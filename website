@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Print3 Assistant</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+    <style>
+      html, body { height: 100%; margin: 0; }
+      .transition-shape {
+        transition: border-radius 0.2s ease, background-color 0.2s ease;
+      }
+      /* Cap textarea growth to ~9 lines */
+      .prompt-textarea {
+        overflow-y: hidden;
+      }
+    </style>
+  </head>
+  <body class="bg-[#1A1A1D] text-white font-sans flex flex-col">
+    <!-- Header -->
+    <header class="flex items-center justify-between py-4 px-6">
+      <img
+        src="https://placehold.co/120x40/1A1A1D/30D5C8/print3-logo-in-custom-font"
+        alt="Print3 Logo"
+        class="h-10 w-auto"
+      />
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col items-center justify-center gap-8 px-4 lg:px-16">
+      <!-- Placeholder Preview Above -->
+      <section class="w-full max-w-lg h-80 bg-[#2A2A2E] rounded-3xl overflow-hidden flex items-center justify-center">
+        <img
+          id="preview-img"
+          src="https://placehold.co/600x400/2A2A2E/888?text=3D+Model+Preview"
+          alt="Placeholder 3D Preview"
+          class="object-contain h-full"
+        />
+      </section>
+
+      <!-- Prompt Panel Below -->
+      <section class="w-full max-w-xl">
+        <div class="flex flex-col items-center text-center">
+          <img
+            src="https://placehold.co/150x150/1A1A1D/0ff/blue-cube-logo-with-p3"
+            alt="Brand Mark"
+            class="w-32 h-32 mb-4"
+          />
+          <h1 class="text-3xl font-semibold mb-6">Make your world.</h1>
+
+          <!-- Separated Prompt Box & Button -->
+          <div class="flex items-center w-full max-w-xl mx-auto gap-4">
+            <!-- Text Box -->
+            <div class="flex-1 bg-[#2A2A2E] rounded-3xl px-5 py-2 flex items-start">
+              <textarea 
+                id="promptInput"
+                name="prompt"
+                placeholder="Describe your 3D print request..."
+                class="prompt-textarea w-full bg-transparent resize-none text-lg placeholder-gray-500 focus:outline-none px-0 py-1"
+                rows="1"
+                oninput="autoGrow(this)">
+</textarea>
+            </div>
+            <!-- Button separated to the right -->
+            <button
+              id="submit-button"
+              type="button"
+              class="w-12 h-12 flex-shrink-0 flex items-center justify-center bg-white rounded-full transition-shape"
+            >
+              <i id="submit-icon" class="fas fa-arrow-up text-xl text-[#1A1A1D]"></i>
+            </button>
+          </div>
+        </section>
+    </main>
+
+    <!-- Scripts -->
+    <script>
+      /**
+       * Auto-grow textarea up to 9 lines, then allow scrolling
+       */
+      function autoGrow(el) {
+        el.style.height = 'auto';
+        const lineHeight = parseFloat(
+          window.getComputedStyle(el).lineHeight
+        );
+        const maxHeight = lineHeight * 9;
+        const newHeight = el.scrollHeight;
+        if (newHeight > maxHeight) {
+          el.style.height = maxHeight + 'px';
+          el.style.overflowY = 'auto';
+        } else {
+          el.style.height = newHeight + 'px';
+          el.style.overflowY = 'hidden';
+        }
+      }
+
+      const submitBtn = document.getElementById('submit-button');
+      const submitIcon = document.getElementById('submit-icon');
+      const previewImg = document.getElementById('preview-img');
+      const placeholders = [
+        'https://placehold.co/600x400/2A2A2E/888?text=3D+Model+Preview',
+        'https://placehold.co/600x400/2A2A2E/555?text=Generated+Model',
+        'https://placehold.co/600x400/2A2A2E/444?text=Final+Design'
+      ];
+      let placeholderIndex = 0;
+
+      submitBtn.addEventListener('click', () => {
+        const text = document.getElementById('promptInput').value.trim();
+        if (!text) return;
+
+        // Morph icon to square stop icon without changing button shape
+        submitIcon.classList.replace('fa-arrow-up', 'fa-stop');
+
+        // Cycle preview image
+        placeholderIndex = (placeholderIndex + 1) % placeholders.length;
+        previewImg.src = placeholders[placeholderIndex];
+      });
+    </script>
+  </body>
+</html>
