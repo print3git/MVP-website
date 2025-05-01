@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Community Creations</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-[#1A1A1D] text-white font-sans flex flex-col min-h-screen">
+    <!-- Header -->
+    <header class="flex items-center justify-between py-4 px-6">
+      <a href="index.html" class="text-white font-medium hover:text-gray-300">&larr; Back</a>
+      <h1 class="text-2xl font-semibold">Community Creations</h1>
+      <div class="w-24"></div>
+    </header>
+
+    <!-- Content -->
+    <main class="flex-1 px-6 py-8">
+      <p class="text-center text-gray-400">No creations yet. Check back soon!</p>
+    </main>
+  </body>
+</html>
