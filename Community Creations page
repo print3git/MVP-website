@@ -5,18 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Community Creations</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
   </head>
   <body class="bg-[#1A1A1D] text-white font-sans flex flex-col min-h-screen">
     <!-- Header -->
     <header class="flex items-center justify-between py-4 px-6">
-      <a href="index.html" class="text-white font-medium hover:text-gray-300">&larr; Back</a>
+      <a href="index.html" class="flex items-center bg-[#2A2A2E] px-4 py-2 rounded-3xl hover:bg-[#3A3A3E] transition-shape">
+        <i class="fas fa-arrow-left text-xl text-white mr-2"></i>
+        <span class="text-white font-medium">Back</span>
+      </a>
       <h1 class="text-2xl font-semibold">Community Creations</h1>
       <div class="w-24"></div>
     </header>
 
     <!-- Content -->
     <main class="flex-1 px-6 py-8">
-      <p class="text-center text-gray-400">No creations yet. Check back soon!</p>
+      <!-- Popular Creations -->
+      <section class="mb-12">
+        <h2 class="text-xl font-semibold mb-4">Popular</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <!-- Placeholder cards -->
+          <div class="h-32 bg-[#2A2A2E] rounded-xl"></div>
+          <div class="h-32 bg-[#2A2A2E] rounded-xl"></div>
+          <div class="h-32 bg-[#2A2A2E] rounded-xl"></div>
+        </div>
+      </section>
+
+      <!-- Recent Creations -->
+      <section>
+        <h2 class="text-xl font-semibold mb-4">Recent</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <!-- Placeholder cards -->
+          <div class="h-32 bg-[#2A2A2E] rounded-xl"></div>
+          <div class="h-32 bg-[#2A2A2E] rounded-xl"></div>
+          <div class="h-32 bg-[#2A2A2E] rounded-xl"></div>
+        </div>
+      </section>
     </main>
   </body>
 </html>
