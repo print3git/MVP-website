@@ -4,8 +4,6 @@
 // 2. const amount = 2000; ===> Optional: Replace with dynamic pricing logic or retrieve from frontend.
 // 3. CORS settings ====> You can restrict to a specific frontend domain instead of cors() open policy.
 
-// ... 
-
 
 
 
