@@ -1,4 +1,4 @@
-// Here’s a complete backend code (Node.js + Express) that supports Stripe payments.
+// Here’s the complete backend code (Node.js + Express) that supports Stripe payments.
 // .... there are some things I need to edit -
 // 1. sk_test_YOUR_SECRET_KEY_HERE ====>  Replace with your Stripe Secret Key from the Stripe dashboard. Keep it private.
 // 2. const amount = 2000; ===> Optional: Replace with dynamic pricing logic or retrieve from frontend.
