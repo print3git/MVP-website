@@ -40,7 +40,7 @@
     <header class="flex items-center justify-between py-4 px-6">
       <img
         src="https://placehold.co/120x40/1A1A1D/30D5C8/print3-logo-in-custom-font"
-        alt="Print3 Logo"
+        alt="Here we put the (light blue) text from the print3 logo"
         class="h-10 w-auto"
       />
     </header>
@@ -84,7 +84,7 @@
         <div class="flex flex-col items-center text-center">
           <img
             src="https://placehold.co/150x150/1A1A1D/0ff/blue-cube-logo-with-p3"
-            alt="Box Logo"
+            alt="This is where we put the Box Logo"
             class="w-32 h-32 mb-4"
           />
           <h1 class="text-3xl font-semibold mb-6">
