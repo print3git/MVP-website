@@ -1,0 +1,8 @@
+Here are the remaining things to add before we pitch to investors:
+
+1. add in a 3d model 'displayer' and connect this to the main page, community creations page, and payment page.
+2. Create Stripe account, get API keys, integrate Stripe into frontend, configure the existing Stripe
+backend file
+3. Either by directly downloading Hunyuan3D 2.0, or by using an existing plugin for it, integrate this as
+the model generator. Ensure it works for both text, images, and text+images prompts.
+4. Configure the 'recent' and 'popular' pages on the Community Creations page
