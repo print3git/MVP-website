@@ -6,3 +6,7 @@ backend file
 3. Either by directly downloading Hunyuan3D 2.0, or by using an existing plugin for it, integrate this as
 the model generator. Ensure it works for both text, images, and text+images prompts.
 4. Configure the 'recent' and 'popular' pages on the Community Creations page
+
+
+(optional)
+- add in a 'print3 discount' for customers who purchase 3 prints.
