@@ -56,7 +56,7 @@
         <!-- Placeholder Image -->
         <img
           id="preview-img"
-          src="https://placehold.co/600x400/2A2A2E/888?text=3D+Model+Preview"
+          src="https://placehold.co/600x400/2A2A2E/888?text=3D+Model+Preview.+This+is+where+we+hook+up+the+Hunyuan+AI"
           alt="Placeholder 3D Preview"
           class="object-contain h-full w-full"
         />
