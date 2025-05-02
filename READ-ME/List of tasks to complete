@@ -1,4 +1,4 @@
-Here are the remaining things to add before we pitch to investors:
+Here are the remaining things to do before we pitch to investors:
 
 1. Add in a 3d model 'displayer' and connect this to the main page, community creations page, and payment page.
 2. Create Stripe account, get API keys, integrate Stripe into frontend, configure the existing Stripe
