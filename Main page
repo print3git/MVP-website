@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
     <title>Print3 Assistant</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -11,10 +14,20 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
     />
+    <!-- model-viewer for in-browser 3D preview -->
+    <script
+      type="module"
+      src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"
+    ></script>
     <style>
-      html, body { height: 100%; margin: 0; }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
       .transition-shape {
-        transition: border-radius 0.2s ease, background-color 0.2s ease;
+        transition: border-radius 0.2s ease,
+          background-color 0.2s ease;
       }
       /* Cap textarea growth to ~9 lines */
       .prompt-textarea {
@@ -33,18 +46,40 @@
     </header>
 
     <!-- Main Content -->
-    <main class="flex-1 flex flex-col items-center justify-center gap-8 px-4 lg:px-16">
-      <!-- Placeholder Preview Above -->
-      <section class="w-full max-w-lg h-80 bg-[#2A2A2E] rounded-3xl overflow-hidden flex items-center justify-center">
+    <main
+      class="flex-1 flex flex-col items-center justify-center gap-8 px-4 lg:px-16"
+    >
+      <!-- Preview Section -->
+      <section
+        class="w-full max-w-lg h-80 bg-[#2A2A2E] rounded-3xl overflow-hidden flex items-center justify-center relative"
+      >
+        <!-- Placeholder Image -->
         <img
           id="preview-img"
           src="https://placehold.co/600x400/2A2A2E/888?text=3D+Model+Preview"
           alt="Placeholder 3D Preview"
-          class="object-contain h-full"
+          class="object-contain h-full w-full"
         />
+        <!-- 3D Viewer (hidden until model loaded) -->
+        <model-viewer
+          id="viewer"
+          src=""
+          alt="Generated 3D Model"
+          camera-controls
+          auto-rotate
+          style="width:100%; height:100%; display:none;"
+        ></model-viewer>
+        <!-- Simple loading overlay -->
+        <div
+          id="loading-overlay"
+          class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center text-white text-lg"
+          style="display:none;"
+        >
+          Generating…
+        </div>
       </section>
 
-      <!-- Prompt Panel Below -->
+      <!-- Prompt Panel -->
       <section class="w-full max-w-xl">
         <div class="flex flex-col items-center text-center">
           <img
@@ -52,38 +87,47 @@
             alt="Brand Mark"
             class="w-32 h-32 mb-4"
           />
-          <h1 class="text-3xl font-semibold mb-6">Make your world.</h1>
+          <h1 class="text-3xl font-semibold mb-6">
+            Make your world.
+          </h1>
 
-          <!-- Separated Prompt Box & Button -->
-          <div class="flex items-center w-full max-w-xl mx-auto gap-4">
-            <!-- Text Box -->
-            <div class="flex-1 bg-[#2A2A2E] rounded-3xl px-5 py-2 flex items-start">
-              <textarea 
+          <div
+            class="flex items-center w-full max-w-xl mx-auto gap-4"
+          >
+            <!-- Textarea -->
+            <div
+              class="flex-1 bg-[#2A2A2E] rounded-3xl px-5 py-2 flex items-start"
+            >
+              <textarea
                 id="promptInput"
                 name="prompt"
                 placeholder="Describe your 3D print request..."
                 class="prompt-textarea w-full bg-transparent resize-none text-lg placeholder-gray-500 focus:outline-none px-0 py-1"
                 rows="1"
-                oninput="autoGrow(this)">
-</textarea>
+                oninput="autoGrow(this)"
+              ></textarea>
             </div>
-            <!-- Button separated to the right -->
+            <!-- Submit Button -->
             <button
               id="submit-button"
               type="button"
               class="w-12 h-12 flex-shrink-0 flex items-center justify-center bg-white rounded-full transition-shape"
             >
-              <i id="submit-icon" class="fas fa-arrow-up text-xl text-[#1A1A1D]"></i>
+              <i
+                id="submit-icon"
+                class="fas fa-arrow-up text-xl text-[#1A1A1D]"
+              ></i>
             </button>
           </div>
-        </section>
+        </div>
+      </section>
     </main>
 
     <!-- Scripts -->
     <script>
-      /**
-       * Auto-grow textarea up to 9 lines, then allow scrolling
-       */
+      const API_BASE = 'https://print3.com'; // ← update this to your server
+
+      // Auto-grow textarea up to 9 lines
       function autoGrow(el) {
         el.style.height = 'auto';
         const lineHeight = parseFloat(
@@ -100,26 +144,71 @@
         }
       }
 
-      const submitBtn = document.getElementById('submit-button');
+      const submitBtn = document.getElementById(
+        'submit-button'
+      );
       const submitIcon = document.getElementById('submit-icon');
       const previewImg = document.getElementById('preview-img');
-      const placeholders = [
-        'https://placehold.co/600x400/2A2A2E/888?text=3D+Model+Preview',
-        'https://placehold.co/600x400/2A2A2E/555?text=Generated+Model',
-        'https://placehold.co/600x400/2A2A2E/444?text=Final+Design'
-      ];
-      let placeholderIndex = 0;
+      const viewer = document.getElementById('viewer');
+      const loadingOverlay = document.getElementById(
+        'loading-overlay'
+      );
 
-      submitBtn.addEventListener('click', () => {
-        const text = document.getElementById('promptInput').value.trim();
-        if (!text) return;
+      submitBtn.addEventListener('click', async () => {
+        const prompt = document
+          .getElementById('promptInput')
+          .value.trim();
+        if (!prompt) return;
 
-        // Morph icon to square stop icon without changing button shape
-        submitIcon.classList.replace('fa-arrow-up', 'fa-stop');
+        // 1) show loading state
+        submitIcon.classList.replace(
+          'fa-arrow-up',
+          'fa-stop'
+        );
+        loadingOverlay.style.display = 'flex';
 
-        // Cycle preview image
-        placeholderIndex = (placeholderIndex + 1) % placeholders.length;
-        previewImg.src = placeholders[placeholderIndex];
+        try {
+          // 2) Shape generation
+          let res = await fetch(`${API_BASE}/generate`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ prompt }),
+          });
+          if (!res.ok)
+            throw new Error('Shape generation failed');
+          const { mesh_url } = await res.json();
+
+          // 3) Texture generation
+          res = await fetch(`${API_BASE}/paint`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ mesh_url, prompt }),
+          });
+          if (!res.ok)
+            throw new Error('Texture generation failed');
+          const { textured_mesh_url } = await res.json();
+
+          // 4) Display in model-viewer
+          previewImg.style.display = 'none';
+          viewer.src = textured_mesh_url;
+          viewer.style.display = 'block';
+        } catch (err) {
+          console.error(err);
+          alert(
+            'Sorry, we couldn’t generate your model. Please try again.'
+          );
+        } finally {
+          // reset loading & icon
+          loadingOverlay.style.display = 'none';
+          submitIcon.classList.replace(
+            'fa-stop',
+            'fa-arrow-up'
+          );
+        }
       });
     </script>
   </body>
