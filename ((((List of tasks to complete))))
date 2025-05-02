@@ -8,7 +8,7 @@ the model generator. Ensure it works for both text, images, and text+images prom
 4. Configure the 'recent' and 'popular' pages on the Community Creations page
 
 
-(optional)
+(optional for now, but certainly do these long-term)
 - add in a 'print3 discount' for customers who purchase 3 prints.
 - add in a 'opt-out' button at the purchase page for adding the design to the 'Community Creations' page:
 we want this to be opt-out to encourage as much sharing as possible, to build up the catalogue and 
