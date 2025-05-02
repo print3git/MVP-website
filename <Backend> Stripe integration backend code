@@ -1,1 +1,41 @@
-<!-- Here we can add in all the BACKEND code required for the Stripe payment plugin -->
+// Here’s a complete backend code (Node.js + Express) that supports Stripe payments.
+
+
+// server.js
+
+// Import dependencies
+const express = require('express');
+const app = express();
+const stripe = require('stripe')('sk_test_YOUR_SECRET_KEY_HERE'); // 🔒 Replace with your real secret key
+const cors = require('cors');
+
+// Middleware
+app.use(cors()); // Allows frontend to call the backend
+app.use(express.json()); // Parses JSON request bodies
+
+// Route to create a PaymentIntent
+app.post('/create-payment-intent', async (req, res) => {
+  try {
+    // Get order amount (use req.body.amount in real apps)
+    const amount = 2000; // 💵 amount in cents ($20.00)
+
+    // Create a PaymentIntent
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: amount,
+      currency: 'usd',
+      automatic_payment_methods: { enabled: true },
+    });
+
+    // Send the client secret to the frontend
+    res.send({
+      clientSecret: paymentIntent.client_secret,
+    });
+  } catch (error) {
+    console.error('Error creating PaymentIntent:', error);
+    res.status(500).send({ error: error.message });
+  }
+});
+
+// Start the server
+const PORT = process.env.PORT || 4242;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
