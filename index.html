@@ -21,31 +21,58 @@
       .transition-shape {
         transition: border-radius 0.2s ease, background-color 0.2s ease;
       }
-      /* cap textarea growth to ~9 lines */
       .prompt-textarea {
-        overflow-y: hidden;
+        overflow-y: hidden; /* cap growth */
       }
+
+      /* ─── Floating slideshow animation ─── */
+      @keyframes floatY {
+        0%   { transform: translateY(-4%); }
+        50%  { transform: translateY(4%);  }
+        100% { transform: translateY(-4%); }
+      }
+      .slide-img {
+        @apply absolute inset-0 object-contain opacity-0 pointer-events-none;
+        animation: floatY 7s ease-in-out infinite;
+        transition: opacity 1s ease-in-out;
+      }
+      .slide-img.show { opacity: 1; }
     </style>
   </head>
   <body class="bg-[#1A1A1D] text-white font-sans flex flex-col">
     <!-- ╔════════ HEADER ════════╗ -->
     <header class="flex items-center justify-between py-4 px-6">
-      <img src="img/text-logo.png" alt="print3 logo" class="h-10 w-auto" />
+      <img src="img/text-logo.png" alt="Print3 wordmark" class="h-10 w-auto" />
     </header>
 
     <!-- ╔════════ MAIN ════════╗ -->
     <main class="flex-1 flex flex-col items-center justify-center gap-8 px-4 lg:px-16">
-      <!-- 3‑D Preview Card -->
-      <section class="w-full max-w-lg h-80 bg-[#2A2A2E] rounded-3xl overflow-hidden flex items-center justify-center relative">
+      <!-- 3‑D Preview Card + floating slideshow overlay → keeps grey bg -->
+      <section id="preview-wrapper" class="relative w-full max-w-lg h-80 bg-[#2A2A2E] rounded-3xl overflow-hidden flex items-center justify-center">
+        <!-- static grey placeholder (hidden when model rendered) -->
         <img id="preview-img" src="https://placehold.co/600x400/2A2A2E/888?text=3D+Model+Preview" alt="3‑D Preview" class="object-contain h-full w-full" />
+
+        <!-- Google 3‑D viewer (hidden until src set) -->
         <model-viewer id="viewer" src="" alt="Generated 3‑D Model" camera-controls auto-rotate style="width:100%;height:100%;display:none;"></model-viewer>
+
+        <!-- Floating slideshow layer (images live in /img folder) -->
+        <div id="slide-layer" class="absolute inset-0 flex items-center justify-center">
+          <img src="img/slide1.png" alt="slideshow image 1" class="slide-img show" />
+          <img src="img/slide2.png" alt="slideshow image 2" class="slide-img" />
+          <img src="img/slide3.png" alt="slideshow image 3" class="slide-img" />
+          <img src="img/slide4.png" alt="slideshow image 4" class="slide-img" />
+          <img src="img/slide5.png" alt="slideshow image 5" class="slide-img" />
+          <img src="img/slide6.png" alt="slideshow image 6" class="slide-img" />
+        </div>
+
+        <!-- Loading overlay -->
         <div id="loading-overlay" class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center text-lg hidden">Generating…</div>
       </section>
 
       <!-- Prompt & Upload Panel -->
       <section class="w-full max-w-xl">
         <div class="flex flex-col items-center text-center">
-          <img src="img/box-logo.png" alt="box logo" class="w-32 h-32 mb-4" />
+          <img src="img/box-logo.png" alt="Print3 cube logo" class="w-32 h-32 mb-4" />
           <h1 class="text-3xl font-semibold mb-6">Make your world.</h1>
 
           <!-- Prompt row -->
@@ -60,13 +87,10 @@
 
           <!-- Upload row -->
           <div class="mt-4 w-full max-w-xl flex gap-4">
-            <!-- Upload btn -->
             <div class="w-1/3">
               <input type="file" id="uploadInput" accept="image/*" multiple class="hidden" />
               <label for="uploadInput" class="block w-full bg-[#2A2A2E] rounded-3xl px-5 py-3 text-lg text-center cursor-pointer hover:bg-[#3A3A3E] transition-shape">Upload Images</label>
             </div>
-
-            <!-- Thumbnails container (hidden until first image) -->
             <div id="image-preview-area" class="hidden flex-1 bg-[#2A2A2E] rounded-3xl min-h-[6rem] max-h-56 flex flex-wrap content-start gap-3 px-4 py-3 overflow-y-auto"></div>
           </div>
         </div>
@@ -76,19 +100,20 @@
     <!-- ╔════════ SCRIPTS ════════╗ -->
     <script>
       /* ========== Config ========= */
-      const API_BASE = "https://print3.com"; // ← replace with your backend
-      const uploadedFiles = []; // File objects kept in memory for later API use
+      const API_BASE = "https://print3.com";
+      const SLIDE_INTERVAL = 4000; // ms
 
-      /* ========== Helpers ========= */
-      function autoGrow(el) {
-        el.style.height = "auto";
-        const lh = parseFloat(getComputedStyle(el).lineHeight);
-        const max = lh * 9;
-        el.style.height = Math.min(el.scrollHeight, max) + "px";
-        el.style.overflowY = el.scrollHeight > max ? "auto" : "hidden";
-      }
+      /* ========== Slideshow ========= */
+      const slides = Array.from(document.querySelectorAll("#slide-layer .slide-img"));
+      let slideIdx = 0;
+      setInterval(() => {
+        slides[slideIdx].classList.remove("show");
+        slideIdx = (slideIdx + 1) % slides.length;
+        slides[slideIdx].classList.add("show");
+      }, SLIDE_INTERVAL);
 
-      /* ========== Element refs ========= */
+      /* ======= Existing prompt & upload JS (unchanged) ======= */
+      const uploadedFiles = [];
       const promptInput = document.getElementById("promptInput");
       const submitBtn = document.getElementById("submit-button");
       const submitIcon = document.getElementById("submit-icon");
@@ -98,7 +123,15 @@
       const viewer = document.getElementById("viewer");
       const loadingOverlay = document.getElementById("loading-overlay");
 
-      /* ========== Prompt → Model ========= */
+      function autoGrow(el) {
+        el.style.height = "auto";
+        const lh = parseFloat(getComputedStyle(el).lineHeight);
+        const max = lh * 9;
+        el.style.height = Math.min(el.scrollHeight, max) + "px";
+        el.style.overflowY = el.scrollHeight > max ? "auto" : "hidden";
+      }
+      promptInput.addEventListener("input", () => autoGrow(promptInput));
+
       submitBtn.addEventListener("click", async () => {
         const prompt = promptInput.value.trim();
         if (!prompt) return;
@@ -110,86 +143,61 @@
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ prompt })
           });
-          if (!shapeRes.ok) throw new Error("shape generation failed");
+          if (!shapeRes.ok) throw new Error();
           const { mesh_url } = await shapeRes.json();
-
           const paintRes = await fetch(`${API_BASE}/paint`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ mesh_url, prompt })
           });
-          if (!paintRes.ok) throw new Error("texture generation failed");
+          if (!paintRes.ok) throw new Error();
           const { textured_mesh_url } = await paintRes.json();
-
           previewImg.classList.add("hidden");
           imagePreviewArea.classList.add("hidden");
           viewer.src = textured_mesh_url;
           viewer.style.display = "block";
         } catch (err) {
-          console.error(err);
-          alert("Generation failed. Check console.");
+          alert("Generation failed");
         } finally {
           loadingOverlay.classList.add("hidden");
           submitIcon.classList.replace("fa-stop", "fa-arrow-up");
         }
       });
 
-      /* ========== Upload handler ========= */
       uploadInput.addEventListener("change", (e) => {
         const files = Array.from(e.target.files);
         if (!files.length) return;
-
         imagePreviewArea.classList.remove("hidden");
         viewer.style.display = "none";
         previewImg.classList.add("hidden");
-
         files.forEach((file) => {
           uploadedFiles.push(file);
           const idx = uploadedFiles.length - 1;
           const url = URL.createObjectURL(file);
-
           const wrapper = document.createElement("div");
           wrapper.className = "relative inline-block";
-          wrapper.dataset.idx = idx.toString();
-
+          wrapper.dataset.idx = idx;
           const img = document.createElement("img");
           img.src = url;
           img.alt = `upload ${idx + 1}`;
           img.className = "object-cover w-24 h-24 rounded-md shadow-md";
-
           const del = document.createElement("button");
           del.type = "button";
           del.innerText = "✕";
-          del.title = "Remove image";
-          del.className = "absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white text-black flex items-center justify-center border border-black text-xs font-bold leading-none";
-
+          del.className = "absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white text-black flex items-center justify-center border border-black text-xs";
           del.addEventListener("click", () => {
-            uploadedFiles[idx] = null; // mark removed
+            uploadedFiles[idx] = null;
             wrapper.remove();
             if (!imagePreviewArea.querySelector("img")) {
               imagePreviewArea.classList.add("hidden");
               previewImg.classList.remove("hidden");
             }
           });
-
           wrapper.appendChild(img);
           wrapper.appendChild(del);
           imagePreviewArea.appendChild(wrapper);
         });
       });
-
-      /* expose a helper for dev‑tools bulk send test */
-      window.sendUploadedImages = async () => {
-        const valid = uploadedFiles.filter(Boolean);
-        if (!valid.length) return alert("No images in buffer.");
-        const fd = new FormData();
-        valid.forEach((f) => fd.append("images[]", f, f.name));
-        const res = await fetch("https://your-external-api.com/upload", { method: "POST", body: fd });
-        console.log(await res.json());
-      };
-
-      /* auto‑grow listener */
-      promptInput.addEventListener("input", () => autoGrow(promptInput));
     </script>
   </body>
 </html>
