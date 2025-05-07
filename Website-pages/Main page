@@ -134,7 +134,7 @@
                        cursor-pointer hover:bg-[#3A3A3E]
                        transition-shape"
               >
-                Upload Image
+                Upload Images
               </label>
             </div>
 
