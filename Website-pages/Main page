@@ -2,23 +2,14 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Print3 Assistant</title>
-    <!-- Tailwind CSS -->
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
-    />
-    <!-- model-viewer for in-browser 3D preview -->
-    <script
-      type="module"
-      src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"
-    ></script>
+    <!-- Font Awesome (arrow‑up icon) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <!-- Google model‑viewer (3‑D preview) -->
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
     <style>
       html,
       body {
@@ -26,215 +17,186 @@
         margin: 0;
       }
       .transition-shape {
-        transition: border-radius 0.2s ease,
-          background-color 0.2s ease;
+        transition: border-radius 0.2s ease, background-color 0.2s ease;
       }
-      /* Cap textarea growth to ~9 lines */
       .prompt-textarea {
-        overflow-y: hidden;
+        overflow-y: hidden; /* cap growth */
       }
     </style>
   </head>
   <body class="bg-[#1A1A1D] text-white font-sans flex flex-col">
-    <!-- Header -->
+    <!-- ░░ Header ░░ -->
     <header class="flex items-center justify-between py-4 px-6">
-      <img
-        src="https://placehold.co/120x40/1A1A1D/30D5C8/print3-logo-in-custom-font"
-        alt="Here we put the (light blue) text from the print3 logo"
-        class="h-10 w-auto"
-      />
+      <img src="https://placehold.co/120x40/1A1A1D/30D5C8/print3-logo-in-custom-font" alt="print3 logo text" class="h-10 w-auto" />
     </header>
 
-    <!-- Main Content -->
-    <main
-      class="flex-1 flex flex-col items-center justify-center gap-8 px-4 lg:px-16"
-    >
-      <!-- Preview Section -->
-      <section
-        class="w-full max-w-lg h-80 bg-[#2A2A2E] rounded-3xl overflow-hidden flex items-center justify-center relative"
-      >
-        <!-- Placeholder Image -->
-        <img
-          id="preview-img"
-          src="https://placehold.co/600x400/2A2A2E/888?text=3D+Model+Preview"
-          alt="3D Preview"
-          class="object-contain h-full w-full"
-        />
-        <!-- 3D Viewer (hidden until model loaded) -->
-        <model-viewer
-          id="viewer"
-          src=""
-          alt="Generated 3D Model"
-          camera-controls
-          auto-rotate
-          style="width:100%; height:100%; display:none;"
-        ></model-viewer>
-        <!-- Loading Overlay -->
-        <div
-          id="loading-overlay"
-          class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center text-white text-lg"
-          style="display:none;"
-        >
-          Generating…
-        </div>
+    <!-- ░░ Main ░░ -->
+    <main class="flex-1 flex flex-col items-center justify-center gap-8 px-4 lg:px-16">
+      <!-- 3‑D Preview -->
+      <section class="w-full max-w-lg h-80 bg-[#2A2A2E] rounded-3xl overflow-hidden flex items-center justify-center relative">
+        <img id="preview-img" src="https://placehold.co/600x400/2A2A2E/888?text=3D+Model+Preview" alt="3‑D Preview" class="object-contain h-full w-full" />
+        <model-viewer id="viewer" src="" alt="Generated 3‑D Model" camera-controls auto-rotate style="width:100%; height:100%; display:none;"></model-viewer>
+        <div id="loading-overlay" class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center text-white text-lg hidden">Generating…</div>
       </section>
 
       <!-- Prompt & Upload Panel -->
       <section class="w-full max-w-xl">
         <div class="flex flex-col items-center text-center">
-          <img
-            src="https://placehold.co/150x150/1A1A1D/0ff/blue-cube-logo-with-p3"
-            alt="This is where we put the Box Logo"
-            class="w-32 h-32 mb-4"
-          />
-          <h1 class="text-3xl font-semibold mb-6">
-            Make your world.
-          </h1>
+          <img src="https://placehold.co/150x150/1A1A1D/0ff/blue-cube-logo-with-p3" alt="Box Logo" class="w-32 h-32 mb-4" />
+          <h1 class="text-3xl font-semibold mb-6">Make your world.</h1>
 
           <!-- Prompt + Submit -->
           <div class="flex items-center w-full max-w-xl mx-auto gap-4">
-            <div
-              class="flex-1 bg-[#2A2A2E] rounded-3xl px-5 py-2 flex items-start"
-            >
-              <textarea
-                id="promptInput"
-                name="prompt"
-                placeholder="Describe your 3D print request..."
-                class="prompt-textarea w-full bg-transparent resize-none text-lg placeholder-gray-500 focus:outline-none px-0 py-1"
-                rows="1"
-                oninput="autoGrow(this)"
-              ></textarea>
+            <div class="flex-1 bg-[#2A2A2E] rounded-3xl px-5 py-2 flex items-start">
+              <textarea id="promptInput" placeholder="Describe your 3‑D print request…" class="prompt-textarea w-full bg-transparent resize-none text-lg placeholder-gray-500 focus:outline-none" rows="1" oninput="autoGrow(this)"></textarea>
             </div>
-            <button
-              id="submit-button"
-              type="button"
-              class="w-12 h-12 flex-shrink-0 flex items-center justify-center bg-white rounded-full transition-shape"
-            >
-              <i
-                id="submit-icon"
-                class="fas fa-arrow-up text-xl text-[#1A1A1D]"
-              ></i>
+            <button id="submit-button" type="button" class="w-12 h-12 flex items-center justify-center bg-white rounded-full transition-shape">
+              <i id="submit-icon" class="fas fa-arrow-up text-xl text-[#1A1A1D]"></i>
             </button>
           </div>
 
-          <!-- Upload + Preview Placeholder Row -->
+          <!-- Upload + Thumbs -->
           <div class="mt-4 w-full max-w-xl flex items-start gap-4">
-            <!-- slightly wider Upload Button (1/3 width) -->
             <div class="w-1/3">
-              <input
-                type="file"
-                id="uploadInput"
-                accept="image/*"
-                class="hidden"
-              />
-              <label
-                for="uploadInput"
-                class="block w-full bg-[#2A2A2E] rounded-3xl
-                       px-5 py-3 text-lg text-center
-                       cursor-pointer hover:bg-[#3A3A3E]
-                       transition-shape"
-              >
-                Upload Images
-              </label>
+              <input type="file" id="uploadInput" accept="image/*" multiple class="hidden" />
+              <label for="uploadInput" class="block w-full bg-[#2A2A2E] rounded-3xl px-5 py-3 text-lg text-center cursor-pointer hover:bg-[#3A3A3E] transition-shape">Upload Image</label>
             </div>
-
-            <!-- 3/4-width placeholder now with explanatory text -->
-            <div
-              id="image-preview-area"
-              class="flex-1 bg-[#2A2A2E] rounded-3xl
-                     h-12 flex items-center justify-center
-                     px-4 text-gray-400 text-center"
-            >
-              Here the uploaded images will be displayed (will remove this bar + leave as blank space)
-            </div>
+            <!-- Preview thumbnails (hidden until first upload) -->
+            <div id="image-preview-area" class="hidden flex-1 bg-[#2A2A2E] rounded-3xl min-h-[6rem] max-h-56 flex flex-wrap content-start gap-3 px-4 py-3 overflow-y-auto"></div>
           </div>
         </div>
       </section>
     </main>
 
-    <!-- Scripts -->
+    <!-- ░░ Scripts ░░ -->
     <script>
-      const API_BASE = 'https://print3.com'; // ← update to your API
+      const API_BASE = "https://print3.com";
+      const uploadedFiles = [];
 
-      // Auto-grow textarea up to 9 lines
+      /* TEXTAREA AUTO‑GROW */
       function autoGrow(el) {
-        el.style.height = 'auto';
-        const lineHeight = parseFloat(
-          window.getComputedStyle(el).lineHeight
-        );
-        const maxHeight = lineHeight * 9;
-        const newHeight = el.scrollHeight;
-        if (newHeight > maxHeight) {
-          el.style.height = maxHeight + 'px';
-          el.style.overflowY = 'auto';
-        } else {
-          el.style.height = newHeight + 'px';
-          el.style.overflowY = 'hidden';
-        }
+        el.style.height = "auto";
+        const lh = parseFloat(getComputedStyle(el).lineHeight);
+        const max = lh * 9;
+        el.style.height = Math.min(el.scrollHeight, max) + "px";
+        el.style.overflowY = el.scrollHeight > max ? "auto" : "hidden";
       }
 
-      const submitBtn = document.getElementById('submit-button');
-      const submitIcon = document.getElementById('submit-icon');
-      const previewImg = document.getElementById('preview-img');
-      const viewer = document.getElementById('viewer');
-      const loadingOverlay = document.getElementById('loading-overlay');
-      const uploadInput = document.getElementById('uploadInput');
+      /* DOM SHORTCUTS */
+      const submitBtn = document.getElementById("submit-button");
+      const submitIcon = document.getElementById("submit-icon");
+      const previewImg = document.getElementById("preview-img");
+      const viewer = document.getElementById("viewer");
+      const loadingOverlay = document.getElementById("loading-overlay");
+      const uploadInput = document.getElementById("uploadInput");
+      const imagePreviewArea = document.getElementById("image-preview-area");
 
-      // Handle prompt → shape & texture generation
-      submitBtn.addEventListener('click', async () => {
-        const prompt = document
-          .getElementById('promptInput')
-          .value.trim();
+      /* PROMPT → MODEL */
+      submitBtn.addEventListener("click", async () => {
+        const prompt = document.getElementById("promptInput").value.trim();
         if (!prompt) return;
-
-        // Show loading
-        submitIcon.classList.replace('fa-arrow-up', 'fa-stop');
-        loadingOverlay.style.display = 'flex';
-
+        submitIcon.classList.replace("fa-arrow-up", "fa-stop");
+        loadingOverlay.classList.remove("hidden");
         try {
-          // 1) Shape generation
-          let res = await fetch(`${API_BASE}/generate`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+          const genRes = await fetch(`${API_BASE}/generate`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ prompt }),
           });
-          if (!res.ok) throw new Error('Shape generation failed');
-          const { mesh_url } = await res.json();
+          if (!genRes.ok) throw new Error("shape generation failed");
+          const { mesh_url } = await genRes.json();
 
-          // 2) Texture generation
-          res = await fetch(`${API_BASE}/paint`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+          const paintRes = await fetch(`${API_BASE}/paint`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ mesh_url, prompt }),
           });
-          if (!res.ok) throw new Error('Texture generation failed');
-          const { textured_mesh_url } = await res.json();
+          if (!paintRes.ok) throw new Error("texture generation failed");
+          const { textured_mesh_url } = await paintRes.json();
 
-          // 3) Display result
-          previewImg.style.display = 'none';
+          previewImg.classList.add("hidden");
+          imagePreviewArea.classList.add("hidden");
           viewer.src = textured_mesh_url;
-          viewer.style.display = 'block';
+          viewer.style.display = "block";
         } catch (err) {
           console.error(err);
-          alert(
-            'Sorry, we couldn’t generate your model. Please try again.'
-          );
+          alert("Sorry, we couldn’t generate your model. Please try again.");
         } finally {
-          loadingOverlay.style.display = 'none';
-          submitIcon.classList.replace('fa-stop', 'fa-arrow-up');
+          loadingOverlay.classList.add("hidden");
+          submitIcon.classList.replace("fa-stop", "fa-arrow-up");
         }
       });
 
-      // Handle image upload → preview
-      uploadInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const objectUrl = URL.createObjectURL(file);
-        previewImg.src = objectUrl;
-        previewImg.style.display = 'block';
-        viewer.style.display = 'none';
+      /* IMAGE UPLOAD */
+      uploadInput.addEventListener("change", (e) => {
+        const files = Array.from(e.target.files);
+        if (!files.length) return;
+
+        // show preview container on first image
+        imagePreviewArea.classList.remove("hidden");
+
+        // reset view
+        viewer.style.display = "none";
+        previewImg.classList.add("hidden");
+
+        files.forEach((file) => {
+          uploadedFiles.push(file);
+          const idx = uploadedFiles.length - 1;
+          const url = URL.createObjectURL(file);
+
+          const wrapper = document.createElement("div");
+          wrapper.className = "relative inline-block";
+          wrapper.dataset.idx = idx;
+
+          const img = document.createElement("img");
+          img.src = url;
+          img.alt = `upload ${idx + 1}`;
+          img.className = "object-cover w-24 h-24 rounded-md shadow-md";
+
+          const delBtn = document.createElement("button");
+          delBtn.type = "button";
+          delBtn.innerText = "✕";
+          delBtn.title = "Remove image";
+          delBtn.className = "absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white text-black flex items-center justify-center border border-black text-xs font-bold leading-none focus:outline-none";
+
+          delBtn.addEventListener("click", (ev) => {
+            ev.stopPropagation();
+            uploadedFiles[idx] = null;
+            wrapper.remove();
+            // if no thumbnails left, hide container again
+            if (!imagePreviewArea.querySelector("img")) {
+              imagePreviewArea.classList.add("hidden");
+            }
+          });
+
+          wrapper.appendChild(img);
+          wrapper.appendChild(delBtn);
+          imagePreviewArea.appendChild(wrapper);
+        });
       });
+
+      /* OPTIONAL: BULK SEND */
+      async function sendUploadedImages() {
+        const valid = uploadedFiles.filter(Boolean);
+        if (!valid.length) {
+          alert("No images to send.");
+          return;
+        }
+        const fd = new FormData();
+        valid.forEach((f) => fd.append("images[]", f, f.name));
+        try {
+          const res = await fetch("https://your-external-api.com/upload", {
+            method: "POST",
+            body: fd,
+          });
+          if (!res.ok) throw new Error("Upload failed");
+          console.log("✅ uploaded", await res.json());
+        } catch (err) {
+          console.error(err);
+          alert("Image upload failed — see console for details.");
+        }
+      }
+      window.sendUploadedImages = sendUploadedImages;
     </script>
   </body>
 </html>
-
