@@ -3,68 +3,71 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Print3 Assistant</title>
-    <!-- Tailwind CSS -->
+    <title>Print3 Assistant</title>
+
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome -->
+
+    <!-- Font Awesome -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
     />
-    <!-- 3D Model Viewer -->
+
+    <!-- model‑viewer (for GLB preview) -->
     <script
       type="module"
       src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"
     ></script>
+
+    <!-- Page‑specific tweaks -->
     <style>
-      html,
-      body {
+      html, body {
         height: 100%;
         margin: 0;
       }
+
+      /* smooth corner / background transitions */
       .transition-shape {
         transition: border-radius 0.2s ease, background-color 0.2s ease;
       }
+
+      /* let the textarea grow but never break layout */
       .prompt-textarea {
-        /* remove UA default padding so text is vertically centred (Safari fix) */
-        padding-top: 0;
-        padding-bottom: 0;
-        /* explicit line‑height equals Tailwind text‑lg default (1.75rem) */
-        line-height: 1.75rem;
-        overflow-y: hidden;
+        overflow-y: hidden;            /* hide scroll until needed */
+        padding: 0;                    /* zero UA padding (Safari fix) */
+        line-height: 1.75rem;          /* match Tailwind text-lg */
       }
+
+      /* subtle float animation for the placeholder slide set */
       @keyframes floatY {
-        0%,
-        100% {
-          transform: translateY(-4%);
-        }
-        50% {
-          transform: translateY(4%);
-        }
+        0%,100% { transform: translateY(-4%); }
+        50%      { transform: translateY(4%);  }
       }
+
       .slide-img {
         @apply absolute inset-0 object-contain opacity-0 pointer-events-none;
         animation: floatY 7s ease-in-out infinite;
         transition: opacity 1s ease-in-out;
       }
-      .slide-img.show {
-        opacity: 1;
-      }
+      .slide-img.show { opacity: 1; }
     </style>
   </head>
+
   <body class="bg-[#1A1A1D] text-white font-sans flex flex-col">
+    <!-- ─────────────────────────── HEADER ─────────────────────────── -->
     <header class="flex items-center justify-between py-4 px-6">
-      <!-- textual logo -->
-      <img src="img/textlogo.png" alt="Print3 logo" class="h-10 w-auto" />
+      <img src="img/textlogo.png" alt="Print3" class="h-10 w-auto" />
     </header>
 
+    <!-- ─────────────────────────── MAIN ─────────────────────────── -->
     <main class="flex-1 flex flex-col items-center justify-center gap-16 px-4 lg:px-16">
-      <!-- Preview Section -->
+      <!-- ===== PREVIEW AREA (placeholder → slides → loader → model) ===== -->
       <section
         id="preview-wrapper"
-        class="relative w-full max-w-lg h-80 bg-[#2A2A2E] rounded-3xl overflow-hidden"
+        class="relative w-full max-w-lg h-80 bg-[#2A2A2E] border border-white/10 rounded-3xl overflow-hidden"
       >
-        <!-- placeholder before any model or slides -->
+        <!-- static dark placeholder img (shown first) -->
         <img
           id="preview-img"
           src="https://placehold.co/600x400/2A2A2E/2A2A2E?text="
@@ -72,124 +75,113 @@
           class="object-contain h-full w-full"
         />
 
+        <!-- model‑viewer hidden until GLB loads -->
         <model-viewer
           id="viewer"
           camera-controls
           auto-rotate
-          style="display: none; width:100%; height:100%;"
+          style="display:none; width:100%; height:100%;"
         ></model-viewer>
 
-        <!-- slide layer hidden by default -->
-        <div
-          id="slide-layer"
-          class="absolute inset-0 flex items-center justify-center"
-          style="display: none;"
-        >
+        <!-- slide demo layer (hidden until user uploads) -->
+        <div id="slide-layer" class="absolute inset-0 flex items-center justify-center" style="display:none;">
           <img src="img/slide1.png" class="slide-img show" alt="" />
-          <img src="img/slide2.png" class="slide-img" alt="" />
-          <img src="img/slide3.png" class="slide-img" alt="" />
-          <img src="img/slide4.png" class="slide-img" alt="" />
-          <img src="img/slide5.png" class="slide-img" alt="" />
-          <img src="img/slide6.png" class="slide-img" alt="" />
+          <img src="img/slide2.png" class="slide-img"       alt="" />
+          <img src="img/slide3.png" class="slide-img"       alt="" />
+          <img src="img/slide4.png" class="slide-img"       alt="" />
+          <img src="img/slide5.png" class="slide-img"       alt="" />
+          <img src="img/slide6.png" class="slide-img"       alt="" />
         </div>
 
-        <div
-          id="loader"
-          class="absolute inset-0 flex items-center justify-center bg-[#2A2A2E] bg-opacity-80"
-          style="display: none;"
-        >
+        <!-- spinner while waiting for API → GLB -->
+        <div id="loader" class="absolute inset-0 flex items-center justify-center bg-[#2A2A2E]/80" style="display:none;">
           <div class="h-10 w-10 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
         </div>
       </section>
 
-      <!-- Input Section -->
+      <!-- ===== INPUT SECTION ===== -->
       <section class="w-full max-w-xl">
         <div class="flex flex-col items-center text-center">
-          <!-- cube logo above heading -->
-          <img src="img/boxlogo.png" alt="Cube Logo" class="w-32 h-auto mb-8" />
+          <img src="img/boxlogo.png" alt="Print3 cube" class="w-32 h-auto mb-8" />
           <h1 class="text-3xl font-semibold mb-8">Make your world.</h1>
 
+          <!-- prompt row -->
           <div class="flex items-center w-full gap-4">
-            <!-- FLEX container centres the textarea baseline on all browsers -->
-            <div class="flex items-center flex-1 bg-[#2A2A2E] rounded-3xl px-5 py-2">
+            <div class="flex-1 bg-[#2A2A2E] border border-white/10 rounded-3xl px-5 py-2 flex items-center">
               <textarea
                 id="promptInput"
                 rows="1"
                 placeholder="Describe your 3D print request…"
-                class="prompt-textarea flex-1 bg-transparent resize-none text-lg placeholder-gray-500 focus:outline-none"
+                class="prompt-textarea w-full bg-transparent resize-none text-lg placeholder-gray-500 focus:outline-none"
               ></textarea>
             </div>
-            <button
-              id="submit-button"
-              class="w-12 h-12 flex items-center justify-center bg-white rounded-full transition-shape"
-            >
+
+            <button id="submit-button" class="w-12 h-12 flex items-center justify-center bg-white rounded-full transition-shape">
               <i id="submit-icon" class="fas fa-arrow-up text-xl text-[#1A1A1D]"></i>
             </button>
           </div>
 
+          <!-- upload row -->
           <div class="mt-4 w-full flex gap-4">
-            <div class="w-1/3">
-              <input type="file" id="uploadInput" accept="image/*" multiple class="hidden" />
-              <label
-                for="uploadInput"
-                class="block w-full bg-[#2A2A2E] rounded-3xl px-5 py-3 text-lg text-center cursor-pointer hover:bg-[#3A3A3E] transition-shape"
-                >Upload Images</label
-              >
-            </div>
+            <!-- hidden native file input -->
+            <input type="file" id="uploadInput" accept="image/*" multiple class="hidden" />
+
+            <!-- visible label (button) -->
+            <label for="uploadInput" class="inline-flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-3xl h-12 px-6 text-lg whitespace-nowrap cursor-pointer hover:bg-[#3A3A3E] transition-shape">
+              Upload Images
+            </label>
+
+            <!-- dynamic thumbnails -->
             <div
-              id="image-preview-area"
-              class="hidden flex-1 bg-[#2A2A2E] rounded-3xl min-h-[6rem] max-h-56 flex flex-wrap content-start gap-3 px-4 py-3 overflow-y-auto"
-            ></div>
+              id="image-preview-area" class="hidden grid grid-cols-4 gap-3 bg-[#2A2A2E] border border-white/10 rounded-3xl min-h-[6rem] max-h-56 px-4 py-3 overflow-y-auto"">
+            </div>
           </div>
         </div>
       </section>
     </main>
 
+    <!-- ─────────────────────────── SCRIPTS ─────────────────────────── -->
     <script type="module">
-      // Configuration
-      const API_BASE = '/api';
-      const SLIDE_INTERVAL = 4000;
-      const FALLBACK_GLB = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
+      /* -------------------------------------------------------------------------- */
+      /* CONFIG                                                                    */
+      /* -------------------------------------------------------------------------- */
+      const API_BASE       = '/api';
+      const SLIDE_INTERVAL = 4000;            // ms
+      const FALLBACK_GLB   = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
 
-      // Element References
+      /* -------------------------------------------------------------------------- */
+      /* DOM REFS                                                                   */
+      /* -------------------------------------------------------------------------- */
+      const $ = (id) => document.getElementById(id);
       const refs = {
-        previewImg: document.getElementById('preview-img'),
-        slides: document.querySelectorAll('#slide-layer .slide-img'),
-        slideLayer: document.getElementById('slide-layer'),
-        loader: document.getElementById('loader'),
-        viewer: document.getElementById('viewer'),
-        promptInput: document.getElementById('promptInput'),
-        submitBtn: document.getElementById('submit-button'),
-        submitIcon: document.getElementById('submit-icon'),
-        uploadInput: document.getElementById('uploadInput'),
-        imagePreviewArea: document.getElementById('image-preview-area'),
+        previewImg       : $('preview-img'),
+        slideLayer       : $('slide-layer'),
+        slides           : document.querySelectorAll('#slide-layer .slide-img'),
+        loader           : $('loader'),
+        viewer           : $('viewer'),
+        promptInput      : $('promptInput'),
+        submitBtn        : $('submit-button'),
+        submitIcon       : $('submit-icon'),
+        uploadInput      : $('uploadInput'),
+        imagePreviewArea : $('image-preview-area'),
       };
 
-      // ensure slide‑layer (and loader) stay hidden on load
-      refs.slideLayer.style.display = 'none';
-      refs.loader.style.display = 'none';
-
-      // UI State Handlers
-      function showSlides() {
-        refs.previewImg.style.display = 'none';
-        refs.slideLayer.style.display = 'flex';
-        refs.loader.style.display = 'none';
-        refs.viewer.style.display = 'none';
-      }
-      function showLoader() {
+      /* -------------------------------------------------------------------------- */
+      /* UI STATE HELPERS                                                           */
+      /* -------------------------------------------------------------------------- */
+      function hideAll() {
         refs.previewImg.style.display = 'none';
         refs.slideLayer.style.display = 'none';
-        refs.loader.style.display = 'flex';
-        refs.viewer.style.display = 'none';
+        refs.loader.style.display     = 'none';
+        refs.viewer.style.display     = 'none';
       }
-      function showModel() {
-        refs.previewImg.style.display = 'none';
-        refs.slideLayer.style.display = 'none';
-        refs.loader.style.display = 'none';
-        refs.viewer.style.display = 'block';
-      }
+      const showSlides = () => { hideAll(); refs.slideLayer.style.display = 'flex'; }
+      const showLoader = () => { hideAll(); refs.loader.style.display     = 'flex'; }
+      const showModel  = () => { hideAll(); refs.viewer.style.display     = 'block'; }
 
-      // Slideshow Loop
+      /* -------------------------------------------------------------------------- */
+      /* SLIDESHOW                                                                  */
+      /* -------------------------------------------------------------------------- */
       let slideIndex = 0;
       setInterval(() => {
         refs.slides[slideIndex].classList.toggle('show');
@@ -197,85 +189,103 @@
         refs.slides[slideIndex].classList.toggle('show');
       }, SLIDE_INTERVAL);
 
-      // Auto-resize Textarea
-      function autoGrow(el) {
-        el.style.height = 'auto';
+      /* -------------------------------------------------------------------------- */
+      /* AUTO‑GROW TEXTAREA                                                         */
+      /* -------------------------------------------------------------------------- */
+      refs.promptInput.addEventListener('input', () => {
+        const el         = refs.promptInput;
+        el.style.height  = 'auto';
         const lineHeight = parseFloat(getComputedStyle(el).lineHeight);
-        const maxHeight = lineHeight * 9;
-        el.style.height = Math.min(el.scrollHeight, maxHeight) + 'px';
+        const maxHeight  = lineHeight * 9;               // 9 lines max
+        el.style.height  = Math.min(el.scrollHeight, maxHeight) + 'px';
         el.style.overflowY = el.scrollHeight > maxHeight ? 'auto' : 'hidden';
-      }
-      refs.promptInput.addEventListener('input', () => autoGrow(refs.promptInput));
+      });
 
-      // Fetch or Fallback
+      /* -------------------------------------------------------------------------- */
+      /* API CALL                                                                   */
+      /* -------------------------------------------------------------------------- */
       async function fetchGlb(prompt, files) {
         try {
           const payload = new FormData();
           if (prompt) payload.append('prompt', prompt);
           files.forEach((f) => payload.append('images', f));
+
           const res = await fetch(`${API_BASE}/generate`, { method: 'POST', body: payload });
           if (!res.ok) throw new Error(`API ${res.status}`);
           return (await res.json()).glb_url;
-        } catch (e) {
-          console.warn('Fetch failed, using fallback', e);
+        } catch (err) {
+          console.warn('API failed → using fallback GLB', err);
           return FALLBACK_GLB;
         }
       }
 
-      // Generate Button Handler
+      /* -------------------------------------------------------------------------- */
+      /* GENERATE BUTTON                                                            */
+      /* -------------------------------------------------------------------------- */
       const uploadedFiles = [];
+
       refs.submitBtn.addEventListener('click', async () => {
-        const text = refs.promptInput.value.trim();
-        if (!text && !uploadedFiles.length) return;
+        const prompt = refs.promptInput.value.trim();
+        if (!prompt && !uploadedFiles.length) return;
+
+        // switch icon → stop / processing
         refs.submitIcon.classList.replace('fa-arrow-up', 'fa-stop');
         showLoader();
+
         try {
-          const url = await fetchGlb(text, uploadedFiles);
-          refs.viewer.src = url;
-          await refs.viewer.updateComplete;
+          const glbUrl = await fetchGlb(prompt, uploadedFiles);
+          refs.viewer.src = glbUrl;
+          await refs.viewer.updateComplete;   // wait until model-viewer renders
           showModel();
         } finally {
           refs.submitIcon.classList.replace('fa-stop', 'fa-arrow-up');
         }
       });
 
-      // Image Upload Handler
+      /* -------------------------------------------------------------------------- */
+      /* FILE UPLOAD                                                                */
+      /* -------------------------------------------------------------------------- */
       refs.uploadInput.addEventListener('change', (e) => {
         const files = Array.from(e.target.files);
         if (!files.length) return;
-        // store & preview
+
         uploadedFiles.length = 0;
         uploadedFiles.push(...files);
-        refs.imagePreviewArea.replaceChildren();
-        refs.imagePreviewArea.classList.remove('hidden');
-        // hide other layers
-        refs.previewImg.style.display = 'none';
-        refs.slideLayer.style.display = 'none';
-        refs.loader.style.display = 'none';
-        refs.viewer.style.display = 'none';
 
-        files.forEach((file, i) => {
-          const url = URL.createObjectURL(file);
-          const container = document.createElement('div');
+        // clear previous previews
+        refs.imagePreviewArea.innerHTML = '';
+        refs.imagePreviewArea.classList.remove('hidden');
+
+        // render thumbnails
+        files.forEach((file, idx) => {
+          const url         = URL.createObjectURL(file);
+          const container   = document.createElement('div');
           container.className = 'relative inline-block';
+
           const img = document.createElement('img');
           img.src = url;
-          img.alt = `upload ${i + 1}`;
-          img.className = 'object-cover w-24 h-24 rounded-md shadow-md';
+          img.alt = `upload ${idx + 1}`;
+          img.className = 'object-cover w-full h-20 rounded-md shadow-md';
+          container.appendChild(img);
+
           const btn = document.createElement('button');
-          btn.type = 'button';
+          btn.type  = 'button';
           btn.innerText = '✕';
           btn.className = 'absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white text-black border border-black text-xs';
           btn.addEventListener('click', () => {
             container.remove();
-            const idx = uploadedFiles.indexOf(file);
-            if (idx > -1) uploadedFiles.splice(idx, 1);
-            if (!refs.imagePreviewArea.querySelector('img')) refs.imagePreviewArea.classList.add('hidden');
+            const index = uploadedFiles.indexOf(file);
+            if (index !== -1) uploadedFiles.splice(index, 1);
+            if (!uploadedFiles.length) refs.imagePreviewArea.classList.add('hidden');
           });
-          container.append(img, btn);
-          refs.imagePreviewArea.append(container);
+          container.appendChild(btn);
+
+          refs.imagePreviewArea.appendChild(container);
         });
       });
+
+      /* show placeholder slides on initial load */
+      showSlides();
     </script>
   </body>
 </html>
