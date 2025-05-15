@@ -7,11 +7,9 @@
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-
     <!-- Stripe.js -->
     <script src="https://js.stripe.com/v3/"></script>
-
-    <!-- Font Awesome for icons -->
+    <!-- Font Awesome -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
@@ -19,69 +17,85 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
-
-    <!-- Google model-viewer (for GLB preview) -->
-    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+    <!-- model-viewer -->
+    <script
+      type="module"
+      src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"
+    ></script>
   </head>
 
   <body class="bg-[#1A1A1D] text-white font-sans min-h-screen flex flex-col">
-
     <!-- Header -->
-        <header class="px-6 py-4">
-          <a
-            href="index.html"
-            class="inline-flex items-center justify-center
-                   bg-[#2A2A2E] border border-white/10
-                   rounded-3xl px-5 py-2 text-lg font-medium
-                   text-white hover:bg-[#3A3A3E] transition-shape"
-          >
-            <!-- White left arrow SVG, guaranteed to render -->
-            <svg
-              class="w-4 h-4 mr-2 flex-shrink-0"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              viewBox="0 0 24 24"
-            >
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-            </svg>
-            Back
-          </a>
-        </header>
-
-
+    <header class="px-6 py-4">
+      <a
+        href="index.html"
+        class="inline-flex items-center justify-center
+               bg-[#2A2A2E] border border-white/10
+               rounded-3xl px-5 py-2 text-lg font-medium
+               text-white hover:bg-[#3A3A3E] transition-shape"
+      >
+        <svg
+          class="w-4 h-4 mr-2 flex-shrink-0"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+        Back
+      </a>
+    </header>
 
     <!-- Main Content -->
     <main class="flex-1 flex flex-col items-center justify-center px-4 space-y-8">
-
-      <!-- Model Preview Area (same as on index.html) -->
-      <section id="preview-wrapper" class="relative w-full max-w-md h-80 bg-[#2A2A2E] border border-white/10 rounded-3xl overflow-hidden">
-        <img id="preview-img" src="https://placehold.co/600x400/2A2A2E/2A2A2E?text=" alt="Preview placeholder" class="object-contain h-full w-full" />
-        <model-viewer id="viewer" camera-controls auto-rotate style="display:none;width:100%;height:100%"></model-viewer>
-        <div id="loader" class="absolute inset-0 flex items-center justify-center bg-[#2A2A2E]/80" style="display:none;">
-          <div class="h-10 w-10 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+      <!-- Model Preview Area -->
+      <section
+        id="preview-wrapper"
+        class="relative w-full max-w-md h-80 bg-[#2A2A2E] border border-white/10 rounded-3xl overflow-hidden"
+      >
+        <img
+          id="preview-img"
+          src="https://placehold.co/600x400/2A2A2E/2A2A2E?text="
+          alt="Preview placeholder"
+          class="object-contain h-full w-full"
+        />
+        <model-viewer
+          id="viewer"
+          camera-controls
+          auto-rotate
+          style="display:none;width:100%;height:100%"
+        ></model-viewer>
+        <div
+          id="loader"
+          class="absolute inset-0 flex items-center justify-center bg-[#2A2A2E]/80"
+          style="display:none;"
+        >
+          <div
+            class="h-10 w-10 border-4 border-white border-t-transparent rounded-full animate-spin"
+          ></div>
         </div>
       </section>
 
       <!-- Checkout Form -->
       <div class="w-full max-w-md bg-[#2A2A2E] rounded-2xl p-6">
         <h2 class="text-2xl font-semibold mb-4 text-center">Checkout</h2>
-
-        <!-- Stripe Payment Element placeholder -->
         <div id="payment-element" class="mb-6">
-          <p class="text-center text-gray-400">[Stripe payment form will go here]</p>
+          <p class="text-center text-gray-400">
+            [Stripe payment form will go here]
+          </p>
         </div>
-
-        <button id="submit-payment" class="w-full bg-[#30D5C8] text-[#1A1A1D] py-3 rounded-xl font-semibold hover:bg-[#28b7a8] transition">
+        <button
+          id="submit-payment"
+          class="w-full bg-[#30D5C8] text-[#1A1A1D] py-3 rounded-xl font-semibold hover:bg-[#28b7a8] transition"
+        >
           Pay Now
         </button>
       </div>
-
     </main>
 
     <!-- Initialization Script -->
     <script>
-      // On load: pull the model URL and display it immediately
       document.addEventListener('DOMContentLoaded', () => {
         const storedUrl = localStorage.getItem('print3Model');
         if (!storedUrl) return;
@@ -90,20 +104,20 @@
         const loader     = document.getElementById('loader');
         const viewer     = document.getElementById('viewer');
 
-        // Hide placeholder image and spinner
+        // Hide placeholder/spinner immediately
         previewImg.style.display = 'none';
         loader.style.display     = 'none';
 
-        // Show the model viewer and set the model source
+        // Show the model and set it
         viewer.style.display = 'block';
-        viewer.src = storedUrl;
+        viewer.src           = storedUrl;
       });
 
-      // Placeholder for Stripe integration
-      document.getElementById('submit-payment').addEventListener('click', () => {
-        alert('Payment flow to be implemented');
-      });
+      document
+        .getElementById('submit-payment')
+        .addEventListener('click', () => {
+          alert('Payment flow to be implemented');
+        });
     </script>
-
   </body>
 </html>
