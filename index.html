@@ -26,6 +26,11 @@
         transition: border-radius 0.2s ease, background-color 0.2s ease;
       }
       .prompt-textarea {
+        /* remove UA default padding so text is vertically centred (Safari fix) */
+        padding-top: 0;
+        padding-bottom: 0;
+        /* explicit line‑height equals Tailwind text‑lg default (1.75rem) */
+        line-height: 1.75rem;
         overflow-y: hidden;
       }
       @keyframes floatY {
@@ -50,12 +55,9 @@
   <body class="bg-[#1A1A1D] text-white font-sans flex flex-col">
     <header class="flex items-center justify-between py-4 px-6">
       <!-- textual logo -->
-      <img
-        src="img/textlogo.png"
-        alt="img/textlogo.png here"
-        class="h-10 w-auto"
-      />
+      <img src="img/textlogo.png" alt="Print3 logo" class="h-10 w-auto" />
     </header>
+
     <main class="flex-1 flex flex-col items-center justify-center gap-16 px-4 lg:px-16">
       <!-- Preview Section -->
       <section
@@ -96,9 +98,7 @@
           class="absolute inset-0 flex items-center justify-center bg-[#2A2A2E] bg-opacity-80"
           style="display: none;"
         >
-          <div
-            class="h-10 w-10 border-4 border-white border-t-transparent rounded-full animate-spin"
-          ></div>
+          <div class="h-10 w-10 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
         </div>
       </section>
 
@@ -106,42 +106,30 @@
       <section class="w-full max-w-xl">
         <div class="flex flex-col items-center text-center">
           <!-- cube logo above heading -->
-          <img
-            src="img/boxlogo.png"
-            alt="img/boxlogo.png here"
-            class="w-32 h-auto mb-8"
-          />
+          <img src="img/boxlogo.png" alt="Cube Logo" class="w-32 h-auto mb-8" />
           <h1 class="text-3xl font-semibold mb-8">Make your world.</h1>
 
           <div class="flex items-center w-full gap-4">
-            <div class="flex-1 bg-[#2A2A2E] rounded-3xl px-5 py-2">
+            <!-- FLEX container centres the textarea baseline on all browsers -->
+            <div class="flex items-center flex-1 bg-[#2A2A2E] rounded-3xl px-5 py-2">
               <textarea
                 id="promptInput"
                 rows="1"
                 placeholder="Describe your 3D print request…"
-                class="prompt-textarea w-full bg-transparent resize-none text-lg placeholder-gray-500 focus:outline-none"
+                class="prompt-textarea flex-1 bg-transparent resize-none text-lg placeholder-gray-500 focus:outline-none"
               ></textarea>
             </div>
             <button
               id="submit-button"
               class="w-12 h-12 flex items-center justify-center bg-white rounded-full transition-shape"
             >
-              <i
-                id="submit-icon"
-                class="fas fa-arrow-up text-xl text-[#1A1A1D]"
-              ></i>
+              <i id="submit-icon" class="fas fa-arrow-up text-xl text-[#1A1A1D]"></i>
             </button>
           </div>
 
           <div class="mt-4 w-full flex gap-4">
             <div class="w-1/3">
-              <input
-                type="file"
-                id="uploadInput"
-                accept="image/*"
-                multiple
-                class="hidden"
-              />
+              <input type="file" id="uploadInput" accept="image/*" multiple class="hidden" />
               <label
                 for="uploadInput"
                 class="block w-full bg-[#2A2A2E] rounded-3xl px-5 py-3 text-lg text-center cursor-pointer hover:bg-[#3A3A3E] transition-shape"
@@ -161,8 +149,7 @@
       // Configuration
       const API_BASE = '/api';
       const SLIDE_INTERVAL = 4000;
-      const FALLBACK_GLB =
-        'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
+      const FALLBACK_GLB = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
 
       // Element References
       const refs = {
@@ -178,7 +165,7 @@
         imagePreviewArea: document.getElementById('image-preview-area'),
       };
 
-      // ensure slide‐layer (and loader) stay hidden on load
+      // ensure slide‑layer (and loader) stay hidden on load
       refs.slideLayer.style.display = 'none';
       refs.loader.style.display = 'none';
 
@@ -203,6 +190,7 @@
       }
 
       // Slideshow Loop
+      let slideIndex = 0;
       setInterval(() => {
         refs.slides[slideIndex].classList.toggle('show');
         slideIndex = (slideIndex + 1) % refs.slides.length;
@@ -212,18 +200,12 @@
       // Auto-resize Textarea
       function autoGrow(el) {
         el.style.height = 'auto';
-        const lineHeight = parseFloat(
-          getComputedStyle(el).lineHeight
-        );
+        const lineHeight = parseFloat(getComputedStyle(el).lineHeight);
         const maxHeight = lineHeight * 9;
-        el.style.height =
-          Math.min(el.scrollHeight, maxHeight) + 'px';
-        el.style.overflowY =
-          el.scrollHeight > maxHeight ? 'auto' : 'hidden';
+        el.style.height = Math.min(el.scrollHeight, maxHeight) + 'px';
+        el.style.overflowY = el.scrollHeight > maxHeight ? 'auto' : 'hidden';
       }
-      refs.promptInput.addEventListener('input', () =>
-        autoGrow(refs.promptInput)
-      );
+      refs.promptInput.addEventListener('input', () => autoGrow(refs.promptInput));
 
       // Fetch or Fallback
       async function fetchGlb(prompt, files) {
@@ -231,10 +213,7 @@
           const payload = new FormData();
           if (prompt) payload.append('prompt', prompt);
           files.forEach((f) => payload.append('images', f));
-          const res = await fetch(`${API_BASE}/generate`, {
-            method: 'POST',
-            body: payload,
-          });
+          const res = await fetch(`${API_BASE}/generate`, { method: 'POST', body: payload });
           if (!res.ok) throw new Error(`API ${res.status}`);
           return (await res.json()).glb_url;
         } catch (e) {
@@ -244,13 +223,11 @@
       }
 
       // Generate Button Handler
+      const uploadedFiles = [];
       refs.submitBtn.addEventListener('click', async () => {
         const text = refs.promptInput.value.trim();
         if (!text && !uploadedFiles.length) return;
-        refs.submitIcon.classList.replace(
-          'fa-arrow-up',
-          'fa-stop'
-        );
+        refs.submitIcon.classList.replace('fa-arrow-up', 'fa-stop');
         showLoader();
         try {
           const url = await fetchGlb(text, uploadedFiles);
@@ -258,26 +235,20 @@
           await refs.viewer.updateComplete;
           showModel();
         } finally {
-          refs.submitIcon.classList.replace(
-            'fa-stop',
-            'fa-arrow-up'
-          );
+          refs.submitIcon.classList.replace('fa-stop', 'fa-arrow-up');
         }
       });
 
       // Image Upload Handler
-      const uploadedFiles = [];
       refs.uploadInput.addEventListener('change', (e) => {
         const files = Array.from(e.target.files);
         if (!files.length) return;
-
         // store & preview
         uploadedFiles.length = 0;
         uploadedFiles.push(...files);
         refs.imagePreviewArea.replaceChildren();
         refs.imagePreviewArea.classList.remove('hidden');
-
-        // make sure nothing else is showing
+        // hide other layers
         refs.previewImg.style.display = 'none';
         refs.slideLayer.style.display = 'none';
         refs.loader.style.display = 'none';
@@ -290,19 +261,16 @@
           const img = document.createElement('img');
           img.src = url;
           img.alt = `upload ${i + 1}`;
-          img.className =
-            'object-cover w-24 h-24 rounded-md shadow-md';
+          img.className = 'object-cover w-24 h-24 rounded-md shadow-md';
           const btn = document.createElement('button');
           btn.type = 'button';
           btn.innerText = '✕';
-          btn.className =
-            'absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white text-black border border-black text-xs';
+          btn.className = 'absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white text-black border border-black text-xs';
           btn.addEventListener('click', () => {
             container.remove();
-            if (
-              !refs.imagePreviewArea.querySelector('img')
-            )
-              refs.imagePreviewArea.classList.add('hidden');
+            const idx = uploadedFiles.indexOf(file);
+            if (idx > -1) uploadedFiles.splice(idx, 1);
+            if (!refs.imagePreviewArea.querySelector('img')) refs.imagePreviewArea.classList.add('hidden');
           });
           container.append(img, btn);
           refs.imagePreviewArea.append(container);
@@ -311,4 +279,3 @@
     </script>
   </body>
 </html>
-
