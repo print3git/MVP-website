@@ -71,15 +71,16 @@
         </div>
 
         <!-- Checkout Button -->
-        <a
-          href="payment.html"
-          class="absolute bottom-4 right-4 font-bold py-3 px-5 rounded-full shadow-md transition"
-          style="background-color: #1F3B65; color: #5EC2C5;"
-          onmouseover="this.style.opacity='0.85'"
-          onmouseout="this.style.opacity='1'"
-        >
-          Checkout
-        </a>
+<!-- Checkout Button (hidden until model loads) -->
+          <a id="checkout-button"
+             href="payment.html"
+             class="hidden absolute bottom-4 right-4 font-bold py-3 px-5 rounded-full shadow-md transition"
+             style="background-color: #1F3B65; color: #5EC2C5;"
+             onmouseover="this.style.opacity='0.85'" 
+             onmouseout="this.style.opacity='1'">
+            Checkout
+          </a>
+
       </section>
 
       <!-- Input section -->
@@ -211,6 +212,8 @@
       /* submit handler */
       const uploadedFiles = [];
       refs.submitBtn.addEventListener('click', async () => {
+        // ▶ hide the Checkout until new model is ready
+        document.getElementById('checkout-button').classList.add('hidden');
         const prompt = refs.promptInput.value.trim();
 
         refs.submitIcon.classList.replace('fa-arrow-up', 'fa-stop');
