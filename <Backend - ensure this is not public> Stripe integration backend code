@@ -35,12 +35,12 @@ app.use(express.json()); // Parses JSON request bodies
 app.post('/create-payment-intent', async (req, res) => {
   try {
     // Get order amount (use req.body.amount in real apps)
-    const amount = 2000; // 💵 amount in cents ($20.00)
+    const amount = 2000; // 💵 amount in pence (£20.00)
 
     // Create a PaymentIntent
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amount,
-      currency: 'usd',
+      currency: 'gbp',
       automatic_payment_methods: { enabled: true },
     });
 
