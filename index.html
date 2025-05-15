@@ -1,5 +1,5 @@
 <!-- ============================
-        index.html (Debugged & Fully Updated)
+        index.html (with rainbow shimmer)
 ============================ -->
 <!DOCTYPE html>
 <html lang="en">
@@ -30,6 +30,32 @@
         overflow-y: hidden;
         padding: 0;
         line-height: 1.75rem;
+      }
+
+      /* Subtle rainbow shimmer for submit button */
+      #submit-button {
+        position: relative;
+        overflow: hidden;
+      }
+      #submit-button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -75%;
+        width: 150%;
+        height: 100%;
+        background: linear-gradient(120deg,
+          transparent,
+          rgba(255, 0, 255, 0.2),
+          rgba(0, 255, 255, 0.2),
+          transparent
+        );
+        animation: shimmer 3s ease-in-out infinite;
+      }
+      @keyframes shimmer {
+        0%   { left: -75%; }
+        50%  { left: 100%; }
+        100% { left: 100%; }
       }
     </style>
   </head>
