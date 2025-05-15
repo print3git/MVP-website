@@ -1,14 +1,27 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Checkout - Print3</title>
+
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Stripe.js (Placeholder, add your own key later) -->
+
+    <!-- Stripe.js -->
     <script src="https://js.stripe.com/v3/"></script>
+
+    <!-- Font Awesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      integrity="sha512-yHnDJ6m0dPT9I9v7eI5wrHDpZgrq2XKn+NhbN+9vDpeK8JhCw7+9bOK9P0wzj2XCHw5IRJ6A7OyBSbFZ+GaY3Q=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
   </head>
   <body class="bg-[#1A1A1D] text-white font-sans min-h-screen flex flex-col">
+
     <!-- Header -->
     <header class="flex items-center py-4 px-6">
       <a href="index.html" class="flex items-center text-lg font-medium hover:text-gray-300">
@@ -20,11 +33,12 @@
     <main class="flex-1 flex items-center justify-center px-4">
       <div class="w-full max-w-md bg-[#2A2A2E] rounded-2xl p-6">
         <h2 class="text-2xl font-semibold mb-4 text-center">Checkout</h2>
+
         <!-- Stripe Payment Element placeholder -->
         <div id="payment-element" class="mb-6">
-          <!-- TODO: Insert Stripe Payment Element here -->
           <p class="text-center text-gray-400">[Stripe payment form will go here]</p>
         </div>
+
         <button id="submit-payment" class="w-full bg-[#30D5C8] text-[#1A1A1D] py-3 rounded-xl font-semibold hover:bg-[#28b7a8] transition">
           Pay Now
         </button>
@@ -38,7 +52,7 @@
       // const elements = stripe.elements();
       // const paymentElement = elements.create('payment');
       // paymentElement.mount('#payment-element');
-      
+
       document.getElementById('submit-payment').addEventListener('click', async () => {
         // TODO: Trigger stripe.confirmPayment() here
         alert('Payment flow to be implemented');
