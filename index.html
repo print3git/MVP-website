@@ -161,8 +161,14 @@
         refs.submitIcon.classList.replace('fa-arrow-up', 'fa-stop');
         showLoader();
 
+
+
+
+
         try {
           const glbUrl = await fetchGlb(prompt, uploadedFiles);
+          // ▶ Store the model URL so payment.html can reuse it:
+          localStorage.setItem('print3Model', glbUrl);
           refs.viewer.src = glbUrl;
           await refs.viewer.updateComplete;
           showModel();
