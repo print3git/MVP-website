@@ -11,7 +11,7 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
 
-    <!-- Google model‑viewer (for GLB preview) -->
+    <!-- Google model-viewer (for GLB preview) -->
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 
     <style>
@@ -21,12 +21,12 @@
         margin: 0;
       }
 
-      /* smooth corner / bg‑colour transitions */
+      /* smooth corner / bg-colour transitions */
       .transition-shape {
         transition: border-radius 0.2s ease, background-color 0.2s ease;
       }
 
-      /* textarea auto‑grow helper */
+      /* textarea auto-grow helper */
       .prompt-textarea {
         overflow-y: hidden;   /* hide scroll until needed */
         padding: 0;           /* reset UA padding (Safari) */
@@ -44,55 +44,101 @@
     <!-- ───────────── MAIN ───────────── -->
     <main class="flex-1 flex flex-col items-center justify-center gap-16 px-4 lg:px-16">
       <!-- Preview area -->
-      <section id="preview-wrapper" class="relative w-full max-w-lg h-80 bg-[#2A2A2E] border border-white/10 rounded-3xl overflow-hidden">
-        <img id="preview-img" src="https://placehold.co/600x400/2A2A2E/2A2A2E?text=" alt="Preview placeholder" class="object-contain h-full w-full" />
-        <model-viewer id="viewer" camera-controls auto-rotate style="display:none;width:100%;height:100%">
-        </model-viewer>
-        <div id="loader" class="absolute inset-0 flex items-center justify-center bg-[#2A2A2E]/80" style="display:none;">
-          <div class="h-10 w-10 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+      <section
+        id="preview-wrapper"
+        class="relative w-full max-w-lg h-80 bg-[#2A2A2E] border border-white/10 rounded-3xl overflow-hidden"
+      >
+        <img
+          id="preview-img"
+          src="https://placehold.co/600x400/2A2A2E/2A2A2E?text="
+          alt="Preview placeholder"
+          class="object-contain h-full w-full"
+        />
+        <model-viewer
+          id="viewer"
+          camera-controls
+          auto-rotate
+          style="display:none;width:100%;height:100%"
+        ></model-viewer>
+        <div
+          id="loader"
+          class="absolute inset-0 flex items-center justify-center bg-[#2A2A2E]/80"
+          style="display:none;"
+        >
+          <div
+            class="h-10 w-10 border-4 border-white border-t-transparent rounded-full animate-spin"
+          ></div>
         </div>
 
         <!-- Checkout Button -->
-        <a href="payment.html"
-           class="absolute bottom-4 right-4 font-bold py-3 px-5 rounded-full shadow-md transition"
-           style="background-color: #1F3B65; color: #5EC2C5;"
-           onmouseover="this.style.opacity='0.85'" 
-           onmouseout="this.style.opacity='1'">
+        <a
+          href="payment.html"
+          class="absolute bottom-4 right-4 font-bold py-3 px-5 rounded-full shadow-md transition"
+          style="background-color: #1F3B65; color: #5EC2C5;"
+          onmouseover="this.style.opacity='0.85'"
+          onmouseout="this.style.opacity='1'"
+        >
           Checkout
         </a>
-
-
-
       </section>
 
       <!-- Input section -->
       <section class="w-full max-w-xl">
         <div class="flex flex-col items-center text-center">
-          <img src="img/boxlogo.png" alt="Print3 cube" class="w-32 h-auto mb-8" />
+          <img
+            src="img/boxlogo.png"
+            alt="Print3 cube"
+            class="w-32 h-auto mb-8"
+          />
           <h1 class="text-3xl font-semibold mb-8">Make your world.</h1>
 
           <!-- prompt row -->
           <div class="flex items-center w-full gap-4">
-            <div class="flex-1 bg-[#2A2A2E] border border-white/10 rounded-3xl px-5 py-2 flex items-center">
-              <textarea id="promptInput" rows="1" placeholder="Describe your 3D print request…" class="prompt-textarea w-full bg-transparent resize-none text-lg placeholder-gray-500 focus:outline-none"></textarea>
+            <div
+              class="flex-1 bg-[#2A2A2E] border border-white/10 rounded-3xl px-5 py-2 flex items-center"
+            >
+              <textarea
+                id="promptInput"
+                rows="1"
+                placeholder="Describe your 3D print request…"
+                class="prompt-textarea w-full bg-transparent resize-none text-lg placeholder-gray-500 focus:outline-none"
+              ></textarea>
             </div>
-            <button id="submit-button" class="w-12 h-12 flex items-center justify-center bg-white rounded-full transition-shape">
-              <i id="submit-icon" class="fas fa-arrow-up text-xl text-[#1A1A1D]"></i>
+            <button
+              id="submit-button"
+              class="w-12 h-12 flex items-center justify-center bg-white rounded-full transition-shape"
+            >
+              <i
+                id="submit-icon"
+                class="fas fa-arrow-up text-xl text-[#1A1A1D]"
+              ></i>
             </button>
           </div>
 
           <!-- upload row -->
           <div class="mt-4 w-full flex items-start gap-4">
             <!-- hidden native file input -->
-            <input type="file" id="uploadInput" accept="image/*" multiple class="hidden" />
+            <input
+              type="file"
+              id="uploadInput"
+              accept="image/*"
+              multiple
+              class="hidden"
+            />
 
             <!-- visible label/button -->
-            <label for="uploadInput" class="inline-flex items-center justify-start bg-[#2A2A2E] border border-white/10 rounded-3xl px-5 py-2 leading-[1.75rem] text-lg whitespace-nowrap cursor-pointer hover:bg-[#3A3A3E] transition-shape">
+            <label
+              for="uploadInput"
+              class="inline-flex items-center justify-start bg-[#2A2A2E] border border-white/10 rounded-3xl px-5 py-2 leading-[1.75rem] text-lg whitespace-nowrap cursor-pointer hover:bg-[#3A3A3E] transition-shape"
+            >
               Upload Images
             </label>
 
             <!-- dynamic thumbnails -->
-            <div id="image-preview-area" class="hidden grid grid-cols-4 gap-3 bg-[#2A2A2E] border border-white/10 rounded-3xl min-h-[6rem] max-h-56 px-4 py-3 overflow-visible"></div>
+            <div
+              id="image-preview-area"
+              class="hidden grid grid-cols-4 gap-3 bg-[#2A2A2E] border border-white/10 rounded-3xl min-h-[6rem] max-h-56 px-4 py-3 overflow-visible"
+            ></div>
           </div>
         </div>
       </section>
@@ -101,38 +147,45 @@
     <!-- ───────────── SCRIPTS ───────────── -->
     <script type="module">
       /* CONFIG */
-      const API_BASE     = '/api';
-      const FALLBACK_GLB = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
+      const API_BASE = '/api';
+      const FALLBACK_GLB =
+        'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
 
-      /* DOM refs */
+      /* DOM refs */
       const $ = (id) => document.getElementById(id);
       const refs = {
-        previewImg       : $('preview-img'),
-        loader           : $('loader'),
-        viewer           : $('viewer'),
-        promptInput      : $('promptInput'),
-        submitBtn        : $('submit-button'),
-        submitIcon       : $('submit-icon'),
-        uploadInput      : $('uploadInput'),
-        imagePreviewArea : $('image-preview-area'),
+        previewImg: $('preview-img'),
+        loader: $('loader'),
+        viewer: $('viewer'),
+        promptInput: $('promptInput'),
+        submitBtn: $('submit-button'),
+        submitIcon: $('submit-icon'),
+        uploadInput: $('uploadInput'),
+        imagePreviewArea: $('image-preview-area'),
       };
 
       /* UI helpers */
       function hideAll() {
         refs.previewImg.style.display = 'none';
-        refs.loader.style.display     = 'none';
-        refs.viewer.style.display     = 'none';
+        refs.loader.style.display = 'none';
+        refs.viewer.style.display = 'none';
       }
-      const showLoader = () => { hideAll(); refs.loader.style.display = 'flex'; };
-      const showModel  = () => { hideAll(); refs.viewer.style.display = 'block'; };
+      const showLoader = () => {
+        hideAll();
+        refs.loader.style.display = 'flex';
+      };
+      const showModel = () => {
+        hideAll();
+        refs.viewer.style.display = 'block';
+      };
 
-      /* auto‑grow textarea */
+      /* auto-grow textarea */
       refs.promptInput.addEventListener('input', () => {
-        const el         = refs.promptInput;
-        el.style.height  = 'auto';
+        const el = refs.promptInput;
+        el.style.height = 'auto';
         const lineHeight = parseFloat(getComputedStyle(el).lineHeight);
-        const maxHeight  = lineHeight * 9;
-        el.style.height  = Math.min(el.scrollHeight, maxHeight) + 'px';
+        const maxHeight = lineHeight * 9;
+        el.style.height = Math.min(el.scrollHeight, maxHeight) + 'px';
         el.style.overflowY = el.scrollHeight > maxHeight ? 'auto' : 'hidden';
       });
 
@@ -143,7 +196,10 @@
           if (prompt) payload.append('prompt', prompt);
           files.forEach((f) => payload.append('images', f));
 
-          const res = await fetch(`${API_BASE}/generate`, { method: 'POST', body: payload });
+          const res = await fetch(`${API_BASE}/generate`, {
+            method: 'POST',
+            body: payload,
+          });
           if (!res.ok) throw new Error(`API ${res.status}`);
           return (await res.json()).glb_url;
         } catch (err) {
@@ -156,14 +212,9 @@
       const uploadedFiles = [];
       refs.submitBtn.addEventListener('click', async () => {
         const prompt = refs.promptInput.value.trim();
-        if (!prompt && !uploadedFiles.length) return;
 
         refs.submitIcon.classList.replace('fa-arrow-up', 'fa-stop');
         showLoader();
-
-
-
-
 
         try {
           const glbUrl = await fetchGlb(prompt, uploadedFiles);
@@ -203,12 +254,14 @@
           const btn = document.createElement('button');
           btn.type = 'button';
           btn.innerText = '✕';
-          btn.className = 'absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white text-black border border-black text-xs';
+          btn.className =
+            'absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white text-black border border-black text-xs';
           btn.addEventListener('click', () => {
             wrapper.remove();
             const index = uploadedFiles.indexOf(file);
             if (index !== -1) uploadedFiles.splice(index, 1);
-            if (!uploadedFiles.length) refs.imagePreviewArea.classList.add('hidden');
+            if (!uploadedFiles.length)
+              refs.imagePreviewArea.classList.add('hidden');
           });
           wrapper.appendChild(btn);
 
