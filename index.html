@@ -1,29 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>… (unchanged head) …</head>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Print3 Assistant</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+
+    <!-- Google model-viewer (for GLB preview) -->
+    <script
+      type="module"
+      src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"
+    ></script>
+
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
+      /* smooth corner / bg-colour transitions */
+      .transition-shape {
+        transition: border-radius 0.2s ease, background-color 0.2s ease;
+      }
+      /* textarea auto-grow helper */
+      .prompt-textarea {
+        overflow-y: hidden;   /* hide scroll until needed */
+        padding: 0;           /* reset UA padding (Safari) */
+        line-height: 1.75rem; /* Tailwind text-lg */
+      }
+    </style>
+  </head>
+
   <body class="bg-[#1A1A1D] text-white font-sans flex flex-col">
     <!-- HEADER -->
     <header class="flex items-center justify-between py-4 px-6">
       <img src="img/textlogo.png" alt="Print3" class="h-10 w-auto" />
     </header>
 
-    <!-- MAIN -->
+    <!-- MAIN CONTENT -->
     <main class="flex-1 flex flex-col items-center justify-center gap-16 px-4 lg:px-16">
       <!-- Preview area -->
-      <section id="preview-wrapper" class="relative w-full max-w-lg h-80 bg-[#2A2A2E] border border-white/10 rounded-3xl overflow-hidden">
-        <img id="preview-img"
-             src="https://placehold.co/600x400/2A2A2E/2A2A2E?text="
-             class="object-contain h-full w-full" />
-        <model-viewer id="viewer" camera-controls auto-rotate
-                      style="display:none;width:100%;height:100%"></model-viewer>
-        <div id="loader" class="absolute inset-0 flex items-center justify-center bg-[#2A2A2E]/80" style="display:none;">
-          <div class="h-10 w-10 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+      <section
+        id="preview-wrapper"
+        class="relative w-full max-w-lg h-80 bg-[#2A2A2E] border border-white/10 rounded-3xl overflow-hidden"
+      >
+        <img
+          id="preview-img"
+          src="https://placehold.co/600x400/2A2A2E/2A2A2E?text="
+          alt="Preview placeholder"
+          class="object-contain h-full w-full"
+        />
+        <model-viewer
+          id="viewer"
+          camera-controls
+          auto-rotate
+          style="display:none;width:100%;height:100%"
+        ></model-viewer>
+        <div
+          id="loader"
+          class="absolute inset-0 flex items-center justify-center bg-[#2A2A2E]/80"
+          style="display:none;"
+        >
+          <div
+            class="h-10 w-10 border-4 border-white border-t-transparent rounded-full animate-spin"
+          ></div>
         </div>
-        <!-- Checkout -->
-        <a id="checkout-button" href="payment.html"
-           class="hidden absolute bottom-4 right-4 font-bold py-3 px-5 rounded-full shadow-md transition"
-           style="background-color: #1F3B65; color: #5EC2C5;"
-           onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+
+        <!-- Checkout Button (hidden until model loads) -->
+        <a
+          id="checkout-button"
+          href="payment.html"
+          class="hidden absolute bottom-4 right-4 font-bold py-3 px-5 rounded-full shadow-md transition"
+          style="background-color: #1F3B65; color: #5EC2C5;"
+          onmouseover="this.style.opacity='0.85'"
+          onmouseout="this.style.opacity='1'"
+        >
           Checkout
         </a>
       </section>
@@ -34,27 +93,48 @@
           <img src="img/boxlogo.png" alt="Print3 cube" class="w-32 h-auto mb-8" />
           <h1 class="text-3xl font-semibold mb-8">Make your world.</h1>
 
-          <!-- Prompt + Submit -->
+          <!-- prompt row -->
           <div class="flex items-center w-full gap-4">
-            <div class="flex-1 bg-[#2A2A2E] border border-white/10 rounded-3xl px-5 py-2 flex items-center">
-              <textarea id="promptInput" rows="1" placeholder="Describe your 3D print request…"
-                        class="prompt-textarea w-full bg-transparent resize-none text-lg placeholder-gray-500 focus:outline-none"></textarea>
+            <div
+              class="flex-1 bg-[#2A2A2E] border border-white/10 rounded-3xl px-5 py-2 flex items-center"
+            >
+              <textarea
+                id="promptInput"
+                rows="1"
+                placeholder="Describe your 3D print request…"
+                class="prompt-textarea w-full bg-transparent resize-none text-lg placeholder-gray-500 focus:outline-none"
+              ></textarea>
             </div>
-            <button id="submit-button" class="w-12 h-12 flex items-center justify-center bg-white rounded-full transition-shape">
-              <i id="submit-icon" class="fas fa-arrow-up text-xl text-[#1A1A1D]"></i>
+            <button
+              id="submit-button"
+              class="w-12 h-12 flex items-center justify-center bg-white rounded-full transition-shape"
+            >
+              <i
+                id="submit-icon"
+                class="fas fa-arrow-up text-xl text-[#1A1A1D]"
+              ></i>
             </button>
           </div>
 
-          <!-- Upload Images -->
+          <!-- upload row -->
           <div class="mt-4 w-full flex items-start gap-4">
-            <input type="file" id="uploadInput" accept="image/*" multiple class="hidden" />
-            <label for="uploadInput"
-                   class="inline-flex items-center justify-start bg-[#2A2A2E] border border-white/10 rounded-3xl px-5 py-2 leading-[1.75rem] text-lg whitespace-nowrap cursor-pointer hover:bg-[#3A3A3E] transition-shape">
+            <input
+              type="file"
+              id="uploadInput"
+              accept="image/*"
+              multiple
+              class="hidden"
+            />
+            <label
+              for="uploadInput"
+              class="inline-flex items-center justify-start bg-[#2A2A2E] border border-white/10 rounded-3xl px-5 py-2 leading-[1.75rem] text-lg whitespace-nowrap cursor-pointer hover:bg-[#3A3A3E] transition-shape"
+            >
               Upload Images
             </label>
-            <div id="image-preview-area"
-                 class="hidden grid grid-cols-4 gap-3 bg-[#2A2A2E] border border-white/10 rounded-3xl min-h-[6rem] max-h-56 px-4 py-3 overflow-visible">
-            </div>
+            <div
+              id="image-preview-area"
+              class="hidden grid grid-cols-4 gap-3 bg-[#2A2A2E] border border-white/10 rounded-3xl min-h-[6rem] max-h-56 px-4 py-3 overflow-visible"
+            ></div>
           </div>
         </div>
       </section>
@@ -63,9 +143,9 @@
     <!-- SCRIPTS -->
     <script type="module">
       const API_BASE = '/api';
-      const FALLBACK_GLB = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
+      const FALLBACK_GLB =
+        'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
       const $ = id => document.getElementById(id);
-
       const refs = {
         previewImg: $('preview-img'),
         loader: $('loader'),
@@ -95,7 +175,7 @@
         el.style.overflowY = el.scrollHeight > maxHeight ? 'auto' : 'hidden';
       });
 
-      // read-and-store uploaded images as base64
+      // upload handler → store into sessionStorage as base64
       refs.uploadInput.addEventListener('change', e => {
         const files = Array.from(e.target.files);
         if (!files.length) return;
@@ -104,42 +184,34 @@
         refs.imagePreviewArea.classList.remove('hidden');
 
         const dataURLs = [];
-        files.forEach((file, idx) => {
+        files.forEach((file, i) => {
           const reader = new FileReader();
           reader.onload = () => {
             dataURLs.push(reader.result);
-            // once all read, save to sessionStorage
             if (dataURLs.length === files.length) {
               sessionStorage.setItem('uploadedImages', JSON.stringify(dataURLs));
             }
           };
           reader.readAsDataURL(file);
 
-          // create thumbnail immediately
+          // thumbnail preview
           const wrapper = document.createElement('div');
           wrapper.className = 'relative';
           const img = document.createElement('img');
           img.src = URL.createObjectURL(file);
-          img.alt = `upload ${idx+1}`;
           img.className = 'object-cover w-full h-20 rounded-md shadow-md';
           wrapper.appendChild(img);
-          const btn = document.createElement('button');
-          btn.type = 'button';
-          btn.innerText = '✕';
-          btn.className = 'absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white text-black border border-black text-xs';
-          btn.onclick = () => wrapper.remove();
-          wrapper.appendChild(btn);
           refs.imagePreviewArea.appendChild(wrapper);
         });
       });
 
-      // fetch GLB
+      // fetch GLB (or fallback)
       async function fetchGlb(prompt, files) {
         try {
-          const payload = new FormData();
-          if (prompt) payload.append('prompt', prompt);
-          files.forEach(f => payload.append('images', f));
-          const res = await fetch(`${API_BASE}/generate`, {method:'POST',body:payload});
+          const fd = new FormData();
+          if (prompt) fd.append('prompt', prompt);
+          files.forEach(f => fd.append('images', f));
+          const res = await fetch(`${API_BASE}/generate`, {method:'POST',body:fd});
           if (!res.ok) throw new Error(`API ${res.status}`);
           return (await res.json()).glb_url;
         } catch {
@@ -147,16 +219,13 @@
         }
       }
 
-      // submit handler
+      // submit
       const uploadedFiles = [];
       refs.submitBtn.addEventListener('click', async () => {
-        // hide old
         $('checkout-button').classList.add('hidden');
-
         refs.submitIcon.classList.replace('fa-arrow-up','fa-stop');
         showLoader();
 
-        // store prompt + files
         const prompt = refs.promptInput.value.trim();
         sessionStorage.setItem('promptText', prompt);
 
@@ -172,40 +241,38 @@
         refs.submitIcon.classList.replace('fa-stop','fa-arrow-up');
       });
 
-      // restore on load
+      // restore on load (only after generate in this session)
       document.addEventListener('DOMContentLoaded', () => {
-        const url      = localStorage.getItem('print3Model');
-        const didGen   = sessionStorage.getItem('hasGenerated');
-        const text     = sessionStorage.getItem('promptText');
-        const imgURLs  = JSON.parse(sessionStorage.getItem('uploadedImages')||'[]');
-
+        const url     = localStorage.getItem('print3Model');
+        const didGen  = sessionStorage.getItem('hasGenerated');
+        const text    = sessionStorage.getItem('promptText');
+        const images  = JSON.parse(sessionStorage.getItem('uploadedImages')||'[]');
         if (!url || !didGen) return;
 
-        // show model + checkout
+        // model + checkout
         refs.previewImg.style.display = 'none';
         refs.loader.style.display     = 'none';
         refs.viewer.src               = url;
         refs.viewer.style.display     = 'block';
         $('checkout-button').classList.remove('hidden');
 
-        // restore prompt text
+        // prompt
         if (text) {
           refs.promptInput.value = text;
           refs.promptInput.dispatchEvent(new Event('input'));
         }
-
-        // restore image previews
-        if (imgURLs.length) {
+        // image previews
+        if (images.length) {
           refs.imagePreviewArea.innerHTML = '';
           refs.imagePreviewArea.classList.remove('hidden');
-          imgURLs.forEach(dataURL => {
-            const wrapper = document.createElement('div');
-            wrapper.className = 'relative';
+          images.forEach(dataURL => {
+            const w = document.createElement('div');
+            w.className = 'relative';
             const img = document.createElement('img');
             img.src = dataURL;
             img.className = 'object-cover w-full h-20 rounded-md shadow-md';
-            wrapper.appendChild(img);
-            refs.imagePreviewArea.appendChild(wrapper);
+            w.appendChild(img);
+            refs.imagePreviewArea.appendChild(w);
           });
         }
       });
