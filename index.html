@@ -1,3 +1,6 @@
+<!-- ============================
+        index.html (Full)
+============================ -->
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -98,7 +101,10 @@
               id="submit-button"
               class="w-12 h-12 flex items-center justify-center bg-white rounded-full transition-shape"
             >
-              <i id="submit-icon" class="fas fa-arrow-up text-xl text-[#1A1A1D]"></i>
+              <i
+                id="submit-icon"
+                class="fas fa-arrow-up text-xl text-[#1A1A1D]"
+              ></i>
             </button>
           </div>
 
@@ -152,7 +158,7 @@
         refs.viewer.style.display = 'none';
       }
       const showLoader = () => { hideAll(); refs.loader.style.display = 'flex'; };
-      const showModel  = () => { hideAll(); refs.viewer.style.display = 'block'; };
+      const showModel = () => { hideAll(); refs.viewer.style.display = 'block'; };
 
       // auto-grow textarea
       refs.promptInput.addEventListener('input', () => {
@@ -163,66 +169,76 @@
         el.style.overflowY = el.scrollHeight > lh * 9 ? 'auto' : 'hidden';
       });
 
-      // upload handler: build full-resolution list and compress thumbnails
+      // upload handler: preserve originals and create compressed thumbnails + remove buttons
       refs.uploadInput.addEventListener('change', (e) => {
         const files = Array.from(e.target.files);
         if (!files.length) return;
 
-        uploadedFiles = files;      // preserve originals for AI
+        uploadedFiles = files;
         refs.imagePreviewArea.innerHTML = '';
         refs.imagePreviewArea.classList.remove('hidden');
 
         const thumbURLs = [];
         files.forEach((file, idx) => {
-          // create immediate objectURL thumbnail for UI
+          // thumbnail wrapper
           const wrapper = document.createElement('div');
           wrapper.className = 'relative';
+
+          // image
           const img = document.createElement('img');
           img.src = URL.createObjectURL(file);
           img.className = 'object-cover w-full h-20 rounded-md shadow-md';
           wrapper.appendChild(img);
+
+          // remove button
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.innerText = '✕';
+          btn.className = 'absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white text-black border border-black text-xs';
+          btn.addEventListener('click', () => {
+            wrapper.remove();
+            // remove from arrays and storage
+            uploadedFiles.splice(idx, 1);
+            thumbURLs.splice(idx, 1);
+            localStorage.setItem('print3Images', JSON.stringify(thumbURLs));
+            if (!uploadedFiles.length) refs.imagePreviewArea.classList.add('hidden');
+          });
+          wrapper.appendChild(btn);
+
           refs.imagePreviewArea.appendChild(wrapper);
 
-          // now compress for storage
+          // compress thumbnail for storage
           const reader = new FileReader();
           reader.onload = () => {
-            const tmpImg = new Image();
-            tmpImg.onload = () => {
-              // scale down to max 200px
+            const tmp = new Image();
+            tmp.onload = () => {
               const maxDim = 200;
-              let w = tmpImg.width, h = tmpImg.height;
+              let w = tmp.width, h = tmp.height;
               const ratio = Math.min(maxDim / w, maxDim / h, 1);
               w *= ratio; h *= ratio;
 
               const canvas = document.createElement('canvas');
               canvas.width = w; canvas.height = h;
-              const ctx = canvas.getContext('2d');
-              ctx.drawImage(tmpImg, 0, 0, w, h);
-              // compress PNG to reasonable quality
-              const thumbDataUrl = canvas.toDataURL('image/png', 0.7);
-              thumbURLs.push(thumbDataUrl);
-
-              // once all thumbnails ready, persist them
+              canvas.getContext('2d').drawImage(tmp, 0, 0, w, h);
+              const dataUrl = canvas.toDataURL('image/png', 0.7);
+              thumbURLs.push(dataUrl);
               if (thumbURLs.length === files.length) {
                 localStorage.setItem('print3Images', JSON.stringify(thumbURLs));
               }
             };
-            tmpImg.src = reader.result;
+            tmp.src = reader.result;
           };
           reader.readAsDataURL(file);
         });
       });
 
-      // fetch GLB (real or fallback)
+      // fetch model
       async function fetchGlb(prompt, files) {
         try {
           const fd = new FormData();
           if (prompt) fd.append('prompt', prompt);
           files.forEach(f => fd.append('images', f));
-          const res = await fetch(`${API_BASE}/generate`, {
-            method: 'POST',
-            body: fd
-          });
+          const res = await fetch(`${API_BASE}/generate`, { method: 'POST', body: fd });
           if (!res.ok) throw new Error(`API ${res.status}`);
           return (await res.json()).glb_url;
         } catch {
@@ -230,62 +246,68 @@
         }
       }
 
-      // on Generate click
+      // generate click
       refs.submitBtn.addEventListener('click', async () => {
         const prompt = refs.promptInput.value.trim();
         if (!prompt && uploadedFiles.length === 0) return;
 
-        // hide old state
         refs.checkoutBtn.classList.add('hidden');
-        refs.submitIcon.classList.replace('fa-arrow-up', 'fa-stop');
+        refs.submitIcon.classList.replace('fa-arrow-up','fa-stop');
         showLoader();
 
-        // store prompt + flag
         localStorage.setItem('print3Prompt', prompt);
         localStorage.setItem('hasGenerated', 'true');
 
-        // get model URL
         const glbUrl = await fetchGlb(prompt, uploadedFiles);
         localStorage.setItem('print3Model', glbUrl);
 
-        // show it
         refs.viewer.src = glbUrl;
         await refs.viewer.updateComplete;
         showModel();
 
         refs.checkoutBtn.classList.remove('hidden');
-        refs.submitIcon.classList.replace('fa-stop', 'fa-arrow-up');
+        refs.submitIcon.classList.replace('fa-stop','fa-arrow-up');
       });
 
-      // restore everything on load/back
+      // restore on load/back
       window.addEventListener('DOMContentLoaded', () => {
         const prompt = localStorage.getItem('print3Prompt');
         const modelUrl = localStorage.getItem('print3Model');
         const didGen = localStorage.getItem('hasGenerated') === 'true';
         const thumbList = JSON.parse(localStorage.getItem('print3Images') || '[]');
 
-        // restore prompt
         if (prompt) {
           refs.promptInput.value = prompt;
           refs.promptInput.dispatchEvent(new Event('input'));
         }
 
-        // restore thumbnails
         if (thumbList.length) {
           refs.imagePreviewArea.innerHTML = '';
           refs.imagePreviewArea.classList.remove('hidden');
-          thumbList.forEach((dataUrl) => {
-            const w = document.createElement('div');
-            w.className = 'relative';
-            const i = document.createElement('img');
-            i.src = dataUrl;
-            i.className = 'object-cover w-full h-20 rounded-md shadow-md';
-            w.appendChild(i);
-            refs.imagePreviewArea.appendChild(w);
+          thumbList.forEach((url, idx) => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'relative';
+            const img = document.createElement('img');
+            img.src = url;
+            img.className = 'object-cover w-full h-20 rounded-md shadow-md';
+            wrapper.appendChild(img);
+
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.innerText = '✕';
+            btn.className = 'absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white text-black border border-black text-xs';
+            btn.addEventListener('click', () => {
+              wrapper.remove();
+              const newList = JSON.parse(localStorage.getItem('print3Images') || '[]')
+                                .filter((_, i) => i !== idx);
+              localStorage.setItem('print3Images', JSON.stringify(newList));
+              if (newList.length === 0) refs.imagePreviewArea.classList.add('hidden');
+            });
+            wrapper.appendChild(btn);
+            refs.imagePreviewArea.appendChild(wrapper);
           });
         }
 
-        // restore model + checkout
         if (didGen && modelUrl) {
           hideAll();
           refs.viewer.src = modelUrl;
