@@ -9,97 +9,51 @@
     <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- Font Awesome -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
-    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
 
-    <!-- model‑viewer (for GLB preview) -->
-    <script
-      type="module"
-      src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"
-    ></script>
+    <!-- Google model‑viewer (for GLB preview) -->
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 
-    <!-- Page‑specific tweaks -->
     <style>
-      html, body {
+      html,
+      body {
         height: 100%;
         margin: 0;
       }
 
-      /* smooth corner / background transitions */
+      /* smooth corner / bg‑colour transitions */
       .transition-shape {
         transition: border-radius 0.2s ease, background-color 0.2s ease;
       }
 
-      /* let the textarea grow but never break layout */
+      /* textarea auto‑grow helper */
       .prompt-textarea {
-        overflow-y: hidden;            /* hide scroll until needed */
-        padding: 0;                    /* zero UA padding (Safari fix) */
-        line-height: 1.75rem;          /* match Tailwind text-lg */
+        overflow-y: hidden;   /* hide scroll until needed */
+        padding: 0;           /* reset UA padding (Safari) */
+        line-height: 1.75rem; /* Tailwind text-lg */
       }
-
-      /* subtle float animation for the placeholder slide set */
-      @keyframes floatY {
-        0%,100% { transform: translateY(-4%); }
-        50%      { transform: translateY(4%);  }
-      }
-
-      .slide-img {
-        @apply absolute inset-0 object-contain opacity-0 pointer-events-none;
-        animation: floatY 7s ease-in-out infinite;
-        transition: opacity 1s ease-in-out;
-      }
-      .slide-img.show { opacity: 1; }
     </style>
   </head>
 
   <body class="bg-[#1A1A1D] text-white font-sans flex flex-col">
-    <!-- ─────────────────────────── HEADER ─────────────────────────── -->
+    <!-- ───────────── HEADER ───────────── -->
     <header class="flex items-center justify-between py-4 px-6">
       <img src="img/textlogo.png" alt="Print3" class="h-10 w-auto" />
     </header>
 
-    <!-- ─────────────────────────── MAIN ─────────────────────────── -->
+    <!-- ───────────── MAIN ───────────── -->
     <main class="flex-1 flex flex-col items-center justify-center gap-16 px-4 lg:px-16">
-      <!-- ===== PREVIEW AREA (placeholder → slides → loader → model) ===== -->
-      <section
-        id="preview-wrapper"
-        class="relative w-full max-w-lg h-80 bg-[#2A2A2E] border border-white/10 rounded-3xl overflow-hidden"
-      >
-        <!-- static dark placeholder img (shown first) -->
-        <img
-          id="preview-img"
-          src="https://placehold.co/600x400/2A2A2E/2A2A2E?text="
-          alt="Preview placeholder"
-          class="object-contain h-full w-full"
-        />
-
-        <!-- model‑viewer hidden until GLB loads -->
-        <model-viewer
-          id="viewer"
-          camera-controls
-          auto-rotate
-          style="display:none; width:100%; height:100%;"
-        ></model-viewer>
-
-        <!-- slide demo layer (hidden until user uploads) -->
-        <div id="slide-layer" class="absolute inset-0 flex items-center justify-center" style="display:none;">
-          <img src="img/slide1.png" class="slide-img show" alt="" />
-          <img src="img/slide2.png" class="slide-img"       alt="" />
-          <img src="img/slide3.png" class="slide-img"       alt="" />
-          <img src="img/slide4.png" class="slide-img"       alt="" />
-          <img src="img/slide5.png" class="slide-img"       alt="" />
-          <img src="img/slide6.png" class="slide-img"       alt="" />
-        </div>
-
-        <!-- spinner while waiting for API → GLB -->
+      <!-- Preview area -->
+      <section id="preview-wrapper" class="relative w-full max-w-lg h-80 bg-[#2A2A2E] border border-white/10 rounded-3xl overflow-hidden">
+        <img id="preview-img" src="https://placehold.co/600x400/2A2A2E/2A2A2E?text=" alt="Preview placeholder" class="object-contain h-full w-full" />
+        <model-viewer id="viewer" camera-controls auto-rotate style="display:none;width:100%;height:100%">
+        </model-viewer>
         <div id="loader" class="absolute inset-0 flex items-center justify-center bg-[#2A2A2E]/80" style="display:none;">
           <div class="h-10 w-10 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
         </div>
       </section>
 
-      <!-- ===== INPUT SECTION ===== -->
+      <!-- Input section -->
       <section class="w-full max-w-xl">
         <div class="flex flex-col items-center text-center">
           <img src="img/boxlogo.png" alt="Print3 cube" class="w-32 h-auto mb-8" />
@@ -108,55 +62,40 @@
           <!-- prompt row -->
           <div class="flex items-center w-full gap-4">
             <div class="flex-1 bg-[#2A2A2E] border border-white/10 rounded-3xl px-5 py-2 flex items-center">
-              <textarea
-                id="promptInput"
-                rows="1"
-                placeholder="Describe your 3D print request…"
-                class="prompt-textarea w-full bg-transparent resize-none text-lg placeholder-gray-500 focus:outline-none"
-              ></textarea>
+              <textarea id="promptInput" rows="1" placeholder="Describe your 3D print request…" class="prompt-textarea w-full bg-transparent resize-none text-lg placeholder-gray-500 focus:outline-none"></textarea>
             </div>
-
             <button id="submit-button" class="w-12 h-12 flex items-center justify-center bg-white rounded-full transition-shape">
               <i id="submit-icon" class="fas fa-arrow-up text-xl text-[#1A1A1D]"></i>
             </button>
           </div>
 
           <!-- upload row -->
-          <div class="mt-4 w-full flex gap-4">
+          <div class="mt-4 w-full flex items-start gap-4">
             <!-- hidden native file input -->
             <input type="file" id="uploadInput" accept="image/*" multiple class="hidden" />
 
-            <!-- visible label (button) -->
-            <label for="uploadInput" class="inline-flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-3xl h-12 px-6 text-lg whitespace-nowrap cursor-pointer hover:bg-[#3A3A3E] transition-shape">
+            <!-- visible label/button -->
+            <label for="uploadInput" class="inline-flex items-center justify-start bg-[#2A2A2E] border border-white/10 rounded-3xl px-5 py-2 leading-[1.75rem] text-lg whitespace-nowrap cursor-pointer hover:bg-[#3A3A3E] transition-shape">
               Upload Images
             </label>
 
             <!-- dynamic thumbnails -->
-            <div
-              id="image-preview-area" class="hidden grid grid-cols-4 gap-3 bg-[#2A2A2E] border border-white/10 rounded-3xl min-h-[6rem] max-h-56 px-4 py-3 overflow-y-auto"">
-            </div>
+            <div id="image-preview-area" class="hidden grid grid-cols-4 gap-3 bg-[#2A2A2E] border border-white/10 rounded-3xl min-h-[6rem] max-h-56 px-4 py-3 overflow-visible"></div>
           </div>
         </div>
       </section>
     </main>
 
-    <!-- ─────────────────────────── SCRIPTS ─────────────────────────── -->
+    <!-- ───────────── SCRIPTS ───────────── -->
     <script type="module">
-      /* -------------------------------------------------------------------------- */
-      /* CONFIG                                                                    */
-      /* -------------------------------------------------------------------------- */
-      const API_BASE       = '/api';
-      const SLIDE_INTERVAL = 4000;            // ms
-      const FALLBACK_GLB   = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
+      /* CONFIG */
+      const API_BASE     = '/api';
+      const FALLBACK_GLB = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
 
-      /* -------------------------------------------------------------------------- */
-      /* DOM REFS                                                                   */
-      /* -------------------------------------------------------------------------- */
+      /* DOM refs */
       const $ = (id) => document.getElementById(id);
       const refs = {
         previewImg       : $('preview-img'),
-        slideLayer       : $('slide-layer'),
-        slides           : document.querySelectorAll('#slide-layer .slide-img'),
         loader           : $('loader'),
         viewer           : $('viewer'),
         promptInput      : $('promptInput'),
@@ -166,44 +105,26 @@
         imagePreviewArea : $('image-preview-area'),
       };
 
-      /* -------------------------------------------------------------------------- */
-      /* UI STATE HELPERS                                                           */
-      /* -------------------------------------------------------------------------- */
+      /* UI helpers */
       function hideAll() {
         refs.previewImg.style.display = 'none';
-        refs.slideLayer.style.display = 'none';
         refs.loader.style.display     = 'none';
         refs.viewer.style.display     = 'none';
       }
-      const showSlides = () => { hideAll(); refs.slideLayer.style.display = 'flex'; }
-      const showLoader = () => { hideAll(); refs.loader.style.display     = 'flex'; }
-      const showModel  = () => { hideAll(); refs.viewer.style.display     = 'block'; }
+      const showLoader = () => { hideAll(); refs.loader.style.display = 'flex'; };
+      const showModel  = () => { hideAll(); refs.viewer.style.display = 'block'; };
 
-      /* -------------------------------------------------------------------------- */
-      /* SLIDESHOW                                                                  */
-      /* -------------------------------------------------------------------------- */
-      let slideIndex = 0;
-      setInterval(() => {
-        refs.slides[slideIndex].classList.toggle('show');
-        slideIndex = (slideIndex + 1) % refs.slides.length;
-        refs.slides[slideIndex].classList.toggle('show');
-      }, SLIDE_INTERVAL);
-
-      /* -------------------------------------------------------------------------- */
-      /* AUTO‑GROW TEXTAREA                                                         */
-      /* -------------------------------------------------------------------------- */
+      /* auto‑grow textarea */
       refs.promptInput.addEventListener('input', () => {
         const el         = refs.promptInput;
         el.style.height  = 'auto';
         const lineHeight = parseFloat(getComputedStyle(el).lineHeight);
-        const maxHeight  = lineHeight * 9;               // 9 lines max
+        const maxHeight  = lineHeight * 9;
         el.style.height  = Math.min(el.scrollHeight, maxHeight) + 'px';
         el.style.overflowY = el.scrollHeight > maxHeight ? 'auto' : 'hidden';
       });
 
-      /* -------------------------------------------------------------------------- */
-      /* API CALL                                                                   */
-      /* -------------------------------------------------------------------------- */
+      /* backend call */
       async function fetchGlb(prompt, files) {
         try {
           const payload = new FormData();
@@ -219,32 +140,26 @@
         }
       }
 
-      /* -------------------------------------------------------------------------- */
-      /* GENERATE BUTTON                                                            */
-      /* -------------------------------------------------------------------------- */
+      /* submit handler */
       const uploadedFiles = [];
-
       refs.submitBtn.addEventListener('click', async () => {
         const prompt = refs.promptInput.value.trim();
         if (!prompt && !uploadedFiles.length) return;
 
-        // switch icon → stop / processing
         refs.submitIcon.classList.replace('fa-arrow-up', 'fa-stop');
         showLoader();
 
         try {
           const glbUrl = await fetchGlb(prompt, uploadedFiles);
           refs.viewer.src = glbUrl;
-          await refs.viewer.updateComplete;   // wait until model-viewer renders
+          await refs.viewer.updateComplete;
           showModel();
         } finally {
           refs.submitIcon.classList.replace('fa-stop', 'fa-arrow-up');
         }
       });
 
-      /* -------------------------------------------------------------------------- */
-      /* FILE UPLOAD                                                                */
-      /* -------------------------------------------------------------------------- */
+      /* upload handler */
       refs.uploadInput.addEventListener('change', (e) => {
         const files = Array.from(e.target.files);
         if (!files.length) return;
@@ -252,35 +167,34 @@
         uploadedFiles.length = 0;
         uploadedFiles.push(...files);
 
-        // clear previous previews
         refs.imagePreviewArea.innerHTML = '';
         refs.imagePreviewArea.classList.remove('hidden');
 
-        // render thumbnails
         files.forEach((file, idx) => {
-          const url         = URL.createObjectURL(file);
-          const container   = document.createElement('div');
-          container.className = 'relative inline-block';
+          const url = URL.createObjectURL(file);
+
+          const wrapper = document.createElement('div');
+          wrapper.className = 'relative';
 
           const img = document.createElement('img');
           img.src = url;
           img.alt = `upload ${idx + 1}`;
           img.className = 'object-cover w-full h-20 rounded-md shadow-md';
-          container.appendChild(img);
+          wrapper.appendChild(img);
 
           const btn = document.createElement('button');
-          btn.type  = 'button';
+          btn.type = 'button';
           btn.innerText = '✕';
           btn.className = 'absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white text-black border border-black text-xs';
           btn.addEventListener('click', () => {
-            container.remove();
+            wrapper.remove();
             const index = uploadedFiles.indexOf(file);
             if (index !== -1) uploadedFiles.splice(index, 1);
             if (!uploadedFiles.length) refs.imagePreviewArea.classList.add('hidden');
           });
-          container.appendChild(btn);
+          wrapper.appendChild(btn);
 
-          refs.imagePreviewArea.appendChild(container);
+          refs.imagePreviewArea.appendChild(wrapper);
         });
       });
     </script>
