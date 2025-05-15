@@ -221,14 +221,17 @@
 
         try {
           const glbUrl = await fetchGlb(prompt, uploadedFiles);
-          // ▶ Store the model URL so payment.html can reuse it:
           localStorage.setItem('print3Model', glbUrl);
           refs.viewer.src = glbUrl;
           await refs.viewer.updateComplete;
           showModel();
+        
+          // ▶ Reveal the Checkout button
+          document.getElementById('checkout-button').classList.remove('hidden');
         } finally {
           refs.submitIcon.classList.replace('fa-stop', 'fa-arrow-up');
         }
+
       });
 
       /* upload handler */
