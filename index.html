@@ -7,12 +7,16 @@
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
-
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
     <!-- Google model-viewer (for GLB preview) -->
-    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+    <script
+      type="module"
+      src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"
+    ></script>
 
     <style>
       html,
@@ -20,12 +24,10 @@
         height: 100%;
         margin: 0;
       }
-
       /* smooth corner / bg-colour transitions */
       .transition-shape {
         transition: border-radius 0.2s ease, background-color 0.2s ease;
       }
-
       /* textarea auto-grow helper */
       .prompt-textarea {
         overflow-y: hidden;   /* hide scroll until needed */
@@ -36,30 +38,33 @@
   </head>
 
   <body class="bg-[#1A1A1D] text-white font-sans flex flex-col">
-    <!-- ───────────── HEADER ───────────── -->
+    <!-- HEADER -->
     <header class="flex items-center justify-between py-4 px-6">
       <img src="img/textlogo.png" alt="Print3" class="h-10 w-auto" />
     </header>
 
-    <!-- ───────────── MAIN ───────────── -->
+    <!-- MAIN CONTENT -->
     <main class="flex-1 flex flex-col items-center justify-center gap-16 px-4 lg:px-16">
       <!-- Preview area -->
       <section
         id="preview-wrapper"
         class="relative w-full max-w-lg h-80 bg-[#2A2A2E] border border-white/10 rounded-3xl overflow-hidden"
       >
+        <!-- Placeholder image (shown initially) -->
         <img
           id="preview-img"
           src="https://placehold.co/600x400/2A2A2E/2A2A2E?text="
           alt="Preview placeholder"
           class="object-contain h-full w-full"
         />
+        <!-- Actual model viewer (hidden until needed) -->
         <model-viewer
           id="viewer"
           camera-controls
           auto-rotate
           style="display:none;width:100%;height:100%"
         ></model-viewer>
+        <!-- Loader spinner -->
         <div
           id="loader"
           class="absolute inset-0 flex items-center justify-center bg-[#2A2A2E]/80"
@@ -70,17 +75,17 @@
           ></div>
         </div>
 
-        <!-- Checkout Button -->
-<!-- Checkout Button (hidden until model loads) -->
-          <a id="checkout-button"
-             href="payment.html"
-             class="hidden absolute bottom-4 right-4 font-bold py-3 px-5 rounded-full shadow-md transition"
-             style="background-color: #1F3B65; color: #5EC2C5;"
-             onmouseover="this.style.opacity='0.85'" 
-             onmouseout="this.style.opacity='1'">
-            Checkout
-          </a>
-
+        <!-- Checkout Button (hidden until model loads) -->
+        <a
+          id="checkout-button"
+          href="payment.html"
+          class="hidden absolute bottom-4 right-4 font-bold py-3 px-5 rounded-full shadow-md transition"
+          style="background-color: #1F3B65; color: #5EC2C5;"
+          onmouseover="this.style.opacity='0.85'"
+          onmouseout="this.style.opacity='1'"
+        >
+          Checkout
+        </a>
       </section>
 
       <!-- Input section -->
@@ -93,7 +98,7 @@
           />
           <h1 class="text-3xl font-semibold mb-8">Make your world.</h1>
 
-          <!-- prompt row -->
+          <!-- Prompt row -->
           <div class="flex items-center w-full gap-4">
             <div
               class="flex-1 bg-[#2A2A2E] border border-white/10 rounded-3xl px-5 py-2 flex items-center"
@@ -116,9 +121,8 @@
             </button>
           </div>
 
-          <!-- upload row -->
+          <!-- Upload row -->
           <div class="mt-4 w-full flex items-start gap-4">
-            <!-- hidden native file input -->
             <input
               type="file"
               id="uploadInput"
@@ -126,16 +130,12 @@
               multiple
               class="hidden"
             />
-
-            <!-- visible label/button -->
             <label
               for="uploadInput"
               class="inline-flex items-center justify-start bg-[#2A2A2E] border border-white/10 rounded-3xl px-5 py-2 leading-[1.75rem] text-lg whitespace-nowrap cursor-pointer hover:bg-[#3A3A3E] transition-shape"
             >
               Upload Images
             </label>
-
-            <!-- dynamic thumbnails -->
             <div
               id="image-preview-area"
               class="hidden grid grid-cols-4 gap-3 bg-[#2A2A2E] border border-white/10 rounded-3xl min-h-[6rem] max-h-56 px-4 py-3 overflow-visible"
@@ -145,7 +145,7 @@
       </section>
     </main>
 
-    <!-- ───────────── SCRIPTS ───────────── -->
+    <!-- SCRIPTS -->
     <script type="module">
       /* CONFIG */
       const API_BASE = '/api';
@@ -212,51 +212,44 @@
       /* submit handler */
       const uploadedFiles = [];
       refs.submitBtn.addEventListener('click', async () => {
-        // ▶ hide the Checkout until new model is ready
+        // 1) hide old state
         document.getElementById('checkout-button').classList.add('hidden');
-        const prompt = refs.promptInput.value.trim();
-
         refs.submitIcon.classList.replace('fa-arrow-up', 'fa-stop');
         showLoader();
 
-        try {
-          const glbUrl = await fetchGlb(prompt, uploadedFiles);
-          localStorage.setItem('print3Model', glbUrl);
-          refs.viewer.src = glbUrl;
-          await refs.viewer.updateComplete;
-          showModel();
-        
-          // ▶ Reveal the Checkout button
-          document.getElementById('checkout-button').classList.remove('hidden');
-        } finally {
-          refs.submitIcon.classList.replace('fa-stop', 'fa-arrow-up');
-        }
+        // 2) fetch (or fallback) & store
+        const prompt = refs.promptInput.value.trim();
+        const glbUrl = await fetchGlb(prompt, uploadedFiles);
+        localStorage.setItem('print3Model', glbUrl);
+        sessionStorage.setItem('hasGenerated', 'true');
 
+        // 3) mount and show
+        refs.viewer.src = glbUrl;
+        await refs.viewer.updateComplete;
+        showModel();
+
+        // 4) reveal Checkout
+        document.getElementById('checkout-button').classList.remove('hidden');
+        refs.submitIcon.classList.replace('fa-stop', 'fa-arrow-up');
       });
 
       /* upload handler */
       refs.uploadInput.addEventListener('change', (e) => {
         const files = Array.from(e.target.files);
         if (!files.length) return;
-
         uploadedFiles.length = 0;
         uploadedFiles.push(...files);
-
         refs.imagePreviewArea.innerHTML = '';
         refs.imagePreviewArea.classList.remove('hidden');
-
         files.forEach((file, idx) => {
           const url = URL.createObjectURL(file);
-
           const wrapper = document.createElement('div');
           wrapper.className = 'relative';
-
           const img = document.createElement('img');
           img.src = url;
           img.alt = `upload ${idx + 1}`;
           img.className = 'object-cover w-full h-20 rounded-md shadow-md';
           wrapper.appendChild(img);
-
           const btn = document.createElement('button');
           btn.type = 'button';
           btn.innerText = '✕';
@@ -264,38 +257,35 @@
             'absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white text-black border border-black text-xs';
           btn.addEventListener('click', () => {
             wrapper.remove();
-            const index = uploadedFiles.indexOf(file);
-            if (index !== -1) uploadedFiles.splice(index, 1);
+            const i = uploadedFiles.indexOf(file);
+            if (i !== -1) uploadedFiles.splice(i, 1);
             if (!uploadedFiles.length)
               refs.imagePreviewArea.classList.add('hidden');
           });
           wrapper.appendChild(btn);
-
           refs.imagePreviewArea.appendChild(wrapper);
         });
       });
-      
-          // ▶ On page load: restore last model + Checkout button if present
-          document.addEventListener('DOMContentLoaded', () => {
-          const storedUrl = localStorage.getItem('print3Model');
-          if (!storedUrl) return;            // nothing to restore
-        
-          // grab your DOM refs
-          const previewImg      = document.getElementById('preview-img');
-          const loader          = document.getElementById('loader');
-          const viewer          = document.getElementById('viewer');
-          const checkoutButton  = document.getElementById('checkout-button');
-        
-          // hide placeholder + spinner, show model
-          previewImg.style.display     = 'none';
-          loader.style.display         = 'none';
-          viewer.src                   = storedUrl;
-          viewer.style.display         = 'block';
-        
-          // reveal the Checkout link
-          checkoutButton.classList.remove('hidden');
-        });
 
+      /* restore state on load (only if generated this session!) */
+      document.addEventListener('DOMContentLoaded', () => {
+        const storedUrl = localStorage.getItem('print3Model');
+        const didGen    = sessionStorage.getItem('hasGenerated');
+        if (!storedUrl || !didGen) return;
+
+        // references
+        const previewImg     = document.getElementById('preview-img');
+        const loader         = document.getElementById('loader');
+        const viewer         = document.getElementById('viewer');
+        const checkoutButton = document.getElementById('checkout-button');
+
+        // restore UI
+        previewImg.style.display = 'none';
+        loader.style.display     = 'none';
+        viewer.src               = storedUrl;
+        viewer.style.display     = 'block';
+        checkoutButton.classList.remove('hidden');
+      });
     </script>
   </body>
 </html>
