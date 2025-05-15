@@ -274,6 +274,28 @@
           refs.imagePreviewArea.appendChild(wrapper);
         });
       });
+      
+          // ▶ On page load: restore last model + Checkout button if present
+          document.addEventListener('DOMContentLoaded', () => {
+          const storedUrl = localStorage.getItem('print3Model');
+          if (!storedUrl) return;            // nothing to restore
+        
+          // grab your DOM refs
+          const previewImg      = document.getElementById('preview-img');
+          const loader          = document.getElementById('loader');
+          const viewer          = document.getElementById('viewer');
+          const checkoutButton  = document.getElementById('checkout-button');
+        
+          // hide placeholder + spinner, show model
+          previewImg.style.display     = 'none';
+          loader.style.display         = 'none';
+          viewer.src                   = storedUrl;
+          viewer.style.display         = 'block';
+        
+          // reveal the Checkout link
+          checkoutButton.classList.remove('hidden');
+        });
+
     </script>
   </body>
 </html>
