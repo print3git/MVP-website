@@ -7,9 +7,11 @@
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+
     <!-- Stripe.js -->
     <script src="https://js.stripe.com/v3/"></script>
-    <!-- Font Awesome -->
+
+    <!-- Font Awesome for icons -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
@@ -17,7 +19,8 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
-    <!-- model-viewer -->
+
+    <!-- Google model-viewer (for GLB preview) -->
     <script
       type="module"
       src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"
@@ -80,11 +83,11 @@
       <!-- Checkout Form -->
       <div class="w-full max-w-md bg-[#2A2A2E] rounded-2xl p-6">
         <h2 class="text-2xl font-semibold mb-4 text-center">Checkout</h2>
+
         <div id="payment-element" class="mb-6">
-          <p class="text-center text-gray-400">
-            [Stripe payment form will go here]
-          </p>
+          <p class="text-center text-gray-400">[Stripe payment form will go here]</p>
         </div>
+
         <button
           id="submit-payment"
           class="w-full bg-[#30D5C8] text-[#1A1A1D] py-3 rounded-xl font-semibold hover:bg-[#28b7a8] transition"
@@ -104,20 +107,16 @@
         const loader     = document.getElementById('loader');
         const viewer     = document.getElementById('viewer');
 
-        // Hide placeholder/spinner immediately
         previewImg.style.display = 'none';
         loader.style.display     = 'none';
 
-        // Show the model and set it
         viewer.style.display = 'block';
         viewer.src           = storedUrl;
       });
 
-      document
-        .getElementById('submit-payment')
-        .addEventListener('click', () => {
-          alert('Payment flow to be implemented');
-        });
+      document.getElementById('submit-payment').addEventListener('click', () => {
+        alert('Payment flow to be implemented');
+      });
     </script>
   </body>
 </html>
