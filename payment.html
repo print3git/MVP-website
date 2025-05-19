@@ -21,33 +21,10 @@
     />
 
     <!-- Google model-viewer (for GLB preview) -->
-    <!-- Stripe Elements integration -->
-    <script type="module">
-      import {loadStripe} from "https://js.stripe.com/v3/";
-    
-      const stripe = await loadStripe(
-        "pk_test_51H8KxS**********************"   // test publishable key
-      );
-    
-      // call your serverless endpoint to get the client-secret
-      const {clientSecret} = await fetch("/api/create-payment-intent", {
-        method: "POST"
-      }).then(r => r.json());
-    
-      const elements        = stripe.elements({clientSecret});
-      const paymentElement  = elements.create("payment");
-      paymentElement.mount("#payment-element");
-    
-      document.getElementById("submit-payment")
-              .addEventListener("click", async () => {
-        const {error} = await stripe.confirmPayment({
-          elements,
-          confirmParams: {return_url: window.location.origin + "/success.html"}
-        });
-        if (error) alert(error.message);
-      });
-    </script>
-
+    <script
+      type="module"
+      src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"
+    ></script>
   </head>
 
   <body class="bg-[#1A1A1D] text-white font-sans min-h-screen flex flex-col">
