@@ -4,6 +4,9 @@ Here are the remaining things to do before we pitch to investors:
 the model generator. Ensure it works for both text, images, and text+images prompts.
 - Create Stripe account, get API keys, integrate Stripe into frontend, configure the existing Stripe
 backend file
+------ When you later create (and verify) your real Stripe account you will simply:
+    1. Replace the placeholder keys with your own dashboard keys.
+    2. Switch the “mode” flag from test to live (or just deploy the same code with live keys)."
 - Create the database (SQL?)
 - add 'share' options to twitter, facebook, tiktok, instagram
 
