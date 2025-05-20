@@ -1,5 +1,5 @@
 <!-- ============================
-        index.html (with transform-based shimmer)
+        index.html
 ============================ -->
 <!DOCTYPE html>
 <html lang="en">
@@ -67,14 +67,15 @@
 
     <main class="flex-1 flex flex-col items-center justify-center gap-16 px-4 lg:px-16">
       <section id="preview-wrapper" class="relative w-full max-w-lg h-80 bg-[#2A2A2E] border border-white/10 rounded-3xl overflow-hidden">
-        <!-- placeholder image (you can leave it in place – model-viewer will render on top) -->
+        <!-- ← HIDDEN placeholder so it no longer covers the viewer -->
         <img
           id="preview-img"
           src="https://placehold.co/600x400/2A2A2E/2A2A2E?text="
           class="object-contain h-full w-full"
+          style="display:none;"
         />
 
-        <!-- model-viewer now shows the astronaut on load -->
+        <!-- model-viewer with Astronaut shown immediately -->
         <model-viewer
           id="viewer"
           src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
