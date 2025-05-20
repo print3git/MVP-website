@@ -166,6 +166,13 @@
         el.style.overflowY = el.scrollHeight > lh * 9 ? 'auto' : 'hidden';
       });
 
+           
+        if (e.key === 'Enter' && !e.shiftKey) {
+         e.preventDefault();
+         refs.submitBtn.click();
+         }
+         });
+
       function renderThumbnails(thumbs) {
         refs.imagePreviewArea.innerHTML = '';
         if (!thumbs.length) {
