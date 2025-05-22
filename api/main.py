@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.responses import JSONResponse
 from hunyuan_runner import generate_3d_asset
