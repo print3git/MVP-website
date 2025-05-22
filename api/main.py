@@ -3,6 +3,9 @@ from fastapi.responses import JSONResponse
 from hunyuan_runner import generate_3d_asset
 import uuid, os
 
+from storage import upload_to_storage # or upload_to_s3
+
+
 app = FastAPI()
 
 GENERATED_DIR = os.getenv("GENERATED_DIR", "generated")
