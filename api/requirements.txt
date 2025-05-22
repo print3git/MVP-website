@@ -1,1 +1,1 @@
-text fastapi uvicorn boto3 python-multipart pillow
+fastapi uvicorn boto3 python-multipart pillow
