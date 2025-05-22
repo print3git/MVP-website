@@ -5,7 +5,8 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- add viewport-fit=cover so safe-area insets work -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Print3 Assistant</title>
 
     <!-- Tailwind CSS -->
@@ -24,8 +25,16 @@
     ></script>
 
     <style>
-      html, body { height: 100%; margin: 0; }
-      .transition-shape { transition: border-radius 0.2s ease, background-color 0.2s ease; }
+      /* respect the safe-area inset at the top (iOS notch / dynamic tab bar) */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding-top: constant(safe-area-inset-top);
+        padding-top: env(safe-area-inset-top);
+      }
+      .transition-shape {
+        transition: border-radius 0.2s ease, background-color 0.2s ease;
+      }
       .prompt-textarea {
         overflow-y: hidden;
         padding: 0;
@@ -71,9 +80,12 @@
       </div>
     </header>
 
-    <main class="flex-1 flex flex-col items-center justify-center gap-16 px-4 lg:px-16">
-      <section id="preview-wrapper" class="relative w-full max-w-lg h-80 bg-[#2A2A2E] border border-white/10 rounded-3xl overflow-hidden">
-        <!-- ← HIDDEN placeholder so it no longer covers the viewer -->
+    <!-- removed vertical centering so content sits right below header -->
+    <main class="flex-1 flex flex-col items-center justify-start gap-16 px-4 lg:px-16">
+      <section
+        id="preview-wrapper"
+        class="relative w-full max-w-lg h-80 bg-[#2A2A2E] border border-white/10 rounded-3xl overflow-hidden"
+      >
         <img
           id="preview-img"
           src="https://placehold.co/600x400/2A2A2E/2A2A2E?text="
@@ -81,7 +93,6 @@
           style="display:none;"
         />
 
-        <!-- model-viewer with Astronaut shown immediately -->
         <model-viewer
           id="viewer"
           src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
@@ -125,7 +136,10 @@
                 class="prompt-textarea w-full bg-transparent resize-none text-lg placeholder-gray-500 focus:outline-none"
               ></textarea>
             </div>
-            <button id="submit-button" class="w-12 h-12 flex items-center justify-center bg-white rounded-full transition-shape">
+            <button
+              id="submit-button"
+              class="w-12 h-12 flex items-center justify-center bg-white rounded-full transition-shape"
+            >
               <i id="submit-icon" class="fas fa-arrow-up text-xl text-[#1A1A1D]"></i>
             </button>
           </div>
@@ -138,7 +152,10 @@
             >
               Upload Images
             </label>
-            <div id="image-preview-area" class="hidden grid grid-cols-4 gap-3 bg-[#2A2A2E] border border-white/10 rounded-3xl min-h-[6rem] max-h-56 px-4 py-3 overflow-visible"></div>
+            <div
+              id="image-preview-area"
+              class="hidden grid grid-cols-4 gap-3 bg-[#2A2A2E] border border-white/10 rounded-3xl min-h-[6rem] max-h-56 px-4 py-3 overflow-visible"
+            ></div>
           </div>
         </div>
       </section>
@@ -149,9 +166,15 @@
       const FALLBACK_GLB = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
       const $ = id => document.getElementById(id);
       const refs = {
-        previewImg: $('preview-img'), loader: $('loader'), viewer: $('viewer'),
-        promptInput: $('promptInput'), submitBtn: $('submit-button'), submitIcon: $('submit-icon'),
-        uploadInput: $('uploadInput'), imagePreviewArea: $('image-preview-area'), checkoutBtn: $('checkout-button')
+        previewImg: $('preview-img'),
+        loader: $('loader'),
+        viewer: $('viewer'),
+        promptInput: $('promptInput'),
+        submitBtn: $('submit-button'),
+        submitIcon: $('submit-icon'),
+        uploadInput: $('uploadInput'),
+        imagePreviewArea: $('image-preview-area'),
+        checkoutBtn: $('checkout-button')
       };
 
       let uploadedFiles = [];
