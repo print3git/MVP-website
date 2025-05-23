@@ -5,27 +5,12 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <!-- add viewport-fit=cover so safe-area insets work -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Print3 Assistant</title>
-
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Font Awesome -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
-    />
-
-    <!-- Google model-viewer -->
-    <script
-      type="module"
-      src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"
-    ></script>
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
     <style>
-      /* respect the safe-area inset at the top (iOS notch / dynamic tab bar) */
       html, body {
         height: 100%;
         margin: 0;
@@ -40,8 +25,6 @@
         padding: 0;
         line-height: 1.75rem;
       }
-
-      /* Subtle rainbow shimmer for submit button (transform-based) */
       #submit-button {
         position: relative;
         overflow: hidden;
@@ -49,17 +32,9 @@
       #submit-button::before {
         content: '';
         position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(
-          120deg,
-          transparent,
-          rgba(255, 0, 255, 0.2),
-          rgba(0, 255, 255, 0.2),
-          transparent
-        );
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: linear-gradient(120deg, transparent, rgba(255, 0, 255, 0.2), rgba(0, 255, 255, 0.2), transparent);
         transform: translateX(-100%);
         animation: shimmer 3s ease-in-out infinite;
       }
@@ -68,7 +43,6 @@
       }
     </style>
   </head>
-
   <body class="bg-[#1A1A1D] text-white font-sans flex flex-col">
     <header class="flex items-center justify-between py-4 px-6">
       <div class="flex flex-col items-start">
@@ -79,83 +53,38 @@
         </div>
       </div>
     </header>
-
-    <!-- removed vertical centering so content sits right below header -->
     <main class="flex-1 flex flex-col items-center justify-start gap-16 px-4 lg:px-16">
-      <section
-        id="preview-wrapper"
-        class="relative w-full max-w-lg h-80 bg-[#2A2A2E] border border-white/10 rounded-3xl overflow-hidden"
-      >
-        <img
-          id="preview-img"
-          src="https://placehold.co/600x400/2A2A2E/2A2A2E?text="
-          class="object-contain h-full w-full"
-          style="display:none;"
-        />
-
-        <model-viewer
-          id="viewer"
-          src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
-          alt="3D astronaut"
-          camera-controls
-          auto-rotate
-          style="width:100%; height:100%;"
-        ></model-viewer>
-
-        <div
-          id="loader"
-          class="absolute inset-0 flex items-center justify-center bg-[#2A2A2E]/80"
-          style="display:none;"
-        >
+      <section id="preview-wrapper" class="relative w-full max-w-lg h-80 bg-[#2A2A2E] border border-white/10 rounded-3xl overflow-hidden">
+        <img id="preview-img" src="https://placehold.co/600x400/2A2A2E/2A2A2E?text=" class="object-contain h-full w-full" style="display:none;" />
+        <model-viewer id="viewer" src="https://modelviewer.dev/shared-assets/models/Astronaut.glb" alt="3D astronaut" camera-controls auto-rotate style="width:100%; height:100%;"></model-viewer>
+        <div id="loader" class="absolute inset-0 flex items-center justify-center bg-[#2A2A2E]/80" style="display:none;">
           <div class="h-10 w-10 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
         </div>
+        <a id="checkout-button" href="payment.html" class="hidden absolute bottom-4 right-4 font-bold py-3 px-5 rounded-full shadow-md transition" style="background-color:#1F3B65;color:#5EC2C5;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">Checkout</a>
 
-        <a
-          id="checkout-button"
-          href="payment.html"
-          class="hidden absolute bottom-4 right-4 font-bold py-3 px-5 rounded-full shadow-md transition"
-          style="background-color:#1F3B65;color:#5EC2C5;"
-          onmouseover="this.style.opacity='0.85'"
-          onmouseout="this.style.opacity='1'"
-        >
-          Checkout
-        </a>
+        <!-- DEMO BUBBLE TEXT -->
+        <div id="demo-bubble" class="absolute top-1/2 right-4 transform -translate-y-1/2 max-w-[200px] rounded-2xl bg-[#00587A] px-4 py-3 text-sm text-white shadow-md">
+          <p>This astronaut is just a demo while we build your model in ~30 seconds</p>
+          <p class="mt-2 font-semibold">You can rotate it!</p>
+        </div>
       </section>
 
       <section class="w-full max-w-xl">
         <div class="flex flex-col items-center text-center">
           <img src="img/boxlogo.png" alt="Print3 cube" class="w-32 h-auto mb-8" />
           <h1 class="text-3xl font-semibold mb-8">Make your world.</h1>
-
           <div class="flex items-center w-full gap-4">
             <div class="flex-1 bg-[#2A2A2E] border border-white/10 rounded-3xl px-5 py-2 flex items-center">
-              <textarea
-                id="promptInput"
-                rows="1"
-                placeholder="Describe your 3D print request…"
-                class="prompt-textarea w-full bg-transparent resize-none text-lg placeholder-gray-500 focus:outline-none"
-              ></textarea>
+              <textarea id="promptInput" rows="1" placeholder="Describe your 3D print request…" class="prompt-textarea w-full bg-transparent resize-none text-lg placeholder-gray-500 focus:outline-none"></textarea>
             </div>
-            <button
-              id="submit-button"
-              class="w-12 h-12 flex items-center justify-center bg-white rounded-full transition-shape"
-            >
+            <button id="submit-button" class="w-12 h-12 flex items-center justify-center bg-white rounded-full transition-shape">
               <i id="submit-icon" class="fas fa-arrow-up text-xl text-[#1A1A1D]"></i>
             </button>
           </div>
-
           <div class="mt-4 w-full flex items-start gap-4">
             <input type="file" id="uploadInput" accept="image/*" multiple class="hidden" />
-            <label
-              for="uploadInput"
-              class="inline-flex items-center justify-start flex-shrink-0 bg-[#2A2A2E] border border-white/10 rounded-3xl px-5 py-2 leading-[1.75rem] text-lg whitespace-nowrap cursor-pointer hover:bg-[#3A3A3E] transition-shape"
-            >
-              Upload Images
-            </label>
-            <div
-              id="image-preview-area"
-              class="hidden grid grid-cols-4 gap-3 bg-[#2A2A2E] border border-white/10 rounded-3xl min-h-[6rem] max-h-56 px-4 py-3 overflow-visible"
-            ></div>
+            <label for="uploadInput" class="inline-flex items-center justify-start flex-shrink-0 bg-[#2A2A2E] border border-white/10 rounded-3xl px-5 py-2 leading-[1.75rem] text-lg whitespace-nowrap cursor-pointer hover:bg-[#3A3A3E] transition-shape">Upload Images</label>
+            <div id="image-preview-area" class="hidden grid grid-cols-4 gap-3 bg-[#2A2A2E] border border-white/10 rounded-3xl min-h-[6rem] max-h-56 px-4 py-3 overflow-visible"></div>
           </div>
         </div>
       </section>
@@ -166,15 +95,10 @@
       const FALLBACK_GLB = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
       const $ = id => document.getElementById(id);
       const refs = {
-        previewImg: $('preview-img'),
-        loader: $('loader'),
-        viewer: $('viewer'),
-        promptInput: $('promptInput'),
-        submitBtn: $('submit-button'),
-        submitIcon: $('submit-icon'),
-        uploadInput: $('uploadInput'),
-        imagePreviewArea: $('image-preview-area'),
-        checkoutBtn: $('checkout-button')
+        previewImg: $('preview-img'), loader: $('loader'), viewer: $('viewer'),
+        promptInput: $('promptInput'), submitBtn: $('submit-button'), submitIcon: $('submit-icon'),
+        uploadInput: $('uploadInput'), imagePreviewArea: $('image-preview-area'), checkoutBtn: $('checkout-button'),
+        demoBubble: $('demo-bubble')
       };
 
       let uploadedFiles = [];
@@ -221,7 +145,6 @@
             renderThumbnails(thumbs);
           });
           wrapper.appendChild(btn);
-
           refs.imagePreviewArea.appendChild(wrapper);
         });
       }
@@ -230,8 +153,6 @@
         const files = Array.from(e.target.files);
         if (!files.length) return;
         uploadedFiles = files;
-
-        // compress thumbnails
         const thumbURLs = await Promise.all(files.map(file => new Promise(resolve => {
           const reader = new FileReader();
           reader.onload = () => {
@@ -250,7 +171,6 @@
           };
           reader.readAsDataURL(file);
         })));
-
         localStorage.setItem('print3Images', JSON.stringify(thumbURLs));
         renderThumbnails(thumbURLs);
       });
@@ -274,6 +194,7 @@
         refs.checkoutBtn.classList.add('hidden');
         refs.submitIcon.classList.replace('fa-arrow-up','fa-stop');
         showLoader();
+        refs.demoBubble.style.display = 'none';
 
         localStorage.setItem('print3Prompt', prompt);
         localStorage.setItem('hasGenerated', 'true');
@@ -306,6 +227,7 @@
           refs.viewer.src = modelUrl;
           refs.viewer.style.display='block';
           refs.checkoutBtn.classList.remove('hidden');
+          refs.demoBubble.style.display = 'none';
         }
       });
     </script>
