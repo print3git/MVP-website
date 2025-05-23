@@ -5,8 +5,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <!-- add viewport-fit=cover so safe-area insets work -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
     <title>Print3 Assistant</title>
 
     <!-- Tailwind CSS -->
@@ -24,17 +26,17 @@
       src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"
     ></script>
 
-    <!-- ❶  Hide the bubble immediately if a model was already generated -->
+    <!-- Hide demo bubble if already generated or dismissed -->
     <script>
-      (function () {
-        if (localStorage.getItem('hasGenerated') === 'true') {
-          document.documentElement.classList.add('has-generated');
-        }
-      })();
+      if (
+        localStorage.getItem("hasGenerated") === "true" ||
+        localStorage.getItem("demoDismissed") === "true"
+      ) {
+        document.documentElement.classList.add("has-generated");
+      }
     </script>
 
     <style>
-      /* respect the safe-area inset at the top (iOS notch / dynamic tab bar) */
       html,
       body {
         height: 100%;
@@ -51,18 +53,15 @@
         line-height: 1.75rem;
       }
 
-      /* Subtle rainbow shimmer for submit button (transform-based) */
+      /* rainbow shimmer on submit button */
       #submit-button {
         position: relative;
         overflow: hidden;
       }
       #submit-button::before {
-        content: '';
+        content: "";
         position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
+        inset: 0;
         background: linear-gradient(
           120deg,
           transparent,
@@ -79,7 +78,7 @@
         }
       }
 
-      /* ❷  If a model is already generated, keep the bubble hidden */
+      /* keep bubble hidden once dismissed or generated */
       .has-generated #demo-note {
         display: none;
       }
@@ -97,7 +96,9 @@
       </div>
     </header>
 
-    <main class="flex-1 flex flex-col items-center justify-start gap-16 px-4 lg:px-16">
+    <main
+      class="flex-1 flex flex-col items-center justify-start gap-16 px-4 lg:px-16"
+    >
       <section
         id="preview-wrapper"
         class="relative w-full max-w-lg h-80 bg-[#2A2A2E] border border-white/10 rounded-3xl overflow-visible"
@@ -118,15 +119,27 @@
           style="width: 100%; height: 100%"
         ></model-viewer>
 
-        <!-- ❸  Demo message-bubble (now with z-10) -->
+        <!-- demo bubble -->
         <div
           id="demo-note"
           class="absolute top-1/2 left-full -translate-x-1/2 -translate-y-1/2
                  w-56 p-4 text-sm leading-snug text-center text-white
                  bg-[#363639] border border-white/15 rounded-3xl shadow-md
-                 pointer-events-none z-10"
+                 pointer-events-auto z-10"
         >
-          Play with this demo while we build your model in&nbsp;~30 seconds
+          <!-- close button -->
+          <button
+            id="demo-note-close"
+            type="button"
+            class="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2
+                   w-6 h-6 rounded-full bg-white text-black border border-black
+                   flex items-center justify-center text-xs font-bold"
+          >
+            ×
+          </button>
+
+          This astronaut is just a demo while we build your model in&nbsp;~30&nbsp;seconds
+          <br /><br />You can rotate&nbsp;it!
         </div>
 
         <div
@@ -146,14 +159,17 @@
           style="background-color: #1f3b65; color: #5ec2c5"
           onmouseover="this.style.opacity='0.85'"
           onmouseout="this.style.opacity='1'"
+          >Checkout</a
         >
-          Checkout
-        </a>
       </section>
 
       <section class="w-full max-w-xl">
         <div class="flex flex-col items-center text-center">
-          <img src="img/boxlogo.png" alt="Print3 cube" class="w-32 h-auto mb-8" />
+          <img
+            src="img/boxlogo.png"
+            alt="Print3 cube"
+            class="w-32 h-auto mb-8"
+          />
           <h1 class="text-3xl font-semibold mb-8">Make your world.</h1>
 
           <div class="flex items-center w-full gap-4">
@@ -171,12 +187,21 @@
               id="submit-button"
               class="w-12 h-12 flex items-center justify-center bg-white rounded-full transition-shape"
             >
-              <i id="submit-icon" class="fas fa-arrow-up text-xl text-[#1A1A1D]"></i>
+              <i
+                id="submit-icon"
+                class="fas fa-arrow-up text-xl text-[#1A1A1D]"
+              ></i>
             </button>
           </div>
 
           <div class="mt-4 w-full flex items-start gap-4">
-            <input type="file" id="uploadInput" accept="image/*" multiple class="hidden" />
+            <input
+              type="file"
+              id="uploadInput"
+              accept="image/*"
+              multiple
+              class="hidden"
+            />
             <label
               for="uploadInput"
               class="inline-flex items-center justify-start flex-shrink-0 bg-[#2A2A2E] border border-white/10 rounded-3xl px-5 py-2 leading-[1.75rem] text-lg whitespace-nowrap cursor-pointer hover:bg-[#3A3A3E] transition-shape"
@@ -193,189 +218,190 @@
     </main>
 
     <script type="module">
-      const API_BASE = '/api';
+      const API_BASE = "/api";
       const FALLBACK_GLB =
-        'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
-
+        "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
       const $ = (id) => document.getElementById(id);
       const refs = {
-        previewImg: $('preview-img'),
-        loader: $('loader'),
-        viewer: $('viewer'),
-        demoNote: $('demo-note'),
-        promptInput: $('promptInput'),
-        submitBtn: $('submit-button'),
-        submitIcon: $('submit-icon'),
-        uploadInput: $('uploadInput'),
-        imagePreviewArea: $('image-preview-area'),
-        checkoutBtn: $('checkout-button')
+        previewImg: $("preview-img"),
+        loader: $("loader"),
+        viewer: $("viewer"),
+        demoNote: $("demo-note"),
+        demoClose: $("demo-note-close"),
+        promptInput: $("promptInput"),
+        submitBtn: $("submit-button"),
+        submitIcon: $("submit-icon"),
+        uploadInput: $("uploadInput"),
+        imagePreviewArea: $("image-preview-area"),
+        checkoutBtn: $("checkout-button"),
       };
 
       let uploadedFiles = [];
 
-      /* ---------- UI helpers ---------- */
+      /* helpers */
       function hideAll() {
-        refs.previewImg.style.display = 'none';
-        refs.loader.style.display = 'none';
-        refs.viewer.style.display = 'none';
+        refs.previewImg.style.display = "none";
+        refs.loader.style.display = "none";
+        refs.viewer.style.display = "none";
       }
       const showLoader = () => {
         hideAll();
-        refs.loader.style.display = 'flex';
+        refs.loader.style.display = "flex";
       };
       const showModel = () => {
         hideAll();
-        refs.viewer.style.display = 'block';
+        refs.viewer.style.display = "block";
       };
-      const hideDemoNote = () => {
-        if (refs.demoNote) refs.demoNote.style.display = 'none';
+      const hideDemo = () => {
+        if (refs.demoNote) refs.demoNote.style.display = "none";
+        document.documentElement.classList.add("has-generated");
       };
 
-      /* ---------- textarea auto-grow ---------- */
-      refs.promptInput.addEventListener('input', () => {
-        const el = refs.promptInput;
-        el.style.height = 'auto';
-        const lh = parseFloat(getComputedStyle(el).lineHeight);
-        el.style.height = Math.min(el.scrollHeight, lh * 9) + 'px';
-        el.style.overflowY = el.scrollHeight > lh * 9 ? 'auto' : 'hidden';
+      /* close button handler */
+      refs.demoClose?.addEventListener("click", () => {
+        hideDemo();
+        localStorage.setItem("demoDismissed", "true");
       });
 
-      /* ---------- submit on Enter ---------- */
-      refs.promptInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
+      /* textarea auto-grow */
+      refs.promptInput.addEventListener("input", () => {
+        const el = refs.promptInput;
+        el.style.height = "auto";
+        const lh = parseFloat(getComputedStyle(el).lineHeight);
+        el.style.height = Math.min(el.scrollHeight, lh * 9) + "px";
+        el.style.overflowY = el.scrollHeight > lh * 9 ? "auto" : "hidden";
+      });
+
+      /* submit on Enter */
+      refs.promptInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
           e.preventDefault();
           refs.submitBtn.click();
         }
       });
 
-      /* ---------- image upload & thumbnails ---------- */
-      function renderThumbnails(thumbs) {
-        refs.imagePreviewArea.innerHTML = '';
-        if (!thumbs.length) {
-          refs.imagePreviewArea.classList.add('hidden');
+      /* thumbnails */
+      function renderThumbnails(arr) {
+        refs.imagePreviewArea.innerHTML = "";
+        if (!arr.length) {
+          refs.imagePreviewArea.classList.add("hidden");
           return;
         }
-        refs.imagePreviewArea.classList.remove('hidden');
-        thumbs.forEach((url, idx) => {
-          const wrapper = document.createElement('div');
-          wrapper.className = 'relative';
-          const img = document.createElement('img');
+        refs.imagePreviewArea.classList.remove("hidden");
+        arr.forEach((url, i) => {
+          const wrap = document.createElement("div");
+          wrap.className = "relative";
+          const img = document.createElement("img");
           img.src = url;
-          img.className = 'object-cover w-full h-20 rounded-md shadow-md';
-          wrapper.appendChild(img);
+          img.className = "object-cover w-full h-20 rounded-md shadow-md";
+          wrap.appendChild(img);
 
-          const btn = document.createElement('button');
-          btn.type = 'button';
+          const btn = document.createElement("button");
+          btn.type = "button";
           btn.innerHTML = '<i class="fas fa-times"></i>';
           btn.className =
-            'absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white text-black border border-black flex items-center justify-center';
-          btn.addEventListener('click', () => {
-            thumbs.splice(idx, 1);
-            uploadedFiles.splice(idx, 1);
-            localStorage.setItem('print3Images', JSON.stringify(thumbs));
-            renderThumbnails(thumbs);
-          });
-          wrapper.appendChild(btn);
-
-          refs.imagePreviewArea.appendChild(wrapper);
+            "absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white text-black border border-black flex items-center justify-center";
+          btn.onclick = () => {
+            arr.splice(i, 1);
+            uploadedFiles.splice(i, 1);
+            localStorage.setItem("print3Images", JSON.stringify(arr));
+            renderThumbnails(arr);
+          };
+          wrap.appendChild(btn);
+          refs.imagePreviewArea.appendChild(wrap);
         });
       }
 
-      refs.uploadInput.addEventListener('change', async (e) => {
-        const files = Array.from(e.target.files);
+      refs.uploadInput.addEventListener("change", async (e) => {
+        const files = [...e.target.files];
         if (!files.length) return;
         uploadedFiles = files;
 
-        const thumbURLs = await Promise.all(
+        const thumbs = await Promise.all(
           files.map(
             (file) =>
-              new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.onload = () => {
-                  const img = new Image();
-                  img.onload = () => {
-                    const maxDim = 200;
-                    let [w, h] = [img.width, img.height];
-                    const ratio = Math.min(maxDim / w, maxDim / h, 1);
-                    w *= ratio;
-                    h *= ratio;
-                    const canvas = document.createElement('canvas');
-                    canvas.width = w;
-                    canvas.height = h;
-                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-                    resolve(canvas.toDataURL('image/png', 0.7));
+              new Promise((res) => {
+                const R = new FileReader();
+                R.onload = () => {
+                  const im = new Image();
+                  im.onload = () => {
+                    let [w, h] = [im.width, im.height],
+                      max = 200,
+                      r = Math.min(max / w, max / h, 1);
+                    w *= r;
+                    h *= r;
+                    const c = document.createElement("canvas");
+                    c.width = w;
+                    c.height = h;
+                    c.getContext("2d").drawImage(im, 0, 0, w, h);
+                    res(c.toDataURL("image/png", 0.7));
                   };
-                  img.src = reader.result;
+                  im.src = R.result;
                 };
-                reader.readAsDataURL(file);
+                R.readAsDataURL(file);
               })
           )
         );
 
-        localStorage.setItem('print3Images', JSON.stringify(thumbURLs));
-        renderThumbnails(thumbURLs);
+        localStorage.setItem("print3Images", JSON.stringify(thumbs));
+        renderThumbnails(thumbs);
       });
 
-      /* ---------- fetch GLB (or fallback) ---------- */
       async function fetchGlb(prompt, files) {
         try {
           const fd = new FormData();
-          if (prompt) fd.append('prompt', prompt);
-          files.forEach((f) => fd.append('images', f));
-          const res = await fetch(`${API_BASE}/generate`, {
-            method: 'POST',
-            body: fd
+          if (prompt) fd.append("prompt", prompt);
+          files.forEach((f) => fd.append("images", f));
+          const r = await fetch(`${API_BASE}/generate`, {
+            method: "POST",
+            body: fd,
           });
-          if (!res.ok) throw new Error(`API ${res.status}`);
-          return (await res.json()).glb_url;
+          if (!r.ok) throw new Error();
+          return (await r.json()).glb_url;
         } catch {
           return FALLBACK_GLB;
         }
       }
 
-      /* ---------- main submit ---------- */
-      refs.submitBtn.addEventListener('click', async () => {
+      refs.submitBtn.addEventListener("click", async () => {
         const prompt = refs.promptInput.value.trim();
         if (!prompt && uploadedFiles.length === 0) return;
-
-        refs.checkoutBtn.classList.add('hidden');
-        refs.submitIcon.classList.replace('fa-arrow-up', 'fa-stop');
+        refs.checkoutBtn.classList.add("hidden");
+        refs.submitIcon.classList.replace("fa-arrow-up", "fa-stop");
         showLoader();
 
-        localStorage.setItem('print3Prompt', prompt);
-        localStorage.setItem('hasGenerated', 'true');
+        localStorage.setItem("print3Prompt", prompt);
+        localStorage.setItem("hasGenerated", "true");
 
-        const glbUrl = await fetchGlb(prompt, uploadedFiles);
-        localStorage.setItem('print3Model', glbUrl);
+        const url = await fetchGlb(prompt, uploadedFiles);
+        localStorage.setItem("print3Model", url);
 
-        refs.viewer.src = glbUrl;
+        refs.viewer.src = url;
         await refs.viewer.updateComplete;
         showModel();
-        hideDemoNote();
+        hideDemo();
 
-        refs.checkoutBtn.classList.remove('hidden');
-        refs.submitIcon.classList.replace('fa-stop', 'fa-arrow-up');
+        refs.checkoutBtn.classList.remove("hidden");
+        refs.submitIcon.classList.replace("fa-stop", "fa-arrow-up");
       });
 
-      /* ---------- restore state on refresh ---------- */
-      window.addEventListener('DOMContentLoaded', () => {
-        const prompt = localStorage.getItem('print3Prompt');
-        const modelUrl = localStorage.getItem('print3Model');
-        const didGen = localStorage.getItem('hasGenerated') === 'true';
-        const thumbs = JSON.parse(localStorage.getItem('print3Images') || '[]');
-
+      /* restore state */
+      window.addEventListener("DOMContentLoaded", () => {
+        const prompt = localStorage.getItem("print3Prompt");
+        const model = localStorage.getItem("print3Model");
+        const has = localStorage.getItem("hasGenerated") === "true";
+        const thumbs = JSON.parse(localStorage.getItem("print3Images") || "[]");
         if (prompt) {
           refs.promptInput.value = prompt;
-          refs.promptInput.dispatchEvent(new Event('input'));
+          refs.promptInput.dispatchEvent(new Event("input"));
         }
         if (thumbs.length) renderThumbnails(thumbs);
-
-        if (didGen && modelUrl) {
+        if (has && model) {
           hideAll();
-          refs.viewer.src = modelUrl;
-          refs.viewer.style.display = 'block';
-          refs.checkoutBtn.classList.remove('hidden');
-          hideDemoNote(); // ensure no flash
+          refs.viewer.src = model;
+          refs.viewer.style.display = "block";
+          refs.checkoutBtn.classList.remove("hidden");
+          hideDemo();
         }
       });
     </script>
