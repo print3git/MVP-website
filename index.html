@@ -27,7 +27,6 @@
     ></script>
 
     <script>
-      /* hide the demo bubble if it was already dismissed or a model was generated */
       if (
         localStorage.getItem("hasGenerated") === "true" ||
         localStorage.getItem("demoDismissed") === "true"
@@ -52,7 +51,6 @@
         padding: 0;
         line-height: 1.75rem;
       }
-      /* rainbow shimmer on submit button */
       #submit-button {
         position: relative;
         overflow: hidden;
@@ -76,7 +74,6 @@
           transform: translateX(100%);
         }
       }
-      /* never show the bubble once dismissed/generated */
       .has-generated #demo-note {
         display: none;
       }
@@ -125,19 +122,19 @@
                  bg-[#363639] border border-white/15 rounded-3xl shadow-md
                  pointer-events-auto z-10"
         >
-          <!-- **bigger close button** -->
+          <!-- smaller close button -->
           <button
             id="demo-note-close"
             type="button"
             class="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2
-                   w-14 h-14 rounded-full bg-white text-black border border-black
-                   flex items-center justify-center text-2xl font-bold"
+                   w-7 h-7 rounded-full bg-white text-black border border-black
+                   flex items-center justify-center text-lg font-bold"
           >
             ×
           </button>
 
-          <!-- **updated text** -->
-          Rotate this demo while we build your design in&nbsp;~30&nbsp;seconds
+          Rotate this demo while we create your design in
+          <span class="text-[#5EC2C5]">~30&nbsp;seconds</span>
         </div>
 
         <div
@@ -236,7 +233,6 @@
 
       let uploadedFiles = [];
 
-      /* helpers */
       const hideAll = () => {
         refs.previewImg.style.display = "none";
         refs.loader.style.display = "none";
@@ -255,13 +251,11 @@
         document.documentElement.classList.add("has-generated");
       };
 
-      /* close button */
       refs.demoClose?.addEventListener("click", () => {
         hideDemo();
         localStorage.setItem("demoDismissed", "true");
       });
 
-      /* textarea auto-grow */
       refs.promptInput.addEventListener("input", () => {
         const el = refs.promptInput;
         el.style.height = "auto";
@@ -270,7 +264,6 @@
         el.style.overflowY = el.scrollHeight > lh * 9 ? "auto" : "hidden";
       });
 
-      /* submit on Enter key */
       refs.promptInput.addEventListener("keydown", (e) => {
         if (e.key === "Enter" && !e.shiftKey) {
           e.preventDefault();
@@ -278,7 +271,6 @@
         }
       });
 
-      /* thumbnails */
       function renderThumbnails(arr) {
         refs.imagePreviewArea.innerHTML = "";
         if (!arr.length) {
@@ -383,7 +375,6 @@
         refs.submitIcon.classList.replace("fa-stop", "fa-arrow-up");
       });
 
-      /* restore state */
       window.addEventListener("DOMContentLoaded", () => {
         const prompt = localStorage.getItem("print3Prompt");
         const model = localStorage.getItem("print3Model");
