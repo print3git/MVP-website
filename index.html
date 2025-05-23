@@ -26,8 +26,8 @@
       src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"
     ></script>
 
-    <!-- Hide demo bubble if already generated or dismissed -->
     <script>
+      /* hide the demo bubble if it was already dismissed or a model was generated */
       if (
         localStorage.getItem("hasGenerated") === "true" ||
         localStorage.getItem("demoDismissed") === "true"
@@ -52,7 +52,6 @@
         padding: 0;
         line-height: 1.75rem;
       }
-
       /* rainbow shimmer on submit button */
       #submit-button {
         position: relative;
@@ -77,8 +76,7 @@
           transform: translateX(100%);
         }
       }
-
-      /* keep bubble hidden once dismissed or generated */
+      /* never show the bubble once dismissed/generated */
       .has-generated #demo-note {
         display: none;
       }
@@ -127,19 +125,19 @@
                  bg-[#363639] border border-white/15 rounded-3xl shadow-md
                  pointer-events-auto z-10"
         >
-          <!-- close button -->
+          <!-- **bigger close button** -->
           <button
             id="demo-note-close"
             type="button"
             class="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2
-                   w-6 h-6 rounded-full bg-white text-black border border-black
-                   flex items-center justify-center text-xs font-bold"
+                   w-14 h-14 rounded-full bg-white text-black border border-black
+                   flex items-center justify-center text-2xl font-bold"
           >
             ×
           </button>
 
-          This astronaut is just a demo while we build your model in&nbsp;~30&nbsp;seconds
-          <br /><br />You can rotate&nbsp;it!
+          <!-- **updated text** -->
+          Rotate this model while we build your design in&nbsp;~30&nbsp;seconds
         </div>
 
         <div
@@ -239,11 +237,11 @@
       let uploadedFiles = [];
 
       /* helpers */
-      function hideAll() {
+      const hideAll = () => {
         refs.previewImg.style.display = "none";
         refs.loader.style.display = "none";
         refs.viewer.style.display = "none";
-      }
+      };
       const showLoader = () => {
         hideAll();
         refs.loader.style.display = "flex";
@@ -253,11 +251,11 @@
         refs.viewer.style.display = "block";
       };
       const hideDemo = () => {
-        if (refs.demoNote) refs.demoNote.style.display = "none";
+        refs.demoNote && (refs.demoNote.style.display = "none");
         document.documentElement.classList.add("has-generated");
       };
 
-      /* close button handler */
+      /* close button */
       refs.demoClose?.addEventListener("click", () => {
         hideDemo();
         localStorage.setItem("demoDismissed", "true");
@@ -272,7 +270,7 @@
         el.style.overflowY = el.scrollHeight > lh * 9 ? "auto" : "hidden";
       });
 
-      /* submit on Enter */
+      /* submit on Enter key */
       refs.promptInput.addEventListener("keydown", (e) => {
         if (e.key === "Enter" && !e.shiftKey) {
           e.preventDefault();
