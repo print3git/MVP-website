@@ -1,44 +1,40 @@
 <!-- ============================
-        index.html  (no-flash bubble)
+        index.html
 ============================ -->
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <!-- add viewport-fit so safe-area insets work -->
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
-    />
-
+    <!-- add viewport-fit=cover so safe-area insets work -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Print3 Assistant</title>
 
-    <!-- --- Tailwind CSS --- -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- --- Font Awesome --- -->
+    <!-- Font Awesome -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
     />
 
-    <!-- --- Google model-viewer --- -->
+    <!-- Google model-viewer -->
     <script
       type="module"
       src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"
     ></script>
 
-    <!-- ===== PRE-EMPTIVE FLAG TO AVOID BUBBLE FLASH ===== -->
+    <!-- ❶  Hide the bubble immediately if a model was already generated -->
     <script>
-      /*  adds class="generated" to <html> before the page is painted
-          if the user has already generated a model in a previous session */
-      if (localStorage.getItem("hasGenerated") === "true") {
-        document.documentElement.classList.add("generated");
-      }
+      (function () {
+        if (localStorage.getItem('hasGenerated') === 'true') {
+          document.documentElement.classList.add('has-generated');
+        }
+      })();
     </script>
 
     <style>
-      /* respect iOS safe-area */
+      /* respect the safe-area inset at the top (iOS notch / dynamic tab bar) */
       html,
       body {
         height: 100%;
@@ -46,7 +42,6 @@
         padding-top: constant(safe-area-inset-top);
         padding-top: env(safe-area-inset-top);
       }
-
       .transition-shape {
         transition: border-radius 0.2s ease, background-color 0.2s ease;
       }
@@ -56,15 +51,18 @@
         line-height: 1.75rem;
       }
 
-      /* submit-button rainbow shimmer */
+      /* Subtle rainbow shimmer for submit button (transform-based) */
       #submit-button {
         position: relative;
         overflow: hidden;
       }
       #submit-button::before {
-        content: "";
+        content: '';
         position: absolute;
-        inset: 0;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
         background: linear-gradient(
           120deg,
           transparent,
@@ -81,15 +79,14 @@
         }
       }
 
-      /*  ===== NEW: hide bubble if <html class="generated"> is present */
-      html.generated #demo-info {
+      /* ❷  If a model is already generated, keep the bubble hidden */
+      .has-generated #demo-note {
         display: none;
       }
     </style>
   </head>
 
   <body class="bg-[#1A1A1D] text-white font-sans flex flex-col">
-    <!-- ─────────────────── Header ─────────────────── -->
     <header class="flex items-center justify-between py-4 px-6">
       <div class="flex flex-col items-start">
         <img src="img/textlogo.png" alt="Print3" class="h-10 w-auto" />
@@ -100,16 +97,11 @@
       </div>
     </header>
 
-    <!-- ─────────────────── Main ─────────────────── -->
-    <main
-      class="flex-1 flex flex-col items-center justify-start gap-16 px-4 lg:px-16"
-    >
-      <!-- ----- Preview area ----- -->
+    <main class="flex-1 flex flex-col items-center justify-start gap-16 px-4 lg:px-16">
       <section
         id="preview-wrapper"
         class="relative w-full max-w-lg h-80 bg-[#2A2A2E] border border-white/10 rounded-3xl overflow-hidden"
       >
-        <!-- placeholder kept but hidden -->
         <img
           id="preview-img"
           src="https://placehold.co/600x400/2A2A2E/2A2A2E?text="
@@ -117,7 +109,6 @@
           style="display: none"
         />
 
-        <!-- Google model-viewer (Astronaut shown immediately) -->
         <model-viewer
           id="viewer"
           src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
@@ -127,19 +118,19 @@
           style="width: 100%; height: 100%"
         ></model-viewer>
 
-        <!-- ===== Demo bubble (hidden via .generated class) ===== -->
+        <!-- ❸  Demo message-bubble -->
         <div
-          id="demo-info"
-          class="absolute right-2 top-1/2 -translate-y-1/2 bg-[#005b83]/90 border border-[#003d5c] rounded-2xl px-6 py-4 max-w-[14rem] text-center text-sm leading-snug shadow-lg"
+          id="demo-note"
+          class="absolute top-1/2 left-full -translate-x-1/2 -translate-y-1/2
+                 w-56 p-4 text-sm leading-snug text-center text-white
+                 bg-[#363639] border border-white/15 rounded-3xl shadow-md
+                 pointer-events-none"
         >
-          <p class="font-semibold">
-            This astronaut is just a demo while we build your model&nbsp;in
-            ~30&nbsp;seconds
-          </p>
-          <p class="mt-2">You can rotate it!</p>
+          This astronaut is just a demo while we build your model in&nbsp;~30 seconds
+          <br /><br />
+          You can rotate&nbsp;it!
         </div>
 
-        <!-- loader spinner -->
         <div
           id="loader"
           class="absolute inset-0 flex items-center justify-center bg-[#2A2A2E]/80"
@@ -150,7 +141,6 @@
           ></div>
         </div>
 
-        <!-- checkout -->
         <a
           id="checkout-button"
           href="payment.html"
@@ -158,18 +148,14 @@
           style="background-color: #1f3b65; color: #5ec2c5"
           onmouseover="this.style.opacity='0.85'"
           onmouseout="this.style.opacity='1'"
-          >Checkout</a
         >
+          Checkout
+        </a>
       </section>
 
-      <!-- ----- Input / controls ----- -->
       <section class="w-full max-w-xl">
         <div class="flex flex-col items-center text-center">
-          <img
-            src="img/boxlogo.png"
-            alt="Print3 cube"
-            class="w-32 h-auto mb-8"
-          />
+          <img src="img/boxlogo.png" alt="Print3 cube" class="w-32 h-auto mb-8" />
           <h1 class="text-3xl font-semibold mb-8">Make your world.</h1>
 
           <div class="flex items-center w-full gap-4">
@@ -187,21 +173,12 @@
               id="submit-button"
               class="w-12 h-12 flex items-center justify-center bg-white rounded-full transition-shape"
             >
-              <i
-                id="submit-icon"
-                class="fas fa-arrow-up text-xl text-[#1A1A1D]"
-              ></i>
+              <i id="submit-icon" class="fas fa-arrow-up text-xl text-[#1A1A1D]"></i>
             </button>
           </div>
 
           <div class="mt-4 w-full flex items-start gap-4">
-            <input
-              type="file"
-              id="uploadInput"
-              accept="image/*"
-              multiple
-              class="hidden"
-            />
+            <input type="file" id="uploadInput" accept="image/*" multiple class="hidden" />
             <label
               for="uploadInput"
               class="inline-flex items-center justify-start flex-shrink-0 bg-[#2A2A2E] border border-white/10 rounded-3xl px-5 py-2 leading-[1.75rem] text-lg whitespace-nowrap cursor-pointer hover:bg-[#3A3A3E] transition-shape"
@@ -217,80 +194,96 @@
       </section>
     </main>
 
-    <!-- ─────────────────── Script ─────────────────── -->
     <script type="module">
-      const API_BASE = "/api";
+      const API_BASE = '/api';
       const FALLBACK_GLB =
-        "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
+        'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
 
-      /*  — Element refs — */
       const $ = (id) => document.getElementById(id);
       const refs = {
-        previewImg: $("preview-img"),
-        loader: $("loader"),
-        viewer: $("viewer"),
-        demoInfo: $("demo-info"),
-        promptInput: $("promptInput"),
-        submitBtn: $("submit-button"),
-        submitIcon: $("submit-icon"),
-        uploadInput: $("uploadInput"),
-        imagePreviewArea: $("image-preview-area"),
-        checkoutBtn: $("checkout-button"),
+        previewImg: $('preview-img'),
+        loader: $('loader'),
+        viewer: $('viewer'),
+        demoNote: $('demo-note'),
+        promptInput: $('promptInput'),
+        submitBtn: $('submit-button'),
+        submitIcon: $('submit-icon'),
+        uploadInput: $('uploadInput'),
+        imagePreviewArea: $('image-preview-area'),
+        checkoutBtn: $('checkout-button')
       };
 
       let uploadedFiles = [];
 
-      /*  — helpers — */
-      const hideAll = () => {
-        refs.previewImg.style.display = "none";
-        refs.loader.style.display = "none";
-        refs.viewer.style.display = "none";
-      };
+      /* ---------- UI helpers ---------- */
+      function hideAll() {
+        refs.previewImg.style.display = 'none';
+        refs.loader.style.display = 'none';
+        refs.viewer.style.display = 'none';
+      }
       const showLoader = () => {
         hideAll();
-        refs.loader.style.display = "flex";
+        refs.loader.style.display = 'flex';
       };
       const showModel = () => {
         hideAll();
-        refs.viewer.style.display = "block";
+        refs.viewer.style.display = 'block';
+      };
+      const hideDemoNote = () => {
+        if (refs.demoNote) refs.demoNote.style.display = 'none';
       };
 
-      /* auto-grow textarea */
-      refs.promptInput.addEventListener("input", () => {
+      /* ---------- textarea auto-grow ---------- */
+      refs.promptInput.addEventListener('input', () => {
         const el = refs.promptInput;
-        el.style.height = "auto";
+        el.style.height = 'auto';
         const lh = parseFloat(getComputedStyle(el).lineHeight);
-        el.style.height = Math.min(el.scrollHeight, lh * 9) + "px";
-        el.style.overflowY = el.scrollHeight > lh * 9 ? "auto" : "hidden";
+        el.style.height = Math.min(el.scrollHeight, lh * 9) + 'px';
+        el.style.overflowY = el.scrollHeight > lh * 9 ? 'auto' : 'hidden';
       });
 
-      /* thumbnails */
-      function renderThumbnails(thumbs) {
-        refs.imagePreviewArea.innerHTML = "";
-        if (!thumbs.length) return refs.imagePreviewArea.classList.add("hidden");
-        refs.imagePreviewArea.classList.remove("hidden");
+      /* ---------- submit on Enter ---------- */
+      refs.promptInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          refs.submitBtn.click();
+        }
+      });
 
+      /* ---------- image upload & thumbnails ---------- */
+      function renderThumbnails(thumbs) {
+        refs.imagePreviewArea.innerHTML = '';
+        if (!thumbs.length) {
+          refs.imagePreviewArea.classList.add('hidden');
+          return;
+        }
+        refs.imagePreviewArea.classList.remove('hidden');
         thumbs.forEach((url, idx) => {
-          const wrap = document.createElement("div");
-          wrap.className = "relative";
-          wrap.innerHTML = `
-            <img src="${url}" class="object-cover w-full h-20 rounded-md shadow-md"/>
-            <button
-              type="button"
-              class="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white text-black border border-black flex items-center justify-center text-xs">
-              ✕
-            </button>`;
-          wrap.querySelector("button").onclick = () => {
+          const wrapper = document.createElement('div');
+          wrapper.className = 'relative';
+          const img = document.createElement('img');
+          img.src = url;
+          img.className = 'object-cover w-full h-20 rounded-md shadow-md';
+          wrapper.appendChild(img);
+
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.innerHTML = '<i class="fas fa-times"></i>';
+          btn.className =
+            'absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white text-black border border-black flex items-center justify-center';
+          btn.addEventListener('click', () => {
             thumbs.splice(idx, 1);
             uploadedFiles.splice(idx, 1);
-            localStorage.setItem("print3Images", JSON.stringify(thumbs));
+            localStorage.setItem('print3Images', JSON.stringify(thumbs));
             renderThumbnails(thumbs);
-          };
-          refs.imagePreviewArea.appendChild(wrap);
+          });
+          wrapper.appendChild(btn);
+
+          refs.imagePreviewArea.appendChild(wrapper);
         });
       }
 
-      refs.uploadInput.addEventListener("change", async (e) => {
+      refs.uploadInput.addEventListener('change', async (e) => {
         const files = Array.from(e.target.files);
         if (!files.length) return;
         uploadedFiles = files;
@@ -305,14 +298,14 @@
                   img.onload = () => {
                     const maxDim = 200;
                     let [w, h] = [img.width, img.height];
-                    const r = Math.min(maxDim / w, maxDim / h, 1);
-                    w *= r;
-                    h *= r;
-                    const c = document.createElement("canvas");
-                    c.width = w;
-                    c.height = h;
-                    c.getContext("2d").drawImage(img, 0, 0, w, h);
-                    resolve(c.toDataURL("image/png", 0.7));
+                    const ratio = Math.min(maxDim / w, maxDim / h, 1);
+                    w *= ratio;
+                    h *= ratio;
+                    const canvas = document.createElement('canvas');
+                    canvas.width = w;
+                    canvas.height = h;
+                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                    resolve(canvas.toDataURL('image/png', 0.7));
                   };
                   img.src = reader.result;
                 };
@@ -321,19 +314,19 @@
           )
         );
 
-        localStorage.setItem("print3Images", JSON.stringify(thumbURLs));
+        localStorage.setItem('print3Images', JSON.stringify(thumbURLs));
         renderThumbnails(thumbURLs);
       });
 
-      /* fetch GLB */
+      /* ---------- fetch GLB (or fallback) ---------- */
       async function fetchGlb(prompt, files) {
         try {
           const fd = new FormData();
-          if (prompt) fd.append("prompt", prompt);
-          files.forEach((f) => fd.append("images", f));
+          if (prompt) fd.append('prompt', prompt);
+          files.forEach((f) => fd.append('images', f));
           const res = await fetch(`${API_BASE}/generate`, {
-            method: "POST",
-            body: fd,
+            method: 'POST',
+            body: fd
           });
           if (!res.ok) throw new Error(`API ${res.status}`);
           return (await res.json()).glb_url;
@@ -342,57 +335,49 @@
         }
       }
 
-      /* submit (arrow or Enter) */
-      async function handleSubmit() {
+      /* ---------- main submit ---------- */
+      refs.submitBtn.addEventListener('click', async () => {
         const prompt = refs.promptInput.value.trim();
         if (!prompt && uploadedFiles.length === 0) return;
-        refs.checkoutBtn.classList.add("hidden");
-        refs.submitIcon.classList.replace("fa-arrow-up", "fa-stop");
+
+        refs.checkoutBtn.classList.add('hidden');
+        refs.submitIcon.classList.replace('fa-arrow-up', 'fa-stop');
         showLoader();
 
-        localStorage.setItem("print3Prompt", prompt);
-        localStorage.setItem("hasGenerated", "true");
+        localStorage.setItem('print3Prompt', prompt);
+        localStorage.setItem('hasGenerated', 'true');
 
         const glbUrl = await fetchGlb(prompt, uploadedFiles);
-        localStorage.setItem("print3Model", glbUrl);
+        localStorage.setItem('print3Model', glbUrl);
 
         refs.viewer.src = glbUrl;
         await refs.viewer.updateComplete;
         showModel();
+        hideDemoNote();
 
-        /* hide demo bubble permanently */
-        refs.demoInfo.style.display = "none";
-        document.documentElement.classList.add("generated");
-
-        refs.checkoutBtn.classList.remove("hidden");
-        refs.submitIcon.classList.replace("fa-stop", "fa-arrow-up");
-      }
-
-      refs.submitBtn.addEventListener("click", handleSubmit);
-      refs.promptInput.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" && !e.shiftKey) {
-          e.preventDefault();
-          handleSubmit();
-        }
+        refs.checkoutBtn.classList.remove('hidden');
+        refs.submitIcon.classList.replace('fa-stop', 'fa-arrow-up');
       });
 
-      /* restore session */
-      window.addEventListener("DOMContentLoaded", () => {
-        const prompt = localStorage.getItem("print3Prompt");
-        const modelUrl = localStorage.getItem("print3Model");
-        const thumbs = JSON.parse(localStorage.getItem("print3Images") || "[]");
+      /* ---------- restore state on refresh ---------- */
+      window.addEventListener('DOMContentLoaded', () => {
+        const prompt = localStorage.getItem('print3Prompt');
+        const modelUrl = localStorage.getItem('print3Model');
+        const didGen = localStorage.getItem('hasGenerated') === 'true';
+        const thumbs = JSON.parse(localStorage.getItem('print3Images') || '[]');
 
         if (prompt) {
           refs.promptInput.value = prompt;
-          refs.promptInput.dispatchEvent(new Event("input"));
+          refs.promptInput.dispatchEvent(new Event('input'));
         }
         if (thumbs.length) renderThumbnails(thumbs);
 
-        if (modelUrl && document.documentElement.classList.contains("generated")) {
+        if (didGen && modelUrl) {
           hideAll();
           refs.viewer.src = modelUrl;
-          refs.viewer.style.display = "block";
-          refs.checkoutBtn.classList.remove("hidden");
+          refs.viewer.style.display = 'block';
+          refs.checkoutBtn.classList.remove('hidden');
+          hideDemoNote(); // ensure no flash
         }
       });
     </script>
