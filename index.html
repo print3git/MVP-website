@@ -27,6 +27,7 @@
     ></script>
 
     <script>
+      /* hide bubble if a model was already generated or user dismissed it */
       if (
         localStorage.getItem("hasGenerated") === "true" ||
         localStorage.getItem("demoDismissed") === "true"
@@ -122,18 +123,18 @@
                  bg-[#363639] border border-white/15 rounded-3xl shadow-md
                  pointer-events-auto z-10"
         >
-          <!-- close button (slightly smaller & tucked in) -->
+          <!-- close button – original overlap & 1.75× size -->
           <button
             id="demo-note-close"
             type="button"
-            class="absolute top-1 right-1
-                   w-7 h-7 rounded-full bg-white text-black border border-black
-                   flex items-center justify-center text-lg font-bold"
+            class="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2
+                   w-12 h-12 rounded-full bg-white text-black border border-black
+                   flex items-center justify-center text-2xl font-bold"
           >
             ×
           </button>
 
-          Rotate this model while we **design your print** in
+          Rotate this model while we design your print in
           <span class="text-[#5EC2C5]">~30&nbsp;seconds</span>
         </div>
 
@@ -261,7 +262,8 @@
         el.style.height = "auto";
         const lh = parseFloat(getComputedStyle(el).lineHeight);
         el.style.height = Math.min(el.scrollHeight, lh * 9) + "px";
-        el.style.overflowY = el.scrollHeight > lh * 9 ? "auto" : "hidden";
+        el.style.overflowY =
+          el.scrollHeight > lh * 9 ? "auto" : "hidden";
       });
 
       refs.promptInput.addEventListener("keydown", (e) => {
@@ -283,7 +285,8 @@
           wrap.className = "relative";
           const img = document.createElement("img");
           img.src = url;
-          img.className = "object-cover w-full h-20 rounded-md shadow-md";
+          img.className =
+            "object-cover w-full h-20 rounded-md shadow-md";
           wrap.appendChild(img);
 
           const btn = document.createElement("button");
@@ -379,7 +382,9 @@
         const prompt = localStorage.getItem("print3Prompt");
         const model = localStorage.getItem("print3Model");
         const has = localStorage.getItem("hasGenerated") === "true";
-        const thumbs = JSON.parse(localStorage.getItem("print3Images") || "[]");
+        const thumbs = JSON.parse(
+          localStorage.getItem("print3Images") || "[]"
+        );
         if (prompt) {
           refs.promptInput.value = prompt;
           refs.promptInput.dispatchEvent(new Event("input"));
