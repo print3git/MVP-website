@@ -1,1 +1,0 @@
-fastapi\nuvicorn\nboto3\npython-multipart\npillow
