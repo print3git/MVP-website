@@ -60,6 +60,20 @@
         >
           <i class="fab fa-reddit-alien"></i>
         </button>
+        <button
+          class="w-9 h-9 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
+          onclick="shareOn('tiktok')"
+          aria-label="Share on TikTok"
+        >
+          <i class="fab fa-tiktok"></i>
+        </button>
+        <button
+          class="w-9 h-9 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
+          onclick="shareOn('instagram')"
+          aria-label="Share on Instagram"
+        >
+          <i class="fab fa-instagram"></i>
+        </button>
       </div>
     </header>
 
@@ -214,6 +228,12 @@
             break;
           case 'linkedin':
             shareUrl = `https://www.linkedin.com/shareArticle?url=${url}&title=${text}`;
+            break;
+          case 'tiktok':
+            shareUrl = `https://www.tiktok.com/upload?url=${url}`;
+            break;
+          case 'instagram':
+            shareUrl = `https://www.instagram.com/?url=${url}`;
             break;
         }
         window.open(shareUrl, '_blank', 'noopener');
