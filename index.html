@@ -90,12 +90,37 @@
           <p>delivered already</p>
         </div>
       </div>
-      <a
-        href="CommunityCreations.html"
-        class="bg-[#2A2A2E] border border-white/10 rounded-3xl px-4 py-2 text-sm hover:bg-[#3A3A3E] transition-shape"
-      >
-        Community
-      </a>
+      <div class="flex items-center space-x-4">
+        <a
+          href="CommunityCreations.html"
+          class="bg-[#2A2A2E] border border-white/10 rounded-3xl px-4 py-2 text-sm hover:bg-[#3A3A3E] transition-shape"
+        >
+          Community
+        </a>
+        <div class="flex space-x-2">
+          <button
+            class="w-9 h-9 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
+            onclick="shareOn('twitter')"
+            aria-label="Share on Twitter"
+          >
+            <i class="fab fa-twitter"></i>
+          </button>
+          <button
+            class="w-9 h-9 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
+            onclick="shareOn('facebook')"
+            aria-label="Share on Facebook"
+          >
+            <i class="fab fa-facebook-f"></i>
+          </button>
+          <button
+            class="w-9 h-9 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
+            onclick="shareOn('reddit')"
+            aria-label="Share on Reddit"
+          >
+            <i class="fab fa-reddit-alien"></i>
+          </button>
+        </div>
+      </div>
     </header>
 
     <main
@@ -239,6 +264,27 @@
       };
 
       let uploadedFiles = [];
+
+      const shareOn = (network) => {
+        const url = encodeURIComponent(window.location.href);
+        const text = encodeURIComponent('Check out print2!');
+        let shareUrl = '';
+        switch (network) {
+          case 'facebook':
+            shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+            break;
+          case 'twitter':
+            shareUrl = `https://twitter.com/intent/tweet?url=${url}&text=${text}`;
+            break;
+          case 'reddit':
+            shareUrl = `https://www.reddit.com/submit?url=${url}&title=${text}`;
+            break;
+          case 'linkedin':
+            shareUrl = `https://www.linkedin.com/shareArticle?url=${url}&title=${text}`;
+            break;
+        }
+        window.open(shareUrl, '_blank', 'noopener');
+      };
 
       const hideAll = () => {
         refs.previewImg.style.display = "none";
