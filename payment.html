@@ -3,143 +3,117 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Checkout - print2</title>
+    <title>Checkout – print3</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+
     <!-- Stripe.js -->
     <script src="https://js.stripe.com/v3/"></script>
+
     <!-- Font Awesome -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-      integrity="sha512-yHnDJ6m0dPT9I9v7eI5wrHDpZgrq2XKn+NhbN+9vDpeK8JhCw7+9bOK9P0wzj2XCHw5IRJ6A7OyBSbFZ+GaY3Q=="
-      crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
-    <!-- model-viewer -->
-    <script
-      type="module"
-      src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"
-    ></script>
+
+    <!-- <model-viewer> -->
+    <script type="module"
+            src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js"></script>
+    <script nomodule
+            src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer-legacy.js"></script>
   </head>
 
   <body class="bg-[#1A1A1D] text-white font-sans min-h-screen flex flex-col">
-    <!-- Header -->
+    <!-- ─────────── Header -->
     <header class="px-6 py-4">
-      <a
-        href="index.html"
-        class="inline-flex items-center justify-center
-               bg-[#2A2A2E] border border-white/10
-               rounded-3xl px-5 py-2 text-lg font-medium
-               text-white hover:bg-[#3A3A3E] transition-shape"
-      >
-        <svg
-          class="w-4 h-4 mr-2 flex-shrink-0"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          viewBox="0 0 24 24"
-        >
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+      <a href="index.html"
+         class="inline-flex items-center justify-center bg-[#2A2A2E] border
+                border-white/10 rounded-3xl px-5 py-2 text-lg font-medium
+                hover:bg-[#3A3A3E] transition-shape">
+        <svg class="w-4 h-4 mr-2 flex-shrink-0" fill="none"
+             stroke="currentColor" stroke-width="2"
+             viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round"
+                d="M15 19l-7-7 7-7" />
         </svg>
         Back
       </a>
     </header>
 
-    <!-- Main Content -->
+    <!-- ─────────── Main -->
     <main class="flex-1 flex flex-col items-center justify-center px-4 space-y-8">
       <!-- Model Preview -->
-      <section
-        id="preview-wrapper"
-        class="relative w-full max-w-md h-80 bg-[#2A2A2E] border border-white/10 rounded-3xl overflow-hidden"
-      >
-        <img
-          id="preview-img"
-          src="https://placehold.co/600x400/2A2A2E/2A2A2E?text="
-          alt="Preview placeholder"
-          class="object-contain h-full w-full"
-        />
-        <model-viewer
-          id="viewer"
-          camera-controls
-          auto-rotate
-          style="display:none;width:100%;height:100%"
-        ></model-viewer>
-        <div
-          id="loader"
-          class="absolute inset-0 flex items-center justify-center bg-[#2A2A2E]/80"
-          style="display:none;"
-        >
-          <div
-            class="h-10 w-10 border-4 border-white border-t-transparent rounded-full animate-spin"
-          ></div>
+      <section id="preview-wrapper"
+               class="relative w-full max-w-md h-80 bg-[#2A2A2E] border
+                      border-white/10 rounded-3xl overflow-hidden">
+        <!-- viewer is always present -->
+        <model-viewer id="viewer"
+                      camera-controls
+                      auto-rotate
+                      loading="eager"  <!-- pre-fetch early -->
+                      style="width:100%;height:100%"></model-viewer>
+
+        <!-- loader overlay -->
+        <div id="loader"
+             class="absolute inset-0 flex items-center justify-center
+                    bg-[#2A2A2E]/80" hidden>
+          <div class="h-10 w-10 border-4 border-white
+                      border-t-transparent rounded-full animate-spin"></div>
         </div>
       </section>
 
       <!-- delivery notice -->
-      <p class="text-center text-sm">
-        <span class="text-gray-400 text-opacity-75">
-          Due to incredibly high demand, delivery may take 3+ weeks.<br />
-          Please allow for this. –
-        </span>
-        <span class="text-white">
-          The print2 team: Jia and Matthew
-        </span>
+      <p class="text-center text-sm text-gray-400/75">
+        Due to incredibly high demand, delivery may take 3+ weeks.<br>
+        Please allow for this. –
+        <span class="text-white">The print3 team: Jia and Matthew</span>
       </p>
 
-      <p class="text-center text-sm">
-        <span class="text-gray-400 text-opacity-75">
-          ✅︎ If you don’t love it, we’ll refund you – no questions asked:<br />
-          
-        </span>
-        <span class="text-white">
-          enquiries@domain.com
-        </span>
+      <p class="text-center text-sm text-gray-400/75">
+        ✅︎ If you don’t love it, we’ll refund you – no questions asked:<br>
+        <span class="text-white">enquiries@domain.com</span>
       </p>
-      
+
       <!-- Checkout Form -->
-      <div
-        class="w-full max-w-md bg-[#2A2A2E]
-               border border-white/10
-               rounded-3xl
-               p-6"
-      >
+      <div class="w-full max-w-md bg-[#2A2A2E] border border-white/10
+                  rounded-3xl p-6">
         <h2 class="text-2xl font-semibold mb-4 text-center">Checkout</h2>
 
-        <div id="payment-element" class="mb-6">
-          <p class="text-center text-gray-400">[Stripe payment form will go here]</p>
+        <div id="payment-element" class="mb-6 text-center text-gray-400">
+          [Stripe payment form will go here]
         </div>
 
-        <button
-          id="submit-payment"
-          class="w-full bg-[#30D5C8] text-[#1A1A1D] py-3 rounded-xl font-semibold hover:bg-[#28b7a8] transition"
-        >
+        <button id="submit-payment"
+                class="w-full bg-[#30D5C8] text-[#1A1A1D] py-3 rounded-xl
+                       font-semibold hover:bg-[#28b7a8] transition">
           Pay Now
         </button>
       </div>
     </main>
 
-    <!-- Initialization Script -->
+    <!-- ─────────── Init -->
     <script>
       const FALLBACK_GLB =
-        "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
+        'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
 
       document.addEventListener('DOMContentLoaded', () => {
-        const previewImg = document.getElementById('preview-img');
         const loader = document.getElementById('loader');
         const viewer = document.getElementById('viewer');
 
-        const storedUrl = localStorage.getItem('print2Model');
+        // Same key the new homepage sets
+        const storedUrl = localStorage.getItem('print3Model') || FALLBACK_GLB;
 
-        previewImg.style.display = 'none';
-        loader.style.display = 'none';
+        viewer.src = storedUrl;
+        viewer.addEventListener('load', () => loader.hidden = true);
 
-        viewer.style.display = 'block';
-        viewer.setAttribute('src', storedUrl || FALLBACK_GLB);
+        // show spinner until the model is ready
+        loader.hidden = false;
       });
 
-      document.getElementById('submit-payment').addEventListener('click', () => {
+      document.getElementById('submit-payment')
+              .addEventListener('click', () => {
         alert('Payment flow to be implemented');
       });
     </script>
