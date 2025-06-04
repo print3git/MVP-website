@@ -11,6 +11,7 @@ const db = require("../db");
 
 jest.mock("axios");
 const axios = require("axios");
+const jwt = require("jsonwebtoken");
 
 jest.mock("stripe");
 const Stripe = require("stripe");
@@ -151,4 +152,29 @@ test("POST /api/generate accepts image upload", async () => {
     c[0].includes("INSERT INTO jobs"),
   );
   expect(insertCall[1][2]).toEqual(expect.any(String));
+});
+
+test("POST /api/community submits model", async () => {
+  db.query.mockResolvedValueOnce({});
+  const token = jwt.sign({ id: "u1" }, "secret");
+  const res = await request(app)
+    .post("/api/community")
+    .set("authorization", `Bearer ${token}`)
+    .send({ jobId: "j1" });
+  expect(res.status).toBe(201);
+});
+
+test("GET /api/community/recent returns creations", async () => {
+  db.query.mockResolvedValueOnce({ rows: [] });
+  const res = await request(app).get("/api/community/recent");
+  expect(res.status).toBe(200);
+});
+
+test("Admin create competition", async () => {
+  db.query.mockResolvedValueOnce({ rows: [{}] });
+  const res = await request(app)
+    .post("/api/admin/competitions")
+    .set("x-admin-token", "admin")
+    .send({ name: "Test", start_date: "2025-01-01", end_date: "2025-01-31" });
+  expect(res.status).toBe(200);
 });
