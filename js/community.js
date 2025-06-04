@@ -1,3 +1,7 @@
+import { shareOn } from './share.js';
+
+window.shareOn = shareOn;
+
 const API_BASE = '/api/community';
 const popularGrid = document.getElementById('popular-grid');
 const recentGrid = document.getElementById('recent-grid');
