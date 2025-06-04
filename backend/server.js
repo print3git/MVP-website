@@ -137,6 +137,22 @@ app.post('/api/create-order', async (req, res) => {
 });
 
 /**
+ * GET /api/community
+ * List models shared with the community
+ */
+app.get('/api/community', async (req, res) => {
+  try {
+    const { rows } = await db.query(
+      "SELECT job_id, model_url FROM jobs WHERE status='complete' AND model_url IS NOT NULL ORDER BY created_at DESC LIMIT 20"
+    );
+    res.json({ models: rows });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch community models' });
+  }
+});
+
+/**
  * POST /api/webhook/stripe
  * Handle Stripe payment confirmation
  */

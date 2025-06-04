@@ -25,6 +25,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Community Creations</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google <model-viewer> -->
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js"></script>
+    <script nomodule src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer-legacy.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
   </head>
   <body class="bg-[#1A1A1D] text-white font-sans flex flex-col min-h-screen">
@@ -65,31 +68,21 @@
       <!-- Popular Creations -->
       <section class="mb-12">
         <h2 class="text-xl font-semibold mb-4">Popular Now</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          <!-- Placeholder cards -->
-          <div class="h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape"></div>
-          <div class="h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape"></div>
-          <div class="h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape"></div>
-          <div class="h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape"></div>
-          <div class="h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape"></div>
-          <div class="h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape"></div>
-        </div>
+        <div id="popular-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
       </section>
 
       <!-- Recent Creations -->
       <section>
         <h2 class="text-xl font-semibold mb-4">Recent</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          <!-- Placeholder cards -->
-          <div class="h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape"></div>
-          <div class="h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape"></div>
-          <div class="h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape"></div>
-          <div class="h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape"></div>
-          <div class="h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape"></div>
-          <div class="h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape"></div>
-        </div>
+        <div id="recent-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
       </section>
     </main>
+    <div id="model-modal" class="hidden fixed inset-0 bg-black/80 items-center justify-center z-50">
+      <div class="relative w-11/12 max-w-xl bg-[#2A2A2E] rounded-xl p-4">
+        <button id="modal-close" class="absolute top-2 right-2 text-white text-2xl">&times;</button>
+        <model-viewer id="modal-viewer" camera-controls style="width:100%;height:300px"></model-viewer>
+      </div>
+    </div>
     <script>
       function shareOn(network) {
         const url = encodeURIComponent(window.location.href);
@@ -111,6 +104,49 @@
         }
         window.open(shareUrl, '_blank', 'noopener');
       }
+
+      const API_BASE = '/api';
+      function createCard(url) {
+        const div = document.createElement('div');
+        div.className = 'h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape flex items-center justify-center cursor-pointer';
+        div.addEventListener('click', () => openModal(url));
+        const mv = document.createElement('model-viewer');
+        mv.src = url;
+        mv.style.width = '100%';
+        mv.style.height = '100%';
+        div.appendChild(mv);
+        return div;
+      }
+
+      function openModal(url) {
+        document.getElementById('modal-viewer').src = url;
+        document.getElementById('model-modal').classList.remove('hidden');
+      }
+
+      function closeModal() {
+        document.getElementById('model-modal').classList.add('hidden');
+      }
+
+      document.getElementById('modal-close').addEventListener('click', closeModal);
+
+      async function loadCommunity() {
+        try {
+          const res = await fetch(`${API_BASE}/community`);
+          if (!res.ok) return;
+          const data = await res.json();
+          const models = data.models || [];
+          const popularGrid = document.getElementById('popular-grid');
+          const recentGrid = document.getElementById('recent-grid');
+          popularGrid.innerHTML = '';
+          recentGrid.innerHTML = '';
+          models.slice(0, 6).forEach(m => popularGrid.appendChild(createCard(m.model_url)));
+          models.slice(-6).reverse().forEach(m => recentGrid.appendChild(createCard(m.model_url)));
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
+      window.addEventListener('DOMContentLoaded', loadCommunity);
     </script>
   </body>
 </html>

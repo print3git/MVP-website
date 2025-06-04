@@ -112,3 +112,10 @@ test('POST /api/generate accepts image upload', async () => {
   );
   expect(insertCall[1][2]).toEqual(expect.any(String));
 });
+
+test('GET /api/community returns models', async () => {
+  db.query.mockResolvedValueOnce({ rows: [{ job_id: '1', model_url: 'url1' }] });
+  const res = await request(app).get('/api/community');
+  expect(res.status).toBe(200);
+  expect(res.body.models).toHaveLength(1);
+});
