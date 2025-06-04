@@ -100,3 +100,25 @@ Detailed tasks from the high-level project plan:
 22. Send an email to the winning user with instructions to claim their free print.
 23. Display past competitions and winners on a dedicated page.
 24. Add competition rules to the documentation.
+## UX Improvements for a frictionless "prompt → model → buy"
+- Guide the user with a step-by-step wizard from entering a prompt through to checkout.
+- Provide pre-made example prompts and images to help new visitors start quickly.
+- Add drag-and-drop image uploads with inline cropping and resizing.
+- Show a real-time progress bar while the model is being generated.
+- Display clear inline error messages if generation fails or the prompt is invalid.
+- Keep the generated model and prompt in local storage so users can resume where they left off.
+- Integrate social login (Google, GitHub) and allow guest checkout without creating an account.
+- Automatically prefill shipping and payment details from the user's profile.
+- Offer a one-click "Buy Now" button directly on the model viewer page.
+- Let users edit the prompt or images without losing the current model.
+- Ensure all interactions work smoothly on mobile with responsive layouts.
+- Make keyboard navigation and screen reader labels first-class.
+- Provide a "reorder" button for past models so users can purchase again instantly.
+- Show estimated print cost and delivery time before checkout.
+- Let users share a generated model to the community or social media with one click.
+- Provide tooltips or a short tutorial overlay explaining each step.
+- Add a progress indicator at the top summarizing "Prompt → Model → Buy."
+- Optimize API requests to reduce loading time on slow networks.
+- Save user preferences such as units or color scheme.
+- Provide instant confirmation with next steps after the payment completes.
+- Link directly from the success page to the user's profile or order history.
