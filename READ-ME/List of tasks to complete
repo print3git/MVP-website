@@ -1,3 +1,26 @@
+## High-Level Tasks (from README.md)
+
+- Integrate Hunyuan 2.5 as the model generator for text, image, and text+image prompts.
+- Configure the "recent" and "popular" pages on the Community Creations page.
+- Remove temporary OBJ files after conversion in the Hunyuan3D server.
+- Add Jest tests for error cases in the Hunyuan3D server.
+- Add pagination to the `/api/status` endpoint.
+- Replace the simple print queue with a real queue module.
+- Improve UI error handling and ensure accessibility with ARIA labels and contrast.
+- Fetch and display recent and popular creations with pagination or infinite scrolling.
+- Add filters by category or date and store submissions in a `community_creations` table.
+- Add GitHub Actions workflows to run `npm test` and Prettier checks.
+- Add unit tests for frontend scripts and mock the Hunyuan API for server error tests.
+- Move notes from `READ-ME/` to a `docs/` folder and include architecture diagrams.
+- Normalize file names, delete placeholders, review console logs, and check for unused dependencies.
+- Implement a profiles system with user accounts, likes, and competitions:
+  - Add a `users` table with registration and login endpoints.
+  - Add authentication middleware and sign-up/sign-in forms.
+  - Link generated models to the authenticated user.
+  - Provide APIs and profile pages to show a user's models and like counts.
+  - Allow liking/unliking models and use like counts to populate "popular now" lists.
+  - Add competitions tables and endpoints to submit and show leaderboards.
+
 Here are the remaining things to do before we pitch to investors:
 
 Note: the lightweight Hunyuan3D API server files have been moved from the
