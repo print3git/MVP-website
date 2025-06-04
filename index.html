@@ -385,6 +385,10 @@
       });
 
       window.addEventListener("DOMContentLoaded", () => {
+        // ensure astronaut placeholder is visible on first load
+        refs.viewer.src = FALLBACK_GLB;
+        refs.viewer.style.display = "block";
+
         const prompt = localStorage.getItem("print2Prompt");
         const model = localStorage.getItem("print2Model");
         const has = localStorage.getItem("hasGenerated") === "true";
