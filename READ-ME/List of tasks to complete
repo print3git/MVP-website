@@ -4,7 +4,7 @@ Note: the lightweight Hunyuan3D API server files have been moved from the
 `img/` directory to `backend/hunyuan_server/` so that `img/` only contains
 image assets.
 
-- Either by directly downloading Hunyuan3D 2.0, or by using an existing plugin for it, integrate this as
+- Either by directly downloading Hunyuan 2.5, or by using an existing plugin for it, integrate this as
 the model generator. Ensure it works for both text, images, and text+images prompts.
 - Create Stripe account, get API keys, integrate Stripe into frontend, configure the existing Stripe
 backend file
