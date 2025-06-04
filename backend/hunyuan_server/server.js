@@ -54,6 +54,7 @@ app.post("/generate", upload.single("image"), async (req, res) => {
     const glbName = `${uuidv4()}.glb`;
     const glbPath = path.join(modelsDir, glbName);
     await obj2gltf(objPath, { output: glbPath });
+    await fs.promises.unlink(objPath).catch(() => {});
 
     res.json({ glb_url: `/models/${glbName}` });
   } catch (err) {

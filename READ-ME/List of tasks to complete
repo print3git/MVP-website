@@ -8,32 +8,12 @@ image assets.
 the model generator. Ensure it works for both text, images, and text+images prompts.
 
 (optional for now, but certainly do these long-term)
-- Configure the 'recent' and 'popular' pages on the Community Creations page
 
 Detailed tasks from the high-level project plan:
 
-## 4. Hunyuan3D Server
-21. Remove temporary OBJ files after conversion.
-22. Add Jest tests for error cases.
-
-## 5. API Server
-29. Add pagination to `/api/status` in future.
-
-## 6. Print Queue
-32. Consider using a real queue module.
-
-## 7. Stripe Integration
-
-## 8. Front-End
-43. Improve UI error handling.
-44. Ensure accessibility with ARIA labels and contrast.
-
 ## 9. Community Creations Page
-45. Fetch and display recent creations.
-46. Fetch and display popular creations.
-47. Implement pagination or infinite scrolling.
+
 48. Add filters by category or date.
-49. Store community submissions in a `community_creations` table.
 
 ## 10. Testing & CI
 50. Add GitHub Actions workflow for `npm test`.

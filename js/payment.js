@@ -55,6 +55,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       const qty = parseInt(qtyInput.value) || 1;
       const discount = qty >= 3 && !optOut.checked ? 200 : 0;
       const url = await createCheckout(qty, discount);
+      if (!optOut.checked) {
+        fetch("/api/community", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ modelUrl: viewer.src }),
+        }).catch(() => {});
+      }
       stripe.redirectToCheckout({ sessionId: url.split("session_id=")[1] });
     });
 });

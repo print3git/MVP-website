@@ -1,23 +1,17 @@
-const queue = [];
-let isProcessing = false;
+const async = require('async');
+const queue = async.queue((jobId, cb) => {
+  setTimeout(() => {
+    console.log(`Finished printing job ${jobId}`);
+    cb();
+  }, 100);
+}, 1);
 
 function enqueuePrint(jobId) {
-  // In a real system, this would push to a message broker
-  if (jobId) {
-    queue.push(jobId);
-    processQueue();
-  }
+  if (jobId) queue.push(jobId);
 }
 
 function processQueue() {
-  if (isProcessing || queue.length === 0) return;
-  isProcessing = true;
-  const jobId = queue.shift();
-  setTimeout(() => {
-    console.log(`Finished printing job ${jobId}`);
-    isProcessing = false;
-    processQueue();
-  }, 100);
+  // async.queue processes tasks automatically
 }
 
 function _getQueue() {

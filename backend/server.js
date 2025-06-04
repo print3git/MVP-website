@@ -106,6 +106,28 @@ app.get("/api/status/:jobId", async (req, res) => {
   }
 });
 
+app.get("/api/status", async (req, res) => {
+  const limit = parseInt(req.query.limit) || 10;
+  const offset = parseInt(req.query.offset) || 0;
+  try {
+    const { rows } = await db.query(
+      "SELECT * FROM jobs ORDER BY created_at DESC LIMIT $1 OFFSET $2",
+      [limit, offset],
+    );
+    res.json(
+      rows.map((j) => ({
+        jobId: j.job_id,
+        status: j.status,
+        model_url: j.model_url,
+        error: j.error,
+      })),
+    );
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch jobs" });
+  }
+});
+
 /**
  * POST /api/create-order
  * Create a Stripe Checkout session
@@ -209,6 +231,41 @@ app.post(
     res.sendStatus(200);
   },
 );
+
+app.post("/api/community", async (req, res) => {
+  const { modelUrl, category } = req.body;
+  if (!modelUrl) return res.status(400).json({ error: "modelUrl required" });
+  try {
+    await db.query(
+      "INSERT INTO community_creations(model_url, category) VALUES($1,$2)",
+      [modelUrl, category || null],
+    );
+    res.sendStatus(201);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "failed to save" });
+  }
+});
+
+function listCreations(orderBy) {
+  return async (req, res) => {
+    const limit = parseInt(req.query.limit) || 12;
+    const offset = parseInt(req.query.offset) || 0;
+    try {
+      const { rows } = await db.query(
+        `SELECT id, model_url FROM community_creations ORDER BY ${orderBy} LIMIT $1 OFFSET $2`,
+        [limit, offset],
+      );
+      res.json(rows);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "failed" });
+    }
+  };
+}
+
+app.get("/api/community/recent", listCreations("created_at DESC"));
+app.get("/api/community/popular", listCreations("likes DESC"));
 
 // Start the server if this file is run directly
 if (require.main === module) {

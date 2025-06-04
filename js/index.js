@@ -146,7 +146,8 @@ async function fetchGlb(prompt, files) {
     const data = await r.json();
     lastJobId = data.jobId;
     return data.glb_url;
-  } catch {
+  } catch (err) {
+    alert("Failed to generate model, showing placeholder");
     return FALLBACK_GLB;
   }
 }
@@ -164,6 +165,12 @@ refs.submitBtn.addEventListener("click", async () => {
   const url = await fetchGlb(prompt, uploadedFiles);
   localStorage.setItem("print3Model", url);
   localStorage.setItem("print3JobId", lastJobId);
+
+  fetch("/api/community", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ modelUrl: url }),
+  }).catch(() => {});
 
   refs.viewer.src = url;
   await refs.viewer.updateComplete;
