@@ -6,6 +6,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const multer = require("multer");
 const path = require("path");
+const morgan = require("morgan");
 const { v4: uuidv4 } = require("uuid");
 const db = require("./db");
 const axios = require("axios");
@@ -13,9 +14,10 @@ const FormData = require("form-data");
 const fs = require("fs");
 const config = require("./config");
 const stripe = require("stripe")(config.stripeKey);
-const { enqueuePrint } = require("./queue/printQueue");
+const { enqueuePrint, processQueue } = require("./queue/printQueue");
 
 const app = express();
+app.use(morgan("dev"));
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "..")));
@@ -118,6 +120,7 @@ app.post("/api/create-order", async (req, res) => {
       return res.status(404).json({ error: "Job not found" });
     }
 
+    const total = (price || 0) * (qty || 1) - (discount || 0);
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       line_items: [
@@ -125,9 +128,9 @@ app.post("/api/create-order", async (req, res) => {
           price_data: {
             currency: "usd",
             product_data: { name: "3D Model" },
-            unit_amount: price || 0,
+            unit_amount: total,
           },
-          quantity: qty || 1,
+          quantity: 1,
         },
       ],
       success_url: `${req.headers.origin}/payment.html?session_id={CHECKOUT_SESSION_ID}`,
@@ -140,7 +143,7 @@ app.post("/api/create-order", async (req, res) => {
       [
         session.id,
         jobId,
-        price || 0,
+        total,
         "pending",
         shippingInfo || {},
         qty || 1,
@@ -197,6 +200,7 @@ app.post(
 
         if (jobId) {
           enqueuePrint(jobId);
+          processQueue();
         }
       } catch (err) {
         console.error(err);

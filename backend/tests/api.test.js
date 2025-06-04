@@ -31,7 +31,10 @@ const stripeMock = {
 };
 Stripe.mockImplementation(() => stripeMock);
 
-jest.mock("../queue/printQueue", () => ({ enqueuePrint: jest.fn() }));
+jest.mock("../queue/printQueue", () => ({
+  enqueuePrint: jest.fn(),
+  processQueue: jest.fn(),
+}));
 const { enqueuePrint } = require("../queue/printQueue");
 
 const request = require("supertest");
