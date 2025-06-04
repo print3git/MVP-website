@@ -13,8 +13,9 @@ This repository contains the early MVP code for print2's website and backend.
    - `DB_URL` – connection string for your PostgreSQL database.
    - `STRIPE_SECRET_KEY` – secret key from your Stripe dashboard.
    - `STRIPE_WEBHOOK_SECRET` – signing secret for Stripe webhooks.
-   - `HUNYUAN_API_KEY` – key for the Hunyuan3D API.
-   - Optional: `PORT` and `HUNYUAN_PORT` to override the default ports.
+  - `HUNYUAN_API_KEY` – key for the Hunyuan3D API.
+  - Optional: `PORT` and `HUNYUAN_PORT` to override the default ports.
+  - Optional: `HUNYUAN_BASE_URL` to point the API server at a remote Hunyuan service.
 
 2. Install dependencies for both servers:
 

@@ -11,13 +11,21 @@ const db = require('./db');
 const axios = require('axios');
 const FormData = require('form-data');
 const fs = require('fs');
+if (!process.env.STRIPE_SECRET_KEY || !process.env.STRIPE_WEBHOOK_SECRET || !process.env.DB_URL) {
+  console.error('Missing required environment variables');
+  process.exit(1);
+}
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { enqueuePrint } = require('./queue/printQueue');
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+app.use('/models', express.static(path.join(__dirname, '..', 'models')));
 const upload = multer({ dest: path.join(__dirname, '..', 'uploads') });
+
+const HUNYUAN_BASE_URL =
+  process.env.HUNYUAN_BASE_URL || 'http://localhost:4000';
 
 const PORT = process.env.PORT || 3000;
 const FALLBACK_GLB =
@@ -52,7 +60,7 @@ app.post('/api/generate', upload.array('images'), async (req, res) => {
     }
     let generatedUrl = FALLBACK_GLB;
     try {
-      const resp = await axios.post('http://localhost:4000/generate', form, {
+      const resp = await axios.post(`${HUNYUAN_BASE_URL}/generate`, form, {
         headers: form.getHeaders(),
       });
       generatedUrl = resp.data.glb_url;
@@ -101,6 +109,12 @@ app.get('/api/status/:jobId', async (req, res) => {
  */
 app.post('/api/create-order', async (req, res) => {
   const { jobId, price, shippingInfo } = req.body;
+  if (!jobId) {
+    return res.status(400).json({ error: 'jobId required' });
+  }
+  if (price !== undefined && (typeof price !== 'number' || price < 0)) {
+    return res.status(400).json({ error: 'price must be a positive number' });
+  }
   try {
     const job = await db.query('SELECT job_id FROM jobs WHERE job_id=$1', [jobId]);
     if (job.rows.length === 0) {

@@ -7,8 +7,22 @@ const fs = require('fs');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 
-const upload = multer({ dest: path.join(__dirname, 'uploads') });
+if (!process.env.HUNYUAN_API_KEY) {
+  console.error('HUNYUAN_API_KEY is required');
+  process.exit(1);
+}
+
+const uploadsDir = path.join(__dirname, 'uploads');
+fs.mkdirSync(uploadsDir, { recursive: true });
+const upload = multer({
+  dest: uploadsDir,
+  limits: { fileSize: 5 * 1024 * 1024 },
+});
 const app = express();
+
+const modelsDir = path.join(__dirname, '..', '..', 'models');
+fs.mkdirSync(modelsDir, { recursive: true });
+app.use('/models', express.static(modelsDir));
 
 /**
  * POST /generate
@@ -37,8 +51,6 @@ app.post('/generate', upload.single('image'), async (req, res) => {
     const objPath = path.join(tmpDir, `${uuidv4()}.obj`);
     fs.writeFileSync(objPath, objResp.data);
 
-    const modelsDir = path.join(__dirname, '..', 'models');
-    await fs.promises.mkdir(modelsDir, { recursive: true });
     const glbName = `${uuidv4()}.glb`;
     const glbPath = path.join(modelsDir, glbName);
     await obj2gltf(objPath, { output: glbPath });

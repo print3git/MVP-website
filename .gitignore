@@ -1,2 +1,7 @@
 .env
 node_modules/
+models/
+uploads/
+backend/hunyuan_server/uploads/
+*.log
+.DS_Store
