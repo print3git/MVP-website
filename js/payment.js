@@ -1,4 +1,7 @@
-const stripe = Stripe("pk_test_placeholder");
+// Initialize Stripe after the library loads to avoid breaking the rest of the
+// page if the network request for Stripe fails. This variable will be assigned
+// once the DOM content is ready.
+let stripe = null;
 const FALLBACK_GLB =
   "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
 
@@ -19,6 +22,11 @@ async function createCheckout(quantity, discount) {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
+  // Safely initialize Stripe once the DOM is ready. If the Stripe library
+  // failed to load, we fall back to plain redirects.
+  if (window.Stripe) {
+    stripe = window.Stripe("pk_test_placeholder");
+  }
   const loader = document.getElementById("loader");
   const viewer = document.getElementById("viewer");
   const qtyInput = document.getElementById("qty");
@@ -55,6 +63,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       const qty = parseInt(qtyInput.value) || 1;
       const discount = qty >= 3 && !optOut.checked ? 200 : 0;
       const url = await createCheckout(qty, discount);
-      stripe.redirectToCheckout({ sessionId: url.split("session_id=")[1] });
+      if (stripe) {
+        stripe.redirectToCheckout({ sessionId: url.split("session_id=")[1] });
+      } else {
+        // Fallback if Stripe failed to load: just navigate to the checkout URL
+        window.location.href = url;
+      }
     });
 });
