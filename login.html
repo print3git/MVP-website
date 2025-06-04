@@ -7,13 +7,17 @@
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body
-    class="bg-gray-900 text-white flex items-center justify-center h-screen"
+    class="bg-[#1A1A1D] text-white font-sans flex items-center justify-center min-h-screen"
   >
-    <form id="loginForm" class="space-y-4 bg-gray-800 p-6 rounded" aria-label="Login form">
+    <form
+      id="loginForm"
+      class="space-y-4 bg-[#2A2A2E] border border-white/10 p-6 rounded-3xl"
+      aria-label="Login form"
+    >
       <label class="block" for="li-name">Username</label>
       <input
         id="li-name"
-        class="w-full p-2 rounded text-black"
+        class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
         placeholder="Username"
         aria-label="Username"
       />
@@ -21,12 +25,17 @@
       <input
         id="li-pass"
         type="password"
-        class="w-full p-2 rounded text-black"
+        class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
         placeholder="Password"
         aria-label="Password"
       />
         <div id="error" class="text-red-400" aria-live="assertive"></div>
-        <button class="bg-blue-600 px-4 py-2 rounded" type="submit">Login</button>
+        <button
+          class="bg-[#30D5C8] text-[#1A1A1D] font-semibold px-4 py-2 rounded-xl hover:bg-[#28b7a8] transition"
+          type="submit"
+        >
+          Login
+        </button>
       </form>
     <script type="module" src="js/login.js"></script>
   </body>
