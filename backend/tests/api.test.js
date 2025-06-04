@@ -78,6 +78,30 @@ test("Stripe create-order flow", async () => {
   expect(res.body.checkoutUrl).toBe("https://stripe.test");
 });
 
+test("POST /api/register returns token", async () => {
+  db.query.mockResolvedValueOnce({ rows: [{ id: "u1", username: "alice" }] });
+  const res = await request(app)
+    .post("/api/register")
+    .send({ username: "alice", email: "a@a.com", password: "p" });
+  expect(res.status).toBe(200);
+  expect(res.body.token).toBeDefined();
+});
+
+const bcrypt = require("bcryptjs");
+
+test("POST /api/login returns token", async () => {
+  db.query.mockResolvedValueOnce({
+    rows: [
+      { id: "u1", username: "alice", password_hash: bcrypt.hashSync("p", 10) },
+    ],
+  });
+  const res = await request(app)
+    .post("/api/login")
+    .send({ username: "alice", password: "p" });
+  expect(res.status).toBe(200);
+  expect(res.body.token).toBeDefined();
+});
+
 test("Stripe webhook updates order and enqueues print", async () => {
   db.query.mockResolvedValueOnce({});
   const payload = JSON.stringify({});
