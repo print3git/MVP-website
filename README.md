@@ -37,3 +37,10 @@ This repository contains the early MVP code for print2's website and backend.
    cd hunyuan_server && npm start  # inside backend/hunyuan_server/
    ```
 
+
+## Contributing
+
+1. Install dependencies in both `backend/` and `backend/hunyuan_server/`.
+2. Run `npm test` inside each server folder before submitting changes.
+3. Format code with `npm run format`.
+4. Open a pull request describing your update.
