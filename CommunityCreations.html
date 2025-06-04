@@ -26,6 +26,9 @@
     <title>Community Creations</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <!-- Google <model-viewer> -->
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js"></script>
+    <script nomodule src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer-legacy.js"></script>
   </head>
   <body class="bg-[#1A1A1D] text-white font-sans flex flex-col min-h-screen">
     <!-- Header -->
@@ -66,13 +69,42 @@
       <section class="mb-12">
         <h2 class="text-xl font-semibold mb-4">Popular Now</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          <!-- Placeholder cards -->
-          <div class="h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape"></div>
-          <div class="h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape"></div>
-          <div class="h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape"></div>
-          <div class="h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape"></div>
-          <div class="h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape"></div>
-          <div class="h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape"></div>
+          <div
+            class="model-card h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape flex items-center justify-center cursor-pointer"
+            data-model="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
+          >
+            Astronaut
+          </div>
+          <div
+            class="model-card h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape flex items-center justify-center cursor-pointer"
+            data-model="https://modelviewer.dev/shared-assets/models/RobotExpressive.glb"
+          >
+            Expressive Robot
+          </div>
+          <div
+            class="model-card h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape flex items-center justify-center cursor-pointer"
+            data-model="https://modelviewer.dev/shared-assets/models/Horse.glb"
+          >
+            Horse
+          </div>
+          <div
+            class="model-card h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape flex items-center justify-center cursor-pointer"
+            data-model="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
+          >
+            Astronaut
+          </div>
+          <div
+            class="model-card h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape flex items-center justify-center cursor-pointer"
+            data-model="https://modelviewer.dev/shared-assets/models/RobotExpressive.glb"
+          >
+            Expressive Robot
+          </div>
+          <div
+            class="model-card h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape flex items-center justify-center cursor-pointer"
+            data-model="https://modelviewer.dev/shared-assets/models/Horse.glb"
+          >
+            Horse
+          </div>
         </div>
       </section>
 
@@ -80,16 +112,66 @@
       <section>
         <h2 class="text-xl font-semibold mb-4">Recent</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          <!-- Placeholder cards -->
-          <div class="h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape"></div>
-          <div class="h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape"></div>
-          <div class="h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape"></div>
-          <div class="h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape"></div>
-          <div class="h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape"></div>
-          <div class="h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape"></div>
+          <div
+            class="model-card h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape flex items-center justify-center cursor-pointer"
+            data-model="https://modelviewer.dev/shared-assets/models/Horse.glb"
+          >
+            Horse
+          </div>
+          <div
+            class="model-card h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape flex items-center justify-center cursor-pointer"
+            data-model="https://modelviewer.dev/shared-assets/models/RobotExpressive.glb"
+          >
+            Expressive Robot
+          </div>
+          <div
+            class="model-card h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape flex items-center justify-center cursor-pointer"
+            data-model="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
+          >
+            Astronaut
+          </div>
+          <div
+            class="model-card h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape flex items-center justify-center cursor-pointer"
+            data-model="https://modelviewer.dev/shared-assets/models/Horse.glb"
+          >
+            Horse
+          </div>
+          <div
+            class="model-card h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape flex items-center justify-center cursor-pointer"
+            data-model="https://modelviewer.dev/shared-assets/models/RobotExpressive.glb"
+          >
+            Expressive Robot
+          </div>
+          <div
+            class="model-card h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape flex items-center justify-center cursor-pointer"
+            data-model="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
+          >
+            Astronaut
+          </div>
         </div>
       </section>
     </main>
+
+    <div
+      id="model-modal"
+      class="fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50"
+    >
+      <div class="relative w-11/12 max-w-3xl">
+        <button
+          id="close-modal"
+          class="absolute -top-4 -right-4 w-9 h-9 rounded-full bg-white text-black flex items-center justify-center"
+        >
+          &times;
+        </button>
+        <model-viewer
+          src=""
+          alt="3D model preview"
+          camera-controls
+          autoplay
+          class="w-full h-96 bg-[#2A2A2E] rounded-xl"
+        ></model-viewer>
+      </div>
+    </div>
     <script>
       function shareOn(network) {
         const url = encodeURIComponent(window.location.href);
@@ -111,6 +193,30 @@
         }
         window.open(shareUrl, '_blank', 'noopener');
       }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const modal = document.getElementById('model-modal');
+        const viewer = modal.querySelector('model-viewer');
+        const closeBtn = document.getElementById('close-modal');
+
+        function close() {
+          modal.classList.add('hidden');
+          document.body.classList.remove('overflow-hidden');
+        }
+
+        document.querySelectorAll('.model-card').forEach((card) => {
+          card.addEventListener('click', () => {
+            viewer.src = card.dataset.model;
+            modal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+          });
+        });
+
+        closeBtn.addEventListener('click', close);
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') close();
+        });
+      });
     </script>
   </body>
 </html>
