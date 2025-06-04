@@ -91,3 +91,12 @@ Detailed tasks from the high-level project plan:
 14. Add a `competition_entries` table linking models to competitions.
 15. Expose APIs to submit models to competitions and fetch leaderboards.
 16. Show active competitions and leaderboards on the frontend.
+
+17. Add `prize_description` and `winner_model_id` columns to the `competitions` table.
+18. Build admin-only endpoints to create, update, and delete competitions.
+19. Create a competition submission form allowing a user to link an existing model to a competition.
+20. Ensure a model can only be submitted to one active competition at a time.
+21. Schedule a job to close competitions, select the entry with the most likes, and update `winner_model_id`.
+22. Send an email to the winning user with instructions to claim their free print.
+23. Display past competitions and winners on a dedicated page.
+24. Add competition rules to the documentation.
