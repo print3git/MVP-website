@@ -50,10 +50,16 @@ test('Stripe create-order flow', async () => {
 
 test('Stripe webhook updates order', async () => {
   db.query.mockResolvedValueOnce({});
-  const payload = JSON.stringify({});
+  const payload = Buffer.from(JSON.stringify({}));
   const res = await request(app)
     .post('/api/webhook/stripe')
     .set('stripe-signature', 'sig')
+    .set('Content-Type', 'application/json')
     .send(payload);
   expect(res.status).toBe(200);
+  expect(stripeMock.webhooks.constructEvent).toHaveBeenCalledWith(
+    expect.any(Buffer),
+    'sig',
+    process.env.STRIPE_WEBHOOK_SECRET
+  );
 });

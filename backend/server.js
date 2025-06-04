@@ -15,6 +15,37 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const app = express();
 app.use(cors());
+
+const stripeWebhookHandler = async (req, res) => {
+  const sig = req.headers['stripe-signature'];
+  let event;
+  try {
+    event = stripe.webhooks.constructEvent(
+      req.body,
+      sig,
+      process.env.STRIPE_WEBHOOK_SECRET
+    );
+  } catch (err) {
+    console.error(err);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  if (event.type === 'checkout.session.completed') {
+    const sessionId = event.data.object.id;
+    try {
+      await db.query('UPDATE orders SET status=$1 WHERE session_id=$2', ['paid', sessionId]);
+      // TODO: trigger your print-queue worker
+    } catch (err) {
+      console.error(err);
+    }
+  }
+  res.sendStatus(200);
+};
+
+app.post('/api/webhook/stripe',
+  express.raw({ type: 'application/json' }),
+  stripeWebhookHandler);
+
 app.use(bodyParser.json());
 const upload = multer({ dest: path.join(__dirname, '..', 'uploads') });
 
@@ -135,35 +166,6 @@ app.post('/api/create-order', async (req, res) => {
   }
 });
 
-/**
- * POST /api/webhook/stripe
- * Handle Stripe payment confirmation
- */
-app.post('/api/webhook/stripe', express.raw({ type: 'application/json' }), async (req, res) => {
-  const sig = req.headers['stripe-signature'];
-  let event;
-  try {
-    event = stripe.webhooks.constructEvent(
-      req.body,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET
-    );
-  } catch (err) {
-    console.error(err);
-    return res.status(400).send(`Webhook Error: ${err.message}`);
-  }
-
-  if (event.type === 'checkout.session.completed') {
-    const sessionId = event.data.object.id;
-    try {
-      await db.query('UPDATE orders SET status=$1 WHERE session_id=$2', ['paid', sessionId]);
-      // TODO: trigger your print-queue worker
-    } catch (err) {
-      console.error(err);
-    }
-  }
-  res.sendStatus(200);
-});
 
 // Start the server if this file is run directly
 if (require.main === module) {
