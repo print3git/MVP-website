@@ -4,14 +4,19 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const multer = require('multer');
+const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 // const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+const upload = multer({ dest: path.join(__dirname, '..', 'uploads') });
 
 const PORT = process.env.PORT || 3000;
+const FALLBACK_GLB =
+  'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
 
 // In-memory stores (swap out for a real database)
 const jobs   = {};
@@ -19,25 +24,19 @@ const orders = {};
 
 /**
  * POST /api/generate
- * Start a 3D generation job
+ * Accept a prompt and optional image uploads
  */
-app.post('/api/generate', (req, res) => {
-  const { prompt, imageB64 } = req.body;
-  if (!prompt && !imageB64) {
+app.post('/api/generate', upload.array('images'), (req, res) => {
+  const { prompt } = req.body;
+  const files = req.files || [];
+  if (!prompt && files.length === 0) {
     return res.status(400).json({ error: 'Prompt or image is required' });
   }
-  const jobId = uuidv4();
-  jobs[jobId] = {
-    jobId,
-    prompt: prompt || null,
-    imageRef: imageB64 || null,
-    status: 'pending',
-    createdAt: new Date()
-  };
-  // TODO: enqueue a worker to call Hunyuan3D, download + reupload .glb, then set:
-  // jobs[jobId].status = 'complete';
-  // jobs[jobId].modelUrl = 'https://your-bucket/.../jobId.glb';
-  res.json({ jobId, status: 'pending' });
+
+  // TODO: call 3D generation service using `prompt` and uploaded images
+  const generatedUrl = FALLBACK_GLB;
+
+  res.json({ glb_url: generatedUrl });
 });
 
 /**
