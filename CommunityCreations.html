@@ -237,6 +237,28 @@
           });
         });
 
+        // Replace placeholder images with snapshots of their GLB models
+        document.querySelectorAll('.model-card').forEach(async (card) => {
+          const img = card.querySelector('img');
+          if (!img) return;
+          const glbUrl = card.dataset.model;
+          const tempViewer = document.createElement('model-viewer');
+          tempViewer.src = glbUrl;
+          tempViewer.style.position = 'fixed';
+          tempViewer.style.left = '-10000px';
+          tempViewer.style.width = '300px';
+          tempViewer.style.height = '300px';
+          document.body.appendChild(tempViewer);
+          try {
+            await tempViewer.updateComplete;
+            img.src = await tempViewer.toDataURL('image/png');
+          } catch (err) {
+            console.error('Failed to capture snapshot', err);
+          } finally {
+            tempViewer.remove();
+          }
+        });
+
         closeBtn.addEventListener('click', close);
         document.addEventListener('keydown', (e) => {
           if (e.key === 'Escape') close();
