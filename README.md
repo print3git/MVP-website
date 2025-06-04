@@ -59,26 +59,8 @@ Then navigate to `http://localhost:8080/index.html` or
 We welcome pull requests! Please fork the repo and create a topic branch. Ensure `npm test` runs clean before submitting.
 For significant changes, please open an issue first to discuss what you would like to change. Be sure to follow the code style enforced by Prettier.
 
-## ToDoList
 
-- Integrate Hunyuan 2.5 as the model generator for text, image, and text+image prompts.
-- Configure the "recent" and "popular" pages on the Community Creations page.
-- Remove temporary OBJ files after conversion in the Hunyuan3D server.
-- Add Jest tests for error cases in the Hunyuan3D server.
-- Add pagination to the `/api/status` endpoint.
-- Replace the simple print queue with a real queue module.
-- Improve UI error handling and ensure accessibility with ARIA labels and contrast.
-- Fetch and display recent and popular creations with pagination or infinite scrolling.
-- Add filters by category or date and store submissions in a `community_creations` table.
-- Add GitHub Actions workflows to run `npm test` and Prettier checks.
-- Add unit tests for frontend scripts and mock the Hunyuan API for server error tests.
-- Move notes from `READ-ME/` to a `docs/` folder and include architecture diagrams.
-- Normalize file names, delete placeholders, review console logs, and check for unused dependencies.
-- Implement a profiles system with user accounts, likes, and competitions:
-  - Add a `users` table with registration and login endpoints.
-  - Add authentication middleware and sign-up/sign-in forms.
-  - Link generated models to the authenticated user.
-  - Provide APIs and profile pages to show a user's models and like counts.
-  - Allow liking/unliking models and use like counts to populate "popular now" lists.
-  - Add competitions tables and endpoints to submit and show leaderboards.
+## ToDo List
+
+All open tasks are tracked in [READ-ME/List of tasks to complete](READ-ME/List%20of%20tasks%20to%20complete).
 
