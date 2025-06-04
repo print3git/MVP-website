@@ -16,7 +16,6 @@ Note: the lightweight Hunyuan3D API server files were moved from `img/` to `back
 
 ## Community Creations
 
-- Configure the "recent" and "popular" pages.
 - Fetch and display recent creations.
 - Fetch and display popular creations.
 - Implement pagination or infinite scrolling.
