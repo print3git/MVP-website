@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
     <title>Checkout – print3</title>
 
     <!-- Tailwind CSS -->
@@ -11,7 +14,7 @@
     <!-- Stripe.js -->
     <script src="https://js.stripe.com/v3/"></script>
 
-    <!-- Font Awesome -->
+    <!-- Font Awesome (optional, used only for back-arrow icon) -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
@@ -19,75 +22,103 @@
     />
 
     <!-- <model-viewer> -->
-    <script type="module"
-            src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js"></script>
-    <script nomodule
-            src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer-legacy.js"></script>
+    <script
+      type="module"
+      src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js"
+    ></script>
+    <script
+      nomodule
+      src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer-legacy.js"
+    ></script>
   </head>
 
   <body class="bg-[#1A1A1D] text-white font-sans min-h-screen flex flex-col">
     <!-- ─────────── Header -->
     <header class="px-6 py-4">
-      <a href="index.html"
-         class="inline-flex items-center justify-center bg-[#2A2A2E] border
-                border-white/10 rounded-3xl px-5 py-2 text-lg font-medium
-                hover:bg-[#3A3A3E] transition-shape">
-        <svg class="w-4 h-4 mr-2 flex-shrink-0" fill="none"
-             stroke="currentColor" stroke-width="2"
-             viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round"
-                d="M15 19l-7-7 7-7" />
+      <a
+        href="index.html"
+        class="inline-flex items-center justify-center bg-[#2A2A2E] border
+               border-white/10 rounded-3xl px-5 py-2 text-lg font-medium
+               hover:bg-[#3A3A3E] transition-shape"
+      >
+        <svg
+          class="w-4 h-4 mr-2 flex-shrink-0"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M15 19l-7-7 7-7"
+          />
         </svg>
         Back
       </a>
     </header>
 
     <!-- ─────────── Main -->
-    <main class="flex-1 flex flex-col items-center justify-center px-4 space-y-8">
+    <main
+      class="flex-1 flex flex-col items-center justify-center px-4 space-y-8"
+    >
       <!-- Model Preview -->
-      <section id="preview-wrapper"
-               class="relative w-full max-w-md h-80 bg-[#2A2A2E] border
-                      border-white/10 rounded-3xl overflow-hidden">
+      <section
+        id="preview-wrapper"
+        class="relative w-full max-w-md h-80 bg-[#2A2A2E] border
+               border-white/10 rounded-3xl overflow-hidden"
+      >
         <!-- viewer is always present -->
-        <model-viewer id="viewer"
-                      camera-controls
-                      auto-rotate
-                      loading="eager"  <!-- pre-fetch early -->
-                      style="width:100%;height:100%"></model-viewer>
+        <model-viewer
+          id="viewer"
+          camera-controls
+          auto-rotate
+          loading="eager"
+          style="width: 100%; height: 100%"
+        ></model-viewer>
 
         <!-- loader overlay -->
-        <div id="loader"
-             class="absolute inset-0 flex items-center justify-center
-                    bg-[#2A2A2E]/80" hidden>
-          <div class="h-10 w-10 border-4 border-white
-                      border-t-transparent rounded-full animate-spin"></div>
+        <div
+          id="loader"
+          class="absolute inset-0 flex items-center justify-center
+                 bg-[#2A2A2E]/80"
+          hidden
+        >
+          <div
+            class="h-10 w-10 border-4 border-white border-t-transparent
+                   rounded-full animate-spin"
+          ></div>
         </div>
       </section>
 
       <!-- delivery notice -->
       <p class="text-center text-sm text-gray-400/75">
-        Due to incredibly high demand, delivery may take 3+ weeks.<br>
+        Due to incredibly high demand, delivery may take 3+ weeks.<br />
         Please allow for this. –
         <span class="text-white">The print3 team: Jia and Matthew</span>
       </p>
 
       <p class="text-center text-sm text-gray-400/75">
-        ✅︎ If you don’t love it, we’ll refund you – no questions asked:<br>
+        ✅︎ If you don’t love it, we’ll refund you – no questions asked:<br />
         <span class="text-white">enquiries@domain.com</span>
       </p>
 
       <!-- Checkout Form -->
-      <div class="w-full max-w-md bg-[#2A2A2E] border border-white/10
-                  rounded-3xl p-6">
+      <div
+        class="w-full max-w-md bg-[#2A2A2E] border border-white/10
+               rounded-3xl p-6"
+      >
         <h2 class="text-2xl font-semibold mb-4 text-center">Checkout</h2>
 
         <div id="payment-element" class="mb-6 text-center text-gray-400">
           [Stripe payment form will go here]
         </div>
 
-        <button id="submit-payment"
-                class="w-full bg-[#30D5C8] text-[#1A1A1D] py-3 rounded-xl
-                       font-semibold hover:bg-[#28b7a8] transition">
+        <button
+          id="submit-payment"
+          class="w-full bg-[#30D5C8] text-[#1A1A1D] py-3 rounded-xl
+                 font-semibold hover:bg-[#28b7a8] transition"
+        >
           Pay Now
         </button>
       </div>
@@ -102,20 +133,29 @@
         const loader = document.getElementById('loader');
         const viewer = document.getElementById('viewer');
 
-        // Same key the new homepage sets
-        const storedUrl = localStorage.getItem('print3Model') || FALLBACK_GLB;
+        // Hide loader when model is actually visible.
+        const hideLoader = () => (loader.hidden = true);
 
-        viewer.src = storedUrl;
-        viewer.addEventListener('load', () => loader.hidden = true);
+        /* 1️⃣ attach listeners BEFORE setting src, to catch cached loads */
+        viewer.addEventListener('load', hideLoader);
+        // in some cases 'load' fires but model isn't rendered yet; this helps
+        viewer.addEventListener('model-visibility', hideLoader);
 
-        // show spinner until the model is ready
+        /* 2️⃣ show spinner immediately */
         loader.hidden = false;
+
+        /* 3️⃣ choose the model URL */
+        viewer.src =
+          localStorage.getItem('print3Model') || // new key
+          localStorage.getItem('print2Model') || // legacy key
+          FALLBACK_GLB;
       });
 
-      document.getElementById('submit-payment')
-              .addEventListener('click', () => {
-        alert('Payment flow to be implemented');
-      });
+      document
+        .getElementById('submit-payment')
+        .addEventListener('click', () => {
+          alert('Payment flow to be implemented');
+        });
     </script>
   </body>
 </html>
