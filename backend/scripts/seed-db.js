@@ -11,7 +11,7 @@ const { Client } = require("pg");
     await client.query(
       "INSERT INTO orders(session_id, job_id, price_cents, status, quantity) VALUES('seed', '00000000-0000-0000-0000-000000000000', 1000, 'paid', 1) ON CONFLICT DO NOTHING",
     );
-    console.log("Seed data inserted");
+    console.info("Seed data inserted");
   } finally {
     await client.end();
   }
