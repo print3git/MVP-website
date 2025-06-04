@@ -9,7 +9,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     />
-    <title>Print3 Assistant</title>
+    <title>print2 Assistant</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -84,7 +84,7 @@
   <body class="bg-[#1A1A1D] text-white font-sans flex flex-col">
     <header class="flex items-center justify-between py-4 px-6">
       <div class="flex flex-col items-start">
-        <img src="img/textlogo.png" alt="Print3" class="h-10 w-auto" />
+        <img src="img/textlogo.png" alt="print2" class="h-10 w-auto" />
         <div class="mt-1 flex flex-col text-sm text-gray-400 opacity-75">
           <p>5400+ prints</p>
           <p>delivered already</p>
@@ -169,7 +169,7 @@
         <div class="flex flex-col items-center text-center">
           <img
             src="img/boxlogo.png"
-            alt="Print3 cube"
+            alt="print2 cube"
             class="w-32 h-auto mb-8"
           />
           <h1 class="text-3xl font-semibold mb-8">Make your world.</h1>
@@ -303,7 +303,7 @@
           btn.onclick = () => {
             arr.splice(i, 1);
             uploadedFiles.splice(i, 1);
-            localStorage.setItem("print3Images", JSON.stringify(arr));
+            localStorage.setItem("print2Images", JSON.stringify(arr));
             renderThumbnails(arr);
           };
           wrap.appendChild(btn);
@@ -342,7 +342,7 @@
           )
         );
 
-        localStorage.setItem("print3Images", JSON.stringify(thumbs));
+        localStorage.setItem("print2Images", JSON.stringify(thumbs));
         renderThumbnails(thumbs);
       });
 
@@ -369,11 +369,11 @@
         refs.submitIcon.classList.replace("fa-arrow-up", "fa-stop");
         showLoader();
 
-        localStorage.setItem("print3Prompt", prompt);
+        localStorage.setItem("print2Prompt", prompt);
         localStorage.setItem("hasGenerated", "true");
 
         const url = await fetchGlb(prompt, uploadedFiles);
-        localStorage.setItem("print3Model", url);
+        localStorage.setItem("print2Model", url);
 
         refs.viewer.src = url;
         await refs.viewer.updateComplete;
@@ -385,11 +385,11 @@
       });
 
       window.addEventListener("DOMContentLoaded", () => {
-        const prompt = localStorage.getItem("print3Prompt");
-        const model = localStorage.getItem("print3Model");
+        const prompt = localStorage.getItem("print2Prompt");
+        const model = localStorage.getItem("print2Model");
         const has = localStorage.getItem("hasGenerated") === "true";
         const thumbs = JSON.parse(
-          localStorage.getItem("print3Images") || "[]"
+          localStorage.getItem("print2Images") || "[]"
         );
         if (prompt) {
           refs.promptInput.value = prompt;
