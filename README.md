@@ -53,3 +53,22 @@ python -m http.server
 
 Then navigate to `http://localhost:8080/index.html` or
 `http://localhost:8080/payment.html`.
+
+## Profiles System Plan
+
+1. Add a `users` table storing id, username, email, password hash, and timestamps.
+2. Implement API endpoints for user registration and login with hashed passwords.
+3. Add session or token-based authentication middleware.
+4. Provide sign-up and sign-in forms on the frontend.
+5. Associate generated models with the authenticated user's id.
+6. Expose an API to list all models created by a user.
+7. Build a profile page showing a user's models and like counts.
+8. Allow viewing other users' profiles by id or username.
+9. Create a `likes` table linking `user_id` and `model_id`.
+10. Implement endpoints to like and unlike models.
+11. Display like counts in the community gallery and profiles.
+12. Use like counts to populate the "popular now" list.
+13. Create a `competitions` table with name and date fields.
+14. Add a `competition_entries` table linking models to competitions.
+15. Expose APIs to submit models to competitions and fetch leaderboards.
+16. Show active competitions and leaderboards on the frontend.
