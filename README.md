@@ -59,8 +59,6 @@ Then navigate to `http://localhost:8080/index.html` or
 We welcome pull requests! Please fork the repo and create a topic branch. Ensure `npm test` runs clean before submitting.
 For significant changes, please open an issue first to discuss what you would like to change. Be sure to follow the code style enforced by Prettier.
 
-
 ## ToDo List
 
-All open tasks are tracked in [READ-ME/List of tasks to complete](READ-ME/List%20of%20tasks%20to%20complete).
-
+All open tasks are tracked in [docs/List of tasks to complete](docs/List%20of%20tasks%20to%20complete).

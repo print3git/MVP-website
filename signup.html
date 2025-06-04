@@ -10,22 +10,28 @@
     class="bg-gray-900 text-white flex items-center justify-center h-screen"
   >
     <form id="signupForm" class="space-y-4 bg-gray-800 p-6 rounded">
+      <label class="block" for="su-name">Username</label>
       <input
         id="su-name"
         class="w-full p-2 rounded text-black"
         placeholder="Username"
+        aria-label="Username"
       />
+      <label class="block" for="su-email">Email</label>
       <input
         id="su-email"
         type="email"
         class="w-full p-2 rounded text-black"
         placeholder="Email"
+        aria-label="Email"
       />
+      <label class="block" for="su-pass">Password</label>
       <input
         id="su-pass"
         type="password"
         class="w-full p-2 rounded text-black"
         placeholder="Password"
+        aria-label="Password"
       />
       <button class="bg-blue-600 px-4 py-2 rounded" type="submit">
         Sign Up
