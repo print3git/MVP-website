@@ -282,7 +282,8 @@
 
       let uploadedFiles = [];
 
-      const shareOn = (network) => {
+      // Expose shareOn globally so header buttons can call it
+      window.shareOn = (network) => {
         const url = encodeURIComponent(window.location.href);
         const text = encodeURIComponent("Check out print3!");
         let shareUrl = "";
