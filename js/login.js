@@ -12,7 +12,7 @@ async function login(e) {
     localStorage.setItem("token", data.token);
     window.location.href = "profile.html";
   } else {
-    alert(data.error || "failed");
+    document.getElementById("error").textContent = data.error || "failed";
   }
 }
 

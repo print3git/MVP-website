@@ -68,7 +68,7 @@ const PORT = process.env.HUNYUAN_PORT || 4000;
 
 if (require.main === module) {
   app.listen(PORT, () => {
-    console.log(`Hunyuan3D server listening on http://localhost:${PORT}`);
+    console.info(`Hunyuan3D server listening on http://localhost:${PORT}`);
   });
 }
 

@@ -17,6 +17,7 @@ const fs = require("fs");
 const config = require("./config");
 const stripe = require("stripe")(config.stripeKey);
 const { enqueuePrint, processQueue } = require("./queue/printQueue");
+const ADMIN_TOKEN = process.env.ADMIN_TOKEN || "admin";
 
 const AUTH_SECRET = process.env.AUTH_SECRET || "secret";
 
@@ -260,6 +261,163 @@ app.post("/api/models/:id/like", authRequired, async (req, res) => {
   }
 });
 
+// Submit a generated model to the community gallery
+app.post("/api/community", authRequired, async (req, res) => {
+  const { jobId, title, category } = req.body;
+  if (!jobId) return res.status(400).json({ error: "jobId required" });
+  try {
+    await db.query(
+      "INSERT INTO community_creations(job_id, title, category) VALUES($1,$2,$3)",
+      [jobId, title || "", category || ""],
+    );
+    res.sendStatus(201);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to submit" });
+  }
+});
+
+function buildGalleryQuery(orderBy) {
+  return `SELECT c.id, c.title, c.category, j.model_url, COALESCE(l.count,0) as likes
+          FROM community_creations c
+          JOIN jobs j ON c.job_id=j.job_id
+          LEFT JOIN (SELECT model_id, COUNT(*) as count FROM likes GROUP BY model_id) l
+          ON j.job_id=l.model_id
+          WHERE ($3::text IS NULL OR c.category=$3)
+          ORDER BY ${orderBy} LIMIT $1 OFFSET $2`;
+}
+
+app.get("/api/community/recent", async (req, res) => {
+  const limit = parseInt(req.query.limit, 10) || 10;
+  const offset = parseInt(req.query.offset, 10) || 0;
+  const category = req.query.category || null;
+  try {
+    const { rows } = await db.query(buildGalleryQuery("c.created_at DESC"), [
+      limit,
+      offset,
+      category,
+    ]);
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch creations" });
+  }
+});
+
+app.get("/api/community/popular", async (req, res) => {
+  const limit = parseInt(req.query.limit, 10) || 10;
+  const offset = parseInt(req.query.offset, 10) || 0;
+  const category = req.query.category || null;
+  try {
+    const { rows } = await db.query(
+      buildGalleryQuery("likes DESC, c.created_at DESC"),
+      [limit, offset, category],
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch creations" });
+  }
+});
+
+app.get("/api/competitions/active", async (req, res) => {
+  try {
+    const { rows } = await db.query(
+      "SELECT * FROM competitions WHERE end_date >= CURRENT_DATE ORDER BY start_date",
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch competitions" });
+  }
+});
+
+app.get("/api/competitions/:id/entries", async (req, res) => {
+  try {
+    const { rows } = await db.query(
+      `SELECT e.model_id, COALESCE(l.count,0) as likes
+       FROM competition_entries e
+       LEFT JOIN (SELECT model_id, COUNT(*) as count FROM likes GROUP BY model_id) l
+       ON e.model_id=l.model_id
+       WHERE e.competition_id=$1
+       ORDER BY likes DESC`,
+      [req.params.id],
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch leaderboard" });
+  }
+});
+
+app.post("/api/competitions/:id/enter", authRequired, async (req, res) => {
+  const { modelId } = req.body;
+  try {
+    await db.query(
+      "INSERT INTO competition_entries(competition_id, model_id, user_id) VALUES($1,$2,$3) ON CONFLICT DO NOTHING",
+      [req.params.id, modelId, req.user.id],
+    );
+    res.sendStatus(201);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to submit entry" });
+  }
+});
+
+function adminCheck(req, res, next) {
+  if (req.headers["x-admin-token"] !== ADMIN_TOKEN) {
+    return res.status(401).json({ error: "Admin token required" });
+  }
+  next();
+}
+
+app.post("/api/admin/competitions", adminCheck, async (req, res) => {
+  const { name, start_date, end_date, prize_description } = req.body;
+  try {
+    const { rows } = await db.query(
+      `INSERT INTO competitions(name,start_date,end_date,prize_description)
+       VALUES($1,$2,$3,$4) RETURNING *`,
+      [name, start_date, end_date, prize_description],
+    );
+    res.json(rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to create competition" });
+  }
+});
+
+app.put("/api/admin/competitions/:id", adminCheck, async (req, res) => {
+  const { name, start_date, end_date, prize_description, winner_model_id } =
+    req.body;
+  try {
+    const { rows } = await db.query(
+      `UPDATE competitions SET name=$1, start_date=$2, end_date=$3, prize_description=$4, winner_model_id=$5, updated_at=NOW() WHERE id=$6 RETURNING *`,
+      [
+        name,
+        start_date,
+        end_date,
+        prize_description,
+        winner_model_id,
+        req.params.id,
+      ],
+    );
+    res.json(rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to update competition" });
+  }
+});
+
+app.delete("/api/admin/competitions/:id", adminCheck, async (req, res) => {
+  try {
+    await db.query("DELETE FROM competitions WHERE id=$1", [req.params.id]);
+    res.sendStatus(204);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to delete competition" });
+  }
+});
+
 /**
  * POST /api/create-order
  * Create a Stripe Checkout session
@@ -367,7 +525,7 @@ app.post(
 // Start the server if this file is run directly
 if (require.main === module) {
   app.listen(PORT, () => {
-    console.log(`API server listening on http://localhost:${PORT}`);
+    console.info(`API server listening on http://localhost:${PORT}`);
   });
 }
 
