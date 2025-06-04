@@ -1,31 +1,46 @@
 <!-- ============================
-        index.html  – "always‑visible astronaut" version
+        index.html (fixed)
 ============================ -->
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
     <title>print3 Assistant</title>
-    <meta name="description" content="Create custom 3D models with generative AI and order high-quality prints with print3." />
+    <meta
+      name="description"
+      content="Create custom 3D models with generative AI and order high‑quality prints with print3."
+    />
     <meta property="og:title" content="print3 – AI‑powered 3D printing" />
-    <meta property="og:description" content="Describe your idea or upload images and print3 turns them into 3D models you can print." />
+    <meta
+      property="og:description"
+      content="Describe your idea or upload images and print3 turns them into 3D models you can print."
+    />
     <meta property="og:image" content="img/boxlogo.png" />
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
 
-    <!-- Google <model-viewer> (module + fallback) -->
+    <!-- Google <model-viewer>  -->
+    <!--  Use a CDN versioned URL so the module is served with CORS headers and the browser can actually download it.  -->
     <script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js"></script>
     <script nomodule src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer-legacy.js"></script>
 
     <script>
       /* hide bubble if a model was already generated or user dismissed it */
-      if (localStorage.getItem("hasGenerated") === "true" || localStorage.getItem("demoDismissed") === "true") {
+      if (
+        localStorage.getItem("hasGenerated") === "true" ||
+        localStorage.getItem("demoDismissed") === "true"
+      ) {
         document.documentElement.classList.add("has-generated");
       }
     </script>
@@ -54,7 +69,13 @@
         content: "";
         position: absolute;
         inset: 0;
-        background: linear-gradient(120deg, transparent, rgba(255, 0, 255, 0.2), rgba(0, 255, 255, 0.2), transparent);
+        background: linear-gradient(
+          120deg,
+          transparent,
+          rgba(255, 0, 255, 0.2),
+          rgba(0, 255, 255, 0.2),
+          transparent
+        );
         transform: translateX(-100%);
         animation: shimmer 3s ease-in-out infinite;
       }
@@ -70,7 +91,6 @@
   </head>
 
   <body class="bg-[#1A1A1D] text-white font-sans flex flex-col">
-    <!-- ------------------------------------------------ HEADER -->
     <header class="flex items-center justify-between py-4 px-6">
       <div class="flex flex-col items-start">
         <img src="img/textlogo.png" alt="print3" class="h-10 w-auto" />
@@ -80,68 +100,172 @@
         </div>
       </div>
       <div class="flex items-center space-x-4">
-        <a href="CommunityCreations.html" class="bg-[#2A2A2E] border border-white/10 rounded-3xl px-4 py-2 text-sm hover:bg-[#3A3A3E] transition-shape">Community</a>
+        <a
+          href="CommunityCreations.html"
+          class="bg-[#2A2A2E] border border-white/10 rounded-3xl px-4 py-2 text-sm hover:bg-[#3A3A3E] transition-shape"
+        >
+          Community
+        </a>
         <div class="flex space-x-2">
-          <button class="w-9 h-9 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape" onclick="shareOn('twitter')" aria-label="Share on Twitter"><i class="fab fa-twitter"></i></button>
-          <button class="w-9 h-9 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape" onclick="shareOn('facebook')" aria-label="Share on Facebook"><i class="fab fa-facebook-f"></i></button>
-          <button class="w-9 h-9 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape" onclick="shareOn('reddit')" aria-label="Share on Reddit"><i class="fab fa-reddit-alien"></i></button>
+          <button
+            class="w-9 h-9 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
+            onclick="shareOn('twitter')"
+            aria-label="Share on Twitter"
+          >
+            <i class="fab fa-twitter"></i>
+          </button>
+          <button
+            class="w-9 h-9 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
+            onclick="shareOn('facebook')"
+            aria-label="Share on Facebook"
+          >
+            <i class="fab fa-facebook-f"></i>
+          </button>
+          <button
+            class="w-9 h-9 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
+            onclick="shareOn('reddit')"
+            aria-label="Share on Reddit"
+          >
+            <i class="fab fa-reddit-alien"></i>
+          </button>
         </div>
       </div>
     </header>
 
-    <!-- ------------------------------------------------ MAIN -->
-    <main class="flex-1 flex flex-col items-center justify-start gap-16 px-4 lg:px-16">
-      <!-- 3‑D preview area -->
-      <section id="preview-wrapper" class="relative w-full max-w-lg h-80 bg-[#2A2A2E] border border-white/10 rounded-3xl overflow-visible">
-        <!-- fallback img (kept hidden) -->
-        <img id="preview-img" src="https://placehold.co/600x400/2A2A2E/2A2A2E?text=" class="object-contain h-full w-full" hidden />
+    <main
+      class="flex-1 flex flex-col items-center justify-start gap-16 px-4 lg:px-16"
+    >
+      <!-- 3‑D preview ------------------------------------------------------ -->
+      <section
+        id="preview-wrapper"
+        class="relative w-full max-w-lg h-80 bg-[#2A2A2E] border border-white/10 rounded-3xl overflow-visible"
+      >
+        <!-- fallback still-image (hidden)  -->
+        <img
+          id="preview-img"
+          src="https://placehold.co/600x400/2A2A2E/2A2A2E?text="
+          class="object-contain h-full w-full"
+          style="display: none"
+        />
 
-        <!-- ALWAYS‑VISIBLE astronaut -->
-        <model-viewer id="viewer" src="https://modelviewer.dev/shared-assets/models/Astronaut.glb" alt="3D astronaut" camera-controls auto-rotate preload loading="eager" style="width: 100%; height: 100%"></model-viewer>
+        <!-- The astronaut now loads eagerly and is always visible  -->
+        <model-viewer
+          id="viewer"
+          src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
+          alt="3D astronaut"
+          camera-controls
+          auto-rotate
+          loading="eager"
+          style="width: 100%; height: 100%; display: block"
+        ></model-viewer>
 
         <!-- demo bubble -->
-        <div id="demo-note" class="absolute top-1/2 left-full -translate-x-1/2 -translate-y-1/2 w-56 p-4 text-sm leading-snug text-center text-white bg-[#363639] border border-white/15 rounded-3xl shadow-md pointer-events-auto z-10">
-          <button id="demo-note-close" type="button" class="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white text-black border border-black flex items-center justify-center text-2xl font-bold">×</button>
-          Rotate this model while we design your print in <span class="text-[#5EC2C5]">~30&nbsp;seconds</span>
+        <div
+          id="demo-note"
+          class="absolute top-1/2 left-full -translate-x-1/2 -translate-y-1/2
+                 w-56 p-4 text-sm leading-snug text-center text-white
+                 bg-[#363639] border border-white/15 rounded-3xl shadow-md
+                 pointer-events-auto z-10"
+        >
+          <!-- close button – original overlap & 1.75× size -->
+          <button
+            id="demo-note-close"
+            type="button"
+            class="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2
+                   w-9 h-9 rounded-full bg-white text-black border border-black
+                   flex items-center justify-center text-2xl font-bold"
+          >
+            ×
+          </button>
+
+          Rotate this model while we design your print in
+          <span class="text-[#5EC2C5]">~30&nbsp;seconds</span>
         </div>
 
-        <!-- loader overlay -->
-        <div id="loader" class="absolute inset-0 flex items-center justify-center bg-[#2A2A2E]/80" hidden>
-          <div class="h-10 w-10 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+        <!-- centred loader -->
+        <div
+          id="loader"
+          class="absolute inset-0 flex items-center justify-center bg-[#2A2A2E]/80"
+          style="display: none"
+        >
+          <div
+            class="h-10 w-10 border-4 border-white border-t-transparent rounded-full animate-spin"
+          ></div>
         </div>
 
-        <!-- checkout button (appears after generation) -->
-        <a id="checkout-button" href="payment.html" class="hidden absolute bottom-4 right-4 font-bold py-3 px-5 rounded-full shadow-md transition" style="background-color: #1f3b65; color: #5ec2c5" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">Checkout</a>
+        <!-- checkout button (hidden by default) -->
+        <a
+          id="checkout-button"
+          href="payment.html"
+          class="hidden absolute bottom-4 right-4 font-bold py-3 px-5 rounded-full shadow-md transition"
+          style="background-color: #1f3b65; color: #5ec2c5"
+          onmouseover="this.style.opacity='0.85'"
+          onmouseout="this.style.opacity='1'"
+          >Checkout</a
+        >
       </section>
 
-      <!-- Prompt / upload area -->
+      <!-- Prompt / upload area ------------------------------------------- -->
       <section class="w-full max-w-xl">
         <div class="flex flex-col items-center text-center">
-          <img src="img/boxlogo.png" alt="print3 cube" class="w-32 h-auto mb-8" />
+          <img
+            src="img/boxlogo.png"
+            alt="print3 cube"
+            class="w-32 h-auto mb-8"
+          />
           <h1 class="text-3xl font-semibold mb-8">Make your world.</h1>
 
           <div class="flex items-center w-full gap-4">
-            <div class="flex-1 bg-[#2A2A2E] border border-white/10 rounded-3xl px-5 py-2 flex items-center">
-              <textarea id="promptInput" rows="1" placeholder="Describe your 3D print request…" class="prompt-textarea w-full bg-transparent resize-none text-lg placeholder-gray-500 focus:outline-none"></textarea>
+            <div
+              class="flex-1 bg-[#2A2A2E] border border-white/10 rounded-3xl px-5 py-2 flex items-center"
+            >
+              <textarea
+                id="promptInput"
+                rows="1"
+                placeholder="Describe your 3D print request…"
+                class="prompt-textarea w-full bg-transparent resize-none text-lg placeholder-gray-500 focus:outline-none"
+              ></textarea>
             </div>
-            <button id="submit-button" class="w-12 h-12 flex items-center justify-center bg-white rounded-full transition-shape"><i id="submit-icon" class="fas fa-arrow-up text-xl text-[#1A1A1D]"></i></button>
+            <button
+              id="submit-button"
+              class="w-12 h-12 flex items-center justify-center bg-white rounded-full transition-shape"
+            >
+              <i
+                id="submit-icon"
+                class="fas fa-arrow-up text-xl text-[#1A1A1D]"
+              ></i>
+            </button>
           </div>
 
           <div class="mt-4 w-full flex items-start gap-4">
-            <input type="file" id="uploadInput" accept="image/*" multiple class="hidden" />
-            <label for="uploadInput" class="inline-flex items-center justify-start flex-shrink-0 bg-[#2A2A2E] border border-white/10 rounded-3xl px-5 py-2 leading-[1.75rem] text-lg whitespace-nowrap cursor-pointer hover:bg-[#3A3A3E] transition-shape">Upload Images</label>
-            <div id="image-preview-area" class="hidden grid grid-cols-4 gap-3 bg-[#2A2A2E] border border-white/10 rounded-3xl min-h-[6rem] max-h-56 px-4 py-3 overflow-visible"></div>
+            <input
+              type="file"
+              id="uploadInput"
+              accept="image/*"
+              multiple
+              class="hidden"
+            />
+            <label
+              for="uploadInput"
+              class="inline-flex items-center justify-start flex-shrink-0 bg-[#2A2A2E] border border-white/10 rounded-3xl px-5 py-2 leading-[1.75rem] text-lg whitespace-nowrap cursor-pointer hover:bg-[#3A3A3E] transition-shape"
+            >
+              Upload Images
+            </label>
+            <div
+              id="image-preview-area"
+              class="hidden grid grid-cols-4 gap-3 bg-[#2A2A2E] border border-white/10 rounded-3xl min-h-[6rem] max-h-56 px-4 py-3 overflow-visible"
+            ></div>
           </div>
         </div>
       </section>
     </main>
 
-    <!-- ------------------------------------------------ SCRIPTS -->
+    <!--  Application logic ----------------------------------------------- -->
     <script type="module">
       const API_BASE = "/api";
-      const FALLBACK_GLB = "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
+      const FALLBACK_GLB =
+        "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
       const $ = (id) => document.getElementById(id);
-
       const refs = {
         previewImg: $("preview-img"),
         loader: $("loader"),
@@ -179,14 +303,19 @@
         window.open(shareUrl, "_blank", "noopener");
       };
 
-      // ---------------- LOADER HANDLERS (viewer never hidden) ---------------
+      const hideAll = () => {
+        refs.previewImg.style.display = "none";
+        refs.loader.style.display = "none";
+        refs.viewer.style.display = "none";
+      };
       const showLoader = () => {
-        refs.loader.hidden = false;
+        hideAll();
+        refs.loader.style.display = "flex";
       };
-      const hideLoader = () => {
-        refs.loader.hidden = true;
+      const showModel = () => {
+        hideAll();
+        refs.viewer.style.display = "block";
       };
-
       const hideDemo = () => {
         refs.demoNote && (refs.demoNote.style.display = "none");
         document.documentElement.classList.add("has-generated");
@@ -197,7 +326,6 @@
         localStorage.setItem("demoDismissed", "true");
       });
 
-      // ---------------- TEXTAREA AUTO-RESIZE ----------------
       refs.promptInput.addEventListener("input", () => {
         const el = refs.promptInput;
         el.style.height = "auto";
@@ -213,7 +341,6 @@
         }
       });
 
-      // ---------------- IMAGE THUMBNAIL PREVIEW ----------------
       function renderThumbnails(arr) {
         refs.imagePreviewArea.innerHTML = "";
         if (!arr.length) {
@@ -226,13 +353,15 @@
           wrap.className = "relative";
           const img = document.createElement("img");
           img.src = url;
-          img.className = "object-cover w-full h-20 rounded-md shadow-md";
+          img.className =
+            "object-cover w-full h-20 rounded-md shadow-md";
           wrap.appendChild(img);
 
           const btn = document.createElement("button");
           btn.type = "button";
           btn.innerHTML = '<i class="fas fa-times"></i>';
-          btn.className = "absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white text-black border border-black flex items-center justify-center";
+          btn.className =
+            "absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white text-black border border-black flex items-center justify-center";
           btn.onclick = () => {
             arr.splice(i, 1);
             uploadedFiles.splice(i, 1);
@@ -250,10 +379,90 @@
         uploadedFiles = files;
 
         const thumbs = await Promise.all(
-          files.map((file) =>
-            new Promise((res) => {
-              const R = new FileReader();
-              R.onload = () => {
-                const im = new Image();
-                im.onload = () => {
-                  let [w, h] = [im.width, im.height], max = 200, r = Math.min(max / w, max / h, 
+          files.map(
+            (file) =>
+              new Promise((res) => {
+                const R = new FileReader();
+                R.onload = () => {
+                  const im = new Image();
+                  im.onload = () => {
+                    let [w, h] = [im.width, im.height],
+                      max = 200,
+                      r = Math.min(max / w, max / h, 1);
+                    w *= r;
+                    h *= r;
+                    const c = document.createElement("canvas");
+                    c.width = w;
+                    c.height = h;
+                    c.getContext("2d").drawImage(im, 0, 0, w, h);
+                    res(c.toDataURL("image/png", 0.7));
+                  };
+                  im.src = R.result;
+                };
+                R.readAsDataURL(file);
+              })
+          )
+        );
+
+        localStorage.setItem("print3Images", JSON.stringify(thumbs));
+        renderThumbnails(thumbs);
+      });
+
+      async function fetchGlb(prompt, files) {
+        try {
+          const fd = new FormData();
+          if (prompt) fd.append("prompt", prompt);
+          files.forEach((f) => fd.append("images", f));
+          const r = await fetch(`${API_BASE}/generate`, {
+            method: "POST",
+            body: fd,
+          });
+          if (!r.ok) throw new Error();
+          return (await r.json()).glb_url;
+        } catch {
+          return FALLBACK_GLB;
+        }
+      }
+
+      refs.submitBtn.addEventListener("click", async () => {
+        const prompt = refs.promptInput.value.trim();
+        if (!prompt && uploadedFiles.length === 0) return;
+        refs.checkoutBtn.classList.add("hidden");
+        refs.submitIcon.classList.replace("fa-arrow-up", "fa-stop");
+        showLoader();
+
+        localStorage.setItem("print3Prompt", prompt);
+        localStorage.setItem("hasGenerated", "true");
+
+        const url = await fetchGlb(prompt, uploadedFiles);
+        localStorage.setItem("print3Model", url);
+
+        refs.viewer.src = url;
+        await refs.viewer.updateComplete;
+        showModel();
+        hideDemo();
+
+        refs.checkoutBtn.classList.remove("hidden");
+        refs.submitIcon.classList.replace("fa-stop", "fa-arrow-up");
+      });
+
+      // ------------------------------------------------ INIT
+      window.addEventListener("DOMContentLoaded", () => {
+        // always show astronaut placeholder on load
+        showModel(); // make sure the viewer is visible straight away
+
+        refs.viewer.src = FALLBACK_GLB;
+
+        const prompt = localStorage.getItem("print3Prompt");
+        const thumbs = JSON.parse(
+          localStorage.getItem("print3Images") || "[]"
+        );
+        if (prompt) {
+          refs.promptInput.value = prompt;
+          refs.promptInput.dispatchEvent(new Event("input"));
+        }
+        if (thumbs.length) renderThumbnails(thumbs);
+      });
+    </script>
+  </body>
+</html>
