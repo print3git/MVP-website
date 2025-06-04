@@ -92,7 +92,11 @@ app.post('/api/webhook/stripe', (req, res) => {
   res.sendStatus(200);
 });
 
-// Start the server
-app.listen(PORT, () => {
-  console.log(`API server listening on http://localhost:${PORT}`);
-});
+// Start the server only if this file is run directly
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`API server listening on http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;
