@@ -122,19 +122,21 @@
 
     <!-- Initialization Script -->
     <script>
-      document.addEventListener('DOMContentLoaded', () => {
-        const storedUrl = localStorage.getItem('print2Model');
-        if (!storedUrl) return;
+      const FALLBACK_GLB =
+        "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
 
+      document.addEventListener('DOMContentLoaded', () => {
         const previewImg = document.getElementById('preview-img');
         const loader = document.getElementById('loader');
         const viewer = document.getElementById('viewer');
+
+        const storedUrl = localStorage.getItem('print2Model');
 
         previewImg.style.display = 'none';
         loader.style.display = 'none';
 
         viewer.style.display = 'block';
-        viewer.setAttribute('src', storedUrl);
+        viewer.setAttribute('src', storedUrl || FALLBACK_GLB);
       });
 
       document.getElementById('submit-payment').addEventListener('click', () => {
