@@ -28,6 +28,25 @@ function addCard(grid, model) {
     document.body.classList.add('overflow-hidden');
   });
   grid.appendChild(div);
+
+  // capture a snapshot of the GLB to use as the thumbnail
+  (async () => {
+    const tempViewer = document.createElement('model-viewer');
+    tempViewer.src = model.model_url;
+    tempViewer.style.position = 'fixed';
+    tempViewer.style.left = '-10000px';
+    tempViewer.style.width = '300px';
+    tempViewer.style.height = '300px';
+    document.body.appendChild(tempViewer);
+    try {
+      await tempViewer.updateComplete;
+      img.src = await tempViewer.toDataURL('image/png');
+    } catch (err) {
+      console.error('Failed to capture snapshot', err);
+    } finally {
+      tempViewer.remove();
+    }
+  })();
 }
 
 async function load(type) {

@@ -166,11 +166,6 @@ refs.submitBtn.addEventListener("click", async () => {
   localStorage.setItem("print3Model", url);
   localStorage.setItem("print3JobId", lastJobId);
 
-  fetch("/api/community", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ modelUrl: url }),
-  }).catch(() => {});
 
   refs.viewer.src = url;
   await refs.viewer.updateComplete;
