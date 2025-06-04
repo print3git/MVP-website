@@ -24,3 +24,89 @@ backend file
 we want this to be opt-out to encourage as much sharing as possible, to build up the catalogue and 
 encourage the community 
 
+
+Detailed tasks from the high-level project plan:
+
+## 1. Repository & Tooling
+1. Add a license file.
+2. Create an `.editorconfig`.
+3. Install Prettier and add `npm run format` script.
+4. Add `engines` field in `backend/package.json`.
+5. Update `.gitignore` for environment and build artifacts.
+6. Write contribution guidelines in `README.md`.
+
+## 2. Environment Configuration
+7. Create `.env` from `.env.example` and document variables.
+8. Add runtime checks for missing env variables.
+9. Allow overriding the Hunyuan server URL via env variable.
+
+## 3. Database Setup
+10. Verify migrations cover all tables.
+11. Add a migration script runner.
+12. Provide a DB seed script.
+13. Add timestamp triggers for `updated_at`.
+14. Extend `orders` table with quantity and discount fields.
+
+## 4. Hunyuan3D Server
+15. Ensure uploads folder exists at startup.
+16. Fix output directory to write `.glb` files to `models/`.
+17. Serve `/models` statically.
+18. Validate input and limit image size.
+19. Extract API base URL and key from env variables.
+20. Handle API errors gracefully.
+21. Remove temporary OBJ files after conversion.
+22. Add Jest tests for error cases.
+
+## 5. API Server
+23. Serve generated models statically.
+24. Validate incoming requests.
+25. Make Hunyuan base URL configurable via env.
+26. Add logging middleware.
+27. Use async/await consistently.
+28. Implement retry or fallback when Hunyuan service fails.
+29. Add pagination to `/api/status` in future.
+
+## 6. Print Queue
+30. Expose a process function to simulate printing.
+31. Provide unit tests for queue functions.
+32. Consider using a real queue module.
+
+## 7. Stripe Integration
+33. Configure Stripe keys via `.env` and document them.
+34. Implement the checkout page with Stripe.js.
+35. Handle payment success or cancel on `payment.html`.
+36. Process Stripe webhooks to update order status.
+37. Add Jest tests covering webhook logic.
+
+## 8. Front-End
+38. Move inline scripts to separate JS files.
+39. Create `share.js` for social-share logic.
+40. Add share buttons for TikTok and Instagram.
+41. Implement an opt-out checkbox for community gallery.
+42. Add a “3-prints discount” notice.
+43. Improve UI error handling.
+44. Ensure accessibility with ARIA labels and contrast.
+
+## 9. Community Creations Page
+45. Fetch and display recent creations.
+46. Fetch and display popular creations.
+47. Implement pagination or infinite scrolling.
+48. Add filters by category or date.
+49. Store community submissions in a `community_creations` table.
+
+## 10. Testing & CI
+50. Add GitHub Actions workflow for `npm test`.
+51. Run prettier check in CI.
+52. Add unit tests for frontend scripts.
+53. Mock the Hunyuan API in server tests for error paths.
+
+## 11. Documentation
+54. Expand `README.md` with detailed setup instructions.
+55. Move notes in `READ-ME/` to a `docs/` folder.
+56. Add architecture diagrams in `docs/`.
+
+## 12. Cleanup & Polish
+57. Normalize file names (rename `READ-ME` to `docs`).
+58. Delete empty placeholder files.
+59. Review all console logs.
+60. Check for unused dependencies in `package.json`.

@@ -3,7 +3,7 @@ process.env.HUNYUAN_API_KEY = 'test';
 jest.mock('axios');
 const axios = require('axios');
 
-jest.mock('obj2gltf');
+jest.mock('obj2gltf', () => jest.fn(), { virtual: true });
 const obj2gltf = require('obj2gltf');
 
 jest.mock('fs');
