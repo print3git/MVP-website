@@ -35,17 +35,31 @@ document.addEventListener("DOMContentLoaded", async () => {
   const cancelMsg = document.getElementById("cancel");
 
   const hideLoader = () => (loader.hidden = true);
+
+  // Wait for the <model-viewer> element to be defined before
+  // attaching events or assigning the model source. If the library
+  // fails to load, we'll just show the fallback model.
+  if (window.customElements?.whenDefined) {
+    try {
+      await customElements.whenDefined("model-viewer");
+    } catch {
+      // ignore if the element never upgrades
+    }
+  }
+
   viewer.addEventListener("load", hideLoader);
-  viewer.addEventListener("model-visibility", hideLoader);
   viewer.addEventListener("error", () => {
     viewer.src = FALLBACK_GLB;
     hideLoader();
   });
+
   loader.hidden = false;
   viewer.src =
     localStorage.getItem("print3Model") ||
     localStorage.getItem("print2Model") ||
     FALLBACK_GLB;
+
+  // Hide the overlay if nothing happens after a short delay
   setTimeout(hideLoader, 7000);
 
   const sessionId = qs("session_id");
