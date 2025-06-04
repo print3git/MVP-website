@@ -12,6 +12,7 @@ const axios = require('axios');
 const FormData = require('form-data');
 const fs = require('fs');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const { enqueuePrint } = require('./queue/printQueue');
 
 const app = express();
 app.use(cors());
@@ -154,10 +155,21 @@ app.post('/api/webhook/stripe', express.raw({ type: 'application/json' }), async
   }
 
   if (event.type === 'checkout.session.completed') {
-    const sessionId = event.data.object.id;
+    const session = event.data.object;
+    const sessionId = session.id;
+    const sessionJobId = session.metadata && session.metadata.jobId;
     try {
       await db.query('UPDATE orders SET status=$1 WHERE session_id=$2', ['paid', sessionId]);
-      // TODO: trigger your print-queue worker
+
+      let jobId = sessionJobId;
+      if (!jobId) {
+        const { rows } = await db.query('SELECT job_id FROM orders WHERE session_id=$1', [sessionId]);
+        jobId = rows[0] && rows[0].job_id;
+      }
+
+      if (jobId) {
+        enqueuePrint(jobId);
+      }
     } catch (err) {
       console.error(err);
     }
