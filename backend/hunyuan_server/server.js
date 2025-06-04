@@ -1,2 +1,56 @@
-// server.js (placeholder)
-console.log("Server running...");
+require('dotenv').config();
+const express = require('express');
+const multer = require('multer');
+const axios = require('axios');
+const obj2gltf = require('obj2gltf');
+const fs = require('fs');
+const path = require('path');
+const { v4: uuidv4 } = require('uuid');
+
+const upload = multer({ dest: path.join(__dirname, 'uploads') });
+const app = express();
+
+/**
+ * POST /generate
+ * Accepts a text prompt and optional image upload.
+ * Calls the Hunyuan 3D API and converts the resulting OBJ to glTF.
+ */
+app.post('/generate', upload.single('image'), async (req, res) => {
+  const { prompt } = req.body;
+  if (!prompt) {
+    return res.status(400).json({ error: 'prompt required' });
+  }
+
+  try {
+    // Placeholder call to the real Hunyuan API
+    const apiKey = process.env.HUNYUAN_API_KEY;
+    const response = await axios.post(
+      'https://hunyuan.tencentcloudapi.com/generate',
+      { prompt },
+      { headers: { Authorization: `Bearer ${apiKey}` } }
+    );
+
+    const objUrl = response.data.obj_url;
+    const objResp = await axios.get(objUrl, { responseType: 'arraybuffer' });
+    const tmpDir = path.join(__dirname, 'tmp');
+    await fs.promises.mkdir(tmpDir, { recursive: true });
+    const objPath = path.join(tmpDir, `${uuidv4()}.obj`);
+    fs.writeFileSync(objPath, objResp.data);
+
+    const modelsDir = path.join(__dirname, '..', 'models');
+    await fs.promises.mkdir(modelsDir, { recursive: true });
+    const glbName = `${uuidv4()}.glb`;
+    const glbPath = path.join(modelsDir, glbName);
+    await obj2gltf(objPath, { output: glbPath });
+
+    res.json({ glb_url: `/models/${glbName}` });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'generation failed' });
+  }
+});
+
+const PORT = process.env.HUNYUAN_PORT || 4000;
+app.listen(PORT, () => {
+  console.log(`Hunyuan3D server listening on http://localhost:${PORT}`);
+});
