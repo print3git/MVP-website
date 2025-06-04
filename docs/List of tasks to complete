@@ -7,25 +7,45 @@ Note: the lightweight Hunyuan3D API server files were moved from `img/` to `back
 ## Model Generation & Queue
 
 - Integrate Hunyuan 2.5 as the generator for text, image and text+image prompts.
+  - Add the v2.5 API client and update config.
+  - Support image uploads alongside text prompts.
+  - Verify generation with sample inputs.
 - Replace the simple print queue with a real queue module.
+  - Evaluate queue libraries and pick one.
+  - Persist jobs to Redis and add a worker.
+  - Write tests for the new queue flow.
 
 ## Front-End
 
 - Improve UI error handling.
+  - Show clear messages for API failures.
+  - Highlight invalid form fields.
 - Ensure accessibility with ARIA labels and contrast.
+  - Audit pages for missing labels.
+  - Fix color contrast issues.
 
 ## Community Creations
 
 - Fetch and display recent creations.
 - Fetch and display popular creations.
 - Implement pagination or infinite scrolling.
+  - Add a "load more" button or infinite scroll component.
+  - Expose API endpoints with page parameters.
 - Add filters by category or date.
+  - Add filter UI controls.
+  - Update backend queries to support filters.
 - Store submissions in a `community_creations` table.
+  - Define table schema and migration.
+  - Seed with a few example rows.
 
 ## Testing & CI
 
 - Add unit tests for frontend scripts.
+  - Set up Jest with jsdom for browser code.
+  - Write tests for each UI module.
 - Mock the Hunyuan API in server tests for error paths.
+  - Provide mock responses for failures.
+  - Ensure endpoints return proper status codes.
 
 ## Documentation
 
@@ -41,38 +61,98 @@ Note: the lightweight Hunyuan3D API server files were moved from `img/` to `back
 - Display like counts in the community gallery and profiles.
 - Use like counts to populate the "popular now" list.
 - Create a `competitions` table with name and date fields.
+  - Write a migration and ORM model.
 - Add a `competition_entries` table linking models to competitions.
+  - Include user_id, model_id and competition_id fields.
+  - Write a migration for the table.
 - Expose APIs to submit models to competitions and fetch leaderboards.
+  - POST /api/competitions/:id/entries.
+  - GET /api/competitions/:id/leaderboard.
 - Show active competitions and leaderboards on the frontend.
+  - Display the current competition with sign-up link.
+  - Render a leaderboard table.
 - Add `prize_description` and `winner_model_id` columns to the `competitions` table.
+  - Create a migration adding these columns.
+  - Update the admin UI to edit prize details.
 - Build admin-only endpoints to create, update, and delete competitions.
+  - Restrict routes with admin middleware.
+  - Implement CRUD handlers.
 - Create a competition submission form allowing a user to link an existing model to a competition.
+  - Build the form UI and validation.
+  - POST the selected model to the competition entry API.
 - Ensure a model can only be submitted to one active competition at a time.
+  - Add a database constraint and server-side check.
 - Schedule a job to close competitions, select the entry with the most likes, and update `winner_model_id`.
+  - Run a cron job nightly to check end dates.
+  - Update the competition with the top entry.
 - Send an email to the winning user with instructions to claim their free print.
+  - Create an email template for winners.
+  - Trigger sending after the winner is selected.
 - Display past competitions and winners on a dedicated page.
+  - Build a page listing completed competitions.
+  - Show the winning model and user.
 - Add competition rules to the documentation.
+  - Outline eligibility and judging criteria.
 
 ## UX Improvements
 
 - Guide the user with a step-by-step wizard from entering a prompt through to checkout.
+  - Design the wizard UI flow.
+  - Persist form data across steps.
 - Provide pre-made example prompts and images to help new visitors start quickly.
 - Add drag-and-drop image uploads with inline cropping and resizing.
+  - Implement a drag-and-drop area.
+  - Integrate a client-side cropping library.
 - Show a real-time progress bar while the model is being generated.
+  - Add a progress bar component.
+  - Update the backend to stream progress events.
 - Display clear inline error messages if generation fails or the prompt is invalid.
+  - Provide failure states in the UI.
+  - Validate prompts before submission.
 - Keep the generated model and prompt in local storage so users can resume where they left off.
+  - Save data to localStorage after each step.
+  - Reload the saved state on page load.
 - Integrate social login (Google, GitHub) and allow guest checkout without creating an account.
+  - Add Google OAuth login.
+  - Add GitHub OAuth login.
+  - Offer guest checkout option.
 - Automatically prefill shipping and payment details from the user's profile.
+  - Retrieve saved profile info from the backend.
+  - Populate the checkout form with the saved data.
 - Offer a one-click "Buy Now" button directly on the model viewer page.
+  - Add a button that uses saved details.
+  - Submit the order in one step.
 - Let users edit the prompt or images without losing the current model.
+  - Keep the previous model in memory.
+  - Re-run generation only when edits are confirmed.
 - Ensure all interactions work smoothly on mobile with responsive layouts.
+  - Add responsive CSS for each page.
+  - Test flows at mobile breakpoints.
 - Make keyboard navigation and screen reader labels first-class.
+  - Define a consistent tab order.
+  - Add missing ARIA labels.
 - Provide a "reorder" button for past models so users can purchase again instantly.
+  - Add a button to order history.
+  - Preload the model into the cart.
 - Show estimated print cost and delivery time before checkout.
+  - Calculate cost and ETA from model parameters.
+  - Display them near the checkout button.
 - Let users share a generated model to the community or social media with one click.
+  - Add share buttons for common platforms.
+  - Provide Open Graph meta tags for previews.
 - Provide tooltips or a short tutorial overlay explaining each step.
+  - Design tooltip copy and dismiss logic.
+  - Allow users to skip the tutorial.
 - Add a progress indicator at the top summarizing "Prompt → Model → Buy."
+  - Display the current step at all times.
 - Optimize API requests to reduce loading time on slow networks.
+  - Bundle multiple requests where possible.
+  - Compress JSON responses.
 - Save user preferences such as units or color scheme.
+  - Persist preferences to local storage.
+  - Apply them on page load.
 - Provide instant confirmation with next steps after the payment completes.
+  - Show a success page with order details.
+  - Include a link to the user's profile.
 - Link directly from the success page to the user's profile or order history.
+  - Provide buttons to view orders or profile from the confirmation screen.
