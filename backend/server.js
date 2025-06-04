@@ -1,4 +1,4 @@
-// api/server.js
+// backend/server.js
 
 require('dotenv').config();
 const express = require('express');
