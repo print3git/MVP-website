@@ -20,10 +20,16 @@ Stripe.mockImplementation(() => stripeMock);
 
 const request = require('supertest');
 const app = require('../server');
+const fs = require('fs');
+const stream = require('stream');
 
 beforeEach(() => {
   db.query.mockClear();
   axios.post.mockClear();
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
 });
 
 test('POST /api/generate returns glb url', async () => {
@@ -56,4 +62,47 @@ test('Stripe webhook updates order', async () => {
     .set('stripe-signature', 'sig')
     .send(payload);
   expect(res.status).toBe(200);
+});
+
+test('POST /api/generate accepts image upload', async () => {
+  const chunks = [];
+  jest
+    .spyOn(fs, 'createWriteStream')
+    .mockImplementation(() => {
+      const writable = new stream.Writable({
+        write(chunk, enc, cb) {
+          chunks.push(chunk);
+          cb();
+        },
+      });
+      return writable;
+    });
+
+  jest
+    .spyOn(fs, 'createReadStream')
+    .mockImplementation(() => {
+      const readable = new stream.Readable({
+        read() {
+          this.push(Buffer.concat(chunks));
+          this.push(null);
+        },
+      });
+      return readable;
+    });
+
+  jest.spyOn(fs, 'unlink').mockImplementation((_, cb) => cb && cb());
+
+  axios.post.mockResolvedValue({ data: { glb_url: '/models/test.glb' } });
+  const res = await request(app)
+    .post('/api/generate')
+    .field('prompt', 'img test')
+    .attach('images', Buffer.from('fake'), 'test.png');
+
+  expect(res.status).toBe(200);
+  expect(res.body.glb_url).toBe('/models/test.glb');
+
+  const insertCall = db.query.mock.calls.find(c =>
+    c[0].includes('INSERT INTO jobs')
+  );
+  expect(insertCall[1][2]).toEqual(expect.any(String));
 });
