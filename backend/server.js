@@ -8,6 +8,8 @@ const multer = require("multer");
 const path = require("path");
 const morgan = require("morgan");
 const { v4: uuidv4 } = require("uuid");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const db = require("./db");
 const axios = require("axios");
 const FormData = require("form-data");
@@ -15,6 +17,8 @@ const fs = require("fs");
 const config = require("./config");
 const stripe = require("stripe")(config.stripeKey);
 const { enqueuePrint, processQueue } = require("./queue/printQueue");
+
+const AUTH_SECRET = process.env.AUTH_SECRET || "secret";
 
 const app = express();
 app.use(morgan("dev"));
@@ -29,57 +33,128 @@ const PORT = config.port;
 const FALLBACK_GLB =
   "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
 
+function authOptional(req, res, next) {
+  const auth = req.headers.authorization || "";
+  const token = auth.startsWith("Bearer ") ? auth.slice(7) : null;
+  if (token) {
+    try {
+      req.user = jwt.verify(token, AUTH_SECRET);
+    } catch (err) {
+      // ignore invalid token
+    }
+  }
+  next();
+}
+
+function authRequired(req, res, next) {
+  authOptional(req, res, () => {
+    if (!req.user) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    next();
+  });
+}
+
+app.post("/api/register", async (req, res) => {
+  const { username, email, password } = req.body;
+  if (!username || !email || !password) {
+    return res.status(400).json({ error: "Missing fields" });
+  }
+  try {
+    const hash = await bcrypt.hash(password, 10);
+    const { rows } = await db.query(
+      "INSERT INTO users(username,email,password_hash) VALUES($1,$2,$3) RETURNING id,username",
+      [username, email, hash],
+    );
+    const token = jwt.sign({ id: rows[0].id, username }, AUTH_SECRET);
+    res.json({ token });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Registration failed" });
+  }
+});
+
+app.post("/api/login", async (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password) {
+    return res.status(400).json({ error: "Missing fields" });
+  }
+  try {
+    const { rows } = await db.query("SELECT * FROM users WHERE username=$1", [
+      username,
+    ]);
+    if (!rows.length) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+    const user = rows[0];
+    const match = await bcrypt.compare(password, user.password_hash);
+    if (!match) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+    const token = jwt.sign({ id: user.id, username }, AUTH_SECRET);
+    res.json({ token });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Login failed" });
+  }
+});
+
 /**
  * POST /api/generate
  * Accept a prompt and optional image uploads
  */
-app.post("/api/generate", upload.array("images"), async (req, res) => {
-  const { prompt } = req.body;
-  const files = req.files || [];
-  if (!prompt && files.length === 0) {
-    return res.status(400).json({ error: "Prompt or image is required" });
-  }
-
-  const jobId = uuidv4();
-  const imageRef = files[0] ? files[0].filename : null;
-
-  try {
-    await db.query(
-      "INSERT INTO jobs(job_id, prompt, image_ref, status) VALUES ($1,$2,$3,$4)",
-      [jobId, prompt, imageRef, "pending"],
-    );
-
-    const form = new FormData();
-    form.append("prompt", prompt);
-    if (files[0]) {
-      form.append("image", fs.createReadStream(files[0].path));
+app.post(
+  "/api/generate",
+  authOptional,
+  upload.array("images"),
+  async (req, res) => {
+    const { prompt } = req.body;
+    const files = req.files || [];
+    if (!prompt && files.length === 0) {
+      return res.status(400).json({ error: "Prompt or image is required" });
     }
-    let generatedUrl = FALLBACK_GLB;
+
+    const jobId = uuidv4();
+    const imageRef = files[0] ? files[0].filename : null;
+    const userId = req.user ? req.user.id : null;
+
     try {
-      const resp = await axios.post(
-        `${config.hunyuanServerUrl}/generate`,
-        form,
-        {
-          headers: form.getHeaders(),
-        },
+      await db.query(
+        "INSERT INTO jobs(job_id, prompt, image_ref, status, user_id) VALUES ($1,$2,$3,$4,$5)",
+        [jobId, prompt, imageRef, "pending", userId],
       );
-      generatedUrl = resp.data.glb_url;
+
+      const form = new FormData();
+      form.append("prompt", prompt);
+      if (files[0]) {
+        form.append("image", fs.createReadStream(files[0].path));
+      }
+      let generatedUrl = FALLBACK_GLB;
+      try {
+        const resp = await axios.post(
+          `${config.hunyuanServerUrl}/generate`,
+          form,
+          {
+            headers: form.getHeaders(),
+          },
+        );
+        generatedUrl = resp.data.glb_url;
+      } catch (err) {
+        console.error("Hunyuan service failed, using fallback", err.message);
+      }
+
+      await db.query(
+        "UPDATE jobs SET status=$1, model_url=$2 WHERE job_id=$3",
+        ["complete", generatedUrl, jobId],
+      );
+
+      res.json({ jobId, glb_url: generatedUrl });
     } catch (err) {
-      console.error("Hunyuan service failed, using fallback", err.message);
+      console.error(err);
+      res.status(500).json({ error: "Failed to generate model" });
     }
-
-    await db.query("UPDATE jobs SET status=$1, model_url=$2 WHERE job_id=$3", [
-      "complete",
-      generatedUrl,
-      jobId,
-    ]);
-
-    res.json({ jobId, glb_url: generatedUrl });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to generate model" });
-  }
-});
+  },
+);
 
 /**
  * GET /api/status/:jobId
@@ -103,6 +178,66 @@ app.get("/api/status/:jobId", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to fetch job" });
+  }
+});
+
+app.get("/api/my/models", authRequired, async (req, res) => {
+  try {
+    const { rows } = await db.query(
+      "SELECT * FROM jobs WHERE user_id=$1 ORDER BY created_at DESC",
+      [req.user.id],
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch models" });
+  }
+});
+
+app.get("/api/users/:username/models", async (req, res) => {
+  try {
+    const { rows } = await db.query("SELECT id FROM users WHERE username=$1", [
+      req.params.username,
+    ]);
+    if (!rows.length) return res.status(404).json({ error: "User not found" });
+    const userId = rows[0].id;
+    const models = await db.query(
+      "SELECT * FROM jobs WHERE user_id=$1 ORDER BY created_at DESC",
+      [userId],
+    );
+    res.json(models.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch models" });
+  }
+});
+
+app.post("/api/models/:id/like", authRequired, async (req, res) => {
+  const modelId = req.params.id;
+  try {
+    const { rows } = await db.query(
+      "SELECT 1 FROM likes WHERE user_id=$1 AND model_id=$2",
+      [req.user.id, modelId],
+    );
+    if (rows.length) {
+      await db.query("DELETE FROM likes WHERE user_id=$1 AND model_id=$2", [
+        req.user.id,
+        modelId,
+      ]);
+    } else {
+      await db.query("INSERT INTO likes(user_id, model_id) VALUES($1,$2)", [
+        req.user.id,
+        modelId,
+      ]);
+    }
+    const count = await db.query(
+      "SELECT COUNT(*) FROM likes WHERE model_id=$1",
+      [modelId],
+    );
+    res.json({ likes: parseInt(count.rows[0].count, 10) });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to update like" });
   }
 });
 
