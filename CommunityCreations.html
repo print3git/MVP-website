@@ -219,9 +219,22 @@
       <div class="relative w-11/12 max-w-3xl">
         <button
           id="close-modal"
-          class="absolute -top-4 -right-4 w-[4.5rem] h-[4.5rem] rounded-full bg-white text-black text-[4rem] font-extrabold leading-none flex items-center justify-center z-50"
+          class="absolute -top-4 -right-4 w-[4.5rem] h-[4.5rem] rounded-full bg-white text-black flex items-center justify-center z-50"
+          type="button"
         >
-          &times;
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            class="w-10 h-10"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="3"
+            stroke-linecap="round"
+          >
+            <line x1="6" y1="6" x2="18" y2="18" />
+            <line x1="6" y1="18" x2="18" y2="6" />
+          </svg>
+          <span class="sr-only">Close</span>
         </button>
         <model-viewer
           src=""
