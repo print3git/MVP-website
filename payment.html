@@ -73,6 +73,7 @@
           id="viewer"
           camera-controls
           auto-rotate
+          crossorigin="anonymous"
           loading="eager"
           style="width: 100%; height: 100%"
         ></model-viewer>
@@ -140,6 +141,11 @@
         viewer.addEventListener('load', hideLoader);
         // in some cases 'load' fires but model isn't rendered yet; this helps
         viewer.addEventListener('model-visibility', hideLoader);
+        // if loading fails, fall back to placeholder model
+        viewer.addEventListener('error', () => {
+          viewer.src = FALLBACK_GLB;
+          hideLoader();
+        });
 
         /* 2️⃣ show spinner immediately */
         loader.hidden = false;
@@ -149,6 +155,9 @@
           localStorage.getItem('print3Model') || // new key
           localStorage.getItem('print2Model') || // legacy key
           FALLBACK_GLB;
+
+        // Hide loader eventually even if no events fire
+        setTimeout(hideLoader, 7000);
       });
 
       document
