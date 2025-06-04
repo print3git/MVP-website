@@ -390,8 +390,6 @@
         refs.viewer.style.display = "block";
 
         const prompt = localStorage.getItem("print2Prompt");
-        const model = localStorage.getItem("print2Model");
-        const has = localStorage.getItem("hasGenerated") === "true";
         const thumbs = JSON.parse(
           localStorage.getItem("print2Images") || "[]"
         );
@@ -400,13 +398,7 @@
           refs.promptInput.dispatchEvent(new Event("input"));
         }
         if (thumbs.length) renderThumbnails(thumbs);
-        if (has && model) {
-          hideAll();
-          refs.viewer.src = model;
-          refs.viewer.style.display = "block";
-          refs.checkoutBtn.classList.remove("hidden");
-          hideDemo();
-        }
+        // always show astronaut placeholder on load; do not auto-load prior model
       });
     </script>
   </body>
