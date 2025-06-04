@@ -7,10 +7,33 @@ const bodyParser = require('body-parser');
 const multer = require('multer');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
-// const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const db = require('./db');
+const axios = require('axios');
+const FormData = require('form-data');
+const fs = require('fs');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const app = express();
 app.use(cors());
+app.post('/api/webhook/stripe', express.raw({ type: 'application/json' }), async (req, res) => {
+  const sig = req.headers['stripe-signature'];
+  let event;
+  try {
+    event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+  } catch (err) {
+    console.error(err);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+  if (event.type === 'checkout.session.completed') {
+    const sessionId = event.data.object.id;
+    try {
+      await db.query('UPDATE orders SET status=$1 WHERE session_id=$2', ['paid', sessionId]);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+  res.sendStatus(200);
+});
 app.use(bodyParser.json());
 const upload = multer({ dest: path.join(__dirname, '..', 'uploads') });
 
@@ -18,42 +41,76 @@ const PORT = process.env.PORT || 3000;
 const FALLBACK_GLB =
   'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
 
-// In-memory stores (swap out for a real database)
-const jobs   = {};
-const orders = {};
+
 
 /**
  * POST /api/generate
  * Accept a prompt and optional image uploads
  */
-app.post('/api/generate', upload.array('images'), (req, res) => {
+app.post('/api/generate', upload.array('images'), async (req, res) => {
   const { prompt } = req.body;
   const files = req.files || [];
   if (!prompt && files.length === 0) {
     return res.status(400).json({ error: 'Prompt or image is required' });
   }
 
-  // TODO: call 3D generation service using `prompt` and uploaded images
-  const generatedUrl = FALLBACK_GLB;
+  const jobId    = uuidv4();
+  const imageRef = files[0] ? files[0].filename : null;
 
-  res.json({ glb_url: generatedUrl });
+  try {
+    await db.query(
+      'INSERT INTO jobs(job_id, prompt, image_ref, status) VALUES ($1,$2,$3,$4)',
+      [jobId, prompt, imageRef, 'pending']
+    );
+
+    const form = new FormData();
+    form.append('prompt', prompt);
+    if (files[0]) {
+      form.append('image', fs.createReadStream(files[0].path));
+    }
+    let generatedUrl = FALLBACK_GLB;
+    try {
+      const resp = await axios.post('http://localhost:4000/generate', form, {
+        headers: form.getHeaders(),
+      });
+      generatedUrl = resp.data.glb_url;
+    } catch (err) {
+      console.error('Hunyuan service failed, using fallback', err.message);
+    }
+
+    await db.query(
+      'UPDATE jobs SET status=$1, model_url=$2 WHERE job_id=$3',
+      ['complete', generatedUrl, jobId]
+    );
+
+    res.json({ jobId, glb_url: generatedUrl });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to generate model' });
+  }
 });
 
 /**
  * GET /api/status/:jobId
  * Poll job status and retrieve the model URL when ready
  */
-app.get('/api/status/:jobId', (req, res) => {
-  const job = jobs[req.params.jobId];
-  if (!job) {
-    return res.status(404).json({ error: 'Job not found' });
+app.get('/api/status/:jobId', async (req, res) => {
+  try {
+    const { rows } = await db.query('SELECT * FROM jobs WHERE job_id=$1', [req.params.jobId]);
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'Job not found' });
+    }
+    const job = rows[0];
+    res.json({
+      jobId:    job.job_id,
+      status:   job.status,
+      model_url: job.model_url,
+      error:    job.error
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch job' });
   }
-  res.json({
-    jobId:    job.jobId,
-    status:   job.status,
-    model_url: job.modelUrl || null,
-    error:    job.error || null
-  });
 });
 
 /**
@@ -62,36 +119,47 @@ app.get('/api/status/:jobId', (req, res) => {
  */
 app.post('/api/create-order', async (req, res) => {
   const { jobId, price, shippingInfo } = req.body;
-  if (!jobs[jobId]) {
-    return res.status(404).json({ error: 'Job not found' });
-  }
-  // TODO: integrate with Stripe SDK instead of stubbing
-  const sessionId   = uuidv4(); 
-  const checkoutUrl = `https://checkout.stripe.com/pay/${sessionId}`;
-  orders[sessionId] = { sessionId, jobId, status: 'pending', shippingInfo };
-  res.json({ checkoutUrl });
-});
-
-/**
- * POST /api/webhook/stripe
- * Handle Stripe payment confirmation
- */
-app.post('/api/webhook/stripe', (req, res) => {
-  // TODO: verify Stripe signature in req.headers['stripe-signature']
-  const event = req.body; // raw JSON webhook payload
-  if (event.type === 'checkout.session.completed') {
-    const sessionId = event.data.object.id;
-    const order     = orders[sessionId];
-    if (order) {
-      order.status = 'paid';
-      // TODO: trigger your print-queue worker, e.g.:
-      // printQueue.enqueue({ jobId: order.jobId });
+  try {
+    const job = await db.query('SELECT job_id FROM jobs WHERE job_id=$1', [jobId]);
+    if (job.rows.length === 0) {
+      return res.status(404).json({ error: 'Job not found' });
     }
+
+    const session = await stripe.checkout.sessions.create({
+      mode: 'payment',
+      line_items: [
+        {
+          price_data: {
+            currency: 'usd',
+            product_data: { name: '3D Model' },
+            unit_amount: price || 0,
+          },
+          quantity: 1,
+        },
+      ],
+      success_url: `${req.headers.origin}/payment.html?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${req.headers.origin}/payment.html?cancel=1`,
+      metadata: { jobId },
+    });
+
+    await db.query(
+      'INSERT INTO orders(session_id, job_id, price_cents, status, shipping_info) VALUES($1,$2,$3,$4,$5)',
+      [session.id, jobId, price || 0, 'pending', shippingInfo || {}]
+    );
+
+    res.json({ checkoutUrl: session.url });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to create order' });
   }
-  res.sendStatus(200);
 });
 
-// Start the server
-app.listen(PORT, () => {
-  console.log(`API server listening on http://localhost:${PORT}`);
-});
+
+// Start the server if this file is run directly
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`API server listening on http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;
