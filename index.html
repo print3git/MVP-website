@@ -1,5 +1,5 @@
 <!-- ============================
-        index.html
+        index.html (fixed)
 ============================ -->
 <!DOCTYPE html>
 <html lang="en">
@@ -9,15 +9,15 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     />
-    <title>print2 Assistant</title>
+    <title>print3 Assistant</title>
     <meta
       name="description"
-      content="Create custom 3D models with generative AI and order high-quality prints with print2."
+      content="Create custom 3D models with generative AI and order high‑quality prints with print3."
     />
-    <meta property="og:title" content="print2 – AI-powered 3D printing" />
+    <meta property="og:title" content="print3 – AI‑powered 3D printing" />
     <meta
       property="og:description"
-      content="Describe your idea or upload images and print2 turns them into 3D models you can print."
+      content="Describe your idea or upload images and print3 turns them into 3D models you can print."
     />
     <meta property="og:image" content="img/boxlogo.png" />
 
@@ -30,11 +30,10 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
     />
 
-    <!-- Google model-viewer -->
-    <script
-      type="module"
-      src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"
-    ></script>
+    <!-- Google <model-viewer>  -->
+    <!--  Use a CDN versioned URL so the module is served with CORS headers and the browser can actually download it.  -->
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js"></script>
+    <script nomodule src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer-legacy.js"></script>
 
     <script>
       /* hide bubble if a model was already generated or user dismissed it */
@@ -94,7 +93,7 @@
   <body class="bg-[#1A1A1D] text-white font-sans flex flex-col">
     <header class="flex items-center justify-between py-4 px-6">
       <div class="flex flex-col items-start">
-        <img src="img/textlogo.png" alt="print2" class="h-10 w-auto" />
+        <img src="img/textlogo.png" alt="print3" class="h-10 w-auto" />
         <div class="mt-1 flex flex-col text-sm text-gray-400 opacity-75">
           <p>5400+ prints</p>
           <p>delivered already</p>
@@ -136,10 +135,12 @@
     <main
       class="flex-1 flex flex-col items-center justify-start gap-16 px-4 lg:px-16"
     >
+      <!-- 3‑D preview ------------------------------------------------------ -->
       <section
         id="preview-wrapper"
         class="relative w-full max-w-lg h-80 bg-[#2A2A2E] border border-white/10 rounded-3xl overflow-visible"
       >
+        <!-- fallback still-image (hidden)  -->
         <img
           id="preview-img"
           src="https://placehold.co/600x400/2A2A2E/2A2A2E?text="
@@ -147,13 +148,15 @@
           style="display: none"
         />
 
+        <!-- The astronaut now loads eagerly and is always visible  -->
         <model-viewer
           id="viewer"
           src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
           alt="3D astronaut"
           camera-controls
           auto-rotate
-          style="width: 100%; height: 100%"
+          loading="eager"
+          style="width: 100%; height: 100%; display: block"
         ></model-viewer>
 
         <!-- demo bubble -->
@@ -179,6 +182,7 @@
           <span class="text-[#5EC2C5]">~30&nbsp;seconds</span>
         </div>
 
+        <!-- centred loader -->
         <div
           id="loader"
           class="absolute inset-0 flex items-center justify-center bg-[#2A2A2E]/80"
@@ -189,6 +193,7 @@
           ></div>
         </div>
 
+        <!-- checkout button (hidden by default) -->
         <a
           id="checkout-button"
           href="payment.html"
@@ -200,11 +205,12 @@
         >
       </section>
 
+      <!-- Prompt / upload area ------------------------------------------- -->
       <section class="w-full max-w-xl">
         <div class="flex flex-col items-center text-center">
           <img
             src="img/boxlogo.png"
-            alt="print2 cube"
+            alt="print3 cube"
             class="w-32 h-auto mb-8"
           />
           <h1 class="text-3xl font-semibold mb-8">Make your world.</h1>
@@ -254,6 +260,7 @@
       </section>
     </main>
 
+    <!--  Application logic ----------------------------------------------- -->
     <script type="module">
       const API_BASE = "/api";
       const FALLBACK_GLB =
@@ -277,23 +284,23 @@
 
       const shareOn = (network) => {
         const url = encodeURIComponent(window.location.href);
-        const text = encodeURIComponent('Check out print2!');
-        let shareUrl = '';
+        const text = encodeURIComponent("Check out print3!");
+        let shareUrl = "";
         switch (network) {
-          case 'facebook':
+          case "facebook":
             shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
             break;
-          case 'twitter':
+          case "twitter":
             shareUrl = `https://twitter.com/intent/tweet?url=${url}&text=${text}`;
             break;
-          case 'reddit':
+          case "reddit":
             shareUrl = `https://www.reddit.com/submit?url=${url}&title=${text}`;
             break;
-          case 'linkedin':
+          case "linkedin":
             shareUrl = `https://www.linkedin.com/shareArticle?url=${url}&title=${text}`;
             break;
         }
-        window.open(shareUrl, '_blank', 'noopener');
+        window.open(shareUrl, "_blank", "noopener");
       };
 
       const hideAll = () => {
@@ -324,8 +331,7 @@
         el.style.height = "auto";
         const lh = parseFloat(getComputedStyle(el).lineHeight);
         el.style.height = Math.min(el.scrollHeight, lh * 9) + "px";
-        el.style.overflowY =
-          el.scrollHeight > lh * 9 ? "auto" : "hidden";
+        el.style.overflowY = el.scrollHeight > lh * 9 ? "auto" : "hidden";
       });
 
       refs.promptInput.addEventListener("keydown", (e) => {
@@ -359,7 +365,7 @@
           btn.onclick = () => {
             arr.splice(i, 1);
             uploadedFiles.splice(i, 1);
-            localStorage.setItem("print2Images", JSON.stringify(arr));
+            localStorage.setItem("print3Images", JSON.stringify(arr));
             renderThumbnails(arr);
           };
           wrap.appendChild(btn);
@@ -398,7 +404,7 @@
           )
         );
 
-        localStorage.setItem("print2Images", JSON.stringify(thumbs));
+        localStorage.setItem("print3Images", JSON.stringify(thumbs));
         renderThumbnails(thumbs);
       });
 
@@ -425,11 +431,11 @@
         refs.submitIcon.classList.replace("fa-arrow-up", "fa-stop");
         showLoader();
 
-        localStorage.setItem("print2Prompt", prompt);
+        localStorage.setItem("print3Prompt", prompt);
         localStorage.setItem("hasGenerated", "true");
 
         const url = await fetchGlb(prompt, uploadedFiles);
-        localStorage.setItem("print2Model", url);
+        localStorage.setItem("print3Model", url);
 
         refs.viewer.src = url;
         await refs.viewer.updateComplete;
@@ -440,21 +446,22 @@
         refs.submitIcon.classList.replace("fa-stop", "fa-arrow-up");
       });
 
+      // ------------------------------------------------ INIT
       window.addEventListener("DOMContentLoaded", () => {
-        // ensure astronaut placeholder is visible on first load
-        refs.viewer.src = FALLBACK_GLB;
-        refs.viewer.style.display = "block";
+        // always show astronaut placeholder on load
+        showModel(); // make sure the viewer is visible straight away
 
-        const prompt = localStorage.getItem("print2Prompt");
+        refs.viewer.src = FALLBACK_GLB;
+
+        const prompt = localStorage.getItem("print3Prompt");
         const thumbs = JSON.parse(
-          localStorage.getItem("print2Images") || "[]"
+          localStorage.getItem("print3Images") || "[]"
         );
         if (prompt) {
           refs.promptInput.value = prompt;
           refs.promptInput.dispatchEvent(new Event("input"));
         }
         if (thumbs.length) renderThumbnails(thumbs);
-        // always show astronaut placeholder on load; do not auto-load prior model
       });
     </script>
   </body>
