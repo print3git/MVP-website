@@ -14,9 +14,12 @@ jest.mock('stripe');
 const Stripe = require('stripe');
 const stripeMock = {
   checkout: { sessions: { create: jest.fn().mockResolvedValue({ id: 'cs_test', url: 'https://stripe.test' }) } },
-  webhooks: { constructEvent: jest.fn(() => ({ type: 'checkout.session.completed', data: { object: { id: 'cs_test' } } })) }
+  webhooks: { constructEvent: jest.fn(() => ({ type: 'checkout.session.completed', data: { object: { id: 'cs_test', metadata: { jobId: 'job1' } } } })) }
 };
 Stripe.mockImplementation(() => stripeMock);
+
+jest.mock('../queue/printQueue', () => ({ enqueuePrint: jest.fn() }));
+const { enqueuePrint } = require('../queue/printQueue');
 
 const request = require('supertest');
 const app = require('../server');
@@ -24,6 +27,7 @@ const app = require('../server');
 beforeEach(() => {
   db.query.mockClear();
   axios.post.mockClear();
+  enqueuePrint.mockClear();
 });
 
 test('POST /api/generate returns glb url', async () => {
@@ -48,12 +52,14 @@ test('Stripe create-order flow', async () => {
   expect(res.body.checkoutUrl).toBe('https://stripe.test');
 });
 
-test('Stripe webhook updates order', async () => {
+test('Stripe webhook updates order and enqueues print', async () => {
   db.query.mockResolvedValueOnce({});
   const payload = JSON.stringify({});
   const res = await request(app)
     .post('/api/webhook/stripe')
     .set('stripe-signature', 'sig')
+    .set('Content-Type', 'application/json')
     .send(payload);
   expect(res.status).toBe(200);
+  expect(enqueuePrint).toHaveBeenCalledWith('job1');
 });
