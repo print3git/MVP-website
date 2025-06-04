@@ -156,3 +156,15 @@ Note: the lightweight Hunyuan3D API server files were moved from `img/` to `back
   - Include a link to the user's profile.
 - Link directly from the success page to the user's profile or order history.
   - Provide buttons to view orders or profile from the confirmation screen.
+
+## Referral System
+
+- Add `referral_code` column to the users table.
+- Generate a unique referral code when a user signs up.
+- Create a `referrals` table storing `referrer_id` and `referred_user_id`.
+- Expose POST `/api/referral/apply` to accept a referral code.
+- Record the referral in the new table when a code is applied.
+- Show the user's referral code and credit balance on their profile page.
+- Credit the referrer after the referred user's first purchase.
+- Send an email notification when the referrer receives credit.
+- Write tests for referral code creation and credit logic.
