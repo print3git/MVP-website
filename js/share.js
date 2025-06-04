@@ -1,4 +1,4 @@
-export function shareOn(network) {
+function shareOn(network) {
   const url = encodeURIComponent(window.location.href);
   const text = encodeURIComponent("Check out print3!");
   let shareUrl = "";
@@ -24,3 +24,8 @@ export function shareOn(network) {
   }
   window.open(shareUrl, "_blank", "noopener");
 }
+
+if (typeof module !== "undefined") {
+  module.exports = { shareOn };
+}
+export { shareOn };

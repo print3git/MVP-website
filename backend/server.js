@@ -157,6 +157,25 @@ app.post(
 );
 
 /**
+ * GET /api/status
+ * List recent jobs with pagination
+ */
+app.get("/api/status", async (req, res) => {
+  const limit = parseInt(req.query.limit, 10) || 10;
+  const offset = parseInt(req.query.offset, 10) || 0;
+  try {
+    const { rows } = await db.query(
+      "SELECT * FROM jobs ORDER BY created_at DESC LIMIT $1 OFFSET $2",
+      [limit, offset],
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch jobs" });
+  }
+});
+
+/**
  * GET /api/status/:jobId
  * Poll job status and retrieve the model URL when ready
  */
