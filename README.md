@@ -10,6 +10,7 @@ This repository contains the early MVP code for print2's website and backend.
 ## Local Setup
 
 1. Copy `.env.example` to `.env` in the repository root and update the values:
+
    - `DB_URL` – connection string for your PostgreSQL database.
    - `STRIPE_SECRET_KEY` – secret key from your Stripe dashboard.
    - `STRIPE_WEBHOOK_SECRET` – signing secret for Stripe webhooks.
@@ -37,7 +38,6 @@ This repository contains the early MVP code for print2's website and backend.
    cd hunyuan_server && npm start  # inside backend/hunyuan_server/
    ```
 
-
 ## Serving the Frontend Locally
 
 `index.html` and `payment.html` use ES module scripts. When opened directly from
@@ -53,3 +53,8 @@ python -m http.server
 
 Then navigate to `http://localhost:8080/index.html` or
 `http://localhost:8080/payment.html`.
+
+## Contributing
+
+We welcome pull requests! Please fork the repo and create a topic branch. Ensure `npm test` runs clean before submitting.
+For significant changes, please open an issue first to discuss what you would like to change. Be sure to follow the code style enforced by Prettier.
