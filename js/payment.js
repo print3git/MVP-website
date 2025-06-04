@@ -37,8 +37,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const hideLoader = () => (loader.hidden = true);
 
   // Wait briefly for the <model-viewer> element to be defined before
-  // attaching events. If the library fails to load we still continue so the
-  // loader will eventually hide and the fallback model appears.
+  // attaching events. If the library fails to load, we continue anyway so
+  // the loader eventually hides and the fallback model appears.
   if (window.customElements?.whenDefined) {
     try {
       await Promise.race([
