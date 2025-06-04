@@ -51,6 +51,11 @@ app.post('/generate', upload.single('image'), async (req, res) => {
 });
 
 const PORT = process.env.HUNYUAN_PORT || 4000;
-app.listen(PORT, () => {
-  console.log(`Hunyuan3D server listening on http://localhost:${PORT}`);
-});
+
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Hunyuan3D server listening on http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;
