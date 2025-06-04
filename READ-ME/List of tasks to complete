@@ -6,16 +6,7 @@ image assets.
 
 - Either by directly downloading Hunyuan 2.5, or by using an existing plugin for it, integrate this as
 the model generator. Ensure it works for both text, images, and text+images prompts.
-- Create Stripe account, get API keys, integrate Stripe into frontend, configure the existing Stripe
-backend file
------- When you later create (and verify) your real Stripe account you will simply:
-    1. Replace the placeholder keys with your own dashboard keys.
-    2. Switch the “mode” flag from test to live (or just deploy the same code with live keys)."
-- Create the database (SQL?)
 - add 'share' options to twitter, facebook, tiktok, instagram
-
-
-
 
 (optional for now, but certainly do these long-term)
 - Configure the 'recent' and 'popular' pages on the Community Creations page
@@ -24,46 +15,14 @@ backend file
 we want this to be opt-out to encourage as much sharing as possible, to build up the catalogue and 
 encourage the community 
 
-
 Detailed tasks from the high-level project plan:
 
-## 1. Repository & Tooling
-1. Add a license file.
-2. Create an `.editorconfig`.
-3. Install Prettier and add `npm run format` script.
-4. Add `engines` field in `backend/package.json`.
-5. Update `.gitignore` for environment and build artifacts.
-6. Write contribution guidelines in `README.md`.
-
-## 2. Environment Configuration
-7. Create `.env` from `.env.example` and document variables.
-8. Add runtime checks for missing env variables.
-9. Allow overriding the Hunyuan server URL via env variable.
-
-## 3. Database Setup
-10. Verify migrations cover all tables.
-11. Add a migration script runner.
-12. Provide a DB seed script.
-13. Add timestamp triggers for `updated_at`.
-14. Extend `orders` table with quantity and discount fields.
-
 ## 4. Hunyuan3D Server
-15. Ensure uploads folder exists at startup.
-16. Fix output directory to write `.glb` files to `models/`.
-17. Serve `/models` statically.
-18. Validate input and limit image size.
-19. Extract API base URL and key from env variables.
-20. Handle API errors gracefully.
 21. Remove temporary OBJ files after conversion.
 22. Add Jest tests for error cases.
 
 ## 5. API Server
-23. Serve generated models statically.
-24. Validate incoming requests.
-25. Make Hunyuan base URL configurable via env.
 26. Add logging middleware.
-27. Use async/await consistently.
-28. Implement retry or fallback when Hunyuan service fails.
 29. Add pagination to `/api/status` in future.
 
 ## 6. Print Queue
@@ -72,11 +31,8 @@ Detailed tasks from the high-level project plan:
 32. Consider using a real queue module.
 
 ## 7. Stripe Integration
-33. Configure Stripe keys via `.env` and document them.
 34. Implement the checkout page with Stripe.js.
 35. Handle payment success or cancel on `payment.html`.
-36. Process Stripe webhooks to update order status.
-37. Add Jest tests covering webhook logic.
 
 ## 8. Front-End
 38. Move inline scripts to separate JS files.
@@ -101,7 +57,6 @@ Detailed tasks from the high-level project plan:
 53. Mock the Hunyuan API in server tests for error paths.
 
 ## 11. Documentation
-54. Expand `README.md` with detailed setup instructions.
 55. Move notes in `READ-ME/` to a `docs/` folder.
 56. Add architecture diagrams in `docs/`.
 
