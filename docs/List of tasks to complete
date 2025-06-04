@@ -1,89 +1,61 @@
-## High-Level Tasks (from README.md)
+# Task List
 
-- Integrate Hunyuan 2.5 as the model generator for text, image, and text+image prompts.
-- Configure the "recent" and "popular" pages on the Community Creations page.
+This document tracks outstanding work on the MVP.
+
+Note: the lightweight Hunyuan3D API server files were moved from `img/` to `backend/hunyuan_server/` so `img/` only contains image assets.
+
+## Model Generation & Queue
+
+- Integrate Hunyuan 2.5 as the generator for text, image and text+image prompts.
 - Replace the simple print queue with a real queue module.
-- Improve UI error handling and ensure accessibility with ARIA labels and contrast.
-- Fetch and display recent and popular creations with pagination or infinite scrolling.
-- Add filters by category or date and store submissions in a `community_creations` table.
-- Add unit tests for frontend scripts and mock the Hunyuan API for server error tests.
-- Include architecture diagrams in the `docs/` folder.
-- Review all console logs and check for unused dependencies.
-- Implement a profiles system with user accounts, likes, and competitions:
-  - Use like counts to populate "popular now" lists.
-  - Add competitions tables and endpoints to submit and show leaderboards.
 
-Here are the remaining things to do before we pitch to investors:
+## Front-End
 
-Note: the lightweight Hunyuan3D API server files have been moved from the
-`img/` directory to `backend/hunyuan_server/` so that `img/` only contains
-image assets.
+- Improve UI error handling.
+- Ensure accessibility with ARIA labels and contrast.
 
-- Either by directly downloading Hunyuan 2.5, or by using an existing plugin for it, integrate this as
-  the model generator. Ensure it works for both text, images, and text+images prompts.
+## Community Creations
 
-(optional for now, but certainly do these long-term)
+- Configure the "recent" and "popular" pages.
+- Fetch and display recent creations.
+- Fetch and display popular creations.
+- Implement pagination or infinite scrolling.
+- Add filters by category or date.
+- Store submissions in a `community_creations` table.
 
-- Configure the 'recent' and 'popular' pages on the Community Creations page
+## Testing & CI
 
-Detailed tasks from the high-level project plan:
+- Add unit tests for frontend scripts.
+- Mock the Hunyuan API in server tests for error paths.
 
-## 4. Hunyuan3D Server
+## Documentation
 
-## 5. API Server
+- Add architecture diagrams in `docs/`.
 
+## Cleanup
 
-## 6. Print Queue
+- Review all console logs.
+- Check for unused dependencies in `package.json`.
 
-32. Consider using a real queue module.
+## Profiles & Competitions
 
-## 7. Stripe Integration
+- Display like counts in the community gallery and profiles.
+- Use like counts to populate the "popular now" list.
+- Create a `competitions` table with name and date fields.
+- Add a `competition_entries` table linking models to competitions.
+- Expose APIs to submit models to competitions and fetch leaderboards.
+- Show active competitions and leaderboards on the frontend.
+- Add `prize_description` and `winner_model_id` columns to the `competitions` table.
+- Build admin-only endpoints to create, update, and delete competitions.
+- Create a competition submission form allowing a user to link an existing model to a competition.
+- Ensure a model can only be submitted to one active competition at a time.
+- Schedule a job to close competitions, select the entry with the most likes, and update `winner_model_id`.
+- Send an email to the winning user with instructions to claim their free print.
+- Display past competitions and winners on a dedicated page.
+- Add competition rules to the documentation.
 
-## 8. Front-End
+## UX Improvements
 
-43. Improve UI error handling.
-44. Ensure accessibility with ARIA labels and contrast.
-
-## 9. Community Creations Page
-
-45. Fetch and display recent creations.
-46. Fetch and display popular creations.
-47. Implement pagination or infinite scrolling.
-48. Add filters by category or date.
-49. Store community submissions in a `community_creations` table.
-
-## 10. Testing & CI
-
-50. Add unit tests for frontend scripts.
-51. Mock the Hunyuan API in server tests for error paths.
-
-## 11. Documentation
-
-56. Add architecture diagrams in `docs/`.
-
-## 12. Cleanup & Polish
-
-59. Review all console logs.
-60. Check for unused dependencies in `package.json`.
-
-## Profiles System Plan
-
-11. Display like counts in the community gallery and profiles.
-12. Use like counts to populate the "popular now" list.
-13. Create a `competitions` table with name and date fields.
-14. Add a `competition_entries` table linking models to competitions.
-15. Expose APIs to submit models to competitions and fetch leaderboards.
-16. Show active competitions and leaderboards on the frontend.
-
-17. Add `prize_description` and `winner_model_id` columns to the `competitions` table.
-18. Build admin-only endpoints to create, update, and delete competitions.
-19. Create a competition submission form allowing a user to link an existing model to a competition.
-20. Ensure a model can only be submitted to one active competition at a time.
-21. Schedule a job to close competitions, select the entry with the most likes, and update `winner_model_id`.
-22. Send an email to the winning user with instructions to claim their free print.
-23. Display past competitions and winners on a dedicated page.
-24. Add competition rules to the documentation.
-## UX Improvements for a frictionless "prompt → model → buy"
 - Guide the user with a step-by-step wizard from entering a prompt through to checkout.
 - Provide pre-made example prompts and images to help new visitors start quickly.
 - Add drag-and-drop image uploads with inline cropping and resizing.
