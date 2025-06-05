@@ -34,6 +34,7 @@ const refs = {
   cropCancel: $('crop-cancel'),
   examples: $('prompt-examples'),
   checkoutBtn: $('checkout-button'),
+  buyNowBtn: $('buy-now-button'),
   stepPrompt: $('step-prompt'),
   stepModel: $('step-model'),
   stepBuy: $('step-buy'),
@@ -55,6 +56,7 @@ function setStep(name) {
 window.shareOn = shareOn;
 let uploadedFiles = [];
 let lastJobId = null;
+
 let progressInterval = null;
 
 function startProgress(estimateMs = 20000) {
@@ -84,6 +86,7 @@ function stopProgress() {
   }, 300);
 }
 
+
 const hideAll = () => {
   refs.previewImg.style.display = 'none';
   refs.loader.style.display = 'none';
@@ -103,6 +106,38 @@ const hideDemo = () => {
   refs.demoNote && (refs.demoNote.style.display = 'none');
   document.documentElement.classList.add('has-generated');
 };
+
+async function fetchProfile() {
+  const token = localStorage.getItem('token');
+  if (!token) return;
+  try {
+    const res = await fetch('/api/profile', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (res.ok) {
+      savedProfile = await res.json();
+    }
+  } catch (err) {
+    console.error('Failed to load profile', err);
+  }
+}
+
+async function buyNow() {
+  if (!savedProfile) return;
+  const jobId = localStorage.getItem('print3JobId');
+  const res = await fetch('/api/create-order', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      jobId,
+      price: 2000,
+      qty: 1,
+      shippingInfo: savedProfile.shipping_info,
+    }),
+  });
+  const data = await res.json();
+  window.location.href = data.checkoutUrl;
+}
 
 function showError(msg) {
   document.getElementById('gen-error').textContent = msg;
@@ -289,6 +324,7 @@ refs.submitBtn.addEventListener('click', async () => {
   showError('');
   refs.promptWrapper.classList.remove('border-red-500');
   refs.checkoutBtn.classList.add('hidden');
+  refs.buyNowBtn?.classList.add('hidden');
   refs.submitIcon.classList.replace('fa-arrow-up', 'fa-stop');
   showLoader();
 
@@ -306,6 +342,7 @@ refs.submitBtn.addEventListener('click', async () => {
   hideDemo();
 
   refs.checkoutBtn.classList.remove('hidden');
+  if (savedProfile) refs.buyNowBtn?.classList.remove('hidden');
   refs.submitIcon.classList.replace('fa-stop', 'fa-arrow-up');
 });
 
@@ -313,6 +350,12 @@ window.addEventListener('DOMContentLoaded', () => {
   setStep('prompt');
   showModel();
   refs.viewer.src = FALLBACK_GLB;
+  fetchProfile().then(() => {
+    if (savedProfile && refs.buyNowBtn) {
+      refs.buyNowBtn.classList.remove('hidden');
+      refs.buyNowBtn.addEventListener('click', buyNow);
+    }
+  });
 
   const prompt = localStorage.getItem('print3Prompt');
   const thumbs = JSON.parse(localStorage.getItem('print3Images') || '[]');

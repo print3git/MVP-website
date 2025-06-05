@@ -237,6 +237,23 @@ app.get('/api/profile', authRequired, async (req, res) => {
   }
 });
 
+app.post('/api/profile', authRequired, async (req, res) => {
+  const { shippingInfo, paymentInfo } = req.body;
+  try {
+    await db.query(
+      `INSERT INTO user_profiles(user_id, shipping_info, payment_info)
+       VALUES($1,$2,$3)
+       ON CONFLICT (user_id)
+       DO UPDATE SET shipping_info=$2, payment_info=$3`,
+      [req.user.id, shippingInfo || {}, paymentInfo || {}]
+    );
+    res.sendStatus(204);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to update profile' });
+  }
+});
+
 app.get('/api/users/:username/models', async (req, res) => {
   try {
     const { rows } = await db.query('SELECT id FROM users WHERE username=$1', [
