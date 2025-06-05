@@ -190,6 +190,14 @@ app.get('/api/status/:jobId', async (req, res) => {
   }
 });
 
+/**
+ * GET /api/config/stripe
+ * Retrieve the Stripe publishable key
+ */
+app.get('/api/config/stripe', (req, res) => {
+  res.json({ publishableKey: config.stripePublishable });
+});
+
 app.get('/api/progress/:jobId', (req, res) => {
   res.set({
     'Content-Type': 'text/event-stream',
