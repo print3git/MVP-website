@@ -147,7 +147,7 @@ async function fetchGlb(prompt, files) {
     lastJobId = data.jobId;
     return data.glb_url;
   } catch (err) {
-    document.getElementById('gen-error').textContent = 'Generation failed';
+    document.getElementById("gen-error").textContent = "Generation failed";
     return FALLBACK_GLB;
   }
 }

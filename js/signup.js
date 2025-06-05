@@ -3,7 +3,9 @@ async function signup(e) {
   const nameEl = document.getElementById("su-name");
   const emailEl = document.getElementById("su-email");
   const passEl = document.getElementById("su-pass");
-  [nameEl, emailEl, passEl].forEach((el) => el.classList.remove("border-red-500"));
+  [nameEl, emailEl, passEl].forEach((el) =>
+    el.classList.remove("border-red-500"),
+  );
   const username = nameEl.value.trim();
   const email = emailEl.value.trim();
   const password = passEl.value.trim();
@@ -24,8 +26,11 @@ async function signup(e) {
     localStorage.setItem("token", data.token);
     window.location.href = "profile.html";
   } else {
-    document.getElementById("error").textContent = data.error || "Signup failed";
-    [nameEl, emailEl, passEl].forEach((el) => el.classList.add("border-red-500"));
+    document.getElementById("error").textContent =
+      data.error || "Signup failed";
+    [nameEl, emailEl, passEl].forEach((el) =>
+      el.classList.add("border-red-500"),
+    );
   }
 }
 
