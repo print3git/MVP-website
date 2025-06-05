@@ -30,7 +30,6 @@ This list tracks ideas to aggressively increase click-through at every step from
 - Provide incentives like discounts or credits for the first order.
 
 ## Community Prints
-- Add a "Purchase Print" button on every item in the Community Creations gallery.
 - Surface other users' models on profile pages with an option to buy prints.
 - Let creators mark their models as publicly sellable or private.
 - Record each purchase in the buyer's order history for reordering and tracking.
