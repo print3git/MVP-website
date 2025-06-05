@@ -102,6 +102,14 @@ test("create-order applies discount", async () => {
   expect(insertCall[1][6]).toBe(20);
 });
 
+test("create-order rejects unknown job", async () => {
+  db.query.mockResolvedValueOnce({ rows: [] });
+  const res = await request(app)
+    .post("/api/create-order")
+    .send({ jobId: "bad" });
+  expect(res.status).toBe(404);
+});
+
 test("POST /api/register returns token", async () => {
   db.query.mockResolvedValueOnce({ rows: [{ id: "u1", username: "alice" }] });
   const res = await request(app)
@@ -196,6 +204,11 @@ test("POST /api/community requires jobId", async () => {
   expect(res.status).toBe(400);
 });
 
+test("POST /api/community requires auth", async () => {
+  const res = await request(app).post("/api/community").send({ jobId: "j1" });
+  expect(res.status).toBe(401);
+});
+
 test("GET /api/community/recent returns creations", async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
   const res = await request(app).get("/api/community/recent");
@@ -211,6 +224,19 @@ test("GET /api/community/recent supports order", async () => {
   );
 });
 
+test("GET /api/community/recent pagination and category", async () => {
+  db.query.mockResolvedValueOnce({ rows: [] });
+  await request(app).get(
+    "/api/community/recent?limit=5&offset=2&category=art&search=bot",
+  );
+  expect(db.query).toHaveBeenCalledWith(expect.any(String), [
+    5,
+    2,
+    "art",
+    "bot",
+  ]);
+});
+
 test("Admin create competition", async () => {
   db.query.mockResolvedValueOnce({ rows: [{}] });
   const res = await request(app)
@@ -218,6 +244,13 @@ test("Admin create competition", async () => {
     .set("x-admin-token", "admin")
     .send({ name: "Test", start_date: "2025-01-01", end_date: "2025-01-31" });
   expect(res.status).toBe(200);
+});
+
+test("Admin create competition unauthorized", async () => {
+  const res = await request(app)
+    .post("/api/admin/competitions")
+    .send({ name: "Test", start_date: "2025-01-01", end_date: "2025-01-31" });
+  expect(res.status).toBe(401);
 });
 
 test("registration missing username", async () => {
