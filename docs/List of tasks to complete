@@ -76,6 +76,7 @@ Note: the lightweight Hunyuan3D API server files were moved from `img/` to `back
   - Display them near the checkout button.
 - Let users share a generated model to the community or social media with one click.
   - Provide Open Graph meta tags for previews.
+  - Implement GET /api/shared/:slug endpoint to fetch shared model metadata.
 - Provide tooltips or a short tutorial overlay explaining each step.
   - Design tooltip copy and dismiss logic.
   - Allow users to skip the tutorial.
