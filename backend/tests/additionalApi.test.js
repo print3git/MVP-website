@@ -153,7 +153,5 @@ test("SSE progress endpoint streams updates", async () => {
     progressEmitter.emit("progress", { jobId: "job1", progress: 100 });
   }, 10);
   const res = await req;
-  expect(res.text).toContain(
-    "data: {\"jobId\":\"job1\",\"progress\":100}"
-  );
+  expect(res.text).toContain('data: {"jobId":"job1","progress":100}');
 });
