@@ -5,10 +5,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>print3 Assistant</title>
     <meta
       name="description"
@@ -64,7 +61,7 @@
         overflow: hidden;
       }
       #submit-button::before {
-        content: "";
+        content: '';
         position: absolute;
         inset: 0;
         background: linear-gradient(
@@ -150,10 +147,7 @@
       </div>
     </header>
 
-
-    <main
-      class="flex-1 flex flex-col items-center justify-start gap-8 px-4 lg:px-16"
-    >
+    <main class="flex-1 flex flex-col items-center justify-start gap-8 px-4 lg:px-16">
       <!-- 3‑D preview ------------------------------------------------------ -->
       <section
         id="preview-wrapper"
@@ -211,14 +205,8 @@
       <!-- Prompt / upload area ------------------------------------------- -->
       <section class="w-full max-w-xl">
         <div class="flex flex-col items-center text-center">
-          <img
-            src="img/boxlogo.png"
-            alt="print3 cube"
-            class="w-32 h-auto mb-8"
-          />
-          <h1 class="text-3xl font-semibold mb-8">
-            Design & Print in 30 Seconds.
-          </h1>
+          <img src="img/boxlogo.png" alt="print3 cube" class="w-32 h-auto mb-8" />
+          <h1 class="text-3xl font-semibold mb-8">Design & Print in 30 Seconds.</h1>
 
           <div class="flex items-center w-full gap-4">
             <div
@@ -238,21 +226,12 @@
               aria-label="Generate"
               class="w-12 h-12 flex items-center justify-center bg-white rounded-full transition-shape"
             >
-              <i
-                id="submit-icon"
-                class="fas fa-arrow-up text-xl text-[#1A1A1D]"
-              ></i>
+              <i id="submit-icon" class="fas fa-arrow-up text-xl text-[#1A1A1D]"></i>
             </button>
           </div>
 
           <div class="mt-4 w-full flex items-start gap-4">
-            <input
-              type="file"
-              id="uploadInput"
-              accept="image/*"
-              multiple
-              class="hidden"
-            />
+            <input type="file" id="uploadInput" accept="image/*" multiple class="hidden" />
             <label
               for="uploadInput"
               aria-label="Upload Images"

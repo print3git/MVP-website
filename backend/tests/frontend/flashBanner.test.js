@@ -1,62 +1,50 @@
 /** @jest-environment node */
-const fs = require("fs");
-const path = require("path");
-const { JSDOM } = require("jsdom");
+const fs = require('fs');
+const path = require('path');
+const { JSDOM } = require('jsdom');
 
-let html = fs.readFileSync(
-  path.join(__dirname, "../../../payment.html"),
-  "utf8",
-);
+let html = fs.readFileSync(path.join(__dirname, '../../../payment.html'), 'utf8');
 html = html
-  .replace(/<script[^>]+src="https?:\/\/[^>]+><\/script>/g, "")
-  .replace(/<link[^>]+href="https?:\/\/[^>]+>/g, "");
+  .replace(/<script[^>]+src="https?:\/\/[^>]+><\/script>/g, '')
+  .replace(/<link[^>]+href="https?:\/\/[^>]+>/g, '');
 
-describe("flash banner", () => {
-  test("hides after countdown ends", async () => {
+describe('flash banner', () => {
+  test('hides after countdown ends', async () => {
     const dom = new JSDOM(html, {
-      runScripts: "dangerously",
-      resources: "usable",
-      url: "http://localhost/",
+      runScripts: 'dangerously',
+      resources: 'usable',
+      url: 'http://localhost/',
     });
     global.window = dom.window;
     global.document = dom.window.document;
-    dom.window.localStorage.setItem(
-      "flashDiscountEnd",
-      String(Date.now() + 1000),
-    );
-    const scriptSrc = fs.readFileSync(
-      path.join(__dirname, "../../../js/payment.js"),
-      "utf8",
-    );
+    dom.window.localStorage.setItem('flashDiscountEnd', String(Date.now() + 1000));
+    const scriptSrc = fs.readFileSync(path.join(__dirname, '../../../js/payment.js'), 'utf8');
     dom.window.eval(scriptSrc);
-    dom.window.document.dispatchEvent(new dom.window.Event("DOMContentLoaded"));
+    dom.window.document.dispatchEvent(new dom.window.Event('DOMContentLoaded'));
     dom.window.startFlashDiscount();
-    const banner = dom.window.document.getElementById("flash-banner");
+    const banner = dom.window.document.getElementById('flash-banner');
     expect(banner.hidden).toBe(false);
     await new Promise((r) => setTimeout(r, 1100));
     expect(banner.hidden).toBe(true);
   });
 
-  test("resetFlashDiscount restarts timer", async () => {
+  test('resetFlashDiscount restarts timer', async () => {
     const dom = new JSDOM(html, {
-      runScripts: "dangerously",
-      resources: "usable",
-      url: "http://localhost/",
+      runScripts: 'dangerously',
+      resources: 'usable',
+      url: 'http://localhost/',
     });
     global.window = dom.window;
     global.document = dom.window.document;
-    const scriptSrc = fs.readFileSync(
-      path.join(__dirname, "../../../js/payment.js"),
-      "utf8",
-    );
+    const scriptSrc = fs.readFileSync(path.join(__dirname, '../../../js/payment.js'), 'utf8');
     dom.window.eval(scriptSrc);
-    dom.window.document.dispatchEvent(new dom.window.Event("DOMContentLoaded"));
+    dom.window.document.dispatchEvent(new dom.window.Event('DOMContentLoaded'));
     dom.window.startFlashDiscount();
-    const first = Number(dom.window.localStorage.getItem("flashDiscountEnd"));
+    const first = Number(dom.window.localStorage.getItem('flashDiscountEnd'));
     dom.window.resetFlashDiscount();
-    const second = Number(dom.window.localStorage.getItem("flashDiscountEnd"));
+    const second = Number(dom.window.localStorage.getItem('flashDiscountEnd'));
     expect(second).toBeGreaterThan(first);
-    const banner = dom.window.document.getElementById("flash-banner");
+    const banner = dom.window.document.getElementById('flash-banner');
     expect(banner.hidden).toBe(false);
   });
 });
