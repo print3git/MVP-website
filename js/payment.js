@@ -36,6 +36,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   const cancelMsg = document.getElementById("cancel");
   const flashMsg = document.getElementById("flash-discount");
 
+  if (location.protocol === "file:") {
+    const warn = document.createElement("p");
+    warn.textContent =
+      "This page must be served from a local web server. Run `npm run serve`" +
+      " and open http://localhost:8080/payment.html.";
+    warn.className = "text-center text-red-400 mb-4";
+    document.body.prepend(warn);
+    return;
+  }
+
   function startFlashDiscount() {
     const saved = parseInt(localStorage.getItem("flashDiscountEnd"), 10) || 0;
     let end = saved;

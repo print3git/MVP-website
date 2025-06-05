@@ -1,0 +1,10 @@
+{
+  "name": "mvp-website",
+  "private": true,
+  "scripts": {
+    "serve": "http-server -p 8080"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}
