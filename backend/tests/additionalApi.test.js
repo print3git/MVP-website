@@ -227,3 +227,17 @@ test('GET /api/shared/:slug 404 when missing', async () => {
   const res = await request(app).get('/api/shared/bad');
   expect(res.status).toBe(404);
 });
+
+
+test('Stripe webhook invalid signature', async () => {
+  stripeMock.webhooks.constructEvent.mockImplementation(() => {
+    throw new Error('bad sig');
+  });
+  const payload = JSON.stringify({});
+  const res = await request(app)
+    .post('/api/webhook/stripe')
+    .set('stripe-signature', 'bad')
+    .set('Content-Type', 'application/json')
+    .send(payload);
+  expect(res.status).toBe(400);
+});
