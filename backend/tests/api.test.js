@@ -266,3 +266,43 @@ test("/api/status/:id returns 404 when missing", async () => {
   const res = await request(app).get("/api/status/bad");
   expect(res.status).toBe(404);
 });
+
+test("GET /api/profile unauthorized", async () => {
+  const res = await request(app).get("/api/profile");
+  expect(res.status).toBe(401);
+});
+
+test("GET /api/profile returns data", async () => {
+  db.query.mockResolvedValueOnce({
+    rows: [{ id: "u1", username: "alice", email: "a@a.com" }],
+  });
+  const token = jwt.sign({ id: "u1" }, "secret");
+  const res = await request(app)
+    .get("/api/profile")
+    .set("authorization", `Bearer ${token}`);
+  expect(res.status).toBe(200);
+  expect(res.body.username).toBe("alice");
+});
+
+test("PUT /api/profile updates profile", async () => {
+  db.query.mockResolvedValueOnce({ rows: [{ id: "u1" }] });
+  const token = jwt.sign({ id: "u1" }, "secret");
+  const res = await request(app)
+    .put("/api/profile")
+    .set("authorization", `Bearer ${token}`)
+    .send({ email: "new@a.com" });
+  expect(res.status).toBe(200);
+  const updateCall = db.query.mock.calls.find((c) =>
+    c[0].includes("UPDATE users"),
+  );
+  expect(updateCall).toBeTruthy();
+});
+
+test("GET /api/users/:user/profile public fetch", async () => {
+  db.query.mockResolvedValueOnce({
+    rows: [{ id: "u2", username: "bob", email: "b@b.com" }],
+  });
+  const res = await request(app).get("/api/users/bob/profile");
+  expect(res.status).toBe(200);
+  expect(res.body.username).toBe("bob");
+});
