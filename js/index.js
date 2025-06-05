@@ -115,6 +115,16 @@ function validatePrompt(p) {
     refs.promptWrapper.classList.add('border-red-500');
     return false;
   }
+  if (p && /[<>]/.test(p)) {
+    showError('Prompt contains invalid characters');
+    refs.promptWrapper.classList.add('border-red-500');
+    return false;
+  }
+  if (p && p.length > 200) {
+    showError('Prompt must be under 200 characters');
+    refs.promptWrapper.classList.add('border-red-500');
+    return false;
+  }
   return true;
 }
 
