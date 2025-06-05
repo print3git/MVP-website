@@ -78,4 +78,4 @@ For significant changes, please open an issue first to discuss what you would li
 
 ## ToDo List
 
-All open tasks are tracked in [docs/List of tasks to complete](docs/List%20of%20tasks%20to%20complete).
+All open tasks are tracked in [docs/task_list.md](docs/task_list.md).
