@@ -12,8 +12,9 @@ This repository contains the early MVP code for print2's website and backend.
 1. Copy `.env.example` to `.env` in the repository root and update the values:
 
    - `DB_URL` – connection string for your PostgreSQL database.
-   - `STRIPE_SECRET_KEY` – secret key from your Stripe dashboard.
-   - `STRIPE_WEBHOOK_SECRET` – signing secret for Stripe webhooks.
+  - `STRIPE_SECRET_KEY` – secret key from your Stripe dashboard.
+  - `STRIPE_PUBLISHABLE_KEY` – publishable key for Stripe.js on the frontend.
+  - `STRIPE_WEBHOOK_SECRET` – signing secret for Stripe webhooks.
    - `HUNYUAN_API_KEY` – key for the Hunyuan3D API.
    - Optional: `PORT` and `HUNYUAN_PORT` to override the default ports.
    - Optional: `HUNYUAN_SERVER_URL` if your Hunyuan API runs on a custom URL.

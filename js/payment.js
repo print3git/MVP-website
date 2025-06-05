@@ -25,7 +25,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Safely initialize Stripe once the DOM is ready. If the Stripe library
   // failed to load, we fall back to plain redirects.
   if (window.Stripe) {
-    stripe = window.Stripe('pk_test_placeholder');
+    try {
+      const resp = await fetch('/api/config/stripe');
+      const data = await resp.json();
+      if (data.publishableKey) {
+        stripe = window.Stripe(data.publishableKey);
+      }
+    } catch {
+      // ignore if the config request fails
+    }
   }
   const loader = document.getElementById('loader');
   const viewer = document.getElementById('viewer');
