@@ -209,9 +209,15 @@ test('SSE progress endpoint streams updates', async () => {
   const req = request(app).get('/api/progress/job1');
   setTimeout(() => {
     progressEmitter.emit('progress', { jobId: 'job1', progress: 100 });
-  }, 10);
+  }, 50);
   const res = await req;
   expect(res.text).toContain('data: {"jobId":"job1","progress":100}');
+});
+
+test('POST /api/create-order rejects unknown job', async () => {
+  db.query.mockResolvedValueOnce({ rows: [] });
+  const res = await request(app).post('/api/create-order').send({ jobId: 'bad' });
+  expect(res.status).toBe(404);
 });
 
 test('GET /api/shared/:slug returns data', async () => {
