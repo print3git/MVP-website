@@ -120,6 +120,12 @@ test('POST /api/models/:id/like requires auth', async () => {
   expect(res.status).toBe(401);
 });
 
+test('GET /api/community/recent pagination and category', async () => {
+  db.query.mockResolvedValueOnce({ rows: [] });
+  await request(app).get('/api/community/recent?limit=5&offset=2&category=art');
+  expect(db.query).toHaveBeenCalledWith(expect.any(String), [5, 2, 'art', null]);
+});
+
 test('GET /api/community/popular uses correct ordering', async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
   await request(app).get('/api/community/popular?limit=1&offset=0');
