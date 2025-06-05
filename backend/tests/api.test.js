@@ -267,6 +267,24 @@ test("/api/status/:id returns 404 when missing", async () => {
   expect(res.status).toBe(404);
 });
 
+
+
+test("GET /api/users/:username/profile returns profile", async () => {
+  db.query.mockResolvedValueOnce({
+    rows: [{ display_name: "Alice", avatar_url: "a.png" }],
+  });
+  const res = await request(app).get("/api/users/alice/profile");
+  expect(res.status).toBe(200);
+  expect(res.body.display_name).toBe("Alice");
+  expect(res.body.avatar_url).toBe("a.png");
+});
+
+test("GET /api/users/:username/profile 404 when missing", async () => {
+  db.query.mockResolvedValueOnce({ rows: [] });
+  const res = await request(app).get("/api/users/none/profile");
+  expect(res.status).toBe(404);
+});
+
 test("GET /api/profile unauthorized", async () => {
   const res = await request(app).get("/api/profile");
   expect(res.status).toBe(401);
