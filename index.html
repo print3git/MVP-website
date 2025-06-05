@@ -150,6 +150,20 @@
       </div>
     </header>
 
+    <nav
+      id="progress"
+      aria-label="Progress"
+      class="w-full flex justify-center mb-4 text-sm"
+    >
+      <ol class="flex space-x-2">
+        <li id="step-prompt" class="font-semibold">Prompt</li>
+        <li>→</li>
+        <li id="step-model" class="text-gray-400">Model</li>
+        <li>→</li>
+        <li id="step-buy" class="text-gray-400">Buy</li>
+      </ol>
+    </nav>
+
     <main
       class="flex-1 flex flex-col items-center justify-start gap-8 px-4 lg:px-16"
     >
@@ -164,6 +178,7 @@
           src="https://placehold.co/600x400/2A2A2E/2A2A2E?text="
           class="object-contain h-full w-full"
           style="display: none"
+          alt="Preview image"
         />
 
         <!-- The astronaut now loads eagerly and is always visible  -->
