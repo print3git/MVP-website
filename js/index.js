@@ -1,11 +1,13 @@
-import { shareOn } from "./share.js";
+'use strict';
+import { shareOn } from './share.js';
 
 if (
-  localStorage.getItem("hasGenerated") === "true" ||
-  localStorage.getItem("demoDismissed") === "true"
+  localStorage.getItem('hasGenerated') === 'true' ||
+  localStorage.getItem('demoDismissed') === 'true'
 ) {
-  document.documentElement.classList.add("has-generated");
+  document.documentElement.classList.add('has-generated');
 }
+
 
 const API_BASE = "/api";
 const FALLBACK_GLB =
@@ -44,8 +46,8 @@ function setStep(name) {
   };
   Object.entries(map).forEach(([key, el]) => {
     if (!el) return;
-    el.classList.toggle("font-semibold", key === name);
-    el.classList.toggle("text-gray-400", key !== name);
+    el.classList.toggle('font-semibold', key === name);
+    el.classList.toggle('text-gray-400', key !== name);
   });
 }
 
@@ -54,87 +56,87 @@ let uploadedFiles = [];
 let lastJobId = null;
 
 const hideAll = () => {
-  refs.previewImg.style.display = "none";
-  refs.loader.style.display = "none";
-  refs.viewer.style.display = "none";
+  refs.previewImg.style.display = 'none';
+  refs.loader.style.display = 'none';
+  refs.viewer.style.display = 'none';
 };
 const showLoader = () => {
   hideAll();
-  refs.loader.style.display = "flex";
+  refs.loader.style.display = 'flex';
 };
 const showModel = () => {
   hideAll();
-  refs.viewer.style.display = "block";
+  refs.viewer.style.display = 'block';
 };
 const hideDemo = () => {
-  refs.demoNote && (refs.demoNote.style.display = "none");
-  document.documentElement.classList.add("has-generated");
+  refs.demoNote && (refs.demoNote.style.display = 'none');
+  document.documentElement.classList.add('has-generated');
 };
 
 function showError(msg) {
-  document.getElementById("gen-error").textContent = msg;
+  document.getElementById('gen-error').textContent = msg;
 }
 
 function validatePrompt(p) {
   if (!p && uploadedFiles.length === 0) {
-    showError("Enter a prompt or upload images");
-    refs.promptWrapper.classList.add("border-red-500");
+    showError('Enter a prompt or upload images');
+    refs.promptWrapper.classList.add('border-red-500');
     return false;
   }
   if (p && p.length < 5) {
-    showError("Prompt must be at least 5 characters");
-    refs.promptWrapper.classList.add("border-red-500");
+    showError('Prompt must be at least 5 characters');
+    refs.promptWrapper.classList.add('border-red-500');
     return false;
   }
   return true;
 }
 
-refs.demoClose?.addEventListener("click", () => {
+refs.demoClose?.addEventListener('click', () => {
   hideDemo();
-  localStorage.setItem("demoDismissed", "true");
+  localStorage.setItem('demoDismissed', 'true');
 });
 
-refs.promptInput.addEventListener("input", () => {
+refs.promptInput.addEventListener('input', () => {
   const el = refs.promptInput;
-  el.style.height = "auto";
+  el.style.height = 'auto';
   const lh = parseFloat(getComputedStyle(el).lineHeight);
-  el.style.height = Math.min(el.scrollHeight, lh * 9) + "px";
-  el.style.overflowY = el.scrollHeight > lh * 9 ? "auto" : "hidden";
-  document.getElementById("gen-error").textContent = "";
-  refs.promptWrapper.classList.remove("border-red-500");
+  el.style.height = Math.min(el.scrollHeight, lh * 9) + 'px';
+  el.style.overflowY = el.scrollHeight > lh * 9 ? 'auto' : 'hidden';
+  document.getElementById('gen-error').textContent = '';
+  refs.promptWrapper.classList.remove('border-red-500');
 });
 
-refs.promptInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter" && !e.shiftKey) {
+refs.promptInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
     e.preventDefault();
     refs.submitBtn.click();
   }
 });
 
 function renderThumbnails(arr) {
-  refs.imagePreviewArea.innerHTML = "";
+  refs.imagePreviewArea.innerHTML = '';
   if (!arr.length) {
-    refs.imagePreviewArea.classList.add("hidden");
+    refs.imagePreviewArea.classList.add('hidden');
     return;
   }
-  refs.imagePreviewArea.classList.remove("hidden");
+  refs.imagePreviewArea.classList.remove('hidden');
   arr.forEach((url, i) => {
-    const wrap = document.createElement("div");
-    wrap.className = "relative";
-    const img = document.createElement("img");
+    const wrap = document.createElement('div');
+    wrap.className = 'relative';
+    const img = document.createElement('img');
     img.src = url;
-    img.className = "object-cover w-full h-20 rounded-md shadow-md";
+    img.className = 'object-cover w-full h-20 rounded-md shadow-md';
     wrap.appendChild(img);
 
-    const btn = document.createElement("button");
-    btn.type = "button";
+    const btn = document.createElement('button');
+    btn.type = 'button';
     btn.innerHTML = '<i class="fas fa-times"></i>';
     btn.className =
-      "absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white text-black border border-black flex items-center justify-center";
+      'absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white text-black border border-black flex items-center justify-center';
     btn.onclick = () => {
       arr.splice(i, 1);
       uploadedFiles.splice(i, 1);
-      localStorage.setItem("print3Images", JSON.stringify(arr));
+      localStorage.setItem('print3Images', JSON.stringify(arr));
       renderThumbnails(arr);
     };
     wrap.appendChild(btn);
@@ -158,38 +160,41 @@ async function processFiles(files) {
                 r = Math.min(max / w, max / h, 1);
               w *= r;
               h *= r;
-              const c = document.createElement("canvas");
+              const c = document.createElement('canvas');
               c.width = w;
               c.height = h;
-              c.getContext("2d").drawImage(im, 0, 0, w, h);
-              res(c.toDataURL("image/png", 0.7));
+              c.getContext('2d').drawImage(im, 0, 0, w, h);
+              res(c.toDataURL('image/png', 0.7));
             };
             im.src = R.result;
           };
           R.readAsDataURL(file);
-        }),
-    ),
+        })
+    )
   );
-  localStorage.setItem("print3Images", JSON.stringify(thumbs));
+
+  localStorage.setItem('print3Images', JSON.stringify(thumbs));
   renderThumbnails(thumbs);
 }
 
-refs.uploadInput.addEventListener("change", (e) => {
+refs.uploadInput.addEventListener('change', (e) => {
   processFiles([...e.target.files]);
 });
 
 if (refs.dropZone) {
-  ["dragover", "dragenter"].forEach((ev) => {
+
+  ['dragover', 'dragenter'].forEach((ev) => {
     refs.dropZone.addEventListener(ev, (e) => {
       e.preventDefault();
-      refs.dropZone.classList.add("ring-2", "ring-cyan-400");
+      refs.dropZone.classList.add('ring-2', 'ring-cyan-400');
     });
   });
-  ["dragleave", "drop"].forEach((ev) => {
+  ['dragleave', 'drop'].forEach((ev) => {
     refs.dropZone.addEventListener(ev, (e) => {
       e.preventDefault();
-      refs.dropZone.classList.remove("ring-2", "ring-cyan-400");
-      if (ev === "drop") {
+      refs.dropZone.classList.remove('ring-2', 'ring-cyan-400');
+      if (ev === 'drop') {
+
         processFiles([...e.dataTransfer.files]);
       }
     });
@@ -199,10 +204,10 @@ if (refs.dropZone) {
 async function fetchGlb(prompt, files) {
   try {
     const fd = new FormData();
-    if (prompt) fd.append("prompt", prompt);
-    files.forEach((f) => fd.append("images", f));
+    if (prompt) fd.append('prompt', prompt);
+    files.forEach((f) => fd.append('images', f));
     const r = await fetch(`${API_BASE}/generate`, {
-      method: "POST",
+      method: 'POST',
       body: fd,
     });
     if (!r.ok) throw new Error();
@@ -210,53 +215,57 @@ async function fetchGlb(prompt, files) {
     lastJobId = data.jobId;
     return data.glb_url;
   } catch (err) {
-    document.getElementById("gen-error").textContent = "Generation failed";
+    document.getElementById('gen-error').textContent = 'Generation failed';
     return FALLBACK_GLB;
   }
 }
 
-refs.submitBtn.addEventListener("click", async () => {
+refs.submitBtn.addEventListener('click', async () => {
   const prompt = refs.promptInput.value.trim();
   if (!validatePrompt(prompt)) return;
-  showError("");
-  refs.promptWrapper.classList.remove("border-red-500");
-  refs.checkoutBtn.classList.add("hidden");
-  refs.submitIcon.classList.replace("fa-arrow-up", "fa-stop");
+  showError('');
+  refs.promptWrapper.classList.remove('border-red-500');
+  refs.checkoutBtn.classList.add('hidden');
+  refs.submitIcon.classList.replace('fa-arrow-up', 'fa-stop');
   showLoader();
 
-  localStorage.setItem("print3Prompt", prompt);
-  localStorage.setItem("hasGenerated", "true");
+  localStorage.setItem('print3Prompt', prompt);
+  localStorage.setItem('hasGenerated', 'true');
 
   const url = await fetchGlb(prompt, uploadedFiles);
-  localStorage.setItem("print3Model", url);
-  localStorage.setItem("print3JobId", lastJobId);
+  localStorage.setItem('print3Model', url);
+  localStorage.setItem('print3JobId', lastJobId);
 
   refs.viewer.src = url;
   await refs.viewer.updateComplete;
   showModel();
-  setStep("model");
+  setStep('model');
   hideDemo();
 
-  refs.checkoutBtn.classList.remove("hidden");
-  refs.submitIcon.classList.replace("fa-stop", "fa-arrow-up");
+  refs.checkoutBtn.classList.remove('hidden');
+  refs.submitIcon.classList.replace('fa-stop', 'fa-arrow-up');
 });
 
-window.addEventListener("DOMContentLoaded", () => {
-  setStep("prompt");
+window.addEventListener('DOMContentLoaded', () => {
+  setStep('prompt');
   showModel();
   refs.viewer.src = FALLBACK_GLB;
 
-  const prompt = localStorage.getItem("print3Prompt");
-  const thumbs = JSON.parse(localStorage.getItem("print3Images") || "[]");
+  const prompt = localStorage.getItem('print3Prompt');
+  const thumbs = JSON.parse(localStorage.getItem('print3Images') || '[]');
   if (prompt) {
     refs.promptInput.value = prompt;
-    refs.promptInput.dispatchEvent(new Event("input"));
+
+    refs.promptInput.dispatchEvent(new Event('input'));
+
   } else {
     const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
     refs.promptInput.placeholder = ex;
   }
   if (refs.examples) {
-    refs.examples.textContent = `Try: ${EXAMPLES.join(" · ")}`;
+
+    refs.examples.textContent = `Try: ${EXAMPLES.join(' · ')}`;
+
   }
   if (thumbs.length) renderThumbnails(thumbs);
 });
