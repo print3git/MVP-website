@@ -120,9 +120,12 @@ test('POST /api/models/:id/like requires auth', async () => {
   expect(res.status).toBe(401);
 });
 
-test('POST /api/community requires user auth', async () => {
-  const res = await request(app).post('/api/community').send({ jobId: 'j1' });
-  expect(res.status).toBe(401);
+
+test('GET /api/community/recent pagination and category', async () => {
+  db.query.mockResolvedValueOnce({ rows: [] });
+  await request(app).get('/api/community/recent?limit=5&offset=2&category=art');
+  expect(db.query).toHaveBeenCalledWith(expect.any(String), [5, 2, 'art', null]);
+
 });
 
 test('GET /api/community/popular uses correct ordering', async () => {
@@ -175,6 +178,19 @@ test('GET /api/competitions/:id/entries order', async () => {
   expect(db.query).toHaveBeenCalledWith(expect.stringContaining('ORDER BY likes DESC'), ['5']);
 });
 
+test('GET /api/competitions/:id/entries leaderboard order', async () => {
+  db.query.mockResolvedValueOnce({
+    rows: [
+      { model_id: 'm2', likes: 10 },
+      { model_id: 'm1', likes: 5 },
+      { model_id: 'm3', likes: 1 },
+    ],
+  });
+  const res = await request(app).get('/api/competitions/5/entries');
+  expect(res.status).toBe(200);
+  expect(res.body.map((e) => e.likes)).toEqual([10, 5, 1]);
+});
+
 test('POST /api/competitions/:id/enter', async () => {
   db.query.mockResolvedValueOnce({});
   const token = jwt.sign({ id: 'u1' }, 'secret');
@@ -188,6 +204,12 @@ test('POST /api/competitions/:id/enter', async () => {
 test('POST /api/competitions/:id/enter requires auth', async () => {
   const res = await request(app).post('/api/competitions/5/enter').send({ modelId: 'm1' });
   expect(res.status).toBe(401);
+});
+
+test('POST /api/competitions/:id/enter rejects unauthenticated user', async () => {
+  const res = await request(app).post('/api/competitions/5/enter').send({ modelId: 'm1' });
+  expect(res.status).toBe(401);
+  expect(res.body.error).toBe('Unauthorized');
 });
 
 test('POST /api/competitions/:id/enter prevents duplicate', async () => {
@@ -204,19 +226,53 @@ test('POST /api/competitions/:id/enter prevents duplicate', async () => {
   ]);
 });
 
+test('POST /api/competitions/:id/enter allows repeat submission without error', async () => {
+  db.query.mockResolvedValue({});
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  const first = await request(app)
+    .post('/api/competitions/5/enter')
+    .set('authorization', `Bearer ${token}`)
+    .send({ modelId: 'm1' });
+  expect(first.status).toBe(201);
+  const second = await request(app)
+    .post('/api/competitions/5/enter')
+    .set('authorization', `Bearer ${token}`)
+    .send({ modelId: 'm1' });
+  expect(second.status).toBe(201);
+  expect(db.query).toHaveBeenCalledTimes(2);
+  expect(db.query).toHaveBeenLastCalledWith(expect.stringContaining('ON CONFLICT DO NOTHING'), [
+    '5',
+    'm1',
+    'u1',
+  ]);
+});
+
 test('DELETE /api/admin/competitions/:id', async () => {
   db.query.mockResolvedValueOnce({});
   const res = await request(app).delete('/api/admin/competitions/5').set('x-admin-token', 'admin');
   expect(res.status).toBe(204);
 });
 
+test('POST /api/admin/competitions unauthorized', async () => {
+  const res = await request(app)
+    .post('/api/admin/competitions')
+    .send({ name: 'Test', start_date: '2025-01-01', end_date: '2025-01-31' });
+  expect(res.status).toBe(401);
+});
+
 test('SSE progress endpoint streams updates', async () => {
   const req = request(app).get('/api/progress/job1');
   setTimeout(() => {
     progressEmitter.emit('progress', { jobId: 'job1', progress: 100 });
-  }, 10);
+  }, 50);
   const res = await req;
   expect(res.text).toContain('data: {"jobId":"job1","progress":100}');
+});
+
+test('POST /api/create-order rejects unknown job', async () => {
+  db.query.mockResolvedValueOnce({ rows: [] });
+  const res = await request(app).post('/api/create-order').send({ jobId: 'bad' });
+  expect(res.status).toBe(404);
 });
 
 test('GET /api/shared/:slug returns data', async () => {
