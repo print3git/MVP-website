@@ -143,6 +143,20 @@ test('GET /api/competitions/active upcoming', async () => {
   expect(db.query).toHaveBeenCalledWith(expect.stringContaining('end_date >= CURRENT_DATE'));
 });
 
+test('GET /api/competitions/past', async () => {
+  db.query.mockResolvedValueOnce({ rows: [] });
+  const res = await request(app).get('/api/competitions/past');
+  expect(res.status).toBe(200);
+});
+
+test('GET /api/competitions/past ordering', async () => {
+  db.query.mockResolvedValueOnce({ rows: [] });
+  await request(app).get('/api/competitions/past');
+  expect(db.query).toHaveBeenCalledWith(
+    expect.stringContaining('ORDER BY c.end_date DESC LIMIT 5')
+  );
+});
+
 test('GET /api/competitions/:id/entries', async () => {
   db.query.mockResolvedValueOnce({ rows: [{ model_id: 'm1', likes: 3 }] });
   const res = await request(app).get('/api/competitions/5/entries');
@@ -198,4 +212,18 @@ test('SSE progress endpoint streams updates', async () => {
   }, 10);
   const res = await req;
   expect(res.text).toContain('data: {"jobId":"job1","progress":100}');
+});
+
+test('GET /api/shared/:slug returns data', async () => {
+  db.getShareBySlug = jest.fn().mockResolvedValue({ job_id: 'j1', slug: 's1' });
+  db.query.mockResolvedValueOnce({ rows: [{ prompt: 'p', model_url: '/m.glb' }] });
+  const res = await request(app).get('/api/shared/s1');
+  expect(res.status).toBe(200);
+  expect(res.body.model_url).toBe('/m.glb');
+});
+
+test('GET /api/shared/:slug 404 when missing', async () => {
+  db.getShareBySlug = jest.fn().mockResolvedValue(null);
+  const res = await request(app).get('/api/shared/bad');
+  expect(res.status).toBe(404);
 });

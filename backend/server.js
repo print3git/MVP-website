@@ -325,6 +325,54 @@ app.post('/api/models/:id/share', authRequired, async (req, res) => {
   }
 });
 
+app.get('/api/shared/:slug', async (req, res) => {
+  try {
+    const share = await db.getShareBySlug(req.params.slug);
+    if (!share) return res.status(404).json({ error: 'Share not found' });
+    const { rows } = await db.query('SELECT prompt, model_url FROM jobs WHERE job_id=$1', [
+      share.job_id,
+    ]);
+    if (!rows.length) return res.status(404).json({ error: 'Share not found' });
+    res.json({
+      jobId: share.job_id,
+      slug: share.slug,
+      model_url: rows[0].model_url,
+      prompt: rows[0].prompt,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch share' });
+  }
+});
+
+app.get('/shared/:slug', async (req, res) => {
+  try {
+    const share = await db.getShareBySlug(req.params.slug);
+    if (!share) return res.status(404).send('Not found');
+    const { rows } = await db.query('SELECT prompt, model_url FROM jobs WHERE job_id=$1', [
+      share.job_id,
+    ]);
+    const prompt = rows[0]?.prompt || 'Shared model';
+    const ogImage = `${req.protocol}://${req.get('host')}/img/boxlogo.png`;
+    res.send(`<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta property="og:title" content="print3 shared model" />
+    <meta property="og:description" content="${prompt.replace(/"/g, '&quot;')}" />
+    <meta property="og:image" content="${ogImage}" />
+    <meta property="og:url" content="${req.protocol}://${req.get('host')}/shared/${share.slug}" />
+  </head>
+  <body>
+    <script>window.location='/share.html?slug=${share.slug}'</script>
+  </body>
+</html>`);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
+
 // Submit a generated model to the community gallery
 app.post('/api/community', authRequired, async (req, res) => {
   const { jobId, title, category } = req.body;
@@ -401,6 +449,22 @@ app.get('/api/competitions/active', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to fetch competitions' });
+  }
+});
+
+app.get('/api/competitions/past', async (req, res) => {
+  try {
+    const { rows } = await db.query(
+      `SELECT c.id, c.name, c.end_date, j.model_url
+       FROM competitions c
+       LEFT JOIN jobs j ON c.winner_model_id=j.job_id
+       WHERE c.end_date < CURRENT_DATE AND c.winner_model_id IS NOT NULL
+       ORDER BY c.end_date DESC LIMIT 5`
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch past competitions' });
   }
 });
 
