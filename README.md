@@ -53,6 +53,9 @@ python -m http.server
 
 Then navigate to `http://localhost:8080/index.html` or
 `http://localhost:8080/payment.html`.
+If you capture thumbnails using model-viewer, make sure your server sends
+`Cross-Origin-Opener-Policy: same-origin` and `Cross-Origin-Embedder-Policy: require-corp`.
+The backend server already sets these headers.
 
 ## User Profiles API
 

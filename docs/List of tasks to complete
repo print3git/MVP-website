@@ -20,6 +20,15 @@ Note: the lightweight Hunyuan3D API server files were moved from `img/` to `back
 - Expand the category list with additional options (e.g., Fashion, Miniatures, Props).
 - Arrange filter controls in a responsive toolbar with sorting options.
 
+- Add CORS headers for GLB and HDR assets served by Express.
+- Set `Cross-Origin-Opener-Policy` and `Cross-Origin-Embedder-Policy` response headers so `model-viewer.toDataURL()` can read pixels.
+- Mark all `<model-viewer>` elements as `crossorigin="anonymous"` including the modal viewer and temporary viewers in `captureSnapshots()`.
+- Show a fallback thumbnail if snapshot capture fails.
+- Pre-generate thumbnails server-side when a model is submitted to the community gallery.
+- Include the thumbnail URL in `/api/community/*` responses.
+- Cache captured thumbnails in `localStorage` to avoid repeated conversions.
+- Test snapshot rendering in multiple browsers.
+- Document the cross-origin setup in `README`.
 ## Testing & CI
 
 - Add unit tests for frontend scripts.
