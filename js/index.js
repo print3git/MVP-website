@@ -16,6 +16,9 @@ const refs = {
   previewImg: $('preview-img'),
   loader: $('loader'),
   viewer: $('viewer'),
+  progressBar: $('progress-bar'),
+  progressWrapper: $('progress-wrapper'),
+  progressText: $('progress-text'),
   demoNote: $('demo-note'),
   demoClose: $('demo-note-close'),
   promptInput: $('promptInput'),
@@ -48,6 +51,34 @@ function setStep(name) {
 window.shareOn = shareOn;
 let uploadedFiles = [];
 let lastJobId = null;
+let progressInterval = null;
+
+function startProgress(estimateMs = 20000) {
+  if (!refs.progressWrapper) return;
+  const start = Date.now();
+  refs.progressBar.style.width = '0%';
+  refs.progressWrapper.style.display = 'block';
+  const tick = () => {
+    const elapsed = Date.now() - start;
+    const pct = Math.min((elapsed / estimateMs) * 100, 99);
+    refs.progressBar.style.width = pct + '%';
+    const remaining = Math.max(estimateMs - elapsed, 0);
+    refs.progressText.textContent = `~${Math.ceil(remaining / 1000)}s remaining`;
+  };
+  tick();
+  clearInterval(progressInterval);
+  progressInterval = setInterval(tick, 500);
+}
+
+function stopProgress() {
+  if (!refs.progressWrapper) return;
+  clearInterval(progressInterval);
+  refs.progressBar.style.width = '100%';
+  refs.progressText.textContent = '';
+  setTimeout(() => {
+    refs.progressWrapper.style.display = 'none';
+  }, 300);
+}
 
 const hideAll = () => {
   refs.previewImg.style.display = 'none';
@@ -57,10 +88,12 @@ const hideAll = () => {
 const showLoader = () => {
   hideAll();
   refs.loader.style.display = 'flex';
+  startProgress();
 };
 const showModel = () => {
   hideAll();
   refs.viewer.style.display = 'block';
+  stopProgress();
 };
 const hideDemo = () => {
   refs.demoNote && (refs.demoNote.style.display = 'none');

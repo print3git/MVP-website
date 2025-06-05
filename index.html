@@ -183,12 +183,18 @@
         <!-- centred loader -->
         <div
           id="loader"
-          class="absolute inset-0 flex items-center justify-center bg-[#2A2A2E]/80"
+          class="absolute inset-0 flex flex-col items-center justify-center bg-[#2A2A2E]/80"
           style="display: none"
         >
           <div
-            class="h-10 w-10 border-4 border-white border-t-transparent rounded-full animate-spin"
+            class="h-10 w-10 border-4 border-white border-t-transparent rounded-full animate-spin mb-6"
           ></div>
+          <div id="progress-wrapper" class="w-3/4 max-w-xs" style="display: none">
+            <div class="w-full h-2 bg-gray-700 rounded">
+              <div id="progress-bar" class="h-full bg-cyan-400 rounded" style="width: 0%"></div>
+            </div>
+            <div id="progress-text" class="text-center text-sm text-white mt-2"></div>
+          </div>
         </div>
 
         <!-- checkout button (hidden by default) -->
