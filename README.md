@@ -54,6 +54,21 @@ python -m http.server
 Then navigate to `http://localhost:8080/index.html` or
 `http://localhost:8080/payment.html`.
 
+## User Profiles API
+
+Two new routes expose profile information:
+
+- `GET /api/profile` – retrieve the currently authenticated user's profile.
+- `GET /api/users/:username/profile` – fetch a public profile for any user.
+
+Profiles are stored in the `user_profiles` table. After pulling the latest code
+run the migration to create this table:
+
+```bash
+cd backend
+npm run migrate
+```
+
 ## Contributing
 
 We welcome pull requests! Please fork the repo and create a topic branch. Ensure `npm test` runs clean before submitting.
