@@ -1,3 +1,7 @@
+const THUMB_CACHE_PREFIX = "thumb-";
+const FALLBACK_IMAGE =
+  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAgMAAABieywaAAAACVBMVEVmZmb///+fn5/Ce0xxAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAACklEQVQImWNoAAAAggCByxOyYQAAAABJRU5ErkJggg==";
+
 function like(id) {
   const token = localStorage.getItem("token");
   if (!token) {
@@ -68,7 +72,14 @@ async function captureSnapshots(container) {
     const img = card.querySelector("img");
     if (img && img.src) continue;
     const glbUrl = card.dataset.model;
+    const cacheKey = THUMB_CACHE_PREFIX + glbUrl;
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) {
+      img.src = cached;
+      continue;
+    }
     const viewer = document.createElement("model-viewer");
+    viewer.setAttribute("crossorigin", "anonymous");
     viewer.src = glbUrl;
     viewer.setAttribute(
       "environment-image",
@@ -81,9 +92,12 @@ async function captureSnapshots(container) {
     document.body.appendChild(viewer);
     try {
       await viewer.updateComplete;
-      img.src = await viewer.toDataURL("image/png");
+      const data = await viewer.toDataURL("image/png");
+      img.src = data;
+      localStorage.setItem(cacheKey, data);
     } catch (err) {
       console.error("Failed to capture snapshot", err);
+      img.src = FALLBACK_IMAGE;
     } finally {
       viewer.remove();
     }
