@@ -222,7 +222,11 @@ app.get("/api/users/:username/models", async (req, res) => {
     if (!rows.length) return res.status(404).json({ error: "User not found" });
     const userId = rows[0].id;
     const models = await db.query(
-      "SELECT * FROM jobs WHERE user_id=$1 ORDER BY created_at DESC",
+      `SELECT j.*, COALESCE(l.count,0) as likes
+       FROM jobs j
+       LEFT JOIN (SELECT model_id, COUNT(*) as count FROM likes GROUP BY model_id) l
+       ON j.job_id=l.model_id
+       WHERE j.user_id=$1 ORDER BY j.created_at DESC`,
       [userId],
     );
     res.json(models.rows);
@@ -525,7 +529,7 @@ app.post(
 // Start the server if this file is run directly
 if (require.main === module) {
   app.listen(PORT, () => {
-    console.info(`API server listening on http://localhost:${PORT}`);
+    console.log(`API server listening on http://localhost:${PORT}`);
   });
 }
 

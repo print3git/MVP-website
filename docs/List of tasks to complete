@@ -14,18 +14,12 @@ Note: the lightweight Hunyuan3D API server files were moved from `img/` to `back
 
 ## Front-End
 
-- Improve UI error handling.
-  - Show clear messages for API failures.
-  - Highlight invalid form fields.
 - Ensure accessibility with ARIA labels and contrast.
   - Audit pages for missing labels.
   - Fix color contrast issues.
 
 ## Community Creations
 
-- Implement pagination or infinite scrolling.
-- Add filters by category or date.
-  - Add filter UI controls.
 
 ## Testing & CI
 
@@ -39,11 +33,6 @@ Note: the lightweight Hunyuan3D API server files were moved from `img/` to `back
 
 ## Profiles & Competitions
 
-- Display like counts in the community gallery and profiles.
-- Use like counts to populate the "popular now" list.
-- Show active competitions and leaderboards on the frontend.
-  - Display the current competition with sign-up link.
-  - Render a leaderboard table.
   - Update the admin UI to edit prize details.
 - Create a competition submission form allowing a user to link an existing model to a competition.
   - Build the form UI and validation.
@@ -77,9 +66,6 @@ Note: the lightweight Hunyuan3D API server files were moved from `img/` to `back
 - Display clear inline error messages if generation fails or the prompt is invalid.
   - Provide failure states in the UI.
   - Validate prompts before submission.
-- Keep the generated model and prompt in local storage so users can resume where they left off.
-  - Save data to localStorage after each step.
-  - Reload the saved state on page load.
 - Integrate social login (Google, GitHub) and allow guest checkout without creating an account.
   - Add Google OAuth login.
   - Add GitHub OAuth login.
@@ -106,7 +92,6 @@ Note: the lightweight Hunyuan3D API server files were moved from `img/` to `back
   - Calculate cost and ETA from model parameters.
   - Display them near the checkout button.
 - Let users share a generated model to the community or social media with one click.
-  - Add share buttons for common platforms.
   - Provide Open Graph meta tags for previews.
 - Provide tooltips or a short tutorial overlay explaining each step.
   - Design tooltip copy and dismiss logic.
@@ -119,11 +104,6 @@ Note: the lightweight Hunyuan3D API server files were moved from `img/` to `back
 - Save user preferences such as units or color scheme.
   - Persist preferences to local storage.
   - Apply them on page load.
-- Provide instant confirmation with next steps after the payment completes.
-  - Show a success page with order details.
-  - Include a link to the user's profile.
-- Link directly from the success page to the user's profile or order history.
-  - Provide buttons to view orders or profile from the confirmation screen.
 
 ## Referral System
 
