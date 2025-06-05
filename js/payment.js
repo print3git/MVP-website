@@ -10,12 +10,12 @@ function qs(name) {
   return params.get(name);
 }
 
-async function createCheckout(quantity, discount) {
+async function createCheckout(quantity, discount, shippingInfo) {
   const jobId = localStorage.getItem('print3JobId');
   const res = await fetch('/api/create-order', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ jobId, price: PRICE, qty: quantity, discount }),
+    body: JSON.stringify({ jobId, price: PRICE, qty: quantity, discount, shippingInfo }),
   });
   const data = await res.json();
   return data.checkoutUrl;
@@ -119,6 +119,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     startFlashDiscount();
   }
 
+  // Prefill shipping fields from saved profile
+  const token = localStorage.getItem('token');
+  if (token) {
+    try {
+      const resp = await fetch('/api/profile', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (resp.ok) {
+        const profile = await resp.json();
+        const ship = profile.shipping_info || {};
+        if (ship.name) document.getElementById('ship-name').value = ship.name;
+        if (ship.address) document.getElementById('ship-address').value = ship.address;
+        if (ship.city) document.getElementById('ship-city').value = ship.city;
+        if (ship.zip) document.getElementById('ship-zip').value = ship.zip;
+      }
+    } catch {
+      /* ignore profile errors */
+    }
+  }
+
   document.getElementById('submit-payment').addEventListener('click', async () => {
     const qty = 1;
     let discount = 0;
@@ -126,7 +146,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (end && end > Date.now()) {
       discount += Math.round(PRICE * 0.05);
     }
-    const url = await createCheckout(qty, discount);
+    const shippingInfo = {
+      name: document.getElementById('ship-name').value,
+      address: document.getElementById('ship-address').value,
+      city: document.getElementById('ship-city').value,
+      zip: document.getElementById('ship-zip').value,
+    };
+    const url = await createCheckout(qty, discount, shippingInfo);
     if (stripe) {
       stripe.redirectToCheckout({ sessionId: url.split('session_id=')[1] });
     } else {
