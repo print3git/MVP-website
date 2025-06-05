@@ -10,6 +10,11 @@ if (
 const API_BASE = "/api";
 const FALLBACK_GLB =
   "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
+const EXAMPLES = [
+  "cute robot figurine",
+  "ornate chess piece",
+  "geometric flower vase",
+];
 const $ = (id) => document.getElementById(id);
 const refs = {
   previewImg: $("preview-img"),
@@ -23,6 +28,8 @@ const refs = {
   submitIcon: $("submit-icon"),
   uploadInput: $("uploadInput"),
   imagePreviewArea: $("image-preview-area"),
+  dropZone: $("drop-zone"),
+  examples: $("prompt-examples"),
   checkoutBtn: $("checkout-button"),
   stepPrompt: $("step-prompt"),
   stepModel: $("step-model"),
@@ -135,11 +142,9 @@ function renderThumbnails(arr) {
   });
 }
 
-refs.uploadInput.addEventListener("change", async (e) => {
-  const files = [...e.target.files];
+async function processFiles(files) {
   if (!files.length) return;
   uploadedFiles = files;
-
   const thumbs = await Promise.all(
     files.map(
       (file) =>
@@ -165,10 +170,31 @@ refs.uploadInput.addEventListener("change", async (e) => {
         }),
     ),
   );
-
   localStorage.setItem("print3Images", JSON.stringify(thumbs));
   renderThumbnails(thumbs);
+}
+
+refs.uploadInput.addEventListener("change", (e) => {
+  processFiles([...e.target.files]);
 });
+
+if (refs.dropZone) {
+  ["dragover", "dragenter"].forEach((ev) => {
+    refs.dropZone.addEventListener(ev, (e) => {
+      e.preventDefault();
+      refs.dropZone.classList.add("ring-2", "ring-cyan-400");
+    });
+  });
+  ["dragleave", "drop"].forEach((ev) => {
+    refs.dropZone.addEventListener(ev, (e) => {
+      e.preventDefault();
+      refs.dropZone.classList.remove("ring-2", "ring-cyan-400");
+      if (ev === "drop") {
+        processFiles([...e.dataTransfer.files]);
+      }
+    });
+  });
+}
 
 async function fetchGlb(prompt, files) {
   try {
@@ -225,6 +251,12 @@ window.addEventListener("DOMContentLoaded", () => {
   if (prompt) {
     refs.promptInput.value = prompt;
     refs.promptInput.dispatchEvent(new Event("input"));
+  } else {
+    const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
+    refs.promptInput.placeholder = ex;
+  }
+  if (refs.examples) {
+    refs.examples.textContent = `Try: ${EXAMPLES.join(" · ")}`;
   }
   if (thumbs.length) renderThumbnails(thumbs);
 });

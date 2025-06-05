@@ -62,7 +62,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     const timer = setInterval(update, 1000);
     window.resetFlashDiscount = () => {
       clearInterval(timer);
-      localStorage.removeItem("flashDiscountEnd");
+      const prev = parseInt(localStorage.getItem("flashDiscountEnd"), 10) || 0;
+      let newEnd = Date.now() + 5 * 60 * 1000;
+      if (newEnd <= prev) {
+        newEnd = prev + 1;
+      }
+      localStorage.setItem("flashDiscountEnd", newEnd);
       flashBanner.hidden = false;
       startFlashDiscount();
     };
