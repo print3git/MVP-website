@@ -67,6 +67,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       startFlashDiscount();
     };
   }
+  window.startFlashDiscount = startFlashDiscount;
 
   const hideLoader = () => (loader.hidden = true);
 
