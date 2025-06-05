@@ -70,6 +70,15 @@ cd backend
 npm run migrate
 ```
 
+## Sharing API
+
+Models can be shared publicly via unique slugs.
+
+- `POST /api/models/:id/share` – create a share link for a model.
+- `GET /api/shared/:slug` – retrieve metadata for a shared model.
+- Visiting `/shared/:slug` returns an HTML page with Open Graph meta tags that
+  redirect to `share.html` for viewing.
+
 ## Contributing
 
 We welcome pull requests! Please fork the repo and create a topic branch. Ensure `npm test` runs clean before submitting.
