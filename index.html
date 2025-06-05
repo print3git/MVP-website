@@ -30,16 +30,10 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
     />
 
-    <!-- Google <model-viewer>  -->
-    <!--  Use a CDN versioned URL so the module is served with CORS headers and the browser can actually download it.  -->
-    <script
-      type="module"
-      src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js"
-    ></script>
-    <script
-      nomodule
-      src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer-legacy.js"
-    ></script>
+    <!-- Google <model-viewer> -->
+    <!--  Serve locally so the demo works without an internet connection  -->
+    <script type="module" src="js/model-viewer.min.js"></script>
+    <script nomodule src="js/model-viewer-umd.js"></script>
 
     <style>
       html,
