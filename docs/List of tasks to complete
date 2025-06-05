@@ -6,11 +6,7 @@ Note: the lightweight Hunyuan3D API server files were moved from `img/` to `back
 
 ## Model Generation & Queue
 
-- Integrate Hunyuan 2.5 as the generator for text, image and text+image prompts.
-- Replace the simple print queue with a real queue module.
-  - Evaluate queue libraries and pick one.
-  - Persist jobs to Redis and add a worker.
-  - Write tests for the new queue flow.
+<!-- Completed: Hunyuan 2.5 integration and Redis-backed queue -->
 
 ## Front-End
 
@@ -38,22 +34,11 @@ Note: the lightweight Hunyuan3D API server files were moved from `img/` to `back
 ## Profiles & Competitions
 
   - Update the admin UI to edit prize details.
-- Create a competition submission form allowing a user to link an existing model to a competition.
+  - Create a competition submission form allowing a user to link an existing model to a competition.
   - Build the form UI and validation.
   - POST the selected model to the competition entry API.
-- Ensure a model can only be submitted to one active competition at a time.
-  - Add a database constraint and server-side check.
-- Schedule a job to close competitions, select the entry with the most likes, and update `winner_model_id`.
-  - Run a cron job nightly to check end dates.
-  - Update the competition with the top entry.
-- Send an email to the winning user with instructions to claim their free print.
-  - Create an email template for winners.
-  - Trigger sending after the winner is selected.
-- Display past competitions and winners on a dedicated page.
-  - Build a page listing completed competitions.
-  - Show the winning model and user.
-- Add competition rules to the documentation.
-  - Outline eligibility and judging criteria.
+
+<!-- Completed: single-entry check, nightly cron to select winners, winner emails, and documentation rules -->
 
 ## UX Improvements
 
@@ -111,12 +96,4 @@ Note: the lightweight Hunyuan3D API server files were moved from `img/` to `back
 
 ## Referral System
 
-- Add `referral_code` column to the users table.
-- Generate a unique referral code when a user signs up.
-- Create a `referrals` table storing `referrer_id` and `referred_user_id`.
-- Expose POST `/api/referral/apply` to accept a referral code.
-- Record the referral in the new table when a code is applied.
-- Show the user's referral code and credit balance on their profile page.
-- Credit the referrer after the referred user's first purchase.
-- Send an email notification when the referrer receives credit.
-- Write tests for referral code creation and credit logic.
+<!-- Completed: referral codes, apply API, credit logic and tests -->
