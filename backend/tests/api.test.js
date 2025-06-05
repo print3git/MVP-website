@@ -266,3 +266,18 @@ test("/api/status/:id returns 404 when missing", async () => {
   const res = await request(app).get("/api/status/bad");
   expect(res.status).toBe(404);
 });
+
+test("PUT /api/profile upserts profile", async () => {
+  db.query.mockResolvedValueOnce({ rows: [{ user_id: "u1", display_name: "Bob" }] });
+  const token = jwt.sign({ id: "u1" }, "secret");
+  const res = await request(app)
+    .put("/api/profile")
+    .set("authorization", `Bearer ${token}`)
+    .send({ display_name: "Bob" });
+  expect(res.status).toBe(200);
+  expect(res.body.display_name).toBe("Bob");
+  const insertCall = db.query.mock.calls.find((c) =>
+    c[0].includes("INSERT INTO user_profiles"),
+  );
+  expect(insertCall[1][0]).toBe("u1");
+});

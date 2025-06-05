@@ -263,6 +263,34 @@ app.get("/api/users/:username/models", async (req, res) => {
   }
 });
 
+app.put("/api/profile", authRequired, async (req, res) => {
+  const { display_name, avatar_url, shipping_info, payment_info } = req.body;
+  try {
+    const { rows } = await db.query(
+      `INSERT INTO user_profiles(user_id, display_name, avatar_url, shipping_info, payment_info)
+       VALUES($1,$2,$3,$4,$5)
+       ON CONFLICT (user_id) DO UPDATE SET
+         display_name=EXCLUDED.display_name,
+         avatar_url=EXCLUDED.avatar_url,
+         shipping_info=EXCLUDED.shipping_info,
+         payment_info=EXCLUDED.payment_info,
+         updated_at=NOW()
+       RETURNING *`,
+      [
+        req.user.id,
+        display_name || null,
+        avatar_url || null,
+        shipping_info || null,
+        payment_info || null,
+      ],
+    );
+    res.json(rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to update profile" });
+  }
+});
+
 app.post("/api/models/:id/like", authRequired, async (req, res) => {
   const modelId = req.params.id;
   try {
