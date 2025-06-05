@@ -178,3 +178,91 @@ test("Admin create competition", async () => {
     .send({ name: "Test", start_date: "2025-01-01", end_date: "2025-01-31" });
   expect(res.status).toBe(200);
 });
+
+test("registration missing username", async () => {
+  const res = await request(app)
+    .post("/api/register")
+    .send({ email: "a@a.com", password: "p" });
+  expect(res.status).toBe(400);
+});
+
+test("registration missing email", async () => {
+  const res = await request(app)
+    .post("/api/register")
+    .send({ username: "a", password: "p" });
+  expect(res.status).toBe(400);
+});
+
+test("registration missing password", async () => {
+  const res = await request(app)
+    .post("/api/register")
+    .send({ username: "a", email: "a@a.com" });
+  expect(res.status).toBe(400);
+});
+
+test("registration duplicate username", async () => {
+  db.query.mockRejectedValueOnce(new Error("duplicate key"));
+  const res = await request(app)
+    .post("/api/register")
+    .send({ username: "a", email: "a@a.com", password: "p" });
+  expect(res.status).toBe(500);
+});
+
+test("login invalid password", async () => {
+  db.query.mockResolvedValueOnce({
+    rows: [
+      { id: "u1", username: "alice", password_hash: bcrypt.hashSync("p", 10) },
+    ],
+  });
+  const res = await request(app)
+    .post("/api/login")
+    .send({ username: "alice", password: "wrong" });
+  expect(res.status).toBe(401);
+});
+
+test("login missing fields", async () => {
+  const res = await request(app).post("/api/login").send({ username: "" });
+  expect(res.status).toBe(400);
+});
+
+test("/api/generate 400 when no prompt or image", async () => {
+  const res = await request(app).post("/api/generate").send({});
+  expect(res.status).toBe(400);
+});
+
+test("/api/generate falls back on server failure", async () => {
+  axios.post.mockRejectedValueOnce(new Error("fail"));
+  const res = await request(app).post("/api/generate").send({ prompt: "t" });
+  expect(res.status).toBe(200);
+  expect(res.body.glb_url).toBe(
+    "https://modelviewer.dev/shared-assets/models/Astronaut.glb",
+  );
+});
+
+test("/api/generate saves authenticated user id", async () => {
+  axios.post.mockResolvedValueOnce({ data: { glb_url: "/m.glb" } });
+  const token = jwt.sign({ id: "u1" }, "secret");
+  await request(app)
+    .post("/api/generate")
+    .set("authorization", `Bearer ${token}`)
+    .send({ prompt: "t" });
+  const insertCall = db.query.mock.calls.find((c) =>
+    c[0].includes("INSERT INTO jobs"),
+  );
+  expect(insertCall[1][4]).toBe("u1");
+});
+
+test("/api/status supports limit and offset", async () => {
+  db.query.mockResolvedValueOnce({ rows: [] });
+  await request(app).get("/api/status?limit=5&offset=2");
+  expect(db.query).toHaveBeenCalledWith(
+    "SELECT * FROM jobs ORDER BY created_at DESC LIMIT $1 OFFSET $2",
+    [5, 2],
+  );
+});
+
+test("/api/status/:id returns 404 when missing", async () => {
+  db.query.mockResolvedValueOnce({ rows: [] });
+  const res = await request(app).get("/api/status/bad");
+  expect(res.status).toBe(404);
+});
