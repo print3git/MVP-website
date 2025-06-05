@@ -6,6 +6,11 @@ async function load() {
     return;
   }
   const comps = await res.json();
+  if (comps.length === 0) {
+    list.innerHTML =
+      '<p class="text-center text-white/80">No active competitions. Check back soon!</p>';
+    return;
+  }
   comps.forEach((c) => {
     const div = document.createElement('div');
     div.className = 'bg-[#2A2A2E] p-4 rounded-xl';
