@@ -263,6 +263,23 @@ app.get("/api/users/:username/models", async (req, res) => {
   }
 });
 
+app.get("/api/users/:username/profile", async (req, res) => {
+  try {
+    const { rows } = await db.query(
+      `SELECT p.display_name, p.avatar_url
+       FROM users u
+       JOIN user_profiles p ON u.username=p.username
+       WHERE u.username=$1`,
+      [req.params.username],
+    );
+    if (!rows.length) return res.status(404).json({ error: "User not found" });
+    res.json(rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch profile" });
+  }
+});
+
 app.post("/api/models/:id/like", authRequired, async (req, res) => {
   const modelId = req.params.id;
   try {
