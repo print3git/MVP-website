@@ -17,9 +17,33 @@ function like(id) {
 async function fetchCreations(type, offset = 0, limit = 6, category = "") {
   const query = new URLSearchParams({ limit, offset });
   if (category) query.set("category", category);
-  const res = await fetch(`/api/community/${type}?${query}`);
-  if (!res.ok) return [];
-  return res.json();
+  try {
+    const res = await fetch(`/api/community/${type}?${query}`);
+    if (!res.ok) throw new Error("bad response");
+    return await res.json();
+  } catch (err) {
+    console.error("Failed to fetch creations", err);
+    return [];
+  }
+}
+
+function getFallbackModels() {
+  const urls = [
+    "https://modelviewer.dev/shared-assets/models/Astronaut.glb",
+    "https://modelviewer.dev/shared-assets/models/RobotExpressive.glb",
+    "https://modelviewer.dev/shared-assets/models/Horse.glb",
+  ];
+  const models = [];
+  for (let i = 0; i < 6; i++) {
+    const url = urls[i % urls.length];
+    models.push({
+      model_url: url,
+      likes: 0,
+      id: `fallback-${i}`,
+      snapshot: "",
+    });
+  }
+  return models;
 }
 
 function createCard(model) {
@@ -65,7 +89,10 @@ async function captureSnapshots(container) {
 async function loadMore(type) {
   const state = window.communityState[type];
   const category = document.getElementById("category").value;
-  const models = await fetchCreations(type, state.offset, 6, category);
+  let models = await fetchCreations(type, state.offset, 6, category);
+  if (models.length === 0 && state.offset === 0) {
+    models = getFallbackModels();
+  }
   state.offset += models.length;
   const grid = document.getElementById(`${type}-grid`);
   models.forEach((m) => grid.appendChild(createCard(m)));
