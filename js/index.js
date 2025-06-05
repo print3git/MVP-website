@@ -18,6 +18,7 @@ const refs = {
   demoNote: $("demo-note"),
   demoClose: $("demo-note-close"),
   promptInput: $("promptInput"),
+  promptWrapper: $("prompt-wrapper"),
   submitBtn: $("submit-button"),
   submitIcon: $("submit-icon"),
   uploadInput: $("uploadInput"),
@@ -47,6 +48,24 @@ const hideDemo = () => {
   document.documentElement.classList.add("has-generated");
 };
 
+function showError(msg) {
+  document.getElementById("gen-error").textContent = msg;
+}
+
+function validatePrompt(p) {
+  if (!p && uploadedFiles.length === 0) {
+    showError("Enter a prompt or upload images");
+    refs.promptWrapper.classList.add("border-red-500");
+    return false;
+  }
+  if (p && p.length < 5) {
+    showError("Prompt must be at least 5 characters");
+    refs.promptWrapper.classList.add("border-red-500");
+    return false;
+  }
+  return true;
+}
+
 refs.demoClose?.addEventListener("click", () => {
   hideDemo();
   localStorage.setItem("demoDismissed", "true");
@@ -58,6 +77,8 @@ refs.promptInput.addEventListener("input", () => {
   const lh = parseFloat(getComputedStyle(el).lineHeight);
   el.style.height = Math.min(el.scrollHeight, lh * 9) + "px";
   el.style.overflowY = el.scrollHeight > lh * 9 ? "auto" : "hidden";
+  document.getElementById("gen-error").textContent = "";
+  refs.promptWrapper.classList.remove("border-red-500");
 });
 
 refs.promptInput.addEventListener("keydown", (e) => {
@@ -154,7 +175,9 @@ async function fetchGlb(prompt, files) {
 
 refs.submitBtn.addEventListener("click", async () => {
   const prompt = refs.promptInput.value.trim();
-  if (!prompt && uploadedFiles.length === 0) return;
+  if (!validatePrompt(prompt)) return;
+  showError("");
+  refs.promptWrapper.classList.remove("border-red-500");
   refs.checkoutBtn.classList.add("hidden");
   refs.submitIcon.classList.replace("fa-arrow-up", "fa-stop");
   showLoader();
