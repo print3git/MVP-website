@@ -4,11 +4,22 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Competitions</title>
+    <meta property="og:title" content="Competitions – print3" />
+    <meta
+      property="og:description"
+      content="Join print3 contests and showcase your 3D designs."
+    />
+    <meta property="og:image" content="img/boxlogo.png" />
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body class="bg-[#1A1A1D] text-white font-sans min-h-screen p-4">
-    <h1 class="text-2xl mb-4">Active Competitions</h1>
-    <div id="list" class="space-y-4"></div>
+    <h1 id="page-title" class="text-2xl mb-4">Active Competitions</h1>
+    <ul
+      id="list"
+      class="space-y-4"
+      role="list"
+      aria-labelledby="page-title"
+    ></ul>
     <script type="module" src="js/competitions.js"></script>
   </body>
 </html>

@@ -86,6 +86,7 @@
         display: none;
       }
     </style>
+
   </head>
 
   <body class="bg-[#1A1A1D] text-white font-sans flex flex-col">
@@ -95,6 +96,14 @@
         <div class="mt-1 flex flex-col text-sm text-gray-400 opacity-75">
           <p>5400+ prints</p>
           <p>delivered already</p>
+        </div>
+
+        <div
+          id="progress-container"
+          class="w-full bg-gray-700 rounded h-2 mt-2"
+          hidden
+        >
+          <div id="progress-bar" class="h-full bg-teal-500 w-0"></div>
         </div>
       </div>
       <div class="flex items-center space-x-4">
@@ -150,6 +159,14 @@
       </div>
     </header>
 
+    <nav aria-label="Progress" class="text-sm text-center mb-4">
+      <span class="font-semibold">Prompt</span>
+      <span class="mx-1">&rarr;</span>
+      <span>Model</span>
+      <span class="mx-1">&rarr;</span>
+      <span>Buy</span>
+    </nav>
+
     <main
       class="flex-1 flex flex-col items-center justify-start gap-8 px-4 lg:px-16"
     >
@@ -162,6 +179,7 @@
         <img
           id="preview-img"
           src="https://placehold.co/600x400/2A2A2E/2A2A2E?text="
+          alt="Uploaded preview"
           class="object-contain h-full w-full"
           style="display: none"
         />
@@ -197,7 +215,8 @@
           style="background-color: #1f3b65; color: #5ec2c5"
           onmouseover="this.style.opacity='0.85'"
           onmouseout="this.style.opacity='1'"
-          >Checkout</a>
+          >Checkout</a
+        >
         <div
           id="gen-error"
           class="absolute bottom-2 left-0 w-full text-center text-red-400 pointer-events-none"
@@ -216,6 +235,15 @@
           <h1 class="text-3xl font-semibold mb-8">
             Design & Print in 30 Seconds.
           </h1>
+
+          <div class="text-left mb-4" id="examples">
+            <p class="font-medium mb-1">Example prompts:</p>
+            <ul class="list-disc list-inside text-sm">
+              <li>A cartoon spaceship with a smiling face</li>
+              <li>A futuristic city skyline at sunset</li>
+              <li>An ornate fantasy throne made of crystals</li>
+            </ul>
+          </div>
 
           <div class="flex items-center w-full gap-4">
             <div
@@ -267,5 +295,6 @@
 
     <!--  Application logic ----------------------------------------------- -->
     <script type="module" src="js/index.js"></script>
+
   </body>
 </html>
