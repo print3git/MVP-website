@@ -17,6 +17,9 @@ const FormData = require("form-data");
 const fs = require("fs");
 const config = require("./config");
 const stripe = require("stripe")(config.stripeKey);
+const passport = require("passport");
+const GoogleStrategy = require("passport-google-oauth20").Strategy;
+const GitHubStrategy = require("passport-github2").Strategy;
 const {
   enqueuePrint,
   processQueue,
@@ -31,6 +34,7 @@ app.use(morgan("dev"));
 app.use(compression());
 app.use(cors());
 app.use(bodyParser.json());
+app.use(passport.initialize());
 app.use(express.static(path.join(__dirname, "..")));
 const uploadsDir = path.join(__dirname, "..", "uploads");
 fs.mkdirSync(uploadsDir, { recursive: true });
@@ -106,6 +110,48 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
+app.post("/api/oauth/google", async (req, res) => {
+  const { id, email } = req.body;
+  if (!id || !email) return res.status(400).json({ error: "Missing fields" });
+  try {
+    let { rows } = await db.query("SELECT * FROM users WHERE email=$1", [email]);
+    if (!rows.length) {
+      const hash = await bcrypt.hash(uuidv4(), 10);
+      ({ rows } = await db.query(
+        "INSERT INTO users(username,email,password_hash) VALUES($1,$2,$3) RETURNING *",
+        [id, email, hash],
+      ));
+    }
+    const user = rows[0];
+    const token = jwt.sign({ id: user.id, username: user.username }, AUTH_SECRET);
+    res.json({ token });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "OAuth failed" });
+  }
+});
+
+app.post("/api/oauth/github", async (req, res) => {
+  const { id, email } = req.body;
+  if (!id || !email) return res.status(400).json({ error: "Missing fields" });
+  try {
+    let { rows } = await db.query("SELECT * FROM users WHERE email=$1", [email]);
+    if (!rows.length) {
+      const hash = await bcrypt.hash(uuidv4(), 10);
+      ({ rows } = await db.query(
+        "INSERT INTO users(username,email,password_hash) VALUES($1,$2,$3) RETURNING *",
+        [id, email, hash],
+      ));
+    }
+    const user = rows[0];
+    const token = jwt.sign({ id: user.id, username: user.username }, AUTH_SECRET);
+    res.json({ token });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "OAuth failed" });
+  }
+});
+
 /**
  * POST /api/generate
  * Accept a prompt and optional image uploads
@@ -119,6 +165,9 @@ app.post(
     const files = req.files || [];
     if (!prompt && files.length === 0) {
       return res.status(400).json({ error: "Prompt or image is required" });
+    }
+    if (prompt && (prompt.length < 5 || prompt.length > 200)) {
+      return res.status(400).json({ error: "Prompt length invalid" });
     }
 
     const jobId = uuidv4();
@@ -289,6 +338,36 @@ app.post("/api/models/:id/like", authRequired, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to update like" });
+  }
+});
+
+app.get("/api/profile", authRequired, async (req, res) => {
+  try {
+    const { rows } = await db.query(
+      "SELECT shipping,payment FROM user_profiles WHERE user_id=$1",
+      [req.user.id],
+    );
+    res.json(rows[0] || {});
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch profile" });
+  }
+});
+
+app.put("/api/profile", authRequired, async (req, res) => {
+  const { shipping, payment } = req.body;
+  try {
+    await db.query(
+      `INSERT INTO user_profiles(user_id,shipping,payment)
+       VALUES($1,$2,$3)
+       ON CONFLICT (user_id)
+       DO UPDATE SET shipping=$2,payment=$3,updated_at=NOW()`,
+      [req.user.id, shipping || {}, payment || {}],
+    );
+    res.sendStatus(204);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to save profile" });
   }
 });
 
@@ -499,6 +578,84 @@ app.post("/api/create-order", async (req, res) => {
     console.error(err);
     res.status(500).json({ error: "Failed to create order" });
   }
+});
+
+app.post("/api/orders/:id/reorder", async (req, res) => {
+  try {
+    const { rows } = await db.query(
+      "SELECT job_id, price_cents, quantity, discount_cents FROM orders WHERE session_id=$1",
+      [req.params.id],
+    );
+    if (!rows.length) return res.status(404).json({ error: "Order not found" });
+    const o = rows[0];
+    const session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      line_items: [
+        {
+          price_data: {
+            currency: "usd",
+            product_data: { name: "3D Model" },
+            unit_amount: o.price_cents,
+          },
+          quantity: 1,
+        },
+      ],
+      success_url: `${req.headers.origin}/payment.html?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${req.headers.origin}/payment.html?cancel=1`,
+      metadata: { jobId: o.job_id },
+    });
+    await db.query(
+      "INSERT INTO orders(session_id, job_id, price_cents, status, quantity, discount_cents) VALUES($1,$2,$3,$4,$5,$6)",
+      [session.id, o.job_id, o.price_cents, "pending", o.quantity, o.discount_cents],
+    );
+    res.json({ checkoutUrl: session.url });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to reorder" });
+  }
+});
+
+app.get("/api/estimate/:jobId", async (req, res) => {
+  try {
+    const { rows } = await db.query(
+      "SELECT prompt FROM jobs WHERE job_id=$1",
+      [req.params.jobId],
+    );
+    if (!rows.length) return res.status(404).json({ error: "Job not found" });
+    const base = 1000 + rows[0].prompt.length * 10;
+    res.json({ cost_cents: base, eta_days: 5 });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to estimate" });
+  }
+});
+
+app.post("/api/batch", async (req, res) => {
+  const requests = Array.isArray(req.body.requests) ? req.body.requests : [];
+  const results = [];
+  for (const r of requests) {
+    const { method, path, body } = r;
+    try {
+      const response = await new Promise((resolve) => {
+        const fakeReq = new express.request.constructor();
+        fakeReq.method = method || "GET";
+        fakeReq.url = path;
+        fakeReq.body = body || {};
+        fakeReq.headers = req.headers;
+        const fakeRes = new express.response.constructor();
+        const chunks = [];
+        fakeRes.json = (obj) => {
+          chunks.push(obj);
+          resolve({ status: fakeRes.statusCode || 200, body: obj });
+        };
+        app.handle(fakeReq, fakeRes, () => resolve({ status: 404 }));
+      });
+      results.push(response);
+    } catch (err) {
+      results.push({ status: 500 });
+    }
+  }
+  res.json({ results });
 });
 
 /**

@@ -15,7 +15,6 @@ Note: the lightweight Hunyuan3D API server files were moved from `img/` to `back
 
 ## Community Creations
 
-- Style the filter dropdown with a flex container and improved spacing.
 - Add a text search box to filter creations by keywords.
 - Expand the category list with additional options (e.g., Fashion, Miniatures, Props).
 - Arrange filter controls in a responsive toolbar with sorting options.
@@ -48,13 +47,7 @@ Note: the lightweight Hunyuan3D API server files were moved from `img/` to `back
   - Add a progress bar component.
 - Display clear inline error messages if generation fails or the prompt is invalid.
   - Provide failure states in the UI.
-  - Validate prompts before submission.
-- Integrate social login (Google, GitHub) and allow guest checkout without creating an account.
-  - Add Google OAuth login.
-  - Add GitHub OAuth login.
-  - Offer guest checkout option.
 - Automatically prefill shipping and payment details from the user's profile.
-  - Retrieve saved profile info from the backend.
   - Populate the checkout form with the saved data.
 - Offer a one-click "Buy Now" button directly on the model viewer page.
   - Add a button that uses saved details.
@@ -68,21 +61,12 @@ Note: the lightweight Hunyuan3D API server files were moved from `img/` to `back
 - Make keyboard navigation and screen reader labels first-class.
   - Define a consistent tab order.
   - Add missing ARIA labels.
-- Provide a "reorder" button for past models so users can purchase again instantly.
-  - Add a button to order history.
-  - Preload the model into the cart.
-- Show estimated print cost and delivery time before checkout.
-  - Calculate cost and ETA from model parameters.
-  - Display them near the checkout button.
-- Let users share a generated model to the community or social media with one click.
-  - Provide Open Graph meta tags for previews.
 - Provide tooltips or a short tutorial overlay explaining each step.
   - Design tooltip copy and dismiss logic.
   - Allow users to skip the tutorial.
 - Add a progress indicator at the top summarizing "Prompt → Model → Buy."
   - Display the current step at all times.
 - Optimize API requests to reduce loading time on slow networks.
-  - Bundle multiple requests where possible.
 - Save user preferences such as units or color scheme.
   - Persist preferences to local storage.
   - Apply them on page load.

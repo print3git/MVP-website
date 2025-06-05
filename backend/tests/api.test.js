@@ -55,7 +55,7 @@ afterEach(() => {
 
 test("POST /api/generate returns glb url", async () => {
   axios.post.mockResolvedValue({ data: { glb_url: "/models/test.glb" } });
-  const res = await request(app).post("/api/generate").send({ prompt: "test" });
+  const res = await request(app).post("/api/generate").send({ prompt: "tests" });
   expect(res.status).toBe(200);
   expect(res.body.glb_url).toBe("/models/test.glb");
 });
@@ -176,5 +176,55 @@ test("Admin create competition", async () => {
     .post("/api/admin/competitions")
     .set("x-admin-token", "admin")
     .send({ name: "Test", start_date: "2025-01-01", end_date: "2025-01-31" });
+  expect(res.status).toBe(200);
+});
+
+test("OAuth Google login", async () => {
+  db.query.mockResolvedValueOnce({ rows: [] });
+  db.query.mockResolvedValueOnce({ rows: [{ id: "u2", username: "g" }] });
+  const res = await request(app)
+    .post("/api/oauth/google")
+    .send({ id: "g", email: "g@g" });
+  expect(res.status).toBe(200);
+  expect(res.body.token).toBeDefined();
+});
+
+test("Profile endpoints", async () => {
+  const token = jwt.sign({ id: "u1" }, "secret");
+  db.query.mockResolvedValue({ rows: [] });
+  const put = await request(app)
+    .put("/api/profile")
+    .set("authorization", `Bearer ${token}`)
+    .send({ shipping: { a: 1 } });
+  expect(put.status).toBe(204);
+  db.query.mockResolvedValueOnce({ rows: [{ shipping: { a: 1 } }] });
+  const get = await request(app)
+    .get("/api/profile")
+    .set("authorization", `Bearer ${token}`);
+  expect(get.status).toBe(200);
+  expect(get.body.shipping.a).toBe(1);
+});
+
+test("Estimate endpoint", async () => {
+  db.query.mockResolvedValueOnce({ rows: [{ prompt: "abc" }] });
+  const res = await request(app).get("/api/estimate/1");
+  expect(res.status).toBe(200);
+  expect(res.body.cost_cents).toBeGreaterThan(0);
+});
+
+test("Batch endpoint", async () => {
+  const payload = { requests: [{ method: "GET", path: "/api/estimate/1" }] };
+  db.query.mockResolvedValueOnce({ rows: [{ prompt: "abc" }] });
+  const res = await request(app).post("/api/batch").send(payload);
+  expect(res.status).toBe(200);
+  expect(Array.isArray(res.body.results)).toBe(true);
+});
+
+test("Reorder endpoint", async () => {
+  db.query.mockResolvedValueOnce({
+    rows: [{ job_id: "j1", price_cents: 100, quantity: 1, discount_cents: 0 }],
+  });
+  db.query.mockResolvedValueOnce({});
+  const res = await request(app).post("/api/orders/s1/reorder");
   expect(res.status).toBe(200);
 });
