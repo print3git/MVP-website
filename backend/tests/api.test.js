@@ -336,3 +336,25 @@ test('GET /api/users/:username/profile 404 when missing', async () => {
   const res = await request(app).get('/api/users/none/profile');
   expect(res.status).toBe(404);
 });
+
+test('GET /api/profile returns profile', async () => {
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  db.query.mockResolvedValueOnce({
+    rows: [{ user_id: 'u1', shipping_info: {}, payment_info: {} }],
+  });
+  const res = await request(app).get('/api/profile').set('authorization', `Bearer ${token}`);
+  expect(res.status).toBe(200);
+  expect(res.body.user_id).toBe('u1');
+});
+
+test('POST /api/profile saves details', async () => {
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  db.query.mockResolvedValueOnce({});
+  const res = await request(app)
+    .post('/api/profile')
+    .set('authorization', `Bearer ${token}`)
+    .send({ shippingInfo: { a: 1 }, paymentInfo: { b: 2 } });
+  expect(res.status).toBe(204);
+  const call = db.query.mock.calls.find((c) => c[0].includes('INSERT INTO user_profiles'));
+  expect(call).toBeTruthy();
+});
