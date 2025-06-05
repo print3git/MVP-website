@@ -1,37 +1,35 @@
 const fs = require("fs");
 const path = require("path");
-const { JSDOM } = require("jsdom");
+const vm = require("vm");
 
-function loadPage(protocol = "http:") {
-  const html = `<!doctype html><body>
-    <div id="loader" hidden></div>
-    <model-viewer id="viewer"></model-viewer>
-  </body>`;
-  const dom = new JSDOM(html, {
-    runScripts: "dangerously",
-    resources: "usable",
-    url: `${protocol}//localhost`,
-  });
-
-  dom.window.customElements = {
-    whenDefined: () => Promise.resolve(),
+function runScript(protocol) {
+  const body = { prepend: jest.fn() };
+  const document = {
+    body,
+    createElement: () => ({ className: "", textContent: "" }),
+    getElementById: () => ({ addEventListener: jest.fn() }),
+    addEventListener: (_, cb) => cb(),
   };
-
-  const scriptContent = fs.readFileSync(
-    path.join(__dirname, "../js/payment.js"),
-    "utf8",
+  const window = {
+    location: { protocol },
+    customElements: { whenDefined: () => Promise.resolve() },
+    document,
+  };
+  const sandbox = {
+    window,
+    document,
+    location: window.location,
+    localStorage: { getItem: () => null },
+    console,
+  };
+  vm.runInNewContext(
+    fs.readFileSync(path.join(__dirname, "../js/payment.js"), "utf8"),
+    sandbox,
   );
-  dom.window.eval(scriptContent);
-  return new Promise((resolve) => {
-    dom.window.document.addEventListener("DOMContentLoaded", () => {
-      setTimeout(() => resolve(dom), 0);
-    });
-    dom.window.document.dispatchEvent(new dom.window.Event("DOMContentLoaded"));
-  });
+  return body.prepend.mock.calls[0][0].textContent;
 }
 
-test("shows warning on file protocol", async () => {
-  const dom = await loadPage("file:");
-  const first = dom.window.document.body.firstElementChild;
-  expect(first.textContent).toMatch(/npm run serve/);
+test("shows warning on file protocol", () => {
+  const text = runScript("file:");
+  expect(text).toMatch(/npm run serve/);
 });

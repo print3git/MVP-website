@@ -3,12 +3,18 @@
   "private": true,
   "scripts": {
     "serve": "http-server -p 8080",
-    "test": "jest"
+    "test": "npm --prefix backend test && cd backend && npx jest --config ../jest.config.js --runTestsByPath ../tests/payment.test.js"
   },
   "devDependencies": {
+    "axios": "^1.9.0",
+    "dotenv": "^16.5.0",
     "http-server": "^14.1.1",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^30.0.0-beta.3",
-    "jsdom": "^26.1.0"
+    "jsdom": "20.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "stripe": "^18.2.1",
+    "supertest": "^7.1.1",
+    "uuid": "^11.1.0"
   }
 }
