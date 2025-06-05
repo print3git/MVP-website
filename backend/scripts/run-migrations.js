@@ -15,7 +15,7 @@ const { Client } = require("pg");
     for (const file of files) {
       const sql = fs.readFileSync(path.join(dir, file), "utf8");
       await client.query(sql);
-      console.info(`Ran migration ${file}`);
+      // Ran migration ${file}
     }
   } finally {
     await client.end();

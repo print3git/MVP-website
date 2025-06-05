@@ -14,7 +14,7 @@ function processQueue() {
   isProcessing = true;
   const jobId = queue.shift();
   setTimeout(() => {
-    console.info(`Finished printing job ${jobId}`);
+    console.log(`Finished printing job ${jobId}`);
     isProcessing = false;
     processQueue();
   }, 100);
