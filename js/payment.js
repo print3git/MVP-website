@@ -34,7 +34,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const optOut = document.getElementById("opt-out");
   const successMsg = document.getElementById("success");
   const cancelMsg = document.getElementById("cancel");
-  const flashMsg = document.getElementById("flash-discount");
+  const flashBanner = document.getElementById("flash-banner");
+  const flashTimer = document.getElementById("flash-timer");
 
   function startFlashDiscount() {
     const saved = parseInt(localStorage.getItem("flashDiscountEnd"), 10) || 0;
@@ -46,7 +47,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const update = () => {
       const diff = end - Date.now();
       if (diff <= 0) {
-        flashMsg.remove();
+        flashBanner.hidden = true;
         clearInterval(timer);
         localStorage.removeItem("flashDiscountEnd");
         return;
@@ -55,14 +56,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       const s = Math.floor((diff % 60000) / 1000)
         .toString()
         .padStart(2, "0");
-      flashMsg.textContent = `5% off if you checkout within ${m}:${s}!`;
+      flashTimer.textContent = `${m}:${s}`;
     };
     update();
     const timer = setInterval(update, 1000);
     window.resetFlashDiscount = () => {
       clearInterval(timer);
       localStorage.removeItem("flashDiscountEnd");
-      flashMsg.textContent = "";
+      flashBanner.hidden = false;
       startFlashDiscount();
     };
   }
@@ -104,7 +105,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     cancelMsg.hidden = false;
   }
 
-  if (flashMsg) {
+  if (flashBanner) {
     startFlashDiscount();
   }
 

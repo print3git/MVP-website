@@ -87,3 +87,15 @@ Note: the lightweight Hunyuan3D API server files were moved from `img/` to `back
 
 ## Referral System
 
+## Flash Discount Banner
+
+- Add a top-of-page banner on `payment.html` displaying the flash discount.
+  - Insert `<div id="flash-banner">` with inner `<span id="flash-timer">`.
+  - Remove the old `flash-discount` element from the checkout form.
+  - Style the banner with a teal-to-cyan gradient and bold text.
+  - Expose `role="status"` for accessibility.
+- Update `js/payment.js` to target the new `flash-timer` span.
+  - Show the remaining minutes and seconds.
+  - Hide the banner when the timer finishes.
+- Write a unit test to validate the countdown expiration logic.
+
