@@ -7,9 +7,6 @@ Note: the lightweight Hunyuan3D API server files were moved from `img/` to `back
 ## Model Generation & Queue
 
 - Integrate Hunyuan 2.5 as the generator for text, image and text+image prompts.
-  - Add the v2.5 API client and update config.
-  - Support image uploads alongside text prompts.
-  - Verify generation with sample inputs.
 - Replace the simple print queue with a real queue module.
   - Evaluate queue libraries and pick one.
   - Persist jobs to Redis and add a worker.
@@ -26,30 +23,14 @@ Note: the lightweight Hunyuan3D API server files were moved from `img/` to `back
 
 ## Community Creations
 
-- Fetch and display recent creations.
-- Fetch and display popular creations.
 - Implement pagination or infinite scrolling.
-  - Add a "load more" button or infinite scroll component.
-  - Expose API endpoints with page parameters.
 - Add filters by category or date.
   - Add filter UI controls.
-  - Update backend queries to support filters.
-- Store submissions in a `community_creations` table.
-  - Define table schema and migration.
-  - Seed with a few example rows.
 
 ## Testing & CI
 
 - Add unit tests for frontend scripts.
-  - Set up Jest with jsdom for browser code.
   - Write tests for each UI module.
-- Mock the Hunyuan API in server tests for error paths.
-  - Provide mock responses for failures.
-  - Ensure endpoints return proper status codes.
-
-## Documentation
-
-- Add architecture diagrams in `docs/`.
 
 ## Cleanup
 
@@ -60,23 +41,10 @@ Note: the lightweight Hunyuan3D API server files were moved from `img/` to `back
 
 - Display like counts in the community gallery and profiles.
 - Use like counts to populate the "popular now" list.
-- Create a `competitions` table with name and date fields.
-  - Write a migration and ORM model.
-- Add a `competition_entries` table linking models to competitions.
-  - Include user_id, model_id and competition_id fields.
-  - Write a migration for the table.
-- Expose APIs to submit models to competitions and fetch leaderboards.
-  - POST /api/competitions/:id/entries.
-  - GET /api/competitions/:id/leaderboard.
 - Show active competitions and leaderboards on the frontend.
   - Display the current competition with sign-up link.
   - Render a leaderboard table.
-- Add `prize_description` and `winner_model_id` columns to the `competitions` table.
-  - Create a migration adding these columns.
   - Update the admin UI to edit prize details.
-- Build admin-only endpoints to create, update, and delete competitions.
-  - Restrict routes with admin middleware.
-  - Implement CRUD handlers.
 - Create a competition submission form allowing a user to link an existing model to a competition.
   - Build the form UI and validation.
   - POST the selected model to the competition entry API.
