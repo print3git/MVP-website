@@ -36,15 +36,15 @@ This list tracks ideas to aggressively increase click-through at every step from
 - Record each purchase in the buyer's order history for reordering and tracking.
 
 ## Payment Countdown Discount
-- Insert a new `<p id="flash-discount">` element in `payment.html` below the existing quantity discount text.
-- Style the countdown message so it matches other notice text.
-- In `js/payment.js`, check `localStorage` for a `flashDiscountEnd` value on page load.
-- If none exists or it's expired, set `flashDiscountEnd` to five minutes from the current time.
-- Start a timer that updates the remaining time in `#flash-discount` every second.
-- When the timer reaches zero, remove the message and delete `flashDiscountEnd` from `localStorage`.
-- Apply a 5% discount during checkout while the timer is active.
-- Pass this discount along with the quantity discount to `createCheckout`.
-- Add a developer-only button or method to reset the timer for testing.
+- [x] Insert a new `<p id="flash-discount">` element in `payment.html` below the existing quantity discount text.
+- [x] Style the countdown message so it matches other notice text.
+- [x] In `js/payment.js`, check `localStorage` for a `flashDiscountEnd` value on page load.
+- [x] If none exists or it's expired, set `flashDiscountEnd` to five minutes from the current time.
+- [x] Start a timer that updates the remaining time in `#flash-discount` every second.
+- [x] When the timer reaches zero, remove the message and delete `flashDiscountEnd` from `localStorage`.
+- [x] Apply a 5% discount during checkout while the timer is active.
+- [x] Pass this discount along with the quantity discount to `createCheckout`.
+- [x] Add a developer-only button or method to reset the timer for testing.
 
 ## Comprehensive Test Suite
 - Add test for /api/progress streaming events until completion
