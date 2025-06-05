@@ -218,6 +218,27 @@ test('POST /api/competitions/:id/enter prevents duplicate', async () => {
   ]);
 });
 
+test('POST /api/competitions/:id/enter allows repeat submission without error', async () => {
+  db.query.mockResolvedValue({});
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  const first = await request(app)
+    .post('/api/competitions/5/enter')
+    .set('authorization', `Bearer ${token}`)
+    .send({ modelId: 'm1' });
+  expect(first.status).toBe(201);
+  const second = await request(app)
+    .post('/api/competitions/5/enter')
+    .set('authorization', `Bearer ${token}`)
+    .send({ modelId: 'm1' });
+  expect(second.status).toBe(201);
+  expect(db.query).toHaveBeenCalledTimes(2);
+  expect(db.query).toHaveBeenLastCalledWith(expect.stringContaining('ON CONFLICT DO NOTHING'), [
+    '5',
+    'm1',
+    'u1',
+  ]);
+});
+
 test('DELETE /api/admin/competitions/:id', async () => {
   db.query.mockResolvedValueOnce({});
   const res = await request(app).delete('/api/admin/competitions/5').set('x-admin-token', 'admin');
