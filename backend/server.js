@@ -354,7 +354,7 @@ app.post("/api/community", authRequired, async (req, res) => {
 });
 
 function buildGalleryQuery(orderBy) {
-  return `SELECT c.id, c.title, c.category, j.model_url, COALESCE(l.count,0) as likes
+  return `SELECT c.id, c.title, c.category, j.job_id, j.model_url, COALESCE(l.count,0) as likes
           FROM community_creations c
           JOIN jobs j ON c.job_id=j.job_id
           LEFT JOIN (SELECT model_id, COUNT(*) as count FROM likes GROUP BY model_id) l
