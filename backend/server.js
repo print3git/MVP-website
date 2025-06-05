@@ -325,6 +325,18 @@ app.post("/api/models/:id/like", authRequired, async (req, res) => {
   }
 });
 
+app.post("/api/models/:id/share", authRequired, async (req, res) => {
+  const jobId = req.params.id;
+  try {
+    const slug = uuidv4();
+    await db.insertShare(jobId, req.user.id, slug);
+    res.json({ slug });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to create share" });
+  }
+});
+
 // Submit a generated model to the community gallery
 app.post("/api/community", authRequired, async (req, res) => {
   const { jobId, title, category } = req.body;
