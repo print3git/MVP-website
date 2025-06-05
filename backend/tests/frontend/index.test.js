@@ -6,6 +6,7 @@ const { JSDOM } = require('jsdom');
 let html = fs.readFileSync(path.join(__dirname, '../../../index.html'), 'utf8');
 html = html
   .replace(/<script[^>]+src="https?:\/\/[^>]+><\/script>/g, '')
+  .replace(/<link[^>]+href="https?:\/\/[^>]+>/g, '')
   .replace(/<script[^>]+src="js\/index.js"[^>]*><\/script>/, '');
 
 describe('index page', () => {
