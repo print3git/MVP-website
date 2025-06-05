@@ -47,21 +47,6 @@ This list tracks ideas to aggressively increase click-through at every step from
 - Add a developer-only button or method to reset the timer for testing.
 
 ## Comprehensive Test Suite
-- Add test for successful user registration
-- Add test for registration with missing username
-- Add test for registration with missing email
-- Add test for registration with missing password
-- Add test for registration rejecting duplicate username
-- Add test for successful login
-- Add test for login with invalid password
-- Add test for login with missing fields
-- Add test for /api/generate with prompt only
-- Add test for /api/generate with image only
-- Add test for /api/generate returning 400 when no prompt or image
-- Add test for /api/generate falling back when generation server fails
-- Add test for /api/generate saving authenticated user id
-- Add test for /api/status list pagination and limit parameters
-- Add test for /api/status/:jobId returning 404 for unknown id
 - Add test for /api/progress streaming events until completion
 - Add test for /api/my/models rejecting unauthenticated user
 - Add test for /api/my/models returning models ordered by date
