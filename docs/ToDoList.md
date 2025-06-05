@@ -92,5 +92,5 @@ This list tracks ideas to aggressively increase click-through at every step from
 - Change the "Upload Images" label to "Upload Image" in `index.html`.
 - Remove the `multiple` attribute from the upload input.
 - Limit `uploadedFiles` to only one file in `js/index.js`.
-- Render just one thumbnail in the preview area and shrink its height.
+- Display only one thumbnail in the preview area and reduce its vertical size.
 - Update ARIA labels or text that reference multiple images.
