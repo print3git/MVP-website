@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shared Model</title>
+    <meta property="og:title" content="Shared Model – print3" />
+    <meta property="og:description" content="View a 3D model shared on print3." />
+    <meta property="og:image" content="img/boxlogo.png" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+    <script
+      type="module"
+      src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js"
+    ></script>
+    <script type="module" src="js/sharedModel.js"></script>
+    <script type="module">
+      import { shareOn } from './js/share.js';
+      window.shareOn = shareOn;
+    </script>
+  </head>
+  <body class="bg-[#1A1A1D] text-white font-sans flex flex-col min-h-screen">
+    <header class="p-4 flex justify-between items-center">
+      <a
+        href="index.html"
+        class="flex items-center bg-[#2A2A2E] px-3 py-1 rounded-xl hover:bg-[#3A3A3E] transition"
+      >
+        <i class="fas fa-arrow-left mr-2"></i>Back
+      </a>
+      <div class="flex space-x-2">
+        <button
+          onclick="shareOn('twitter')"
+          aria-label="Share on Twitter"
+          class="w-8 h-8 flex items-center justify-center bg-[#1A1A1D] border border-white/10 rounded hover:bg-[#3A3A3E]"
+        >
+          <i class="fab fa-twitter"></i>
+        </button>
+        <button
+          onclick="shareOn('facebook')"
+          aria-label="Share on Facebook"
+          class="w-8 h-8 flex items-center justify-center bg-[#1A1A1D] border border-white/10 rounded hover:bg-[#3A3A3E]"
+        >
+          <i class="fab fa-facebook-f"></i>
+        </button>
+      </div>
+    </header>
+    <main class="flex-1 flex items-center justify-center p-4">
+      <div class="w-full max-w-md h-80 relative">
+        <model-viewer
+          id="viewer"
+          src=""
+          environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
+          camera-controls
+          style="width: 100%; height: 100%; display: block"
+        ></model-viewer>
+        <p id="error" class="absolute bottom-2 left-0 w-full text-center text-red-400"></p>
+      </div>
+    </main>
+  </body>
+</html>
