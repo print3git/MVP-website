@@ -205,6 +205,13 @@ test('DELETE /api/admin/competitions/:id', async () => {
   expect(res.status).toBe(204);
 });
 
+test('POST /api/admin/competitions unauthorized', async () => {
+  const res = await request(app)
+    .post('/api/admin/competitions')
+    .send({ name: 'Test', start_date: '2025-01-01', end_date: '2025-01-31' });
+  expect(res.status).toBe(401);
+});
+
 test('SSE progress endpoint streams updates', async () => {
   const req = request(app).get('/api/progress/job1');
   setTimeout(() => {
