@@ -4,6 +4,7 @@
 let stripe = null;
 const FALLBACK_GLB =
   "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
+const PRICE = 2000;
 
 function qs(name) {
   const params = new URLSearchParams(window.location.search);
@@ -15,7 +16,7 @@ async function createCheckout(quantity, discount) {
   const res = await fetch("/api/create-order", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ jobId, price: 2000, qty: quantity, discount }),
+    body: JSON.stringify({ jobId, price: PRICE, qty: quantity, discount }),
   });
   const data = await res.json();
   return data.checkoutUrl;
@@ -33,6 +34,38 @@ document.addEventListener("DOMContentLoaded", async () => {
   const optOut = document.getElementById("opt-out");
   const successMsg = document.getElementById("success");
   const cancelMsg = document.getElementById("cancel");
+  const flashMsg = document.getElementById("flash-discount");
+
+  function startFlashDiscount() {
+    const saved = parseInt(localStorage.getItem("flashDiscountEnd"), 10) || 0;
+    let end = saved;
+    if (!end || end < Date.now()) {
+      end = Date.now() + 5 * 60 * 1000;
+      localStorage.setItem("flashDiscountEnd", end);
+    }
+    const update = () => {
+      const diff = end - Date.now();
+      if (diff <= 0) {
+        flashMsg.remove();
+        clearInterval(timer);
+        localStorage.removeItem("flashDiscountEnd");
+        return;
+      }
+      const m = Math.floor(diff / 60000);
+      const s = Math.floor((diff % 60000) / 1000)
+        .toString()
+        .padStart(2, "0");
+      flashMsg.textContent = `5% off if you checkout within ${m}:${s}!`;
+    };
+    update();
+    const timer = setInterval(update, 1000);
+    window.resetFlashDiscount = () => {
+      clearInterval(timer);
+      localStorage.removeItem("flashDiscountEnd");
+      flashMsg.textContent = "";
+      startFlashDiscount();
+    };
+  }
 
   const hideLoader = () => (loader.hidden = true);
 
@@ -71,11 +104,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     cancelMsg.hidden = false;
   }
 
+  if (flashMsg) {
+    startFlashDiscount();
+  }
+
   document
     .getElementById("submit-payment")
     .addEventListener("click", async () => {
       const qty = parseInt(qtyInput.value) || 1;
-      const discount = qty >= 3 && !optOut.checked ? 200 : 0;
+      let discount = qty >= 3 && !optOut.checked ? 200 : 0;
+      const end = parseInt(localStorage.getItem("flashDiscountEnd"), 10) || 0;
+      if (end && end > Date.now()) {
+        discount += Math.round(qty * PRICE * 0.05);
+      }
       const url = await createCheckout(qty, discount);
       if (stripe) {
         stripe.redirectToCheckout({ sessionId: url.split("session_id=")[1] });
