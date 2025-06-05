@@ -34,3 +34,14 @@ This list tracks ideas to aggressively increase click-through at every step from
 - Surface other users' models on profile pages with an option to buy prints.
 - Let creators mark their models as publicly sellable or private.
 - Record each purchase in the buyer's order history for reordering and tracking.
+
+## Payment Countdown Discount
+- Insert a new `<p id="flash-discount">` element in `payment.html` below the existing quantity discount text.
+- Style the countdown message so it matches other notice text.
+- In `js/payment.js`, check `localStorage` for a `flashDiscountEnd` value on page load.
+- If none exists or it's expired, set `flashDiscountEnd` to five minutes from the current time.
+- Start a timer that updates the remaining time in `#flash-discount` every second.
+- When the timer reaches zero, remove the message and delete `flashDiscountEnd` from `localStorage`.
+- Apply a 5% discount during checkout while the timer is active.
+- Pass this discount along with the quantity discount to `createCheckout`.
+- Add a developer-only button or method to reset the timer for testing.
