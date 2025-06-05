@@ -19,7 +19,7 @@ const { Client } = require("pg");
       "INSERT INTO community_creations(job_id, title, category) VALUES($1,$2,$3) ON CONFLICT DO NOTHING",
       ["00000000-0000-0000-0000-000000000000", "Another Model", "demo"],
     );
-    console.info("Seed data inserted");
+    // Seed data inserted
   } finally {
     await client.end();
   }
