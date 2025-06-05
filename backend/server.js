@@ -387,6 +387,22 @@ app.get('/api/competitions/active', async (req, res) => {
   }
 });
 
+app.get('/api/competitions/past', async (req, res) => {
+  try {
+    const { rows } = await db.query(
+      `SELECT c.id, c.name, c.end_date, j.model_url
+       FROM competitions c
+       LEFT JOIN jobs j ON c.winner_model_id=j.job_id
+       WHERE c.end_date < CURRENT_DATE AND c.winner_model_id IS NOT NULL
+       ORDER BY c.end_date DESC LIMIT 5`
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch past competitions' });
+  }
+});
+
 app.get('/api/competitions/:id/entries', async (req, res) => {
   try {
     const { rows } = await db.query(
