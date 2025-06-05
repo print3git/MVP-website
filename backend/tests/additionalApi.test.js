@@ -120,6 +120,11 @@ test('POST /api/models/:id/like requires auth', async () => {
   expect(res.status).toBe(401);
 });
 
+test('POST /api/community requires user auth', async () => {
+  const res = await request(app).post('/api/community').send({ jobId: 'j1' });
+  expect(res.status).toBe(401);
+});
+
 test('GET /api/community/popular uses correct ordering', async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
   await request(app).get('/api/community/popular?limit=1&offset=0');
