@@ -198,6 +198,12 @@ test('POST /api/competitions/:id/enter requires auth', async () => {
   expect(res.status).toBe(401);
 });
 
+test('POST /api/competitions/:id/enter rejects unauthenticated user', async () => {
+  const res = await request(app).post('/api/competitions/5/enter').send({ modelId: 'm1' });
+  expect(res.status).toBe(401);
+  expect(res.body.error).toBe('Unauthorized');
+});
+
 test('POST /api/competitions/:id/enter prevents duplicate', async () => {
   db.query.mockResolvedValueOnce({});
   const token = jwt.sign({ id: 'u1' }, 'secret');
