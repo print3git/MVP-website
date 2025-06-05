@@ -122,7 +122,7 @@ test("GET /api/community/popular uses correct ordering", async () => {
   await request(app).get("/api/community/popular?limit=1&offset=0");
   expect(db.query).toHaveBeenCalledWith(
     expect.stringContaining("likes DESC, c.created_at DESC"),
-    [1, 0, null],
+    [1, 0, null, null],
   );
 });
 
