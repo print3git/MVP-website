@@ -45,6 +45,7 @@ This list tracks ideas to aggressively increase click-through at every step from
 - Apply a 5% discount during checkout while the timer is active.
 - Pass this discount along with the quantity discount to `createCheckout`.
 - Add a developer-only button or method to reset the timer for testing.
+
 ## Comprehensive Test Suite
 - Add test for successful user registration
 - Add test for registration with missing username
