@@ -163,6 +163,20 @@ test('GET /api/competitions/active upcoming', async () => {
   expect(db.query).toHaveBeenCalledWith(expect.stringContaining('end_date >= CURRENT_DATE'));
 });
 
+test('GET /api/competitions/active returns upcoming comps', async () => {
+  const upcoming = {
+    id: '1',
+    name: 'Future Event',
+    start_date: '2099-01-01',
+    end_date: '2099-01-31',
+  };
+  db.query.mockResolvedValueOnce({ rows: [upcoming] });
+  const res = await request(app).get('/api/competitions/active');
+  expect(res.status).toBe(200);
+  expect(res.body[0].id).toBe('1');
+  expect(res.body[0].start_date).toBe('2099-01-01');
+});
+
 test('GET /api/competitions/past', async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
   const res = await request(app).get('/api/competitions/past');
