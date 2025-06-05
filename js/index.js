@@ -16,6 +16,9 @@ const refs = {
   previewImg: $('preview-img'),
   loader: $('loader'),
   viewer: $('viewer'),
+  progressBar: $('progress-bar'),
+  progressWrapper: $('progress-wrapper'),
+  progressText: $('progress-text'),
   demoNote: $('demo-note'),
   demoClose: $('demo-note-close'),
   promptInput: $('promptInput'),
@@ -25,6 +28,10 @@ const refs = {
   uploadInput: $('uploadInput'),
   imagePreviewArea: $('image-preview-area'),
   dropZone: $('drop-zone'),
+  cropModal: $('crop-modal'),
+  cropImage: $('crop-image'),
+  cropConfirm: $('crop-confirm'),
+  cropCancel: $('crop-cancel'),
   examples: $('prompt-examples'),
   checkoutBtn: $('checkout-button'),
   buyNowBtn: $('buy-now-button'),
@@ -49,7 +56,36 @@ function setStep(name) {
 window.shareOn = shareOn;
 let uploadedFiles = [];
 let lastJobId = null;
-let savedProfile = null;
+
+let progressInterval = null;
+
+function startProgress(estimateMs = 20000) {
+  if (!refs.progressWrapper) return;
+  const start = Date.now();
+  refs.progressBar.style.width = '0%';
+  refs.progressWrapper.style.display = 'block';
+  const tick = () => {
+    const elapsed = Date.now() - start;
+    const pct = Math.min((elapsed / estimateMs) * 100, 99);
+    refs.progressBar.style.width = pct + '%';
+    const remaining = Math.max(estimateMs - elapsed, 0);
+    refs.progressText.textContent = `~${Math.ceil(remaining / 1000)}s remaining`;
+  };
+  tick();
+  clearInterval(progressInterval);
+  progressInterval = setInterval(tick, 500);
+}
+
+function stopProgress() {
+  if (!refs.progressWrapper) return;
+  clearInterval(progressInterval);
+  refs.progressBar.style.width = '100%';
+  refs.progressText.textContent = '';
+  setTimeout(() => {
+    refs.progressWrapper.style.display = 'none';
+  }, 300);
+}
+
 
 const hideAll = () => {
   refs.previewImg.style.display = 'none';
@@ -59,10 +95,12 @@ const hideAll = () => {
 const showLoader = () => {
   hideAll();
   refs.loader.style.display = 'flex';
+  startProgress();
 };
 const showModel = () => {
   hideAll();
   refs.viewer.style.display = 'block';
+  stopProgress();
 };
 const hideDemo = () => {
   refs.demoNote && (refs.demoNote.style.display = 'none');
@@ -113,6 +151,16 @@ function validatePrompt(p) {
   }
   if (p && p.length < 5) {
     showError('Prompt must be at least 5 characters');
+    refs.promptWrapper.classList.add('border-red-500');
+    return false;
+  }
+  if (p && /[<>]/.test(p)) {
+    showError('Prompt contains invalid characters');
+    refs.promptWrapper.classList.add('border-red-500');
+    return false;
+  }
+  if (p && p.length > 200) {
+    showError('Prompt must be under 200 characters');
     refs.promptWrapper.classList.add('border-red-500');
     return false;
   }
@@ -172,35 +220,58 @@ function renderThumbnails(arr) {
   });
 }
 
+function getThumbnail(file) {
+  return new Promise((res) => {
+    const R = new FileReader();
+    R.onload = () => {
+      const im = new Image();
+      im.onload = () => {
+        let [w, h] = [im.width, im.height],
+          max = 200,
+          r = Math.min(max / w, max / h, 1);
+        w *= r;
+        h *= r;
+        const c = document.createElement('canvas');
+        c.width = w;
+        c.height = h;
+        c.getContext('2d').drawImage(im, 0, 0, w, h);
+        res(c.toDataURL('image/png', 0.7));
+      };
+      im.src = R.result;
+    };
+    R.readAsDataURL(file);
+  });
+}
+
+function openCropper(file) {
+  return new Promise((resolve) => {
+    refs.cropImage.src = URL.createObjectURL(file);
+    refs.cropModal.classList.remove('hidden');
+    const cropper = new Cropper(refs.cropImage, { aspectRatio: 1, viewMode: 1 });
+    const done = (result) => {
+      cropper.destroy();
+      refs.cropModal.classList.add('hidden');
+      resolve(result);
+    };
+    refs.cropConfirm.onclick = () => {
+      const canvas = cropper.getCroppedCanvas({ width: 512, height: 512 });
+      canvas.toBlob((b) => {
+        done(new File([b], file.name, { type: 'image/png' }));
+      }, 'image/png');
+    };
+    refs.cropCancel.onclick = () => done(null);
+  });
+}
+
 async function processFiles(files) {
   if (!files.length) return;
-  uploadedFiles = files;
-  const thumbs = await Promise.all(
-    files.map(
-      (file) =>
-        new Promise((res) => {
-          const R = new FileReader();
-          R.onload = () => {
-            const im = new Image();
-            im.onload = () => {
-              let [w, h] = [im.width, im.height],
-                max = 200,
-                r = Math.min(max / w, max / h, 1);
-              w *= r;
-              h *= r;
-              const c = document.createElement('canvas');
-              c.width = w;
-              c.height = h;
-              c.getContext('2d').drawImage(im, 0, 0, w, h);
-              res(c.toDataURL('image/png', 0.7));
-            };
-            im.src = R.result;
-          };
-          R.readAsDataURL(file);
-        })
-    )
-  );
-
+  const processed = [];
+  for (const f of files) {
+    const c = await openCropper(f);
+    if (c) processed.push(c);
+  }
+  uploadedFiles = processed;
+  const thumbs = await Promise.all(processed.map((f) => getThumbnail(f)));
   localStorage.setItem('print3Images', JSON.stringify(thumbs));
   renderThumbnails(thumbs);
 }
@@ -210,6 +281,7 @@ refs.uploadInput.addEventListener('change', (e) => {
 });
 
 if (refs.dropZone) {
+  refs.dropZone.addEventListener('click', () => refs.uploadInput.click());
   ['dragover', 'dragenter'].forEach((ev) => {
     refs.dropZone.addEventListener(ev, (e) => {
       e.preventDefault();
