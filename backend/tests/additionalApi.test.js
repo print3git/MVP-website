@@ -228,7 +228,6 @@ test('GET /api/shared/:slug 404 when missing', async () => {
   expect(res.status).toBe(404);
 });
 
-
 test('Stripe webhook invalid signature', async () => {
   stripeMock.webhooks.constructEvent.mockImplementation(() => {
     throw new Error('bad sig');
