@@ -6,7 +6,6 @@ Note: the lightweight Hunyuan3D API server files were moved from `img/` to `back
 
 ## Model Generation & Queue
 
-
 ## Front-End
 
 - Ensure accessibility with ARIA labels and contrast.
@@ -16,7 +15,6 @@ Note: the lightweight Hunyuan3D API server files were moved from `img/` to `back
 ## Community Creations
 
 - Style the filter dropdown with a flex container and improved spacing.
-- Add a text search box to filter creations by keywords.
 - Expand the category list with additional options (e.g., Fashion, Miniatures, Props).
 - Arrange filter controls in a responsive toolbar with sorting options.
 
@@ -29,11 +27,10 @@ Note: the lightweight Hunyuan3D API server files were moved from `img/` to `back
 
 ## Profiles & Competitions
 
-  - Update the admin UI to edit prize details.
-  - Create a competition submission form allowing a user to link an existing model to a competition.
-  - Build the form UI and validation.
-  - POST the selected model to the competition entry API.
-
+- Update the admin UI to edit prize details.
+- Create a competition submission form allowing a user to link an existing model to a competition.
+- Build the form UI and validation.
+- POST the selected model to the competition entry API.
 
 ## UX Improvements
 
@@ -89,4 +86,3 @@ Note: the lightweight Hunyuan3D API server files were moved from `img/` to `back
   - Apply them on page load.
 
 ## Referral System
-
