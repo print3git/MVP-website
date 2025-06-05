@@ -6,7 +6,6 @@ Note: the lightweight Hunyuan3D API server files were moved from `img/` to `back
 
 ## Model Generation & Queue
 
-
 ## Front-End
 
 - Ensure accessibility with ARIA labels and contrast.
@@ -14,8 +13,6 @@ Note: the lightweight Hunyuan3D API server files were moved from `img/` to `back
   - Fix color contrast issues.
 
 ## Community Creations
-
-
 
 ## Testing & CI
 
@@ -26,11 +23,10 @@ Note: the lightweight Hunyuan3D API server files were moved from `img/` to `back
 
 ## Profiles & Competitions
 
-  - Update the admin UI to edit prize details.
-  - Create a competition submission form allowing a user to link an existing model to a competition.
-  - Build the form UI and validation.
-  - POST the selected model to the competition entry API.
-
+- Update the admin UI to edit prize details.
+- Create a competition submission form allowing a user to link an existing model to a competition.
+- Build the form UI and validation.
+- POST the selected model to the competition entry API.
 
 ## UX Improvements
 
@@ -89,13 +85,12 @@ Note: the lightweight Hunyuan3D API server files were moved from `img/` to `back
 
 ## Flash Discount Banner
 
-- Add a top-of-page banner on `payment.html` displaying the flash discount.
-  - Insert `<div id="flash-banner">` with inner `<span id="flash-timer">`.
-  - Remove the old `flash-discount` element from the checkout form.
-  - Style the banner with a teal-to-cyan gradient and bold text.
-  - Expose `role="status"` for accessibility.
-- Update `js/payment.js` to target the new `flash-timer` span.
-  - Show the remaining minutes and seconds.
-  - Hide the banner when the timer finishes.
+- Add a top-of-page banner on `payment.html` displaying the flash discount. (DONE)
+  - Insert `<div id="flash-banner">` with inner `<span id="flash-timer">`. (DONE)
+  - Remove the old `flash-discount` element from the checkout form. (DONE)
+  - Style the banner with a teal-to-cyan gradient and bold text. (DONE)
+  - Expose `role="status"` for accessibility. (DONE)
+- Update `js/payment.js` to target the new `flash-timer` span. (DONE)
+  - Show the remaining minutes and seconds. (DONE)
+  - Hide the banner when the timer finishes. (DONE)
 - Write a unit test to validate the countdown expiration logic.
-
