@@ -7,6 +7,7 @@ const bodyParser = require("body-parser");
 const multer = require("multer");
 const path = require("path");
 const morgan = require("morgan");
+const compression = require("compression");
 const { v4: uuidv4 } = require("uuid");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -16,13 +17,18 @@ const FormData = require("form-data");
 const fs = require("fs");
 const config = require("./config");
 const stripe = require("stripe")(config.stripeKey);
-const { enqueuePrint, processQueue } = require("./queue/printQueue");
+const {
+  enqueuePrint,
+  processQueue,
+  progressEmitter,
+} = require("./queue/printQueue");
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || "admin";
 
 const AUTH_SECRET = process.env.AUTH_SECRET || "secret";
 
 const app = express();
 app.use(morgan("dev"));
+app.use(compression());
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "..")));
@@ -199,6 +205,27 @@ app.get("/api/status/:jobId", async (req, res) => {
     console.error(err);
     res.status(500).json({ error: "Failed to fetch job" });
   }
+});
+
+app.get("/api/progress/:jobId", (req, res) => {
+  res.set({
+    "Content-Type": "text/event-stream",
+    "Cache-Control": "no-cache",
+    Connection: "keep-alive",
+  });
+  res.flushHeaders();
+  const jobId = req.params.jobId;
+  const send = (update) => {
+    if (update.jobId === jobId) {
+      res.write(`data: ${JSON.stringify(update)}\n\n`);
+      if (update.progress === 100) {
+        progressEmitter.removeListener("progress", send);
+        res.end();
+      }
+    }
+  };
+  progressEmitter.on("progress", send);
+  req.on("close", () => progressEmitter.removeListener("progress", send));
 });
 
 app.get("/api/my/models", authRequired, async (req, res) => {

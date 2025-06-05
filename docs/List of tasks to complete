@@ -6,7 +6,6 @@ Note: the lightweight Hunyuan3D API server files were moved from `img/` to `back
 
 ## Model Generation & Queue
 
-<!-- Completed: Hunyuan 2.5 integration and Redis-backed queue -->
 
 ## Front-End
 
@@ -28,9 +27,6 @@ Note: the lightweight Hunyuan3D API server files were moved from `img/` to `back
 
 ## Cleanup
 
-- Review all console logs.
-- Check for unused dependencies in `package.json`.
-
 ## Profiles & Competitions
 
   - Update the admin UI to edit prize details.
@@ -38,7 +34,6 @@ Note: the lightweight Hunyuan3D API server files were moved from `img/` to `back
   - Build the form UI and validation.
   - POST the selected model to the competition entry API.
 
-<!-- Completed: single-entry check, nightly cron to select winners, winner emails, and documentation rules -->
 
 ## UX Improvements
 
@@ -51,7 +46,6 @@ Note: the lightweight Hunyuan3D API server files were moved from `img/` to `back
   - Integrate a client-side cropping library.
 - Show a real-time progress bar while the model is being generated.
   - Add a progress bar component.
-  - Update the backend to stream progress events.
 - Display clear inline error messages if generation fails or the prompt is invalid.
   - Provide failure states in the UI.
   - Validate prompts before submission.
@@ -89,11 +83,9 @@ Note: the lightweight Hunyuan3D API server files were moved from `img/` to `back
   - Display the current step at all times.
 - Optimize API requests to reduce loading time on slow networks.
   - Bundle multiple requests where possible.
-  - Compress JSON responses.
 - Save user preferences such as units or color scheme.
   - Persist preferences to local storage.
   - Apply them on page load.
 
 ## Referral System
 
-<!-- Completed: referral codes, apply API, credit logic and tests -->

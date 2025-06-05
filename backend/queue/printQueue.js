@@ -1,5 +1,8 @@
+const { EventEmitter } = require("events");
+
 const queue = [];
 let isProcessing = false;
+const progressEmitter = new EventEmitter();
 
 function enqueuePrint(jobId) {
   // In a real system, this would push to a message broker
@@ -13,10 +16,19 @@ function processQueue() {
   if (isProcessing || queue.length === 0) return;
   isProcessing = true;
   const jobId = queue.shift();
-  setTimeout(() => {
-    console.log(`Finished printing job ${jobId}`);
-    isProcessing = false;
-    processQueue();
+  let progress = 0;
+  progressEmitter.emit("progress", { jobId, progress });
+  const interval = setInterval(() => {
+    progress += 20;
+    if (progress >= 100) {
+      progress = 100;
+      clearInterval(interval);
+      isProcessing = false;
+      progressEmitter.emit("progress", { jobId, progress });
+      processQueue();
+    } else {
+      progressEmitter.emit("progress", { jobId, progress });
+    }
   }, 100);
 }
 
@@ -24,4 +36,9 @@ function _getQueue() {
   return queue;
 }
 
-module.exports = { enqueuePrint, processQueue, _getQueue };
+module.exports = {
+  enqueuePrint,
+  processQueue,
+  _getQueue,
+  progressEmitter,
+};
