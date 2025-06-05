@@ -149,6 +149,13 @@ test("POST /api/competitions/:id/enter", async () => {
   expect(res.status).toBe(201);
 });
 
+test("POST /api/competitions/:id/enter requires auth", async () => {
+  const res = await request(app)
+    .post("/api/competitions/5/enter")
+    .send({ modelId: "m1" });
+  expect(res.status).toBe(401);
+});
+
 test("DELETE /api/admin/competitions/:id", async () => {
   db.query.mockResolvedValueOnce({});
   const res = await request(app)
