@@ -354,12 +354,13 @@ app.post("/api/community", authRequired, async (req, res) => {
 });
 
 function buildGalleryQuery(orderBy) {
-  return `SELECT c.id, c.title, c.category, j.model_url, COALESCE(l.count,0) as likes
+  return `SELECT c.id, c.title, c.category, j.job_id, j.model_url, COALESCE(l.count,0) as likes
           FROM community_creations c
           JOIN jobs j ON c.job_id=j.job_id
           LEFT JOIN (SELECT model_id, COUNT(*) as count FROM likes GROUP BY model_id) l
           ON j.job_id=l.model_id
           WHERE ($3::text IS NULL OR c.category=$3)
+            AND ($4::text IS NULL OR c.title ILIKE '%' || $4 || '%')
           ORDER BY ${orderBy} LIMIT $1 OFFSET $2`;
 }
 
@@ -367,12 +368,13 @@ app.get("/api/community/recent", async (req, res) => {
   const limit = parseInt(req.query.limit, 10) || 10;
   const offset = parseInt(req.query.offset, 10) || 0;
   const category = req.query.category || null;
+  const search = req.query.search || null;
+  const order = req.query.order === "asc" ? "ASC" : "DESC";
   try {
-    const { rows } = await db.query(buildGalleryQuery("c.created_at DESC"), [
-      limit,
-      offset,
-      category,
-    ]);
+    const { rows } = await db.query(
+      buildGalleryQuery(`c.created_at ${order}`),
+      [limit, offset, category, search],
+    );
     res.json(rows);
   } catch (err) {
     console.error(err);
@@ -384,10 +386,11 @@ app.get("/api/community/popular", async (req, res) => {
   const limit = parseInt(req.query.limit, 10) || 10;
   const offset = parseInt(req.query.offset, 10) || 0;
   const category = req.query.category || null;
+  const search = req.query.search || null;
   try {
     const { rows } = await db.query(
       buildGalleryQuery("likes DESC, c.created_at DESC"),
-      [limit, offset, category],
+      [limit, offset, category, search],
     );
     res.json(rows);
   } catch (err) {

@@ -15,10 +15,7 @@ Note: the lightweight Hunyuan3D API server files were moved from `img/` to `back
 
 ## Community Creations
 
-- Style the filter dropdown with a flex container and improved spacing.
-- Add a text search box to filter creations by keywords.
-- Expand the category list with additional options (e.g., Fashion, Miniatures, Props).
-- Arrange filter controls in a responsive toolbar with sorting options.
+
 
 ## Testing & CI
 
