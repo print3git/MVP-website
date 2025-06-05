@@ -16,7 +16,8 @@ async function load() {
   container.innerHTML = "";
   models.forEach((m) => {
     const div = document.createElement("div");
-    div.className = "bg-[#2A2A2E] border border-white/10 rounded-3xl p-4 flex justify-between";
+    div.className =
+      "bg-[#2A2A2E] border border-white/10 rounded-3xl p-4 flex justify-between";
     div.innerHTML = `<span>${m.prompt} - ${m.model_url || ""}</span><span>${m.likes} ❤️</span>`;
     container.appendChild(div);
   });

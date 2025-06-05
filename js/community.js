@@ -14,9 +14,9 @@ function like(id) {
       if (span) span.textContent = d.likes;
     });
 }
-async function fetchCreations(type, offset = 0, limit = 6, category = '') {
+async function fetchCreations(type, offset = 0, limit = 6, category = "") {
   const query = new URLSearchParams({ limit, offset });
-  if (category) query.set('category', category);
+  if (category) query.set("category", category);
   const res = await fetch(`/api/community/${type}?${query}`);
   if (!res.ok) return [];
   return res.json();
@@ -64,7 +64,7 @@ async function captureSnapshots(container) {
 
 async function loadMore(type) {
   const state = window.communityState[type];
-  const category = document.getElementById('category').value;
+  const category = document.getElementById("category").value;
   const models = await fetchCreations(type, state.offset, 6, category);
   state.offset += models.length;
   const grid = document.getElementById(`${type}-grid`);
@@ -83,15 +83,13 @@ function init() {
   document
     .getElementById("popular-load")
     .addEventListener("click", () => loadMore("popular"));
-  document
-    .getElementById('category')
-    .addEventListener('change', () => {
-      document.getElementById('recent-grid').innerHTML = '';
-      document.getElementById('popular-grid').innerHTML = '';
-      window.communityState = { recent: { offset: 0 }, popular: { offset: 0 } };
-      loadMore('popular');
-      loadMore('recent');
-    });
+  document.getElementById("category").addEventListener("change", () => {
+    document.getElementById("recent-grid").innerHTML = "";
+    document.getElementById("popular-grid").innerHTML = "";
+    window.communityState = { recent: { offset: 0 }, popular: { offset: 0 } };
+    loadMore("popular");
+    loadMore("recent");
+  });
   loadMore("popular");
   loadMore("recent");
 }
