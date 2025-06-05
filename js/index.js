@@ -24,7 +24,23 @@ const refs = {
   uploadInput: $("uploadInput"),
   imagePreviewArea: $("image-preview-area"),
   checkoutBtn: $("checkout-button"),
+  stepPrompt: $("step-prompt"),
+  stepModel: $("step-model"),
+  stepBuy: $("step-buy"),
 };
+
+function setStep(name) {
+  const map = {
+    prompt: refs.stepPrompt,
+    model: refs.stepModel,
+    buy: refs.stepBuy,
+  };
+  Object.entries(map).forEach(([key, el]) => {
+    if (!el) return;
+    el.classList.toggle("font-semibold", key === name);
+    el.classList.toggle("text-gray-400", key !== name);
+  });
+}
 
 window.shareOn = shareOn;
 let uploadedFiles = [];
@@ -192,6 +208,7 @@ refs.submitBtn.addEventListener("click", async () => {
   refs.viewer.src = url;
   await refs.viewer.updateComplete;
   showModel();
+  setStep("model");
   hideDemo();
 
   refs.checkoutBtn.classList.remove("hidden");
@@ -199,6 +216,7 @@ refs.submitBtn.addEventListener("click", async () => {
 });
 
 window.addEventListener("DOMContentLoaded", () => {
+  setStep("prompt");
   showModel();
   refs.viewer.src = FALLBACK_GLB;
 

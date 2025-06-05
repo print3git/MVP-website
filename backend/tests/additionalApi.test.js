@@ -50,6 +50,18 @@ test("GET /api/my/models requires auth", async () => {
   expect(res.status).toBe(401);
 });
 
+test("GET /api/my/models ordered by date", async () => {
+  db.query.mockResolvedValueOnce({ rows: [] });
+  const token = jwt.sign({ id: "u1" }, "secret");
+  await request(app)
+    .get("/api/my/models")
+    .set("authorization", `Bearer ${token}`);
+  expect(db.query).toHaveBeenCalledWith(
+    expect.stringContaining("ORDER BY created_at DESC"),
+    ["u1"],
+  );
+});
+
 test("GET /api/profile returns profile", async () => {
   db.query.mockResolvedValueOnce({ rows: [{ display_name: "A" }] });
   const token = jwt.sign({ id: "u1" }, "secret");
@@ -132,11 +144,28 @@ test("GET /api/competitions/active", async () => {
   expect(res.status).toBe(200);
 });
 
+test("GET /api/competitions/active upcoming", async () => {
+  db.query.mockResolvedValueOnce({ rows: [] });
+  await request(app).get("/api/competitions/active");
+  expect(db.query).toHaveBeenCalledWith(
+    expect.stringContaining("end_date >= CURRENT_DATE"),
+  );
+});
+
 test("GET /api/competitions/:id/entries", async () => {
   db.query.mockResolvedValueOnce({ rows: [{ model_id: "m1", likes: 3 }] });
   const res = await request(app).get("/api/competitions/5/entries");
   expect(res.status).toBe(200);
   expect(res.body[0].likes).toBe(3);
+});
+
+test("GET /api/competitions/:id/entries order", async () => {
+  db.query.mockResolvedValueOnce({ rows: [] });
+  await request(app).get("/api/competitions/5/entries");
+  expect(db.query).toHaveBeenCalledWith(
+    expect.stringContaining("ORDER BY likes DESC"),
+    ["5"],
+  );
 });
 
 test("POST /api/competitions/:id/enter", async () => {
@@ -154,6 +183,19 @@ test("POST /api/competitions/:id/enter requires auth", async () => {
     .post("/api/competitions/5/enter")
     .send({ modelId: "m1" });
   expect(res.status).toBe(401);
+});
+
+test("POST /api/competitions/:id/enter prevents duplicate", async () => {
+  db.query.mockResolvedValueOnce({});
+  const token = jwt.sign({ id: "u1" }, "secret");
+  await request(app)
+    .post("/api/competitions/5/enter")
+    .set("authorization", `Bearer ${token}`)
+    .send({ modelId: "m1" });
+  expect(db.query).toHaveBeenCalledWith(
+    expect.stringContaining("ON CONFLICT DO NOTHING"),
+    ["5", "m1", "u1"],
+  );
 });
 
 test("DELETE /api/admin/competitions/:id", async () => {
