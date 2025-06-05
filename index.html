@@ -150,6 +150,12 @@
       </div>
     </header>
 
+    <div
+      id="trust-banner"
+      class="bg-teal-600 text-[#1A1A1D] text-center text-sm font-semibold py-2"
+    >
+      Trusted by thousands of makers
+    </div>
 
     <main
       class="flex-1 flex flex-col items-center justify-start gap-8 px-4 lg:px-16"
@@ -180,6 +186,23 @@
           style="width: 100%; height: 100%; display: block"
         ></model-viewer>
 
+        <a
+          href="CommunityCreations.html"
+          class="absolute top-4 left-4 bg-[#2A2A2E] border border-white/10 rounded-full px-3 py-1 text-sm text-white hover:bg-[#3A3A3E] transition"
+        >
+          View Community Gallery
+        </a>
+
+        <div
+          id="overlay-cta"
+          class="absolute inset-0 flex items-center justify-center pointer-events-none"
+        >
+          <span
+            class="bg-black/70 text-white text-xl font-bold px-4 py-2 rounded-full"
+            >See Yours Now ➔</span
+          >
+        </div>
+
         <!-- centred loader -->
         <div
           id="loader"
@@ -201,6 +224,12 @@
           onmouseout="this.style.opacity='1'"
           >Checkout</a
         >
+        <p
+          id="micro-commit"
+          class="absolute bottom-4 left-4 text-xs text-gray-300"
+        >
+          90% of previewers go on to buy
+        </p>
         <div
           id="gen-error"
           class="absolute bottom-2 left-0 w-full text-center text-red-400 pointer-events-none"
@@ -216,9 +245,15 @@
             alt="print3 cube"
             class="w-32 h-auto mb-8"
           />
-          <h1 class="text-3xl font-semibold mb-8">
+          <h1 class="text-3xl font-semibold mb-2">
             Design & Print in 30 Seconds.
           </h1>
+          <p class="text-lg text-gray-300 mb-6">
+            Turn your idea into a collectible print.
+          </p>
+          <p class="text-sm italic text-gray-400 max-w-md">
+            “The best printing service for r/3dprinting!” – happy customer
+          </p>
 
           <div class="flex items-center w-full gap-4">
             <div
@@ -271,5 +306,13 @@
 
     <!--  Application logic ----------------------------------------------- -->
     <script type="module" src="js/index.js"></script>
+
+    <a
+      href="#promptInput"
+      id="sticky-get-started"
+      class="fixed bottom-6 right-6 bg-[#30D5C8] text-[#1A1A1D] font-semibold py-3 px-6 rounded-full shadow-lg hover:bg-[#28b7a8] transition"
+    >
+      Get Started
+    </a>
   </body>
 </html>
