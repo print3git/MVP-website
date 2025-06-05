@@ -112,6 +112,11 @@ test("POST /api/models/:id/like removes like", async () => {
   expect(res.body.likes).toBe(0);
 });
 
+test("POST /api/models/:id/like requires auth", async () => {
+  const res = await request(app).post("/api/models/j1/like").send();
+  expect(res.status).toBe(401);
+});
+
 test("GET /api/community/popular uses correct ordering", async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
   await request(app).get("/api/community/popular?limit=1&offset=0");
