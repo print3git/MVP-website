@@ -199,3 +199,17 @@ test('SSE progress endpoint streams updates', async () => {
   const res = await req;
   expect(res.text).toContain('data: {"jobId":"job1","progress":100}');
 });
+
+test('GET /api/shared/:slug returns data', async () => {
+  db.getShareBySlug = jest.fn().mockResolvedValue({ job_id: 'j1', slug: 's1' });
+  db.query.mockResolvedValueOnce({ rows: [{ prompt: 'p', model_url: '/m.glb' }] });
+  const res = await request(app).get('/api/shared/s1');
+  expect(res.status).toBe(200);
+  expect(res.body.model_url).toBe('/m.glb');
+});
+
+test('GET /api/shared/:slug 404 when missing', async () => {
+  db.getShareBySlug = jest.fn().mockResolvedValue(null);
+  const res = await request(app).get('/api/shared/bad');
+  expect(res.status).toBe(404);
+});
