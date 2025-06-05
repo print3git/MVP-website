@@ -71,6 +71,12 @@ cd backend
 npm run migrate
 ```
 
+### One-Click Checkout
+
+The model viewer page includes a **Buy Now** button for fast purchasing. When a
+logged-in user has shipping details saved in their profile, clicking **Buy Now**
+submits the order immediately and redirects to the Stripe checkout page.
+
 ## Sharing API
 
 Models can be shared publicly via unique slugs.
