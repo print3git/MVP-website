@@ -45,3 +45,10 @@ This list tracks ideas to aggressively increase click-through at every step from
 - Apply a 5% discount during checkout while the timer is active.
 - Pass this discount along with the quantity discount to `createCheckout`.
 - Add a developer-only button or method to reset the timer for testing.
+
+## Single Image Upload Restriction
+- Change the "Upload Images" label to "Upload Image" in `index.html`.
+- Remove the `multiple` attribute from the upload input.
+- Limit `uploadedFiles` to only one file in `js/index.js`.
+- Render just one thumbnail in the preview area and shrink its height.
+- Update ARIA labels or text that reference multiple images.
