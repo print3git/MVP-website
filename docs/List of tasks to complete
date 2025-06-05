@@ -6,6 +6,7 @@ Note: the lightweight Hunyuan3D API server files were moved from `img/` to `back
 
 ## Model Generation & Queue
 
+
 ## Front-End
 
 - Ensure accessibility with ARIA labels and contrast.
@@ -13,6 +14,8 @@ Note: the lightweight Hunyuan3D API server files were moved from `img/` to `back
   - Fix color contrast issues.
 
 ## Community Creations
+
+
 
 ## Testing & CI
 
@@ -23,22 +26,23 @@ Note: the lightweight Hunyuan3D API server files were moved from `img/` to `back
 
 ## Profiles & Competitions
 
-- Update the admin UI to edit prize details.
-- Create a competition submission form allowing a user to link an existing model to a competition.
-- Build the form UI and validation.
-- POST the selected model to the competition entry API.
+  - Update the admin UI to edit prize details.
+  - Create a competition submission form allowing a user to link an existing model to a competition.
+  - Build the form UI and validation.
+  - POST the selected model to the competition entry API.
+
 
 ## UX Improvements
 
 - Guide the user with a step-by-step wizard from entering a prompt through to checkout.
   - Design the wizard UI flow.
   - Persist form data across steps.
-- Provide pre-made example prompts and images to help new visitors start quickly. (DONE)
+- Provide pre-made example prompts and images to help new visitors start quickly.
 - Add drag-and-drop image uploads with inline cropping and resizing.
   - Implement a drag-and-drop area.
   - Integrate a client-side cropping library.
-- Show a real-time progress bar while the model is being generated. (DONE)
-  - Add a progress bar component. (DONE)
+- Show a real-time progress bar while the model is being generated.
+  - Add a progress bar component.
 - Display clear inline error messages if generation fails or the prompt is invalid.
   - Provide failure states in the UI.
   - Validate prompts before submission.
@@ -60,21 +64,21 @@ Note: the lightweight Hunyuan3D API server files were moved from `img/` to `back
   - Test flows at mobile breakpoints.
 - Make keyboard navigation and screen reader labels first-class.
   - Define a consistent tab order.
-  - Add missing ARIA labels. (DONE)
-- Provide a "reorder" button for past models so users can purchase again instantly. (DONE)
-  - Add a button to order history. (DONE)
-  - Preload the model into the cart. (DONE)
-- Show estimated print cost and delivery time before checkout. (DONE)
-  - Calculate cost and ETA from model parameters. (DONE)
-  - Display them near the checkout button. (DONE)
+  - Add missing ARIA labels.
+- Provide a "reorder" button for past models so users can purchase again instantly.
+  - Add a button to order history.
+  - Preload the model into the cart.
+- Show estimated print cost and delivery time before checkout.
+  - Calculate cost and ETA from model parameters.
+  - Display them near the checkout button.
 - Let users share a generated model to the community or social media with one click.
   - Provide Open Graph meta tags for previews.
   - Implement GET /api/shared/:slug endpoint to fetch shared model metadata.
 - Provide tooltips or a short tutorial overlay explaining each step.
   - Design tooltip copy and dismiss logic.
   - Allow users to skip the tutorial.
-- Add a progress indicator at the top summarizing "Prompt → Model → Buy." (DONE)
-  - Display the current step at all times. (DONE)
+- Add a progress indicator at the top summarizing "Prompt → Model → Buy."
+  - Display the current step at all times.
 - Optimize API requests to reduce loading time on slow networks.
   - Bundle multiple requests where possible.
 - Save user preferences such as units or color scheme.
@@ -84,4 +88,14 @@ Note: the lightweight Hunyuan3D API server files were moved from `img/` to `back
 ## Referral System
 
 ## Flash Discount Banner
+
+- Add a top-of-page banner on `payment.html` displaying the flash discount.
+  - Insert `<div id="flash-banner">` with inner `<span id="flash-timer">`.
+  - Remove the old `flash-discount` element from the checkout form.
+  - Style the banner with a teal-to-cyan gradient and bold text.
+  - Expose `role="status"` for accessibility.
+- Update `js/payment.js` to target the new `flash-timer` span.
+  - Show the remaining minutes and seconds.
+  - Hide the banner when the timer finishes.
+- Write a unit test to validate the countdown expiration logic.
 

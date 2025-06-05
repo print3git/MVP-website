@@ -47,7 +47,6 @@ nothing loads. Run a lightweight web server in the repository root and open the
 pages through `http://localhost` to avoid this issue. Two easy options are:
 
 ```bash
-npx http-server      # Node.js
 # or
 python -m http.server
 ```
