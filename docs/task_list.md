@@ -24,8 +24,6 @@ This consolidated list merges all outstanding tasks from the previous to-do docu
 - Provide tooltips or a short tutorial overlay explaining each step.
   - Design tooltip copy and dismiss logic.
   - Allow users to skip the tutorial.
-- Add a progress indicator at the top summarizing "Prompt → Model → Buy."
-  - Display the current step at all times.
 
 ## Purchase & Checkout
 - Present a 3D viewer with clear "Buy Now" and "Edit" options once generation completes.

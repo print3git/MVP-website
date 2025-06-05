@@ -63,11 +63,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       clearInterval(timer);
       const prevRaw = parseInt(localStorage.getItem('flashDiscountEnd'), 10);
       const prev = Number.isFinite(prevRaw) ? prevRaw : 0;
+
       let newEnd = Date.now() + 5 * 60 * 1000;
       if (newEnd <= prev) {
         newEnd = prev + 1;
       }
+
       localStorage.setItem('flashDiscountEnd', newEnd);
+
       flashBanner.hidden = false;
       startFlashDiscount();
     };
