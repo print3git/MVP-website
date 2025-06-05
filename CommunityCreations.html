@@ -80,7 +80,7 @@
 
     <!-- Content -->
     <main class="flex-1 px-6 py-8 space-y-12">
-      <div class="mb-6 flex items-center space-x-2">
+      <div class="mb-6 flex flex-wrap items-center gap-2">
         <label for="category" class="font-medium">Filter:</label>
         <select
           id="category"
@@ -94,6 +94,13 @@
           <option value="miniatures">Miniatures</option>
           <option value="props">Props</option>
         </select>
+        <input
+          type="text"
+          id="search"
+          placeholder="Search..."
+          aria-label="Search creations"
+          class="bg-[#2A2A2E] border border-white/20 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4A4A4E] flex-1 min-w-[10rem]"
+        />
       </div>
       <!-- Popular Creations -->
       <section class="mb-12">
@@ -186,5 +193,6 @@
         init();
       });
     </script>
+
   </body>
 </html>
