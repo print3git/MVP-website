@@ -30,6 +30,14 @@
   </head>
 
   <body class="bg-[#1A1A1D] text-white font-sans min-h-screen flex flex-col">
+    <div
+      id="flash-banner"
+      role="status"
+      class="text-[#1A1A1D] font-semibold text-center py-2 bg-gradient-to-r from-teal-400 via-cyan-300 to-teal-500"
+    >
+      Order within <span id="flash-timer">5:00</span> to get 5% off!
+    </div>
+
     <!-- ─────────── Header -->
     <header class="px-6 py-4">
       <a
@@ -48,14 +56,6 @@
         Back
       </a>
     </header>
-
-    <div
-      id="flash-banner"
-      role="status"
-      class="text-[#1A1A1D] font-semibold text-center py-2 bg-gradient-to-r from-teal-400 via-cyan-300 to-teal-500"
-    >
-      Order within <span id="flash-timer">5:00</span> to get 5% off!
-    </div>
 
     <!-- ─────────── Main -->
     <main class="flex-1 flex flex-col items-center justify-center px-4 space-y-8">
