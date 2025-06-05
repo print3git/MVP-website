@@ -27,6 +27,13 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
     />
 
+    <!-- Cropper.js -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js"></script>
+
     <!-- Google <model-viewer>  -->
     <!--  Use a CDN versioned URL so the module is served with CORS headers and the browser can actually download it.  -->
     <script
@@ -236,15 +243,16 @@
             </button>
           </div>
 
-          <div class="mt-4 w-full flex items-start gap-4">
+          <div class="mt-4 w-full flex flex-col gap-4">
             <input type="file" id="uploadInput" accept="image/*" multiple class="hidden" />
-            <label
-              for="uploadInput"
+            <div
+              id="drop-zone"
               aria-label="Upload Images"
-              class="inline-flex items-center justify-start flex-shrink-0 bg-[#2A2A2E] border border-white/10 rounded-3xl px-5 py-2 leading-[1.75rem] text-lg whitespace-nowrap cursor-pointer hover:bg-[#3A3A3E] transition-shape"
+              class="flex items-center justify-center bg-[#2A2A2E] border border-dashed border-white/10 rounded-3xl px-5 py-6 text-gray-400 cursor-pointer hover:bg-[#3A3A3E] transition-shape"
             >
-              Upload Images
-            </label>
+              Drag & drop images or
+              <label for="uploadInput" class="underline ml-1 cursor-pointer">browse</label>
+            </div>
             <div
               id="image-preview-area"
               class="hidden grid grid-cols-4 gap-3 bg-[#2A2A2E] border border-white/10 rounded-3xl min-h-[6rem] max-h-56 px-4 py-3 overflow-visible"
@@ -253,6 +261,21 @@
         </div>
       </section>
     </main>
+
+    <div
+      id="crop-modal"
+      class="fixed inset-0 bg-black/70 flex items-center justify-center hidden z-50"
+    >
+      <div class="bg-[#2A2A2E] p-4 rounded-lg">
+        <img id="crop-image" class="max-w-[80vw] max-h-[80vh]" />
+        <div class="mt-2 text-right">
+          <button id="crop-cancel" class="px-4 py-2 bg-gray-500 text-white rounded mr-2">
+            Cancel
+          </button>
+          <button id="crop-confirm" class="px-4 py-2 bg-blue-600 text-white rounded">Crop</button>
+        </div>
+      </div>
+    </div>
 
     <!--  Application logic ----------------------------------------------- -->
     <script type="module" src="js/index.js"></script>
