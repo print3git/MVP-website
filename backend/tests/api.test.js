@@ -79,6 +79,29 @@ test("Stripe create-order flow", async () => {
   expect(res.body.checkoutUrl).toBe("https://stripe.test");
 });
 
+test("create-order applies discount", async () => {
+  db.query.mockResolvedValueOnce({ rows: [{ job_id: "1" }] });
+  db.query.mockResolvedValueOnce({});
+  const res = await request(app)
+    .post("/api/create-order")
+    .send({ jobId: "1", price: 100, qty: 2, discount: 20 });
+  expect(res.status).toBe(200);
+  expect(stripeMock.checkout.sessions.create).toHaveBeenCalledWith(
+    expect.objectContaining({
+      line_items: [
+        expect.objectContaining({
+          price_data: expect.objectContaining({ unit_amount: 180 }),
+        }),
+      ],
+    }),
+  );
+  const insertCall = db.query.mock.calls.find((c) =>
+    c[0].includes("INSERT INTO orders"),
+  );
+  expect(insertCall[1][2]).toBe(180);
+  expect(insertCall[1][6]).toBe(20);
+});
+
 test("POST /api/register returns token", async () => {
   db.query.mockResolvedValueOnce({ rows: [{ id: "u1", username: "alice" }] });
   const res = await request(app)
@@ -162,6 +185,15 @@ test("POST /api/community submits model", async () => {
     .set("authorization", `Bearer ${token}`)
     .send({ jobId: "j1" });
   expect(res.status).toBe(201);
+});
+
+test("POST /api/community requires jobId", async () => {
+  const token = jwt.sign({ id: "u1" }, "secret");
+  const res = await request(app)
+    .post("/api/community")
+    .set("authorization", `Bearer ${token}`)
+    .send({});
+  expect(res.status).toBe(400);
 });
 
 test("GET /api/community/recent returns creations", async () => {
