@@ -241,6 +241,22 @@ app.get("/api/my/models", authRequired, async (req, res) => {
   }
 });
 
+app.get("/api/profile", authRequired, async (req, res) => {
+  try {
+    const { rows } = await db.query(
+      "SELECT * FROM user_profiles WHERE user_id=$1",
+      [req.user.id],
+    );
+    if (rows.length === 0) {
+      return res.status(404).json({ error: "Profile not found" });
+    }
+    res.json(rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch profile" });
+  }
+});
+
 app.get("/api/users/:username/models", async (req, res) => {
   try {
     const { rows } = await db.query("SELECT id FROM users WHERE username=$1", [
