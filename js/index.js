@@ -144,22 +144,28 @@ function showError(msg) {
 }
 
 function validatePrompt(p) {
-  if (!p && uploadedFiles.length === 0) {
+  const txt = p ? p.trim() : '';
+  if (!txt && uploadedFiles.length === 0) {
     showError('Enter a prompt or upload images');
     refs.promptWrapper.classList.add('border-red-500');
     return false;
   }
-  if (p && p.length < 5) {
+  if (txt && txt.length < 5) {
     showError('Prompt must be at least 5 characters');
     refs.promptWrapper.classList.add('border-red-500');
     return false;
   }
-  if (p && /[<>]/.test(p)) {
+  if (txt && /\n/.test(txt)) {
+    showError('Prompt cannot contain line breaks');
+    refs.promptWrapper.classList.add('border-red-500');
+    return false;
+  }
+  if (txt && /[<>]/.test(txt)) {
     showError('Prompt contains invalid characters');
     refs.promptWrapper.classList.add('border-red-500');
     return false;
   }
-  if (p && p.length > 200) {
+  if (txt && txt.length > 200) {
     showError('Prompt must be under 200 characters');
     refs.promptWrapper.classList.add('border-red-500');
     return false;
