@@ -57,6 +57,18 @@ test('GET /api/my/models ordered by date', async () => {
   ]);
 });
 
+test('GET /api/my/models returns models sorted by date', async () => {
+  const rows = [
+    { job_id: 'j2', created_at: '2024-01-02' },
+    { job_id: 'j1', created_at: '2024-01-01' },
+  ];
+  db.query.mockResolvedValueOnce({ rows });
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  const res = await request(app).get('/api/my/models').set('authorization', `Bearer ${token}`);
+  expect(res.status).toBe(200);
+  expect(res.body.map((r) => r.job_id)).toEqual(['j2', 'j1']);
+});
+
 test('GET /api/profile returns profile', async () => {
   db.query.mockResolvedValueOnce({ rows: [{ display_name: 'A' }] });
   const token = jwt.sign({ id: 'u1' }, 'secret');
