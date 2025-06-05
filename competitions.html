@@ -8,10 +8,33 @@
     <meta property="og:description" content="Join print3 contests and showcase your 3D designs." />
     <meta property="og:image" content="img/boxlogo.png" />
     <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
   </head>
-  <body class="bg-[#1A1A1D] text-white font-sans min-h-screen p-4">
-    <h1 class="text-2xl mb-4">Active Competitions</h1>
-    <div id="list" class="space-y-4"></div>
+  <body class="bg-[#1A1A1D] text-white font-sans flex flex-col min-h-screen">
+    <header class="flex items-center justify-between p-4">
+      <a
+        href="index.html"
+        class="flex items-center bg-[#2A2A2E] px-3 py-1 rounded-xl hover:bg-[#3A3A3E] transition"
+      >
+        <i class="fas fa-arrow-left mr-2"></i>Back
+      </a>
+      <h1 class="text-xl font-semibold">Competitions</h1>
+      <div></div>
+    </header>
+    <main class="flex-1 p-4 space-y-6">
+      <section class="bg-[#2A2A2E] p-4 rounded-xl">
+        <p class="mb-2">
+          Put your modelling skills to the test! Enter our themed contests,
+          climb the leaderboard and win free prints.
+        </p>
+        <p>Sign up or log in to submit your best designs.</p>
+      </section>
+      <h2 class="text-2xl">Active Competitions</h2>
+      <div id="list" class="space-y-4"></div>
+    </main>
     <script type="module" src="js/competitions.js"></script>
   </body>
 </html>
