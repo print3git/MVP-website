@@ -8,34 +8,28 @@ if (
   document.documentElement.classList.add('has-generated');
 }
 
-
-const API_BASE = "/api";
-const FALLBACK_GLB =
-  "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
-const EXAMPLES = [
-  "cute robot figurine",
-  "ornate chess piece",
-  "geometric flower vase",
-];
+const API_BASE = '/api';
+const FALLBACK_GLB = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
+const EXAMPLES = ['cute robot figurine', 'ornate chess piece', 'geometric flower vase'];
 const $ = (id) => document.getElementById(id);
 const refs = {
-  previewImg: $("preview-img"),
-  loader: $("loader"),
-  viewer: $("viewer"),
-  demoNote: $("demo-note"),
-  demoClose: $("demo-note-close"),
-  promptInput: $("promptInput"),
-  promptWrapper: $("prompt-wrapper"),
-  submitBtn: $("submit-button"),
-  submitIcon: $("submit-icon"),
-  uploadInput: $("uploadInput"),
-  imagePreviewArea: $("image-preview-area"),
-  dropZone: $("drop-zone"),
-  examples: $("prompt-examples"),
-  checkoutBtn: $("checkout-button"),
-  stepPrompt: $("step-prompt"),
-  stepModel: $("step-model"),
-  stepBuy: $("step-buy"),
+  previewImg: $('preview-img'),
+  loader: $('loader'),
+  viewer: $('viewer'),
+  demoNote: $('demo-note'),
+  demoClose: $('demo-note-close'),
+  promptInput: $('promptInput'),
+  promptWrapper: $('prompt-wrapper'),
+  submitBtn: $('submit-button'),
+  submitIcon: $('submit-icon'),
+  uploadInput: $('uploadInput'),
+  imagePreviewArea: $('image-preview-area'),
+  dropZone: $('drop-zone'),
+  examples: $('prompt-examples'),
+  checkoutBtn: $('checkout-button'),
+  stepPrompt: $('step-prompt'),
+  stepModel: $('step-model'),
+  stepBuy: $('step-buy'),
 };
 
 function setStep(name) {
@@ -182,7 +176,6 @@ refs.uploadInput.addEventListener('change', (e) => {
 });
 
 if (refs.dropZone) {
-
   ['dragover', 'dragenter'].forEach((ev) => {
     refs.dropZone.addEventListener(ev, (e) => {
       e.preventDefault();
@@ -194,7 +187,6 @@ if (refs.dropZone) {
       e.preventDefault();
       refs.dropZone.classList.remove('ring-2', 'ring-cyan-400');
       if (ev === 'drop') {
-
         processFiles([...e.dataTransfer.files]);
       }
     });
@@ -257,15 +249,12 @@ window.addEventListener('DOMContentLoaded', () => {
     refs.promptInput.value = prompt;
 
     refs.promptInput.dispatchEvent(new Event('input'));
-
   } else {
     const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
     refs.promptInput.placeholder = ex;
   }
   if (refs.examples) {
-
     refs.examples.textContent = `Try: ${EXAMPLES.join(' · ')}`;
-
   }
   if (thumbs.length) renderThumbnails(thumbs);
 });
