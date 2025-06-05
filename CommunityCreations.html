@@ -40,9 +40,7 @@
         <i class="fas fa-arrow-left text-xl text-white mr-2"></i>
         <span class="text-white font-medium">Back</span>
       </a>
-      <h1
-        class="absolute inset-x-0 top-1/2 -translate-y-1/2 text-center text-2xl font-semibold"
-      >
+      <h1 class="absolute inset-x-0 top-1/2 -translate-y-1/2 text-center text-2xl font-semibold">
         Community Creations
       </h1>
       <div class="flex space-x-2">
@@ -90,9 +88,7 @@
         <select
           id="category"
           aria-label="Category filter"
-
           class="bg-[#2A2A2E] border border-white/20 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4A4A4E] h-11"
-
         >
           <option value="">All</option>
           <option value="sculpture">Sculpture</option>
@@ -111,9 +107,7 @@
         <select
           id="sort"
           aria-label="Sort order"
-
           class="bg-[#2A2A2E] border border-white/20 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4A4A4E] h-11"
-
         >
           <option value="desc">Newest</option>
           <option value="asc">Oldest</option>
@@ -122,25 +116,15 @@
       <!-- Popular Creations -->
       <section class="mb-12">
         <h2 class="text-xl font-semibold mb-4">Popular Now</h2>
-        <div
-          id="popular-grid"
-          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
-        ></div>
-        <button id="popular-load" class="mt-4 px-4 py-2 bg-[#2A2A2E] rounded">
-          Load More
-        </button>
+        <div id="popular-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
+        <button id="popular-load" class="mt-4 px-4 py-2 bg-[#2A2A2E] rounded">Load More</button>
       </section>
 
       <!-- Recent Creations -->
       <section>
         <h2 class="text-xl font-semibold mb-4">Recent</h2>
-        <div
-          id="recent-grid"
-          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
-        ></div>
-        <button id="recent-load" class="mt-4 px-4 py-2 bg-[#2A2A2E] rounded">
-          Load More
-        </button>
+        <div id="recent-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
+        <button id="recent-load" class="mt-4 px-4 py-2 bg-[#2A2A2E] rounded">Load More</button>
       </section>
     </main>
 
@@ -179,32 +163,32 @@
       </div>
     </div>
     <script type="module">
-      import { shareOn } from "./js/share.js";
-      import { init } from "./js/community.js";
+      import { shareOn } from './js/share.js';
+      import { init } from './js/community.js';
       window.shareOn = shareOn;
 
-      document.addEventListener("DOMContentLoaded", () => {
-        const modal = document.getElementById("model-modal");
-        const viewer = modal.querySelector("model-viewer");
-        const closeBtn = document.getElementById("close-modal");
+      document.addEventListener('DOMContentLoaded', () => {
+        const modal = document.getElementById('model-modal');
+        const viewer = modal.querySelector('model-viewer');
+        const closeBtn = document.getElementById('close-modal');
 
         function close() {
-          modal.classList.add("hidden");
-          document.body.classList.remove("overflow-hidden");
+          modal.classList.add('hidden');
+          document.body.classList.remove('overflow-hidden');
         }
 
-        document.addEventListener("click", (e) => {
-          const card = e.target.closest(".model-card");
+        document.addEventListener('click', (e) => {
+          const card = e.target.closest('.model-card');
           if (card) {
             viewer.src = card.dataset.model;
-            modal.classList.remove("hidden");
-            document.body.classList.add("overflow-hidden");
+            modal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
           }
         });
 
-        closeBtn.addEventListener("click", close);
-        document.addEventListener("keydown", (e) => {
-          if (e.key === "Escape") close();
+        closeBtn.addEventListener('click', close);
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') close();
         });
 
         init();
