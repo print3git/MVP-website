@@ -16,6 +16,7 @@ This repository contains the early MVP code for print2's website and backend.
    - `STRIPE_WEBHOOK_SECRET` – signing secret for Stripe webhooks.
    - `HUNYUAN_API_KEY` – key for the Hunyuan3D API.
    - Optional: `PORT` and `HUNYUAN_PORT` to override the default ports.
+   - Optional: `HUNYUAN_SERVER_URL` if your Hunyuan API runs on a custom URL.
 
 2. Install dependencies for both servers:
 
@@ -72,6 +73,7 @@ npm run migrate
 ## Contributing
 
 We welcome pull requests! Please fork the repo and create a topic branch. Ensure `npm test` runs clean before submitting.
+Run `npm run format` in `backend/` to apply Prettier formatting before committing.
 For significant changes, please open an issue first to discuss what you would like to change. Be sure to follow the code style enforced by Prettier.
 
 ## ToDo List
