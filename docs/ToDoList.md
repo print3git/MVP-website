@@ -46,6 +46,48 @@ This list tracks ideas to aggressively increase click-through at every step from
 - Pass this discount along with the quantity discount to `createCheckout`.
 - Add a developer-only button or method to reset the timer for testing.
 
+## Comprehensive Test Suite
+- Add test for successful user registration
+- Add test for registration with missing username
+- Add test for registration with missing email
+- Add test for registration with missing password
+- Add test for registration rejecting duplicate username
+- Add test for successful login
+- Add test for login with invalid password
+- Add test for login with missing fields
+- Add test for /api/generate with prompt only
+- Add test for /api/generate with image only
+- Add test for /api/generate returning 400 when no prompt or image
+- Add test for /api/generate falling back when generation server fails
+- Add test for /api/generate saving authenticated user id
+- Add test for /api/status list pagination and limit parameters
+- Add test for /api/status/:jobId returning 404 for unknown id
+- Add test for /api/progress streaming events until completion
+- Add test for /api/my/models rejecting unauthenticated user
+- Add test for /api/my/models returning models ordered by date
+- Add test for /api/users/:username/models 404 when user missing
+- Add test for /api/models/:id/like toggling like and unlike
+- Add test for /api/models/:id/like rejecting unauthenticated user
+- Add test for /api/community submission missing jobId
+- Add test for /api/community requires user auth
+- Add test for /api/community/recent pagination and category filter
+- Add test for /api/community/popular sorting by likes then date
+- Add test for /api/competitions/active returning upcoming comps
+- Add test for /api/competitions/:id/enter prevents duplicate entry
+- Add test for /api/competitions/:id/enter rejecting unauthenticated user
+- Add test for /api/competitions/:id/entries leaderboard order
+- Add test for /api/admin/competitions creation unauthorized
+- Add test for /api/admin/competitions creation success
+- Add test for /api/create-order rejecting unknown job
+- Add test for /api/create-order applying discount argument
+- Add test for /api/webhook/stripe invalid signature
+- Add test for /api/webhook/stripe updating order and queueing print
+- Add test for queue processing multiple items sequentially
+- Add test for queue progress events reach 100%
+- Add test for login page error display on failed login
+- Add test for signup page error display on failed signup
+- Add test for payment countdown timer expiration logic
+
 ## Single Image Upload Restriction
 - Change the "Upload Images" label to "Upload Image" in `index.html`.
 - Remove the `multiple` attribute from the upload input.
