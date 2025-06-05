@@ -36,4 +36,27 @@ describe("flash banner", () => {
     await new Promise((r) => setTimeout(r, 1100));
     expect(banner.hidden).toBe(true);
   });
+
+  test("resetFlashDiscount restarts timer", async () => {
+    const dom = new JSDOM(html, {
+      runScripts: "dangerously",
+      resources: "usable",
+      url: "http://localhost/",
+    });
+    global.window = dom.window;
+    global.document = dom.window.document;
+    const scriptSrc = fs.readFileSync(
+      path.join(__dirname, "../../../js/payment.js"),
+      "utf8",
+    );
+    dom.window.eval(scriptSrc);
+    dom.window.document.dispatchEvent(new dom.window.Event("DOMContentLoaded"));
+    dom.window.startFlashDiscount();
+    const first = Number(dom.window.localStorage.getItem("flashDiscountEnd"));
+    dom.window.resetFlashDiscount();
+    const second = Number(dom.window.localStorage.getItem("flashDiscountEnd"));
+    expect(second).toBeGreaterThan(first);
+    const banner = dom.window.document.getElementById("flash-banner");
+    expect(banner.hidden).toBe(false);
+  });
 });
