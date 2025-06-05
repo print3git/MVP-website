@@ -37,26 +37,19 @@ This list tracks ideas to aggressively increase click-through at every step from
 
 
 ## Comprehensive Test Suite
-- Add test for /api/progress streaming events until completion
-- Add test for /api/my/models rejecting unauthenticated user
 - Add test for /api/my/models returning models ordered by date
-- Add test for /api/users/:username/models 404 when user missing
-- Add test for /api/models/:id/like toggling like and unlike
 - Add test for /api/models/:id/like rejecting unauthenticated user
 - Add test for /api/community submission missing jobId
 - Add test for /api/community requires user auth
 - Add test for /api/community/recent pagination and category filter
-- Add test for /api/community/popular sorting by likes then date
 - Add test for /api/competitions/active returning upcoming comps
 - Add test for /api/competitions/:id/enter prevents duplicate entry
 - Add test for /api/competitions/:id/enter rejecting unauthenticated user
 - Add test for /api/competitions/:id/entries leaderboard order
 - Add test for /api/admin/competitions creation unauthorized
-- Add test for /api/admin/competitions creation success
 - Add test for /api/create-order rejecting unknown job
 - Add test for /api/create-order applying discount argument
 - Add test for /api/webhook/stripe invalid signature
-- Add test for /api/webhook/stripe updating order and queueing print
 - Add test for queue processing multiple items sequentially
 - Add test for queue progress events reach 100%
 - Add test for signup page error display on failed signup
