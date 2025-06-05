@@ -1,9 +1,11 @@
-/\*_ @jest-environment jsdom _/
+/** @jest-environment node */
 const fs = require("fs");
 const path = require("path");
 const { JSDOM } = require("jsdom");
 
 let html = fs.readFileSync(
+
+  
 path.join(\_\_dirname, "../../../payment.html"),
 "utf8",
 );

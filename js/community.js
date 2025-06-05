@@ -20,7 +20,7 @@ async function fetchCreations(
   limit = 6,
   category = "",
   search = "",
-  order = "desc"
+  order = "desc",
 ) {
   const query = new URLSearchParams({ limit, offset });
   if (category) query.set("category", category);
@@ -89,7 +89,7 @@ async function captureSnapshots(container) {
     viewer.src = glbUrl;
     viewer.setAttribute(
       "environment-image",
-      "https://modelviewer.dev/shared-assets/environments/neutral.hdr"
+      "https://modelviewer.dev/shared-assets/environments/neutral.hdr",
     );
     viewer.style.position = "fixed";
     viewer.style.left = "-10000px";

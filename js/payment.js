@@ -70,12 +70,39 @@ startFlashDiscount();
 }
 window.startFlashDiscount = startFlashDiscount;
 
-const updateEstimate = () => {
-if (!estimateEl) return;
-const qty = parseInt(qtyInput.value) || 1;
-const cost = ((PRICE \* qty) / 100).toFixed(2);
-estimateEl.textContent = `$${cost}, Delivery: 5-7 days`;
-};
+
+  function startFlashDiscount() {
+    const saved = parseInt(localStorage.getItem("flashDiscountEnd"), 10) || 0;
+    let end = saved;
+    if (!end || end < Date.now()) {
+      end = Date.now() + 5 * 60 * 1000;
+      localStorage.setItem("flashDiscountEnd", end);
+    }
+    const update = () => {
+      const diff = end - Date.now();
+      if (diff <= 0) {
+        flashBanner.hidden = true;
+        clearInterval(timer);
+        localStorage.removeItem("flashDiscountEnd");
+        return;
+      }
+      const m = Math.floor(diff / 60000);
+      const s = Math.floor((diff % 60000) / 1000)
+        .toString()
+        .padStart(2, "0");
+      flashTimer.textContent = `${m}:${s}`;
+    };
+    update();
+    const timer = setInterval(update, 1000);
+    window.resetFlashDiscount = () => {
+      clearInterval(timer);
+      localStorage.removeItem("flashDiscountEnd");
+      flashBanner.hidden = false;
+      startFlashDiscount();
+    };
+  }
+  window.startFlashDiscount = startFlashDiscount;
+
 
 const hideLoader = () => (loader.hidden = true);
 
