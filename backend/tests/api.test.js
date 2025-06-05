@@ -146,6 +146,19 @@ test("Stripe webhook updates order and enqueues print", async () => {
   expect(enqueuePrint).toHaveBeenCalledWith("job1");
 });
 
+test("Stripe webhook invalid signature", async () => {
+  stripeMock.webhooks.constructEvent.mockImplementation(() => {
+    throw new Error("bad sig");
+  });
+  const payload = JSON.stringify({});
+  const res = await request(app)
+    .post("/api/webhook/stripe")
+    .set("stripe-signature", "bad")
+    .set("Content-Type", "application/json")
+    .send(payload);
+  expect(res.status).toBe(400);
+});
+
 test("POST /api/generate accepts image upload", async () => {
   const chunks = [];
   jest.spyOn(fs, "createWriteStream").mockImplementation(() => {

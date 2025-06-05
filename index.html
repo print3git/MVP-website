@@ -5,10 +5,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>print3 Assistant</title>
     <meta
       name="description"
@@ -64,7 +61,7 @@
         overflow: hidden;
       }
       #submit-button::before {
-        content: "";
+        content: '';
         position: absolute;
         inset: 0;
         background: linear-gradient(
@@ -150,11 +147,15 @@
       </div>
     </header>
 
-    <nav
-      id="progress"
-      aria-label="Progress"
-      class="w-full flex justify-center mb-4 text-sm"
+    <div
+      id="demo-note"
+      class="mx-6 mb-4 p-4 bg-[#2A2A2E] border border-white/10 rounded-3xl text-sm flex justify-between items-start"
     >
+      <p>Try descriptive keywords like materials or style for better results.</p>
+      <button id="demo-note-close" aria-label="Dismiss" class="ml-4">✕</button>
+    </div>
+
+    <nav id="progress" aria-label="Progress" class="w-full flex justify-center mb-4 text-sm">
       <ol class="flex space-x-2">
         <li id="step-prompt" class="font-semibold">Prompt</li>
         <li>→</li>
@@ -164,9 +165,7 @@
       </ol>
     </nav>
 
-    <main
-      class="flex-1 flex flex-col items-center justify-start gap-8 px-4 lg:px-16"
-    >
+    <main class="flex-1 flex flex-col items-center justify-start gap-8 px-4 lg:px-16">
       <!-- 3‑D preview ------------------------------------------------------ -->
       <section
         id="preview-wrapper"
@@ -178,7 +177,7 @@
           src="https://placehold.co/600x400/2A2A2E/2A2A2E?text="
           class="object-contain h-full w-full"
           style="display: none"
-          alt="Preview image"
+          alt="Placeholder preview image"
         />
 
         <!-- The astronaut now loads eagerly and is always visible  -->
@@ -224,14 +223,8 @@
       <!-- Prompt / upload area ------------------------------------------- -->
       <section class="w-full max-w-xl">
         <div class="flex flex-col items-center text-center">
-          <img
-            src="img/boxlogo.png"
-            alt="print3 cube"
-            class="w-32 h-auto mb-8"
-          />
-          <h1 class="text-3xl font-semibold mb-8">
-            Design & Print in 30 Seconds.
-          </h1>
+          <img src="img/boxlogo.png" alt="print3 cube" class="w-32 h-auto mb-8" />
+          <h1 class="text-3xl font-semibold mb-8">Design & Print in 30 Seconds.</h1>
 
           <div class="flex items-center w-full gap-4">
             <div
@@ -251,21 +244,22 @@
               aria-label="Generate"
               class="w-12 h-12 flex items-center justify-center bg-white rounded-full transition-shape"
             >
-              <i
-                id="submit-icon"
-                class="fas fa-arrow-up text-xl text-[#1A1A1D]"
-              ></i>
+              <i id="submit-icon" class="fas fa-arrow-up text-xl text-[#1A1A1D]"></i>
             </button>
           </div>
 
-          <div class="mt-4 w-full flex items-start gap-4">
-            <input
-              type="file"
-              id="uploadInput"
-              accept="image/*"
-              multiple
-              class="hidden"
-            />
+          <div
+            id="prompt-examples"
+            class="mt-2 text-sm text-gray-400"
+            aria-label="Example prompts"
+          ></div>
+
+          <div
+            id="drop-zone"
+            class="mt-4 w-full flex items-start gap-4"
+            aria-label="Image drop area"
+          >
+            <input type="file" id="uploadInput" accept="image/*" multiple class="hidden" />
             <label
               for="uploadInput"
               aria-label="Upload Images"
