@@ -67,25 +67,34 @@
       <!-- Model Preview -->
       <section
         id="preview-wrapper"
-        class="relative w-full max-w-md h-80 bg-[#2A2A2E] border border-white/10 rounded-3xl overflow-hidden"
+        class="relative w-full max-w-lg h-80 bg-[#2A2A2E] border border-white/10 rounded-3xl overflow-visible"
       >
-        <!-- viewer is always present -->
+        <!-- fallback still-image (hidden)  -->
+        <img
+          id="preview-img"
+          src="https://placehold.co/600x400/2A2A2E/2A2A2E?text="
+          class="object-contain h-full w-full"
+          style="display: none"
+          alt="Preview image"
+        />
+
+        <!-- The astronaut now loads eagerly and is always visible  -->
         <model-viewer
           id="viewer"
           src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
+          alt="3D astronaut"
           environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
           camera-controls
           auto-rotate
-          crossorigin="anonymous"
           loading="eager"
-          style="width: 100%; height: 100%"
+          style="width: 100%; height: 100%; display: block"
         ></model-viewer>
 
-        <!-- loader overlay -->
+        <!-- centred loader -->
         <div
           id="loader"
           class="absolute inset-0 flex items-center justify-center bg-[#2A2A2E]/80"
-          hidden
+          style="display: none"
         >
           <div
             class="h-10 w-10 border-4 border-white border-t-transparent rounded-full animate-spin"
