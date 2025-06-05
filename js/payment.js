@@ -29,7 +29,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
   const loader = document.getElementById('loader');
   const viewer = document.getElementById('viewer');
-  const qtyInput = document.getElementById('qty');
   const optOut = document.getElementById('opt-out');
   const successMsg = document.getElementById('success');
   const cancelMsg = document.getElementById('cancel');
@@ -117,11 +116,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   document.getElementById('submit-payment').addEventListener('click', async () => {
-    const qty = parseInt(qtyInput.value) || 1;
-    let discount = qty >= 3 && !optOut.checked ? 200 : 0;
+    const qty = 1;
+    let discount = 0;
     const end = parseInt(localStorage.getItem('flashDiscountEnd'), 10) || 0;
     if (end && end > Date.now()) {
-      discount += Math.round(qty * PRICE * 0.05);
+      discount += Math.round(PRICE * 0.05);
     }
     const url = await createCheckout(qty, discount);
     if (stripe) {

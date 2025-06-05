@@ -1,47 +1,45 @@
-process.env.STRIPE_SECRET_KEY = "test";
-process.env.STRIPE_WEBHOOK_SECRET = "whsec";
-process.env.DB_URL = "postgres://user:pass@localhost/db";
-process.env.HUNYUAN_API_KEY = "test";
-process.env.HUNYUAN_SERVER_URL = "http://localhost:4000";
+process.env.STRIPE_SECRET_KEY = 'test';
+process.env.STRIPE_WEBHOOK_SECRET = 'whsec';
+process.env.DB_URL = 'postgres://user:pass@localhost/db';
+process.env.HUNYUAN_API_KEY = 'test';
+process.env.HUNYUAN_SERVER_URL = 'http://localhost:4000';
 
-jest.mock("../db", () => ({
+jest.mock('../db', () => ({
   query: jest.fn().mockResolvedValue({ rows: [] }),
 }));
-const db = require("../db");
+const db = require('../db');
 
-jest.mock("axios");
-const axios = require("axios");
-const jwt = require("jsonwebtoken");
+jest.mock('axios');
+const axios = require('axios');
+const jwt = require('jsonwebtoken');
 
-jest.mock("stripe");
-const Stripe = require("stripe");
+jest.mock('stripe');
+const Stripe = require('stripe');
 const stripeMock = {
   checkout: {
     sessions: {
-      create: jest
-        .fn()
-        .mockResolvedValue({ id: "cs_test", url: "https://stripe.test" }),
+      create: jest.fn().mockResolvedValue({ id: 'cs_test', url: 'https://stripe.test' }),
     },
   },
   webhooks: {
     constructEvent: jest.fn(() => ({
-      type: "checkout.session.completed",
-      data: { object: { id: "cs_test", metadata: { jobId: "job1" } } },
+      type: 'checkout.session.completed',
+      data: { object: { id: 'cs_test', metadata: { jobId: 'job1' } } },
     })),
   },
 };
 Stripe.mockImplementation(() => stripeMock);
 
-jest.mock("../queue/printQueue", () => ({
+jest.mock('../queue/printQueue', () => ({
   enqueuePrint: jest.fn(),
   processQueue: jest.fn(),
 }));
-const { enqueuePrint } = require("../queue/printQueue");
+const { enqueuePrint } = require('../queue/printQueue');
 
-const request = require("supertest");
-const app = require("../server");
-const fs = require("fs");
-const stream = require("stream");
+const request = require('supertest');
+const app = require('../server');
+const fs = require('fs');
+const stream = require('stream');
 
 beforeEach(() => {
   db.query.mockClear();
@@ -53,38 +51,36 @@ afterEach(() => {
   jest.restoreAllMocks();
 });
 
-test("POST /api/generate returns glb url", async () => {
-  axios.post.mockResolvedValue({ data: { glb_url: "/models/test.glb" } });
-  const res = await request(app).post("/api/generate").send({ prompt: "test" });
+test('POST /api/generate returns glb url', async () => {
+  axios.post.mockResolvedValue({ data: { glb_url: '/models/test.glb' } });
+  const res = await request(app).post('/api/generate').send({ prompt: 'test' });
   expect(res.status).toBe(200);
-  expect(res.body.glb_url).toBe("/models/test.glb");
+  expect(res.body.glb_url).toBe('/models/test.glb');
 });
 
-test("GET /api/status returns job", async () => {
+test('GET /api/status returns job', async () => {
   db.query.mockResolvedValueOnce({
-    rows: [{ job_id: "1", status: "complete", model_url: "url" }],
+    rows: [{ job_id: '1', status: 'complete', model_url: 'url' }],
   });
-  const res = await request(app).get("/api/status/1");
+  const res = await request(app).get('/api/status/1');
   expect(res.status).toBe(200);
-  expect(res.body.status).toBe("complete");
+  expect(res.body.status).toBe('complete');
 });
 
-test("Stripe create-order flow", async () => {
-  db.query.mockResolvedValueOnce({ rows: [{ job_id: "1" }] });
+test('Stripe create-order flow', async () => {
+  db.query.mockResolvedValueOnce({ rows: [{ job_id: '1' }] });
   db.query.mockResolvedValueOnce({});
-  const res = await request(app)
-    .post("/api/create-order")
-    .send({ jobId: "1", price: 100 });
+  const res = await request(app).post('/api/create-order').send({ jobId: '1', price: 100 });
   expect(res.status).toBe(200);
-  expect(res.body.checkoutUrl).toBe("https://stripe.test");
+  expect(res.body.checkoutUrl).toBe('https://stripe.test');
 });
 
-test("create-order applies discount", async () => {
-  db.query.mockResolvedValueOnce({ rows: [{ job_id: "1" }] });
+test('create-order applies discount', async () => {
+  db.query.mockResolvedValueOnce({ rows: [{ job_id: '1' }] });
   db.query.mockResolvedValueOnce({});
   const res = await request(app)
-    .post("/api/create-order")
-    .send({ jobId: "1", price: 100, qty: 2, discount: 20 });
+    .post('/api/create-order')
+    .send({ jobId: '1', price: 100, qty: 2, discount: 20 });
   expect(res.status).toBe(200);
   expect(stripeMock.checkout.sessions.create).toHaveBeenCalledWith(
     expect.objectContaining({
@@ -93,75 +89,67 @@ test("create-order applies discount", async () => {
           price_data: expect.objectContaining({ unit_amount: 180 }),
         }),
       ],
-    }),
+    })
   );
-  const insertCall = db.query.mock.calls.find((c) =>
-    c[0].includes("INSERT INTO orders"),
-  );
+  const insertCall = db.query.mock.calls.find((c) => c[0].includes('INSERT INTO orders'));
   expect(insertCall[1][2]).toBe(180);
   expect(insertCall[1][6]).toBe(20);
 });
 
-test("create-order rejects unknown job", async () => {
+test('create-order rejects unknown job', async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
-  const res = await request(app)
-    .post("/api/create-order")
-    .send({ jobId: "bad" });
+  const res = await request(app).post('/api/create-order').send({ jobId: 'bad' });
   expect(res.status).toBe(404);
 });
 
-test("POST /api/register returns token", async () => {
-  db.query.mockResolvedValueOnce({ rows: [{ id: "u1", username: "alice" }] });
+test('POST /api/register returns token', async () => {
+  db.query.mockResolvedValueOnce({ rows: [{ id: 'u1', username: 'alice' }] });
   const res = await request(app)
-    .post("/api/register")
-    .send({ username: "alice", email: "a@a.com", password: "p" });
+    .post('/api/register')
+    .send({ username: 'alice', email: 'a@a.com', password: 'p' });
   expect(res.status).toBe(200);
   expect(res.body.token).toBeDefined();
 });
 
-const bcrypt = require("bcryptjs");
+const bcrypt = require('bcryptjs');
 
-test("POST /api/login returns token", async () => {
+test('POST /api/login returns token', async () => {
   db.query.mockResolvedValueOnce({
-    rows: [
-      { id: "u1", username: "alice", password_hash: bcrypt.hashSync("p", 10) },
-    ],
+    rows: [{ id: 'u1', username: 'alice', password_hash: bcrypt.hashSync('p', 10) }],
   });
-  const res = await request(app)
-    .post("/api/login")
-    .send({ username: "alice", password: "p" });
+  const res = await request(app).post('/api/login').send({ username: 'alice', password: 'p' });
   expect(res.status).toBe(200);
   expect(res.body.token).toBeDefined();
 });
 
-test("Stripe webhook updates order and enqueues print", async () => {
+test('Stripe webhook updates order and enqueues print', async () => {
   db.query.mockResolvedValueOnce({});
   const payload = JSON.stringify({});
   const res = await request(app)
-    .post("/api/webhook/stripe")
-    .set("stripe-signature", "sig")
-    .set("Content-Type", "application/json")
+    .post('/api/webhook/stripe')
+    .set('stripe-signature', 'sig')
+    .set('Content-Type', 'application/json')
     .send(payload);
   expect(res.status).toBe(200);
-  expect(enqueuePrint).toHaveBeenCalledWith("job1");
+  expect(enqueuePrint).toHaveBeenCalledWith('job1');
 });
 
-test("Stripe webhook invalid signature", async () => {
+test('Stripe webhook invalid signature', async () => {
   stripeMock.webhooks.constructEvent.mockImplementation(() => {
-    throw new Error("bad sig");
+    throw new Error('bad sig');
   });
   const payload = JSON.stringify({});
   const res = await request(app)
-    .post("/api/webhook/stripe")
-    .set("stripe-signature", "bad")
-    .set("Content-Type", "application/json")
+    .post('/api/webhook/stripe')
+    .set('stripe-signature', 'bad')
+    .set('Content-Type', 'application/json')
     .send(payload);
   expect(res.status).toBe(400);
 });
 
-test("POST /api/generate accepts image upload", async () => {
+test('POST /api/generate accepts image upload', async () => {
   const chunks = [];
-  jest.spyOn(fs, "createWriteStream").mockImplementation(() => {
+  jest.spyOn(fs, 'createWriteStream').mockImplementation(() => {
     const writable = new stream.Writable({
       write(chunk, enc, cb) {
         chunks.push(chunk);
@@ -171,7 +159,7 @@ test("POST /api/generate accepts image upload", async () => {
     return writable;
   });
 
-  jest.spyOn(fs, "createReadStream").mockImplementation(() => {
+  jest.spyOn(fs, 'createReadStream').mockImplementation(() => {
     const readable = new stream.Readable({
       read() {
         this.push(Buffer.concat(chunks));
@@ -181,191 +169,170 @@ test("POST /api/generate accepts image upload", async () => {
     return readable;
   });
 
-  jest.spyOn(fs, "unlink").mockImplementation((_, cb) => cb && cb());
+  jest.spyOn(fs, 'unlink').mockImplementation((_, cb) => cb && cb());
 
-  axios.post.mockResolvedValue({ data: { glb_url: "/models/test.glb" } });
+  axios.post.mockResolvedValue({ data: { glb_url: '/models/test.glb' } });
   const res = await request(app)
-    .post("/api/generate")
-    .field("prompt", "img test")
-    .attach("images", Buffer.from("fake"), "test.png");
+    .post('/api/generate')
+    .field('prompt', 'img test')
+    .attach('images', Buffer.from('fake'), 'test.png');
 
   expect(res.status).toBe(200);
-  expect(res.body.glb_url).toBe("/models/test.glb");
+  expect(res.body.glb_url).toBe('/models/test.glb');
 
-  const insertCall = db.query.mock.calls.find((c) =>
-    c[0].includes("INSERT INTO jobs"),
-  );
+  const insertCall = db.query.mock.calls.find((c) => c[0].includes('INSERT INTO jobs'));
   expect(insertCall[1][2]).toEqual(expect.any(String));
 });
 
-test("POST /api/community submits model", async () => {
+test('POST /api/community submits model', async () => {
   db.query.mockResolvedValueOnce({});
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: 'u1' }, 'secret');
   const res = await request(app)
-    .post("/api/community")
-    .set("authorization", `Bearer ${token}`)
-    .send({ jobId: "j1" });
+    .post('/api/community')
+    .set('authorization', `Bearer ${token}`)
+    .send({ jobId: 'j1' });
   expect(res.status).toBe(201);
 });
 
-test("POST /api/community requires jobId", async () => {
-  const token = jwt.sign({ id: "u1" }, "secret");
+test('POST /api/community requires jobId', async () => {
+  const token = jwt.sign({ id: 'u1' }, 'secret');
   const res = await request(app)
-    .post("/api/community")
-    .set("authorization", `Bearer ${token}`)
+    .post('/api/community')
+    .set('authorization', `Bearer ${token}`)
     .send({});
   expect(res.status).toBe(400);
 });
 
-test("POST /api/community requires auth", async () => {
-  const res = await request(app).post("/api/community").send({ jobId: "j1" });
+test('POST /api/community requires auth', async () => {
+  const res = await request(app).post('/api/community').send({ jobId: 'j1' });
   expect(res.status).toBe(401);
 });
 
-test("GET /api/community/recent returns creations", async () => {
+test('GET /api/community/recent returns creations', async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
-  const res = await request(app).get("/api/community/recent");
+  const res = await request(app).get('/api/community/recent');
   expect(res.status).toBe(200);
 });
 
-test("GET /api/community/recent supports order", async () => {
+test('GET /api/community/recent supports order', async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
-  await request(app).get("/api/community/recent?order=asc");
-  expect(db.query).toHaveBeenCalledWith(
-    expect.stringContaining("ORDER BY c.created_at ASC"),
-    [10, 0, null, null],
-  );
-});
-
-test("GET /api/community/recent pagination and category", async () => {
-  db.query.mockResolvedValueOnce({ rows: [] });
-  await request(app).get(
-    "/api/community/recent?limit=5&offset=2&category=art&search=bot",
-  );
-  expect(db.query).toHaveBeenCalledWith(expect.any(String), [
-    5,
-    2,
-    "art",
-    "bot",
+  await request(app).get('/api/community/recent?order=asc');
+  expect(db.query).toHaveBeenCalledWith(expect.stringContaining('ORDER BY c.created_at ASC'), [
+    10,
+    0,
+    null,
+    null,
   ]);
 });
 
-test("Admin create competition", async () => {
+test('GET /api/community/recent pagination and category', async () => {
+  db.query.mockResolvedValueOnce({ rows: [] });
+  await request(app).get('/api/community/recent?limit=5&offset=2&category=art&search=bot');
+  expect(db.query).toHaveBeenCalledWith(expect.any(String), [5, 2, 'art', 'bot']);
+});
+
+test('Admin create competition', async () => {
   db.query.mockResolvedValueOnce({ rows: [{}] });
   const res = await request(app)
-    .post("/api/admin/competitions")
-    .set("x-admin-token", "admin")
-    .send({ name: "Test", start_date: "2025-01-01", end_date: "2025-01-31" });
+    .post('/api/admin/competitions')
+    .set('x-admin-token', 'admin')
+    .send({ name: 'Test', start_date: '2025-01-01', end_date: '2025-01-31' });
   expect(res.status).toBe(200);
 });
 
-test("Admin create competition unauthorized", async () => {
+test('Admin create competition unauthorized', async () => {
   const res = await request(app)
-    .post("/api/admin/competitions")
-    .send({ name: "Test", start_date: "2025-01-01", end_date: "2025-01-31" });
+    .post('/api/admin/competitions')
+    .send({ name: 'Test', start_date: '2025-01-01', end_date: '2025-01-31' });
   expect(res.status).toBe(401);
 });
 
-test("registration missing username", async () => {
-  const res = await request(app)
-    .post("/api/register")
-    .send({ email: "a@a.com", password: "p" });
+test('registration missing username', async () => {
+  const res = await request(app).post('/api/register').send({ email: 'a@a.com', password: 'p' });
   expect(res.status).toBe(400);
 });
 
-test("registration missing email", async () => {
-  const res = await request(app)
-    .post("/api/register")
-    .send({ username: "a", password: "p" });
+test('registration missing email', async () => {
+  const res = await request(app).post('/api/register').send({ username: 'a', password: 'p' });
   expect(res.status).toBe(400);
 });
 
-test("registration missing password", async () => {
-  const res = await request(app)
-    .post("/api/register")
-    .send({ username: "a", email: "a@a.com" });
+test('registration missing password', async () => {
+  const res = await request(app).post('/api/register').send({ username: 'a', email: 'a@a.com' });
   expect(res.status).toBe(400);
 });
 
-test("registration duplicate username", async () => {
-  db.query.mockRejectedValueOnce(new Error("duplicate key"));
+test('registration duplicate username', async () => {
+  db.query.mockRejectedValueOnce(new Error('duplicate key'));
   const res = await request(app)
-    .post("/api/register")
-    .send({ username: "a", email: "a@a.com", password: "p" });
+    .post('/api/register')
+    .send({ username: 'a', email: 'a@a.com', password: 'p' });
   expect(res.status).toBe(500);
 });
 
-test("login invalid password", async () => {
+test('login invalid password', async () => {
   db.query.mockResolvedValueOnce({
-    rows: [
-      { id: "u1", username: "alice", password_hash: bcrypt.hashSync("p", 10) },
-    ],
+    rows: [{ id: 'u1', username: 'alice', password_hash: bcrypt.hashSync('p', 10) }],
   });
-  const res = await request(app)
-    .post("/api/login")
-    .send({ username: "alice", password: "wrong" });
+  const res = await request(app).post('/api/login').send({ username: 'alice', password: 'wrong' });
   expect(res.status).toBe(401);
 });
 
-test("login missing fields", async () => {
-  const res = await request(app).post("/api/login").send({ username: "" });
+test('login missing fields', async () => {
+  const res = await request(app).post('/api/login').send({ username: '' });
   expect(res.status).toBe(400);
 });
 
-test("/api/generate 400 when no prompt or image", async () => {
-  const res = await request(app).post("/api/generate").send({});
+test('/api/generate 400 when no prompt or image', async () => {
+  const res = await request(app).post('/api/generate').send({});
   expect(res.status).toBe(400);
 });
 
-test("/api/generate falls back on server failure", async () => {
-  axios.post.mockRejectedValueOnce(new Error("fail"));
-  const res = await request(app).post("/api/generate").send({ prompt: "t" });
+test('/api/generate falls back on server failure', async () => {
+  axios.post.mockRejectedValueOnce(new Error('fail'));
+  const res = await request(app).post('/api/generate').send({ prompt: 't' });
   expect(res.status).toBe(200);
-  expect(res.body.glb_url).toBe(
-    "https://modelviewer.dev/shared-assets/models/Astronaut.glb",
-  );
+  expect(res.body.glb_url).toBe('https://modelviewer.dev/shared-assets/models/Astronaut.glb');
 });
 
-test("/api/generate saves authenticated user id", async () => {
-  axios.post.mockResolvedValueOnce({ data: { glb_url: "/m.glb" } });
-  const token = jwt.sign({ id: "u1" }, "secret");
+test('/api/generate saves authenticated user id', async () => {
+  axios.post.mockResolvedValueOnce({ data: { glb_url: '/m.glb' } });
+  const token = jwt.sign({ id: 'u1' }, 'secret');
   await request(app)
-    .post("/api/generate")
-    .set("authorization", `Bearer ${token}`)
-    .send({ prompt: "t" });
-  const insertCall = db.query.mock.calls.find((c) =>
-    c[0].includes("INSERT INTO jobs"),
-  );
-  expect(insertCall[1][4]).toBe("u1");
+    .post('/api/generate')
+    .set('authorization', `Bearer ${token}`)
+    .send({ prompt: 't' });
+  const insertCall = db.query.mock.calls.find((c) => c[0].includes('INSERT INTO jobs'));
+  expect(insertCall[1][4]).toBe('u1');
 });
 
-test("/api/status supports limit and offset", async () => {
+test('/api/status supports limit and offset', async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
-  await request(app).get("/api/status?limit=5&offset=2");
+  await request(app).get('/api/status?limit=5&offset=2');
   expect(db.query).toHaveBeenCalledWith(
-    "SELECT * FROM jobs ORDER BY created_at DESC LIMIT $1 OFFSET $2",
-    [5, 2],
+    'SELECT * FROM jobs ORDER BY created_at DESC LIMIT $1 OFFSET $2',
+    [5, 2]
   );
 });
 
-test("/api/status/:id returns 404 when missing", async () => {
+test('/api/status/:id returns 404 when missing', async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
-  const res = await request(app).get("/api/status/bad");
+  const res = await request(app).get('/api/status/bad');
   expect(res.status).toBe(404);
 });
 
-test("GET /api/users/:username/profile returns profile", async () => {
+test('GET /api/users/:username/profile returns profile', async () => {
   db.query.mockResolvedValueOnce({
-    rows: [{ display_name: "Alice", avatar_url: "a.png" }],
+    rows: [{ display_name: 'Alice', avatar_url: 'a.png' }],
   });
-  const res = await request(app).get("/api/users/alice/profile");
+  const res = await request(app).get('/api/users/alice/profile');
   expect(res.status).toBe(200);
-  expect(res.body.display_name).toBe("Alice");
-  expect(res.body.avatar_url).toBe("a.png");
+  expect(res.body.display_name).toBe('Alice');
+  expect(res.body.avatar_url).toBe('a.png');
 });
 
-test("GET /api/users/:username/profile 404 when missing", async () => {
+test('GET /api/users/:username/profile 404 when missing', async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
-  const res = await request(app).get("/api/users/none/profile");
+  const res = await request(app).get('/api/users/none/profile');
   expect(res.status).toBe(404);
 });
