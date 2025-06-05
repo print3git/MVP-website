@@ -21,6 +21,7 @@ const upload = multer({
 const app = express();
 const baseUrl =
   process.env.HUNYUAN_BASE_URL || "https://hunyuan.tencentcloudapi.com";
+const apiVersion = process.env.HUNYUAN_VERSION || "2.5";
 
 /**
  * POST /generate
@@ -38,7 +39,7 @@ app.post("/generate", upload.single("image"), async (req, res) => {
     const apiKey = process.env.HUNYUAN_API_KEY;
     const response = await axios.post(
       `${baseUrl}/generate`,
-      { prompt },
+      { prompt, version: apiVersion },
       { headers: { Authorization: `Bearer ${apiKey}` } },
     );
 
@@ -68,7 +69,7 @@ const PORT = process.env.HUNYUAN_PORT || 4000;
 
 if (require.main === module) {
   app.listen(PORT, () => {
-    console.info(`Hunyuan3D server listening on http://localhost:${PORT}`);
+    console.log(`Hunyuan3D server listening on http://localhost:${PORT}`);
   });
 }
 

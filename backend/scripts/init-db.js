@@ -13,7 +13,7 @@ const { Client } = require("pg");
     await client.connect();
     await client.query(sql);
     await client.end();
-    console.info("Database initialized");
+    // Database initialized
   } catch (err) {
     console.error(err);
     process.exit(1);

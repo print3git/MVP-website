@@ -80,6 +80,18 @@
 
     <!-- Content -->
     <main class="flex-1 px-6 py-8 space-y-12">
+      <div class="mb-6">
+        <label for="category" class="mr-2">Filter:</label>
+        <select
+          id="category"
+          aria-label="Category filter"
+          class="bg-[#2A2A2E] border border-white/10 rounded px-2 py-1"
+        >
+          <option value="">All</option>
+          <option value="sculpture">Sculpture</option>
+          <option value="toy">Toy</option>
+        </select>
+      </div>
       <!-- Popular Creations -->
       <section class="mb-12">
         <h2 class="text-xl font-semibold mb-4">Popular Now</h2>

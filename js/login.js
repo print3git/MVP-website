@@ -1,7 +1,17 @@
 async function login(e) {
   e.preventDefault();
-  const username = document.getElementById("li-name").value;
-  const password = document.getElementById("li-pass").value;
+  const nameEl = document.getElementById("li-name");
+  const passEl = document.getElementById("li-pass");
+  nameEl.classList.remove("border-red-500");
+  passEl.classList.remove("border-red-500");
+  const username = nameEl.value.trim();
+  const password = passEl.value.trim();
+  if (!username || !password) {
+    document.getElementById("error").textContent = "All fields required";
+    if (!username) nameEl.classList.add("border-red-500");
+    if (!password) passEl.classList.add("border-red-500");
+    return;
+  }
   const res = await fetch("/api/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -12,7 +22,9 @@ async function login(e) {
     localStorage.setItem("token", data.token);
     window.location.href = "profile.html";
   } else {
-    document.getElementById("error").textContent = data.error || "failed";
+    document.getElementById("error").textContent = data.error || "Login failed";
+    nameEl.classList.add("border-red-500");
+    passEl.classList.add("border-red-500");
   }
 }
 
