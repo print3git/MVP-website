@@ -15,7 +15,9 @@ function like(id) {
     });
 }
 async function fetchCreations(type, offset = 0, limit = 6) {
-  const res = await fetch(`/api/community/${type}?limit=${limit}&offset=${offset}`);
+  const res = await fetch(
+    `/api/community/${type}?limit=${limit}&offset=${offset}`,
+  );
   if (!res.ok) return [];
   return res.json();
 }
@@ -37,23 +39,23 @@ function createCard(model) {
 }
 
 async function captureSnapshots(container) {
-  const cards = container.querySelectorAll('.model-card');
+  const cards = container.querySelectorAll(".model-card");
   for (const card of cards) {
-    const img = card.querySelector('img');
+    const img = card.querySelector("img");
     if (img && img.src) continue;
     const glbUrl = card.dataset.model;
-    const viewer = document.createElement('model-viewer');
+    const viewer = document.createElement("model-viewer");
     viewer.src = glbUrl;
-    viewer.style.position = 'fixed';
-    viewer.style.left = '-10000px';
-    viewer.style.width = '300px';
-    viewer.style.height = '300px';
+    viewer.style.position = "fixed";
+    viewer.style.left = "-10000px";
+    viewer.style.width = "300px";
+    viewer.style.height = "300px";
     document.body.appendChild(viewer);
     try {
       await viewer.updateComplete;
-      img.src = await viewer.toDataURL('image/png');
+      img.src = await viewer.toDataURL("image/png");
     } catch (err) {
-      console.error('Failed to capture snapshot', err);
+      console.error("Failed to capture snapshot", err);
     } finally {
       viewer.remove();
     }
@@ -74,8 +76,12 @@ async function loadMore(type) {
 
 function init() {
   window.communityState = { recent: { offset: 0 }, popular: { offset: 0 } };
-  document.getElementById("recent-load").addEventListener("click", () => loadMore("recent"));
-  document.getElementById("popular-load").addEventListener("click", () => loadMore("popular"));
+  document
+    .getElementById("recent-load")
+    .addEventListener("click", () => loadMore("recent"));
+  document
+    .getElementById("popular-load")
+    .addEventListener("click", () => loadMore("popular"));
   loadMore("popular");
   loadMore("recent");
 }

@@ -13,11 +13,11 @@ const { Client } = require("pg");
     );
     await client.query(
       "INSERT INTO community_creations(job_id, title, category) VALUES($1,$2,$3) ON CONFLICT DO NOTHING",
-      ['00000000-0000-0000-0000-000000000000', 'Example Model', 'demo'],
+      ["00000000-0000-0000-0000-000000000000", "Example Model", "demo"],
     );
     await client.query(
       "INSERT INTO community_creations(job_id, title, category) VALUES($1,$2,$3) ON CONFLICT DO NOTHING",
-      ['00000000-0000-0000-0000-000000000000', 'Another Model', 'demo'],
+      ["00000000-0000-0000-0000-000000000000", "Another Model", "demo"],
     );
     console.info("Seed data inserted");
   } finally {
