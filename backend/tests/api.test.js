@@ -170,6 +170,15 @@ test("GET /api/community/recent returns creations", async () => {
   expect(res.status).toBe(200);
 });
 
+test("GET /api/community/recent supports order", async () => {
+  db.query.mockResolvedValueOnce({ rows: [] });
+  await request(app).get("/api/community/recent?order=asc");
+  expect(db.query).toHaveBeenCalledWith(
+    expect.stringContaining("ORDER BY c.created_at ASC"),
+    [10, 0, null, null],
+  );
+});
+
 test("Admin create competition", async () => {
   db.query.mockResolvedValueOnce({ rows: [{}] });
   const res = await request(app)

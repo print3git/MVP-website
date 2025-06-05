@@ -369,13 +369,12 @@ app.get("/api/community/recent", async (req, res) => {
   const offset = parseInt(req.query.offset, 10) || 0;
   const category = req.query.category || null;
   const search = req.query.search || null;
+  const order = req.query.order === "asc" ? "ASC" : "DESC";
   try {
-    const { rows } = await db.query(buildGalleryQuery("c.created_at DESC"), [
-      limit,
-      offset,
-      category,
-      search,
-    ]);
+    const { rows } = await db.query(
+      buildGalleryQuery(`c.created_at ${order}`),
+      [limit, offset, category, search],
+    );
     res.json(rows);
   } catch (err) {
     console.error(err);

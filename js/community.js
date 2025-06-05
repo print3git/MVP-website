@@ -19,11 +19,13 @@ async function fetchCreations(
   offset = 0,
   limit = 6,
   category = "",
-  search = ""
+  search = "",
+  order = "desc"
 ) {
   const query = new URLSearchParams({ limit, offset });
   if (category) query.set("category", category);
   if (search) query.set("search", search);
+  if (order && type === "recent") query.set("order", order);
   try {
     const res = await fetch(`/api/community/${type}?${query}`);
     if (!res.ok) throw new Error("bad response");
@@ -101,7 +103,15 @@ async function loadMore(type) {
   const state = window.communityState[type];
   const category = document.getElementById("category").value;
   const search = document.getElementById("search")?.value || "";
-  let models = await fetchCreations(type, state.offset, 6, category, search);
+  const order = document.getElementById("sort")?.value || "desc";
+  let models = await fetchCreations(
+    type,
+    state.offset,
+    6,
+    category,
+    search,
+    order,
+  );
   if (models.length === 0 && state.offset === 0) {
     models = getFallbackModels();
   }
@@ -129,6 +139,16 @@ function init() {
     loadMore("popular");
     loadMore("recent");
   });
+  const sortSelect = document.getElementById("sort");
+  if (sortSelect) {
+    sortSelect.addEventListener("change", () => {
+      document.getElementById("recent-grid").innerHTML = "";
+      document.getElementById("popular-grid").innerHTML = "";
+      window.communityState = { recent: { offset: 0 }, popular: { offset: 0 } };
+      loadMore("popular");
+      loadMore("recent");
+    });
+  }
   const searchInput = document.getElementById("search");
   if (searchInput) {
     searchInput.addEventListener("input", () => {
