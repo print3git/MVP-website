@@ -151,6 +151,31 @@
     </header>
 
 
+    <div
+      id="demo-note"
+      class="mx-6 mb-4 p-4 bg-[#2A2A2E] border border-white/10 rounded-3xl text-sm flex justify-between items-start"
+    >
+      <p>
+        Try descriptive keywords like materials or style for better results.
+      </p>
+      <button id="demo-note-close" aria-label="Dismiss" class="ml-4">✕</button>
+    </div>
+
+    <nav
+      id="progress"
+      aria-label="Progress"
+      class="w-full flex justify-center mb-4 text-sm"
+    >
+      <ol class="flex space-x-2">
+        <li id="step-prompt" class="font-semibold">Prompt</li>
+        <li>→</li>
+        <li id="step-model" class="text-gray-400">Model</li>
+        <li>→</li>
+        <li id="step-buy" class="text-gray-400">Buy</li>
+      </ol>
+    </nav>
+
+
     <main
       class="flex-1 flex flex-col items-center justify-start gap-8 px-4 lg:px-16"
     >
@@ -245,7 +270,17 @@
             </button>
           </div>
 
-          <div class="mt-4 w-full flex items-start gap-4">
+          <div
+            id="prompt-examples"
+            class="mt-2 text-sm text-gray-400"
+            aria-label="Example prompts"
+          ></div>
+
+          <div
+            id="drop-zone"
+            class="mt-4 w-full flex items-start gap-4"
+            aria-label="Image drop area"
+          >
             <input
               type="file"
               id="uploadInput"
