@@ -3,6 +3,7 @@
 This consolidated list merges all outstanding tasks from the previous to-do documents.
 
 ## Advertising & Landing
+
 - A/B test ad designs and copy to identify highest-performing creatives.
 - Target ads to demographics most likely to convert.
 - Use retargeting pixels to bring back visitors who left.
@@ -13,6 +14,7 @@ This consolidated list merges all outstanding tasks from the previous to-do docu
 - Prefill the prompt box with the last prompt or a suggested one.
 
 ## Prompting & Generation
+
 - Validate prompts client-side to prevent submission errors.
 - Show a short tooltip/tutorial explaining how to craft a good prompt.
 - Display trending prompts or community examples for inspiration.
@@ -26,6 +28,7 @@ This consolidated list merges all outstanding tasks from the previous to-do docu
   - Allow users to skip the tutorial.
 
 ## Purchase & Checkout
+
 - Present a 3D viewer with clear "Buy Now" and "Edit" options once generation completes.
 - Enable one-click purchase using saved payment/shipping details.
 - Offer multiple payment methods including Apple Pay and Google Pay.
@@ -46,6 +49,7 @@ This consolidated list merges all outstanding tasks from the previous to-do docu
   - Display them near the checkout button.
 
 ## Community & Sharing
+
 - Surface other users' models on profile pages with an option to buy prints.
 - Let creators mark their models as publicly sellable or private.
 - Record each purchase in the buyer's order history for reordering and tracking.
@@ -54,12 +58,14 @@ This consolidated list merges all outstanding tasks from the previous to-do docu
   - Implement GET /api/shared/:slug endpoint to fetch shared model metadata.
 
 ## Profiles & Competitions
+
 - Update the admin UI to edit prize details.
 - Create a competition submission form allowing a user to link an existing model to a competition.
 - Build the form UI and validation.
 - POST the selected model to the competition entry API.
 
 ## User Experience & Accessibility
+
 - Ensure accessibility with ARIA labels and contrast.
   - Audit pages for missing labels.
   - Fix color contrast issues.
@@ -82,6 +88,7 @@ This consolidated list merges all outstanding tasks from the previous to-do docu
   - Apply them on page load.
 
 ## Testing & Continuous Integration
+
 - Add unit tests for frontend scripts.
   - Write tests for each UI module.
 - Add test for /api/my/models returning models ordered by date.
