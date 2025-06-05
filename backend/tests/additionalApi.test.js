@@ -170,6 +170,19 @@ test('GET /api/competitions/:id/entries order', async () => {
   expect(db.query).toHaveBeenCalledWith(expect.stringContaining('ORDER BY likes DESC'), ['5']);
 });
 
+test('GET /api/competitions/:id/entries leaderboard order', async () => {
+  db.query.mockResolvedValueOnce({
+    rows: [
+      { model_id: 'm2', likes: 10 },
+      { model_id: 'm1', likes: 5 },
+      { model_id: 'm3', likes: 1 },
+    ],
+  });
+  const res = await request(app).get('/api/competitions/5/entries');
+  expect(res.status).toBe(200);
+  expect(res.body.map((e) => e.likes)).toEqual([10, 5, 1]);
+});
+
 test('POST /api/competitions/:id/enter', async () => {
   db.query.mockResolvedValueOnce({});
   const token = jwt.sign({ id: 'u1' }, 'secret');
