@@ -35,16 +35,6 @@ This list tracks ideas to aggressively increase click-through at every step from
 - Let creators mark their models as publicly sellable or private.
 - Record each purchase in the buyer's order history for reordering and tracking.
 
-## Payment Countdown Discount
-- [x] Insert a new `<p id="flash-discount">` element in `payment.html` below the existing quantity discount text.
-- [x] Style the countdown message so it matches other notice text.
-- [x] In `js/payment.js`, check `localStorage` for a `flashDiscountEnd` value on page load.
-- [x] If none exists or it's expired, set `flashDiscountEnd` to five minutes from the current time.
-- [x] Start a timer that updates the remaining time in `#flash-discount` every second.
-- [x] When the timer reaches zero, remove the message and delete `flashDiscountEnd` from `localStorage`.
-- [x] Apply a 5% discount during checkout while the timer is active.
-- [x] Pass this discount along with the quantity discount to `createCheckout`.
-- [x] Add a developer-only button or method to reset the timer for testing.
 
 ## Comprehensive Test Suite
 - Add test for /api/progress streaming events until completion
@@ -69,6 +59,5 @@ This list tracks ideas to aggressively increase click-through at every step from
 - Add test for /api/webhook/stripe updating order and queueing print
 - Add test for queue processing multiple items sequentially
 - Add test for queue progress events reach 100%
-- Add test for login page error display on failed login
 - Add test for signup page error display on failed signup
 - Add test for payment countdown timer expiration logic
