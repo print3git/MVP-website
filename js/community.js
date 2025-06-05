@@ -70,6 +70,10 @@ async function captureSnapshots(container) {
     const glbUrl = card.dataset.model;
     const viewer = document.createElement("model-viewer");
     viewer.src = glbUrl;
+    viewer.setAttribute(
+      "environment-image",
+      "https://modelviewer.dev/shared-assets/environments/neutral.hdr"
+    );
     viewer.style.position = "fixed";
     viewer.style.left = "-10000px";
     viewer.style.width = "300px";
