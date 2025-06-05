@@ -78,9 +78,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const hideLoader = () => (loader.hidden = true);
 
-  // Wait for the <model-viewer> element to be defined before
-  // attaching events or assigning the model source. If the library
-  // fails to load, we'll just show the fallback model.
+  // Attach events immediately so we don't miss the "load" event even if the
+  // <model-viewer> element upgrades while this script is still loading. If the
+  // library fails to load, the "error" handler falls back to the astronaut
+  // model and hides the loader overlay.
+  viewer.addEventListener('load', hideLoader);
+  viewer.addEventListener('error', () => {
+    viewer.src = FALLBACK_GLB;
+    hideLoader();
+  });
+
+  // Wait for the <model-viewer> definition before assigning the model source.
+  // Some browsers won't process the "src" attribute on a custom element until
+  // after it's upgraded, so we guard against that here.
   if (window.customElements?.whenDefined) {
     try {
       await customElements.whenDefined('model-viewer');
@@ -88,12 +98,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       // ignore if the element never upgrades
     }
   }
-
-  viewer.addEventListener('load', hideLoader);
-  viewer.addEventListener('error', () => {
-    viewer.src = FALLBACK_GLB;
-    hideLoader();
-  });
 
   loader.hidden = false;
   viewer.src =
