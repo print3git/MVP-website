@@ -28,6 +28,10 @@ const refs = {
   uploadInput: $('uploadInput'),
   imagePreviewArea: $('image-preview-area'),
   dropZone: $('drop-zone'),
+  cropModal: $('crop-modal'),
+  cropImage: $('crop-image'),
+  cropConfirm: $('crop-confirm'),
+  cropCancel: $('crop-cancel'),
   examples: $('prompt-examples'),
   checkoutBtn: $('checkout-button'),
   stepPrompt: $('step-prompt'),
@@ -181,35 +185,58 @@ function renderThumbnails(arr) {
   });
 }
 
+function getThumbnail(file) {
+  return new Promise((res) => {
+    const R = new FileReader();
+    R.onload = () => {
+      const im = new Image();
+      im.onload = () => {
+        let [w, h] = [im.width, im.height],
+          max = 200,
+          r = Math.min(max / w, max / h, 1);
+        w *= r;
+        h *= r;
+        const c = document.createElement('canvas');
+        c.width = w;
+        c.height = h;
+        c.getContext('2d').drawImage(im, 0, 0, w, h);
+        res(c.toDataURL('image/png', 0.7));
+      };
+      im.src = R.result;
+    };
+    R.readAsDataURL(file);
+  });
+}
+
+function openCropper(file) {
+  return new Promise((resolve) => {
+    refs.cropImage.src = URL.createObjectURL(file);
+    refs.cropModal.classList.remove('hidden');
+    const cropper = new Cropper(refs.cropImage, { aspectRatio: 1, viewMode: 1 });
+    const done = (result) => {
+      cropper.destroy();
+      refs.cropModal.classList.add('hidden');
+      resolve(result);
+    };
+    refs.cropConfirm.onclick = () => {
+      const canvas = cropper.getCroppedCanvas({ width: 512, height: 512 });
+      canvas.toBlob((b) => {
+        done(new File([b], file.name, { type: 'image/png' }));
+      }, 'image/png');
+    };
+    refs.cropCancel.onclick = () => done(null);
+  });
+}
+
 async function processFiles(files) {
   if (!files.length) return;
-  uploadedFiles = files;
-  const thumbs = await Promise.all(
-    files.map(
-      (file) =>
-        new Promise((res) => {
-          const R = new FileReader();
-          R.onload = () => {
-            const im = new Image();
-            im.onload = () => {
-              let [w, h] = [im.width, im.height],
-                max = 200,
-                r = Math.min(max / w, max / h, 1);
-              w *= r;
-              h *= r;
-              const c = document.createElement('canvas');
-              c.width = w;
-              c.height = h;
-              c.getContext('2d').drawImage(im, 0, 0, w, h);
-              res(c.toDataURL('image/png', 0.7));
-            };
-            im.src = R.result;
-          };
-          R.readAsDataURL(file);
-        })
-    )
-  );
-
+  const processed = [];
+  for (const f of files) {
+    const c = await openCropper(f);
+    if (c) processed.push(c);
+  }
+  uploadedFiles = processed;
+  const thumbs = await Promise.all(processed.map((f) => getThumbnail(f)));
   localStorage.setItem('print3Images', JSON.stringify(thumbs));
   renderThumbnails(thumbs);
 }
@@ -219,6 +246,7 @@ refs.uploadInput.addEventListener('change', (e) => {
 });
 
 if (refs.dropZone) {
+  refs.dropZone.addEventListener('click', () => refs.uploadInput.click());
   ['dragover', 'dragenter'].forEach((ev) => {
     refs.dropZone.addEventListener(ev, (e) => {
       e.preventDefault();
