@@ -3,10 +3,10 @@ const fs = require("fs");
 const path = require("path");
 const { JSDOM } = require("jsdom");
 
-let html = fs.readFileSync(
+const paymentHtml = fs.readFileSync(
   path.join(__dirname, "../../../payment.html"),
   "utf8",
-  .replace(/<script[^>]+tailwind[^>]*><\/script>/, "")
+let html = paymentHtml
   .replace(/<link[^>]*font-awesome[^>]*>/, "")
   .replace(/<script[^>]+model-viewer[^>]*><\/script>/g, "")
   .replace(/<script[^>]+stripe[^>]*><\/script>/, "");
