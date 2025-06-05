@@ -22,6 +22,7 @@ const {
   processQueue,
   progressEmitter,
 } = require("./queue/printQueue");
+const { getShareBySlug } = require("./db");
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || "admin";
 
 const AUTH_SECRET = process.env.AUTH_SECRET || "secret";
@@ -334,6 +335,17 @@ app.post("/api/models/:id/share", authRequired, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to create share" });
+  }
+});
+
+app.get("/api/shared/:slug", async (req, res) => {
+  try {
+    const share = await getShareBySlug(req.params.slug);
+    if (!share) return res.status(404).json({ error: "Not found" });
+    res.json(share);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch share" });
   }
 });
 

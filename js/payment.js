@@ -5,6 +5,8 @@ let stripe = null;
 const FALLBACK_GLB =
   "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
 const PRICE = 2000;
+const BASE_SHIPPING = 5;
+const ETA_DAYS = 7;
 
 function qs(name) {
   const params = new URLSearchParams(window.location.search);
@@ -35,6 +37,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const successMsg = document.getElementById("success");
   const cancelMsg = document.getElementById("cancel");
   const flashMsg = document.getElementById("flash-discount");
+  const shippingInfo = document.getElementById("shipping-info");
+  const etaInfo = document.getElementById("eta-info");
 
   function startFlashDiscount() {
     const saved = parseInt(localStorage.getItem("flashDiscountEnd"), 10) || 0;
@@ -104,6 +108,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     cancelMsg.hidden = false;
   }
 
+  shippingInfo.textContent = `Shipping: $${BASE_SHIPPING.toFixed(2)}`;
+  etaInfo.textContent = `Estimated delivery in ${ETA_DAYS} days`;
+
+  if (!localStorage.getItem("orderedBefore")) {
+    flashMsg.textContent = "10% off your first order!";
+  }
+
   if (flashMsg) {
     startFlashDiscount();
   }
@@ -118,6 +129,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         discount += Math.round(qty * PRICE * 0.05);
       }
       const url = await createCheckout(qty, discount);
+      localStorage.setItem("orderedBefore", "true");
       if (stripe) {
         stripe.redirectToCheckout({ sessionId: url.split("session_id=")[1] });
       } else {
