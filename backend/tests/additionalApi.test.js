@@ -45,6 +45,11 @@ test("GET /api/my/models returns models", async () => {
   expect(res.body[0].job_id).toBe("j1");
 });
 
+test("GET /api/my/models requires auth", async () => {
+  const res = await request(app).get("/api/my/models");
+  expect(res.status).toBe(401);
+});
+
 test("GET /api/profile returns profile", async () => {
   db.query.mockResolvedValueOnce({ rows: [{ display_name: "A" }] });
   const token = jwt.sign({ id: "u1" }, "secret");
