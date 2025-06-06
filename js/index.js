@@ -205,10 +205,18 @@ refs.promptInput.addEventListener('keydown', (e) => {
   }
 });
 
+function syncUploadHeights() {
+  if (!refs.dropZone || !refs.imagePreviewArea) return;
+  const h = refs.dropZone.getBoundingClientRect().height;
+  refs.dropZone.style.height = h + 'px';
+  refs.imagePreviewArea.style.height = h + 'px';
+}
+
 function renderThumbnails(arr) {
   refs.imagePreviewArea.innerHTML = '';
   if (!arr.length) {
     refs.imagePreviewArea.classList.add('hidden');
+    syncUploadHeights();
     return;
   }
   refs.imagePreviewArea.classList.remove('hidden');
@@ -217,7 +225,7 @@ function renderThumbnails(arr) {
     wrap.className = 'relative';
     const img = document.createElement('img');
     img.src = url;
-    img.className = 'object-cover w-full h-20 rounded-md shadow-md';
+    img.className = 'object-cover w-full h-full rounded-md shadow-md';
     wrap.appendChild(img);
 
     const btn = document.createElement('button');
@@ -234,6 +242,7 @@ function renderThumbnails(arr) {
     wrap.appendChild(btn);
     refs.imagePreviewArea.appendChild(wrap);
   });
+  syncUploadHeights();
 }
 
 function getThumbnail(file) {
@@ -345,6 +354,8 @@ refs.submitBtn.addEventListener('click', async () => {
 });
 
 window.addEventListener('DOMContentLoaded', () => {
+  syncUploadHeights();
+  window.addEventListener('resize', syncUploadHeights);
   setStep('prompt');
   showModel();
   const sr = new URLSearchParams(window.location.search).get('sr');
