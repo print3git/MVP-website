@@ -105,3 +105,16 @@ This consolidated list merges all outstanding tasks from the previous to-do docu
 - Add test for queue progress events reach 100%.
 - Add test for payment countdown timer expiration logic.
 - Write a unit test to validate the countdown expiration logic.
+
+## Mailing List
+
+- Decide on the signup trigger for collecting emails.
+- Choose an email marketing service or build a custom solution.
+- Update signup and order forms with an opt-in checkbox.
+- Store opted-in addresses in a `mailing_list` table.
+- Send confirmation emails to verify subscriptions.
+- Sync the database with the mailing service automatically.
+- Provide an unsubscribe link in every email.
+- Test the full signup and confirmation flow end-to-end.
+- Document how the mailing list is managed.
+- Monitor bounces and unsubscribes to keep the list clean.
