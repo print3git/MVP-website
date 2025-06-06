@@ -56,6 +56,7 @@ function setStep(name) {
 window.shareOn = shareOn;
 let uploadedFiles = [];
 let lastJobId = null;
+let savedProfile = null;
 
 let progressInterval = null;
 
@@ -85,7 +86,6 @@ function stopProgress() {
     refs.progressWrapper.style.display = 'none';
   }, 300);
 }
-
 
 const hideAll = () => {
   refs.previewImg.style.display = 'none';
