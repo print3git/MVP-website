@@ -14,14 +14,17 @@
     />
   </head>
   <body class="bg-[#1A1A1D] text-white font-sans flex flex-col min-h-screen">
-    <header class="flex items-center justify-between p-4">
+    <header class="relative flex items-center justify-between py-4 px-6">
       <a
         href="index.html"
-        class="flex items-center bg-[#2A2A2E] px-3 py-1 rounded-xl hover:bg-[#3A3A3E] transition"
+        class="relative z-10 flex items-center bg-[#2A2A2E] border border-white/10 px-4 py-2 rounded-3xl hover:bg-[#3A3A3E] transition-shape"
       >
-        <i class="fas fa-arrow-left mr-2"></i>Back
+        <i class="fas fa-arrow-left text-xl text-white mr-2"></i>
+        <span class="text-white font-medium">Back</span>
       </a>
-      <h1 class="text-xl font-semibold">Competitions</h1>
+      <h1 class="absolute inset-x-0 top-1/2 -translate-y-1/2 text-center text-2xl font-semibold">
+        Competitions
+      </h1>
       <div class="flex space-x-2">
         <button
           class="w-9 h-9 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
