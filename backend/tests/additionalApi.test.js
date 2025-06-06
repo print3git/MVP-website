@@ -47,6 +47,14 @@ test('GET /api/my/models returns models', async () => {
   expect(res.body[0].job_id).toBe('j1');
 });
 
+test('GET /api/my/models includes snapshot', async () => {
+  db.query.mockResolvedValueOnce({ rows: [{ job_id: 'j1', snapshot: 'snap.png' }] });
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  const res = await request(app).get('/api/my/models').set('authorization', `Bearer ${token}`);
+  expect(res.status).toBe(200);
+  expect(res.body[0].snapshot).toBeDefined();
+});
+
 test('GET /api/my/models requires auth', async () => {
   const res = await request(app).get('/api/my/models');
   expect(res.status).toBe(401);
@@ -111,6 +119,15 @@ test('GET /api/users/:username/models returns models', async () => {
   const call = db.query.mock.calls.find((c) => c[0].includes('FROM jobs'));
   expect(call[0]).toContain('j.is_public=TRUE');
   expect(call[1]).toEqual(['u1', 10, 0]);
+});
+
+test('GET /api/users/:username/models includes snapshot', async () => {
+  db.query
+    .mockResolvedValueOnce({ rows: [{ id: 'u1' }] })
+    .mockResolvedValueOnce({ rows: [{ job_id: 'j1', likes: 0, snapshot: 's.png' }] });
+  const res = await request(app).get('/api/users/alice/models');
+  expect(res.status).toBe(200);
+  expect(res.body[0].snapshot).toBeDefined();
 });
 
 test('GET /api/users/:username/models supports pagination', async () => {
