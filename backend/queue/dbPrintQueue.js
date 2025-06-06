@@ -1,3 +1,4 @@
+
 const { EventEmitter } = require('events');
 
 // Simple database-backed print queue placeholder
@@ -17,3 +18,4 @@ module.exports = {
   enqueuePrint,
   progressEmitter,
 };
+
