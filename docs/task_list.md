@@ -91,6 +91,8 @@ This consolidated list merges all outstanding tasks from the previous to-do docu
 
 - Add unit tests for frontend scripts.
   - Write tests for each UI module.
+- Add test for /api/my/models returning models ordered by date.
+- Add test for /api/community requires user auth.
 - Add test for /api/community/recent pagination and category filter.
 - Add test for /api/competitions/active returning upcoming comps.
 - Add test for /api/competitions/:id/enter prevents duplicate entry.
@@ -100,5 +102,6 @@ This consolidated list merges all outstanding tasks from the previous to-do docu
 - Add test for /api/create-order rejecting unknown job.
 - Add test for /api/webhook/stripe invalid signature.
 - Add test for queue processing multiple items sequentially.
+- Add test for queue progress events reach 100%.
 - Add test for payment countdown timer expiration logic.
 - Write a unit test to validate the countdown expiration logic.
