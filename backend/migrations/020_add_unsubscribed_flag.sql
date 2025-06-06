@@ -1,0 +1,2 @@
+ALTER TABLE mailing_list
+  ADD COLUMN IF NOT EXISTS unsubscribed BOOLEAN DEFAULT FALSE;
