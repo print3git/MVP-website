@@ -19,13 +19,11 @@ window.addEventListener('DOMContentLoaded', async () => {
   const sr = getParam('sr');
   const viewer = document.getElementById('viewer');
 
-  const quoteEl = document.getElementById('sr-quote');
+  const quoteEl = document.getElementById('subreddit-quote');
   const entry = sr && map[sr.toLowerCase()];
 
   if (entry && viewer) {
     viewer.src = entry.glb;
     if (quoteEl) quoteEl.textContent = entry.quote;
-  } else if (quoteEl) {
-    quoteEl.textContent = 'Design anything you can imagine.';
   }
 });
