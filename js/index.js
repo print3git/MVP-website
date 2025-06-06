@@ -57,15 +57,24 @@ window.shareOn = shareOn;
 let uploadedFiles = [];
 let lastJobId = null;
 
+let savedProfile = null;
+
+// Track when the prompt or images have been modified after a generation
+let editsPending = false;
+
 let progressInterval = null;
+let progressStart = null;
+let usingViewerProgress = false;
 
 function startProgress(estimateMs = 20000) {
   if (!refs.progressWrapper) return;
-  const start = Date.now();
+  progressStart = Date.now();
+  usingViewerProgress = false;
   refs.progressBar.style.width = '0%';
   refs.progressWrapper.style.display = 'block';
   const tick = () => {
-    const elapsed = Date.now() - start;
+    if (usingViewerProgress) return;
+    const elapsed = Date.now() - progressStart;
     const pct = Math.min((elapsed / estimateMs) * 100, 99);
     refs.progressBar.style.width = pct + '%';
     const remaining = Math.max(estimateMs - elapsed, 0);
@@ -79,6 +88,7 @@ function startProgress(estimateMs = 20000) {
 function stopProgress() {
   if (!refs.progressWrapper) return;
   clearInterval(progressInterval);
+  usingViewerProgress = false;
   refs.progressBar.style.width = '100%';
   refs.progressText.textContent = '';
   setTimeout(() => {
@@ -114,7 +124,7 @@ async function fetchProfile() {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (res.ok) {
-      savedProfile = await res.json();
+      userProfile = await res.json();
     }
   } catch (err) {
     console.error('Failed to load profile', err);
@@ -122,7 +132,7 @@ async function fetchProfile() {
 }
 
 async function buyNow() {
-  if (!savedProfile) return;
+  if (!userProfile) return;
   const jobId = localStorage.getItem('print3JobId');
   const res = await fetch('/api/create-order', {
     method: 'POST',
@@ -131,7 +141,7 @@ async function buyNow() {
       jobId,
       price: 2000,
       qty: 1,
-      shippingInfo: savedProfile.shipping_info,
+      shippingInfo: userProfile.shipping_info,
     }),
   });
   const data = await res.json();
@@ -143,22 +153,28 @@ function showError(msg) {
 }
 
 function validatePrompt(p) {
-  if (!p && uploadedFiles.length === 0) {
+  const txt = p ? p.trim() : '';
+  if (!txt && uploadedFiles.length === 0) {
     showError('Enter a prompt or upload images');
     refs.promptWrapper.classList.add('border-red-500');
     return false;
   }
-  if (p && p.length < 5) {
+  if (txt && txt.length < 5) {
     showError('Prompt must be at least 5 characters');
     refs.promptWrapper.classList.add('border-red-500');
     return false;
   }
-  if (p && /[<>]/.test(p)) {
+  if (txt && /\n/.test(txt)) {
+    showError('Prompt cannot contain line breaks');
+    refs.promptWrapper.classList.add('border-red-500');
+    return false;
+  }
+  if (txt && /[<>]/.test(txt)) {
     showError('Prompt contains invalid characters');
     refs.promptWrapper.classList.add('border-red-500');
     return false;
   }
-  if (p && p.length > 200) {
+  if (txt && txt.length > 200) {
     showError('Prompt must be under 200 characters');
     refs.promptWrapper.classList.add('border-red-500');
     return false;
@@ -179,6 +195,10 @@ refs.promptInput.addEventListener('input', () => {
   el.style.overflowY = el.scrollHeight > lh * 9 ? 'auto' : 'hidden';
   document.getElementById('gen-error').textContent = '';
   refs.promptWrapper.classList.remove('border-red-500');
+  editsPending = true;
+  refs.checkoutBtn.classList.add('hidden');
+  refs.buyNowBtn?.classList.add('hidden');
+  setStep('prompt');
 });
 
 refs.promptInput.addEventListener('keydown', (e) => {
@@ -278,6 +298,10 @@ async function processFiles(files) {
   const thumbs = await Promise.all(processed.map((f) => getThumbnail(f)));
   localStorage.setItem('print3Images', JSON.stringify(thumbs));
   renderThumbnails(thumbs);
+  editsPending = true;
+  refs.checkoutBtn.classList.add('hidden');
+  refs.buyNowBtn?.classList.add('hidden');
+  setStep('prompt');
 }
 
 refs.uploadInput.addEventListener('change', (e) => {
@@ -339,6 +363,8 @@ refs.submitBtn.addEventListener('click', async () => {
   localStorage.setItem('print3Model', url);
   localStorage.setItem('print3JobId', lastJobId);
 
+  editsPending = false;
+
   refs.viewer.src = url;
   await refs.viewer.updateComplete;
   showModel();
@@ -346,7 +372,7 @@ refs.submitBtn.addEventListener('click', async () => {
   hideDemo();
 
   refs.checkoutBtn.classList.remove('hidden');
-  if (savedProfile) refs.buyNowBtn?.classList.remove('hidden');
+  if (userProfile) refs.buyNowBtn?.classList.remove('hidden');
   refs.submitIcon.classList.replace('fa-stop', 'fa-arrow-up');
 });
 
@@ -354,8 +380,23 @@ window.addEventListener('DOMContentLoaded', () => {
   setStep('prompt');
   showModel();
   refs.viewer.src = FALLBACK_GLB;
+  if (refs.viewer) {
+    refs.viewer.addEventListener('progress', (e) => {
+      if (!progressStart) progressStart = Date.now();
+      usingViewerProgress = true;
+      const pct = Math.round(e.detail.totalProgress * 100);
+      refs.progressBar.style.width = pct + '%';
+      const elapsed = Date.now() - progressStart;
+      if (pct < 100) {
+        const remaining = pct > 0 ? (elapsed * (100 - pct)) / pct : 0;
+        refs.progressText.textContent = `~${Math.ceil(remaining / 1000)}s remaining`;
+      } else {
+        stopProgress();
+      }
+    });
+  }
   fetchProfile().then(() => {
-    if (savedProfile && refs.buyNowBtn) {
+    if (userProfile && refs.buyNowBtn) {
       refs.buyNowBtn.classList.remove('hidden');
       refs.buyNowBtn.addEventListener('click', buyNow);
     }
