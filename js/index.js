@@ -58,10 +58,8 @@ let uploadedFiles = [];
 let lastJobId = null;
 let userProfile = null;
 
-
 // Track when the prompt or images have been modified after a generation
 let editsPending = false;
-
 
 let progressInterval = null;
 let progressStart = null;
@@ -373,7 +371,6 @@ refs.submitBtn.addEventListener('click', async () => {
 });
 
 window.addEventListener('DOMContentLoaded', () => {
-
   setStep('prompt');
   showModel();
   refs.viewer.src = FALLBACK_GLB;
@@ -391,7 +388,6 @@ window.addEventListener('DOMContentLoaded', () => {
         stopProgress();
       }
     });
-
   }
   fetchProfile().then(() => {
     if (userProfile && refs.buyNowBtn) {
