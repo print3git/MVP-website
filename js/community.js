@@ -15,11 +15,17 @@ function like(id) {
     });
 }
 
+/**
+ * Return a function that delays invoking `fn` until after `delay` ms
+ * have elapsed since the last invocation.
+ * @param {Function} fn
+ * @param {number} delay
+ */
 function debounce(fn, delay) {
   let timeout;
   return (...args) => {
     clearTimeout(timeout);
-    timeout = setTimeout(() => fn.apply(null, args), delay);
+    timeout = setTimeout(() => fn(...args), delay);
   };
 }
 async function fetchCreations(
@@ -156,14 +162,14 @@ function init() {
   }
   const searchInput = document.getElementById('search');
   if (searchInput) {
-    const handleSearch = debounce(() => {
+    const onSearchInput = () => {
       document.getElementById('recent-grid').innerHTML = '';
       document.getElementById('popular-grid').innerHTML = '';
       window.communityState = { recent: { offset: 0 }, popular: { offset: 0 } };
       loadMore('popular');
       loadMore('recent');
-    }, 300);
-    searchInput.addEventListener('input', handleSearch);
+    };
+    searchInput.addEventListener('input', debounce(onSearchInput, 300));
   }
   loadMore('popular');
   loadMore('recent');
