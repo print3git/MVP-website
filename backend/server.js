@@ -515,8 +515,9 @@ app.get('/api/competitions/past', async (req, res) => {
 app.get('/api/competitions/:id/entries', async (req, res) => {
   try {
     const { rows } = await db.query(
-      `SELECT e.model_id, COALESCE(l.count,0) as likes
+      `SELECT e.model_id, j.model_url, COALESCE(l.count,0) as likes
        FROM competition_entries e
+       JOIN jobs j ON e.model_id=j.job_id
        LEFT JOIN (SELECT model_id, COUNT(*) as count FROM likes GROUP BY model_id) l
        ON e.model_id=l.model_id
        WHERE e.competition_id=$1
