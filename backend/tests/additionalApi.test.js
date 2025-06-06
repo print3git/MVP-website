@@ -134,7 +134,6 @@ test('POST /api/models/:id/like requires auth', async () => {
   expect(res.status).toBe(401);
 });
 
-
 test('POST /api/models/:id/public updates flag', async () => {
   db.query.mockResolvedValueOnce({ rows: [{ is_public: true }] });
 
@@ -161,6 +160,8 @@ test('POST /api/models/:id/public requires boolean', async () => {
   expect(res.status).toBe(400);
 });
 
+test('GET /api/community/recent pagination and category', async () => {
+  db.query.mockResolvedValueOnce({ rows: [] });
   await request(app).get('/api/community/recent?limit=5&offset=2&category=art');
   expect(db.query).toHaveBeenCalledWith(expect.any(String), [5, 2, 'art', null]);
 });
