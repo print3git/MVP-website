@@ -59,7 +59,6 @@ window.shareOn = shareOn;
 let uploadedFiles = [];
 let lastJobId = null;
 
-
 let savedProfile = null;
 
 // Track when the prompt or images have been modified after a generation
@@ -346,8 +345,8 @@ async function fetchGlb(prompt, files) {
   } catch (err) {
     document.getElementById('gen-error').textContent = 'Generation failed';
 
+    return FALLBACK_GLB;
   }
-
 }
 
 refs.submitBtn.addEventListener('click', async () => {
