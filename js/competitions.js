@@ -72,8 +72,7 @@ async function loadPast() {
   }
   const comps = await res.json();
   if (comps.length === 0) {
-    container.innerHTML =
-      '<p class="text-center text-white/80">No past competitions yet.</p>';
+    container.innerHTML = '<p class="text-center text-white/80">No past competitions yet.</p>';
     return;
   }
   comps.forEach((c) => {
