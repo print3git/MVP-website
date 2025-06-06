@@ -65,7 +65,7 @@ Then navigate to `http://localhost:8080/index.html` or
 
 ## Uploading Reference Images
 
-Images can be added via drag-and-drop in the generator page. Dropping one or more files opens a cropping dialog powered by Cropper.js allowing you to trim each image before upload.
+Images can be added via drag-and-drop in the generator page.
 
 ## User Profiles API
 
@@ -90,11 +90,7 @@ submits the order immediately and redirects to the Stripe checkout page.
 
 ### Drag-and-Drop Image Uploads
 
-Users can drag and drop image files onto the upload area on `index.html`. A
-cropping modal powered by [Cropper.js](https://github.com/fengyuanchen/cropperjs)
-lets users resize their images to a square preview before the files are uploaded
-to the server. The same modal appears when browsing for files via the standard
-file picker.
+Users can drag and drop image files onto the upload area on `index.html`.
 
 ## Sharing API
 

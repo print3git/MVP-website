@@ -29,10 +29,6 @@ const refs = {
   uploadInput: $('uploadInput'),
   imagePreviewArea: $('image-preview-area'),
   dropZone: $('drop-zone'),
-  cropModal: $('crop-modal'),
-  cropImage: $('crop-image'),
-  cropConfirm: $('crop-confirm'),
-  cropCancel: $('crop-cancel'),
   examples: $('prompt-examples'),
   trending: $("trending-prompts"),
   checkoutBtn: $('checkout-button'),
@@ -266,40 +262,11 @@ function getThumbnail(file) {
   });
 }
 
-function openCropper(file) {
-  return new Promise((resolve) => {
-    refs.cropImage.src = URL.createObjectURL(file);
-    refs.cropModal.classList.remove('hidden');
-    const cropper = new Cropper(refs.cropImage, { aspectRatio: 1, viewMode: 1 });
-    const onKey = (e) => {
-      if (e.key === 'Escape') done(null);
-    };
-    window.addEventListener('keydown', onKey);
-    const done = (result) => {
-      cropper.destroy();
-      window.removeEventListener('keydown', onKey);
-      refs.cropModal.classList.add('hidden');
-      resolve(result);
-    };
-    refs.cropConfirm.onclick = () => {
-      const canvas = cropper.getCroppedCanvas({ width: 512, height: 512 });
-      canvas.toBlob((b) => {
-        done(new File([b], file.name, { type: 'image/png' }));
-      }, 'image/png');
-    };
-    refs.cropCancel.onclick = () => done(null);
-  });
-}
 
 async function processFiles(files) {
   if (!files.length) return;
-  const processed = [];
-  for (const f of files) {
-    const c = await openCropper(f);
-    if (c) processed.push(c);
-  }
-  uploadedFiles = processed;
-  const thumbs = await Promise.all(processed.map((f) => getThumbnail(f)));
+  uploadedFiles = [...files];
+  const thumbs = await Promise.all(uploadedFiles.map((f) => getThumbnail(f)));
   localStorage.setItem('print3Images', JSON.stringify(thumbs));
   renderThumbnails(thumbs);
   editsPending = true;
