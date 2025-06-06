@@ -15,20 +15,6 @@ This consolidated list merges all outstanding tasks from the previous to-do docu
 
 - Offer multiple payment methods including Apple Pay and Google Pay.
 
-- Provide incentives like discounts or credits for the first order.
-- Automatically prefill shipping and payment details from the user's profile.
-  - Retrieve saved profile info from the backend.
-  - Populate the checkout form with the saved data.
-- Offer a one-click "Buy Now" button directly on the model viewer page.
-
-  - Add a button that uses saved details.
-  - Submit the order in one step.
-
-- Show estimated print cost and delivery time before checkout.
-  - Calculate cost and ETA from model parameters.
-  - Display them near the checkout button.
-
-
 ## Community & Sharing
 
 - Surface other users' models on profile pages with an option to buy prints.
@@ -46,25 +32,6 @@ This consolidated list merges all outstanding tasks from the previous to-do docu
   - Apply them on page load.
 
 
-## Testing & Continuous Integration
-
-- Add unit tests for frontend scripts.
-  - Write tests for each UI module.
-- Add test for /api/my/models returning models ordered by date.
-- Add test for /api/community requires user auth.
-- Add test for /api/community/recent pagination and category filter.
-- Add test for /api/competitions/active returning upcoming comps.
-- Add test for /api/competitions/:id/enter prevents duplicate entry.
-- Add test for /api/competitions/:id/enter rejecting unauthenticated user.
-- Add test for /api/competitions/:id/entries leaderboard order.
-- Add test for /api/admin/competitions creation unauthorized.
-- Add test for /api/create-order rejecting unknown job.
-- Add test for /api/webhook/stripe invalid signature.
-- Add test for queue processing multiple items sequentially.
-- Add test for queue progress events reach 100%.
-- Add test for payment countdown timer expiration logic.
-- Write a unit test to validate the countdown expiration logic.
-
 ## Mailing List
 
 - Decide on the signup trigger for collecting emails.
@@ -74,8 +41,6 @@ This consolidated list merges all outstanding tasks from the previous to-do docu
 - Monitor bounces and unsubscribes to keep the list clean.
 
 ## Creating urgency
-
-- Implement countdown timers for limited-time offers.
 
 - Show dynamic "Only X left" or "Selling fast" notices.
 - Display shipping cut-off timers like "Order in 3h for same-day processing".
@@ -91,4 +56,3 @@ This consolidated list merges all outstanding tasks from the previous to-do docu
 - Let users opt in for notifications when a promotion is about to end.
 
 
-- Implement a one-click "Buy Now" checkout option to reduce friction.
