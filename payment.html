@@ -141,6 +141,16 @@
                 aria-label="Address"
               />
             </div>
+            <div>
+              <input
+                id="checkout-email"
+                type="email"
+                class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+                placeholder="Email"
+                autocomplete="email"
+                aria-label="Email"
+              />
+            </div>
             <div class="flex gap-2">
               <input
                 id="ship-city"
@@ -157,6 +167,10 @@
                 aria-label="ZIP code"
               />
             </div>
+            <label class="flex items-center text-sm">
+              <input id="ml-optin" type="checkbox" class="mr-2" />
+              Join our mailing list
+            </label>
 
             <div id="payment-element" class="text-center text-gray-400">
               [Stripe payment form will go here]
