@@ -16,11 +16,7 @@ async function loadAccount() {
   container.innerHTML = `
     <div class="space-y-2">
       <p><strong>Username:</strong> ${profile.display_name || ''}</p>
-      <pre class="bg-[#2A2A2E] p-4 rounded-xl">${JSON.stringify(
-        profile,
-        null,
-        2
-      )}</pre>
+      <pre class="bg-[#2A2A2E] p-4 rounded-xl">${JSON.stringify(profile, null, 2)}</pre>
     </div>
   `;
 }
