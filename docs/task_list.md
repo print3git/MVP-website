@@ -11,24 +11,9 @@ This consolidated list merges all outstanding tasks from the previous to-do docu
 - Keep landing pages minimal with a single prominent "Start Generating" button.
 - Offer social login and guest mode so users can begin without account friction.
 
-- Offer subreddit-specific landing pages for Reddit ads.
-  - Accept an `sr` query parameter indicating the subreddit.
-  - Place a dedicated .glb placeholder for each subreddit in `/models/`.
-  - Create `js/subredditLanding.js` with a mapping from subreddit to placeholder and quote.
-  - Parse `sr` on page load to choose the correct .glb and quote.
-  - Insert the quote into a new element with id `sr-quote`.
-  - Include `<script src="js/subredditLanding.js"></script>` on the landing page.
-  - Fallback to the default astronaut and generic quote when `sr` is missing or unknown.
-  - Generate ad links with the `?sr=<subreddit>` parameter.
-
-## Prompting & Generation
-
-- Display trending prompts or community examples for inspiration.
-
 ## Purchase & Checkout
 
 - Offer multiple payment methods including Apple Pay and Google Pay.
-- Automatically calculate and display shipping cost and delivery ETA before checkout.
 
 - Send a reminder email if a user generates a model but doesn't purchase. _(done)_
 - Provide incentives like discounts or credits for the first order.
@@ -44,6 +29,7 @@ This consolidated list merges all outstanding tasks from the previous to-do docu
   - Calculate cost and ETA from model parameters.
   - Display them near the checkout button.
 
+
 ## Community & Sharing
 
 - Surface other users' models on profile pages with an option to buy prints.
@@ -55,9 +41,11 @@ This consolidated list merges all outstanding tasks from the previous to-do docu
   - Fix color contrast issues.
 - Optimize API requests to reduce loading time on slow networks.
   - Bundle multiple requests where possible.
+
 - Save user preferences such as units or color scheme.
   - Persist preferences to local storage.
   - Apply them on page load.
+
 
 ## Testing & Continuous Integration
 
@@ -102,5 +90,6 @@ This consolidated list merges all outstanding tasks from the previous to-do docu
 - Offer free shipping for a short window with a countdown bar.
 - Add progress bars toward goals like "Join the first 100 buyers".
 - Let users opt in for notifications when a promotion is about to end.
+
 
 - Implement a one-click "Buy Now" checkout option to reduce friction.
