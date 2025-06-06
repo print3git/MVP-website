@@ -200,7 +200,6 @@ refs.promptInput.addEventListener('input', () => {
   document.getElementById('gen-error').textContent = '';
   refs.promptWrapper.classList.remove('border-red-500');
   editsPending = true;
-  refs.checkoutBtn.classList.add('hidden');
   refs.buyNowBtn?.classList.add('hidden');
   setStep('prompt');
 });
@@ -303,7 +302,6 @@ async function processFiles(files) {
   localStorage.setItem('print3Images', JSON.stringify(thumbs));
   renderThumbnails(thumbs);
   editsPending = true;
-  refs.checkoutBtn.classList.add('hidden');
   refs.buyNowBtn?.classList.add('hidden');
   setStep('prompt');
 }
@@ -356,7 +354,6 @@ refs.submitBtn.addEventListener('click', async () => {
   if (!validatePrompt(prompt)) return;
   showError('');
   refs.promptWrapper.classList.remove('border-red-500');
-  refs.checkoutBtn.classList.add('hidden');
   refs.buyNowBtn?.classList.add('hidden');
   refs.submitIcon.classList.replace('fa-arrow-up', 'fa-stop');
   showLoader();
