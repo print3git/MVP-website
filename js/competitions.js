@@ -26,7 +26,7 @@ async function load() {
     const table = div.querySelector('.leaderboard');
     loadLeaderboard(c.id, table);
     setInterval(() => loadLeaderboard(c.id, table), 30000);
-    div.querySelector('.enter').addEventListener('click', () => enter(c.id));
+    div.querySelector('.enter').addEventListener('click', () => openModal(c.id));
     const timer = div.querySelector('.countdown');
     startCountdown(timer);
   });
@@ -64,12 +64,42 @@ function startCountdown(el) {
   timer = setInterval(update, 60000);
 }
 
-async function enter(id) {
+let currentId;
+let modal;
+let form;
+let input;
+let errorEl;
+
+function openModal(id) {
+  currentId = id;
+  modal.classList.remove('hidden');
+  document.body.classList.add('overflow-hidden');
+  errorEl.textContent = '';
+  input.value = '';
+}
+
+function closeModal() {
+  modal.classList.add('hidden');
+  document.body.classList.remove('overflow-hidden');
+  errorEl.textContent = '';
+  input.value = '';
+}
+
+async function submitEntry(e) {
+  e.preventDefault();
+  const modelId = input.value.trim();
+  input.classList.remove('border-red-500');
+  if (!modelId) {
+    errorEl.textContent = 'Model ID required';
+    input.classList.add('border-red-500');
+    return;
+  }
   const token = localStorage.getItem('token');
-  if (!token) return alert('Login required');
-  const modelId = prompt('Model ID to submit');
-  if (!modelId) return;
-  await fetch(`/api/competitions/${id}/enter`, {
+  if (!token) {
+    alert('Login required');
+    return;
+  }
+  const res = await fetch(`/api/competitions/${currentId}/enter`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -77,7 +107,7 @@ async function enter(id) {
     },
     body: JSON.stringify({ modelId }),
   });
-  alert('Submitted');
+  if (res.ok) closeModal();
 }
 
 async function loadPast() {
@@ -102,6 +132,16 @@ async function loadPast() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  modal = document.getElementById('enter-modal');
+  form = document.getElementById('enter-form');
+  input = document.getElementById('enter-model-id');
+  errorEl = document.getElementById('enter-error');
+  const cancel = document.getElementById('enter-cancel');
+  cancel?.addEventListener('click', closeModal);
+  form?.addEventListener('submit', submitEntry);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeModal();
+  });
   load();
   loadPast();
 });
