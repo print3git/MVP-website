@@ -106,6 +106,7 @@ This consolidated list merges all outstanding tasks from the previous to-do docu
 - Add test for payment countdown timer expiration logic.
 - Write a unit test to validate the countdown expiration logic.
 
+
 ## Mailing List
 
 - Decide on the signup trigger for collecting emails.
@@ -118,3 +119,22 @@ This consolidated list merges all outstanding tasks from the previous to-do docu
 - Test the full signup and confirmation flow end-to-end.
 - Document how the mailing list is managed.
 - Monitor bounces and unsubscribes to keep the list clean.
+
+
+## Creating urgency
+- Implement countdown timers for limited-time offers.
+- Show dynamic "Only X left" or "Selling fast" notices.
+- Implement short-lived discounts with visible expiration timers.
+- Display shipping cut-off timers like "Order in 3h for same-day processing".
+- Add small pop-ups such as "Anna from NY just purchased" or "23 people are viewing this item".
+- Advertise limited-run products with remaining quantity counters.
+- Start a short reservation timer when items are added to the cart.
+- Offer bonuses to the first 100 customers and show how many spots are left.
+- Tie promotions to events/holidays (e.g., "Order before Friday for Father's Day delivery").
+- Trigger exit-intent pop-ups warning "Sale ends tonight!" or offering a final code.
+- Show queue positions or a waitlist to encourage immediate checkout.
+- Offer free shipping for a short window with a countdown bar.
+- Add progress bars toward goals like "Join the first 100 buyers".
+- Let users opt in for notifications when a promotion is about to end.
+- Implement a one-click "Buy Now" checkout option to reduce friction.
+
