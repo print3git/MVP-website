@@ -21,7 +21,7 @@ function getParam(name) {
 window.addEventListener('DOMContentLoaded', () => {
   const sr = getParam('sr');
   const viewer = document.getElementById('viewer');
-  const quoteEl = document.getElementById('sr-quote');
+  const quoteEl = document.getElementById('subreddit-quote');
   const entry = sr && MAP[sr.toLowerCase()];
   if (entry && viewer) {
     viewer.src = entry.glb;
