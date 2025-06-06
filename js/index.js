@@ -38,6 +38,10 @@ const refs = {
   stepPrompt: $('step-prompt'),
   stepModel: $('step-model'),
   stepBuy: $('step-buy'),
+  promptTip: $('prompt-tip'),
+  promptTipClose: $('prompt-tip-close'),
+  tutorialOverlay: $('tutorial-overlay'),
+  tutorialSkip: $('tutorial-skip'),
 };
 
 function setStep(name) {
@@ -58,10 +62,8 @@ let uploadedFiles = [];
 let lastJobId = null;
 let savedProfile = null;
 
-
 // Track when the prompt or images have been modified after a generation
 let editsPending = false;
-
 
 let progressInterval = null;
 let progressStart = null;
@@ -373,7 +375,6 @@ refs.submitBtn.addEventListener('click', async () => {
 });
 
 window.addEventListener('DOMContentLoaded', () => {
-
   setStep('prompt');
   showModel();
   refs.viewer.src = FALLBACK_GLB;
@@ -391,7 +392,6 @@ window.addEventListener('DOMContentLoaded', () => {
         stopProgress();
       }
     });
-
   }
   fetchProfile().then(() => {
     if (savedProfile && refs.buyNowBtn) {
@@ -414,4 +414,26 @@ window.addEventListener('DOMContentLoaded', () => {
     refs.examples.textContent = `Try: ${EXAMPLES.join(' · ')}`;
   }
   if (thumbs.length) renderThumbnails(thumbs);
+
+  if (refs.promptTip && !localStorage.getItem('promptTipDismissed')) {
+    refs.promptInput.addEventListener(
+      'focus',
+      () => {
+        refs.promptTip.style.display = 'block';
+      },
+      { once: true }
+    );
+    refs.promptTipClose?.addEventListener('click', () => {
+      refs.promptTip.style.display = 'none';
+      localStorage.setItem('promptTipDismissed', 'true');
+    });
+  }
+
+  if (refs.tutorialOverlay && !localStorage.getItem('tutorialDismissed')) {
+    refs.tutorialOverlay.classList.remove('hidden');
+    refs.tutorialSkip?.addEventListener('click', () => {
+      refs.tutorialOverlay.classList.add('hidden');
+      localStorage.setItem('tutorialDismissed', 'true');
+    });
+  }
 });
