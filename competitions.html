@@ -26,7 +26,6 @@
     <header class="relative flex items-center justify-between py-4 px-6">
       <a
         href="index.html"
-
         class="inline-flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-3xl px-5 py-2 text-lg font-medium hover:bg-[#3A3A3E] transition-shape"
       >
         <svg
@@ -39,7 +38,6 @@
           <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
         </svg>
         Back
-
       </a>
       <h1 class="absolute inset-x-0 top-1/2 -translate-y-1/2 text-center text-2xl font-semibold pointer-events-none">
         Competitions
@@ -95,6 +93,28 @@
       <h2 class="text-2xl mt-8">Past Winners</h2>
       <div id="past" class="space-y-4"></div>
     </main>
+    <div
+      id="enter-modal"
+      class="fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50"
+    >
+      <form id="enter-form" class="bg-[#2A2A2E] p-6 rounded-xl space-y-4 w-80">
+        <input
+          id="enter-model-id"
+          class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+          placeholder="Model ID"
+          aria-label="Model ID"
+        />
+        <div id="enter-error" class="text-red-400 text-sm"></div>
+        <div class="flex justify-end space-x-2">
+          <button id="enter-cancel" type="button" class="px-4 py-2 bg-gray-500 rounded">
+            Cancel
+          </button>
+          <button type="submit" class="px-4 py-2 bg-[#30D5C8] text-[#1A1A1D] rounded">
+            Submit
+          </button>
+        </div>
+      </form>
+    </div>
     <script type="module" src="js/competitions.js"></script>
     <script type="module">
       import { shareOn } from './js/share.js';
