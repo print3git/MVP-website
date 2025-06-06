@@ -64,7 +64,6 @@ let lastJobId = null;
 
 let savedProfile = null;
 
-
 // Track when the prompt or images have been modified after a generation
 let editsPending = false;
 
