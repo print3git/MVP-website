@@ -93,7 +93,6 @@ async function load() {
     }
     container.appendChild(div);
   });
-
 }
 
 document.addEventListener('DOMContentLoaded', () => {
