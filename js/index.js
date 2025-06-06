@@ -341,10 +341,13 @@ async function fetchGlb(prompt, files) {
     });
     if (!r.ok) throw new Error();
     const data = await r.json();
-    lastJobId = data.jobId;
-    return data.glb_url;
+  lastJobId = data.jobId;
+  return data.glb_url;
   } catch (err) {
     document.getElementById('gen-error').textContent = 'Generation failed';
+
+  }
+
 }
 
 refs.submitBtn.addEventListener('click', async () => {
