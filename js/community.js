@@ -14,6 +14,14 @@ function like(id) {
       if (span) span.textContent = d.likes;
     });
 }
+
+function debounce(fn, delay) {
+  let timeout;
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => fn.apply(null, args), delay);
+  };
+}
 async function fetchCreations(
   type,
   offset = 0,
@@ -148,13 +156,14 @@ function init() {
   }
   const searchInput = document.getElementById('search');
   if (searchInput) {
-    searchInput.addEventListener('input', () => {
+    const handleSearch = debounce(() => {
       document.getElementById('recent-grid').innerHTML = '';
       document.getElementById('popular-grid').innerHTML = '';
       window.communityState = { recent: { offset: 0 }, popular: { offset: 0 } };
       loadMore('popular');
       loadMore('recent');
-    });
+    }, 300);
+    searchInput.addEventListener('input', handleSearch);
   }
   loadMore('popular');
   loadMore('recent');
