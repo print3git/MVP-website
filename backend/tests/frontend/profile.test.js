@@ -16,7 +16,9 @@ test('load displays models from API', async () => {
   dom.window.localStorage.setItem('token', 't');
   dom.window.fetch = jest.fn(() =>
     Promise.resolve({
-      json: () => [{ prompt: 'p', model_url: 'u', job_id: 'j', likes: 1 }],
+      json: () => [
+        { prompt: 'p', model_url: 'u', job_id: 'j', likes: 1, snapshot: '' },
+      ],
     })
   );
   await dom.window.loadProfile();

@@ -36,6 +36,7 @@ const upload = multer({ dest: uploadsDir });
 
 const PORT = config.port;
 const FALLBACK_GLB = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
+const PLACEHOLDER_SNAPSHOT = '/img/boxlogo.png';
 
 function authOptional(req, res, next) {
   const auth = req.headers.authorization || '';
@@ -115,7 +116,7 @@ app.post('/api/generate', authOptional, upload.array('images'), async (req, res)
 
   const jobId = uuidv4();
   const imageRef = files[0] ? files[0].filename : null;
-  const snapshot = req.body.snapshot || null;
+  const snapshot = req.body.snapshot || PLACEHOLDER_SNAPSHOT;
   const userId = req.user ? req.user.id : null;
 
   try {

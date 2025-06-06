@@ -17,12 +17,12 @@ function setup() {
   const mockGlobals = `
     function getFallbackModels() {
       return [
-        { model_url: 'url1' },
-        { model_url: 'url2' },
-        { model_url: 'url3' },
-        { model_url: 'url4' },
-        { model_url: 'url5' },
-        { model_url: 'url6' }
+        { model_url: 'url1', snapshot: '' },
+        { model_url: 'url2', snapshot: '' },
+        { model_url: 'url3', snapshot: '' },
+        { model_url: 'url4', snapshot: '' },
+        { model_url: 'url5', snapshot: '' },
+        { model_url: 'url6', snapshot: '' }
       ];
     }
 

@@ -4,6 +4,7 @@ CREATE TABLE jobs (
   image_ref TEXT,
   status   TEXT,
   model_url TEXT,
+  snapshot TEXT,
   error    TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
