@@ -39,7 +39,7 @@ This consolidated list merges all outstanding tasks from the previous to-do docu
 - Enable one-click purchase using saved payment/shipping details.
 - Offer multiple payment methods including Apple Pay and Google Pay.
 - Automatically calculate and display shipping cost and delivery ETA before checkout.
-- Send a reminder email if a user generates a model but doesn't purchase.
+- Send a reminder email if a user generates a model but doesn't purchase. *(done)*
 - Provide incentives like discounts or credits for the first order.
 - Automatically prefill shipping and payment details from the user's profile.
   - Retrieve saved profile info from the backend.
