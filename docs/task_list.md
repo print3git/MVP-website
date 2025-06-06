@@ -56,3 +56,8 @@ This consolidated list merges all outstanding tasks from the previous to-do docu
 - Let users opt in for notifications when a promotion is about to end.
 
 
+## Profile Models
+- Display thumbnails on `profile.html` using the snapshot value.
+- Allow clicking a thumbnail to view the 3D model.
+- Write tests covering the new endpoint behavior.
+
