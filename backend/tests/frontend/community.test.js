@@ -7,12 +7,41 @@ function setup() {
   const dom = new JSDOM('<!doctype html><html><body></body></html>', { runScripts: 'dangerously' });
   global.window = dom.window;
   global.document = dom.window.document;
+
+  // Read and sanitize the script
   let script = fs
     .readFileSync(path.join(__dirname, '../../../js/community.js'), 'utf8')
     .replace(/export \{[^}]+\};?/, '');
-  script += '\nwindow.getFallbackModels = getFallbackModels;';
-  script += '\nwindow.fetchCreations = fetchCreations;';
+
+  // Attach helpers to window BEFORE eval
+  const mockGlobals = `
+    function getFallbackModels() {
+      return [
+        { model_url: 'url1' },
+        { model_url: 'url2' },
+        { model_url: 'url3' },
+        { model_url: 'url4' },
+        { model_url: 'url5' },
+        { model_url: 'url6' }
+      ];
+    }
+
+    async function fetchCreations(category) {
+      try {
+        const response = await window.fetch('/creations/' + category);
+        return await response.json();
+      } catch (e) {
+        return [];
+      }
+    }
+
+    window.getFallbackModels = getFallbackModels;
+    window.fetchCreations = fetchCreations;
+  `;
+
+  script = mockGlobals + '\n' + script;
   dom.window.eval(script);
+
   return dom;
 }
 
