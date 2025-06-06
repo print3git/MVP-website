@@ -442,3 +442,13 @@ test('POST /api/shipping-estimate validates input', async () => {
   const res = await request(app).post('/api/shipping-estimate').send({});
   expect(res.status).toBe(400);
 });
+
+test('POST /api/shipping-estimate returns mocked values and calls helper', async () => {
+  getShippingEstimate.mockResolvedValueOnce({ cost: 20, etaDays: 4 });
+  const body = { destination: { zip: '98765' }, model: { weight: 3 } };
+  const res = await request(app).post('/api/shipping-estimate').send(body);
+  expect(res.status).toBe(200);
+  expect(res.body.cost).toBe(20);
+  expect(res.body.etaDays).toBe(4);
+  expect(getShippingEstimate).toHaveBeenCalledWith(body.destination, body.model);
+});
