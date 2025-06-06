@@ -3,5 +3,6 @@ node_modules/
 models/
 uploads/
 backend/hunyuan_server/uploads/
+img/community/*.png
 *.log
 .DS_Store

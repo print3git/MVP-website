@@ -33,6 +33,8 @@ app.use(express.static(path.join(__dirname, '..')));
 const uploadsDir = path.join(__dirname, '..', 'uploads');
 fs.mkdirSync(uploadsDir, { recursive: true });
 const upload = multer({ dest: uploadsDir });
+const communityDir = path.join(__dirname, '..', 'img', 'community');
+fs.mkdirSync(communityDir, { recursive: true });
 
 const PORT = config.port;
 const FALLBACK_GLB = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
@@ -115,13 +117,24 @@ app.post('/api/generate', authOptional, upload.array('images'), async (req, res)
 
   const jobId = uuidv4();
   const imageRef = files[0] ? files[0].filename : null;
-  const snapshot = req.body.snapshot || null;
+  const rawSnapshot = req.body.snapshot || null;
+  let snapshotPath = null;
+  if (rawSnapshot && rawSnapshot.startsWith('data:image/')) {
+    try {
+      const base64 = rawSnapshot.split(',')[1];
+      const buf = Buffer.from(base64, 'base64');
+      snapshotPath = path.join('img', 'community', `${jobId}.png`);
+      fs.writeFileSync(path.join(__dirname, '..', snapshotPath), buf);
+    } catch (err) {
+      console.error('Failed to save snapshot', err);
+    }
+  }
   const userId = req.user ? req.user.id : null;
 
   try {
     await db.query(
       'INSERT INTO jobs(job_id, prompt, image_ref, status, user_id, snapshot) VALUES ($1,$2,$3,$4,$5,$6)',
-      [jobId, prompt, imageRef, 'pending', userId, snapshot]
+      [jobId, prompt, imageRef, 'pending', userId, snapshotPath]
     );
 
     const form = new FormData();
