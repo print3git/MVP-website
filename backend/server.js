@@ -232,6 +232,23 @@ app.get('/api/my/models', authRequired, async (req, res) => {
   }
 });
 
+app.get('/api/my/orders', authRequired, async (req, res) => {
+  try {
+    const { rows } = await db.query(
+      `SELECT o.session_id, o.job_id, o.price_cents, o.status, o.quantity, o.discount_cents, o.created_at, j.model_url
+       FROM orders o
+       JOIN jobs j ON o.job_id=j.job_id
+       WHERE o.user_id=$1
+       ORDER BY o.created_at DESC`,
+      [req.user.id]
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch orders' });
+  }
+});
+
 app.get('/api/profile', authRequired, async (req, res) => {
   try {
     const { rows } = await db.query('SELECT * FROM user_profiles WHERE user_id=$1', [req.user.id]);
@@ -577,7 +594,7 @@ app.delete('/api/admin/competitions/:id', adminCheck, async (req, res) => {
  * POST /api/create-order
  * Create a Stripe Checkout session
  */
-app.post('/api/create-order', async (req, res) => {
+app.post('/api/create-order', authOptional, async (req, res) => {
   const { jobId, price, shippingInfo, qty, discount } = req.body;
   try {
     const job = await db.query('SELECT job_id FROM jobs WHERE job_id=$1', [jobId]);
@@ -604,8 +621,17 @@ app.post('/api/create-order', async (req, res) => {
     });
 
     await db.query(
-      'INSERT INTO orders(session_id, job_id, price_cents, status, shipping_info, quantity, discount_cents) VALUES($1,$2,$3,$4,$5,$6,$7)',
-      [session.id, jobId, total, 'pending', shippingInfo || {}, qty || 1, discount || 0]
+      'INSERT INTO orders(session_id, job_id, user_id, price_cents, status, shipping_info, quantity, discount_cents) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',
+      [
+        session.id,
+        jobId,
+        req.user ? req.user.id : null,
+        total,
+        'pending',
+        shippingInfo || {},
+        qty || 1,
+        discount || 0,
+      ]
     );
 
     res.json({ checkoutUrl: session.url });
