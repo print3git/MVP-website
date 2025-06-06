@@ -248,8 +248,13 @@ function openCropper(file) {
     refs.cropImage.src = URL.createObjectURL(file);
     refs.cropModal.classList.remove('hidden');
     const cropper = new Cropper(refs.cropImage, { aspectRatio: 1, viewMode: 1 });
+    const onKey = (e) => {
+      if (e.key === 'Escape') done(null);
+    };
+    window.addEventListener('keydown', onKey);
     const done = (result) => {
       cropper.destroy();
+      window.removeEventListener('keydown', onKey);
       refs.cropModal.classList.add('hidden');
       resolve(result);
     };
