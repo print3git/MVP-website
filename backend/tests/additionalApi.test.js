@@ -170,9 +170,7 @@ test('DELETE /api/models/:id deletes model', async () => {
     .mockResolvedValueOnce({})
     .mockResolvedValueOnce({});
   const token = jwt.sign({ id: 'u1' }, 'secret');
-  const res = await request(app)
-    .delete('/api/models/j1')
-    .set('authorization', `Bearer ${token}`);
+  const res = await request(app).delete('/api/models/j1').set('authorization', `Bearer ${token}`);
   expect(res.status).toBe(204);
   const call = db.query.mock.calls[0][0];
   expect(call).toContain('DELETE FROM jobs');
@@ -181,9 +179,7 @@ test('DELETE /api/models/:id deletes model', async () => {
 test('DELETE /api/models/:id 404 when missing', async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
   const token = jwt.sign({ id: 'u1' }, 'secret');
-  const res = await request(app)
-    .delete('/api/models/bad')
-    .set('authorization', `Bearer ${token}`);
+  const res = await request(app).delete('/api/models/bad').set('authorization', `Bearer ${token}`);
   expect(res.status).toBe(404);
 });
 
