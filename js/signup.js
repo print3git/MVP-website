@@ -3,10 +3,12 @@ async function signup(e) {
   const nameEl = document.getElementById('su-name');
   const emailEl = document.getElementById('su-email');
   const passEl = document.getElementById('su-pass');
+  const optInEl = document.getElementById('signup-mailing');
   [nameEl, emailEl, passEl].forEach((el) => el.classList.remove('border-red-500'));
   const username = nameEl.value.trim();
   const email = emailEl.value.trim();
   const password = passEl.value.trim();
+  const optIn = optInEl && optInEl.checked;
   if (!username || !email || !password) {
     document.getElementById('error').textContent = 'All fields required';
     if (!username) nameEl.classList.add('border-red-500');
@@ -22,6 +24,13 @@ async function signup(e) {
   const data = await res.json();
   if (data.token) {
     localStorage.setItem('token', data.token);
+    if (optIn) {
+      fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+    }
     window.location.href = 'profile.html';
   } else {
     document.getElementById('error').textContent = data.error || 'Signup failed';
