@@ -822,6 +822,15 @@ app.post('/api/webhook/stripe', express.raw({ type: 'application/json' }), async
   res.sendStatus(200);
 });
 
+app.get('/api/print-jobs/:id', async (req, res) => {
+  const { rows } = await db.query(
+    'SELECT status FROM print_jobs WHERE id=$1',
+    [req.params.id]
+  );
+  if (!rows.length) return res.status(404).json({ error: 'Not found' });
+  res.json(rows[0]);
+});
+
 async function checkCompetitionStart() {
   try {
     const comps = await db.query(
