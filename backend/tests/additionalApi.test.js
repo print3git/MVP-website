@@ -24,7 +24,7 @@ const stripeMock = {
 };
 Stripe.mockImplementation(() => stripeMock);
 
-const { progressEmitter } = require('../queue/printQueue');
+const { progressEmitter } = require('../queue/dbPrintQueue');
 
 const request = require('supertest');
 const app = require('../server');

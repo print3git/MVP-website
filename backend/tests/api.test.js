@@ -30,11 +30,11 @@ const stripeMock = {
 };
 Stripe.mockImplementation(() => stripeMock);
 
-jest.mock('../queue/printQueue', () => ({
+jest.mock('../queue/dbPrintQueue', () => ({
   enqueuePrint: jest.fn(),
-  processQueue: jest.fn(),
+  progressEmitter: { on: jest.fn(), emit: jest.fn(), removeListener: jest.fn() },
 }));
-const { enqueuePrint } = require('../queue/printQueue');
+const { enqueuePrint } = require('../queue/dbPrintQueue');
 
 jest.mock('../shipping', () => ({
   getShippingEstimate: jest.fn().mockResolvedValue({ cost: 10, etaDays: 5 }),
@@ -148,6 +148,7 @@ test('POST /api/login returns token', async () => {
 
 test('Stripe webhook updates order and enqueues print', async () => {
   db.query.mockResolvedValueOnce({});
+  db.query.mockResolvedValueOnce({ rows: [{ job_id: 'job1', shipping_info: {} }] });
   const payload = JSON.stringify({});
   const res = await request(app)
     .post('/api/webhook/stripe')
@@ -155,7 +156,7 @@ test('Stripe webhook updates order and enqueues print', async () => {
     .set('Content-Type', 'application/json')
     .send(payload);
   expect(res.status).toBe(200);
-  expect(enqueuePrint).toHaveBeenCalledWith('job1');
+  expect(enqueuePrint).toHaveBeenCalledWith('job1', 'cs_test', {});
 });
 
 test('Stripe webhook invalid signature', async () => {

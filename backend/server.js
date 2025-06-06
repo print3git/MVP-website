@@ -17,7 +17,7 @@ const FormData = require('form-data');
 const fs = require('fs');
 const config = require('./config');
 const stripe = require('stripe')(config.stripeKey);
-const { enqueuePrint, processQueue, progressEmitter } = require('./queue/printQueue');
+const { progressEmitter } = require('./queue/dbPrintQueue');
 const { sendMail } = require('./mail');
 const { getShippingEstimate } = require('./shipping');
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'admin';
@@ -803,17 +803,17 @@ app.post('/api/webhook/stripe', express.raw({ type: 'application/json' }), async
     try {
       await db.query('UPDATE orders SET status=$1 WHERE session_id=$2', ['paid', sessionId]);
 
-      let jobId = sessionJobId;
-      if (!jobId) {
-        const { rows } = await db.query('SELECT job_id FROM orders WHERE session_id=$1', [
-          sessionId,
-        ]);
-        jobId = rows[0] && rows[0].job_id;
-      }
+      const { rows } = await db.query(
+        'SELECT job_id, shipping_info FROM orders WHERE session_id=$1',
+        [sessionId]
+      );
+      const order = rows[0] || {};
+      const jobId = sessionJobId || order.job_id;
+      const shippingInfo = order.shipping_info;
 
       if (jobId) {
-        enqueuePrint(jobId);
-        processQueue();
+        const { enqueuePrint } = require('./queue/dbPrintQueue');
+        await enqueuePrint(jobId, sessionId, shippingInfo);
       }
     } catch (err) {
       console.error(err);
