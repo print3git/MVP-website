@@ -13,6 +13,16 @@ This consolidated list merges all outstanding tasks from the previous to-do docu
 - Provide a few example prompts to inspire new visitors.
 - Prefill the prompt box with the last prompt or a suggested one.
 
+- Offer subreddit-specific landing pages for Reddit ads.
+  - Accept an `sr` query parameter indicating the subreddit.
+  - Place a dedicated .glb placeholder for each subreddit in `/models/`.
+  - Create `js/subredditLanding.js` with a mapping from subreddit to placeholder and quote.
+  - Parse `sr` on page load to choose the correct .glb and quote.
+  - Insert the quote into a new element with id `sr-quote`.
+  - Include `<script src="js/subredditLanding.js"></script>` on the landing page.
+  - Fallback to the default astronaut and generic quote when `sr` is missing or unknown.
+  - Generate ad links with the `?sr=<subreddit>` parameter.
+
 ## Prompting & Generation
 
 - Validate prompts client-side to prevent submission errors.
