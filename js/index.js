@@ -391,8 +391,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     refs.promptInput.dispatchEvent(new Event('input'));
   } else {
-    const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
-    refs.promptInput.placeholder = ex;
+    refs.promptInput.placeholder = 'Describe your 3D print request…';
   }
   if (refs.examples) {
     refs.examples.textContent = `Try: ${EXAMPLES.join(' · ')}`;
