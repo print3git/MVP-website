@@ -21,6 +21,7 @@ async function load() {
         <button data-id="${c.id}" class="enter bg-[#30D5C8] text-[#1A1A1D] px-3 py-1 rounded">Enter</button>
         <button onclick="shareOn('twitter')" aria-label="Share on Twitter" class="w-8 h-8 flex items-center justify-center bg-[#1A1A1D] border border-white/10 rounded hover:bg-[#3A3A3E]"><i class="fab fa-twitter"></i></button>
       </div>
+      <a class="text-sm underline" href="#" id="rules-link">Rules</a>
       <table class="leaderboard w-full mt-4 text-sm"></table>`;
     list.appendChild(div);
     const table = div.querySelector('.leaderboard');
