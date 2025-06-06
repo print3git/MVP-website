@@ -21,6 +21,38 @@ function createCard(model) {
   return div;
 }
 
+async function createAccount(e) {
+  e.preventDefault();
+  const nameEl = document.getElementById('ca-name');
+  const emailEl = document.getElementById('ca-email');
+  const passEl = document.getElementById('ca-pass');
+  [nameEl, emailEl, passEl].forEach((el) => el.classList.remove('border-red-500'));
+  const username = nameEl.value.trim();
+  const email = emailEl.value.trim();
+  const password = passEl.value.trim();
+  if (!username || !email || !password) {
+    document.getElementById('ca-error').textContent = 'All fields required';
+    if (!username) nameEl.classList.add('border-red-500');
+    if (!email) emailEl.classList.add('border-red-500');
+    if (!password) passEl.classList.add('border-red-500');
+    return;
+  }
+  const res = await fetch('/api/register', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, email, password }),
+  });
+  const data = await res.json();
+  if (data.token) {
+    localStorage.setItem('token', data.token);
+    document.getElementById('create-account-form').classList.add('hidden');
+    load();
+  } else {
+    document.getElementById('ca-error').textContent = data.error || 'Signup failed';
+    [nameEl, emailEl, passEl].forEach((el) => el.classList.add('border-red-500'));
+  }
+}
+
 async function captureSnapshots(container) {
   const cards = container.querySelectorAll('.model-card');
   for (const card of cards) {
@@ -52,7 +84,7 @@ async function captureSnapshots(container) {
 async function load() {
   const token = localStorage.getItem('token');
   if (!token) {
-    window.location.href = 'login.html';
+    document.getElementById('create-account-form').classList.remove('hidden');
     return;
   }
   const urlParams = new URLSearchParams(window.location.search);
@@ -106,5 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') close();
   });
+  const form = document.getElementById('create-account-form');
+  form?.addEventListener('submit', createAccount);
   load();
 });
