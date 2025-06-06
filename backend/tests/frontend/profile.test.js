@@ -9,6 +9,12 @@ html = html
   .replace(/<script[^>]*src="js\/profile.js"[^>]*>\s*<\/script>/, '');
 
 describe('profile page', () => {
+  afterEach(() => {
+    if (global.window) global.window.close();
+    delete global.window;
+    delete global.document;
+    delete global.fetch;
+  });
   test('redirects to login when no token', () => {
     const dom = new JSDOM(html, { runScripts: 'dangerously', resources: 'usable', url: 'http://localhost/profile.html' });
     global.window = dom.window;

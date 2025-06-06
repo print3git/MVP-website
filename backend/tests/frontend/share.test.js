@@ -8,6 +8,11 @@ const scriptSrc = fs
   .replace(/export\s+\{[^}]+\};?/, '') + '\nwindow.shareOn = shareOn;';
 
 describe('shareOn', () => {
+  afterEach(() => {
+    if (global.window) global.window.close();
+    delete global.window;
+    delete global.document;
+  });
   test('opens twitter share url', () => {
     const dom = new JSDOM('', { url: 'http://example.com' });
     global.window = dom.window;

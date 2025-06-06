@@ -4,6 +4,13 @@ const path = require('path');
 const { JSDOM } = require('jsdom');
 
 describe('community like', () => {
+  afterEach(() => {
+    if (global.window) global.window.close();
+    delete global.window;
+    delete global.document;
+    delete global.fetch;
+    delete global.localStorage;
+  });
   test('sends like request with auth header', async () => {
     const dom = new JSDOM('<span id="likes-1"></span>', { url: 'http://localhost/' });
     global.window = dom.window;

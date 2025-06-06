@@ -6,6 +6,12 @@ const { JSDOM } = require('jsdom');
 let html = '<div id="list"></div>';
 
 describe('competitions page', () => {
+  afterEach(() => {
+    if (global.window) global.window.close();
+    delete global.window;
+    delete global.document;
+    delete global.fetch;
+  });
   test('displays message when no competitions', async () => {
     const dom = new JSDOM(html, { runScripts: 'dangerously', resources: 'usable', url: 'http://localhost/' });
     global.window = dom.window;

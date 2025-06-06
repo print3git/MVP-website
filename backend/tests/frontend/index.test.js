@@ -10,6 +10,13 @@ html = html
   .replace(/<script[^>]*src="js\/index.js"[^>]*>\s*<\/script>/, '');
 
 describe('index page', () => {
+  afterEach(() => {
+    if (global.window) global.window.close();
+    delete global.window;
+    delete global.document;
+    delete global.fetch;
+    delete global.localStorage;
+  });
   test('adds has-generated class when localStorage flag set', () => {
     const dom = new JSDOM(html, { runScripts: 'dangerously', resources: 'usable', url: 'http://localhost/' });
     global.window = dom.window;
