@@ -27,8 +27,6 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
     />
 
-
-
     <!-- Google <model-viewer>  -->
     <!--  Use a CDN versioned URL so the module is served with CORS headers and the browser can actually download it.  -->
     <script
@@ -85,7 +83,7 @@
         display: none;
       }
     </style>
-
+  </head>
   <body class="bg-[#1A1A1D] text-white font-sans flex flex-col">
     <header class="flex items-center justify-between py-4 px-6">
       <div class="flex flex-col items-start">
@@ -150,6 +148,7 @@
           >
             <i class="fab fa-instagram"></i>
           </button>
+        </div>
       </div>
     </header>
 
@@ -232,7 +231,7 @@
       <!-- Prompt / upload area ------------------------------------------- -->
       <section class="w-full max-w-xl">
         <div class="flex flex-col items-center text-center">
-          <img src="img/boxlogo.png" alt="print3 cube" class="w-32 h-auto mb-8"/>
+          <img src="img/boxlogo.png" alt="print3 cube" class="w-32 h-auto mb-8" />
           <h1 class="text-3xl font-semibold mb-8">Design & Print in 30 Seconds.</h1>
 
           <div class="flex items-center w-full gap-4">
@@ -292,8 +291,6 @@
         </button>
       </div>
     </div>
-
-
 
     <!--  Application logic ----------------------------------------------- -->
     <script src="js/subredditLanding.js"></script>
