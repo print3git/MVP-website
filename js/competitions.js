@@ -59,12 +59,49 @@ function startCountdown(el) {
   const timer = setInterval(update, 60000);
 }
 
+let currentComp = null;
+
 async function enter(id) {
   const token = localStorage.getItem('token');
   if (!token) return alert('Login required');
-  const modelId = prompt('Model ID to submit');
+
+  const res = await fetch('/api/my/models', {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    alert('Failed to load models');
+    return;
+  }
+  const models = await res.json();
+  const modal = document.getElementById('entry-modal');
+  const select = document.getElementById('model-select');
+  select.innerHTML = '';
+  if (models.length === 0) {
+    const opt = document.createElement('option');
+    opt.textContent = 'No models available';
+    opt.disabled = true;
+    opt.selected = true;
+    select.appendChild(opt);
+  } else {
+    models.forEach((m) => {
+      const opt = document.createElement('option');
+      opt.value = m.job_id;
+      opt.textContent = m.prompt || m.job_id;
+      select.appendChild(opt);
+    });
+  }
+  currentComp = id;
+  modal.classList.remove('hidden');
+  document.body.classList.add('overflow-hidden');
+}
+
+async function submitEntry() {
+  const token = localStorage.getItem('token');
+  if (!token || !currentComp) return;
+  const select = document.getElementById('model-select');
+  const modelId = select.value;
   if (!modelId) return;
-  await fetch(`/api/competitions/${id}/enter`, {
+  await fetch(`/api/competitions/${currentComp}/enter`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -72,7 +109,14 @@ async function enter(id) {
     },
     body: JSON.stringify({ modelId }),
   });
+  closeModal();
   alert('Submitted');
+}
+
+function closeModal() {
+  document.getElementById('entry-modal').classList.add('hidden');
+  document.body.classList.remove('overflow-hidden');
+  currentComp = null;
 }
 
 async function loadPast() {
@@ -99,4 +143,11 @@ async function loadPast() {
 document.addEventListener('DOMContentLoaded', () => {
   load();
   loadPast();
+
+  const modal = document.getElementById('entry-modal');
+  document.getElementById('entry-cancel').addEventListener('click', closeModal);
+  document.getElementById('entry-submit').addEventListener('click', submitEntry);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal();
+  });
 });
