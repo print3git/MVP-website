@@ -58,20 +58,39 @@ This consolidated list merges all outstanding tasks from the previous to-do docu
   - Persist preferences to local storage.
   - Apply them on page load.
 
+
+## Testing & Continuous Integration
+
+- Add unit tests for frontend scripts.
+  - Write tests for each UI module.
+- Add test for /api/my/models returning models ordered by date.
+- Add test for /api/community requires user auth.
+- Add test for /api/community/recent pagination and category filter.
+- Add test for /api/competitions/active returning upcoming comps.
+- Add test for /api/competitions/:id/enter prevents duplicate entry.
+- Add test for /api/competitions/:id/enter rejecting unauthenticated user.
+- Add test for /api/competitions/:id/entries leaderboard order.
+- Add test for /api/admin/competitions creation unauthorized.
+- Add test for /api/create-order rejecting unknown job.
+- Add test for /api/webhook/stripe invalid signature.
+- Add test for queue processing multiple items sequentially.
+- Add test for queue progress events reach 100%.
+- Add test for payment countdown timer expiration logic.
+- Write a unit test to validate the countdown expiration logic.
+
 ## Mailing List
 
 - Decide on the signup trigger for collecting emails.
-- Choose an email marketing service or build a custom solution.
-- Update signup and order forms with an opt-in checkbox.
-- Store opted-in addresses in a `mailing_list` table.
-- Send confirmation emails to verify subscriptions.
 - Sync the database with the mailing service automatically.
 - Provide an unsubscribe link in every email.
 - Test the full signup and confirmation flow end-to-end.
-- Document how the mailing list is managed.
 - Monitor bounces and unsubscribes to keep the list clean.
 
 ## Creating urgency
+
+
+- Implement countdown timers for limited-time offers.
+
 - Show dynamic "Only X left" or "Selling fast" notices.
 - Display shipping cut-off timers like "Order in 3h for same-day processing".
 - Add small pop-ups such as "Anna from NY just purchased" or "23 people are viewing this item".
@@ -84,4 +103,6 @@ This consolidated list merges all outstanding tasks from the previous to-do docu
 - Offer free shipping for a short window with a countdown bar.
 - Add progress bars toward goals like "Join the first 100 buyers".
 - Let users opt in for notifications when a promotion is about to end.
+ 
+- Implement a one-click "Buy Now" checkout option to reduce friction.
 
