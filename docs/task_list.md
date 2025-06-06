@@ -15,7 +15,20 @@ This consolidated list merges all outstanding tasks from the previous to-do docu
 
 - Offer multiple payment methods including Apple Pay and Google Pay.
 
-- Send a reminder email if a user generates a model but doesn't purchase. *(done)*
+- Send a reminder email if a user generates a model but doesn't purchase. _(done)_
+- Provide incentives like discounts or credits for the first order.
+- Automatically prefill shipping and payment details from the user's profile.
+  - Retrieve saved profile info from the backend.
+  - Populate the checkout form with the saved data.
+- Offer a one-click "Buy Now" button directly on the model viewer page.
+
+  - Add a button that uses saved details.
+  - Submit the order in one step.
+
+- Show estimated print cost and delivery time before checkout.
+  - Calculate cost and ETA from model parameters.
+  - Display them near the checkout button.
+
 
 ## Community & Sharing
 
@@ -28,6 +41,11 @@ This consolidated list merges all outstanding tasks from the previous to-do docu
   - Fix color contrast issues.
 - Optimize API requests to reduce loading time on slow networks.
   - Bundle multiple requests where possible.
+
+- Save user preferences such as units or color scheme.
+  - Persist preferences to local storage.
+  - Apply them on page load.
+
 
 ## Testing & Continuous Integration
 
@@ -72,5 +90,6 @@ This consolidated list merges all outstanding tasks from the previous to-do docu
 - Offer free shipping for a short window with a countdown bar.
 - Add progress bars toward goals like "Join the first 100 buyers".
 - Let users opt in for notifications when a promotion is about to end.
- 
 
+
+- Implement a one-click "Buy Now" checkout option to reduce friction.
