@@ -1,371 +1,313 @@
-diff --git a/index.html b/index.html
-index 86740cfa0cb87038a5891b9c4f688fab2087b02f..a77e229a4787cdf67e6749231958ebb235a1911d 100644
---- a/index.html
-+++ b/index.html
-@@ -5,52 +5,50 @@
- <html lang="en">
-   <head>
-     <meta charset="UTF-8" />
-     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-     <title>print3 Assistant</title>
-     <meta
-       name="description"
-       content="Create custom 3D models with generative AI and order high‑quality prints with print3."
-     />
-     <meta property="og:title" content="print3 – AI‑powered 3D printing" />
-     <meta
-       property="og:description"
-       content="Describe your idea or upload images and print3 turns them into 3D models you can print."
-     />
-     <meta property="og:image" content="img/boxlogo.png" />
- 
-     <!-- Tailwind CSS -->
-     <script src="https://cdn.tailwindcss.com"></script>
- 
-     <!-- Font Awesome -->
-     <link
-       rel="stylesheet"
-       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
-     />
- 
--
--
-     <!-- Google <model-viewer>  -->
-     <!--  Use a CDN versioned URL so the module is served with CORS headers and the browser can actually download it.  -->
-     <script
-       type="module"
-       src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js"
-     ></script>
-     <script
-       nomodule
-       src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer-legacy.js"
-     ></script>
- 
-     <style>
-       html,
-       body {
-         height: 100%;
-         margin: 0;
-         padding-top: constant(safe-area-inset-top);
-         padding-top: env(safe-area-inset-top);
-       }
-       .transition-shape {
-         transition:
-           border-radius 0.2s ease,
-           background-color 0.2s ease;
-       }
-       .prompt-textarea {
-diff --git a/index.html b/index.html
-index 86740cfa0cb87038a5891b9c4f688fab2087b02f..a77e229a4787cdf67e6749231958ebb235a1911d 100644
---- a/index.html
-+++ b/index.html
-@@ -63,63 +61,60 @@
-         overflow: hidden;
-       }
-       #submit-button::before {
-         content: '';
-         position: absolute;
-         inset: 0;
-         background: linear-gradient(
-           120deg,
-           rgba(255, 255, 255, 0) 0%,
-           rgba(255, 0, 255, 0.3) 15%,
-           rgba(0, 255, 255, 0.3) 85%,
-           rgba(255, 255, 255, 0) 100%
-         );
-         transform: translateX(-100%);
-         animation: shimmer 3s ease-in-out infinite;
-       }
-       @keyframes shimmer {
-         to {
-           transform: translateX(100%);
-         }
-       }
-       .has-generated #demo-note {
-         display: none;
-       }
-     </style>
-+  </head>
- 
-   <body class="bg-[#1A1A1D] text-white font-sans flex flex-col">
-     <header class="flex items-center justify-between py-4 px-6">
-       <div class="flex flex-col items-start">
-         <img src="img/textlogo.png" alt="print3" class="h-10 w-auto" />
-         <div class="mt-1 flex flex-col text-sm text-gray-400 opacity-75">
-           <p>5400+ prints</p>
-           <p>delivered already</p>
-         </div>
--        <div class="mt-1 flex flex-col text-sm text-gray-400 opacity-75">
--          <p>"I'm astonished at how high-quality the print </p>
--          <p>is" - email from an r/subreddit user </p>
--        </div>
-       </div>
-       <div class="flex items-center space-x-4">
-         <a
-           href="profile.html"
-           class="bg-[#2A2A2E] border border-white/10 rounded-3xl px-4 py-2 text-sm hover:bg-[#3A3A3E] transition-shape"
-         >
-           Profile
-         </a>
-         <a
-           href="CommunityCreations.html"
-           class="bg-[#2A2A2E] border border-white/10 rounded-3xl px-4 py-2 text-sm hover:bg-[#3A3A3E] transition-shape"
-         >
-           Community
-         </a>
-         <a
-           href="competitions.html"
-           class="bg-[#2A2A2E] border border-white/10 rounded-3xl px-4 py-2 text-sm hover:bg-[#3A3A3E] transition-shape"
-         >
-           Competitions
-         </a>
-         <div class="flex space-x-2">
-           <button
-             class="w-9 h-9 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
-             onclick="shareOn('twitter')"
-             aria-label="Share on Twitter"
-diff --git a/index.html b/index.html
-index 86740cfa0cb87038a5891b9c4f688fab2087b02f..a77e229a4787cdf67e6749231958ebb235a1911d 100644
---- a/index.html
-+++ b/index.html
-@@ -132,133 +127,144 @@
-             aria-label="Share on Facebook"
-           >
-             <i class="fab fa-facebook-f"></i>
-           </button>
-           <button
-             class="w-9 h-9 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
-             onclick="shareOn('reddit')"
-             aria-label="Share on Reddit"
-           >
-             <i class="fab fa-reddit-alien"></i>
-           </button>
-           <button
-             class="w-9 h-9 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
-             onclick="shareOn('tiktok')"
-             aria-label="Share on TikTok"
-           >
-             <i class="fab fa-tiktok"></i>
-           </button>
-           <button
-             class="w-9 h-9 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
-             onclick="shareOn('instagram')"
-             aria-label="Share on Instagram"
-           >
-             <i class="fab fa-instagram"></i>
-           </button>
-+        </div>
-       </div>
-     </header>
- 
-     <main class="flex-1 flex flex-col items-center justify-start gap-8 px-4 lg:px-16">
-       <!-- 3‑D preview ------------------------------------------------------ -->
--      <section
--        id="preview-wrapper"
--        class="relative w-full max-w-lg h-80 bg-[#2A2A2E] border border-white/10 rounded-3xl overflow-visible"
--      >
--        <!-- fallback still-image (hidden)  -->
--        <img
--          id="preview-img"
--          src="https://placehold.co/600x400/2A2A2E/2A2A2E?text="
--          class="object-contain h-full w-full"
--          style="display: none"
--          alt="Preview image"
--        />
-+      <div class="relative flex justify-center w-full max-w-lg">
-+        <section
-+          id="preview-wrapper"
-+          class="relative w-full max-w-lg h-80 bg-[#2A2A2E] border border-white/10 rounded-3xl overflow-visible"
-+        >
-+          <!-- fallback still-image (hidden)  -->
-+          <img
-+            id="preview-img"
-+            src="https://placehold.co/600x400/2A2A2E/2A2A2E?text="
-+            class="object-contain h-full w-full"
-+            style="display: none"
-+            alt="Preview image"
-+          />
- 
--        <!-- The astronaut now loads eagerly and is always visible  -->
--        <model-viewer
--          id="viewer"
--          src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
--          alt="3D astronaut"
--          environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
--          camera-controls
--          auto-rotate
--          loading="eager"
--          style="width: 100%; height: 100%; display: block"
--        ></model-viewer>
-+          <!-- The astronaut now loads eagerly and is always visible  -->
-+          <model-viewer
-+            id="viewer"
-+            src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
-+            alt="3D astronaut"
-+            environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
-+            camera-controls
-+            auto-rotate
-+            loading="eager"
-+            style="width: 100%; height: 100%; display: block"
-+          ></model-viewer>
- 
--        <!-- centred loader -->
--        <div
--          id="loader"
--          class="absolute inset-0 flex flex-col items-center justify-center bg-[#2A2A2E]/80"
--          style="display: none"
--        >
-+          <!-- centred loader -->
-           <div
--            class="h-10 w-10 border-4 border-white border-t-transparent rounded-full animate-spin mb-6"
--          ></div>
--          <div id="progress-wrapper" class="w-3/4 max-w-xs" style="display: none">
--            <div class="w-full h-2 bg-gray-700 rounded">
--              <div id="progress-bar" class="h-full bg-cyan-400 rounded" style="width: 0%"></div>
-+            id="loader"
-+            class="absolute inset-0 flex flex-col items-center justify-center bg-[#2A2A2E]/80"
-+            style="display: none"
-+          >
-+            <div
-+              class="h-10 w-10 border-4 border-white border-t-transparent rounded-full animate-spin mb-6"
-+            ></div>
-+            <div id="progress-wrapper" class="w-3/4 max-w-xs" style="display: none">
-+              <div class="w-full h-2 bg-gray-700 rounded">
-+                <div id="progress-bar" class="h-full bg-cyan-400 rounded" style="width: 0%"></div>
-+              </div>
-+              <div id="progress-text" class="text-center text-sm text-white mt-2"></div>
-             </div>
--            <div id="progress-text" class="text-center text-sm text-white mt-2"></div>
-           </div>
--        </div>
- 
--        <!-- checkout button -->
--        <a
--          id="checkout-button"
--          href="payment.html"
--          class="absolute bottom-4 right-4 font-bold py-3 px-5 rounded-full shadow-md transition"
--          style="background-color: #1f3b65; color: #5ec2c5"
--          onmouseover="this.style.opacity='0.85'"
--          onmouseout="this.style.opacity='1'"
--          >Checkout</a
--        >
--        <button
--          id="buy-now-button"
--          class="hidden absolute bottom-4 right-32 font-bold py-3 px-5 rounded-full shadow-md transition"
--          style="background-color: #5ec2c5; color: #1f3b65"
--        >
--          Buy Now
--        </button>
-+          <!-- checkout button -->
-+          <a
-+            id="checkout-button"
-+            href="payment.html"
-+            class="absolute bottom-4 right-4 font-bold py-3 px-5 rounded-full shadow-md transition"
-+            style="background-color: #1f3b65; color: #5ec2c5"
-+            onmouseover="this.style.opacity='0.85'"
-+            onmouseout="this.style.opacity='1'"
-+            >Checkout</a
-+          >
-+          <button
-+            id="buy-now-button"
-+            class="hidden absolute bottom-4 right-32 font-bold py-3 px-5 rounded-full shadow-md transition"
-+            style="background-color: #5ec2c5; color: #1f3b65"
-+          >
-+            Buy Now
-+          </button>
-+          <div
-+            id="gen-error"
-+            class="absolute bottom-2 left-0 w-full text-center text-red-400 pointer-events-none"
-+            aria-live="assertive"
-+          ></div>
-+        </section>
-         <div
--          id="gen-error"
--          class="absolute bottom-2 left-0 w-full text-center text-red-400 pointer-events-none"
--          aria-live="assertive"
--        ></div>
--      </section>
-+          id="subreddit-quote"
-+          class="absolute left-full ml-4 flex flex-col text-sm text-gray-400"
-+          style="transform: translateY(-50%)"
-+        >
-+          <p>"I'm astonished at how high-quality the print"</p>
-+          <p>is - email from an r/subreddit user</p>
-+        </div>
-+      </div>
- 
-       <div
-         id="prompt-tip"
-         class="absolute left-1/2 -translate-x-1/2 top-12 bg-[#2A2A2E] border border-white/10 rounded-xl p-3 text-sm shadow-lg hidden"
-       >
-         <p class="mb-2">Craft short prompts describing style and shape.</p>
-         <button id="prompt-tip-close" class="underline">Got it</button>
-       </div>
- 
-       <!-- Prompt / upload area ------------------------------------------- -->
-       <section class="w-full max-w-xl">
-         <div class="flex flex-col items-center text-center">
--          <img src="img/boxlogo.png" alt="print3 cube" class="w-32 h-auto mb-8"/>
-+          <img src="img/boxlogo.png" alt="print3 cube" class="w-32 h-auto mb-8" />
-           <h1 class="text-3xl font-semibold mb-8">Design & Print in 30 Seconds.</h1>
- 
-           <div class="flex items-center w-full gap-4">
-             <div
-               id="prompt-wrapper"
-               class="flex-1 bg-[#2A2A2E] border border-white/10 rounded-3xl px-5 py-2 flex items-center"
-             >
-               <textarea
-                 id="promptInput"
-                 rows="1"
-                 placeholder="Describe your 3D print request…"
-                 aria-label="Prompt"
-                 class="prompt-textarea w-full bg-transparent resize-none text-lg placeholder-gray-500 focus:outline-none"
-               ></textarea>
-             </div>
-             <button
-               id="submit-button"
-               aria-label="Generate"
-               class="w-12 h-12 flex items-center justify-center bg-white rounded-full transition-shape"
-             >
-               <i id="submit-icon" class="fas fa-arrow-up text-xl text-[#1A1A1D]"></i>
-             </button>
-           </div>
- 
-           <div class="mt-4 w-full flex flex-col gap-4">
-diff --git a/index.html b/index.html
-index 86740cfa0cb87038a5891b9c4f688fab2087b02f..a77e229a4787cdf67e6749231958ebb235a1911d 100644
---- a/index.html
-+++ b/index.html
-@@ -275,32 +281,30 @@
-               id="image-preview-area"
-               class="hidden grid grid-cols-4 gap-3 bg-[#2A2A2E] border border-white/10 rounded-3xl min-h-[6rem] max-h-56 px-4 py-3 overflow-visible"
-             ></div>
-           </div>
-         </div>
-       </section>
-     </main>
- 
-     <div
-       id="tutorial-overlay"
-       class="fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50"
-     >
-       <div class="bg-[#2A2A2E] p-6 rounded-xl text-center max-w-sm">
-         <h2 class="text-xl font-semibold mb-4">Getting Started</h2>
-         <ol class="list-decimal list-inside text-left mb-4 space-y-1">
-           <li>Describe your idea or upload images.</li>
-           <li>Generate your 3D model.</li>
-           <li>Buy your print instantly.</li>
-         </ol>
-         <button id="tutorial-skip" class="mt-2 px-4 py-2 bg-white text-[#1A1A1D] rounded w-full">
-           Start Creating
-         </button>
-       </div>
-     </div>
- 
--
--
-     <!--  Application logic ----------------------------------------------- -->
-     <script src="js/subredditLanding.js"></script>
-     <script type="module" src="js/index.js"></script>
-   </body>
- </html>
+<!-- ============================
+        index.html (fixed)
+============================ -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>print3 Assistant</title>
+    <meta
+      name="description"
+      content="Create custom 3D models with generative AI and order high‑quality prints with print3."
+    />
+    <meta property="og:title" content="print3 – AI‑powered 3D printing" />
+    <meta
+      property="og:description"
+      content="Describe your idea or upload images and print3 turns them into 3D models you can print."
+    />
+    <meta property="og:image" content="img/boxlogo.png" />
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+
+    <!-- Google <model-viewer>  -->
+    <!--  Use a CDN versioned URL so the module is served with CORS headers and the browser can actually download it.  -->
+    <script
+      type="module"
+      src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js"
+    ></script>
+    <script
+      nomodule
+      src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer-legacy.js"
+    ></script>
+
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        padding-top: constant(safe-area-inset-top);
+        padding-top: env(safe-area-inset-top);
+      }
+      .transition-shape {
+        transition:
+          border-radius 0.2s ease,
+          background-color 0.2s ease;
+      }
+      .prompt-textarea {
+        overflow-y: hidden;
+        padding: 0;
+        line-height: 1.75rem;
+      }
+      #submit-button {
+        position: relative;
+        overflow: hidden;
+      }
+      #submit-button::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          120deg,
+          rgba(255, 255, 255, 0) 0%,
+          rgba(255, 0, 255, 0.3) 15%,
+          rgba(0, 255, 255, 0.3) 85%,
+          rgba(255, 255, 255, 0) 100%
+        );
+        transform: translateX(-100%);
+        animation: shimmer 3s ease-in-out infinite;
+      }
+      @keyframes shimmer {
+        to {
+          transform: translateX(100%);
+        }
+      }
+      .has-generated #demo-note {
+        display: none;
+      }
+    </style>
+  </head>
+
+  <body class="bg-[#1A1A1D] text-white font-sans flex flex-col">
+    <header class="flex items-center justify-between py-4 px-6">
+      <div class="flex flex-col items-start">
+        <img src="img/textlogo.png" alt="print3" class="h-10 w-auto" />
+        <div class="mt-1 flex flex-col text-sm text-gray-400 opacity-75">
+          <p>5400+ prints</p>
+          <p>delivered already</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-4">
+        <a
+          href="profile.html"
+          class="bg-[#2A2A2E] border border-white/10 rounded-3xl px-4 py-2 text-sm hover:bg-[#3A3A3E] transition-shape"
+        >
+          Profile
+        </a>
+        <a
+          href="CommunityCreations.html"
+          class="bg-[#2A2A2E] border border-white/10 rounded-3xl px-4 py-2 text-sm hover:bg-[#3A3A3E] transition-shape"
+        >
+          Community
+        </a>
+        <a
+          href="competitions.html"
+          class="bg-[#2A2A2E] border border-white/10 rounded-3xl px-4 py-2 text-sm hover:bg-[#3A3A3E] transition-shape"
+        >
+          Competitions
+        </a>
+        <div class="flex space-x-2">
+          <button
+            class="w-9 h-9 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
+            onclick="shareOn('twitter')"
+            aria-label="Share on Twitter"
+          >
+            <i class="fab fa-twitter"></i>
+          </button>
+          <button
+            class="w-9 h-9 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
+            onclick="shareOn('facebook')"
+            aria-label="Share on Facebook"
+          >
+            <i class="fab fa-facebook-f"></i>
+          </button>
+          <button
+            class="w-9 h-9 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
+            onclick="shareOn('reddit')"
+            aria-label="Share on Reddit"
+          >
+            <i class="fab fa-reddit-alien"></i>
+          </button>
+          <button
+            class="w-9 h-9 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
+            onclick="shareOn('tiktok')"
+            aria-label="Share on TikTok"
+          >
+            <i class="fab fa-tiktok"></i>
+          </button>
+          <button
+            class="w-9 h-9 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
+            onclick="shareOn('instagram')"
+            aria-label="Share on Instagram"
+          >
+            <i class="fab fa-instagram"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="flex-1 flex flex-col items-center justify-start gap-8 px-4 lg:px-16">
+      <!-- 3‑D preview ------------------------------------------------------ -->
+
+      <div class="relative flex justify-center w-full max-w-lg">
+
+        <section
+          id="preview-wrapper"
+          class="relative w-full max-w-lg h-80 bg-[#2A2A2E] border border-white/10 rounded-3xl overflow-visible"
+        >
+          <!-- fallback still-image (hidden)  -->
+          <img
+            id="preview-img"
+            src="https://placehold.co/600x400/2A2A2E/2A2A2E?text="
+            class="object-contain h-full w-full"
+            style="display: none"
+            alt="Preview image"
+          />
+
+          <!-- The astronaut now loads eagerly and is always visible  -->
+          <model-viewer
+            id="viewer"
+            src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
+            alt="3D astronaut"
+            environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
+            camera-controls
+            auto-rotate
+            loading="eager"
+            style="width: 100%; height: 100%; display: block"
+          ></model-viewer>
+
+          <!-- centred loader -->
+          <div
+            id="loader"
+            class="absolute inset-0 flex flex-col items-center justify-center bg-[#2A2A2E]/80"
+            style="display: none"
+          >
+            <div
+              class="h-10 w-10 border-4 border-white border-t-transparent rounded-full animate-spin mb-6"
+            ></div>
+            <div id="progress-wrapper" class="w-3/4 max-w-xs" style="display: none">
+              <div class="w-full h-2 bg-gray-700 rounded">
+                <div id="progress-bar" class="h-full bg-cyan-400 rounded" style="width: 0%"></div>
+              </div>
+              <div id="progress-text" class="text-center text-sm text-white mt-2"></div>
+            </div>
+          </div>
+
+          <!-- checkout button -->
+          <a
+            id="checkout-button"
+            href="payment.html"
+            class="absolute bottom-4 right-4 font-bold py-3 px-5 rounded-full shadow-md transition"
+            style="background-color: #1f3b65; color: #5ec2c5"
+            onmouseover="this.style.opacity='0.85'"
+            onmouseout="this.style.opacity='1'"
+            >Checkout</a
+          >
+          <button
+            id="buy-now-button"
+            class="hidden absolute bottom-4 right-32 font-bold py-3 px-5 rounded-full shadow-md transition"
+            style="background-color: #5ec2c5; color: #1f3b65"
+          >
+            Buy Now
+          </button>
+          <div
+            id="gen-error"
+            class="absolute bottom-2 left-0 w-full text-center text-red-400 pointer-events-none"
+            aria-live="assertive"
+          ></div>
+        </section>
+        <div
+          id="subreddit-quote"
+
+          class="absolute left-full ml-4 top-1/2 -translate-y-1/2 flex flex-col text-sm text-gray-400 text-center"
+
+        >
+          <p>"I'm astonished at how high-quality the print</p>
+          <p>is" - email from an r/subreddit user</p>
+        </div>
+      </div>
+
+      <div
+        id="prompt-tip"
+        class="absolute left-1/2 -translate-x-1/2 top-12 bg-[#2A2A2E] border border-white/10 rounded-xl p-3 text-sm shadow-lg hidden"
+      >
+        <p class="mb-2">Craft short prompts describing style and shape.</p>
+        <button id="prompt-tip-close" class="underline">Got it</button>
+      </div>
+
+      <!-- Prompt / upload area ------------------------------------------- -->
+      <section class="w-full max-w-xl">
+        <div class="flex flex-col items-center text-center">
+          <img src="img/boxlogo.png" alt="print3 cube" class="w-32 h-auto mb-8" />
+          <h1 class="text-3xl font-semibold mb-8">Design & Print in 30 Seconds.</h1>
+
+          <div class="flex items-center w-full gap-4">
+            <div
+              id="prompt-wrapper"
+              class="flex-1 bg-[#2A2A2E] border border-white/10 rounded-3xl px-5 py-2 flex items-center"
+            >
+              <textarea
+                id="promptInput"
+                rows="1"
+                placeholder="Describe your 3D print request…"
+                aria-label="Prompt"
+                class="prompt-textarea w-full bg-transparent resize-none text-lg placeholder-gray-500 focus:outline-none"
+              ></textarea>
+            </div>
+            <button
+              id="submit-button"
+              aria-label="Generate"
+              class="w-12 h-12 flex items-center justify-center bg-white rounded-full transition-shape"
+            >
+              <i id="submit-icon" class="fas fa-arrow-up text-xl text-[#1A1A1D]"></i>
+            </button>
+          </div>
+
+          <div class="mt-4 w-full flex flex-col gap-4">
+            <input type="file" id="uploadInput" accept="image/*" class="hidden" />
+            <div
+              id="drop-zone"
+              aria-label="Upload Image"
+              class="flex items-center justify-center bg-[#2A2A2E] border border-dashed border-white/10 rounded-3xl px-5 py-6 text-gray-400 cursor-pointer hover:bg-[#3A3A3E] transition-shape"
+            >
+              Drag & drop image or
+              <label for="uploadInput" class="underline ml-1 cursor-pointer">browse</label>
+            </div>
+            <div
+              id="image-preview-area"
+              class="hidden grid grid-cols-4 gap-3 bg-[#2A2A2E] border border-white/10 rounded-3xl min-h-[6rem] max-h-56 px-4 py-3 overflow-visible"
+            ></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div
+      id="tutorial-overlay"
+      class="fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50"
+    >
+      <div class="bg-[#2A2A2E] p-6 rounded-xl text-center max-w-sm">
+        <h2 class="text-xl font-semibold mb-4">Getting Started</h2>
+        <ol class="list-decimal list-inside text-left mb-4 space-y-1">
+          <li>Describe your idea or upload images.</li>
+          <li>Generate your 3D model.</li>
+          <li>Buy your print instantly.</li>
+        </ol>
+        <button id="tutorial-skip" class="mt-2 px-4 py-2 bg-white text-[#1A1A1D] rounded w-full">
+          Start Creating
+        </button>
+      </div>
+    </div>
+
+    <!--  Application logic ----------------------------------------------- -->
+    <script src="js/subredditLanding.js"></script>
+    <script type="module" src="js/index.js"></script>
+  </body>
+</html>
