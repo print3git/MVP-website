@@ -790,6 +790,22 @@ app.get('/api/confirm-subscription', async (req, res) => {
   }
 });
 
+app.get('/api/unsubscribe', async (req, res) => {
+  const { token } = req.query;
+  if (!token) return res.status(400).send('Invalid token');
+  try {
+    const result = await db.query(
+      'UPDATE mailing_list SET unsubscribed=TRUE WHERE token=$1',
+      [token]
+    );
+    if (result.rowCount === 0) return res.status(404).send('Invalid token');
+    res.send('You have been unsubscribed');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Failed to unsubscribe');
+  }
+});
+
 /**
  * POST /api/webhook/stripe
  * Handle Stripe payment confirmation
