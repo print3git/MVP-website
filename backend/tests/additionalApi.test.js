@@ -91,6 +91,8 @@ test('GET /api/users/:username/models returns models', async () => {
   const res = await request(app).get('/api/users/alice/models');
   expect(res.status).toBe(200);
   expect(res.body[0].job_id).toBe('j1');
+  const call = db.query.mock.calls.find((c) => c[0].includes('FROM jobs'));
+  expect(call[0]).toContain('j.is_public=TRUE');
 });
 
 test('GET /api/users/:username/models 404 when missing', async () => {
@@ -133,11 +135,38 @@ test('POST /api/models/:id/like requires auth', async () => {
 });
 
 
+
+
+test('POST /api/models/:id/public updates flag', async () => {
+  db.query.mockResolvedValueOnce({ rows: [{ is_public: true }] });
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  const res = await request(app)
+    .post('/api/models/j1/public')
+    .set('authorization', `Bearer ${token}`)
+    .send({ isPublic: true });
+  expect(res.status).toBe(200);
+  expect(res.body.is_public).toBe(true);
+  expect(db.query).toHaveBeenCalledWith(expect.stringContaining('UPDATE jobs SET is_public'), [
+    true,
+    'j1',
+    'u1',
+  ]);
+});
+
+test('POST /api/models/:id/public requires boolean', async () => {
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  const res = await request(app)
+    .post('/api/models/j1/public')
+    .set('authorization', `Bearer ${token}`)
+    .send({});
+  expect(res.status).toBe(400);
+});
+
+
 test('GET /api/community/recent pagination and category', async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
   await request(app).get('/api/community/recent?limit=5&offset=2&category=art');
   expect(db.query).toHaveBeenCalledWith(expect.any(String), [5, 2, 'art', null]);
-
 });
 
 test('GET /api/community/popular uses correct ordering', async () => {
