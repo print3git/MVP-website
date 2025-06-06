@@ -28,7 +28,7 @@ describe('flash banner', () => {
     expect(banner.hidden).toBe(true);
   });
 
-  test('startFlashDiscount does not restart expired timer', async () => {
+  test('startFlashDiscount restarts expired timer', async () => {
     const dom = new JSDOM(html, {
       runScripts: 'dangerously',
       resources: 'usable',
@@ -43,8 +43,8 @@ describe('flash banner', () => {
     dom.window.document.dispatchEvent(new dom.window.Event('DOMContentLoaded'));
     dom.window.startFlashDiscount();
     const end = Number(dom.window.localStorage.getItem('flashDiscountEnd'));
-    expect(end).toBe(expired);
+    expect(end).toBeGreaterThan(Date.now());
     const banner = dom.window.document.getElementById('flash-banner');
-    expect(banner.hidden).toBe(true);
+    expect(banner.hidden).toBe(false);
   });
 });

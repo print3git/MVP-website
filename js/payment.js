@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const saved = parseInt(localStorage.getItem('flashDiscountEnd'), 10);
     let end;
 
-    if (Number.isFinite(saved)) {
+    if (Number.isFinite(saved) && saved > Date.now()) {
       end = saved;
     } else {
       end = Date.now() + 5 * 60 * 1000;
@@ -83,6 +83,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (diff <= 0) {
         flashBanner.hidden = true;
         clearInterval(timer);
+        localStorage.removeItem('flashDiscountEnd');
         return;
       }
       const m = Math.floor(diff / 60000);
