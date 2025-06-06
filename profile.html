@@ -8,6 +8,10 @@
     <meta property="og:description" content="View your generated models and past orders." />
     <meta property="og:image" content="img/boxlogo.png" />
     <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
     <script
       type="module"
       src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js"
@@ -76,6 +80,39 @@
     </header>
     <main class="flex-1 px-6 py-4">
       <div id="models" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
+      <form
+        id="create-account-form"
+        class="space-y-4 bg-[#2A2A2E] border border-white/10 p-6 rounded-3xl w-96 mx-auto hidden mt-8"
+        aria-label="Create account form"
+      >
+        <input
+          id="ca-name"
+          class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+          placeholder="Username"
+          aria-label="Username"
+        />
+        <input
+          id="ca-email"
+          type="email"
+          class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+          placeholder="Email"
+          aria-label="Email"
+        />
+        <input
+          id="ca-pass"
+          type="password"
+          class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+          placeholder="Password"
+          aria-label="Password"
+        />
+        <div id="ca-error" class="text-red-400" aria-live="assertive"></div>
+        <button
+          class="bg-[#30D5C8] text-[#1A1A1D] font-semibold px-4 py-2 rounded-xl hover:bg-[#28b7a8] transition"
+          type="submit"
+        >
+          Create Account
+        </button>
+      </form>
     </main>
     <div
       id="model-modal"
