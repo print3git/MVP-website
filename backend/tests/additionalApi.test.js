@@ -163,6 +163,7 @@ test('POST /api/models/:id/public requires boolean', async () => {
 });
 
 
+
 test('GET /api/community/recent pagination and category', async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
   await request(app).get('/api/community/recent?limit=5&offset=2&category=art');
