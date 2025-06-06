@@ -240,4 +240,5 @@ test('Stripe webhook invalid signature', async () => {
     .send(payload);
   expect(res.status).toBe(400);
   expect(res.text).toContain('Webhook Error: bad sig');
+  expect(stripeMock.webhooks.constructEvent).toHaveBeenCalled();
 });
