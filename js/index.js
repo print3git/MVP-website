@@ -349,7 +349,10 @@ refs.submitBtn.addEventListener('click', async () => {
 window.addEventListener('DOMContentLoaded', () => {
   setStep('prompt');
   showModel();
-  refs.viewer.src = FALLBACK_GLB;
+  const sr = new URLSearchParams(window.location.search).get('sr');
+  if (!sr) {
+    refs.viewer.src = FALLBACK_GLB;
+  }
   if (refs.viewer) {
     refs.viewer.addEventListener('progress', (e) => {
       if (!progressStart) progressStart = Date.now();
