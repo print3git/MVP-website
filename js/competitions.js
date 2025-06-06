@@ -1,3 +1,48 @@
+function like(id) {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    alert('Login required');
+    return;
+  }
+  fetch(`/api/models/${id}/like`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+    .then((r) => r.json())
+    .then((d) => {
+      const span = document.querySelector(`#likes-${id}`);
+      if (span) span.textContent = d.likes;
+    });
+}
+
+async function captureSnapshots(container) {
+  const cards = container.querySelectorAll('.entry-card');
+  for (const card of cards) {
+    const img = card.querySelector('img');
+    if (img && img.src) continue;
+    const glbUrl = card.dataset.model;
+    const viewer = document.createElement('model-viewer');
+    viewer.src = glbUrl;
+    viewer.setAttribute(
+      'environment-image',
+      'https://modelviewer.dev/shared-assets/environments/neutral.hdr'
+    );
+    viewer.style.position = 'fixed';
+    viewer.style.left = '-10000px';
+    viewer.style.width = '300px';
+    viewer.style.height = '300px';
+    document.body.appendChild(viewer);
+    try {
+      await viewer.updateComplete;
+      img.src = await viewer.toDataURL('image/png');
+    } catch (err) {
+      console.error('Failed to capture snapshot', err);
+    } finally {
+      viewer.remove();
+    }
+  }
+}
+
 async function load() {
   const res = await fetch('/api/competitions/active');
   const list = document.getElementById('list');
@@ -22,15 +67,18 @@ async function load() {
         <button onclick="shareOn('twitter')" aria-label="Share on Twitter" class="w-9 h-9 flex items-center justify-center bg-[#1A1A1D] border border-white/10 rounded hover:bg-[#3A3A3E]"><i class="fab fa-twitter"></i></button>
       </div>
       <table class="leaderboard w-full mt-4 text-sm"></table>
+
       <div class="comments space-y-1 mt-4"></div>
       <form data-id="${c.id}" class="comment-form flex space-x-2 mt-2">
         <input type="text" name="text" class="flex-1 bg-[#1A1A1D] border border-white/10 rounded px-2" placeholder="Add a comment" />
         <button class="bg-[#30D5C8] text-[#1A1A1D] px-2 rounded">Post</button>
       </form>`;
+
     list.appendChild(div);
     const table = div.querySelector('.leaderboard');
-    loadLeaderboard(c.id, table);
-    setInterval(() => loadLeaderboard(c.id, table), 30000);
+    const grid = div.querySelector('.entries-grid');
+    loadLeaderboard(c.id, table, grid);
+    setInterval(() => loadLeaderboard(c.id, table, grid), 30000);
     div.querySelector('.enter').addEventListener('click', () => enter(c.id));
     const commentsDiv = div.querySelector('.comments');
     loadComments(c.id, commentsDiv);
@@ -43,13 +91,30 @@ async function load() {
   });
 }
 
-async function loadLeaderboard(id, table) {
+async function loadLeaderboard(id, table, grid) {
   const res = await fetch(`/api/competitions/${id}/entries`);
   if (!res.ok) return;
   const rows = await res.json();
   table.innerHTML = rows
     .map((r, i) => `<tr><td>${i + 1}</td><td>${r.model_id}</td><td>${r.likes}</td></tr>`)
     .join('');
+  if (grid) {
+    grid.innerHTML = '';
+    rows.forEach((r) => {
+      const card = document.createElement('div');
+      card.className =
+        'entry-card relative h-32 bg-[#2A2A2E] border border-white/10 rounded-xl flex items-center justify-center';
+      card.dataset.model = r.model_url;
+      card.dataset.job = r.model_id;
+      card.innerHTML = `<img src="" alt="Model" class="w-full h-full object-contain pointer-events-none" />\n      <button class="like absolute bottom-1 left-1 text-xs bg-red-600 px-1 rounded">\u2665</button>\n      <span class="absolute bottom-1 right-1 text-xs bg-black/50 px-1 rounded" id="likes-${r.model_id}">${r.likes}</span>`;
+      card.querySelector('.like').addEventListener('click', (e) => {
+        e.stopPropagation();
+        like(r.model_id);
+      });
+      grid.appendChild(card);
+    });
+    captureSnapshots(grid);
+  }
 }
 
 function zeroPad(num) {
