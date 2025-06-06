@@ -1,5 +1,7 @@
 const nodemailer = require('nodemailer');
 const sgTransport = require('nodemailer-sendgrid');
+const fs = require('fs/promises');
+const path = require('path');
 const config = require('./config');
 
 let transporter = null;
@@ -21,4 +23,25 @@ async function sendMail(to, subject, text) {
   });
 }
 
-module.exports = { sendMail };
+async function renderTemplate(templateName, data = {}) {
+  const filePath = path.join(__dirname, 'email_templates', templateName);
+  let content = await fs.readFile(filePath, 'utf8');
+  for (const [key, value] of Object.entries(data)) {
+    const regex = new RegExp(`{{\\s*${key}\\s*}}`, 'g');
+    content = content.replace(regex, String(value));
+  }
+  return content;
+}
+
+async function sendTemplate(to, subject, templateName, data = {}) {
+  if (!transporter) return;
+  const text = await renderTemplate(templateName, data);
+  await transporter.sendMail({
+    from: config.emailFrom,
+    to,
+    subject,
+    text,
+  });
+}
+
+module.exports = { sendMail, sendTemplate };

@@ -1,0 +1,6 @@
+Hi {{username}},
+
+Thanks for joining us! Please confirm your subscription by clicking the link below:
+{{confirm_url}}
+
+Welcome aboard!
