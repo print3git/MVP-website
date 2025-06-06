@@ -62,7 +62,7 @@ function startCountdown(el) {
 async function enter(id) {
   const token = localStorage.getItem('token');
   if (!token) {
-    alert('Please log in to enter.');
+    alert('Login required');
     return;
   }
   const modelId = prompt('Model ID to submit');
