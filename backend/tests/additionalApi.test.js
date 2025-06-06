@@ -161,6 +161,7 @@ test('POST /api/models/:id/public requires boolean', async () => {
   expect(res.status).toBe(400);
 });
 
+test('GET /api/community/recent uses filters', async () => {
   await request(app).get('/api/community/recent?limit=5&offset=2&category=art');
   expect(db.query).toHaveBeenCalledWith(expect.any(String), [5, 2, 'art', null]);
 });
