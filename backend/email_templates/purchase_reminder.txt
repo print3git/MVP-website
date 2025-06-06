@@ -1,0 +1,5 @@
+Hi {{username}},
+
+We noticed you haven't finished your purchase yet. If you'd like to complete it, just return to your jobs page and finalize the order.
+
+Let us know if you need any help!
