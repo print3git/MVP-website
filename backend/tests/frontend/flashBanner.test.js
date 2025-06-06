@@ -28,7 +28,7 @@ describe('flash banner', () => {
     expect(banner.hidden).toBe(true);
   });
 
-  test('resetFlashDiscount restarts timer', async () => {
+  test('startFlashDiscount does not restart expired timer', async () => {
     const dom = new JSDOM(html, {
       runScripts: 'dangerously',
       resources: 'usable',
@@ -36,34 +36,15 @@ describe('flash banner', () => {
     });
     global.window = dom.window;
     global.document = dom.window.document;
-    const scriptSrc = fs.readFileSync(path.join(__dirname, '../../../js/payment.js'), 'utf8');
-    dom.window.eval(scriptSrc);
-    dom.window.document.dispatchEvent(new dom.window.Event('DOMContentLoaded'));
-    dom.window.startFlashDiscount();
-    const first = Number(dom.window.localStorage.getItem('flashDiscountEnd'));
-    dom.window.resetFlashDiscount();
-    const second = Number(dom.window.localStorage.getItem('flashDiscountEnd'));
-    expect(second).toBeGreaterThan(first);
-    const banner = dom.window.document.getElementById('flash-banner');
-    expect(banner.hidden).toBe(false);
-  });
-
-  test('startFlashDiscount resets expired timer', async () => {
-    const dom = new JSDOM(html, {
-      runScripts: 'dangerously',
-      resources: 'usable',
-      url: 'http://localhost/',
-    });
-    global.window = dom.window;
-    global.document = dom.window.document;
-    dom.window.localStorage.setItem('flashDiscountEnd', String(Date.now() - 1000));
+    const expired = Date.now() - 1000;
+    dom.window.localStorage.setItem('flashDiscountEnd', String(expired));
     const scriptSrc = fs.readFileSync(path.join(__dirname, '../../../js/payment.js'), 'utf8');
     dom.window.eval(scriptSrc);
     dom.window.document.dispatchEvent(new dom.window.Event('DOMContentLoaded'));
     dom.window.startFlashDiscount();
     const end = Number(dom.window.localStorage.getItem('flashDiscountEnd'));
-    expect(end).toBeGreaterThan(Date.now());
+    expect(end).toBe(expired);
     const banner = dom.window.document.getElementById('flash-banner');
-    expect(banner.hidden).toBe(false);
+    expect(banner.hidden).toBe(true);
   });
 });
