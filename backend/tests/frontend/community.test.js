@@ -8,6 +8,7 @@ function setup() {
   global.window = dom.window;
   global.document = dom.window.document;
 
+  
   // Read and sanitize the script
   let script = fs
     .readFileSync(path.join(__dirname, '../../../js/community.js'), 'utf8')
