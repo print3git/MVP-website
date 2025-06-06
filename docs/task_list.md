@@ -1,7 +1,3 @@
-# Project Task List
-
-This consolidated list merges all outstanding tasks from the previous to-do documents.
-
 ## Advertising & Landing
 
 - A/B test ad designs and copy to identify highest-performing creatives.
@@ -47,12 +43,9 @@ This consolidated list merges all outstanding tasks from the previous to-do docu
 - Add small pop-ups such as "Anna from NY just purchased" or "23 people are viewing this item".
 - Advertise limited-run products with remaining quantity counters.
 - Start a short reservation timer when items are added to the cart.
-- Offer bonuses to the first 100 customers and show how many spots are left.
 - Tie promotions to events/holidays (e.g., "Order before Friday for Father's Day delivery").
 - Trigger exit-intent pop-ups warning "Sale ends tonight!" or offering a final code.
 - Show queue positions or a waitlist to encourage immediate checkout.
-- Offer free shipping for a short window with a countdown bar.
-- Add progress bars toward goals like "Join the first 100 buyers".
 - Let users opt in for notifications when a promotion is about to end.
 
 
