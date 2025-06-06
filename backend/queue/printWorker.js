@@ -33,10 +33,7 @@ async function processNextJob(client) {
   const { model_url: modelUrl, shipping_info: shipping } = rows[0];
   try {
     await axios.post(PRINTER_API_URL, { modelUrl, shipping });
-    await client.query('UPDATE jobs SET status=$1, error=NULL WHERE job_id=$2', [
-      'sent',
-      jobId,
-    ]);
+    await client.query('UPDATE jobs SET status=$1, error=NULL WHERE job_id=$2', ['sent', jobId]);
   } catch (err) {
     await client.query('UPDATE jobs SET error=$1 WHERE job_id=$2', [err.message, jobId]);
   }
