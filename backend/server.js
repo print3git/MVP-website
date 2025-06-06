@@ -801,10 +801,7 @@ app.post('/api/webhook/sendgrid', async (req, res) => {
       if (evt.event === 'bounce' || evt.event === 'spamreport') {
         const email = evt.email;
         if (email) {
-          await db.query(
-            'UPDATE mailing_list SET unsubscribed=TRUE WHERE email=$1',
-            [email]
-          );
+          await db.query('UPDATE mailing_list SET unsubscribed=TRUE WHERE email=$1', [email]);
         }
       }
     }

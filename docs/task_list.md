@@ -21,12 +21,12 @@
   - Audit pages for missing labels.
   - Fix color contrast issues.
 - Optimize API requests to reduce loading time on slow networks.
+
   - Bundle multiple requests where possible.
 
 - Save user preferences such as units or color scheme.
   - Persist preferences to local storage.
   - Apply them on page load.
-
 
 ## Mailing List
 
@@ -48,9 +48,8 @@
 - Show queue positions or a waitlist to encourage immediate checkout.
 - Let users opt in for notifications when a promotion is about to end.
 
-
 ## Profile Models
+
 - Display thumbnails on `profile.html` using the snapshot value.
 - Allow clicking a thumbnail to view the 3D model.
 - Write tests covering the new endpoint behavior.
-

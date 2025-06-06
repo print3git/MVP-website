@@ -1,16 +1,16 @@
 const MAP = {
   art: {
     glb: 'models/reddit_art.glb',
-    quote: 'Create artistic masterpieces with print3!'
+    quote: 'Create artistic masterpieces with print3!',
   },
   '3dprinting': {
     glb: 'models/reddit_3dprinting.glb',
-    quote: ''
+    quote: '',
   },
   gamedev: {
     glb: 'models/reddit_gamedev.glb',
-    quote: 'Bring your game ideas to life with print3!'
-  }
+    quote: 'Bring your game ideas to life with print3!',
+  },
 };
 
 function getParam(name) {
