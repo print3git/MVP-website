@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Submit Entry</title>
+    <meta property="og:title" content="Submit Entry – print3" />
+    <meta property="og:description" content="Enter a model into a print3 competition." />
+    <meta property="og:image" content="img/boxlogo.png" />
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-[#1A1A1D] text-white font-sans flex items-center justify-center min-h-screen">
+    <form id="entryForm" class="space-y-4 bg-[#2A2A2E] border border-white/10 p-6 rounded-3xl w-96" aria-label="Competition entry form">
+      <select id="modelSelect" class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10">
+        <option value="">Select a model</option>
+      </select>
+      <div id="error" class="text-red-400" aria-live="assertive"></div>
+      <button class="bg-[#30D5C8] text-[#1A1A1D] font-semibold px-4 py-2 rounded-xl hover:bg-[#28b7a8] transition" type="submit">Submit Entry</button>
+    </form>
+    <script type="module" src="js/enterCompetition.js"></script>
+  </body>
+</html>

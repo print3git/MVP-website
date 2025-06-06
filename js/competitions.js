@@ -59,20 +59,8 @@ function startCountdown(el) {
   const timer = setInterval(update, 60000);
 }
 
-async function enter(id) {
-  const token = localStorage.getItem('token');
-  if (!token) return alert('Login required');
-  const modelId = prompt('Model ID to submit');
-  if (!modelId) return;
-  await fetch(`/api/competitions/${id}/enter`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ modelId }),
-  });
-  alert('Submitted');
+function enter(id) {
+  window.location.href = `enterCompetition.html?id=${id}`;
 }
 
 async function loadPast() {
