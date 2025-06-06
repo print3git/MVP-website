@@ -59,12 +59,41 @@ function startCountdown(el) {
   const timer = setInterval(update, 60000);
 }
 
+let currentCompetition = null;
+
 async function enter(id) {
   const token = localStorage.getItem('token');
   if (!token) return alert('Login required');
-  const modelId = prompt('Model ID to submit');
+  currentCompetition = id;
+  const res = await fetch('/api/my/models', {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    alert('Failed to load models');
+    return;
+  }
+  const models = await res.json();
+  const select = document.getElementById('model-select');
+  select.innerHTML = models
+    .map((m) => `<option value="${m.job_id}">${m.prompt || m.job_id}</option>`)
+    .join('');
+  const modal = document.getElementById('entry-modal');
+  modal.classList.remove('hidden');
+  document.body.classList.add('overflow-hidden');
+}
+
+function closeEntryModal() {
+  document.getElementById('entry-modal').classList.add('hidden');
+  document.body.classList.remove('overflow-hidden');
+  currentCompetition = null;
+}
+
+async function submitEntry() {
+  const token = localStorage.getItem('token');
+  if (!token || !currentCompetition) return;
+  const modelId = document.getElementById('model-select').value;
   if (!modelId) return;
-  await fetch(`/api/competitions/${id}/enter`, {
+  await fetch(`/api/competitions/${currentCompetition}/enter`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -72,6 +101,7 @@ async function enter(id) {
     },
     body: JSON.stringify({ modelId }),
   });
+  closeEntryModal();
   alert('Submitted');
 }
 
@@ -99,4 +129,8 @@ async function loadPast() {
 document.addEventListener('DOMContentLoaded', () => {
   load();
   loadPast();
+  const cancel = document.getElementById('entry-cancel');
+  const confirm = document.getElementById('entry-confirm');
+  cancel.addEventListener('click', closeEntryModal);
+  confirm.addEventListener('click', submitEntry);
 });

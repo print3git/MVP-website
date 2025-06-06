@@ -56,7 +56,7 @@ function setStep(name) {
 window.shareOn = shareOn;
 let uploadedFiles = [];
 let lastJobId = null;
-let savedProfile = null;
+window.savedProfile = null;
 
 
 // Track when the prompt or images have been modified after a generation
