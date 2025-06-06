@@ -11,10 +11,16 @@ html = html
 
 describe('index validatePrompt', () => {
   function setup() {
-    const dom = new JSDOM(html, { runScripts: 'dangerously', resources: 'usable', url: 'http://localhost/' });
+    const dom = new JSDOM(html, {
+      runScripts: 'dangerously',
+      resources: 'usable',
+      url: 'http://localhost/',
+    });
     global.window = dom.window;
     global.document = dom.window.document;
-    const shareSrc = fs.readFileSync(path.join(__dirname, '../../../js/share.js'), 'utf8').replace(/export \{[^}]+\};?/, '');
+    const shareSrc = fs
+      .readFileSync(path.join(__dirname, '../../../js/share.js'), 'utf8')
+      .replace(/export \{[^}]+\};?/, '');
     dom.window.eval(shareSrc);
     let script = fs
       .readFileSync(path.join(__dirname, '../../../js/index.js'), 'utf8')
@@ -29,7 +35,9 @@ describe('index validatePrompt', () => {
     const dom = setup();
     const ok = dom.window.validatePrompt('abc');
     expect(ok).toBe(false);
-    expect(dom.window.document.getElementById('gen-error').textContent).toBe('Prompt must be at least 5 characters');
+    expect(dom.window.document.getElementById('gen-error').textContent).toBe(
+      'Prompt must be at least 5 characters'
+    );
   });
 
   test('accepts valid prompt', () => {
