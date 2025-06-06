@@ -68,18 +68,21 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   function startFlashDiscount() {
-    const saved = parseInt(localStorage.getItem('flashDiscountEnd'), 10) || 0;
-    let end = saved;
-    if (!end || end < Date.now()) {
+    const saved = parseInt(localStorage.getItem('flashDiscountEnd'), 10);
+    let end;
+
+    if (Number.isFinite(saved)) {
+      end = saved;
+    } else {
       end = Date.now() + 5 * 60 * 1000;
       localStorage.setItem('flashDiscountEnd', end);
     }
+    let timer;
     const update = () => {
       const diff = end - Date.now();
       if (diff <= 0) {
         flashBanner.hidden = true;
         clearInterval(timer);
-        localStorage.removeItem('flashDiscountEnd');
         return;
       }
       const m = Math.floor(diff / 60000);
@@ -89,22 +92,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       flashTimer.textContent = `${m}:${s}`;
     };
     update();
-    const timer = setInterval(update, 1000);
-    window.resetFlashDiscount = () => {
-      clearInterval(timer);
-      const prevRaw = parseInt(localStorage.getItem('flashDiscountEnd'), 10);
-      const prev = Number.isFinite(prevRaw) ? prevRaw : 0;
-
-      let newEnd = Date.now() + 5 * 60 * 1000;
-      if (newEnd <= prev) {
-        newEnd = prev + 1;
-      }
-
-      localStorage.setItem('flashDiscountEnd', newEnd);
-
-      flashBanner.hidden = false;
-      startFlashDiscount();
-    };
+    timer = setInterval(update, 1000);
   }
   window.startFlashDiscount = startFlashDiscount;
 
