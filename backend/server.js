@@ -274,7 +274,7 @@ app.get('/api/users/:username/models', async (req, res) => {
        FROM jobs j
        LEFT JOIN (SELECT model_id, COUNT(*) as count FROM likes GROUP BY model_id) l
        ON j.job_id=l.model_id
-       WHERE j.user_id=$1 ORDER BY j.created_at DESC`,
+       WHERE j.user_id=$1 AND j.is_public=TRUE ORDER BY j.created_at DESC`,
       [userId]
     );
     res.json(models.rows);
@@ -318,6 +318,25 @@ app.post('/api/models/:id/like', authRequired, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to update like' });
+  }
+});
+
+app.post('/api/models/:id/public', authRequired, async (req, res) => {
+  const jobId = req.params.id;
+  const { isPublic } = req.body;
+  if (typeof isPublic !== 'boolean') {
+    return res.status(400).json({ error: 'isPublic required' });
+  }
+  try {
+    const { rows } = await db.query(
+      'UPDATE jobs SET is_public=$1 WHERE job_id=$2 AND user_id=$3 RETURNING is_public',
+      [isPublic, jobId, req.user.id]
+    );
+    if (!rows.length) return res.status(404).json({ error: 'Model not found' });
+    res.json({ is_public: rows[0].is_public });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to update model' });
   }
 });
 
