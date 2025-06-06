@@ -59,9 +59,18 @@ function startCountdown(el) {
   const timer = setInterval(update, 60000);
 }
 
+let currentCompetitionId = null;
+
 async function enter(id) {
   const token = localStorage.getItem('token');
   if (!token) return alert('Login required');
+  currentCompetitionId = id;
+  const modal = document.getElementById('entry-modal');
+  if (modal) {
+    modal.classList.remove('hidden');
+    document.body.classList.add('overflow-hidden');
+    return;
+  }
   const modelId = prompt('Model ID to submit');
   if (!modelId) return;
   await fetch(`/api/competitions/${id}/enter`, {
@@ -73,6 +82,31 @@ async function enter(id) {
     body: JSON.stringify({ modelId }),
   });
   alert('Submitted');
+}
+
+async function submitEntry(modelId) {
+  const token = localStorage.getItem('token');
+  if (!token || !currentCompetitionId) return;
+  const res = await fetch(`/api/competitions/${currentCompetitionId}/enter`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ modelId }),
+  });
+  if (res.ok) {
+    const modal = document.getElementById('entry-modal');
+    if (modal) {
+      modal.classList.add('hidden');
+      document.body.classList.remove('overflow-hidden');
+    }
+    const msg = document.createElement('div');
+    msg.textContent = 'Entry submitted!';
+    msg.className = 'fixed bottom-4 right-4 bg-green-600 text-white px-3 py-2 rounded';
+    document.body.appendChild(msg);
+    setTimeout(() => msg.remove(), 3000);
+  }
 }
 
 async function loadPast() {
@@ -99,4 +133,11 @@ async function loadPast() {
 document.addEventListener('DOMContentLoaded', () => {
   load();
   loadPast();
+  const entryModal = document.getElementById('entry-modal');
+  if (entryModal) {
+    entryModal.addEventListener('click', (e) => {
+      const target = e.target.closest('[data-model-id]');
+      if (target) submitEntry(target.dataset.modelId);
+    });
+  }
 });
