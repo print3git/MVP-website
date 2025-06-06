@@ -44,6 +44,29 @@ document.addEventListener('DOMContentLoaded', async () => {
   const cancelMsg = document.getElementById('cancel');
   const flashBanner = document.getElementById('flash-banner');
   const flashTimer = document.getElementById('flash-timer');
+  const costEl = document.getElementById('cost-estimate');
+  const etaEl = document.getElementById('eta-estimate');
+
+  async function updateEstimate() {
+    if (!costEl || !etaEl) return;
+    const dest = {
+      address: document.getElementById('ship-address').value,
+      city: document.getElementById('ship-city').value,
+      zip: document.getElementById('ship-zip').value,
+    };
+    try {
+      const resp = await fetch('/api/shipping-estimate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ destination: dest, model: { weight: 1 } }),
+      });
+      const data = await resp.json();
+      if (data.cost) costEl.textContent = `Estimated Cost: $${data.cost.toFixed(2)}`;
+      if (data.etaDays) etaEl.textContent = `ETA: ${data.etaDays} days`;
+    } catch {
+      /* ignore */
+    }
+  }
 
   function startFlashDiscount() {
     const saved = parseInt(localStorage.getItem('flashDiscountEnd'), 10) || 0;
@@ -143,11 +166,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (ship.address) document.getElementById('ship-address').value = ship.address;
         if (ship.city) document.getElementById('ship-city').value = ship.city;
         if (ship.zip) document.getElementById('ship-zip').value = ship.zip;
+        await updateEstimate();
       }
     } catch {
       /* ignore profile errors */
     }
   }
+
+  ['ship-address', 'ship-city', 'ship-zip'].forEach((id) => {
+    document.getElementById(id)?.addEventListener('change', updateEstimate);
+  });
+  updateEstimate();
 
   document.getElementById('submit-payment').addEventListener('click', async () => {
     const qty = 1;
