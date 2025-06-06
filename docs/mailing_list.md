@@ -9,3 +9,7 @@ that link marks the address as confirmed.
 To configure the email service, set `SENDGRID_API_KEY` and `EMAIL_FROM` in `.env`.
 Subscriptions are processed through the `/api/subscribe` endpoint which inserts
 or updates the address and dispatches the confirmation email.
+
+## Syncing Contacts
+
+Run `node scripts/sync-mailing-list.js` from the `backend` directory to push all confirmed subscribers to SendGrid. The script reads `DB_URL` and `SENDGRID_API_KEY` from your `.env` file and uses the SendGrid API to upsert each address.
