@@ -396,10 +396,7 @@ test('POST /api/shipping-estimate returns estimate', async () => {
     .send({ destination: { zip: '12345' }, model: { weight: 2 } });
   expect(res.status).toBe(200);
   expect(res.body.cost).toBe(10);
-  expect(getShippingEstimate).toHaveBeenCalledWith(
-    { zip: '12345' },
-    { weight: 2 }
-  );
+  expect(getShippingEstimate).toHaveBeenCalledWith({ zip: '12345' }, { weight: 2 });
 });
 
 test('POST /api/shipping-estimate validates input', async () => {
