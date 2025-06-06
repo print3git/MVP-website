@@ -38,6 +38,10 @@ const refs = {
   stepPrompt: $('step-prompt'),
   stepModel: $('step-model'),
   stepBuy: $('step-buy'),
+  promptTip: $('prompt-tip'),
+  promptTipClose: $('prompt-tip-close'),
+  tutorialOverlay: $('tutorial-overlay'),
+  tutorialSkip: $('tutorial-skip'),
 };
 
 function setStep(name) {
@@ -56,12 +60,12 @@ function setStep(name) {
 window.shareOn = shareOn;
 let uploadedFiles = [];
 let lastJobId = null;
-let savedProfile = null;
 
+
+let savedProfile = null;
 
 // Track when the prompt or images have been modified after a generation
 let editsPending = false;
-
 
 let progressInterval = null;
 let progressStart = null;
@@ -125,7 +129,7 @@ async function fetchProfile() {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (res.ok) {
-      savedProfile = await res.json();
+      userProfile = await res.json();
     }
   } catch (err) {
     console.error('Failed to load profile', err);
@@ -133,7 +137,7 @@ async function fetchProfile() {
 }
 
 async function buyNow() {
-  if (!savedProfile) return;
+  if (!userProfile) return;
   const jobId = localStorage.getItem('print3JobId');
   const res = await fetch('/api/create-order', {
     method: 'POST',
@@ -142,7 +146,7 @@ async function buyNow() {
       jobId,
       price: 2000,
       qty: 1,
-      shippingInfo: savedProfile.shipping_info,
+      shippingInfo: userProfile.shipping_info,
     }),
   });
   const data = await res.json();
@@ -268,8 +272,13 @@ function openCropper(file) {
     refs.cropImage.src = URL.createObjectURL(file);
     refs.cropModal.classList.remove('hidden');
     const cropper = new Cropper(refs.cropImage, { aspectRatio: 1, viewMode: 1 });
+    const onKey = (e) => {
+      if (e.key === 'Escape') done(null);
+    };
+    window.addEventListener('keydown', onKey);
     const done = (result) => {
       cropper.destroy();
+      window.removeEventListener('keydown', onKey);
       refs.cropModal.classList.add('hidden');
       resolve(result);
     };
@@ -368,12 +377,11 @@ refs.submitBtn.addEventListener('click', async () => {
   hideDemo();
 
   refs.checkoutBtn.classList.remove('hidden');
-  if (savedProfile) refs.buyNowBtn?.classList.remove('hidden');
+  if (userProfile) refs.buyNowBtn?.classList.remove('hidden');
   refs.submitIcon.classList.replace('fa-stop', 'fa-arrow-up');
 });
 
 window.addEventListener('DOMContentLoaded', () => {
-
   setStep('prompt');
   showModel();
   refs.viewer.src = FALLBACK_GLB;
@@ -391,10 +399,9 @@ window.addEventListener('DOMContentLoaded', () => {
         stopProgress();
       }
     });
-
   }
   fetchProfile().then(() => {
-    if (savedProfile && refs.buyNowBtn) {
+    if (userProfile && refs.buyNowBtn) {
       refs.buyNowBtn.classList.remove('hidden');
       refs.buyNowBtn.addEventListener('click', buyNow);
     }
@@ -414,4 +421,26 @@ window.addEventListener('DOMContentLoaded', () => {
     refs.examples.textContent = `Try: ${EXAMPLES.join(' · ')}`;
   }
   if (thumbs.length) renderThumbnails(thumbs);
+
+  if (refs.promptTip && !localStorage.getItem('promptTipDismissed')) {
+    refs.promptInput.addEventListener(
+      'focus',
+      () => {
+        refs.promptTip.style.display = 'block';
+      },
+      { once: true }
+    );
+    refs.promptTipClose?.addEventListener('click', () => {
+      refs.promptTip.style.display = 'none';
+      localStorage.setItem('promptTipDismissed', 'true');
+    });
+  }
+
+  if (refs.tutorialOverlay && !localStorage.getItem('tutorialDismissed')) {
+    refs.tutorialOverlay.classList.remove('hidden');
+    refs.tutorialSkip?.addEventListener('click', () => {
+      refs.tutorialOverlay.classList.add('hidden');
+      localStorage.setItem('tutorialDismissed', 'true');
+    });
+  }
 });
