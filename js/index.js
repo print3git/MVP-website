@@ -38,6 +38,7 @@ const refs = {
   stepBuy: $('step-buy'),
   tutorialOverlay: $('tutorial-overlay'),
   tutorialSkip: $('tutorial-skip'),
+  subredditQuote: $('subreddit-quote'),
 };
 
 function setStep(name) {
@@ -115,6 +116,14 @@ const hideDemo = () => {
   refs.demoNote && (refs.demoNote.style.display = 'none');
   document.documentElement.classList.add('has-generated');
 };
+
+function positionQuote() {
+  if (!refs.subredditQuote || !refs.checkoutBtn) return;
+  const btnRect = refs.checkoutBtn.getBoundingClientRect();
+  const containerRect = refs.checkoutBtn.closest('.relative').getBoundingClientRect();
+  const center = btnRect.top + btnRect.height / 2 - containerRect.top;
+  refs.subredditQuote.style.top = center + 'px';
+}
 
 async function fetchProfile() {
   const token = localStorage.getItem('token');
@@ -349,6 +358,7 @@ refs.submitBtn.addEventListener('click', async () => {
 window.addEventListener('DOMContentLoaded', () => {
   setStep('prompt');
   showModel();
+  positionQuote();
   refs.viewer.src = FALLBACK_GLB;
   if (refs.viewer) {
     refs.viewer.addEventListener('progress', (e) => {
@@ -411,4 +421,5 @@ window.addEventListener('DOMContentLoaded', () => {
       localStorage.setItem('tutorialDismissed', 'true');
     });
   }
+  window.addEventListener('resize', positionQuote);
 });
