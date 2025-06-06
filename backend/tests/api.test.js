@@ -36,6 +36,11 @@ jest.mock('../queue/printQueue', () => ({
 }));
 const { enqueuePrint } = require('../queue/printQueue');
 
+jest.mock('../shipping', () => ({
+  getShippingEstimate: jest.fn().mockResolvedValue({ cost: 10, etaDays: 5 }),
+}));
+const { getShippingEstimate } = require('../shipping');
+
 const request = require('supertest');
 const app = require('../server');
 const fs = require('fs');
@@ -45,6 +50,7 @@ beforeEach(() => {
   db.query.mockClear();
   axios.post.mockClear();
   enqueuePrint.mockClear();
+  getShippingEstimate.mockClear();
 });
 
 afterEach(() => {
@@ -382,4 +388,21 @@ test('GET /api/my/orders returns orders', async () => {
 test('GET /api/my/orders requires auth', async () => {
   const res = await request(app).get('/api/my/orders');
   expect(res.status).toBe(401);
+});
+
+test('POST /api/shipping-estimate returns estimate', async () => {
+  const res = await request(app)
+    .post('/api/shipping-estimate')
+    .send({ destination: { zip: '12345' }, model: { weight: 2 } });
+  expect(res.status).toBe(200);
+  expect(res.body.cost).toBe(10);
+  expect(getShippingEstimate).toHaveBeenCalledWith(
+    { zip: '12345' },
+    { weight: 2 }
+  );
+});
+
+test('POST /api/shipping-estimate validates input', async () => {
+  const res = await request(app).post('/api/shipping-estimate').send({});
+  expect(res.status).toBe(400);
 });

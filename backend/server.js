@@ -19,6 +19,7 @@ const config = require('./config');
 const stripe = require('stripe')(config.stripeKey);
 const { enqueuePrint, processQueue, progressEmitter } = require('./queue/printQueue');
 const { sendMail } = require('./mail');
+const { getShippingEstimate } = require('./shipping');
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'admin';
 
 const AUTH_SECRET = process.env.AUTH_SECRET || 'secret';
@@ -638,6 +639,24 @@ app.delete('/api/admin/competitions/:id', adminCheck, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to delete competition' });
+  }
+});
+
+/**
+ * POST /api/shipping-estimate
+ * Calculate shipping cost and ETA
+ */
+app.post('/api/shipping-estimate', async (req, res) => {
+  const { destination, model } = req.body;
+  if (!destination || !model) {
+    return res.status(400).json({ error: 'destination and model required' });
+  }
+  try {
+    const estimate = await getShippingEstimate(destination, model);
+    res.json(estimate);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to get shipping estimate' });
   }
 });
 
