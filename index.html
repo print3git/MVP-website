@@ -27,8 +27,6 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
     />
 
-
-
     <!-- Google <model-viewer>  -->
     <!--  Use a CDN versioned URL so the module is served with CORS headers and the browser can actually download it.  -->
     <script
@@ -85,6 +83,7 @@
         display: none;
       }
     </style>
+  </head>
 
   <body class="bg-[#1A1A1D] text-white font-sans flex flex-col">
     <header class="flex items-center justify-between py-4 px-6">
@@ -150,81 +149,85 @@
           >
             <i class="fab fa-instagram"></i>
           </button>
+        </div>
       </div>
     </header>
 
     <main class="flex-1 flex flex-col items-center justify-start gap-8 px-4 lg:px-16">
       <!-- 3‑D preview ------------------------------------------------------ -->
       <div class="relative flex justify-center">
-      <section
-        id="preview-wrapper"
-        class="relative w-full max-w-lg h-80 bg-[#2A2A2E] border border-white/10 rounded-3xl overflow-visible"
-      >
-        <!-- fallback still-image (hidden)  -->
-        <img
-          id="preview-img"
-          src="https://placehold.co/600x400/2A2A2E/2A2A2E?text="
-          class="object-contain h-full w-full"
-          style="display: none"
-          alt="Preview image"
-        />
-
-        <!-- The astronaut now loads eagerly and is always visible  -->
-        <model-viewer
-          id="viewer"
-          src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
-          alt="3D astronaut"
-          environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
-          camera-controls
-          auto-rotate
-          loading="eager"
-          style="width: 100%; height: 100%; display: block"
-        ></model-viewer>
-
-        <!-- centred loader -->
-        <div
-          id="loader"
-          class="absolute inset-0 flex flex-col items-center justify-center bg-[#2A2A2E]/80"
-          style="display: none"
+        <section
+          id="preview-wrapper"
+          class="relative w-full max-w-lg h-80 bg-[#2A2A2E] border border-white/10 rounded-3xl overflow-visible"
         >
+          <!-- fallback still-image (hidden)  -->
+          <img
+            id="preview-img"
+            src="https://placehold.co/600x400/2A2A2E/2A2A2E?text="
+            class="object-contain h-full w-full"
+            style="display: none"
+            alt="Preview image"
+          />
+
+          <!-- The astronaut now loads eagerly and is always visible  -->
+          <model-viewer
+            id="viewer"
+            src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
+            alt="3D astronaut"
+            environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
+            camera-controls
+            auto-rotate
+            loading="eager"
+            style="width: 100%; height: 100%; display: block"
+          ></model-viewer>
+
+          <!-- centred loader -->
           <div
-            class="h-10 w-10 border-4 border-white border-t-transparent rounded-full animate-spin mb-6"
-          ></div>
-          <div id="progress-wrapper" class="w-3/4 max-w-xs" style="display: none">
-            <div class="w-full h-2 bg-gray-700 rounded">
-              <div id="progress-bar" class="h-full bg-cyan-400 rounded" style="width: 0%"></div>
+            id="loader"
+            class="absolute inset-0 flex flex-col items-center justify-center bg-[#2A2A2E]/80"
+            style="display: none"
+          >
+            <div
+              class="h-10 w-10 border-4 border-white border-t-transparent rounded-full animate-spin mb-6"
+            ></div>
+            <div id="progress-wrapper" class="w-3/4 max-w-xs" style="display: none">
+              <div class="w-full h-2 bg-gray-700 rounded">
+                <div id="progress-bar" class="h-full bg-cyan-400 rounded" style="width: 0%"></div>
+              </div>
+              <div id="progress-text" class="text-center text-sm text-white mt-2"></div>
             </div>
-            <div id="progress-text" class="text-center text-sm text-white mt-2"></div>
           </div>
-        </div>
 
-        <!-- checkout button -->
-        <a
-          id="checkout-button"
-          href="payment.html"
-          class="absolute bottom-4 right-4 font-bold py-3 px-5 rounded-full shadow-md transition"
-          style="background-color: #1f3b65; color: #5ec2c5"
-          onmouseover="this.style.opacity='0.85'"
-          onmouseout="this.style.opacity='1'"
-          >Checkout</a
-        >
-        <button
-          id="buy-now-button"
-          class="hidden absolute bottom-4 right-32 font-bold py-3 px-5 rounded-full shadow-md transition"
-          style="background-color: #5ec2c5; color: #1f3b65"
-        >
-          Buy Now
-        </button>
+          <!-- checkout button -->
+          <a
+            id="checkout-button"
+            href="payment.html"
+            class="absolute bottom-4 right-4 font-bold py-3 px-5 rounded-full shadow-md transition"
+            style="background-color: #1f3b65; color: #5ec2c5"
+            onmouseover="this.style.opacity='0.85'"
+            onmouseout="this.style.opacity='1'"
+            >Checkout</a
+          >
+          <button
+            id="buy-now-button"
+            class="hidden absolute bottom-4 right-32 font-bold py-3 px-5 rounded-full shadow-md transition"
+            style="background-color: #5ec2c5; color: #1f3b65"
+          >
+            Buy Now
+          </button>
+          <div
+            id="gen-error"
+            class="absolute bottom-2 left-0 w-full text-center text-red-400 pointer-events-none"
+            aria-live="assertive"
+          ></div>
+        </section>
         <div
-          id="gen-error"
-          class="absolute bottom-2 left-0 w-full text-center text-red-400 pointer-events-none"
-          aria-live="assertive"
-        ></div>
-      </section>
-      <div id="subreddit-quote" class="absolute left-full ml-4 bottom-20 flex flex-col text-sm text-gray-400 text-center">
-        <p>"I'm astonished at how high-quality the print"</p>
-        <p>is - email from an r/subreddit user</p>
-      </div>
+          id="subreddit-quote"
+          class="absolute left-full ml-4 bottom-8 flex flex-col text-sm text-gray-400 text-center"
+        >
+          <p>"I'm astonished at how high-quality the print"</p>
+          <p>is - email from an r/subreddit user</p>
+        </div>
       </div>
 
       <div
@@ -238,7 +241,7 @@
       <!-- Prompt / upload area ------------------------------------------- -->
       <section class="w-full max-w-xl">
         <div class="flex flex-col items-center text-center">
-          <img src="img/boxlogo.png" alt="print3 cube" class="w-32 h-auto mb-8"/>
+          <img src="img/boxlogo.png" alt="print3 cube" class="w-32 h-auto mb-8" />
           <h1 class="text-3xl font-semibold mb-8">Design & Print in 30 Seconds.</h1>
 
           <div class="flex items-center w-full gap-4">
@@ -298,8 +301,6 @@
         </button>
       </div>
     </div>
-
-
 
     <!--  Application logic ----------------------------------------------- -->
     <script src="js/subredditLanding.js"></script>
