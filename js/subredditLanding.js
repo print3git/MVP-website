@@ -5,7 +5,7 @@ const MAP = {
   },
   '3dprinting': {
     glb: 'models/reddit_3dprinting.glb',
-    quote: 'Join the 3D printing revolution on print3!'
+    quote: ''
   },
   gamedev: {
     glb: 'models/reddit_gamedev.glb',
