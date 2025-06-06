@@ -791,6 +791,30 @@ app.get('/api/confirm-subscription', async (req, res) => {
 });
 
 /**
+ * POST /api/webhook/sendgrid
+ * Handle SendGrid event notifications
+ */
+app.post('/api/webhook/sendgrid', async (req, res) => {
+  const events = Array.isArray(req.body) ? req.body : [];
+  try {
+    for (const evt of events) {
+      if (evt.event === 'bounce' || evt.event === 'spamreport') {
+        const email = evt.email;
+        if (email) {
+          await db.query(
+            'UPDATE mailing_list SET unsubscribed=TRUE WHERE email=$1',
+            [email]
+          );
+        }
+      }
+    }
+  } catch (err) {
+    console.error('Failed to process SendGrid webhook', err);
+  }
+  res.sendStatus(204);
+});
+
+/**
  * POST /api/webhook/stripe
  * Handle Stripe payment confirmation
  */

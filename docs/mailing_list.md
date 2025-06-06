@@ -9,3 +9,8 @@ that link marks the address as confirmed.
 To configure the email service, set `SENDGRID_API_KEY` and `EMAIL_FROM` in `.env`.
 Subscriptions are processed through the `/api/subscribe` endpoint which inserts
 or updates the address and dispatches the confirmation email.
+
+To keep the list healthy, SendGrid's Event Webhook should be pointed at
+`/api/webhook/sendgrid`. Configure this URL in the SendGrid dashboard so that
+bounce or spam complaint events automatically mark the matching email as
+`unsubscribed` in the database.
