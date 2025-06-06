@@ -58,18 +58,24 @@ let uploadedFiles = [];
 let lastJobId = null;
 let savedProfile = null;
 
+
 // Track when the prompt or images have been modified after a generation
 let editsPending = false;
 
+
 let progressInterval = null;
+let progressStart = null;
+let usingViewerProgress = false;
 
 function startProgress(estimateMs = 20000) {
   if (!refs.progressWrapper) return;
-  const start = Date.now();
+  progressStart = Date.now();
+  usingViewerProgress = false;
   refs.progressBar.style.width = '0%';
   refs.progressWrapper.style.display = 'block';
   const tick = () => {
-    const elapsed = Date.now() - start;
+    if (usingViewerProgress) return;
+    const elapsed = Date.now() - progressStart;
     const pct = Math.min((elapsed / estimateMs) * 100, 99);
     refs.progressBar.style.width = pct + '%';
     const remaining = Math.max(estimateMs - elapsed, 0);
@@ -83,6 +89,7 @@ function startProgress(estimateMs = 20000) {
 function stopProgress() {
   if (!refs.progressWrapper) return;
   clearInterval(progressInterval);
+  usingViewerProgress = false;
   refs.progressBar.style.width = '100%';
   refs.progressText.textContent = '';
   setTimeout(() => {
@@ -360,18 +367,25 @@ refs.submitBtn.addEventListener('click', async () => {
 });
 
 window.addEventListener('DOMContentLoaded', () => {
-  const storedModel = localStorage.getItem('print3Model');
-  if (storedModel) {
-    refs.viewer.src = storedModel;
-    showModel();
-    setStep('model');
-    document.documentElement.classList.add('has-generated');
-    editsPending = false;
-  } else {
-    setStep('prompt');
-    showModel();
-    refs.viewer.src = FALLBACK_GLB;
-    editsPending = false;
+
+  setStep('prompt');
+  showModel();
+  refs.viewer.src = FALLBACK_GLB;
+  if (refs.viewer) {
+    refs.viewer.addEventListener('progress', (e) => {
+      if (!progressStart) progressStart = Date.now();
+      usingViewerProgress = true;
+      const pct = Math.round(e.detail.totalProgress * 100);
+      refs.progressBar.style.width = pct + '%';
+      const elapsed = Date.now() - progressStart;
+      if (pct < 100) {
+        const remaining = pct > 0 ? (elapsed * (100 - pct)) / pct : 0;
+        refs.progressText.textContent = `~${Math.ceil(remaining / 1000)}s remaining`;
+      } else {
+        stopProgress();
+      }
+    });
+
   }
   fetchProfile().then(() => {
     if (savedProfile && refs.buyNowBtn) {
