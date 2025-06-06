@@ -70,6 +70,7 @@ app.post('/api/register', async (req, res) => {
       'INSERT INTO users(username,email,password_hash) VALUES($1,$2,$3) RETURNING id,username',
       [username, email, hash]
     );
+    await db.query('INSERT INTO user_profiles(user_id) VALUES($1)', [rows[0].id]);
     const token = jwt.sign({ id: rows[0].id, username }, AUTH_SECRET);
     res.json({ token });
   } catch (err) {
