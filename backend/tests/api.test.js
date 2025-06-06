@@ -92,8 +92,8 @@ test('create-order applies discount', async () => {
     })
   );
   const insertCall = db.query.mock.calls.find((c) => c[0].includes('INSERT INTO orders'));
-  expect(insertCall[1][2]).toBe(180);
-  expect(insertCall[1][6]).toBe(20);
+  expect(insertCall[1][3]).toBe(180);
+  expect(insertCall[1][7]).toBe(20);
 });
 
 test('create-order rejects unknown job', async () => {
@@ -357,4 +357,29 @@ test('POST /api/profile saves details', async () => {
   expect(res.status).toBe(204);
   const call = db.query.mock.calls.find((c) => c[0].includes('INSERT INTO user_profiles'));
   expect(call).toBeTruthy();
+});
+
+test('POST /api/create-order saves user id', async () => {
+  db.query.mockResolvedValueOnce({ rows: [{ job_id: '1' }] });
+  db.query.mockResolvedValueOnce({});
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  await request(app)
+    .post('/api/create-order')
+    .set('authorization', `Bearer ${token}`)
+    .send({ jobId: '1', price: 100 });
+  const call = db.query.mock.calls.find((c) => c[0].includes('INSERT INTO orders'));
+  expect(call[1][2]).toBe('u1');
+});
+
+test('GET /api/my/orders returns orders', async () => {
+  db.query.mockResolvedValueOnce({ rows: [{ session_id: 's1' }] });
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  const res = await request(app).get('/api/my/orders').set('authorization', `Bearer ${token}`);
+  expect(res.status).toBe(200);
+  expect(res.body[0].session_id).toBe('s1');
+});
+
+test('GET /api/my/orders requires auth', async () => {
+  const res = await request(app).get('/api/my/orders');
+  expect(res.status).toBe(401);
 });
