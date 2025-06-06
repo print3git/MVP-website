@@ -18,6 +18,7 @@ const fs = require('fs');
 const config = require('./config');
 const stripe = require('stripe')(config.stripeKey);
 const { enqueuePrint, processQueue, progressEmitter } = require('./queue/printQueue');
+const { sendMail } = require('./mail');
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'admin';
 
 const AUTH_SECRET = process.env.AUTH_SECRET || 'secret';
@@ -263,14 +264,14 @@ app.get('/api/profile', authRequired, async (req, res) => {
 });
 
 app.post('/api/profile', authRequired, async (req, res) => {
-  const { shippingInfo, paymentInfo } = req.body;
+  const { shippingInfo, paymentInfo, competitionNotify } = req.body;
   try {
     await db.query(
-      `INSERT INTO user_profiles(user_id, shipping_info, payment_info)
-       VALUES($1,$2,$3)
+      `INSERT INTO user_profiles(user_id, shipping_info, payment_info, competition_notify)
+       VALUES($1,$2,$3,$4)
        ON CONFLICT (user_id)
-       DO UPDATE SET shipping_info=$2, payment_info=$3`,
-      [req.user.id, shippingInfo || {}, paymentInfo || {}]
+       DO UPDATE SET shipping_info=$2, payment_info=$3, competition_notify=$4`,
+      [req.user.id, shippingInfo || {}, paymentInfo || {}, competitionNotify !== false]
     );
     res.sendStatus(204);
   } catch (err) {
@@ -559,7 +560,22 @@ app.post('/api/admin/competitions', adminCheck, async (req, res) => {
        VALUES($1,$2,$3,$4) RETURNING *`,
       [name, start_date, end_date, prize_description]
     );
-    res.json(rows[0]);
+    const comp = rows[0];
+    try {
+      const recipients = await db.query(
+        `SELECT u.email FROM users u JOIN user_profiles p ON u.id=p.user_id WHERE p.competition_notify=TRUE`
+      );
+      for (const r of recipients.rows) {
+        await sendMail(
+          r.email,
+          'New Competition',
+          `A new competition "${comp.name}" has been created.`
+        );
+      }
+    } catch (err) {
+      console.error('Failed to send competition notification', err);
+    }
+    res.json(comp);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to create competition' });
@@ -681,11 +697,41 @@ app.post('/api/webhook/stripe', express.raw({ type: 'application/json' }), async
   res.sendStatus(200);
 });
 
+async function checkCompetitionStart() {
+  try {
+    const comps = await db.query(
+      `SELECT id, name FROM competitions WHERE start_date <= CURRENT_DATE AND start_notification_sent=FALSE`
+    );
+    if (comps.rows.length) {
+      const recipients = await db.query(
+        `SELECT u.email FROM users u JOIN user_profiles p ON u.id=p.user_id WHERE p.competition_notify=TRUE`
+      );
+      for (const comp of comps.rows) {
+        for (const r of recipients.rows) {
+          await sendMail(
+            r.email,
+            'Voting Open',
+            `Voting is now open for competition "${comp.name}".`
+          );
+        }
+        await db.query('UPDATE competitions SET start_notification_sent=TRUE WHERE id=$1', [
+          comp.id,
+        ]);
+      }
+    }
+  } catch (err) {
+    console.error('Failed to send start notifications', err);
+  }
+}
+
 // Start the server if this file is run directly
 if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`API server listening on http://localhost:${PORT}`);
   });
+  checkCompetitionStart();
+  setInterval(checkCompetitionStart, 3600000);
 }
 
 module.exports = app;
+module.exports.checkCompetitionStart = checkCompetitionStart;
