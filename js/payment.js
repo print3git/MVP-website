@@ -141,6 +141,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (ship.address) document.getElementById('ship-address').value = ship.address;
         if (ship.city) document.getElementById('ship-city').value = ship.city;
         if (ship.zip) document.getElementById('ship-zip').value = ship.zip;
+        const pay = profile.payment_info || {};
+        if (pay.name) document.getElementById('pay-name').value = pay.name;
+        if (pay.number) document.getElementById('pay-number').value = pay.number;
+        if (pay.exp) document.getElementById('pay-exp').value = pay.exp;
+        if (pay.cvc) document.getElementById('pay-cvc').value = pay.cvc;
       }
     } catch {
       /* ignore profile errors */

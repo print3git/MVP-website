@@ -158,6 +158,41 @@
               />
             </div>
 
+            <div>
+              <input
+                id="pay-name"
+                class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+                placeholder="Name on Card"
+                autocomplete="cc-name"
+                aria-label="Name on card"
+              />
+            </div>
+            <div>
+              <input
+                id="pay-number"
+                class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+                placeholder="Card Number"
+                autocomplete="cc-number"
+                aria-label="Card number"
+              />
+            </div>
+            <div class="flex gap-2">
+              <input
+                id="pay-exp"
+                class="flex-1 p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+                placeholder="MM/YY"
+                autocomplete="cc-exp"
+                aria-label="Expiration"
+              />
+              <input
+                id="pay-cvc"
+                class="w-28 p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+                placeholder="CVC"
+                autocomplete="cc-csc"
+                aria-label="CVC"
+              />
+            </div>
+
             <div id="payment-element" class="text-center text-gray-400">
               [Stripe payment form will go here]
             </div>
