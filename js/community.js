@@ -109,6 +109,8 @@ async function captureSnapshots(container) {
 
 async function loadMore(type) {
   const state = window.communityState[type];
+  if (state.loading || state.done) return;
+  state.loading = true;
   const category = document.getElementById('category').value;
   const search = document.getElementById('search')?.value || '';
   const order = document.getElementById('sort')?.value || 'desc';
@@ -121,18 +123,40 @@ async function loadMore(type) {
   models.forEach((m) => grid.appendChild(createCard(m)));
   await captureSnapshots(grid);
   if (models.length < 6) {
-    document.getElementById(`${type}-load`).classList.add('hidden');
+    state.done = true;
+    const sentinel = document.getElementById(`${type}-sentinel`);
+    const obs = state.observer;
+    if (obs && sentinel) obs.unobserve(sentinel);
   }
+  state.loading = false;
+}
+
+function createObserver(type) {
+  const sentinel = document.getElementById(`${type}-sentinel`);
+  if (!sentinel) return;
+  const observer = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+      loadMore(type);
+    }
+  });
+  observer.observe(sentinel);
+  window.communityState[type].observer = observer;
 }
 
 function init() {
-  window.communityState = { recent: { offset: 0 }, popular: { offset: 0 } };
-  document.getElementById('recent-load').addEventListener('click', () => loadMore('recent'));
-  document.getElementById('popular-load').addEventListener('click', () => loadMore('popular'));
+  window.communityState = {
+    recent: { offset: 0, done: false, loading: false, observer: null },
+    popular: { offset: 0, done: false, loading: false, observer: null },
+  };
   document.getElementById('category').addEventListener('change', () => {
     document.getElementById('recent-grid').innerHTML = '';
     document.getElementById('popular-grid').innerHTML = '';
-    window.communityState = { recent: { offset: 0 }, popular: { offset: 0 } };
+    window.communityState = {
+      recent: { offset: 0, done: false, loading: false, observer: null },
+      popular: { offset: 0, done: false, loading: false, observer: null },
+    };
+    createObserver('popular');
+    createObserver('recent');
     loadMore('popular');
     loadMore('recent');
   });
@@ -141,7 +165,12 @@ function init() {
     sortSelect.addEventListener('change', () => {
       document.getElementById('recent-grid').innerHTML = '';
       document.getElementById('popular-grid').innerHTML = '';
-      window.communityState = { recent: { offset: 0 }, popular: { offset: 0 } };
+      window.communityState = {
+        recent: { offset: 0, done: false, loading: false, observer: null },
+        popular: { offset: 0, done: false, loading: false, observer: null },
+      };
+      createObserver('popular');
+      createObserver('recent');
       loadMore('popular');
       loadMore('recent');
     });
@@ -151,11 +180,18 @@ function init() {
     searchInput.addEventListener('input', () => {
       document.getElementById('recent-grid').innerHTML = '';
       document.getElementById('popular-grid').innerHTML = '';
-      window.communityState = { recent: { offset: 0 }, popular: { offset: 0 } };
+      window.communityState = {
+        recent: { offset: 0, done: false, loading: false, observer: null },
+        popular: { offset: 0, done: false, loading: false, observer: null },
+      };
+      createObserver('popular');
+      createObserver('recent');
       loadMore('popular');
       loadMore('recent');
     });
   }
+  createObserver('popular');
+  createObserver('recent');
   loadMore('popular');
   loadMore('recent');
 }

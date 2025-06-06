@@ -56,7 +56,9 @@ function setStep(name) {
 window.shareOn = shareOn;
 let uploadedFiles = [];
 let lastJobId = null;
+
 let savedProfile = null;
+
 
 // Track when the prompt or images have been modified after a generation
 let editsPending = false;
@@ -123,7 +125,7 @@ async function fetchProfile() {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (res.ok) {
-      savedProfile = await res.json();
+      userProfile = await res.json();
     }
   } catch (err) {
     console.error('Failed to load profile', err);
@@ -131,7 +133,7 @@ async function fetchProfile() {
 }
 
 async function buyNow() {
-  if (!savedProfile) return;
+  if (!userProfile) return;
   const jobId = localStorage.getItem('print3JobId');
   const res = await fetch('/api/create-order', {
     method: 'POST',
@@ -140,7 +142,7 @@ async function buyNow() {
       jobId,
       price: 2000,
       qty: 1,
-      shippingInfo: savedProfile.shipping_info,
+      shippingInfo: userProfile.shipping_info,
     }),
   });
   const data = await res.json();
@@ -366,7 +368,7 @@ refs.submitBtn.addEventListener('click', async () => {
   hideDemo();
 
   refs.checkoutBtn.classList.remove('hidden');
-  if (savedProfile) refs.buyNowBtn?.classList.remove('hidden');
+  if (userProfile) refs.buyNowBtn?.classList.remove('hidden');
   refs.submitIcon.classList.replace('fa-stop', 'fa-arrow-up');
 });
 
@@ -390,7 +392,7 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   }
   fetchProfile().then(() => {
-    if (savedProfile && refs.buyNowBtn) {
+    if (userProfile && refs.buyNowBtn) {
       refs.buyNowBtn.classList.remove('hidden');
       refs.buyNowBtn.addEventListener('click', buyNow);
     }
