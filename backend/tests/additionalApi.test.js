@@ -239,4 +239,5 @@ test('Stripe webhook invalid signature', async () => {
     .set('Content-Type', 'application/json')
     .send(payload);
   expect(res.status).toBe(400);
+  expect(res.text).toContain('Webhook Error: bad sig');
 });
