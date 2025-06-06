@@ -12,4 +12,6 @@ module.exports = {
   hunyuanApiKey: process.env.HUNYUAN_API_KEY,
   hunyuanServerUrl: process.env.HUNYUAN_SERVER_URL || 'http://localhost:4000',
   port: process.env.PORT || 3000,
+  sendgridKey: process.env.SENDGRID_API_KEY || '',
+  emailFrom: process.env.EMAIL_FROM || 'noreply@example.com',
 };

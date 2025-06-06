@@ -38,6 +38,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const loader = document.getElementById('loader');
   const viewer = document.getElementById('viewer');
   const optOut = document.getElementById('opt-out');
+  const emailEl = document.getElementById('checkout-email');
+  const optInEl = document.getElementById('ml-optin');
   const successMsg = document.getElementById('success');
   const cancelMsg = document.getElementById('cancel');
   const flashBanner = document.getElementById('flash-banner');
@@ -159,6 +161,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       address: document.getElementById('ship-address').value,
       city: document.getElementById('ship-city').value,
       zip: document.getElementById('ship-zip').value,
+      email: emailEl.value,
     };
     const url = await createCheckout(qty, discount, shippingInfo);
     if (stripe) {
@@ -166,6 +169,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     } else {
       // Fallback if Stripe failed to load: just navigate to the checkout URL
       window.location.href = url;
+    }
+    if (optInEl && optInEl.checked && emailEl.value) {
+      fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: emailEl.value }),
+      });
     }
   });
 });
