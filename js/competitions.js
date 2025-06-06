@@ -67,13 +67,25 @@ async function load() {
         <button onclick="shareOn('twitter')" aria-label="Share on Twitter" class="w-9 h-9 flex items-center justify-center bg-[#1A1A1D] border border-white/10 rounded hover:bg-[#3A3A3E]"><i class="fab fa-twitter"></i></button>
       </div>
       <table class="leaderboard w-full mt-4 text-sm"></table>
-      <div class="entries-grid grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mt-4"></div>`;
+
+      <div class="comments space-y-1 mt-4"></div>
+      <form data-id="${c.id}" class="comment-form flex space-x-2 mt-2">
+        <input type="text" name="text" class="flex-1 bg-[#1A1A1D] border border-white/10 rounded px-2" placeholder="Add a comment" />
+        <button class="bg-[#30D5C8] text-[#1A1A1D] px-2 rounded">Post</button>
+      </form>`;
+
     list.appendChild(div);
     const table = div.querySelector('.leaderboard');
     const grid = div.querySelector('.entries-grid');
     loadLeaderboard(c.id, table, grid);
     setInterval(() => loadLeaderboard(c.id, table, grid), 30000);
     div.querySelector('.enter').addEventListener('click', () => enter(c.id));
+    const commentsDiv = div.querySelector('.comments');
+    loadComments(c.id, commentsDiv);
+    div.querySelector('.comment-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      submitComment(c.id, e.target, commentsDiv);
+    });
     const timer = div.querySelector('.countdown');
     startCountdown(timer);
   });
@@ -142,6 +154,34 @@ async function enter(id) {
     body: JSON.stringify({ modelId }),
   });
   alert('Submitted');
+}
+
+async function loadComments(id, container) {
+  const res = await fetch(`/api/competitions/${id}/comments`);
+  if (!res.ok) return;
+  const comments = await res.json();
+  container.innerHTML = comments
+    .map((c) => `<p><strong>${c.username}:</strong> ${c.text}</p>`)
+    .join('');
+}
+
+async function submitComment(id, form, container) {
+  const token = localStorage.getItem('token');
+  if (!token) return alert('Login required');
+  const text = form.text.value.trim();
+  if (!text) return;
+  const res = await fetch(`/api/competitions/${id}/comments`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ text }),
+  });
+  if (res.ok) {
+    form.text.value = '';
+    loadComments(id, container);
+  }
 }
 
 async function loadPast() {
