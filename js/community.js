@@ -123,11 +123,7 @@ async function captureSnapshots(container) {
   }
 }
 
-async function loadMore(type) {
-  const state = window.communityState[type];
-  if (state.loading || state.done) return;
-  state.loading = true;
-
+function getFilters() {
   const category = document.getElementById('category').value;
   const search = document.getElementById('search')?.value || '';
   const order = document.getElementById('sort')?.value || 'desc';
@@ -150,7 +146,6 @@ async function loadMore(type, filters = getFilters()) {
   await captureSnapshots(grid);
   const btn = document.getElementById(`${type}-load`);
   if (models.length < 6) {
-
     btn.classList.add('hidden');
   } else {
     btn.classList.remove('hidden');
@@ -170,7 +165,6 @@ function renderGrid(type, filters = getFilters()) {
     else btn.classList.remove('hidden');
   } else {
     loadMore(type, filters);
-
   }
   state.loading = false;
 }
@@ -188,7 +182,6 @@ function createObserver(type) {
 }
 
 function init() {
-
   window.communityState = {
     recent: { offset: 0, done: false, loading: false, observer: null },
     popular: { offset: 0, done: false, loading: false, observer: null },
@@ -204,12 +197,10 @@ function init() {
     createObserver('recent');
     loadMore('popular');
     loadMore('recent');
-
   });
   const sortSelect = document.getElementById('sort');
   if (sortSelect) {
     sortSelect.addEventListener('change', () => {
-
       document.getElementById('recent-grid').innerHTML = '';
       document.getElementById('popular-grid').innerHTML = '';
       window.communityState = {
@@ -220,15 +211,11 @@ function init() {
       createObserver('recent');
       loadMore('popular');
       loadMore('recent');
-
     });
   }
   const searchInput = document.getElementById('search');
   if (searchInput) {
-
-    searchInput.addEventListener('input', () => {
-
-
+    function onSearchInput() {
       document.getElementById('recent-grid').innerHTML = '';
       document.getElementById('popular-grid').innerHTML = '';
       window.communityState = {
@@ -239,14 +226,14 @@ function init() {
       createObserver('recent');
       loadMore('popular');
       loadMore('recent');
-    };
+    }
+
     searchInput.addEventListener('input', debounce(onSearchInput, SEARCH_DELAY));
   }
   createObserver('popular');
   createObserver('recent');
   loadMore('popular');
   loadMore('recent');
-
 }
 
 export { like, init };
