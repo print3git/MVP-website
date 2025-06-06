@@ -12,12 +12,13 @@ This repository contains the early MVP code for print2's website and backend.
 1. Copy `.env.example` to `.env` in the repository root and update the values:
 
    - `DB_URL` – connection string for your PostgreSQL database.
-  - `STRIPE_SECRET_KEY` – secret key from your Stripe dashboard.
-  - `STRIPE_PUBLISHABLE_KEY` – publishable key for Stripe.js on the frontend.
-  - `STRIPE_WEBHOOK_SECRET` – signing secret for Stripe webhooks.
-   - `HUNYUAN_API_KEY` – key for the Hunyuan3D API.
-   - Optional: `PORT` and `HUNYUAN_PORT` to override the default ports.
-   - Optional: `HUNYUAN_SERVER_URL` if your Hunyuan API runs on a custom URL.
+
+- `STRIPE_SECRET_KEY` – secret key from your Stripe dashboard.
+- `STRIPE_PUBLISHABLE_KEY` – publishable key for Stripe.js on the frontend.
+- `STRIPE_WEBHOOK_SECRET` – signing secret for Stripe webhooks.
+- `HUNYUAN_API_KEY` – key for the Hunyuan3D API.
+- Optional: `PORT` and `HUNYUAN_PORT` to override the default ports.
+- Optional: `HUNYUAN_SERVER_URL` if your Hunyuan API runs on a custom URL.
 
 2. Install dependencies for both servers:
 
@@ -55,6 +56,11 @@ python -m http.server
 
 Then navigate to `http://localhost:8080/index.html` or
 `http://localhost:8080/payment.html`.
+
+## Uploading Reference Images
+
+Images can be added via drag-and-drop in the generator page. Dropping one or more files opens a cropping dialog powered by Cropper.js allowing you to trim each image before upload.
+
 
 ## User Profiles API
 

@@ -86,7 +86,6 @@ function stopProgress() {
   }, 300);
 }
 
-
 const hideAll = () => {
   refs.previewImg.style.display = 'none';
   refs.loader.style.display = 'none';
