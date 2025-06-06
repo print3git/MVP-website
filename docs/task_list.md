@@ -30,12 +30,13 @@ This consolidated list merges all outstanding tasks from the previous to-do docu
 - Offer multiple payment methods including Apple Pay and Google Pay.
 - Automatically calculate and display shipping cost and delivery ETA before checkout.
 
-- Send a reminder email if a user generates a model but doesn't purchase. *(done)*
+- Send a reminder email if a user generates a model but doesn't purchase. _(done)_
 - Provide incentives like discounts or credits for the first order.
 - Automatically prefill shipping and payment details from the user's profile.
   - Retrieve saved profile info from the backend.
   - Populate the checkout form with the saved data.
 - Offer a one-click "Buy Now" button directly on the model viewer page.
+
   - Add a button that uses saved details.
   - Submit the order in one step.
 
@@ -57,7 +58,6 @@ This consolidated list merges all outstanding tasks from the previous to-do docu
 - Save user preferences such as units or color scheme.
   - Persist preferences to local storage.
   - Apply them on page load.
-
 
 ## Testing & Continuous Integration
 
@@ -88,7 +88,6 @@ This consolidated list merges all outstanding tasks from the previous to-do docu
 
 ## Creating urgency
 
-
 - Implement countdown timers for limited-time offers.
 
 - Show dynamic "Only X left" or "Selling fast" notices.
@@ -103,6 +102,5 @@ This consolidated list merges all outstanding tasks from the previous to-do docu
 - Offer free shipping for a short window with a countdown bar.
 - Add progress bars toward goals like "Join the first 100 buyers".
 - Let users opt in for notifications when a promotion is about to end.
- 
-- Implement a one-click "Buy Now" checkout option to reduce friction.
 
+- Implement a one-click "Buy Now" checkout option to reduce friction.
