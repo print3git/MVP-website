@@ -244,6 +244,33 @@ test('GET /api/competitions/:id/entries leaderboard order', async () => {
   expect(res.body.map((e) => e.likes)).toEqual([10, 5, 1]);
 });
 
+test('GET /api/competitions/:id/comments', async () => {
+  db.query.mockResolvedValueOnce({ rows: [{ id: 'c1', text: 'hi' }] });
+  const res = await request(app).get('/api/competitions/5/comments');
+  expect(res.status).toBe(200);
+  expect(res.body[0].text).toBe('hi');
+});
+
+test('POST /api/competitions/:id/comments requires auth', async () => {
+  const res = await request(app).post('/api/competitions/5/comments').send({ text: 'hey' });
+  expect(res.status).toBe(401);
+});
+
+test('POST /api/competitions/:id/comments', async () => {
+  db.query.mockResolvedValueOnce({ rows: [{ id: 'c1', text: 'hello' }] });
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  const res = await request(app)
+    .post('/api/competitions/5/comments')
+    .set('authorization', `Bearer ${token}`)
+    .send({ text: 'hello' });
+  expect(res.status).toBe(201);
+  expect(res.body.text).toBe('hello');
+  expect(db.query).toHaveBeenCalledWith(
+    expect.stringContaining('INSERT INTO competition_comments'),
+    ['5', 'u1', 'hello']
+  );
+});
+
 test('POST /api/competitions/:id/enter', async () => {
   db.query.mockResolvedValueOnce({});
   const token = jwt.sign({ id: 'u1' }, 'secret');
