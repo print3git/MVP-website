@@ -147,6 +147,20 @@ test('Stripe webhook invalid signature', async () => {
   expect(res.status).toBe(400);
 });
 
+test('Stripe webhook invalid signature does not process', async () => {
+  stripeMock.webhooks.constructEvent.mockImplementation(() => {
+    throw new Error('bad sig');
+  });
+  const payload = JSON.stringify({});
+  await request(app)
+    .post('/api/webhook/stripe')
+    .set('stripe-signature', 'bad')
+    .set('Content-Type', 'application/json')
+    .send(payload);
+  expect(db.query).not.toHaveBeenCalled();
+  expect(enqueuePrint).not.toHaveBeenCalled();
+});
+
 test('POST /api/generate accepts image upload', async () => {
   const chunks = [];
   jest.spyOn(fs, 'createWriteStream').mockImplementation(() => {
@@ -206,6 +220,11 @@ test('POST /api/community requires jobId', async () => {
 test('POST /api/community requires auth', async () => {
   const res = await request(app).post('/api/community').send({ jobId: 'j1' });
   expect(res.status).toBe(401);
+});
+
+test('POST /api/community unauthorized skips DB', async () => {
+  await request(app).post('/api/community').send({ jobId: 'j1' });
+  expect(db.query).not.toHaveBeenCalled();
 });
 
 test('GET /api/community/recent returns creations', async () => {
