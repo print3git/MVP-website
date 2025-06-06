@@ -228,7 +228,11 @@ app.get('/api/my/models', authRequired, async (req, res) => {
   const offset = parseInt(req.query.offset, 10) || 0;
   try {
     const { rows } = await db.query(
-      'SELECT * FROM jobs WHERE user_id=$1 ORDER BY created_at DESC LIMIT $2 OFFSET $3',
+      `SELECT job_id, prompt, model_url, status, is_public, created_at, snapshot
+       FROM jobs
+       WHERE user_id=$1
+       ORDER BY created_at DESC
+       LIMIT $2 OFFSET $3`,
       [req.user.id, limit, offset]
     );
     res.json(rows);
@@ -295,11 +299,15 @@ app.get('/api/users/:username/models', async (req, res) => {
     if (!rows.length) return res.status(404).json({ error: 'User not found' });
     const userId = rows[0].id;
     const models = await db.query(
-      `SELECT j.*, COALESCE(l.count,0) as likes
+      `SELECT j.job_id, j.prompt, j.model_url, j.status, j.is_public,
+              j.created_at, j.snapshot,
+              COALESCE(l.count,0) as likes
        FROM jobs j
        LEFT JOIN (SELECT model_id, COUNT(*) as count FROM likes GROUP BY model_id) l
        ON j.job_id=l.model_id
-       WHERE j.user_id=$1 AND j.is_public=TRUE ORDER BY j.created_at DESC LIMIT $2 OFFSET $3`,
+       WHERE j.user_id=$1 AND j.is_public=TRUE
+       ORDER BY j.created_at DESC
+       LIMIT $2 OFFSET $3`,
       [userId, limit, offset]
     );
     res.json(models.rows);
