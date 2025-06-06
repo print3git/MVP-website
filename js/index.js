@@ -38,8 +38,6 @@ const refs = {
   stepPrompt: $('step-prompt'),
   stepModel: $('step-model'),
   stepBuy: $('step-buy'),
-  promptTip: $('prompt-tip'),
-  promptTipClose: $('prompt-tip-close'),
   tutorialOverlay: $('tutorial-overlay'),
   tutorialSkip: $('tutorial-skip'),
 };
@@ -348,8 +346,6 @@ async function fetchGlb(prompt, files) {
     return data.glb_url;
   } catch (err) {
     document.getElementById('gen-error').textContent = 'Generation failed';
-    return FALLBACK_GLB;
-  }
 }
 
 refs.submitBtn.addEventListener('click', async () => {
