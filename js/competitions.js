@@ -90,7 +90,7 @@ async function loadPast() {
   comps.forEach((c) => {
     const div = document.createElement('div');
     div.className = 'bg-[#2A2A2E] p-4 rounded-xl space-y-2 text-center';
-    const altText = c.name ? `Winner of ${c.name}` : `Model ${c.winner_model_id}`;
+    const altText = c.name || c.winner_model_id;
     div.innerHTML = `<h3 class="text-lg">${c.name}</h3>
       <img src="${c.model_url}" alt="${altText}" class="w-32 h-32 object-contain mx-auto" />`;
     container.appendChild(div);
