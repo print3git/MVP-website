@@ -26,7 +26,7 @@ describe('index validatePrompt', () => {
       .readFileSync(path.join(__dirname, '../../../js/index.js'), 'utf8')
       .replace("import { shareOn } from './share.js';", '')
       .replace(/window\.addEventListener\('DOMContentLoaded'[\s\S]+$/, '');
-    script += '\nlet savedProfile = null;\nwindow.validatePrompt = validatePrompt;';
+    script += '\nwindow.validatePrompt = validatePrompt;';
     dom.window.eval(script);
     return dom;
   }
