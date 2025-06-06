@@ -13,7 +13,7 @@ async function load() {
   }
   comps.forEach((c) => {
     const div = document.createElement('div');
-    div.className = 'bg-[#2A2A2E] p-4 rounded-xl space-y-2';
+    div.className = 'bg-[#2A2A2E] border border-white/10 p-5 rounded-xl space-y-3 w-full';
     div.innerHTML = `<h2 class="text-xl">${c.name}</h2>
       <p>${c.prize_description || ''}</p>
       <p class="text-sm"><span class="countdown" data-end="${c.end_date}"></span> left</p>
@@ -89,7 +89,8 @@ async function loadPast() {
   }
   comps.forEach((c) => {
     const div = document.createElement('div');
-    div.className = 'bg-[#2A2A2E] p-4 rounded-xl space-y-2 text-center';
+    div.className =
+      'bg-[#2A2A2E] border border-white/10 p-5 rounded-xl space-y-3 text-center w-full';
     div.innerHTML = `<h3 class="text-lg">${c.name}</h3>
       <img src="${c.model_url}" alt="Winning model" class="w-32 h-32 object-contain mx-auto" />`;
     container.appendChild(div);
