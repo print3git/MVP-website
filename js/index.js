@@ -56,6 +56,7 @@ function setStep(name) {
 window.shareOn = shareOn;
 let uploadedFiles = [];
 let lastJobId = null;
+let savedProfile = null;
 
 let progressInterval = null;
 
