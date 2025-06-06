@@ -293,6 +293,7 @@ function openCropper(file) {
 
 async function processFiles(files) {
   if (!files.length) return;
+  files = files.slice(0, 1);
   const processed = [];
   for (const f of files) {
     const c = await openCropper(f);
