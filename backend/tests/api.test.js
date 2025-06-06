@@ -36,6 +36,11 @@ jest.mock('../queue/printQueue', () => ({
 }));
 const { enqueuePrint } = require('../queue/printQueue');
 
+jest.mock('../shipping', () => ({
+  getShippingEstimate: jest.fn().mockResolvedValue({ cost: 10, etaDays: 5 }),
+}));
+const { getShippingEstimate } = require('../shipping');
+
 const request = require('supertest');
 const app = require('../server');
 const fs = require('fs');
@@ -45,6 +50,7 @@ beforeEach(() => {
   db.query.mockClear();
   axios.post.mockClear();
   enqueuePrint.mockClear();
+  getShippingEstimate.mockClear();
 });
 
 afterEach(() => {
@@ -165,6 +171,20 @@ test('Stripe webhook invalid signature', async () => {
   expect(res.status).toBe(400);
 });
 
+test('Stripe webhook invalid signature does not process', async () => {
+  stripeMock.webhooks.constructEvent.mockImplementation(() => {
+    throw new Error('bad sig');
+  });
+  const payload = JSON.stringify({});
+  await request(app)
+    .post('/api/webhook/stripe')
+    .set('stripe-signature', 'bad')
+    .set('Content-Type', 'application/json')
+    .send(payload);
+  expect(db.query).not.toHaveBeenCalled();
+  expect(enqueuePrint).not.toHaveBeenCalled();
+});
+
 test('POST /api/generate accepts image upload', async () => {
   const chunks = [];
   jest.spyOn(fs, 'createWriteStream').mockImplementation(() => {
@@ -224,6 +244,11 @@ test('POST /api/community requires jobId', async () => {
 test('POST /api/community requires auth', async () => {
   const res = await request(app).post('/api/community').send({ jobId: 'j1' });
   expect(res.status).toBe(401);
+});
+
+test('POST /api/community unauthorized skips DB', async () => {
+  await request(app).post('/api/community').send({ jobId: 'j1' });
+  expect(db.query).not.toHaveBeenCalled();
 });
 
 test('GET /api/community/recent returns creations', async () => {
@@ -402,4 +427,18 @@ test('GET /api/my/orders returns orders', async () => {
 test('GET /api/my/orders requires auth', async () => {
   const res = await request(app).get('/api/my/orders');
   expect(res.status).toBe(401);
+});
+
+test('POST /api/shipping-estimate returns estimate', async () => {
+  const res = await request(app)
+    .post('/api/shipping-estimate')
+    .send({ destination: { zip: '12345' }, model: { weight: 2 } });
+  expect(res.status).toBe(200);
+  expect(res.body.cost).toBe(10);
+  expect(getShippingEstimate).toHaveBeenCalledWith({ zip: '12345' }, { weight: 2 });
+});
+
+test('POST /api/shipping-estimate validates input', async () => {
+  const res = await request(app).post('/api/shipping-estimate').send({});
+  expect(res.status).toBe(400);
 });

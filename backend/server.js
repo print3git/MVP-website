@@ -19,6 +19,7 @@ const config = require('./config');
 const stripe = require('stripe')(config.stripeKey);
 const { enqueuePrint, processQueue, progressEmitter } = require('./queue/printQueue');
 const { sendMail } = require('./mail');
+const { getShippingEstimate } = require('./shipping');
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'admin';
 
 const AUTH_SECRET = process.env.AUTH_SECRET || 'secret';
@@ -370,6 +371,23 @@ app.post('/api/models/:id/share', authRequired, async (req, res) => {
   }
 });
 
+app.delete('/api/models/:id', authRequired, async (req, res) => {
+  const jobId = req.params.id;
+  try {
+    const { rows } = await db.query(
+      'DELETE FROM jobs WHERE job_id=$1 AND user_id=$2 RETURNING job_id',
+      [jobId, req.user.id]
+    );
+    if (!rows.length) return res.status(404).json({ error: 'Model not found' });
+    await db.query('DELETE FROM likes WHERE model_id=$1', [jobId]);
+    await db.query('DELETE FROM shares WHERE job_id=$1', [jobId]);
+    res.sendStatus(204);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to delete model' });
+  }
+});
+
 app.get('/api/shared/:slug', async (req, res) => {
   try {
     const share = await db.getShareBySlug(req.params.slug);
@@ -638,6 +656,24 @@ app.delete('/api/admin/competitions/:id', adminCheck, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to delete competition' });
+  }
+});
+
+/**
+ * POST /api/shipping-estimate
+ * Calculate shipping cost and ETA
+ */
+app.post('/api/shipping-estimate', async (req, res) => {
+  const { destination, model } = req.body;
+  if (!destination || !model) {
+    return res.status(400).json({ error: 'destination and model required' });
+  }
+  try {
+    const estimate = await getShippingEstimate(destination, model);
+    res.json(estimate);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to get shipping estimate' });
   }
 });
 

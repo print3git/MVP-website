@@ -41,6 +41,12 @@ This repository contains the early MVP code for print2's website and backend.
    cd hunyuan_server && npm start  # inside backend/hunyuan_server/
    ```
 
+5. (Optional) Run the purchase reminder job periodically:
+
+   ```bash
+   npm run send-reminders  # inside backend/
+   ```
+
 ## Serving the Frontend Locally
 
 `index.html` and `payment.html` use ES module scripts. When opened directly from
