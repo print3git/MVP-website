@@ -1,0 +1,18 @@
+{
+  "art": {
+    "glb": "models/reddit_art.glb",
+    "quote": "Create artistic masterpieces with print3!"
+  },
+  "3dprinting": {
+    "glb": "models/reddit_3dprinting.glb",
+    "quote": "Turn your CAD files into reality with print3!"
+  },
+  "gamedev": {
+    "glb": "models/reddit_gamedev.glb",
+    "quote": "Bring your game ideas to life with print3!"
+  },
+  "mechanicalkeyboards": {
+    "glb": "models/reddit_mk.glb",
+    "quote": "Craft custom keyboard parts using print3!"
+  }
+}
