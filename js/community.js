@@ -15,6 +15,8 @@ function like(id) {
     });
 }
 
+const SEARCH_DELAY = 300;
+
 /**
  * Return a function that delays invoking `fn` until after `delay` ms
  * have elapsed since the last invocation.
@@ -169,7 +171,7 @@ function init() {
       loadMore('popular');
       loadMore('recent');
     };
-    searchInput.addEventListener('input', debounce(onSearchInput, 300));
+    searchInput.addEventListener('input', debounce(onSearchInput, SEARCH_DELAY));
   }
   loadMore('popular');
   loadMore('recent');
