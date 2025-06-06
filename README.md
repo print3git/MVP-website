@@ -99,6 +99,16 @@ Models can be shared publicly via unique slugs.
 - Visiting `/shared/:slug` returns an HTML page with Open Graph meta tags that
   redirect to `share.html` for viewing.
 
+## Model Lists
+
+Two endpoints provide lists of model jobs:
+
+- `GET /api/my/models`
+- `GET /api/users/:username/models`
+
+Both accept optional `limit` and `offset` query parameters to paginate results.
+If omitted, the API returns up to 10 most recent models starting from offset 0.
+
 ## Contributing
 
 We welcome pull requests! Please fork the repo and create a topic branch. Ensure `npm test` runs clean before submitting.
