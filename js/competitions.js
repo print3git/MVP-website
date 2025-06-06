@@ -19,7 +19,7 @@ async function load() {
       <p class="text-sm"><span class="countdown" data-end="${c.end_date}"></span> left</p>
       <div class="flex space-x-2">
         <button data-id="${c.id}" class="enter bg-[#30D5C8] text-[#1A1A1D] px-3 py-1 rounded">Enter</button>
-        <button onclick="shareOn('twitter')" aria-label="Share on Twitter" class="w-8 h-8 flex items-center justify-center bg-[#1A1A1D] border border-white/10 rounded hover:bg-[#3A3A3E]"><i class="fab fa-twitter"></i></button>
+        <button onclick="shareOn('twitter')" aria-label="Share on Twitter" class="w-9 h-9 flex items-center justify-center bg-[#1A1A1D] border border-white/10 rounded hover:bg-[#3A3A3E]"><i class="fab fa-twitter"></i></button>
       </div>
       <table class="leaderboard w-full mt-4 text-sm"></table>`;
     list.appendChild(div);
