@@ -61,7 +61,10 @@ function startCountdown(el) {
 
 async function enter(id) {
   const token = localStorage.getItem('token');
-  if (!token) return alert('Login required');
+  if (!token) {
+    alert('Please log in to enter.');
+    return;
+  }
   const modelId = prompt('Model ID to submit');
   if (!modelId) return;
   await fetch(`/api/competitions/${id}/enter`, {
