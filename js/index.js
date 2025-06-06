@@ -58,6 +58,11 @@ let uploadedFiles = [];
 let lastJobId = null;
 let savedProfile = null;
 
+
+// Track when the prompt or images have been modified after a generation
+let editsPending = false;
+
+
 let progressInterval = null;
 let progressStart = null;
 let usingViewerProgress = false;
@@ -185,6 +190,10 @@ refs.promptInput.addEventListener('input', () => {
   el.style.overflowY = el.scrollHeight > lh * 9 ? 'auto' : 'hidden';
   document.getElementById('gen-error').textContent = '';
   refs.promptWrapper.classList.remove('border-red-500');
+  editsPending = true;
+  refs.checkoutBtn.classList.add('hidden');
+  refs.buyNowBtn?.classList.add('hidden');
+  setStep('prompt');
 });
 
 refs.promptInput.addEventListener('keydown', (e) => {
@@ -279,6 +288,10 @@ async function processFiles(files) {
   const thumbs = await Promise.all(processed.map((f) => getThumbnail(f)));
   localStorage.setItem('print3Images', JSON.stringify(thumbs));
   renderThumbnails(thumbs);
+  editsPending = true;
+  refs.checkoutBtn.classList.add('hidden');
+  refs.buyNowBtn?.classList.add('hidden');
+  setStep('prompt');
 }
 
 refs.uploadInput.addEventListener('change', (e) => {
@@ -340,6 +353,8 @@ refs.submitBtn.addEventListener('click', async () => {
   localStorage.setItem('print3Model', url);
   localStorage.setItem('print3JobId', lastJobId);
 
+  editsPending = false;
+
   refs.viewer.src = url;
   await refs.viewer.updateComplete;
   showModel();
@@ -352,6 +367,7 @@ refs.submitBtn.addEventListener('click', async () => {
 });
 
 window.addEventListener('DOMContentLoaded', () => {
+
   setStep('prompt');
   showModel();
   refs.viewer.src = FALLBACK_GLB;
@@ -369,6 +385,7 @@ window.addEventListener('DOMContentLoaded', () => {
         stopProgress();
       }
     });
+
   }
   fetchProfile().then(() => {
     if (savedProfile && refs.buyNowBtn) {
