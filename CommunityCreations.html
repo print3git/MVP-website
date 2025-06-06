@@ -165,16 +165,22 @@
     <script type="module">
       import { shareOn } from './js/share.js';
       import { init } from './js/community.js';
+      import { trapFocus } from './js/focus-trap.js';
       window.shareOn = shareOn;
 
       document.addEventListener('DOMContentLoaded', () => {
         const modal = document.getElementById('model-modal');
         const viewer = modal.querySelector('model-viewer');
         const closeBtn = document.getElementById('close-modal');
+        let releaseFocus;
 
         function close() {
           modal.classList.add('hidden');
           document.body.classList.remove('overflow-hidden');
+          if (releaseFocus) {
+            releaseFocus();
+            releaseFocus = null;
+          }
         }
 
         document.addEventListener('click', (e) => {
@@ -183,6 +189,7 @@
             viewer.src = card.dataset.model;
             modal.classList.remove('hidden');
             document.body.classList.add('overflow-hidden');
+            releaseFocus = trapFocus(modal);
           }
         });
 

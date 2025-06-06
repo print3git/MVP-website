@@ -1,5 +1,6 @@
 'use strict';
 import { shareOn } from './share.js';
+import { trapFocus } from './focus-trap.js';
 
 if (
   localStorage.getItem('hasGenerated') === 'true' ||
@@ -267,10 +268,12 @@ function openCropper(file) {
   return new Promise((resolve) => {
     refs.cropImage.src = URL.createObjectURL(file);
     refs.cropModal.classList.remove('hidden');
+    const releaseFocus = trapFocus(refs.cropModal);
     const cropper = new Cropper(refs.cropImage, { aspectRatio: 1, viewMode: 1 });
     const done = (result) => {
       cropper.destroy();
       refs.cropModal.classList.add('hidden');
+      releaseFocus();
       resolve(result);
     };
     refs.cropConfirm.onclick = () => {

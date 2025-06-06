@@ -1,3 +1,7 @@
+import { trapFocus } from './focus-trap.js';
+
+let releaseFocus = null;
+
 function createCard(model) {
   const div = document.createElement('div');
   div.className =
@@ -17,6 +21,7 @@ function createCard(model) {
     viewer.src = model.model_url;
     modal.classList.remove('hidden');
     document.body.classList.add('overflow-hidden');
+    releaseFocus = trapFocus(modal);
   });
   return div;
 }
@@ -102,6 +107,10 @@ document.addEventListener('DOMContentLoaded', () => {
   function close() {
     modal.classList.add('hidden');
     document.body.classList.remove('overflow-hidden');
+    if (releaseFocus) {
+      releaseFocus();
+      releaseFocus = null;
+    }
   }
   closeBtn.addEventListener('click', close);
   document.addEventListener('keydown', (e) => {
