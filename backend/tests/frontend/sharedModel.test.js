@@ -4,10 +4,15 @@ const path = require('path');
 const { JSDOM } = require('jsdom');
 
 function setup(url) {
-  const dom = new JSDOM('<div id="viewer"></div><div id="error"></div>', { runScripts: 'dangerously', url });
+  const dom = new JSDOM('<div id="viewer"></div><div id="error"></div>', {
+    runScripts: 'dangerously',
+    url,
+  });
   global.window = dom.window;
   global.document = dom.window.document;
-  const shareSrc = fs.readFileSync(path.join(__dirname, '../../../js/share.js'), 'utf8').replace(/export \{[^}]+\};?/, '');
+  const shareSrc = fs
+    .readFileSync(path.join(__dirname, '../../../js/share.js'), 'utf8')
+    .replace(/export \{[^}]+\};?/, '');
   dom.window.eval(shareSrc);
   let script = fs
     .readFileSync(path.join(__dirname, '../../../js/sharedModel.js'), 'utf8')
@@ -18,9 +23,11 @@ function setup(url) {
 
 test('loads model from API', async () => {
   const dom = setup('http://localhost/share.html?slug=test');
-  dom.window.fetch = jest.fn(() => Promise.resolve({ ok: true, json: () => ({ model_url: 'foo.glb' }) }));
+  dom.window.fetch = jest.fn(() =>
+    Promise.resolve({ ok: true, json: () => ({ model_url: 'foo.glb' }) })
+  );
   dom.window.document.dispatchEvent(new dom.window.Event('DOMContentLoaded'));
-  await new Promise(r => setTimeout(r, 0));
+  await new Promise((r) => setTimeout(r, 0));
   expect(dom.window.document.getElementById('viewer').src).toContain('foo.glb');
 });
 

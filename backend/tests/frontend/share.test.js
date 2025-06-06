@@ -5,10 +5,14 @@ const { JSDOM } = require('jsdom');
 
 describe('shareOn', () => {
   function load() {
-    const dom = new JSDOM('<!doctype html><html><body></body></html>', { runScripts: 'dangerously' });
+    const dom = new JSDOM('<!doctype html><html><body></body></html>', {
+      runScripts: 'dangerously',
+    });
     global.window = dom.window;
     global.document = dom.window.document;
-    let src = fs.readFileSync(path.join(__dirname, '../../../js/share.js'), 'utf8').replace(/export \{[^}]+\};?/, '');
+    let src = fs
+      .readFileSync(path.join(__dirname, '../../../js/share.js'), 'utf8')
+      .replace(/export \{[^}]+\};?/, '');
     dom.window.eval(src);
     return dom.window.shareOn;
   }
