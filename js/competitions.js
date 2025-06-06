@@ -147,6 +147,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const modal = document.getElementById('entry-modal');
   document.getElementById('entry-cancel').addEventListener('click', closeModal);
   document.getElementById('entry-submit').addEventListener('click', submitEntry);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal();
   });
