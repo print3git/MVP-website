@@ -160,7 +160,6 @@ test('POST /api/models/:id/public requires boolean', async () => {
   expect(res.status).toBe(400);
 });
 
-
 test('GET /api/community/recent pagination and category', async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
 

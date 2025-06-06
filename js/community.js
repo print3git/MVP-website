@@ -226,8 +226,7 @@ function init() {
       createObserver('recent');
       loadMore('popular');
       loadMore('recent');
-
-    });
+    }
 
     searchInput.addEventListener('input', debounce(onSearchInput, SEARCH_DELAY));
   }
