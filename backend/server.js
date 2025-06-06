@@ -114,12 +114,13 @@ app.post('/api/generate', authOptional, upload.array('images'), async (req, res)
 
   const jobId = uuidv4();
   const imageRef = files[0] ? files[0].filename : null;
+  const snapshot = req.body.snapshot || null;
   const userId = req.user ? req.user.id : null;
 
   try {
     await db.query(
-      'INSERT INTO jobs(job_id, prompt, image_ref, status, user_id) VALUES ($1,$2,$3,$4,$5)',
-      [jobId, prompt, imageRef, 'pending', userId]
+      'INSERT INTO jobs(job_id, prompt, image_ref, status, user_id, snapshot) VALUES ($1,$2,$3,$4,$5,$6)',
+      [jobId, prompt, imageRef, 'pending', userId, snapshot]
     );
 
     const form = new FormData();
