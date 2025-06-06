@@ -11,7 +11,7 @@ if (
 const API_BASE = '/api';
 const FALLBACK_GLB = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
 const EXAMPLES = ['cute robot figurine', 'ornate chess piece', 'geometric flower vase'];
-const TRENDING = ["dragon statue", "space rover", "anime character"];
+const TRENDING = ['dragon statue', 'space rover', 'anime character'];
 const $ = (id) => document.getElementById(id);
 const refs = {
   previewImg: $('preview-img'),
@@ -30,7 +30,7 @@ const refs = {
   imagePreviewArea: $('image-preview-area'),
   dropZone: $('drop-zone'),
   examples: $('prompt-examples'),
-  trending: $("trending-prompts"),
+  trending: $('trending-prompts'),
   checkoutBtn: $('checkout-button'),
   buyNowBtn: $('buy-now-button'),
   stepPrompt: $('step-prompt'),
@@ -261,7 +261,6 @@ function getThumbnail(file) {
   });
 }
 
-
 async function processFiles(files) {
   if (!files.length) return;
 
@@ -389,7 +388,7 @@ window.addEventListener('DOMContentLoaded', () => {
   if (thumbs.length) renderThumbnails(thumbs);
 
   if (refs.trending) {
-    refs.trending.textContent = `Trending: ${TRENDING.join(" · ")}`;
+    refs.trending.textContent = `Trending: ${TRENDING.join(' · ')}`;
   }
   if (refs.promptTip && !localStorage.getItem('promptTipDismissed')) {
     refs.promptInput.addEventListener(
