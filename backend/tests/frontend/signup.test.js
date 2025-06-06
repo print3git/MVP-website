@@ -49,8 +49,7 @@ describe('signup form', () => {
       resources: 'usable',
       url: 'http://localhost/signup.html',
     });
-    dom.window.document
-      .querySelectorAll('script[src*="tailwind"]').forEach((s) => s.remove());
+    dom.window.document.querySelectorAll('script[src*="tailwind"]').forEach((s) => s.remove());
     global.window = dom.window;
     global.document = dom.window.document;
     const scriptSrc = fs
@@ -76,9 +75,7 @@ describe('signup form', () => {
     dom.window.document.getElementById('su-email').value = 'a@a.com';
     dom.window.document.getElementById('su-pass').value = 'p';
     dom.window.document.getElementById('signup-mailing').checked = true;
-    dom.window.document
-      .getElementById('signupForm')
-      .dispatchEvent(new dom.window.Event('submit'));
+    dom.window.document.getElementById('signupForm').dispatchEvent(new dom.window.Event('submit'));
     await new Promise((r) => setTimeout(r, 0));
     await Promise.all(global.fetch.mock.results.map((r) => r.value));
 
