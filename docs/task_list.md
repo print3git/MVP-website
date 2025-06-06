@@ -69,9 +69,6 @@ This consolidated list merges all outstanding tasks from the previous to-do docu
 - Ensure accessibility with ARIA labels and contrast.
   - Audit pages for missing labels.
   - Fix color contrast issues.
-- Add drag-and-drop image uploads with inline cropping and resizing.
-  - Implement a drag-and-drop area.
-  - Integrate a client-side cropping library.
 - Display clear inline error messages if generation fails or the prompt is invalid.
   - Provide failure states in the UI.
   - Validate prompts before submission.
