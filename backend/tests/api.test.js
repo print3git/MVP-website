@@ -9,6 +9,9 @@ jest.mock('../db', () => ({
 }));
 const db = require('../db');
 
+jest.mock('../mail', () => ({ sendMail: jest.fn() }));
+const { sendMail } = require('../mail');
+
 jest.mock('axios');
 const axios = require('axios');
 const jwt = require('jsonwebtoken');
@@ -451,4 +454,39 @@ test('POST /api/shipping-estimate returns mocked values and calls helper', async
   expect(res.body.cost).toBe(20);
   expect(res.body.etaDays).toBe(4);
   expect(getShippingEstimate).toHaveBeenCalledWith(body.destination, body.model);
+});
+
+test('POST /api/subscribe inserts mailing list record', async () => {
+  db.query.mockResolvedValueOnce({});
+  const res = await request(app)
+    .post('/api/subscribe')
+    .send({ email: 'test@example.com' });
+  expect(res.status).toBe(204);
+  const call = db.query.mock.calls.find((c) =>
+    c[0].includes('INSERT INTO mailing_list')
+  );
+  expect(call).toBeTruthy();
+  expect(call[1][0]).toBe('test@example.com');
+});
+
+test('GET /api/confirm-subscription updates confirmed flag', async () => {
+  db.query.mockResolvedValueOnce({});
+  const res = await request(app).get('/api/confirm-subscription?token=tok1');
+  expect(res.status).toBe(200);
+  const call = db.query.mock.calls.find((c) =>
+    c[0].includes('UPDATE mailing_list SET confirmed')
+  );
+  expect(call).toBeTruthy();
+  expect(call[1][0]).toBe('tok1');
+});
+
+test('GET /api/unsubscribe sets unsubscribed flag', async () => {
+  db.query.mockResolvedValueOnce({});
+  const res = await request(app).get('/api/unsubscribe?token=tok2');
+  expect(res.status).toBe(200);
+  const call = db.query.mock.calls.find((c) =>
+    c[0].includes('UPDATE mailing_list SET unsubscribed')
+  );
+  expect(call).toBeTruthy();
+  expect(call[1][0]).toBe('tok2');
 });
