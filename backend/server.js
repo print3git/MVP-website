@@ -653,7 +653,24 @@ app.post('/api/create-order', authOptional, async (req, res) => {
       return res.status(404).json({ error: 'Job not found' });
     }
 
-    const total = (price || 0) * (qty || 1) - (discount || 0);
+    let totalDiscount = discount || 0;
+
+    if (req.user) {
+      const { rows: paid } = await db.query(
+        'SELECT 1 FROM orders WHERE user_id=$1 AND status=$2 LIMIT 1',
+        [req.user.id, 'paid']
+      );
+      if (paid.length === 0) {
+        const firstDisc = Math.round((price || 0) * (qty || 1) * 0.1);
+        totalDiscount += firstDisc;
+        await db.query('INSERT INTO incentives(user_id, type) VALUES($1,$2)', [
+          req.user.id,
+          'first_order',
+        ]);
+      }
+    }
+
+    const total = (price || 0) * (qty || 1) - totalDiscount;
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
       line_items: [
@@ -681,7 +698,7 @@ app.post('/api/create-order', authOptional, async (req, res) => {
         'pending',
         shippingInfo || {},
         qty || 1,
-        discount || 0,
+        totalDiscount,
       ]
     );
 
