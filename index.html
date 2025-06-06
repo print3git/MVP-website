@@ -1,5 +1,5 @@
 <!-- ============================
-        index.html (fixed)
+        index.html (updated)
 ============================ -->
 <!doctype html>
 <html lang="en">
@@ -223,14 +223,14 @@
             aria-live="assertive"
           ></div>
         </section>
+
+        <!--  Subreddit quote  -->
         <div
           id="subreddit-quote"
-
-          class="absolute left-full ml-4 top-1/2 -translate-y-1/2 flex flex-col text-sm text-gray-400 text-center"
-
+          class="absolute left-full ml-4 flex text-sm text-gray-400 text-center leading-snug"
         >
-          <p>"I'm astonished at how high-quality the print</p>
-          <p>is" - email from an r/subreddit user</p>
+          <!-- Forced two-line layout using <br> -->
+          <p>"I'm astonished at how high-quality the print<br />is" – email from an r/subreddit user</p>
         </div>
       </div>
 
@@ -309,5 +309,28 @@
     <!--  Application logic ----------------------------------------------- -->
     <script src="js/subredditLanding.js"></script>
     <script type="module" src="js/index.js"></script>
+
+    <!--  Position the subreddit quote so its centre aligns with the centre of the checkout button  -->
+    <script>
+      function positionQuote() {
+        const quote = document.getElementById('subreddit-quote');
+        const checkout = document.getElementById('checkout-button');
+        if (!quote || !checkout) return;
+
+        // bounding rectangles relative to viewport
+        const wrapperRect = checkout.parentElement.getBoundingClientRect();
+        const checkoutRect = checkout.getBoundingClientRect();
+
+        // Calculate centre of checkout button relative to its parent (#preview-wrapper)
+        const checkoutCentreY = checkoutRect.top + checkoutRect.height / 2 - wrapperRect.top;
+
+        // Offset so that quote itself is centred on that y‑coordinate
+        quote.style.top = `${checkoutCentreY - quote.offsetHeight / 2}px`;
+      }
+
+      // Run once everything is rendered, and again on resize (for mobile / responsive)
+      window.addEventListener('load', positionQuote);
+      window.addEventListener('resize', positionQuote);
+    </script>
   </body>
 </html>
