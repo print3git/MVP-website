@@ -107,57 +107,75 @@ async function captureSnapshots(container) {
   }
 }
 
-async function loadMore(type) {
-  const state = window.communityState[type];
+function getFilters() {
   const category = document.getElementById('category').value;
   const search = document.getElementById('search')?.value || '';
   const order = document.getElementById('sort')?.value || 'desc';
+  return { category, search, order, key: `${category}|${search}|${order}` };
+}
+
+async function loadMore(type, filters = getFilters()) {
+  const { category, search, order, key } = filters;
+  const cache = window.communityState[type];
+  if (!cache[key]) cache[key] = { offset: 0, models: [] };
+  const state = cache[key];
   let models = await fetchCreations(type, state.offset, 6, category, search, order);
   if (models.length === 0 && state.offset === 0) {
     models = getFallbackModels();
   }
   state.offset += models.length;
+  state.models = state.models.concat(models);
   const grid = document.getElementById(`${type}-grid`);
   models.forEach((m) => grid.appendChild(createCard(m)));
   await captureSnapshots(grid);
+  const btn = document.getElementById(`${type}-load`);
   if (models.length < 6) {
-    document.getElementById(`${type}-load`).classList.add('hidden');
+    btn.classList.add('hidden');
+  } else {
+    btn.classList.remove('hidden');
+  }
+}
+
+function renderGrid(type, filters = getFilters()) {
+  const { key } = filters;
+  const grid = document.getElementById(`${type}-grid`);
+  grid.innerHTML = '';
+  const state = window.communityState[type][key];
+  if (state && state.models.length) {
+    state.models.forEach((m) => grid.appendChild(createCard(m)));
+    captureSnapshots(grid);
+    const btn = document.getElementById(`${type}-load`);
+    if (state.models.length < 6) btn.classList.add('hidden');
+    else btn.classList.remove('hidden');
+  } else {
+    loadMore(type, filters);
   }
 }
 
 function init() {
-  window.communityState = { recent: { offset: 0 }, popular: { offset: 0 } };
+  window.communityState = { recent: {}, popular: {} };
   document.getElementById('recent-load').addEventListener('click', () => loadMore('recent'));
   document.getElementById('popular-load').addEventListener('click', () => loadMore('popular'));
   document.getElementById('category').addEventListener('change', () => {
-    document.getElementById('recent-grid').innerHTML = '';
-    document.getElementById('popular-grid').innerHTML = '';
-    window.communityState = { recent: { offset: 0 }, popular: { offset: 0 } };
-    loadMore('popular');
-    loadMore('recent');
+    renderGrid('popular');
+    renderGrid('recent');
   });
   const sortSelect = document.getElementById('sort');
   if (sortSelect) {
     sortSelect.addEventListener('change', () => {
-      document.getElementById('recent-grid').innerHTML = '';
-      document.getElementById('popular-grid').innerHTML = '';
-      window.communityState = { recent: { offset: 0 }, popular: { offset: 0 } };
-      loadMore('popular');
-      loadMore('recent');
+      renderGrid('popular');
+      renderGrid('recent');
     });
   }
   const searchInput = document.getElementById('search');
   if (searchInput) {
     searchInput.addEventListener('input', () => {
-      document.getElementById('recent-grid').innerHTML = '';
-      document.getElementById('popular-grid').innerHTML = '';
-      window.communityState = { recent: { offset: 0 }, popular: { offset: 0 } };
-      loadMore('popular');
-      loadMore('recent');
+      renderGrid('popular');
+      renderGrid('recent');
     });
   }
-  loadMore('popular');
-  loadMore('recent');
+  renderGrid('popular');
+  renderGrid('recent');
 }
 
 export { like, init };
