@@ -371,6 +371,23 @@ app.post('/api/models/:id/share', authRequired, async (req, res) => {
   }
 });
 
+app.delete('/api/models/:id', authRequired, async (req, res) => {
+  const jobId = req.params.id;
+  try {
+    const { rows } = await db.query(
+      'DELETE FROM jobs WHERE job_id=$1 AND user_id=$2 RETURNING job_id',
+      [jobId, req.user.id]
+    );
+    if (!rows.length) return res.status(404).json({ error: 'Model not found' });
+    await db.query('DELETE FROM likes WHERE model_id=$1', [jobId]);
+    await db.query('DELETE FROM shares WHERE job_id=$1', [jobId]);
+    res.sendStatus(204);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to delete model' });
+  }
+});
+
 app.get('/api/shared/:slug', async (req, res) => {
   try {
     const share = await db.getShareBySlug(req.params.slug);

@@ -164,6 +164,25 @@ test('POST /api/models/:id/public requires boolean', async () => {
   expect(res.status).toBe(400);
 });
 
+test('DELETE /api/models/:id deletes model', async () => {
+  db.query
+    .mockResolvedValueOnce({ rows: [{ job_id: 'j1' }] })
+    .mockResolvedValueOnce({})
+    .mockResolvedValueOnce({});
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  const res = await request(app).delete('/api/models/j1').set('authorization', `Bearer ${token}`);
+  expect(res.status).toBe(204);
+  const call = db.query.mock.calls[0][0];
+  expect(call).toContain('DELETE FROM jobs');
+});
+
+test('DELETE /api/models/:id 404 when missing', async () => {
+  db.query.mockResolvedValueOnce({ rows: [] });
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  const res = await request(app).delete('/api/models/bad').set('authorization', `Bearer ${token}`);
+  expect(res.status).toBe(404);
+});
+
 test('GET /api/community/recent pagination and category', async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
 
