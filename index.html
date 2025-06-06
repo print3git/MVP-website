@@ -197,11 +197,11 @@
           </div>
         </div>
 
-        <!-- checkout button (hidden by default) -->
+        <!-- checkout button -->
         <a
           id="checkout-button"
           href="payment.html"
-          class="hidden absolute bottom-4 right-4 font-bold py-3 px-5 rounded-full shadow-md transition"
+          class="absolute bottom-4 right-4 font-bold py-3 px-5 rounded-full shadow-md transition"
           style="background-color: #1f3b65; color: #5ec2c5"
           onmouseover="this.style.opacity='0.85'"
           onmouseout="this.style.opacity='1'"
@@ -258,13 +258,13 @@
           </div>
 
           <div class="mt-4 w-full flex flex-col gap-4">
-            <input type="file" id="uploadInput" accept="image/*" multiple class="hidden" />
+            <input type="file" id="uploadInput" accept="image/*" class="hidden" />
             <div
               id="drop-zone"
-              aria-label="Upload Images"
+              aria-label="Upload Image"
               class="flex items-center justify-center bg-[#2A2A2E] border border-dashed border-white/10 rounded-3xl px-5 py-6 text-gray-400 cursor-pointer hover:bg-[#3A3A3E] transition-shape"
             >
-              Drag & drop images or
+              Drag & drop image or
               <label for="uploadInput" class="underline ml-1 cursor-pointer">browse</label>
             </div>
             <div
