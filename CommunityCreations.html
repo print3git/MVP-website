@@ -48,7 +48,7 @@
         </svg>
         Back
       </a>
-      <h1 class="absolute inset-x-0 top-1/2 -translate-y-1/2 text-center text-2xl font-semibold">
+      <h1 class="absolute inset-x-0 top-1/2 -translate-y-1/2 text-center text-2xl font-semibold pointer-events-none">
         Community Creations
       </h1>
       <div class="flex space-x-2">
@@ -105,13 +105,6 @@
           <option value="miniatures">Miniatures</option>
           <option value="props">Props</option>
         </select>
-        <input
-          type="text"
-          id="search"
-          placeholder="Search..."
-          aria-label="Search creations"
-          class="bg-[#2A2A2E] border border-white/20 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4A4A4E] flex-1 min-w-[10rem] h-11"
-        />
         <select
           id="sort"
           aria-label="Sort order"
@@ -120,6 +113,13 @@
           <option value="desc">Newest</option>
           <option value="asc">Oldest</option>
         </select>
+        <input
+          type="text"
+          id="search"
+          placeholder="Search..."
+          aria-label="Search creations"
+          class="bg-[#2A2A2E] border border-white/20 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4A4A4E] flex-1 min-w-[10rem] h-11"
+        />
       </div>
       <!-- Popular Creations -->
       <section class="mb-12">
