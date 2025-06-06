@@ -1,25 +1,24 @@
 const db = require('../db');
 
-// Emits progress updates for print jobs. When a job is enqueued we
-// insert a record into the print_jobs table so a worker can process it
-// asynchronously. For now we simply emit an initial progress event so
-// tests can verify that the job was scheduled.
+
+async function enqueuePrint(jobId, orderId, shippingInfo) {
   await db.query(
-    'INSERT INTO print_jobs(job_id, session_id, shipping_info) VALUES($1,$2,$3)',
-    [jobId, sessionId, shippingInfo]
+    'INSERT INTO print_jobs(job_id, order_id, shipping_info) VALUES($1,$2,$3)',
+    [jobId, orderId, shippingInfo]
   );
-// progress event when enqueued.
-
-const progressEmitter = new EventEmitter();
-
-async function enqueuePrint(jobId, sessionId, shippingInfo) {
-  if (!jobId) return;
-  // placeholder async operation
-  progressEmitter.emit('progress', { jobId, progress: 0, sessionId, shippingInfo });
 }
 
-module.exports = {
-  enqueuePrint,
-  progressEmitter,
-};
+async function getNextPendingJob() {
+  const { rows } = await db.query(
+    "SELECT * FROM print_jobs WHERE status='pending' ORDER BY created_at ASC LIMIT 1"
+  );
+  return rows[0] || null;
+}
+
+async function updateJobStatus(id, status) {
+  await db.query('UPDATE print_jobs SET status=$1 WHERE id=$2', [status, id]);
+}
+
+module.exports = { enqueuePrint, getNextPendingJob, updateJobStatus };
+
 

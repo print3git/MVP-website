@@ -14,4 +14,5 @@ module.exports = {
   port: process.env.PORT || 3000,
   sendgridKey: process.env.SENDGRID_API_KEY || '',
   emailFrom: process.env.EMAIL_FROM || 'noreply@example.com',
+  printerApiUrl: process.env.PRINTER_API_URL || 'http://localhost:5000/print',
 };
