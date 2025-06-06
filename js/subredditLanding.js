@@ -18,8 +18,10 @@ window.addEventListener('DOMContentLoaded', async () => {
   const map = await loadMap();
   const sr = getParam('sr');
   const viewer = document.getElementById('viewer');
+
   const quoteEl = document.getElementById('sr-quote');
   const entry = sr && map[sr.toLowerCase()];
+
   if (entry && viewer) {
     viewer.src = entry.glb;
     if (quoteEl) quoteEl.textContent = entry.quote;
