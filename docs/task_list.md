@@ -16,16 +16,12 @@ This consolidated list merges all outstanding tasks from the previous to-do docu
 ## Prompting & Generation
 
 - Validate prompts client-side to prevent submission errors.
-- Show a short tooltip/tutorial explaining how to craft a good prompt.
 - Display trending prompts or community examples for inspiration.
 - Show a real-time progress bar and estimated wait time while the model renders.
 - Allow users to continue browsing or editing the prompt without losing progress.
 - Let users edit the prompt or images without losing the current model.
   - Keep the previous model in memory.
   - Re-run generation only when edits are confirmed.
-- Provide tooltips or a short tutorial overlay explaining each step.
-  - Design tooltip copy and dismiss logic.
-  - Allow users to skip the tutorial.
 
 ## Purchase & Checkout
 
@@ -41,9 +37,6 @@ This consolidated list merges all outstanding tasks from the previous to-do docu
 - Offer a one-click "Buy Now" button directly on the model viewer page.
   - Add a button that uses saved details.
   - Submit the order in one step.
-- Provide a "reorder" button for past models so users can purchase again instantly.
-  - Add a button to order history.
-  - Preload the model into the cart.
 - Show estimated print cost and delivery time before checkout.
   - Calculate cost and ETA from model parameters.
   - Display them near the checkout button.
