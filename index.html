@@ -227,7 +227,7 @@
         <!-- subreddit quote -->
         <div
           id="subreddit-quote"
-          class="absolute left-full ml-4 flex text-sm text-gray-400 text-left leading-snug"
+          class="absolute left-full ml-4 flex text-sm text-gray-400 text-left leading-snug invisible"
         >
           <p class="whitespace-nowrap">
             "I'm astonished at how high-quality the print<br />is" – email from an
@@ -320,8 +320,10 @@
 
         // Offset so the quote is centred on that y-coordinate
         quote.style.top = `${checkoutCentreY - quote.offsetHeight / 2}px`;
+        quote.classList.remove('invisible');
       }
 
+      window.addEventListener('DOMContentLoaded', positionQuote);
       window.addEventListener('load', positionQuote);
       window.addEventListener('resize', positionQuote);
     </script>
