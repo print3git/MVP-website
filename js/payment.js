@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
   const loader = document.getElementById('loader');
   const viewer = document.getElementById('viewer');
-  const optOut = document.getElementById('opt-out');
+  const optIn = document.getElementById('checkout-mailing');
   const emailEl = document.getElementById('checkout-email');
   const successMsg = document.getElementById('success');
   const cancelMsg = document.getElementById('cancel');
@@ -186,7 +186,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Fallback if Stripe failed to load: just navigate to the checkout URL
       window.location.href = url;
     }
-    if (emailEl.value) {
+    if (optIn && optIn.checked && emailEl.value) {
       fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
