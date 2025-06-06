@@ -26,7 +26,7 @@ describe('index validatePrompt', () => {
       .readFileSync(path.join(__dirname, '../../../js/index.js'), 'utf8')
       .replace("import { shareOn } from './share.js';", '')
       .replace(/window\.addEventListener\('DOMContentLoaded'[\s\S]+$/, '');
-    script += '\nlet savedProfile = null;\nwindow.validatePrompt = validatePrompt;';
+    script += '\nwindow.validatePrompt = validatePrompt;';
     dom.window.eval(script);
     return dom;
   }
@@ -45,5 +45,43 @@ describe('index validatePrompt', () => {
     const ok = dom.window.validatePrompt('hello world');
     expect(ok).toBe(true);
     expect(dom.window.document.getElementById('gen-error').textContent).toBe('');
+  });
+
+  test('rejects empty prompt without images', () => {
+    const dom = setup();
+    dom.window.uploadedFiles = [];
+    const ok = dom.window.validatePrompt('');
+    expect(ok).toBe(false);
+    expect(dom.window.document.getElementById('gen-error').textContent).toBe(
+      'Enter a prompt or upload images'
+    );
+  });
+
+  test('rejects prompts with line breaks', () => {
+    const dom = setup();
+    const ok = dom.window.validatePrompt('line1\nline2');
+    expect(ok).toBe(false);
+    expect(dom.window.document.getElementById('gen-error').textContent).toBe(
+      'Prompt cannot contain line breaks'
+    );
+  });
+
+  test('rejects prompts with angle brackets', () => {
+    const dom = setup();
+    const ok = dom.window.validatePrompt('hello <world>');
+    expect(ok).toBe(false);
+    expect(dom.window.document.getElementById('gen-error').textContent).toBe(
+      'Prompt contains invalid characters'
+    );
+  });
+
+  test('rejects overly long prompts', () => {
+    const dom = setup();
+    const longPrompt = 'a'.repeat(201);
+    const ok = dom.window.validatePrompt(longPrompt);
+    expect(ok).toBe(false);
+    expect(dom.window.document.getElementById('gen-error').textContent).toBe(
+      'Prompt must be under 200 characters'
+    );
   });
 });
