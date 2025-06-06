@@ -36,8 +36,6 @@ const refs = {
   stepPrompt: $('step-prompt'),
   stepModel: $('step-model'),
   stepBuy: $('step-buy'),
-  tutorialOverlay: $('tutorial-overlay'),
-  tutorialSkip: $('tutorial-skip'),
 };
 
 function setStep(name) {
@@ -404,14 +402,6 @@ window.addEventListener('DOMContentLoaded', () => {
     refs.promptTipClose?.addEventListener('click', () => {
       refs.promptTip.style.display = 'none';
       localStorage.setItem('promptTipDismissed', 'true');
-    });
-  }
-
-  if (refs.tutorialOverlay && !localStorage.getItem('tutorialDismissed')) {
-    refs.tutorialOverlay.classList.remove('hidden');
-    refs.tutorialSkip?.addEventListener('click', () => {
-      refs.tutorialOverlay.classList.add('hidden');
-      localStorage.setItem('tutorialDismissed', 'true');
     });
   }
 });
