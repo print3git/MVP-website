@@ -9,6 +9,9 @@ jest.mock('../db', () => ({
 }));
 const db = require('../db');
 
+jest.mock('../mail', () => ({ sendMail: jest.fn() }));
+const { sendMail } = require('../mail');
+
 jest.mock('axios');
 const axios = require('axios');
 const jwt = require('jsonwebtoken');
@@ -29,6 +32,7 @@ const app = require('../server');
 beforeEach(() => {
   db.query.mockClear();
   axios.post.mockClear();
+  sendMail.mockClear();
   stripeMock.checkout.sessions.create.mockResolvedValue({
     id: 'cs_test',
     url: 'https://stripe.test',
@@ -244,6 +248,33 @@ test('GET /api/competitions/:id/entries leaderboard order', async () => {
   expect(res.body.map((e) => e.likes)).toEqual([10, 5, 1]);
 });
 
+test('GET /api/competitions/:id/comments', async () => {
+  db.query.mockResolvedValueOnce({ rows: [{ id: 'c1', text: 'hi' }] });
+  const res = await request(app).get('/api/competitions/5/comments');
+  expect(res.status).toBe(200);
+  expect(res.body[0].text).toBe('hi');
+});
+
+test('POST /api/competitions/:id/comments requires auth', async () => {
+  const res = await request(app).post('/api/competitions/5/comments').send({ text: 'hey' });
+  expect(res.status).toBe(401);
+});
+
+test('POST /api/competitions/:id/comments', async () => {
+  db.query.mockResolvedValueOnce({ rows: [{ id: 'c1', text: 'hello' }] });
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  const res = await request(app)
+    .post('/api/competitions/5/comments')
+    .set('authorization', `Bearer ${token}`)
+    .send({ text: 'hello' });
+  expect(res.status).toBe(201);
+  expect(res.body.text).toBe('hello');
+  expect(db.query).toHaveBeenCalledWith(
+    expect.stringContaining('INSERT INTO competition_comments'),
+    ['5', 'u1', 'hello']
+  );
+});
+
 test('POST /api/competitions/:id/enter', async () => {
   db.query.mockResolvedValueOnce({});
   const token = jwt.sign({ id: 'u1' }, 'secret');
@@ -340,4 +371,27 @@ test('GET /api/shared/:slug 404 when missing', async () => {
   db.getShareBySlug = jest.fn().mockResolvedValue(null);
   const res = await request(app).get('/api/shared/bad');
   expect(res.status).toBe(404);
+});
+
+test('POST /api/admin/competitions sends emails', async () => {
+  db.query
+    .mockResolvedValueOnce({ rows: [{ id: 'c1', name: 'Comp' }] })
+    .mockResolvedValueOnce({ rows: [{ email: 'a@a.com' }, { email: 'b@b.com' }] });
+  const res = await request(app)
+    .post('/api/admin/competitions')
+    .set('x-admin-token', 'admin')
+    .send({ name: 'Comp', start_date: '2025-01-01', end_date: '2025-01-31' });
+  expect(res.status).toBe(200);
+  expect(sendMail).toHaveBeenCalledTimes(2);
+});
+
+test('checkCompetitionStart sends voting emails', async () => {
+  db.query
+    .mockResolvedValueOnce({ rows: [{ id: 'c1', name: 'Comp' }] })
+    .mockResolvedValueOnce({ rows: [{ email: 'a@a.com' }] })
+    .mockResolvedValueOnce({});
+  await app.checkCompetitionStart();
+  expect(sendMail).toHaveBeenCalledWith('a@a.com', 'Voting Open', expect.stringContaining('Comp'));
+  const call = db.query.mock.calls.find((c) => c[0].includes('UPDATE competitions'));
+  expect(call[1][0]).toBe('c1');
 });

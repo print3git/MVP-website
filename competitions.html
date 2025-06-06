@@ -12,6 +12,15 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
     />
+    <!-- Google <model-viewer> -->
+    <script
+      type="module"
+      src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js"
+    ></script>
+    <script
+      nomodule
+      src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer-legacy.js"
+    ></script>
   </head>
   <body class="bg-[#1A1A1D] text-white font-sans flex flex-col min-h-screen">
     <header class="relative flex items-center justify-between py-4 px-6">
@@ -30,7 +39,7 @@
         </svg>
         Back
       </a>
-      <h1 class="absolute inset-x-0 top-1/2 -translate-y-1/2 text-center text-2xl font-semibold">
+      <h1 class="absolute inset-x-0 top-1/2 -translate-y-1/2 text-center text-2xl font-semibold pointer-events-none">
         Competitions
       </h1>
       <div class="flex space-x-2">
