@@ -99,10 +99,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const modal = document.getElementById('model-modal');
   const closeBtn = document.getElementById('close-modal');
   function close() {
-    modal.classList.add('hidden');
+    modal?.classList.add('hidden');
     document.body.classList.remove('overflow-hidden');
   }
-  closeBtn.addEventListener('click', close);
+  closeBtn?.addEventListener('click', close);
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') close();
   });
