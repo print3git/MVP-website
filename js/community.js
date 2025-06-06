@@ -14,6 +14,22 @@ function like(id) {
       if (span) span.textContent = d.likes;
     });
 }
+
+const SEARCH_DELAY = 300;
+
+/**
+ * Return a function that delays invoking `fn` until after `delay` ms
+ * have elapsed since the last invocation.
+ * @param {Function} fn
+ * @param {number} delay
+ */
+function debounce(fn, delay) {
+  let timeout;
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => fn(...args), delay);
+  };
+}
 async function fetchCreations(
   type,
   offset = 0,
@@ -209,7 +225,9 @@ function init() {
   }
   const searchInput = document.getElementById('search');
   if (searchInput) {
+
     searchInput.addEventListener('input', () => {
+
 
       document.getElementById('recent-grid').innerHTML = '';
       document.getElementById('popular-grid').innerHTML = '';
@@ -221,7 +239,8 @@ function init() {
       createObserver('recent');
       loadMore('popular');
       loadMore('recent');
-    });
+    };
+    searchInput.addEventListener('input', debounce(onSearchInput, SEARCH_DELAY));
   }
   createObserver('popular');
   createObserver('recent');
