@@ -41,8 +41,13 @@ async function loadLeaderboard(id, table) {
     .join('');
 }
 
+function zeroPad(num) {
+  return String(num).padStart(2, '0');
+}
+
 function startCountdown(el) {
   const end = new Date(el.dataset.end + 'T23:59:59');
+  let timer;
   function update() {
     const diff = end - new Date();
     if (diff <= 0) {
@@ -53,10 +58,10 @@ function startCountdown(el) {
     const d = Math.floor(diff / 86400000);
     const h = Math.floor((diff % 86400000) / 3600000);
     const m = Math.floor((diff % 3600000) / 60000);
-    el.textContent = `${d}d ${h}h ${m}m`;
+    el.textContent = `${d}d ${zeroPad(h)}:${zeroPad(m)}`;
   }
   update();
-  const timer = setInterval(update, 60000);
+  timer = setInterval(update, 60000);
 }
 
 async function enter(id) {

@@ -57,6 +57,11 @@ python -m http.server
 Then navigate to `http://localhost:8080/index.html` or
 `http://localhost:8080/payment.html`.
 
+## Uploading Reference Images
+
+Images can be added via drag-and-drop in the generator page. Dropping one or more files opens a cropping dialog powered by Cropper.js allowing you to trim each image before upload.
+
+
 ## User Profiles API
 
 Two new routes expose profile information:
