@@ -222,10 +222,12 @@ app.get('/api/progress/:jobId', (req, res) => {
 });
 
 app.get('/api/my/models', authRequired, async (req, res) => {
+  const limit = parseInt(req.query.limit, 10) || 10;
+  const offset = parseInt(req.query.offset, 10) || 0;
   try {
     const { rows } = await db.query(
-      'SELECT * FROM jobs WHERE user_id=$1 ORDER BY created_at DESC',
-      [req.user.id]
+      'SELECT * FROM jobs WHERE user_id=$1 ORDER BY created_at DESC LIMIT $2 OFFSET $3',
+      [req.user.id, limit, offset]
     );
     res.json(rows);
   } catch (err) {
@@ -282,6 +284,8 @@ app.post('/api/profile', authRequired, async (req, res) => {
 });
 
 app.get('/api/users/:username/models', async (req, res) => {
+  const limit = parseInt(req.query.limit, 10) || 10;
+  const offset = parseInt(req.query.offset, 10) || 0;
   try {
     const { rows } = await db.query('SELECT id FROM users WHERE username=$1', [
       req.params.username,
@@ -293,8 +297,8 @@ app.get('/api/users/:username/models', async (req, res) => {
        FROM jobs j
        LEFT JOIN (SELECT model_id, COUNT(*) as count FROM likes GROUP BY model_id) l
        ON j.job_id=l.model_id
-       WHERE j.user_id=$1 AND j.is_public=TRUE ORDER BY j.created_at DESC`,
-      [userId]
+       WHERE j.user_id=$1 AND j.is_public=TRUE ORDER BY j.created_at DESC LIMIT $2 OFFSET $3`,
+      [userId, limit, offset]
     );
     res.json(models.rows);
   } catch (err) {
