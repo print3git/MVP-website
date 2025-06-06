@@ -532,6 +532,40 @@ app.get('/api/competitions/:id/entries', async (req, res) => {
   }
 });
 
+app.get('/api/competitions/:id/comments', async (req, res) => {
+  try {
+    const { rows } = await db.query(
+      `SELECT cc.id, cc.text, cc.created_at, u.username
+       FROM competition_comments cc
+       JOIN users u ON cc.user_id=u.id
+       WHERE cc.competition_id=$1
+       ORDER BY cc.created_at ASC`,
+      [req.params.id]
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch comments' });
+  }
+});
+
+app.post('/api/competitions/:id/comments', authRequired, async (req, res) => {
+  const { text } = req.body;
+  if (!text) return res.status(400).json({ error: 'text required' });
+  try {
+    const { rows } = await db.query(
+      `INSERT INTO competition_comments(competition_id, user_id, text)
+       VALUES($1,$2,$3)
+       RETURNING id, text, created_at`,
+      [req.params.id, req.user.id, text]
+    );
+    res.status(201).json(rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to post comment' });
+  }
+});
+
 app.post('/api/competitions/:id/enter', authRequired, async (req, res) => {
   const { modelId } = req.body;
   try {
