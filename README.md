@@ -78,6 +78,14 @@ The model viewer page includes a **Buy Now** button for fast purchasing. When a
 logged-in user has shipping details saved in their profile, clicking **Buy Now**
 submits the order immediately and redirects to the Stripe checkout page.
 
+### Drag-and-Drop Image Uploads
+
+Users can drag and drop image files onto the upload area on `index.html`. A
+cropping modal powered by [Cropper.js](https://github.com/fengyuanchen/cropperjs)
+lets users resize their images to a square preview before the files are uploaded
+to the server. The same modal appears when browsing for files via the standard
+file picker.
+
 ## Sharing API
 
 Models can be shared publicly via unique slugs.
