@@ -15,7 +15,6 @@ This consolidated list merges all outstanding tasks from the previous to-do docu
 
 - Offer multiple payment methods including Apple Pay and Google Pay.
 
-- Send a reminder email if a user generates a model but doesn't purchase. _(done)_
 - Provide incentives like discounts or credits for the first order.
 - Automatically prefill shipping and payment details from the user's profile.
   - Retrieve saved profile info from the backend.
