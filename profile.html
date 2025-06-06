@@ -106,12 +106,21 @@
           aria-label="Password"
         />
         <div id="ca-error" class="text-red-400" aria-live="assertive"></div>
-        <button
-          class="bg-[#30D5C8] text-[#1A1A1D] font-semibold px-4 py-2 rounded-xl hover:bg-[#28b7a8] transition"
-          type="submit"
-        >
-          Create Account
-        </button>
+        <div class="flex space-x-2">
+          <button
+            class="bg-[#30D5C8] text-[#1A1A1D] font-semibold px-4 py-2 rounded-xl hover:bg-[#28b7a8] transition"
+            type="submit"
+          >
+            Create Account
+          </button>
+          <button
+            id="login-button"
+            type="button"
+            class="bg-[#30D5C8] text-[#1A1A1D] font-semibold px-4 py-2 rounded-xl hover:bg-[#28b7a8] transition"
+          >
+            Login
+          </button>
+        </div>
       </form>
     </main>
     <div

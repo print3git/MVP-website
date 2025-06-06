@@ -20,7 +20,7 @@ async function login(e) {
   const data = await res.json();
   if (data.token) {
     localStorage.setItem('token', data.token);
-    window.location.href = 'profile.html';
+    window.location.href = 'account.html';
   } else {
     document.getElementById('error').textContent = data.error || 'Login failed';
     nameEl.classList.add('border-red-500');

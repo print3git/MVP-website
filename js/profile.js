@@ -118,5 +118,9 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   const form = document.getElementById('create-account-form');
   form?.addEventListener('submit', createAccount);
+  const loginBtn = document.getElementById('login-button');
+  loginBtn?.addEventListener('click', () => {
+    window.location.href = 'login.html';
+  });
   load();
 });
