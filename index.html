@@ -90,11 +90,6 @@
         display: none;
       }
     </style>
-    <style id="theme-style">
-      [data-theme="light"] body { background:#ffffff; color:#1A1A1D; }
-      [data-theme="light"] #preview-wrapper { background:#f2f2f2; }
-    </style>
-  </head>
 
   <body class="bg-[#1A1A1D] text-white font-sans flex flex-col">
     <header class="flex items-center justify-between py-4 px-6">
@@ -160,10 +155,6 @@
           >
             <i class="fab fa-instagram"></i>
           </button>
-          <button id="theme-toggle" class="w-9 h-9 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape" aria-label="Toggle theme">
-            <i class="fas fa-adjust"></i>
-          </button>
-        </div>
       </div>
     </header>
 
@@ -326,7 +317,6 @@
     </div>
 
     <!--  Application logic ----------------------------------------------- -->
-    <script src="js/theme.js"></script>
     <script src="js/subredditLanding.js"></script>
     <script type="module" src="js/index.js"></script>
   </body>
