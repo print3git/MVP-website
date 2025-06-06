@@ -47,6 +47,7 @@ function zeroPad(num) {
 
 function startCountdown(el) {
   const end = new Date(el.dataset.end + 'T23:59:59');
+  let timer;
   function update() {
     const diff = end - new Date();
     if (diff <= 0) {
@@ -60,7 +61,7 @@ function startCountdown(el) {
     el.textContent = `${d}d ${zeroPad(h)}:${zeroPad(m)}`;
   }
   update();
-  const timer = setInterval(update, 60000);
+  timer = setInterval(update, 60000);
 }
 
 async function enter(id) {
