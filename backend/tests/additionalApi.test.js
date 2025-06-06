@@ -135,6 +135,7 @@ test('POST /api/models/:id/like requires auth', async () => {
 });
 
 
+
 test('POST /api/models/:id/public updates flag', async () => {
   db.query.mockResolvedValueOnce({ rows: [{ is_public: true }] });
   const token = jwt.sign({ id: 'u1' }, 'secret');
