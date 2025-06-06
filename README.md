@@ -41,6 +41,12 @@ This repository contains the early MVP code for print2's website and backend.
    cd hunyuan_server && npm start  # inside backend/hunyuan_server/
    ```
 
+5. (Optional) Run the purchase reminder job periodically:
+
+   ```bash
+   npm run send-reminders  # inside backend/
+   ```
+
 ## Serving the Frontend Locally
 
 `index.html` and `payment.html` use ES module scripts. When opened directly from
@@ -60,7 +66,6 @@ Then navigate to `http://localhost:8080/index.html` or
 ## Uploading Reference Images
 
 Images can be added via drag-and-drop in the generator page. Dropping one or more files opens a cropping dialog powered by Cropper.js allowing you to trim each image before upload.
-
 
 ## User Profiles API
 

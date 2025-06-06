@@ -29,7 +29,16 @@ This consolidated list merges all outstanding tasks from the previous to-do docu
 
 - Offer multiple payment methods including Apple Pay and Google Pay.
 - Automatically calculate and display shipping cost and delivery ETA before checkout.
-- Send a reminder email if a user generates a model but doesn't purchase.
+
+- Send a reminder email if a user generates a model but doesn't purchase. *(done)*
+- Provide incentives like discounts or credits for the first order.
+- Automatically prefill shipping and payment details from the user's profile.
+  - Retrieve saved profile info from the backend.
+  - Populate the checkout form with the saved data.
+- Offer a one-click "Buy Now" button directly on the model viewer page.
+  - Add a button that uses saved details.
+  - Submit the order in one step.
+
 - Show estimated print cost and delivery time before checkout.
   - Calculate cost and ETA from model parameters.
   - Display them near the checkout button.
