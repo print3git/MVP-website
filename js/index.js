@@ -8,7 +8,7 @@ if (
   document.documentElement.classList.add('has-generated');
 }
 
-const API_BASE = '/api';
+const API_BASE = (window.API_ORIGIN || '') + '/api';
 const FALLBACK_GLB = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
 const EXAMPLES = ['cute robot figurine', 'ornate chess piece', 'geometric flower vase'];
 const TRENDING = ['dragon statue', 'space rover', 'anime character'];

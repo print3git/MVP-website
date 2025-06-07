@@ -1,10 +1,12 @@
+const API_BASE = (window.API_ORIGIN || '') + '/api';
+
 function like(id) {
   const token = localStorage.getItem('token');
   if (!token) {
     alert('Login required');
     return;
   }
-  fetch(`/api/models/${id}/like`, {
+  fetch(`${API_BASE}/models/${id}/like`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}` },
   })
@@ -44,7 +46,7 @@ async function captureSnapshots(container) {
 }
 
 async function load() {
-  const res = await fetch('/api/competitions/active');
+  const res = await fetch(`${API_BASE}/competitions/active`);
   const list = document.getElementById('list');
   if (!res.ok) {
     list.textContent = 'Failed to load competitions';
@@ -94,7 +96,7 @@ async function load() {
 }
 
 async function loadLeaderboard(id, table, grid) {
-  const res = await fetch(`/api/competitions/${id}/entries`);
+  const res = await fetch(`${API_BASE}/competitions/${id}/entries`);
   if (!res.ok) return;
   const rows = await res.json();
   table.innerHTML = rows
@@ -177,7 +179,7 @@ async function submitEntry(e) {
     alert('Login required');
     return;
   }
-  const res = await fetch(`/api/competitions/${currentId}/enter`, {
+  const res = await fetch(`${API_BASE}/competitions/${currentId}/enter`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -189,7 +191,7 @@ async function submitEntry(e) {
 }
 
 async function loadComments(id, container) {
-  const res = await fetch(`/api/competitions/${id}/comments`);
+  const res = await fetch(`${API_BASE}/competitions/${id}/comments`);
   if (!res.ok) return;
   const comments = await res.json();
   container.innerHTML = comments
@@ -202,7 +204,7 @@ async function submitComment(id, form, container) {
   if (!token) return alert('Login required');
   const text = form.text.value.trim();
   if (!text) return;
-  const res = await fetch(`/api/competitions/${id}/comments`, {
+  const res = await fetch(`${API_BASE}/competitions/${id}/comments`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -217,7 +219,7 @@ async function submitComment(id, form, container) {
 }
 
 async function loadPast() {
-  const res = await fetch('/api/competitions/past');
+  const res = await fetch(`${API_BASE}/competitions/past`);
   const container = document.getElementById('past');
   if (!res.ok) {
     container.textContent = 'Failed to load winners';
