@@ -1,10 +1,12 @@
+const API_BASE = (window.API_ORIGIN || '') + '/api';
+
 function like(id) {
   const token = localStorage.getItem('token');
   if (!token) {
     alert('Login required');
     return;
   }
-  fetch(`/api/models/${id}/like`, {
+  fetch(`${API_BASE}/models/${id}/like`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}` },
   })
@@ -43,7 +45,7 @@ async function fetchCreations(
   if (search) query.set('search', search);
   if (order && type === 'recent') query.set('order', order);
   try {
-    const res = await fetch(`/api/community/${type}?${query}`);
+    const res = await fetch(`${API_BASE}/community/${type}?${query}`);
     if (!res.ok) throw new Error('bad response');
     return await res.json();
   } catch (err) {
