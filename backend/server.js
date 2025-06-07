@@ -206,6 +206,30 @@ app.get('/api/config/stripe', (req, res) => {
 });
 
 /**
+ * GET /api/print-slots
+ * Return the current number of available print slots
+ */
+app.get('/api/print-slots', (req, res) => {
+  const dtf = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/New_York',
+    hour12: false,
+    hour: 'numeric',
+  });
+  const hour = parseInt(dtf.format(new Date()), 10);
+  let slots;
+  if (hour >= 1 && hour < 4) slots = 9;
+  else if (hour >= 4 && hour < 7) slots = 8;
+  else if (hour >= 7 && hour < 10) slots = 7;
+  else if (hour >= 10 && hour < 13) slots = 6;
+  else if (hour >= 13 && hour < 16) slots = 5;
+  else if (hour >= 16 && hour < 19) slots = 4;
+  else if (hour >= 19 && hour < 22) slots = 3;
+  else if (hour >= 22 && hour < 24) slots = 2;
+  else slots = 1; // 12am - 1am
+  res.json({ slots });
+});
+
+/**
  * GET /api/subreddit/:name
  * Retrieve model and quote for a subreddit
  */
