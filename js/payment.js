@@ -99,11 +99,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (sessionId) recordPurchase();
   let baseSlots = null;
 
+
   if (slotEl) {
     try {
       const resp = await fetch('/api/print-slots');
       if (resp.ok) {
         const data = await resp.json();
+
         baseSlots = data.slots;
         slotEl.textContent = adjustedSlots(baseSlots);
       }
