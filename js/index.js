@@ -353,11 +353,11 @@ refs.submitBtn.addEventListener('click', async () => {
   refs.submitIcon.classList.replace('fa-stop', 'fa-arrow-up');
 });
 
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', async () => {
   syncUploadHeights();
   window.addEventListener('resize', syncUploadHeights);
   setStep('prompt');
-  showModel();
+  showLoader();
   const sr = new URLSearchParams(window.location.search).get('sr');
   if (!sr) {
     refs.viewer.src = FALLBACK_GLB;
@@ -376,7 +376,9 @@ window.addEventListener('DOMContentLoaded', () => {
         stopProgress();
       }
     });
+    await refs.viewer.updateComplete;
   }
+  showModel();
   fetchProfile().then(() => {
     if (userProfile && refs.buyNowBtn) {
       refs.buyNowBtn.classList.remove('hidden');
