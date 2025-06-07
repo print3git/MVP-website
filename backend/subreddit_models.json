@@ -14,5 +14,9 @@
   "mechanicalkeyboards": {
     "glb": "models/reddit_mk.glb",
     "quote": "Craft custom keyboard parts using print3!"
+  },
+  "magic": {
+    "glb": "https://modelviewer.dev/shared-assets/models/Astronaut.glb",
+    "quote": "This feels like mgic!"
   }
 }
