@@ -143,8 +143,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       localStorage.setItem('flashDiscountEnd', String(end));
     }
 
-    flashBanner.hidden = false;
-
     let timer;
     const update = () => {
       const diff = end - Date.now();
@@ -161,6 +159,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     update();
+    flashBanner.hidden = false;
     timer = setInterval(update, 1000);
   }
   window.startFlashDiscount = startFlashDiscount;

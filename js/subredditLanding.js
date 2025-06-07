@@ -25,9 +25,11 @@ window.addEventListener('DOMContentLoaded', async () => {
   if (entry && viewer) viewer.src = entry.glb;
   if (entry && quoteEl) {
     quoteEl.textContent = entry.quote;
+
   }
 
   if (quoteEl && window.positionQuote) {
     window.positionQuote();
+
   }
 });
