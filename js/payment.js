@@ -136,6 +136,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   function startFlashDiscount() {
+    let show = sessionStorage.getItem('flashDiscountShow');
+    if (!show) {
+      show = Math.random() < 0.5 ? '1' : '0';
+      sessionStorage.setItem('flashDiscountShow', show);
+    }
+    if (show === '0') {
+      flashBanner.hidden = true;
+      localStorage.removeItem('flashDiscountEnd');
+      return;
+    }
+
     let end = Number(localStorage.getItem('flashDiscountEnd'));
 
     if (!Number.isFinite(end) || end <= Date.now()) {
