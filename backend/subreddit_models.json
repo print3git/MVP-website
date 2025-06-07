@@ -1,22 +1,32 @@
 {
+  "default": {
+    "subreddit": null,
+    "glb": "https://modelviewer.dev/shared-assets/models/Astronaut.glb",
+    "quote": "I'm astonished at how high-quality the print is"
+  },
   "art": {
+    "subreddit": "art",
     "glb": "models/reddit_art.glb",
     "quote": "Create artistic masterpieces with print3!"
   },
   "3dprinting": {
+    "subreddit": "3dprinting",
     "glb": "models/reddit_3dprinting.glb",
-    "quote": "Turn your CAD files into reality with print3!"
+    "quote": "I'm astonished at how high-quality the print is"
   },
   "gamedev": {
+    "subreddit": "gamedev",
     "glb": "models/reddit_gamedev.glb",
     "quote": "Bring your game ideas to life with print3!"
   },
   "mechanicalkeyboards": {
+    "subreddit": "mechanicalkeyboards",
     "glb": "models/reddit_mk.glb",
     "quote": "Craft custom keyboard parts using print3!"
   },
   "magic": {
+    "subreddit": "magic",
     "glb": "https://modelviewer.dev/shared-assets/models/Astronaut.glb",
-    "quote": "This feels like mgic!"
+    "quote": "It feels like magic"
   }
 }
