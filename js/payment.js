@@ -147,7 +147,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
-    let end = Number(localStorage.getItem('flashDiscountEnd'));
+    const endStr = localStorage.getItem('flashDiscountEnd');
+    if (endStr === '0') {
+      flashBanner.hidden = true;
+      return;
+    }
+    let end = Number(endStr);
 
     if (!Number.isFinite(end) || end <= Date.now()) {
       end = Date.now() + 5 * 60 * 1000;
@@ -159,7 +164,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const diff = end - Date.now();
       if (diff <= 0) {
         flashBanner.hidden = true;
-        localStorage.removeItem('flashDiscountEnd');
+        localStorage.setItem('flashDiscountEnd', '0');
         clearInterval(timer);
         return;
       }
