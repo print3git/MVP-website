@@ -1,4 +1,9 @@
 {
+  "default": {
+    "subreddit": null,
+    "glb": "https://modelviewer.dev/shared-assets/models/Astronaut.glb",
+    "quote": "I'm astonished at how high-quality the print is"
+  },
   "art": {
     "subreddit": "art",
     "glb": "models/reddit_art.glb",
