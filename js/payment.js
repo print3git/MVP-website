@@ -99,7 +99,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (sessionId) recordPurchase();
   let baseSlots = null;
 
-
   if (slotEl) {
     try {
       const resp = await fetch('/api/print-slots');

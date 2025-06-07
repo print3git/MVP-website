@@ -57,10 +57,7 @@ describe('flash banner', () => {
     });
     global.window = dom.window;
     global.document = dom.window.document;
-    const scriptSrc = fs.readFileSync(
-      path.join(__dirname, '../../../js/payment.js'),
-      'utf8'
-    );
+    const scriptSrc = fs.readFileSync(path.join(__dirname, '../../../js/payment.js'), 'utf8');
     dom.window.eval(scriptSrc);
     dom.window.document.dispatchEvent(new dom.window.Event('DOMContentLoaded'));
     dom.window.startFlashDiscount();
