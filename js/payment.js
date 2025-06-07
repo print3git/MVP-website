@@ -68,20 +68,21 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   function startFlashDiscount() {
-    const saved = parseInt(localStorage.getItem('flashDiscountEnd'), 10);
-    let end;
+    let end = Number(localStorage.getItem('flashDiscountEnd'));
 
-    if (Number.isFinite(saved)) {
-      end = saved;
-    } else {
+    if (!Number.isFinite(end) || end <= Date.now()) {
       end = Date.now() + 5 * 60 * 1000;
-      localStorage.setItem('flashDiscountEnd', end);
+      localStorage.setItem('flashDiscountEnd', String(end));
     }
+
+    flashBanner.hidden = false;
+
     let timer;
     const update = () => {
       const diff = end - Date.now();
       if (diff <= 0) {
         flashBanner.hidden = true;
+        localStorage.removeItem('flashDiscountEnd');
         clearInterval(timer);
         return;
       }
@@ -91,6 +92,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         .padStart(2, '0');
       flashTimer.textContent = `${m}:${s}`;
     };
+
     update();
     timer = setInterval(update, 1000);
   }
