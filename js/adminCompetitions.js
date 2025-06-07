@@ -6,10 +6,12 @@ function setToken(token) {
   localStorage.setItem('adminToken', token);
 }
 
+const API_BASE = (window.API_ORIGIN || '') + '/api';
+
 async function load() {
   const list = document.getElementById('list');
   list.textContent = 'Loading...';
-  const res = await fetch('/api/competitions/active');
+  const res = await fetch(`${API_BASE}/competitions/active`);
   if (!res.ok) {
     list.textContent = 'Failed to load competitions';
     return;
@@ -37,7 +39,7 @@ async function load() {
         prize_description: div.querySelector('.prize').value,
         winner_model_id: div.querySelector('.winner').value || null,
       };
-      const resp = await fetch(`/api/admin/competitions/${c.id}`, {
+      const resp = await fetch(`${API_BASE}/admin/competitions/${c.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
