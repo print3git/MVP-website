@@ -68,6 +68,8 @@ async function init() {
   }
 
   function startFlashDiscount() {
+    // Always hide the banner until the timer text is updated to avoid flicker
+    flashBanner.hidden = true;
     let end = Number(localStorage.getItem('flashDiscountEnd'));
 
     if (!Number.isFinite(end) || end <= Date.now()) {
