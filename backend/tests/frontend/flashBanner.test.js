@@ -48,4 +48,21 @@ describe('flash banner', () => {
     const banner = dom.window.document.getElementById('flash-banner');
     expect(banner.hidden).toBe(false);
   });
+
+  test('timer updates before banner is shown', async () => {
+    const dom = new JSDOM(html, {
+      runScripts: 'dangerously',
+      resources: 'usable',
+      url: 'http://localhost/',
+    });
+    global.window = dom.window;
+    global.document = dom.window.document;
+    dom.window.localStorage.setItem('flashDiscountEnd', String(Date.now() + 61000));
+    const scriptSrc = fs.readFileSync(path.join(__dirname, '../../../js/payment.js'), 'utf8');
+    dom.window.eval(scriptSrc);
+    dom.window.document.dispatchEvent(new dom.window.Event('DOMContentLoaded'));
+    dom.window.startFlashDiscount();
+    const timerText = dom.window.document.getElementById('flash-timer').textContent;
+    expect(timerText).not.toBe('5:00');
+  });
 });

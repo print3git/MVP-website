@@ -75,8 +75,6 @@ async function init() {
       localStorage.setItem('flashDiscountEnd', String(end));
     }
 
-    flashBanner.hidden = false;
-
     let timer;
     const update = () => {
       const diff = end - Date.now();
@@ -94,6 +92,7 @@ async function init() {
     };
 
     update();
+    flashBanner.hidden = false;
     timer = setInterval(update, 1000);
   }
   window.startFlashDiscount = startFlashDiscount;
