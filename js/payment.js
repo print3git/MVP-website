@@ -4,6 +4,55 @@
 let stripe = null;
 const FALLBACK_GLB = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
 const PRICE = 2000;
+// Time zone used to reset local purchase counts at 1 AM Eastern
+const TZ = 'America/New_York';
+
+function getCycleKey() {
+  const now = new Date();
+  const dateFmt = new Intl.DateTimeFormat('en-US', {
+    timeZone: TZ,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+  const hourFmt = new Intl.DateTimeFormat('en-US', {
+    timeZone: TZ,
+    hour: 'numeric',
+    hour12: false,
+  });
+  const dateStr = dateFmt.format(now);
+  const hour = parseInt(hourFmt.format(now), 10);
+  if (hour < 1) {
+    const prev = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    return dateFmt.format(prev);
+  }
+  return dateStr;
+}
+
+function resetPurchaseCount() {
+  const key = getCycleKey();
+  if (localStorage.getItem('slotCycle') !== key) {
+    localStorage.setItem('slotCycle', key);
+    localStorage.setItem('slotPurchases', '0');
+  }
+}
+
+function getPurchaseCount() {
+  resetPurchaseCount();
+  const n = parseInt(localStorage.getItem('slotPurchases'), 10);
+  return Number.isInteger(n) && n > 0 ? n : 0;
+}
+
+function recordPurchase() {
+  resetPurchaseCount();
+  const n = getPurchaseCount();
+  localStorage.setItem('slotPurchases', String(n + 1));
+}
+
+function adjustedSlots(base) {
+  const n = getPurchaseCount();
+  return Math.max(0, base - n);
+}
 
 function qs(name) {
   const params = new URLSearchParams(window.location.search);
@@ -45,6 +94,23 @@ document.addEventListener('DOMContentLoaded', async () => {
   const flashTimer = document.getElementById('flash-timer');
   const costEl = document.getElementById('cost-estimate');
   const etaEl = document.getElementById('eta-estimate');
+  const slotEl = document.getElementById('slot-count');
+  const sessionId = qs('session_id');
+  if (sessionId) recordPurchase();
+  let baseSlots = null;
+
+  if (slotEl) {
+    try {
+      const resp = await fetch('/api/print-slots');
+      if (resp.ok) {
+        const data = await resp.json();
+        baseSlots = data.slots;
+        slotEl.textContent = adjustedSlots(baseSlots);
+      }
+    } catch {
+      /* ignore slot errors */
+    }
+  }
 
   async function updateEstimate() {
     if (!costEl || !etaEl) return;
@@ -128,7 +194,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Hide the overlay if nothing happens after a short delay
   setTimeout(hideLoader, 7000);
 
-  const sessionId = qs('session_id');
   if (sessionId) {
     successMsg.hidden = false;
     return;
