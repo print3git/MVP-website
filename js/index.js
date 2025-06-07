@@ -326,31 +326,39 @@ async function fetchGlb(prompt, files) {
 
 refs.submitBtn.addEventListener('click', async () => {
   const prompt = refs.promptInput.value.trim();
-  if (!validatePrompt(prompt)) return;
+  if (!validatePrompt(prompt)) {
+    // Ensure icon resets if validation fails
+    refs.submitIcon.classList.replace('fa-stop', 'fa-arrow-up');
+    return;
+  }
   showError('');
   refs.promptWrapper.classList.remove('border-red-500');
   refs.buyNowBtn?.classList.add('hidden');
   refs.submitIcon.classList.replace('fa-arrow-up', 'fa-stop');
   showLoader();
 
-  localStorage.setItem('print3Prompt', prompt);
-  localStorage.setItem('hasGenerated', 'true');
+  try {
+    localStorage.setItem('print3Prompt', prompt);
+    localStorage.setItem('hasGenerated', 'true');
 
-  const url = await fetchGlb(prompt, uploadedFiles);
-  localStorage.setItem('print3Model', url);
-  localStorage.setItem('print3JobId', lastJobId);
+    const url = await fetchGlb(prompt, uploadedFiles);
+    localStorage.setItem('print3Model', url);
+    localStorage.setItem('print3JobId', lastJobId);
 
-  editsPending = false;
+    editsPending = false;
 
-  refs.viewer.src = url;
-  await refs.viewer.updateComplete;
-  showModel();
-  setStep('model');
-  hideDemo();
+    refs.viewer.src = url;
+    await refs.viewer.updateComplete;
+    showModel();
+    setStep('model');
+    hideDemo();
 
-  refs.checkoutBtn.classList.remove('hidden');
-  if (userProfile) refs.buyNowBtn?.classList.remove('hidden');
-  refs.submitIcon.classList.replace('fa-stop', 'fa-arrow-up');
+    refs.checkoutBtn.classList.remove('hidden');
+    if (userProfile) refs.buyNowBtn?.classList.remove('hidden');
+  } finally {
+    // Always return the button to the arrow state
+    refs.submitIcon.classList.replace('fa-stop', 'fa-arrow-up');
+  }
 });
 
 window.addEventListener('DOMContentLoaded', async () => {
