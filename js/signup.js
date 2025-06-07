@@ -1,3 +1,5 @@
+const API_BASE = (window.API_ORIGIN || '') + '/api';
+
 async function signup(e) {
   e.preventDefault();
   const nameEl = document.getElementById('su-name');
@@ -16,7 +18,7 @@ async function signup(e) {
     if (!password) passEl.classList.add('border-red-500');
     return;
   }
-  const res = await fetch('/api/register', {
+  const res = await fetch(`${API_BASE}/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ username, email, password }),
@@ -25,7 +27,7 @@ async function signup(e) {
   if (data.token) {
     localStorage.setItem('token', data.token);
     if (optIn) {
-      fetch('/api/subscribe', {
+      fetch(`${API_BASE}/subscribe`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),

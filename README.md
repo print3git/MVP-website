@@ -63,6 +63,17 @@ python -m http.server
 Then navigate to `http://localhost:8080/index.html` or
 `http://localhost:8080/payment.html`.
 
+When the backend server runs on a different port (the default is 3000),
+set `window.API_ORIGIN` in the page so the frontend knows where to send API
+requests:
+
+```html
+<script>
+  window.API_ORIGIN = 'http://localhost:3000';
+</script>
+```
+Include this snippet before loading any of the JavaScript modules.
+
 ## Uploading Reference Images
 
 Images can be added via drag-and-drop in the generator page.

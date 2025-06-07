@@ -1,3 +1,5 @@
+const API_BASE = (window.API_ORIGIN || '') + '/api';
+
 function getParam(name) {
   const params = new URLSearchParams(window.location.search);
   return params.get(name);
@@ -5,7 +7,7 @@ function getParam(name) {
 
 async function fetchSubredditInfo(sr) {
   try {
-    const resp = await fetch(`/api/subreddit/${encodeURIComponent(sr)}`);
+    const resp = await fetch(`${API_BASE}/subreddit/${encodeURIComponent(sr)}`);
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     return await resp.json();
   } catch (err) {

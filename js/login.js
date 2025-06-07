@@ -1,3 +1,5 @@
+const API_BASE = (window.API_ORIGIN || '') + '/api';
+
 async function login(e) {
   e.preventDefault();
   const nameEl = document.getElementById('li-name');
@@ -12,7 +14,7 @@ async function login(e) {
     if (!password) passEl.classList.add('border-red-500');
     return;
   }
-  const res = await fetch('/api/login', {
+  const res = await fetch(`${API_BASE}/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ username, password }),

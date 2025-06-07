@@ -4,6 +4,7 @@
 let stripe = null;
 const FALLBACK_GLB = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
 const PRICE = 2000;
+const API_BASE = (window.API_ORIGIN || '') + '/api';
 // Time zone used to reset local purchase counts at 1 AM Eastern
 const TZ = 'America/New_York';
 
@@ -61,7 +62,7 @@ function qs(name) {
 
 async function createCheckout(quantity, discount, shippingInfo) {
   const jobId = localStorage.getItem('print3JobId');
-  const res = await fetch('/api/create-order', {
+  const res = await fetch(`${API_BASE}/create-order`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ jobId, price: PRICE, qty: quantity, discount, shippingInfo }),
@@ -75,7 +76,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // failed to load, we fall back to plain redirects.
   if (window.Stripe) {
     try {
-      const resp = await fetch('/api/config/stripe');
+      const resp = await fetch(`${API_BASE}/config/stripe`);
       const data = await resp.json();
       if (data.publishableKey) {
         stripe = window.Stripe(data.publishableKey);
@@ -101,7 +102,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   if (slotEl) {
     try {
-      const resp = await fetch('/api/print-slots');
+      const resp = await fetch(`${API_BASE}/print-slots`);
       if (resp.ok) {
         const data = await resp.json();
 
@@ -121,7 +122,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       zip: document.getElementById('ship-zip').value,
     };
     try {
-      const resp = await fetch('/api/shipping-estimate', {
+      const resp = await fetch(`${API_BASE}/shipping-estimate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ destination: dest, model: { weight: 1 } }),
@@ -210,7 +211,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const token = localStorage.getItem('token');
   if (token) {
     try {
-      const resp = await fetch('/api/profile', {
+      const resp = await fetch(`${API_BASE}/profile`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (resp.ok) {
@@ -254,7 +255,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       window.location.href = url;
     }
     if (emailEl.value) {
-      fetch('/api/subscribe', {
+      fetch(`${API_BASE}/subscribe`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: emailEl.value }),

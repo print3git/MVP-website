@@ -1,5 +1,6 @@
 import { shareOn } from './share.js';
 window.shareOn = shareOn;
+const API_BASE = (window.API_ORIGIN || '') + '/api';
 
 document.addEventListener('DOMContentLoaded', async () => {
   const params = new URLSearchParams(window.location.search);
@@ -9,7 +10,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
   try {
-    const res = await fetch(`/api/shared/${slug}`);
+    const res = await fetch(`${API_BASE}/shared/${slug}`);
     if (!res.ok) throw new Error('bad');
     const data = await res.json();
     const viewer = document.getElementById('viewer');

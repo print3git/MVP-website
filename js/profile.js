@@ -1,3 +1,5 @@
+const API_BASE = (window.API_ORIGIN || '') + '/api';
+
 function createCard(model) {
   const div = document.createElement('div');
   div.className =
@@ -37,7 +39,7 @@ async function createAccount(e) {
     if (!password) passEl.classList.add('border-red-500');
     return;
   }
-  const res = await fetch('/api/register', {
+  const res = await fetch(`${API_BASE}/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ username, email, password }),
@@ -89,8 +91,8 @@ async function load() {
   }
   const urlParams = new URLSearchParams(window.location.search);
   const user = urlParams.get('user');
-  let endpoint = '/api/my/models';
-  if (user) endpoint = `/api/users/${encodeURIComponent(user)}/models`;
+  let endpoint = `${API_BASE}/my/models`;
+  if (user) endpoint = `${API_BASE}/users/${encodeURIComponent(user)}/models`;
   const res = await fetch(endpoint, {
     headers: { Authorization: `Bearer ${token}` },
   });
