@@ -45,6 +45,19 @@ document.addEventListener('DOMContentLoaded', async () => {
   const flashTimer = document.getElementById('flash-timer');
   const costEl = document.getElementById('cost-estimate');
   const etaEl = document.getElementById('eta-estimate');
+  const slotEl = document.getElementById('slot-count');
+
+  if (slotEl) {
+    try {
+      const resp = await fetch('/api/print-slots');
+      if (resp.ok) {
+        const data = await resp.json();
+        slotEl.textContent = data.slots;
+      }
+    } catch {
+      /* ignore slot errors */
+    }
+  }
 
   async function updateEstimate() {
     if (!costEl || !etaEl) return;

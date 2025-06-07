@@ -452,3 +452,9 @@ test('checkCompetitionStart sends voting emails', async () => {
   const call = db.query.mock.calls.find((c) => c[0].includes('UPDATE competitions'));
   expect(call[1][0]).toBe('c1');
 });
+
+test('GET /api/print-slots returns count', async () => {
+  const res = await request(app).get('/api/print-slots');
+  expect(res.status).toBe(200);
+  expect(typeof res.body.slots).toBe('number');
+});
