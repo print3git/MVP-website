@@ -112,6 +112,7 @@
       <div class="flex items-center space-x-4 self-start mt-1">
         <a
           href="profile.html"
+          id="profile-link"
           class="bg-[#2A2A2E] border border-white/10 rounded-3xl px-4 py-2 text-sm hover:bg-[#3A3A3E] transition-shape"
           >Profile</a
         >
@@ -313,6 +314,14 @@
     <!-- ▸▸▸ SCRIPTS ------------------------------------------------------ -->
     <script src="js/subredditLanding.js"></script>
     <script type="module" src="js/index.js"></script>
+    <script>
+      document.getElementById('profile-link')?.addEventListener('click', function (e) {
+        if (!localStorage.getItem('token')) {
+          e.preventDefault();
+          window.location.href = 'login.html';
+        }
+      });
+    </script>
 
     <!-- Position the subreddit quote so its centre aligns with the centre
          of the checkout button -->

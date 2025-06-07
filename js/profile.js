@@ -120,5 +120,10 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   const form = document.getElementById('create-account-form');
   form?.addEventListener('submit', createAccount);
+  const logoutBtn = document.getElementById('logout-btn');
+  logoutBtn?.addEventListener('click', () => {
+    localStorage.removeItem('token');
+    window.location.href = 'index.html';
+  });
   load();
 });
