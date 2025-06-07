@@ -24,6 +24,9 @@ const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'admin';
 
 const AUTH_SECRET = process.env.AUTH_SECRET || 'secret';
 
+// Mapping of subreddit models and quotes stored server-side
+const subredditModels = require('./subreddit_models.json');
+
 const app = express();
 app.use(morgan('dev'));
 app.use(compression());
@@ -200,6 +203,17 @@ app.get('/api/status/:jobId', async (req, res) => {
  */
 app.get('/api/config/stripe', (req, res) => {
   res.json({ publishableKey: config.stripePublishable });
+});
+
+/**
+ * GET /api/subreddit/:name
+ * Retrieve model and quote for a subreddit
+ */
+app.get('/api/subreddit/:name', (req, res) => {
+  const sr = req.params.name.toLowerCase();
+  const entry = subredditModels[sr];
+  if (!entry) return res.status(404).json({ error: 'Subreddit not found' });
+  res.json(entry);
 });
 
 app.get('/api/progress/:jobId', (req, res) => {
