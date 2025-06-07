@@ -70,11 +70,20 @@ async function init() {
   function startFlashDiscount() {
     // Always hide the banner until the timer text is updated to avoid flicker
     flashBanner.hidden = true;
-    let end = Number(localStorage.getItem('flashDiscountEnd'));
+    let end;
+    try {
+      end = Number(localStorage.getItem('flashDiscountEnd'));
+    } catch {
+      end = NaN;
+    }
 
     if (!Number.isFinite(end) || end <= Date.now()) {
       end = Date.now() + 5 * 60 * 1000;
-      localStorage.setItem('flashDiscountEnd', String(end));
+      try {
+        localStorage.setItem('flashDiscountEnd', String(end));
+      } catch {
+        /* ignore storage errors */
+      }
     }
 
     let timer;
@@ -82,7 +91,11 @@ async function init() {
       const diff = end - Date.now();
       if (diff <= 0) {
         flashBanner.hidden = true;
-        localStorage.removeItem('flashDiscountEnd');
+        try {
+          localStorage.removeItem('flashDiscountEnd');
+        } catch {
+          /* ignore */
+        }
         clearInterval(timer);
         return;
       }
