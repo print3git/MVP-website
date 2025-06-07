@@ -47,6 +47,7 @@ describe('flash banner', () => {
     expect(end).toBeGreaterThan(expired);
     const banner = dom.window.document.getElementById('flash-banner');
     expect(banner.hidden).toBe(false);
+
   });
 
   test('timer updates before banner is shown', async () => {
@@ -64,5 +65,6 @@ describe('flash banner', () => {
     dom.window.startFlashDiscount();
     const timerText = dom.window.document.getElementById('flash-timer').textContent;
     expect(timerText).not.toBe('5:00');
+
   });
 });
