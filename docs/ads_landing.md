@@ -8,4 +8,6 @@ To ensure visitors see the correct creative, include an `sr` parameter in every 
 https://print3.example.com/index.html?sr=art
 ```
 
-The value is looked up in `public/subreddit_models.json` so new subreddits can be added without modifying the script.
+The page requests data for that subreddit from the API endpoint
+`/api/subreddit/<name>`, so new subreddits can be added without modifying the
+client script.
