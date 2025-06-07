@@ -27,10 +27,10 @@ describe('flash banner', () => {
     expect(banner.hidden).toBe(false);
     await new Promise((r) => setTimeout(r, 1100));
     expect(banner.hidden).toBe(true);
-    expect(dom.window.localStorage.getItem('flashDiscountEnd')).toBe(null);
+    expect(dom.window.localStorage.getItem('flashDiscountEnd')).toBe('0');
   });
 
-  test('startFlashDiscount restarts expired timer', async () => {
+  test('does not restart after expiration', async () => {
     const dom = new JSDOM(html, {
       runScripts: 'dangerously',
       resources: 'usable',
@@ -39,16 +39,15 @@ describe('flash banner', () => {
     global.window = dom.window;
     global.document = dom.window.document;
     dom.window.sessionStorage.setItem('flashDiscountShow', '1');
-    const expired = Date.now() - 1000;
-    dom.window.localStorage.setItem('flashDiscountEnd', String(expired));
+    dom.window.localStorage.setItem('flashDiscountEnd', '0');
     const scriptSrc = fs.readFileSync(path.join(__dirname, '../../../js/payment.js'), 'utf8');
     dom.window.eval(scriptSrc);
     dom.window.document.dispatchEvent(new dom.window.Event('DOMContentLoaded'));
     dom.window.startFlashDiscount();
-    const end = Number(dom.window.localStorage.getItem('flashDiscountEnd'));
-    expect(end).toBeGreaterThan(expired);
+    const end = dom.window.localStorage.getItem('flashDiscountEnd');
+    expect(end).toBe('0');
     const banner = dom.window.document.getElementById('flash-banner');
-    expect(banner.hidden).toBe(false);
+    expect(banner.hidden).toBe(true);
   });
 
   test('countdown shows 4:59 after one second', async () => {
