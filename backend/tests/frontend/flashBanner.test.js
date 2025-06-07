@@ -26,9 +26,10 @@ describe('flash banner', () => {
     expect(banner.hidden).toBe(false);
     await new Promise((r) => setTimeout(r, 1100));
     expect(banner.hidden).toBe(true);
+    expect(dom.window.localStorage.getItem('flashDiscountEnd')).toBe(null);
   });
 
-  test('startFlashDiscount does not restart expired timer', async () => {
+  test('startFlashDiscount restarts expired timer', async () => {
     const dom = new JSDOM(html, {
       runScripts: 'dangerously',
       resources: 'usable',
@@ -43,8 +44,46 @@ describe('flash banner', () => {
     dom.window.document.dispatchEvent(new dom.window.Event('DOMContentLoaded'));
     dom.window.startFlashDiscount();
     const end = Number(dom.window.localStorage.getItem('flashDiscountEnd'));
-    expect(end).toBe(expired);
+    expect(end).toBeGreaterThan(expired);
     const banner = dom.window.document.getElementById('flash-banner');
-    expect(banner.hidden).toBe(true);
+    expect(banner.hidden).toBe(false);
+  });
+
+  test('timer updates immediately', async () => {
+    const dom = new JSDOM(html, {
+      runScripts: 'dangerously',
+      resources: 'usable',
+      url: 'http://localhost/',
+    });
+    global.window = dom.window;
+    global.document = dom.window.document;
+    dom.window.localStorage.setItem('flashDiscountEnd', String(Date.now() + 61000));
+    const scriptSrc = fs.readFileSync(path.join(__dirname, '../../../js/payment.js'), 'utf8');
+    dom.window.eval(scriptSrc);
+    dom.window.document.dispatchEvent(new dom.window.Event('DOMContentLoaded'));
+    dom.window.startFlashDiscount();
+    const timerText = dom.window.document.getElementById('flash-timer').textContent;
+    expect(timerText).not.toBe('5:00');
+  });
+
+  test('restarting clears previous interval', async () => {
+    const dom = new JSDOM(html, {
+      runScripts: 'dangerously',
+      resources: 'usable',
+      url: 'http://localhost/',
+    });
+    global.window = dom.window;
+    global.document = dom.window.document;
+    dom.window.localStorage.setItem('flashDiscountEnd', String(Date.now() + 500));
+    const scriptSrc = fs.readFileSync(path.join(__dirname, '../../../js/payment.js'), 'utf8');
+    dom.window.eval(scriptSrc);
+    dom.window.document.dispatchEvent(new dom.window.Event('DOMContentLoaded'));
+    dom.window.startFlashDiscount();
+    await new Promise((r) => setTimeout(r, 100));
+    dom.window.localStorage.setItem('flashDiscountEnd', String(Date.now() + 1000));
+    dom.window.startFlashDiscount();
+    await new Promise((r) => setTimeout(r, 600));
+    const banner = dom.window.document.getElementById('flash-banner');
+    expect(banner.hidden).toBe(false);
   });
 });

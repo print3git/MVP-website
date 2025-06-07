@@ -21,7 +21,7 @@ async function createCheckout(quantity, discount, shippingInfo) {
   return data.checkoutUrl;
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
+async function init() {
   // Safely initialize Stripe once the DOM is ready. If the Stripe library
   // failed to load, we fall back to plain redirects.
   if (window.Stripe) {
@@ -67,22 +67,32 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  function startFlashDiscount() {
-    const saved = parseInt(localStorage.getItem('flashDiscountEnd'), 10);
-    let end;
+  let flashDiscountInterval;
 
-    if (Number.isFinite(saved)) {
-      end = saved;
-    } else {
-      end = Date.now() + 5 * 60 * 1000;
-      localStorage.setItem('flashDiscountEnd', end);
+  function startFlashDiscount() {
+    // Always hide the banner until the timer text is updated to avoid flicker
+    flashBanner.hidden = true;
+    let end = parseInt(localStorage.getItem('flashDiscountEnd'), 10);
+
+    if (flashDiscountInterval) {
+      clearInterval(flashDiscountInterval);
+      flashDiscountInterval = null;
     }
-    let timer;
+
+    if (!Number.isFinite(end) || end <= Date.now()) {
+      end = Date.now() + 5 * 60 * 1000;
+      localStorage.setItem('flashDiscountEnd', String(end));
+    }
+
     const update = () => {
       const diff = end - Date.now();
       if (diff <= 0) {
         flashBanner.hidden = true;
-        clearInterval(timer);
+        localStorage.removeItem('flashDiscountEnd');
+        if (flashDiscountInterval) {
+          clearInterval(flashDiscountInterval);
+          flashDiscountInterval = null;
+        }
         return;
       }
       const m = Math.floor(diff / 60000);
@@ -91,8 +101,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         .padStart(2, '0');
       flashTimer.textContent = `${m}:${s}`;
     };
+
     update();
-    timer = setInterval(update, 1000);
+    if (end > Date.now()) {
+      flashBanner.hidden = false;
+      flashDiscountInterval = setInterval(update, 1000);
+    } else {
+      localStorage.removeItem('flashDiscountEnd');
+    }
   }
   window.startFlashDiscount = startFlashDiscount;
 
@@ -137,6 +153,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   if (flashBanner) {
     startFlashDiscount();
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) {
+        startFlashDiscount();
+      }
+    });
   }
 
   // Prefill shipping fields from saved profile
@@ -194,4 +215,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
     }
   });
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init, { once: true });
+} else {
+  init();
+}
