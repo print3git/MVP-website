@@ -23,7 +23,6 @@ describe('flash banner', () => {
     dom.window.document.dispatchEvent(new dom.window.Event('DOMContentLoaded'));
     dom.window.startFlashDiscount();
     const banner = dom.window.document.getElementById('flash-banner');
-    await new Promise((r) => setTimeout(r));
     expect(banner.hidden).toBe(false);
     await new Promise((r) => setTimeout(r, 1100));
     expect(banner.hidden).toBe(true);
@@ -47,10 +46,9 @@ describe('flash banner', () => {
     const end = Number(dom.window.localStorage.getItem('flashDiscountEnd'));
     expect(end).toBeGreaterThan(expired);
     const banner = dom.window.document.getElementById('flash-banner');
-    await new Promise((r) => setTimeout(r));
     expect(banner.hidden).toBe(false);
 
-  });
+  test('timer updates immediately', async () => {
 
   test('timer updates before banner is shown', async () => {
     const dom = new JSDOM(html, {
