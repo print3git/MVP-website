@@ -67,10 +67,13 @@ async function init() {
     }
   }
 
+  // Stores the interval ID for the countdown so we can clear it when
+  // restarting or when the timer expires.
   let flashDiscountInterval;
 
   function startFlashDiscount() {
     // Always hide the banner until the timer text is updated to avoid flicker
+    // and reset any existing interval.
     flashBanner.hidden = true;
     let end = parseInt(localStorage.getItem('flashDiscountEnd'), 10);
 
