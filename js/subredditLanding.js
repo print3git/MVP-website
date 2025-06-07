@@ -17,16 +17,12 @@ async function fetchSubredditInfo(sr) {
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
-  const sr = getParam('sr');
+  const sr = getParam('sr') || 'default';
   const viewer = document.getElementById('viewer');
   const quoteEl = document.getElementById('subreddit-quote');
 
-  let entry = null;
-  if (sr) {
-    entry = await fetchSubredditInfo(sr);
-    if (entry && viewer) viewer.src = entry.glb;
-  }
-
+  const entry = await fetchSubredditInfo(sr);
+  if (entry && viewer) viewer.src = entry.glb;
   if (entry && quoteEl) {
     quoteEl.textContent = entry.quote;
   }
