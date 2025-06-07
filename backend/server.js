@@ -729,6 +729,50 @@ app.post('/api/shipping-estimate', async (req, res) => {
   }
 });
 
+app.get('/api/cart', authRequired, async (req, res) => {
+  try {
+    const items = await db.getCartItems(req.user.id);
+    res.json(items);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch cart' });
+  }
+});
+
+app.post('/api/cart/items', authRequired, async (req, res) => {
+  const { jobId, quantity } = req.body;
+  if (!jobId) return res.status(400).json({ error: 'jobId required' });
+  try {
+    const item = await db.addCartItem(req.user.id, jobId, quantity || 1);
+    res.status(201).json(item);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to add item' });
+  }
+});
+
+app.patch('/api/cart/items/:id', authRequired, async (req, res) => {
+  const { quantity } = req.body;
+  if (!quantity) return res.status(400).json({ error: 'quantity required' });
+  try {
+    const item = await db.updateCartItem(req.params.id, quantity);
+    res.json(item);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to update item' });
+  }
+});
+
+app.delete('/api/cart/items/:id', authRequired, async (req, res) => {
+  try {
+    await db.removeCartItem(req.params.id);
+    res.sendStatus(204);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to remove item' });
+  }
+});
+
 /**
  * POST /api/create-order
  * Create a Stripe Checkout session
