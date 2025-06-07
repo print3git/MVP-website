@@ -232,7 +232,7 @@ function renderThumbnails(arr) {
     btn.type = 'button';
     btn.innerHTML = '<i class="fas fa-times"></i>';
     btn.className =
-      'absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white text-black border border-black flex items-center justify-center';
+      'absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white text-black border border-black flex items-center justify-center z-10';
     btn.onclick = () => {
       arr.splice(i, 1);
       uploadedFiles.splice(i, 1);
@@ -353,11 +353,11 @@ refs.submitBtn.addEventListener('click', async () => {
   refs.submitIcon.classList.replace('fa-stop', 'fa-arrow-up');
 });
 
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', async () => {
   syncUploadHeights();
   window.addEventListener('resize', syncUploadHeights);
   setStep('prompt');
-  showModel();
+  showLoader();
   const sr = new URLSearchParams(window.location.search).get('sr');
   if (!sr) {
     refs.viewer.src = FALLBACK_GLB;
@@ -376,7 +376,9 @@ window.addEventListener('DOMContentLoaded', () => {
         stopProgress();
       }
     });
+    await refs.viewer.updateComplete;
   }
+  showModel();
   fetchProfile().then(() => {
     if (userProfile && refs.buyNowBtn) {
       refs.buyNowBtn.classList.remove('hidden');
