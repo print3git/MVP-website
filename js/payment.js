@@ -92,9 +92,11 @@ async function init() {
     };
 
     update();
-    setTimeout(() => {
-      flashBanner.hidden = false;
-    });
+    if (end > Date.now()) {
+      setTimeout(() => {
+        flashBanner.hidden = false;
+      });
+    }
     timer = setInterval(update, 1000);
   }
   window.startFlashDiscount = startFlashDiscount;
