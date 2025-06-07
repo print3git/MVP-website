@@ -23,5 +23,8 @@ window.addEventListener('DOMContentLoaded', async () => {
   if (!sr) return;
   const entry = await fetchSubredditInfo(sr);
   if (entry && viewer) viewer.src = entry.glb;
-  if (entry && quoteEl) quoteEl.textContent = entry.quote;
+  if (entry && quoteEl) {
+    quoteEl.textContent = entry.quote;
+    if (window.positionQuote) window.positionQuote();
+  }
 });
