@@ -4,6 +4,7 @@
 let stripe = null;
 const FALLBACK_GLB = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
 const PRICE = 2000;
+// Time zone used to reset local purchase counts at 1 AM Eastern
 const TZ = 'America/New_York';
 
 function getCycleKey() {
