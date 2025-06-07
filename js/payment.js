@@ -136,14 +136,23 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   function startFlashDiscount() {
+    let show = sessionStorage.getItem('flashDiscountShow');
+    if (!show) {
+      show = Math.random() < 0.5 ? '1' : '0';
+      sessionStorage.setItem('flashDiscountShow', show);
+    }
+    if (show === '0') {
+      flashBanner.hidden = true;
+      localStorage.removeItem('flashDiscountEnd');
+      return;
+    }
+
     let end = Number(localStorage.getItem('flashDiscountEnd'));
 
     if (!Number.isFinite(end) || end <= Date.now()) {
       end = Date.now() + 5 * 60 * 1000;
       localStorage.setItem('flashDiscountEnd', String(end));
     }
-
-    flashBanner.hidden = false;
 
     let timer;
     const update = () => {
@@ -161,6 +170,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     update();
+    flashBanner.hidden = false;
     timer = setInterval(update, 1000);
   }
   window.startFlashDiscount = startFlashDiscount;
