@@ -16,20 +16,21 @@ async function fetchSubredditInfo(sr) {
   }
 }
 
+const FALLBACK_QUOTE = "I'm astonished at how high-quality the print is";
+
 window.addEventListener('DOMContentLoaded', async () => {
   const sr = getParam('sr') || 'default';
   const viewer = document.getElementById('viewer');
   const quoteEl = document.getElementById('subreddit-quote');
 
-  const entry = await fetchSubredditInfo(sr);
-  if (entry && viewer) viewer.src = entry.glb;
-  if (entry && quoteEl) {
-    quoteEl.textContent = entry.quote;
-
+  let entry = null;
+  if (sr) {
+    entry = await fetchSubredditInfo(sr);
+    if (entry && viewer) viewer.src = entry.glb;
   }
 
-  if (quoteEl && window.positionQuote) {
-    window.positionQuote();
-
+  if (quoteEl) {
+    quoteEl.textContent = entry ? entry.quote : FALLBACK_QUOTE;
+    if (window.positionQuote) window.positionQuote();
   }
 });
