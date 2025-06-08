@@ -1,3 +1,5 @@
+import { captureSnapshots } from './snapshot.js';
+
 const API_BASE = (window.API_ORIGIN || '') + '/api';
 
 function createCard(model) {
@@ -55,6 +57,7 @@ async function createAccount(e) {
   }
 }
 
+
 async function captureSnapshots(container) {
   const cards = container.querySelectorAll('.model-card');
   for (const card of cards) {
@@ -83,6 +86,7 @@ async function captureSnapshots(container) {
     }
   }
 }
+
 
 async function load() {
   const token = localStorage.getItem('token');
