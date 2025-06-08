@@ -120,17 +120,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   if (slotEl) {
     slotEl.style.visibility = 'hidden';
+    // Compute a client-side slot count first so we have a reasonable value even
+    // if the API fails or returns stale data.
+    baseSlots = computeSlotsByTime();
     try {
       const resp = await fetch(`${API_BASE}/print-slots`);
       if (resp.ok) {
         const data = await resp.json();
-        baseSlots = data.slots;
+        if (typeof data.slots === 'number') {
+          baseSlots = data.slots;
+        }
       }
     } catch {
-      // ignore slot errors and fall back to local time
-    }
-    if (baseSlots === null) {
-      baseSlots = computeSlotsByTime();
+      // ignore slot errors and fall back to the computed time-based value
     }
     slotEl.textContent = adjustedSlots(baseSlots);
     slotEl.style.visibility = 'visible';
