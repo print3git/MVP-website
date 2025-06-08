@@ -54,9 +54,8 @@ async function fetchCreations(
   }
 }
 
-function getFallbackModels() {
 
-
+function getFallbackModels(count = 6, start = 0) {
   const base = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0';
 
   const samples = [
@@ -73,18 +72,26 @@ function getFallbackModels() {
     { name: 'Duck', ext: 'png' },
     { name: 'CesiumMan', ext: 'gif' },
   ];
-  const models = [];
-  for (let i = 0; i < 6; i++) {
-    const s = samples[i % samples.length];
-    models.push({
-      model_url: `${base}/${s.name}/glTF-Binary/${s.name}.glb`,
-      likes: 0,
-      id: `fallback-${i}`,
-      job_id: `fallback-${i}`,
-      snapshot: `${base}/${s.name}/screenshot/screenshot.${s.ext}`,
-    });
-  }
-  return models;
+
+  return samples.slice(start, start + count).map((s, i) => ({
+    model_url: `${base}/${s.name}/glTF-Binary/${s.name}.glb`,
+    likes: 0,
+    id: `fallback-${start + i}`,
+    job_id: `fallback-${start + i}`,
+    snapshot: `${base}/${s.name}/screenshot/screenshot.${s.ext}`,
+  }));
+}
+
+const prefetchedModels = new Set();
+function prefetchModel(url) {
+  if (prefetchedModels.has(url)) return;
+  const link = document.createElement('link');
+  link.rel = 'prefetch';
+  link.href = url;
+  link.as = 'fetch';
+  document.head.appendChild(link);
+  prefetchedModels.add(url);
+
 }
 
 const prefetchedModels = new Set();
@@ -167,7 +174,8 @@ async function loadMore(type, filters = getFilters()) {
   const state = cache[key];
   let models = await fetchCreations(type, state.offset, 6, category, search, order);
   if (models.length === 0 && state.offset === 0) {
-    models = getFallbackModels();
+    const start = type === 'popular' ? 0 : 6;
+    models = getFallbackModels(6, start);
   }
   state.offset += models.length;
   state.models = state.models.concat(models);
