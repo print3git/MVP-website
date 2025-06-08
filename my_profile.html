@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Profile</title>
+    <meta property="og:title" content="My Profile – print3" />
+    <meta property="og:image" content="img/boxlogo.png" />
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-[#1A1A1D] text-white font-sans flex flex-col min-h-screen">
+    <header class="relative flex items-center justify-between py-4 px-6">
+      <a
+        href="profile.html"
+        class="inline-flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-3xl px-5 py-2 text-lg font-medium hover:bg-[#3A3A3E] transition-shape"
+      >
+        <svg
+          class="w-4 h-4 mr-2 flex-shrink-0"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+        Back
+      </a>
+      <h1
+        class="absolute inset-x-0 top-1/2 -translate-y-1/2 text-center text-2xl font-semibold pointer-events-none"
+      >
+        My Profile
+      </h1>
+      <span class="w-9 h-9"></span>
+    </header>
+    <main class="flex-1 flex items-center justify-center p-6">
+      <div
+        id="profile-info"
+        class="space-y-2 bg-[#2A2A2E] border border-white/10 p-6 rounded-3xl w-96"
+      >
+        <p><strong>Username:</strong> <span id="mp-username"></span></p>
+        <p><strong>Email:</strong> <span id="mp-email"></span></p>
+      </div>
+    </main>
+    <script type="module" src="js/account.js"></script>
+  </body>
+</html>
