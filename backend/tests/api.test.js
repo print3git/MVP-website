@@ -356,6 +356,13 @@ test('/api/generate saves authenticated user id', async () => {
   expect(insertCall[1][4]).toBe('u1');
 });
 
+test('/api/generate inserts community row', async () => {
+  axios.post.mockResolvedValueOnce({ data: { glb_url: '/m.glb' } });
+  await request(app).post('/api/generate').send({ prompt: 't' });
+  const communityCall = db.query.mock.calls.find((c) => c[0].includes('INSERT INTO community_creations'));
+  expect(communityCall).toBeDefined();
+});
+
 test('/api/status supports limit and offset', async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
   await request(app).get('/api/status?limit=5&offset=2');
