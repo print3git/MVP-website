@@ -239,8 +239,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   loader.hidden = false;
-  viewer.src =
-    localStorage.getItem('print3Model') || localStorage.getItem('print2Model') || FALLBACK_GLB;
+  viewer.src = localStorage.getItem('print3Model') || FALLBACK_GLB;
 
   // Hide the overlay if nothing happens after a short delay
   setTimeout(hideLoader, 7000);

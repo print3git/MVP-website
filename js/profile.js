@@ -1,3 +1,5 @@
+import { captureSnapshots } from './snapshot.js';
+
 const API_BASE = (window.API_ORIGIN || '') + '/api';
 
 function createCard(model) {
@@ -55,6 +57,7 @@ async function createAccount(e) {
   }
 }
 
+
 async function captureSnapshots(container) {
   const cards = container.querySelectorAll('.model-card');
   for (const card of cards) {
@@ -62,7 +65,7 @@ async function captureSnapshots(container) {
     if (img && img.src) continue;
     const glbUrl = card.dataset.model;
     const viewer = document.createElement('model-viewer');
-    // use anonymous CORS so snapshot works with remote GLBs
+
     viewer.crossOrigin = 'anonymous';
     viewer.src = glbUrl;
     viewer.setAttribute(
@@ -84,6 +87,7 @@ async function captureSnapshots(container) {
     }
   }
 }
+
 
 async function load() {
   const token = localStorage.getItem('token');
