@@ -14,9 +14,7 @@ function generateTitle(prompt = '') {
     if (unique.length >= 3) break;
   }
 
-  const title = unique
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(' ');
+  const title = unique.map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
   return title || 'Untitled Model';
 }
 
