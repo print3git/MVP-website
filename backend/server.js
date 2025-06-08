@@ -107,10 +107,15 @@ app.post('/api/login', async (req, res) => {
 
 app.get('/api/me', authRequired, async (req, res) => {
   try {
-    const { rows } = await db.query('SELECT id, username, email FROM users WHERE id=$1', [req.user.id]);
+    const { rows } = await db.query('SELECT id, username, email FROM users WHERE id=$1', [
+      req.user.id,
+    ]);
     if (!rows.length) return res.status(404).json({ error: 'User not found' });
     const user = rows[0];
-    const profile = await db.query('SELECT shipping_info, payment_info, competition_notify FROM user_profiles WHERE user_id=$1', [req.user.id]);
+    const profile = await db.query(
+      'SELECT shipping_info, payment_info, competition_notify FROM user_profiles WHERE user_id=$1',
+      [req.user.id]
+    );
     res.json({
       id: user.id,
       username: user.username,
