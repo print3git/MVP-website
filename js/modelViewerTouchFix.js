@@ -1,4 +1,5 @@
 function blockScrollForModelViewer() {
+
   function preventScroll(e) {
     if (e.touches.length !== 1) return;
     const el = e.target.closest('model-viewer');
@@ -7,6 +8,7 @@ function blockScrollForModelViewer() {
 
   document.addEventListener('touchstart', preventScroll, {passive: false});
   document.addEventListener('touchmove', preventScroll, {passive: false});
+
 }
 
 if (document.readyState === 'loading') {
