@@ -7,7 +7,8 @@ let html = fs.readFileSync(path.join(__dirname, '../../../payment.html'), 'utf8'
 html = html
   .replace(/<script[^>]+src="https?:\/\/[^>]+><\/script>/g, '')
   .replace(/<link[^>]+href="https?:\/\/[^>]+>/g, '')
-  .replace(/<script[^>]+src="js\/payment.js"[^>]*><\/script>/, '');
+  .replace(/<script[^>]+src="js\/payment.js"[^>]*><\/script>/, '')
+  .replace(/<script[^>]+src="js\/modelViewerTouchFix.js"[^>]*><\/script>/, '');
 
 function cycleKey() {
   const tz = 'America/New_York';
