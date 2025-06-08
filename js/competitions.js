@@ -200,7 +200,6 @@ async function loadPast() {
   const res = await fetch(`${API_BASE}/competitions/past`);
   const container = document.getElementById('past');
   if (!res.ok) {
-    container.textContent = 'Failed to load winners';
     return;
   }
   const comps = await res.json();
@@ -229,5 +228,4 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.key === 'Escape') closeModal();
   });
   load();
-  loadPast();
 });
