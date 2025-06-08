@@ -94,16 +94,6 @@
       .has-generated #demo-note {
         display: none;
       }
-
-      /* Adjust subreddit quote width based on orientation */
-      #subreddit-quote {
-        max-width: 22ch; /* landscape default */
-      }
-      @media (orientation: portrait) {
-        #subreddit-quote {
-          max-width: 16ch; /* forces an extra line in portrait */
-        }
-      }
     </style>
   </head>
 
@@ -255,6 +245,7 @@
           id="subreddit-quote"
 
           class="flex text-sm text-gray-400 text-left leading-snug invisible mt-2 lg:mt-0 lg:absolute lg:left-full lg:ml-4 lg:max-w-none"
+          style="max-width: 22ch"
         >
           <p class="lg:whitespace-nowrap">
             "I'm astonished at how high-quality the print
