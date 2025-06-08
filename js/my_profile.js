@@ -25,21 +25,40 @@ function createCard(model) {
   return div;
 }
 
-async function load() {
+const state = { offset: 0, done: false, loading: false };
+
+async function loadMore() {
+  if (state.loading || state.done) return;
   const token = localStorage.getItem('token');
   if (!token) {
     window.location.href = 'login.html';
     return;
   }
-  const res = await fetch(`${API_BASE}/my/models`, {
+  state.loading = true;
+  const query = new URLSearchParams({ limit: 9, offset: state.offset });
+  const res = await fetch(`${API_BASE}/my/models?${query}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
-  if (!res.ok) return;
+  if (!res.ok) {
+    state.loading = false;
+    return;
+  }
   const models = await res.json();
   const container = document.getElementById('models');
-  container.innerHTML = '';
   models.forEach((m) => container.appendChild(createCard(m)));
-  captureSnapshots(container);
+  await captureSnapshots(container);
+  state.offset += models.length;
+  if (models.length < 9) state.done = true;
+  state.loading = false;
+}
+
+function createObserver() {
+  const sentinel = document.getElementById('models-sentinel');
+  if (!sentinel) return;
+  const observer = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) loadMore();
+  });
+  observer.observe(sentinel);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -58,5 +77,6 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.removeItem('token');
     window.location.href = 'index.html';
   });
-  load();
+  createObserver();
+  loadMore();
 });
