@@ -37,7 +37,7 @@ function debounce(fn, delay) {
 async function fetchCreations(
   type,
   offset = 0,
-  limit = 6,
+  limit = 9,
   category = '',
   search = '',
   order = 'desc'
@@ -56,7 +56,7 @@ async function fetchCreations(
   }
 }
 
-function getFallbackModels(count = 6, start = 0) {
+function getFallbackModels(count = 9, start = 0) {
   const base = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0';
 
   const samples = [
@@ -144,10 +144,10 @@ async function loadMore(type, filters = getFilters()) {
   const cache = window.communityState[type];
   if (!cache[key]) cache[key] = { offset: 0, models: [] };
   const state = cache[key];
-  let models = await fetchCreations(type, state.offset, 6, category, search, order);
+  let models = await fetchCreations(type, state.offset, 9, category, search, order);
   if (models.length === 0 && state.offset === 0) {
-    const start = type === 'popular' ? 0 : 6;
-    models = getFallbackModels(6, start);
+    const start = 0;
+    models = getFallbackModels(9, start);
   }
   state.offset += models.length;
   state.models = state.models.concat(models);
@@ -156,7 +156,7 @@ async function loadMore(type, filters = getFilters()) {
   await captureSnapshots(grid);
   const btn = document.getElementById(`${type}-load`);
   if (btn) {
-    if (models.length < 6) {
+    if (models.length < 9) {
       btn.classList.add('hidden');
     } else {
       btn.classList.remove('hidden');
@@ -174,7 +174,7 @@ function renderGrid(type, filters = getFilters()) {
     captureSnapshots(grid);
     const btn = document.getElementById(`${type}-load`);
     if (btn) {
-      if (state.models.length < 6) btn.classList.add('hidden');
+      if (state.models.length < 9) btn.classList.add('hidden');
       else btn.classList.remove('hidden');
     }
   } else {
