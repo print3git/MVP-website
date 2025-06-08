@@ -144,7 +144,9 @@ If omitted, the API returns up to 10 most recent models starting from offset 0.
 
 ## Contributing
 
-We welcome pull requests! Please fork the repo and create a topic branch. Ensure `npm test` runs clean before submitting.
+We welcome pull requests! Please fork the repo and create a topic branch. Run
+`npm ci` inside `backend/` to install dependencies, then ensure `npm test` runs
+clean before submitting.
 Run `npm run test-ci` for the same tests using a single process, which matches the CI configuration.
 Run `npm run format` in `backend/` to apply Prettier formatting before committing.
 For significant changes, please open an issue first to discuss what you would like to change. Be sure to follow the code style enforced by Prettier.
