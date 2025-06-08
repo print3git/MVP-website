@@ -171,6 +171,14 @@
           auto-rotate
           class="w-full h-96 bg-[#2A2A2E] rounded-xl"
         ></model-viewer>
+        <a
+          id="modal-checkout"
+          href="payment.html"
+          class="absolute bottom-4 right-4 font-bold py-3 px-5 rounded-full shadow-md transition"
+          style="background-color: #1f3b65; color: #5ec2c5"
+          onmouseover="this.style.opacity='0.85'"
+          onmouseout="this.style.opacity='1'"
+          >Checkout</a>
       </div>
     </div>
     <script type="module">
@@ -181,6 +189,7 @@
       document.addEventListener('DOMContentLoaded', () => {
         const modal = document.getElementById('model-modal');
         const viewer = modal.querySelector('model-viewer');
+        const checkoutBtn = document.getElementById('modal-checkout');
         const closeBtn = document.getElementById('close-modal');
 
         function close() {
@@ -192,9 +201,18 @@
           const card = e.target.closest('.model-card');
           if (card) {
             viewer.src = card.dataset.model;
+            checkoutBtn.dataset.model = card.dataset.model;
+            checkoutBtn.dataset.job = card.dataset.job;
             modal.classList.remove('hidden');
             document.body.classList.add('overflow-hidden');
           }
+        });
+
+        checkoutBtn.addEventListener('click', () => {
+          const model = checkoutBtn.dataset.model;
+          const job = checkoutBtn.dataset.job;
+          if (model) localStorage.setItem('print3Model', model);
+          if (job) localStorage.setItem('print3JobId', job);
         });
 
         closeBtn.addEventListener('click', close);

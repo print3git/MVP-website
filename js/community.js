@@ -34,7 +34,8 @@ function debounce(fn, delay) {
     timeout = setTimeout(() => fn(...args), delay);
   };
 }
-async function fetchCreations(
+var fetchCreations = window.fetchCreations;
+if (!fetchCreations) fetchCreations = async function (
   type,
   offset = 0,
   limit = 9,
@@ -54,9 +55,10 @@ async function fetchCreations(
     console.error('Failed to fetch creations', err);
     return [];
   }
-}
+};
 
-function getFallbackModels(count = 9, start = 0) {
+var getFallbackModels = window.getFallbackModels;
+if (!getFallbackModels) getFallbackModels = function (count = 9, start = 0) {
   const base = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0';
 
   const samples = [
