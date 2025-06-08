@@ -25,7 +25,6 @@ async function captureSnapshots(container) {
     const glbUrl = card.dataset.model;
     const viewer = document.createElement('model-viewer');
     viewer.crossOrigin = 'anonymous';
-    viewer.setAttribute('crossorigin', 'anonymous');
     viewer.src = glbUrl;
     viewer.setAttribute(
       'environment-image',
