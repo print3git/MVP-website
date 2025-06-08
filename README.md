@@ -72,11 +72,31 @@ requests:
   window.API_ORIGIN = 'http://localhost:3000';
 </script>
 ```
+
 Include this snippet before loading any of the JavaScript modules.
 
 ## Uploading Reference Images
 
 Images can be added via drag-and-drop in the generator page.
+
+## Managing Subreddit Quotes
+
+Quotes shown on the landing page are stored in
+`backend/subreddit_models.json`. Each entry is an object with three
+fields:
+
+```json
+{
+  "subreddit": "art",
+  "glb": "models/reddit_art.glb",
+  "quote": "Create artistic masterpieces<br />with print3!"
+}
+```
+
+Add new entries to the JSON file to support more subreddits or multiple
+quotes for the same subreddit. When the page loads with
+`?sr=subredditname`, the server responds with a random matching entry
+and the quote is inserted automatically.
 
 ## User Profiles API
 

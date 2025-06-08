@@ -77,6 +77,12 @@
         >
           <i class="fab fa-instagram"></i>
         </button>
+        <a
+          href="my_profile.html"
+          id="account-link"
+          class="bg-[#2A2A2E] border border-white/10 rounded-3xl px-3 py-2 text-sm hover:bg-[#3A3A3E] transition-shape hidden"
+          >Account</a
+        >
         <button
           id="logout-btn"
           class="bg-[#2A2A2E] border border-white/10 rounded-3xl px-3 py-2 text-sm hover:bg-[#3A3A3E] transition-shape"
@@ -87,6 +93,20 @@
     </header>
     <main class="flex-1 px-6 py-4">
       <div id="models" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
+      <div id="auth-options" class="text-center mt-8 hidden">
+        <a
+          href="login.html"
+          id="login-btn"
+          class="bg-[#30D5C8] text-[#1A1A1D] font-semibold px-4 py-2 rounded-xl hover:bg-[#28b7a8] transition mr-2"
+          >Log In</a
+        >
+        <button
+          id="show-create-btn"
+          class="bg-[#30D5C8] text-[#1A1A1D] font-semibold px-4 py-2 rounded-xl hover:bg-[#28b7a8] transition"
+        >
+          Create Account
+        </button>
+      </div>
       <form
         id="create-account-form"
         class="space-y-4 bg-[#2A2A2E] border border-white/10 p-6 rounded-3xl w-96 mx-auto hidden mt-8"

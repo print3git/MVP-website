@@ -7,6 +7,7 @@ const PRICE = 2000;
 const API_BASE = (window.API_ORIGIN || '') + '/api';
 // Time zone used to reset local purchase counts at 1 AM Eastern
 const TZ = 'America/New_York';
+let flashTimerId = null;
 
 function getCycleKey() {
   const now = new Date();
@@ -55,6 +56,24 @@ function adjustedSlots(base) {
   return Math.max(0, base - n);
 }
 
+function computeSlotsByTime() {
+  const dtf = new Intl.DateTimeFormat('en-US', {
+    timeZone: TZ,
+    hour12: false,
+    hour: 'numeric',
+  });
+  const hour = parseInt(dtf.format(new Date()), 10);
+  if (hour >= 1 && hour < 4) return 9;
+  if (hour >= 4 && hour < 7) return 8;
+  if (hour >= 7 && hour < 10) return 7;
+  if (hour >= 10 && hour < 13) return 6;
+  if (hour >= 13 && hour < 16) return 5;
+  if (hour >= 16 && hour < 19) return 4;
+  if (hour >= 19 && hour < 22) return 3;
+  if (hour >= 22 && hour < 24) return 2;
+  return 1;
+}
+
 function qs(name) {
   const params = new URLSearchParams(window.location.search);
   return params.get(name);
@@ -101,17 +120,25 @@ document.addEventListener('DOMContentLoaded', async () => {
   let baseSlots = null;
 
   if (slotEl) {
+    slotEl.style.visibility = 'hidden';
+    // Compute a client-side slot count first so we have a reasonable value even
+    // if the API fails or returns stale data.
+    baseSlots = computeSlotsByTime();
     try {
       const resp = await fetch(`${API_BASE}/print-slots`);
       if (resp.ok) {
         const data = await resp.json();
-
-        baseSlots = data.slots;
-        slotEl.textContent = adjustedSlots(baseSlots);
+        
+        if (typeof data.slots === 'number') {
+          baseSlots = data.slots;
+        }
       }
     } catch {
-      /* ignore slot errors */
+      // ignore slot errors and fall back to the computed time-based value
     }
+    slotEl.textContent = adjustedSlots(baseSlots);
+    slotEl.style.visibility = 'visible';
+
   }
 
   async function updateEstimate() {
@@ -152,31 +179,40 @@ document.addEventListener('DOMContentLoaded', async () => {
       flashBanner.hidden = true;
       return;
     }
-    let end = Number(endStr);
+    let end = parseInt(endStr, 10);
 
-    if (!Number.isFinite(end) || end <= Date.now()) {
+    if (!Number.isFinite(end)) {
       end = Date.now() + 5 * 60 * 1000;
       localStorage.setItem('flashDiscountEnd', String(end));
+    } else if (end <= Date.now()) {
+      flashBanner.hidden = true;
+      localStorage.setItem('flashDiscountEnd', '0');
+      return;
     }
 
-    let timer;
+    if (flashTimerId) {
+      return;
+    }
     const update = () => {
       const diff = end - Date.now();
       if (diff <= 0) {
         flashBanner.hidden = true;
         localStorage.setItem('flashDiscountEnd', '0');
-        clearInterval(timer);
+        if (flashTimerId) {
+          clearTimeout(flashTimerId);
+          flashTimerId = null;
+        }
         return;
       }
       const diffSec = Math.ceil(diff / 1000);
       const m = Math.floor(diffSec / 60);
       const s = String(diffSec % 60).padStart(2, '0');
       flashTimer.textContent = `${m}:${s}`;
+      flashTimerId = setTimeout(update, 1000);
     };
 
     update();
     flashBanner.hidden = false;
-    timer = setInterval(update, 1000);
   }
   window.startFlashDiscount = startFlashDiscount;
 
