@@ -19,7 +19,7 @@ async function fetchSubredditInfo(sr) {
 const FALLBACK_QUOTE = "I'm astonished at how high-quality the print is";
 
 window.addEventListener('DOMContentLoaded', async () => {
-  const sr = getParam('sr');
+  const sr = getParam('sr') || 'default';
   const viewer = document.getElementById('viewer');
   const quoteEl = document.getElementById('subreddit-quote');
 
