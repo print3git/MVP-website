@@ -16,10 +16,13 @@ async function fetchSubredditInfo(sr) {
   }
 }
 
+const FALLBACK_QUOTE = "I'm astonished at how high-quality the print is";
+
 window.addEventListener('DOMContentLoaded', async () => {
   const sr = getParam('sr') || 'default';
   const viewer = document.getElementById('viewer');
   const quoteEl = document.getElementById('subreddit-quote');
+
 
   const entry = await fetchSubredditInfo(sr);
   if (entry && viewer) viewer.src = entry.glb;
@@ -30,6 +33,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       const srName = entry.subreddit || 'subreddit';
       p.innerHTML = `"${entry.quote}" – email from an <span class="text-white">r/${srName}</span> user`;
     }
+
     if (window.positionQuote) window.positionQuote();
   }
 });
