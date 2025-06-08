@@ -186,6 +186,12 @@ app.post('/api/generate', authOptional, upload.array('images'), async (req, res)
       jobId,
     ]);
 
+    // Automatically add new models to the community gallery
+    await db.query(
+      'INSERT INTO community_creations(job_id, title, category) SELECT $1,$2,$3 WHERE NOT EXISTS (SELECT 1 FROM community_creations WHERE job_id=$1)',
+      [jobId, prompt || '', '']
+    );
+
     res.json({ jobId, glb_url: generatedUrl });
   } catch (err) {
     console.error(err);
