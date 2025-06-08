@@ -154,9 +154,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     let end = Number(endStr);
 
-    if (!Number.isFinite(end) || end <= Date.now()) {
+    if (!Number.isFinite(end)) {
       end = Date.now() + 5 * 60 * 1000;
       localStorage.setItem('flashDiscountEnd', String(end));
+    } else if (end <= Date.now()) {
+      flashBanner.hidden = true;
+      localStorage.setItem('flashDiscountEnd', '0');
+      return;
     }
 
     let timer;
