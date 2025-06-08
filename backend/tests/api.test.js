@@ -305,6 +305,13 @@ test('registration missing password', async () => {
   expect(res.status).toBe(400);
 });
 
+test('registration invalid email', async () => {
+  const res = await request(app)
+    .post('/api/register')
+    .send({ username: 'a', email: 'invalid', password: 'p' });
+  expect(res.status).toBe(400);
+});
+
 test('registration duplicate username', async () => {
   db.query.mockRejectedValueOnce(new Error('duplicate key'));
   const res = await request(app)
