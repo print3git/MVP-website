@@ -7,6 +7,10 @@
     <meta property="og:title" content="My Profile – print3" />
     <meta property="og:image" content="img/boxlogo.png" />
     <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
   </head>
   <body class="bg-[#1A1A1D] text-white font-sans flex flex-col min-h-screen">
     <header class="relative flex items-center justify-between py-4 px-6">
@@ -30,7 +34,43 @@
       >
         My Profile
       </h1>
-      <span class="w-9 h-9"></span>
+      <div class="flex space-x-2">
+        <button
+          class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
+          onclick="shareOn('twitter')"
+          aria-label="Share on Twitter"
+        >
+          <i class="fab fa-twitter"></i>
+        </button>
+        <button
+          class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
+          onclick="shareOn('facebook')"
+          aria-label="Share on Facebook"
+        >
+          <i class="fab fa-facebook-f"></i>
+        </button>
+        <button
+          class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
+          onclick="shareOn('reddit')"
+          aria-label="Share on Reddit"
+        >
+          <i class="fab fa-reddit-alien"></i>
+        </button>
+        <button
+          class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
+          onclick="shareOn('tiktok')"
+          aria-label="Share on TikTok"
+        >
+          <i class="fab fa-tiktok"></i>
+        </button>
+        <button
+          class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
+          onclick="shareOn('instagram')"
+          aria-label="Share on Instagram"
+        >
+          <i class="fab fa-instagram"></i>
+        </button>
+      </div>
     </header>
     <main class="flex-1 flex items-center justify-center p-6">
       <div
@@ -42,5 +82,9 @@
       </div>
     </main>
     <script type="module" src="js/account.js"></script>
+    <script type="module">
+      import { shareOn } from './js/share.js';
+      window.shareOn = shareOn;
+    </script>
   </body>
 </html>
