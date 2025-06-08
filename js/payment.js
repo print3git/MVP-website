@@ -7,7 +7,7 @@ const PRICE = 2000;
 const API_BASE = (window.API_ORIGIN || '') + '/api';
 // Time zone used to reset local purchase counts at 1 AM Eastern
 const TZ = 'America/New_York';
-let flashInterval = null;
+let flashTimerId = null;
 
 function getCycleKey() {
   const now = new Date();
@@ -153,7 +153,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       flashBanner.hidden = true;
       return;
     }
-    let end = Number(endStr);
+    let end = parseInt(endStr, 10);
 
     if (!Number.isFinite(end)) {
       end = Date.now() + 5 * 60 * 1000;
@@ -164,24 +164,25 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
-    if (flashInterval) {
+    if (flashTimerId) {
       return;
     }
-    let timer;
     const update = () => {
       const diff = end - Date.now();
       if (diff <= 0) {
         flashBanner.hidden = true;
         localStorage.setItem('flashDiscountEnd', '0');
-        globalThis.clearTimeout(timer);
-        flashInterval = null;
+        if (flashTimerId) {
+          clearTimeout(flashTimerId);
+          flashTimerId = null;
+        }
         return;
       }
       const diffSec = Math.ceil(diff / 1000);
       const m = Math.floor(diffSec / 60);
       const s = String(diffSec % 60).padStart(2, '0');
       flashTimer.textContent = `${m}:${s}`;
-      flashInterval = globalThis.setTimeout(update, 1000);
+      flashTimerId = setTimeout(update, 1000);
     };
 
     update();
