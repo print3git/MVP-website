@@ -63,7 +63,8 @@ function getFallbackModels(count = 6, start = 0) {
     { name: 'DamagedHelmet', ext: 'png' },
     { name: 'BoomBox', ext: 'jpg' },
     { name: 'BarramundiFish', ext: 'jpg' },
-    { name: 'FlightHelmet', ext: 'jpg' },
+    // FlightHelmet lacks a GLB; use a different sample that definitely has one
+    { name: 'Fox', ext: 'jpg' },
     { name: 'Avocado', ext: 'jpg' },
     { name: 'AntiqueCamera', ext: 'png' },
     { name: 'Lantern', ext: 'jpg' },
@@ -87,9 +88,12 @@ const prefetchedModels = new Set();
 function prefetchModel(url) {
   if (prefetchedModels.has(url)) return;
   const link = document.createElement('link');
-  link.rel = 'prefetch';
+  // Preload with high priority so the model is ready when clicked
+  link.rel = 'preload';
   link.href = url;
   link.as = 'fetch';
+  link.crossOrigin = 'anonymous';
+  link.fetchPriority = 'high';
   document.head.appendChild(link);
   prefetchedModels.add(url);
 }
@@ -113,6 +117,8 @@ function createCard(model) {
     const modal = document.getElementById('model-modal');
     const viewer = modal.querySelector('model-viewer');
     viewer.setAttribute('poster', model.snapshot || '');
+    // Ensure the viewer fetches the model immediately
+    viewer.setAttribute('fetchpriority', 'high');
     viewer.setAttribute('loading', 'eager');
     viewer.src = model.model_url;
     modal.classList.remove('hidden');
@@ -120,6 +126,7 @@ function createCard(model) {
   });
   return div;
 }
+
 
 
 async function captureSnapshots(container) {
@@ -151,6 +158,7 @@ async function captureSnapshots(container) {
     }
   }
 }
+
 
 
 function getFilters() {
