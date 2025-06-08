@@ -24,8 +24,15 @@ const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'admin';
 
 const AUTH_SECRET = process.env.AUTH_SECRET || 'secret';
 
-// Mapping of subreddit models and quotes stored server-side
-const subredditModels = require('./subreddit_models.json');
+// Array of subreddit quote entries stored server-side
+let subredditModels = [];
+try {
+  const modelsPath = path.join(__dirname, 'subreddit_models.json');
+  const raw = fs.readFileSync(modelsPath, 'utf8');
+  subredditModels = JSON.parse(raw);
+} catch (err) {
+  console.error('Failed to load subreddit_models.json', err);
+}
 
 const app = express();
 app.use(morgan('dev'));
@@ -102,6 +109,29 @@ app.post('/api/login', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Login failed' });
+  }
+});
+
+app.get('/api/me', authRequired, async (req, res) => {
+  try {
+    const { rows } = await db.query('SELECT id, username, email FROM users WHERE id=$1', [
+      req.user.id,
+    ]);
+    if (!rows.length) return res.status(404).json({ error: 'User not found' });
+    const user = rows[0];
+    const profile = await db.query(
+      'SELECT shipping_info, payment_info, competition_notify FROM user_profiles WHERE user_id=$1',
+      [req.user.id]
+    );
+    res.json({
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      profile: profile.rows[0] || {},
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch account' });
   }
 });
 
@@ -235,8 +265,11 @@ app.get('/api/print-slots', (req, res) => {
  */
 app.get('/api/subreddit/:name', (req, res) => {
   const sr = req.params.name.toLowerCase();
-  const entry = subredditModels[sr];
-  if (!entry) return res.status(404).json({ error: 'Subreddit not found' });
+  const matches = subredditModels.filter((e) => (e.subreddit || '').toLowerCase() === sr);
+  if (matches.length === 0) {
+    return res.status(404).json({ error: 'Subreddit not found' });
+  }
+  const entry = matches[Math.floor(Math.random() * matches.length)];
   res.json(entry);
 });
 

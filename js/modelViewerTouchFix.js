@@ -1,13 +1,14 @@
 function blockScrollForModelViewer() {
-  document.addEventListener(
-    'touchmove',
-    (e) => {
-      if (e.touches.length !== 1) return;
-      const el = e.target.closest('model-viewer');
-      if (el) e.preventDefault();
-    },
-    { passive: false }
-  );
+
+  function preventScroll(e) {
+    if (e.touches.length !== 1) return;
+    const el = e.target.closest('model-viewer');
+    if (el) e.preventDefault();
+  }
+
+  document.addEventListener('touchstart', preventScroll, {passive: false});
+  document.addEventListener('touchmove', preventScroll, {passive: false});
+
 }
 
 if (document.readyState === 'loading') {

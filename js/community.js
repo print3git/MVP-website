@@ -54,8 +54,10 @@ async function fetchCreations(
   }
 }
 
+
 function getFallbackModels(count = 6, start = 0) {
   const base = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0';
+
   const samples = [
     { name: 'DamagedHelmet', ext: 'png' },
     { name: 'BoomBox', ext: 'jpg' },
@@ -70,6 +72,7 @@ function getFallbackModels(count = 6, start = 0) {
     { name: 'Duck', ext: 'png' },
     { name: 'CesiumMan', ext: 'gif' },
   ];
+
   return samples.slice(start, start + count).map((s, i) => ({
     model_url: `${base}/${s.name}/glTF-Binary/${s.name}.glb`,
     likes: 0,
@@ -77,6 +80,18 @@ function getFallbackModels(count = 6, start = 0) {
     job_id: `fallback-${start + i}`,
     snapshot: `${base}/${s.name}/screenshot/screenshot.${s.ext}`,
   }));
+}
+
+const prefetchedModels = new Set();
+function prefetchModel(url) {
+  if (prefetchedModels.has(url)) return;
+  const link = document.createElement('link');
+  link.rel = 'prefetch';
+  link.href = url;
+  link.as = 'fetch';
+  document.head.appendChild(link);
+  prefetchedModels.add(url);
+
 }
 
 const prefetchedModels = new Set();
