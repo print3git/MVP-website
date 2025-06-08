@@ -243,7 +243,7 @@
         <!-- subreddit quote -->
         <div
           id="subreddit-quote"
-          class="absolute left-full ml-4 flex text-sm text-gray-400 text-left leading-snug invisible"
+          class="absolute text-left text-sm text-gray-400 leading-snug invisible"
         >
           <p class="whitespace-nowrap">
             "I'm astonished at how high-quality the <br />print is" – email from an
@@ -328,34 +328,33 @@
       });
     </script>
 
-    <!-- Position the subreddit quote so its centre aligns with the centre
-         of the checkout button -->
+    <!-- Position the subreddit quote so its left edge aligns with the left
+         edge of the checkout button and stays just below the viewer box -->
     <script>
       function positionQuote() {
-        const quote = document.getElementById('subreddit-quote');
+        const quote    = document.getElementById('subreddit-quote');
         const checkout = document.getElementById('checkout-button');
         if (!quote || !checkout) return;
 
-        if (getComputedStyle(quote).position !== 'absolute') {
-          quote.classList.remove('invisible');
-          return;
-        }
-
-        // bounding rectangles relative to viewport
-        const wrapperRect = checkout.parentElement.getBoundingClientRect();
+        // bounding rectangles relative to the viewport
+        const wrapperRect  = checkout.parentElement.getBoundingClientRect(); // #preview-wrapper
         const checkoutRect = checkout.getBoundingClientRect();
 
-        // centre of checkout button relative to its parent (#preview-wrapper)
-        const checkoutCentreY = checkoutRect.top + checkoutRect.height / 2 - wrapperRect.top;
+        /* Horizontal: match the left edge of the Checkout button */
+        const left = checkoutRect.left - wrapperRect.left;
 
-        // Offset so the quote is centred on that y-coordinate
-        quote.style.top = `${checkoutCentreY - quote.offsetHeight / 2}px`;
+        /* Vertical: place quote just below the viewer (16 px gap) */
+        const top  = wrapperRect.height + 16;
+
+        quote.style.left = `${left}px`;
+        quote.style.top  = `${top}px`;
+
         quote.classList.remove('invisible');
       }
 
       window.addEventListener('DOMContentLoaded', positionQuote);
-      window.addEventListener('load', positionQuote);
-      window.addEventListener('resize', positionQuote);
+      window.addEventListener('load',           positionQuote);
+      window.addEventListener('resize',         positionQuote);
     </script>
   </body>
 </html>
