@@ -7,6 +7,7 @@ const PRICE = 2000;
 const API_BASE = (window.API_ORIGIN || '') + '/api';
 // Time zone used to reset local purchase counts at 1 AM Eastern
 const TZ = 'America/New_York';
+let flashTimerId = null;
 
 function getCycleKey() {
   const now = new Date();
@@ -127,6 +128,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const resp = await fetch(`${API_BASE}/print-slots`);
       if (resp.ok) {
         const data = await resp.json();
+        
         if (typeof data.slots === 'number') {
           baseSlots = data.slots;
         }
@@ -136,6 +138,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     slotEl.textContent = adjustedSlots(baseSlots);
     slotEl.style.visibility = 'visible';
+
   }
 
   async function updateEstimate() {
@@ -176,31 +179,40 @@ document.addEventListener('DOMContentLoaded', async () => {
       flashBanner.hidden = true;
       return;
     }
-    let end = Number(endStr);
+    let end = parseInt(endStr, 10);
 
-    if (!Number.isFinite(end) || end <= Date.now()) {
+    if (!Number.isFinite(end)) {
       end = Date.now() + 5 * 60 * 1000;
       localStorage.setItem('flashDiscountEnd', String(end));
+    } else if (end <= Date.now()) {
+      flashBanner.hidden = true;
+      localStorage.setItem('flashDiscountEnd', '0');
+      return;
     }
 
-    let timer;
+    if (flashTimerId) {
+      return;
+    }
     const update = () => {
       const diff = end - Date.now();
       if (diff <= 0) {
         flashBanner.hidden = true;
         localStorage.setItem('flashDiscountEnd', '0');
-        clearInterval(timer);
+        if (flashTimerId) {
+          clearTimeout(flashTimerId);
+          flashTimerId = null;
+        }
         return;
       }
       const diffSec = Math.ceil(diff / 1000);
       const m = Math.floor(diffSec / 60);
       const s = String(diffSec % 60).padStart(2, '0');
       flashTimer.textContent = `${m}:${s}`;
+      flashTimerId = setTimeout(update, 1000);
     };
 
     update();
     flashBanner.hidden = false;
-    timer = setInterval(update, 1000);
   }
   window.startFlashDiscount = startFlashDiscount;
 
