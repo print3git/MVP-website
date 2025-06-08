@@ -175,10 +175,12 @@ app.post('/api/generate', authOptional, upload.array('images'), async (req, res)
     }
 
     const autoTitle = generateTitle(prompt);
-    await db.query(
-      'UPDATE jobs SET status=$1, model_url=$2, generated_title=$3 WHERE job_id=$4',
-      ['complete', generatedUrl, autoTitle, jobId]
-    );
+    await db.query('UPDATE jobs SET status=$1, model_url=$2, generated_title=$3 WHERE job_id=$4', [
+      'complete',
+      generatedUrl,
+      autoTitle,
+      jobId,
+    ]);
 
     res.json({ jobId, glb_url: generatedUrl });
   } catch (err) {
