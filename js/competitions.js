@@ -1,3 +1,5 @@
+import { captureSnapshots } from './snapshot.js';
+
 const API_BASE = (window.API_ORIGIN || '') + '/api';
 
 function like(id) {
@@ -16,6 +18,7 @@ function like(id) {
       if (span) span.textContent = d.likes;
     });
 }
+
 
 async function captureSnapshots(container) {
   const cards = container.querySelectorAll('.entry-card');
@@ -45,6 +48,7 @@ async function captureSnapshots(container) {
     }
   }
 }
+
 
 async function load() {
   const res = await fetch(`${API_BASE}/competitions/active`);

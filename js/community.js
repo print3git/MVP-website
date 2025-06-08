@@ -1,3 +1,5 @@
+import { captureSnapshots } from './snapshot.js';
+
 const API_BASE = (window.API_ORIGIN || '') + '/api';
 
 function like(id) {
@@ -119,6 +121,7 @@ function createCard(model) {
   return div;
 }
 
+
 async function captureSnapshots(container) {
   const cards = container.querySelectorAll('.model-card');
   for (const card of cards) {
@@ -147,6 +150,7 @@ async function captureSnapshots(container) {
     }
   }
 }
+
 
 function getFilters() {
   const category = document.getElementById('category').value;
