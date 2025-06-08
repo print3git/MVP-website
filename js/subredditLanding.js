@@ -17,11 +17,19 @@ async function fetchSubredditInfo(sr) {
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
-  const sr = getParam('sr');
+  const sr = getParam('sr') || 'default';
   const viewer = document.getElementById('viewer');
   const quoteEl = document.getElementById('subreddit-quote');
-  if (!sr) return;
+
   const entry = await fetchSubredditInfo(sr);
   if (entry && viewer) viewer.src = entry.glb;
-  if (entry && quoteEl) quoteEl.textContent = entry.quote;
+
+  if (quoteEl) {
+    const p = quoteEl.querySelector('p');
+    if (entry && p) {
+      const srName = entry.subreddit || 'subreddit';
+      p.innerHTML = `"${entry.quote}" – email from an <span class="text-white">r/${srName}</span> user`;
+    }
+    if (window.positionQuote) window.positionQuote();
+  }
 });
