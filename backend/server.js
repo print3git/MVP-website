@@ -16,6 +16,7 @@ const axios = require('axios');
 const FormData = require('form-data');
 const fs = require('fs');
 const config = require('./config');
+const generateTitle = require('./utils/generateTitle');
 const stripe = require('stripe')(config.stripeKey);
 const { enqueuePrint, processQueue, progressEmitter } = require('./queue/printQueue');
 const { sendMail } = require('./mail');
@@ -173,11 +174,11 @@ app.post('/api/generate', authOptional, upload.array('images'), async (req, res)
       console.error('Hunyuan service failed, using fallback', err.message);
     }
 
-    await db.query('UPDATE jobs SET status=$1, model_url=$2 WHERE job_id=$3', [
-      'complete',
-      generatedUrl,
-      jobId,
-    ]);
+    const autoTitle = generateTitle(prompt);
+    await db.query(
+      'UPDATE jobs SET status=$1, model_url=$2, generated_title=$3 WHERE job_id=$4',
+      ['complete', generatedUrl, autoTitle, jobId]
+    );
 
     res.json({ jobId, glb_url: generatedUrl });
   } catch (err) {
@@ -220,6 +221,7 @@ app.get('/api/status/:jobId', async (req, res) => {
       jobId: job.job_id,
       status: job.status,
       model_url: job.model_url,
+      generated_title: job.generated_title,
       error: job.error,
     });
   } catch (err) {
@@ -527,9 +529,11 @@ app.post('/api/community', authRequired, async (req, res) => {
   const { jobId, title, category } = req.body;
   if (!jobId) return res.status(400).json({ error: 'jobId required' });
   try {
+    const { rows } = await db.query('SELECT generated_title FROM jobs WHERE job_id=$1', [jobId]);
+    const autoTitle = rows[0] ? rows[0].generated_title : '';
     await db.query('INSERT INTO community_creations(job_id, title, category) VALUES($1,$2,$3)', [
       jobId,
-      title || '',
+      title || autoTitle,
       category || '',
     ]);
     res.sendStatus(201);
