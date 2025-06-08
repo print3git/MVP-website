@@ -105,6 +105,24 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
+app.get('/api/me', authRequired, async (req, res) => {
+  try {
+    const { rows } = await db.query('SELECT id, username, email FROM users WHERE id=$1', [req.user.id]);
+    if (!rows.length) return res.status(404).json({ error: 'User not found' });
+    const user = rows[0];
+    const profile = await db.query('SELECT shipping_info, payment_info, competition_notify FROM user_profiles WHERE user_id=$1', [req.user.id]);
+    res.json({
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      profile: profile.rows[0] || {},
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch account' });
+  }
+});
+
 /**
  * POST /api/generate
  * Accept a prompt and optional image uploads
