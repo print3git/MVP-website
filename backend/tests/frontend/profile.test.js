@@ -10,7 +10,10 @@ test('load displays models from API', async () => {
   });
   global.window = dom.window;
   global.document = dom.window.document;
-  let script = fs.readFileSync(path.join(__dirname, '../../../js/profile.js'), 'utf8');
+  dom.window.captureSnapshots = () => {};
+  let script = fs
+    .readFileSync(path.join(__dirname, '../../../js/profile.js'), 'utf8')
+    .replace(/import[^;]+;\n/, '');
   script += '\nwindow.loadProfile = load;';
   dom.window.eval(script);
   dom.window.localStorage.setItem('token', 't');
