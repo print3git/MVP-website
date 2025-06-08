@@ -66,11 +66,12 @@ test('POST /api/generate returns glb url', async () => {
 
 test('GET /api/status returns job', async () => {
   db.query.mockResolvedValueOnce({
-    rows: [{ job_id: '1', status: 'complete', model_url: 'url' }],
+    rows: [{ job_id: '1', status: 'complete', model_url: 'url', generated_title: 'Auto' }],
   });
   const res = await request(app).get('/api/status/1');
   expect(res.status).toBe(200);
   expect(res.body.status).toBe('complete');
+  expect(res.body.generated_title).toBe('Auto');
 });
 
 test('Stripe create-order flow', async () => {
@@ -223,6 +224,7 @@ test('POST /api/generate accepts image upload', async () => {
 });
 
 test('POST /api/community submits model', async () => {
+  db.query.mockResolvedValueOnce({ rows: [{ generated_title: 'Auto' }] });
   db.query.mockResolvedValueOnce({});
   const token = jwt.sign({ id: 'u1' }, 'secret');
   const res = await request(app)
@@ -230,6 +232,10 @@ test('POST /api/community submits model', async () => {
     .set('authorization', `Bearer ${token}`)
     .send({ jobId: 'j1' });
   expect(res.status).toBe(201);
+  expect(db.query).toHaveBeenCalledWith(
+    expect.stringContaining('INSERT INTO community_creations'),
+    ['j1', 'Auto', '']
+  );
 });
 
 test('POST /api/community requires jobId', async () => {
