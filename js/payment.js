@@ -130,7 +130,7 @@ async function createCheckout(quantity, discount, shippingInfo) {
       const resp = await fetch(`${API_BASE}/print-slots`);
       if (resp.ok) {
         const data = await resp.json();
-        
+
         if (typeof data.slots === 'number') {
           baseSlots = data.slots;
         }
@@ -140,7 +140,6 @@ async function createCheckout(quantity, discount, shippingInfo) {
     }
     slotEl.textContent = adjustedSlots(baseSlots);
     slotEl.style.visibility = 'visible';
-
   }
 
   async function updateEstimate() {
@@ -242,8 +241,7 @@ async function createCheckout(quantity, discount, shippingInfo) {
   }
 
   loader.hidden = false;
-  viewer.src =
-    localStorage.getItem('print3Model') || localStorage.getItem('print2Model') || FALLBACK_GLB;
+  viewer.src = localStorage.getItem('print3Model') || FALLBACK_GLB;
 
   // Hide the overlay if nothing happens after a short delay
   setTimeout(hideLoader, 7000);

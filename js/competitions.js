@@ -1,3 +1,5 @@
+import { captureSnapshots } from './snapshot.js';
+
 const API_BASE = (window.API_ORIGIN || '') + '/api';
 
 function like(id) {
@@ -17,6 +19,7 @@ function like(id) {
     });
 }
 
+
 async function captureSnapshots(container) {
   const cards = container.querySelectorAll('.entry-card');
   for (const card of cards) {
@@ -24,6 +27,7 @@ async function captureSnapshots(container) {
     if (img && img.src) continue;
     const glbUrl = card.dataset.model;
     const viewer = document.createElement('model-viewer');
+    viewer.crossOrigin = 'anonymous';
     viewer.src = glbUrl;
     viewer.setAttribute(
       'environment-image',
@@ -44,6 +48,7 @@ async function captureSnapshots(container) {
     }
   }
 }
+
 
 async function load() {
   const res = await fetch(`${API_BASE}/competitions/active`);
