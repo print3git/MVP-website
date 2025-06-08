@@ -190,6 +190,9 @@ function renderGrid(type, filters = getFilters()) {
   state.loading = false;
 }
 
+// IntersectionObserver support has been removed in favor of explicit "More"
+// buttons. The following function is left in place for potential future use
+// but is no longer invoked.
 function createObserver(type) {
   const sentinel = document.getElementById(`${type}-sentinel`);
   if (!sentinel) return;
@@ -207,6 +210,11 @@ function init() {
     recent: { offset: 0, done: false, loading: false, observer: null },
     popular: { offset: 0, done: false, loading: false, observer: null },
   };
+
+  const popBtn = document.getElementById('popular-load');
+  if (popBtn) popBtn.addEventListener('click', () => loadMore('popular'));
+  const recentBtn = document.getElementById('recent-load');
+  if (recentBtn) recentBtn.addEventListener('click', () => loadMore('recent'));
   document.getElementById('category').addEventListener('change', () => {
     document.getElementById('recent-grid').innerHTML = '';
     document.getElementById('popular-grid').innerHTML = '';
@@ -214,8 +222,6 @@ function init() {
       recent: { offset: 0, done: false, loading: false, observer: null },
       popular: { offset: 0, done: false, loading: false, observer: null },
     };
-    createObserver('popular');
-    createObserver('recent');
     loadMore('popular');
     loadMore('recent');
   });
@@ -228,8 +234,6 @@ function init() {
         recent: { offset: 0, done: false, loading: false, observer: null },
         popular: { offset: 0, done: false, loading: false, observer: null },
       };
-      createObserver('popular');
-      createObserver('recent');
       loadMore('popular');
       loadMore('recent');
     });
@@ -243,16 +247,12 @@ function init() {
         recent: { offset: 0, done: false, loading: false, observer: null },
         popular: { offset: 0, done: false, loading: false, observer: null },
       };
-      createObserver('popular');
-      createObserver('recent');
       loadMore('popular');
       loadMore('recent');
     }
 
     searchInput.addEventListener('input', debounce(onSearchInput, SEARCH_DELAY));
   }
-  createObserver('popular');
-  createObserver('recent');
   loadMore('popular');
   loadMore('recent');
 }
