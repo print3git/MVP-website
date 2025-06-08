@@ -63,7 +63,8 @@ function getFallbackModels(count = 6, start = 0) {
     { name: 'DamagedHelmet', ext: 'png' },
     { name: 'BoomBox', ext: 'jpg' },
     { name: 'BarramundiFish', ext: 'jpg' },
-    { name: 'FlightHelmet', ext: 'jpg' },
+    // FlightHelmet lacks a GLB; use a different sample that definitely has one
+    { name: 'Fox', ext: 'jpg' },
     { name: 'Avocado', ext: 'jpg' },
     { name: 'AntiqueCamera', ext: 'png' },
     { name: 'Lantern', ext: 'jpg' },
@@ -87,9 +88,12 @@ const prefetchedModels = new Set();
 function prefetchModel(url) {
   if (prefetchedModels.has(url)) return;
   const link = document.createElement('link');
-  link.rel = 'prefetch';
+  // Preload with high priority so the model is ready when clicked
+  link.rel = 'preload';
   link.href = url;
   link.as = 'fetch';
+  link.crossOrigin = 'anonymous';
+  link.fetchPriority = 'high';
   document.head.appendChild(link);
   prefetchedModels.add(url);
 }
@@ -113,6 +117,8 @@ function createCard(model) {
     const modal = document.getElementById('model-modal');
     const viewer = modal.querySelector('model-viewer');
     viewer.setAttribute('poster', model.snapshot || '');
+    // Ensure the viewer fetches the model immediately
+    viewer.setAttribute('fetchpriority', 'high');
     viewer.setAttribute('loading', 'eager');
     viewer.src = model.model_url;
     modal.classList.remove('hidden');
@@ -122,6 +128,7 @@ function createCard(model) {
 }
 
 
+
 async function captureSnapshots(container) {
   const cards = container.querySelectorAll('.model-card');
   for (const card of cards) {
@@ -129,6 +136,7 @@ async function captureSnapshots(container) {
     if (img && img.src) continue;
     const glbUrl = card.dataset.model;
     const viewer = document.createElement('model-viewer');
+    // use anonymous CORS so snapshot works with remote GLBs
     viewer.crossOrigin = 'anonymous';
     viewer.src = glbUrl;
     viewer.setAttribute(
@@ -150,6 +158,7 @@ async function captureSnapshots(container) {
     }
   }
 }
+
 
 
 function getFilters() {
@@ -175,10 +184,12 @@ async function loadMore(type, filters = getFilters()) {
   models.forEach((m) => grid.appendChild(createCard(m)));
   await captureSnapshots(grid);
   const btn = document.getElementById(`${type}-load`);
-  if (models.length < 6) {
-    btn.classList.add('hidden');
-  } else {
-    btn.classList.remove('hidden');
+  if (btn) {
+    if (models.length < 6) {
+      btn.classList.add('hidden');
+    } else {
+      btn.classList.remove('hidden');
+    }
   }
 }
 
@@ -191,8 +202,10 @@ function renderGrid(type, filters = getFilters()) {
     state.models.forEach((m) => grid.appendChild(createCard(m)));
     captureSnapshots(grid);
     const btn = document.getElementById(`${type}-load`);
-    if (state.models.length < 6) btn.classList.add('hidden');
-    else btn.classList.remove('hidden');
+    if (btn) {
+      if (state.models.length < 6) btn.classList.add('hidden');
+      else btn.classList.remove('hidden');
+    }
   } else {
     loadMore(type, filters);
   }
