@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const resp = await fetch(`${API_BASE}/print-slots`);
       if (resp.ok) {
         const data = await resp.json();
-        
+
         if (typeof data.slots === 'number') {
           baseSlots = data.slots;
         }
@@ -138,7 +138,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     slotEl.textContent = adjustedSlots(baseSlots);
     slotEl.style.visibility = 'visible';
-
   }
 
   async function updateEstimate() {
