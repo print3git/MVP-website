@@ -88,9 +88,11 @@ async function createCheckout(quantity, discount, shippingInfo) {
   });
   const data = await res.json();
   return data.checkoutUrl;
-}
-
-document.addEventListener('DOMContentLoaded', async () => {
+  const slotRow = document.getElementById('slot-row');
+    if (slotRow) slotRow.hidden = true;
+    slotEl.textContent = adjustedSlots(baseSlots);
+    if (slotRow) slotRow.hidden = false;
+          slotEl.textContent = adjustedSlots(baseSlots);
   // Safely initialize Stripe once the DOM is ready. If the Stripe library
   // failed to load, we fall back to plain redirects.
   if (window.Stripe) {
