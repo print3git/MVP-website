@@ -37,7 +37,7 @@ function debounce(fn, delay) {
 async function fetchCreations(
   type,
   offset = 0,
-  limit = 6,
+  limit = 9,
   category = '',
   search = '',
   order = 'desc'
@@ -56,14 +56,15 @@ async function fetchCreations(
   }
 }
 
-function getFallbackModels(count = 6, start = 0) {
+function getFallbackModels(count = 9, start = 0) {
   const base = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0';
 
   const samples = [
     { name: 'DamagedHelmet', ext: 'png' },
     { name: 'BoomBox', ext: 'jpg' },
     { name: 'BarramundiFish', ext: 'jpg' },
-    { name: 'FlightHelmet', ext: 'jpg' },
+    // FlightHelmet lacks a GLB; use a different sample that definitely has one
+    { name: 'Fox', ext: 'jpg' },
     { name: 'Avocado', ext: 'jpg' },
     { name: 'AntiqueCamera', ext: 'png' },
     { name: 'Lantern', ext: 'jpg' },
@@ -87,9 +88,12 @@ const prefetchedModels = new Set();
 function prefetchModel(url) {
   if (prefetchedModels.has(url)) return;
   const link = document.createElement('link');
-  link.rel = 'prefetch';
+  // Preload with high priority so the model is ready when clicked
+  link.rel = 'preload';
   link.href = url;
   link.as = 'fetch';
+  link.crossOrigin = 'anonymous';
+  link.fetchPriority = 'high';
   document.head.appendChild(link);
   prefetchedModels.add(url);
 }
@@ -113,6 +117,8 @@ function createCard(model) {
     const modal = document.getElementById('model-modal');
     const viewer = modal.querySelector('model-viewer');
     viewer.setAttribute('poster', model.snapshot || '');
+    // Ensure the viewer fetches the model immediately
+    viewer.setAttribute('fetchpriority', 'high');
     viewer.setAttribute('loading', 'eager');
     viewer.src = model.model_url;
     modal.classList.remove('hidden');
@@ -122,34 +128,8 @@ function createCard(model) {
 }
 
 
-async function captureSnapshots(container) {
-  const cards = container.querySelectorAll('.model-card');
-  for (const card of cards) {
-    const img = card.querySelector('img');
-    if (img && img.src) continue;
-    const glbUrl = card.dataset.model;
-    const viewer = document.createElement('model-viewer');
-    viewer.crossOrigin = 'anonymous';
-    viewer.src = glbUrl;
-    viewer.setAttribute(
-      'environment-image',
-      'https://modelviewer.dev/shared-assets/environments/neutral.hdr'
-    );
-    viewer.style.position = 'fixed';
-    viewer.style.left = '-10000px';
-    viewer.style.width = '300px';
-    viewer.style.height = '300px';
-    document.body.appendChild(viewer);
-    try {
-      await viewer.updateComplete;
-      img.src = await viewer.toDataURL('image/png');
-    } catch (err) {
-      console.error('Failed to capture snapshot', err);
-    } finally {
-      viewer.remove();
-    }
-  }
-}
+
+
 
 
 function getFilters() {
@@ -164,10 +144,10 @@ async function loadMore(type, filters = getFilters()) {
   const cache = window.communityState[type];
   if (!cache[key]) cache[key] = { offset: 0, models: [] };
   const state = cache[key];
-  let models = await fetchCreations(type, state.offset, 6, category, search, order);
+  let models = await fetchCreations(type, state.offset, 9, category, search, order);
   if (models.length === 0 && state.offset === 0) {
-    const start = type === 'popular' ? 0 : 6;
-    models = getFallbackModels(6, start);
+    const start = 0;
+    models = getFallbackModels(9, start);
   }
   state.offset += models.length;
   state.models = state.models.concat(models);
@@ -175,10 +155,12 @@ async function loadMore(type, filters = getFilters()) {
   models.forEach((m) => grid.appendChild(createCard(m)));
   await captureSnapshots(grid);
   const btn = document.getElementById(`${type}-load`);
-  if (models.length < 6) {
-    btn.classList.add('hidden');
-  } else {
-    btn.classList.remove('hidden');
+  if (btn) {
+    if (models.length < 9) {
+      btn.classList.add('hidden');
+    } else {
+      btn.classList.remove('hidden');
+    }
   }
 }
 
@@ -191,8 +173,10 @@ function renderGrid(type, filters = getFilters()) {
     state.models.forEach((m) => grid.appendChild(createCard(m)));
     captureSnapshots(grid);
     const btn = document.getElementById(`${type}-load`);
-    if (state.models.length < 6) btn.classList.add('hidden');
-    else btn.classList.remove('hidden');
+    if (btn) {
+      if (state.models.length < 9) btn.classList.add('hidden');
+      else btn.classList.remove('hidden');
+    }
   } else {
     loadMore(type, filters);
   }
