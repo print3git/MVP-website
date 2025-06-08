@@ -55,6 +55,24 @@ function adjustedSlots(base) {
   return Math.max(0, base - n);
 }
 
+function computeSlotsByTime() {
+  const dtf = new Intl.DateTimeFormat('en-US', {
+    timeZone: TZ,
+    hour12: false,
+    hour: 'numeric',
+  });
+  const hour = parseInt(dtf.format(new Date()), 10);
+  if (hour >= 1 && hour < 4) return 9;
+  if (hour >= 4 && hour < 7) return 8;
+  if (hour >= 7 && hour < 10) return 7;
+  if (hour >= 10 && hour < 13) return 6;
+  if (hour >= 13 && hour < 16) return 5;
+  if (hour >= 16 && hour < 19) return 4;
+  if (hour >= 19 && hour < 22) return 3;
+  if (hour >= 22 && hour < 24) return 2;
+  return 1;
+}
+
 function qs(name) {
   const params = new URLSearchParams(window.location.search);
   return params.get(name);
@@ -105,13 +123,15 @@ document.addEventListener('DOMContentLoaded', async () => {
       const resp = await fetch(`${API_BASE}/print-slots`);
       if (resp.ok) {
         const data = await resp.json();
-
         baseSlots = data.slots;
-        slotEl.textContent = adjustedSlots(baseSlots);
       }
     } catch {
-      /* ignore slot errors */
+      // ignore slot errors and fall back to local time
     }
+    if (baseSlots === null) {
+      baseSlots = computeSlotsByTime();
+    }
+    slotEl.textContent = adjustedSlots(baseSlots);
   }
 
   async function updateEstimate() {
