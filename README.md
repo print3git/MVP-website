@@ -122,6 +122,17 @@ cd backend
 npm run migrate
 ```
 
+### Discount Codes
+
+Promotional discount codes are stored in the `discount_codes` table. Run the
+database migrations after updating your local checkout to ensure this table
+exists:
+
+```bash
+cd backend
+npm run migrate
+```
+
 ### One-Click Checkout
 
 The model viewer page includes a **Buy Now** button for fast purchasing. When a
