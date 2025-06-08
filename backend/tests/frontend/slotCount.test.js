@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const { JSDOM } = require('jsdom');
 
-let html = fs.readFileSync(path.join(__dirname, '../../../payment.html'), 'utf8');
+let html = fs.readFileSync(path.join(__dirname, '../../../public/payment.html'), 'utf8');
 html = html
   .replace(/<script[^>]+src="https?:\/\/[^>]+><\/script>/g, '')
   .replace(/<link[^>]+href="https?:\/\/[^>]+>/g, '')
@@ -39,7 +39,7 @@ describe('slot count', () => {
     global.window = dom.window;
     global.document = dom.window.document;
     dom.window.fetch = jest.fn(() => Promise.resolve({ ok: true, json: () => ({ slots: 5 }) }));
-    const scriptSrc = fs.readFileSync(path.join(__dirname, '../../../js/payment.js'), 'utf8');
+    const scriptSrc = fs.readFileSync(path.join(__dirname, '../../../public/js/payment.js'), 'utf8');
     dom.window.eval(scriptSrc);
     await new Promise((r) => setTimeout(r, 0));
     expect(dom.window.document.getElementById('slot-count').textContent).toBe('4');
@@ -55,7 +55,7 @@ describe('slot count', () => {
     global.window = dom.window;
     global.document = dom.window.document;
     dom.window.fetch = jest.fn(() => Promise.resolve({ ok: true, json: () => ({ slots: 6 }) }));
-    const scriptSrc = fs.readFileSync(path.join(__dirname, '../../../js/payment.js'), 'utf8');
+    const scriptSrc = fs.readFileSync(path.join(__dirname, '../../../public/js/payment.js'), 'utf8');
     dom.window.eval(scriptSrc);
     dom.window.localStorage.setItem('slotCycle', cycleKey());
     dom.window.localStorage.setItem('slotPurchases', '2');

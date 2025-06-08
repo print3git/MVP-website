@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const { JSDOM } = require('jsdom');
 
-let html = fs.readFileSync(path.join(__dirname, '../../../payment.html'), 'utf8');
+let html = fs.readFileSync(path.join(__dirname, '../../../public/payment.html'), 'utf8');
 html = html
   .replace(/<script[^>]+src="https?:\/\/[^>]+><\/script>/g, '')
   .replace(/<link[^>]+href="https?:\/\/[^>]+>/g, '')
@@ -20,7 +20,7 @@ describe('flash banner', () => {
     global.document = dom.window.document;
     dom.window.sessionStorage.setItem('flashDiscountShow', '1');
     dom.window.localStorage.setItem('flashDiscountEnd', String(Date.now() + 1000));
-    const scriptSrc = fs.readFileSync(path.join(__dirname, '../../../js/payment.js'), 'utf8');
+    const scriptSrc = fs.readFileSync(path.join(__dirname, '../../../public/js/payment.js'), 'utf8');
     dom.window.eval(scriptSrc);
     dom.window.document.dispatchEvent(new dom.window.Event('DOMContentLoaded'));
     dom.window.startFlashDiscount();
@@ -41,7 +41,7 @@ describe('flash banner', () => {
     global.document = dom.window.document;
     dom.window.sessionStorage.setItem('flashDiscountShow', '1');
     dom.window.localStorage.setItem('flashDiscountEnd', '0');
-    const scriptSrc = fs.readFileSync(path.join(__dirname, '../../../js/payment.js'), 'utf8');
+    const scriptSrc = fs.readFileSync(path.join(__dirname, '../../../public/js/payment.js'), 'utf8');
     dom.window.eval(scriptSrc);
     dom.window.document.dispatchEvent(new dom.window.Event('DOMContentLoaded'));
     dom.window.startFlashDiscount();
@@ -60,7 +60,7 @@ describe('flash banner', () => {
     global.window = dom.window;
     global.document = dom.window.document;
     dom.window.sessionStorage.setItem('flashDiscountShow', '1');
-    const scriptSrc = fs.readFileSync(path.join(__dirname, '../../../js/payment.js'), 'utf8');
+    const scriptSrc = fs.readFileSync(path.join(__dirname, '../../../public/js/payment.js'), 'utf8');
     dom.window.eval(scriptSrc);
     dom.window.document.dispatchEvent(new dom.window.Event('DOMContentLoaded'));
     dom.window.startFlashDiscount();
@@ -79,7 +79,7 @@ describe('flash banner', () => {
     global.window = dom.window;
     global.document = dom.window.document;
     dom.window.sessionStorage.setItem('flashDiscountShow', '0');
-    const scriptSrc = fs.readFileSync(path.join(__dirname, '../../../js/payment.js'), 'utf8');
+    const scriptSrc = fs.readFileSync(path.join(__dirname, '../../../public/js/payment.js'), 'utf8');
     dom.window.eval(scriptSrc);
     dom.window.document.dispatchEvent(new dom.window.Event('DOMContentLoaded'));
     dom.window.startFlashDiscount();

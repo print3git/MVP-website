@@ -39,7 +39,7 @@ app.use(morgan('dev'));
 app.use(compression());
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, '..')));
+app.use(express.static(path.join(__dirname, '../public')));
 const uploadsDir = path.join(__dirname, '..', 'uploads');
 fs.mkdirSync(uploadsDir, { recursive: true });
 const upload = multer({ dest: uploadsDir });

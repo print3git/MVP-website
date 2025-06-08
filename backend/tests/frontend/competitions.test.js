@@ -8,7 +8,7 @@ test('startCountdown closes past competitions', () => {
   global.window = dom.window;
   global.document = dom.window.document;
   let script = fs
-    .readFileSync(path.join(__dirname, '../../../js/competitions.js'), 'utf8')
+    .readFileSync(path.join(__dirname, '../../../public/js/competitions.js'), 'utf8')
     .replace(/document\.addEventListener\('DOMContentLoaded'[\s\S]+$/, '');
   script += '\nwindow.startCountdown = startCountdown;';
   dom.window.eval(script);
@@ -23,7 +23,7 @@ test('startCountdown formats remaining time', () => {
   global.window = dom.window;
   global.document = dom.window.document;
   let script = fs
-    .readFileSync(path.join(__dirname, '../../../js/competitions.js'), 'utf8')
+    .readFileSync(path.join(__dirname, '../../../public/js/competitions.js'), 'utf8')
     .replace(/document\.addEventListener\('DOMContentLoaded'[\s\S]+$/, '');
   script += '\nwindow.startCountdown = startCountdown;';
   dom.window.eval(script);

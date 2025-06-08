@@ -11,7 +11,7 @@ describe('shareOn', () => {
     global.window = dom.window;
     global.document = dom.window.document;
     let src = fs
-      .readFileSync(path.join(__dirname, '../../../js/share.js'), 'utf8')
+      .readFileSync(path.join(__dirname, '../../../public/js/share.js'), 'utf8')
       .replace(/export \{[^}]+\};?/, '');
     dom.window.eval(src);
     return dom.window.shareOn;

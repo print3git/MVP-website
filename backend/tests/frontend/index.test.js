@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const { JSDOM } = require('jsdom');
 
-let html = fs.readFileSync(path.join(__dirname, '../../../index.html'), 'utf8');
+let html = fs.readFileSync(path.join(__dirname, '../../../public/index.html'), 'utf8');
 html = html
   .replace(/<script[^>]+src="https?:\/\/[^>]+><\/script>/g, '')
   .replace(/<link[^>]+href="https?:\/\/[^>]+>/g, '')
@@ -22,11 +22,11 @@ describe('index validatePrompt', () => {
     global.window = dom.window;
     global.document = dom.window.document;
     const shareSrc = fs
-      .readFileSync(path.join(__dirname, '../../../js/share.js'), 'utf8')
+      .readFileSync(path.join(__dirname, '../../../public/js/share.js'), 'utf8')
       .replace(/export \{[^}]+\};?/, '');
     dom.window.eval(shareSrc);
     let script = fs
-      .readFileSync(path.join(__dirname, '../../../js/index.js'), 'utf8')
+      .readFileSync(path.join(__dirname, '../../../public/js/index.js'), 'utf8')
       .replace("import { shareOn } from './share.js';", '')
 
       .replace(/window\.addEventListener\('DOMContentLoaded'[\s\S]+$/, '')

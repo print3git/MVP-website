@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const { JSDOM } = require('jsdom');
 
-let html = fs.readFileSync(path.join(__dirname, '../../../login.html'), 'utf8');
+let html = fs.readFileSync(path.join(__dirname, '../../../public/login.html'), 'utf8');
 html = html.replace(/<script[^>]+tailwind[^>]*><\/script>/, '');
 
 describe('login form', () => {
@@ -16,7 +16,7 @@ describe('login form', () => {
     dom.window.document.querySelectorAll('script[src*="tailwind"]').forEach((s) => s.remove());
     global.window = dom.window;
     global.document = dom.window.document;
-    const scriptSrc = fs.readFileSync(path.join(__dirname, '../../../js/login.js'), 'utf8');
+    const scriptSrc = fs.readFileSync(path.join(__dirname, '../../../public/js/login.js'), 'utf8');
     dom.window.eval(scriptSrc);
     // DOMContentLoaded has already fired in JSDOM when using runScripts,
     // so no need to wait for it here.

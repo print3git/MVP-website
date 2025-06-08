@@ -51,8 +51,8 @@ This repository contains the early MVP code for print2's website and backend.
 
 `index.html` and `payment.html` use ES module scripts. When opened directly from
 the filesystem (e.g. with a `file://` URL) the browser blocks these modules and
-nothing loads. Run a lightweight web server in the repository root and open the
-pages through `http://localhost` to avoid this issue. Two easy options are:
+nothing loads. Run a lightweight web server inside the `public/` directory and
+open the pages through `http://localhost` to avoid this issue. Two easy options are:
 
 ```bash
 npx http-server      # Node.js

@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const { JSDOM } = require('jsdom');
 
-let html = fs.readFileSync(path.join(__dirname, '../../../signup.html'), 'utf8');
+let html = fs.readFileSync(path.join(__dirname, '../../../public/signup.html'), 'utf8');
 html = html.replace(/<script[^>]+tailwind[^>]*><\/script>/, '');
 
 describe('signup form', () => {
@@ -16,7 +16,7 @@ describe('signup form', () => {
     dom.window.document.querySelectorAll('script[src*="tailwind"]').forEach((s) => s.remove());
     global.window = dom.window;
     global.document = dom.window.document;
-    const scriptSrc = fs.readFileSync(path.join(__dirname, '../../../js/signup.js'), 'utf8');
+    const scriptSrc = fs.readFileSync(path.join(__dirname, '../../../public/js/signup.js'), 'utf8');
     dom.window.eval(scriptSrc);
     const fetchMock = jest.fn(() => Promise.resolve({ json: () => ({ error: 'fail' }) }));
     dom.window.fetch = fetchMock;
