@@ -242,9 +242,7 @@ app.get('/api/print-slots', (req, res) => {
  */
 app.get('/api/subreddit/:name', (req, res) => {
   const sr = req.params.name.toLowerCase();
-  const matches = subredditModels.filter(
-    (e) => (e.subreddit || '').toLowerCase() === sr
-  );
+  const matches = subredditModels.filter((e) => (e.subreddit || '').toLowerCase() === sr);
   if (matches.length === 0) {
     return res.status(404).json({ error: 'Subreddit not found' });
   }
