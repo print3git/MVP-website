@@ -34,14 +34,23 @@ This repository contains the early MVP code for print2's website and backend.
    npm run init-db
    ```
 
-4. Start the servers in separate terminals:
+4. Create an admin user (optional):
+
+   Set `ADMIN_USERNAME` and `ADMIN_PASSWORD` in your `.env` file or as environment
+   variables, then run:
+
+   ```bash
+   npm run create-admin  # inside backend/
+   ```
+
+5. Start the servers in separate terminals:
 
    ```bash
    npm start            # inside backend/
    cd hunyuan_server && npm start  # inside backend/hunyuan_server/
    ```
 
-5. (Optional) Run the purchase reminder job periodically:
+6. (Optional) Run the purchase reminder job periodically:
 
    ```bash
    npm run send-reminders  # inside backend/
