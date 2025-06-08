@@ -128,7 +128,7 @@
         >
 
         <!-- social buttons -->
-        <div class="flex space-x-2">
+        <div class="flex space-x-2 flex-none">
           <button
             class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
             onclick="shareOn('twitter')"
@@ -243,11 +243,10 @@
         <!-- subreddit quote -->
         <div
           id="subreddit-quote"
-
-          class="flex text-sm text-gray-400 text-left leading-snug invisible mt-2 lg:mt-0 lg:absolute lg:left-full lg:ml-4 max-w-[22ch] lg:max-w-none"
-        >
-          <p>
-            "I'm astonished at how high-quality<br class="lg:hidden" />
+          class="flex text-sm text-gray-400 text-left leading-snug invisible mt-2 lg:mt-0 lg:absolute lg:left-full lg:ml-4 lg:max-w-none"
+          style="max-width: 24ch"
+            "I'm astonished at how high-quality the print
+            is" – email from an <span class="text-white">r/subreddit</span> user
             the print
             <br class="hidden lg:block" />
             is" – email from an<br class="lg:hidden" />
