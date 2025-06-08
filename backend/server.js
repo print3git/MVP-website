@@ -25,7 +25,14 @@ const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'admin';
 const AUTH_SECRET = process.env.AUTH_SECRET || 'secret';
 
 // Array of subreddit quote entries stored server-side
-const subredditModels = require('./subreddit_models.json');
+let subredditModels = [];
+try {
+  const modelsPath = path.join(__dirname, 'subreddit_models.json');
+  const raw = fs.readFileSync(modelsPath, 'utf8');
+  subredditModels = JSON.parse(raw);
+} catch (err) {
+  console.error('Failed to load subreddit_models.json', err);
+}
 
 const app = express();
 app.use(morgan('dev'));
