@@ -175,10 +175,12 @@ async function loadMore(type, filters = getFilters()) {
   models.forEach((m) => grid.appendChild(createCard(m)));
   await captureSnapshots(grid);
   const btn = document.getElementById(`${type}-load`);
-  if (models.length < 6) {
-    btn.classList.add('hidden');
-  } else {
-    btn.classList.remove('hidden');
+  if (btn) {
+    if (models.length < 6) {
+      btn.classList.add('hidden');
+    } else {
+      btn.classList.remove('hidden');
+    }
   }
 }
 
@@ -191,8 +193,10 @@ function renderGrid(type, filters = getFilters()) {
     state.models.forEach((m) => grid.appendChild(createCard(m)));
     captureSnapshots(grid);
     const btn = document.getElementById(`${type}-load`);
-    if (state.models.length < 6) btn.classList.add('hidden');
-    else btn.classList.remove('hidden');
+    if (btn) {
+      if (state.models.length < 6) btn.classList.add('hidden');
+      else btn.classList.remove('hidden');
+    }
   } else {
     loadMore(type, filters);
   }
