@@ -26,7 +26,8 @@ async function load() {
   const res = await fetch(`${API_BASE}/competitions/active`);
   const list = document.getElementById('list');
   if (!res.ok) {
-    list.textContent = 'Failed to load competitions';
+    // When the competitions API fails, show a friendly message
+    list.textContent = 'No ongoing competitions right now';
     return;
   }
   const comps = await res.json();

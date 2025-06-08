@@ -20,6 +20,7 @@ const stripe = require('stripe')(config.stripeKey);
 const { enqueuePrint, processQueue, progressEmitter } = require('./queue/printQueue');
 const { sendMail } = require('./mail');
 const { getShippingEstimate } = require('./shipping');
+const { validateDiscountCode } = require('./discountCodes');
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'admin';
 
 const AUTH_SECRET = process.env.AUTH_SECRET || 'secret';
@@ -760,6 +761,22 @@ app.post('/api/shipping-estimate', async (req, res) => {
     console.error(err);
     res.status(500).json({ error: 'Failed to get shipping estimate' });
   }
+});
+
+/**
+ * POST /api/discount-code
+ * Validate a discount code and return the amount in cents
+ */
+app.post('/api/discount-code', (req, res) => {
+  const { code } = req.body;
+  if (!code) {
+    return res.status(400).json({ error: 'code required' });
+  }
+  const amount = validateDiscountCode(code);
+  if (!amount) {
+    return res.status(404).json({ error: 'Invalid code' });
+  }
+  res.json({ discount: amount });
 });
 
 /**

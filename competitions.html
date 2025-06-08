@@ -100,6 +100,20 @@
       <div id="list" class="space-y-4"></div>
       <h2 class="text-2xl mt-8">Past Winners</h2>
       <div id="past" class="space-y-4"></div>
+      <div class="mt-6">
+        <h3 class="text-xl font-semibold mb-4">Winning Models</h3>
+        <div id="winners-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <div class="model-card relative h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape flex items-center justify-center cursor-pointer" data-model="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/DamagedHelmet/glTF-Binary/DamagedHelmet.glb" data-job="helmet">
+            <img src="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/DamagedHelmet/screenshot/screenshot.png" alt="Damaged Helmet" class="w-full h-full object-contain pointer-events-none" />
+          </div>
+          <div class="model-card relative h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape flex items-center justify-center cursor-pointer" data-model="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Fox/glTF-Binary/Fox.glb" data-job="fox">
+            <img src="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Fox/screenshot/screenshot.jpg" alt="Fox" class="w-full h-full object-contain pointer-events-none" />
+          </div>
+          <div class="model-card relative h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape flex items-center justify-center cursor-pointer" data-model="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BoomBox/glTF-Binary/BoomBox.glb" data-job="boombox">
+            <img src="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BoomBox/screenshot/screenshot.jpg" alt="BoomBox" class="w-full h-full object-contain pointer-events-none" />
+          </div>
+        </div>
+      </div>
     </main>
     <div
       id="enter-modal"
@@ -123,10 +137,87 @@
         </div>
       </form>
     </div>
+    <div
+      id="model-modal"
+      class="fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50"
+    >
+      <div class="relative w-11/12 max-w-3xl">
+        <button
+          id="close-modal"
+          class="absolute -top-4 -right-4 w-[4.5rem] h-[4.5rem] rounded-full bg-white text-black flex items-center justify-center z-50"
+          type="button"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            class="w-10 h-10"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="3"
+            stroke-linecap="round"
+          >
+            <line x1="6" y1="6" x2="18" y2="18" />
+            <line x1="6" y1="18" x2="18" y2="6" />
+          </svg>
+          <span class="sr-only">Close</span>
+        </button>
+        <model-viewer
+          src=""
+          alt="3D model preview"
+          environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
+          camera-controls
+          auto-rotate
+          class="w-full h-96 bg-[#2A2A2E] rounded-xl"
+        ></model-viewer>
+        <a
+          id="modal-checkout"
+          href="payment.html"
+          class="absolute bottom-4 right-4 font-bold py-3 px-5 rounded-full shadow-md transition"
+          style="background-color: #1f3b65; color: #5ec2c5"
+          onmouseover="this.style.opacity='0.85'"
+          onmouseout="this.style.opacity='1'"
+          >Checkout</a>
+      </div>
+    </div>
     <script type="module" src="js/competitions.js"></script>
     <script type="module">
       import { shareOn } from './js/share.js';
       window.shareOn = shareOn;
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const modal = document.getElementById('model-modal');
+        const viewer = modal.querySelector('model-viewer');
+        const checkoutBtn = document.getElementById('modal-checkout');
+        const closeBtn = document.getElementById('close-modal');
+
+        function close() {
+          modal.classList.add('hidden');
+          document.body.classList.remove('overflow-hidden');
+        }
+
+        document.addEventListener('click', (e) => {
+          const card = e.target.closest('.model-card');
+          if (card) {
+            viewer.src = card.dataset.model;
+            checkoutBtn.dataset.model = card.dataset.model;
+            checkoutBtn.dataset.job = card.dataset.job;
+            modal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+          }
+        });
+
+        checkoutBtn.addEventListener('click', () => {
+          const model = checkoutBtn.dataset.model;
+          const job = checkoutBtn.dataset.job;
+          if (model) localStorage.setItem('print3Model', model);
+          if (job) localStorage.setItem('print3JobId', job);
+        });
+
+        closeBtn.addEventListener('click', close);
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') close();
+        });
+      });
     </script>
   </body>
 </html>

@@ -1,5 +1,31 @@
-function shareOn(network) {
-  const url = encodeURIComponent(window.location.href);
+async function captureSnapshot(glbUrl) {
+  if (!glbUrl) return null;
+  const viewer = document.createElement('model-viewer');
+  viewer.crossOrigin = 'anonymous';
+  viewer.src = glbUrl;
+  viewer.setAttribute(
+    'environment-image',
+    'https://modelviewer.dev/shared-assets/environments/neutral.hdr'
+  );
+  viewer.style.position = 'fixed';
+  viewer.style.left = '-10000px';
+  viewer.style.width = '300px';
+  viewer.style.height = '300px';
+  document.body.appendChild(viewer);
+  try {
+    await viewer.updateComplete;
+    return await viewer.toDataURL('image/png');
+  } catch (err) {
+    console.error('Failed to capture snapshot', err);
+    return null;
+  } finally {
+    viewer.remove();
+  }
+}
+
+async function shareOn(network) {
+  const shareLink = 'https://print2.io';
+  const url = encodeURIComponent(shareLink);
   const text = encodeURIComponent('Check out print3!');
   let shareUrl = '';
   switch (network) {
@@ -21,6 +47,26 @@ function shareOn(network) {
     case 'instagram':
       shareUrl = `https://www.instagram.com/?url=${url}`;
       break;
+  }
+  const modelUrl = typeof localStorage !== 'undefined'
+    ? localStorage.getItem('print3Model')
+    : null;
+  if (navigator.share && modelUrl) {
+    try {
+      const dataUrl = await captureSnapshot(modelUrl);
+      const response = await fetch(dataUrl);
+      const blob = await response.blob();
+      const file = new File([blob], 'model.png', { type: 'image/png' });
+      await navigator.share({
+        title: 'print3 model',
+        text: 'Check out print3!',
+        url: shareLink,
+        files: [file],
+      });
+      return;
+    } catch (err) {
+      console.error('Web share failed', err);
+    }
   }
   window.open(shareUrl, '_blank', 'noopener');
 }
