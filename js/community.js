@@ -54,24 +54,40 @@ async function fetchCreations(
   }
 }
 
-function getFallbackModels() {
-  const urls = [
-    'https://modelviewer.dev/shared-assets/models/Astronaut.glb',
-    'https://modelviewer.dev/shared-assets/models/RobotExpressive.glb',
-    'https://modelviewer.dev/shared-assets/models/Horse.glb',
+function getFallbackModels(count = 6, start = 0) {
+  const base = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0';
+  const samples = [
+    { name: 'DamagedHelmet', ext: 'png' },
+    { name: 'BoomBox', ext: 'jpg' },
+    { name: 'BarramundiFish', ext: 'jpg' },
+    { name: 'FlightHelmet', ext: 'jpg' },
+    { name: 'Avocado', ext: 'jpg' },
+    { name: 'AntiqueCamera', ext: 'png' },
+    { name: 'Lantern', ext: 'jpg' },
+    { name: 'WaterBottle', ext: 'jpg' },
+    { name: 'Corset', ext: 'jpg' },
+    { name: 'ToyCar', ext: 'jpg' },
+    { name: 'Duck', ext: 'png' },
+    { name: 'CesiumMan', ext: 'gif' },
   ];
-  const models = [];
-  for (let i = 0; i < 6; i++) {
-    const url = urls[i % urls.length];
-    models.push({
-      model_url: url,
-      likes: 0,
-      id: `fallback-${i}`,
-      job_id: `fallback-${i}`,
-      snapshot: '',
-    });
-  }
-  return models;
+  return samples.slice(start, start + count).map((s, i) => ({
+    model_url: `${base}/${s.name}/glTF-Binary/${s.name}.glb`,
+    likes: 0,
+    id: `fallback-${start + i}`,
+    job_id: `fallback-${start + i}`,
+    snapshot: `${base}/${s.name}/screenshot/screenshot.${s.ext}`,
+  }));
+}
+
+const prefetchedModels = new Set();
+function prefetchModel(url) {
+  if (prefetchedModels.has(url)) return;
+  const link = document.createElement('link');
+  link.rel = 'prefetch';
+  link.href = url;
+  link.as = 'fetch';
+  document.head.appendChild(link);
+  prefetchedModels.add(url);
 }
 
 function createCard(model) {
@@ -81,15 +97,19 @@ function createCard(model) {
   div.dataset.model = model.model_url;
   div.dataset.job = model.job_id;
   div.innerHTML = `\n      <img src="${model.snapshot || ''}" alt="Model" class="w-full h-full object-contain pointer-events-none" />\n      <span class="sr-only">${model.title || 'Model'}</span>\n      <span class="absolute bottom-1 right-1 text-xs bg-black/50 px-1 rounded" id="likes-${model.id}">${model.likes}</span>\n      <button class="purchase absolute bottom-1 left-1 text-xs bg-blue-600 px-1 rounded">Buy</button>`;
+  prefetchModel(model.model_url);
   div.querySelector('.purchase').addEventListener('click', (e) => {
     e.stopPropagation();
     localStorage.setItem('print3Model', model.model_url);
     localStorage.setItem('print3JobId', model.job_id);
     window.location.href = 'payment.html';
   });
+  div.addEventListener('pointerenter', () => prefetchModel(model.model_url));
   div.addEventListener('click', () => {
     const modal = document.getElementById('model-modal');
     const viewer = modal.querySelector('model-viewer');
+    viewer.setAttribute('poster', model.snapshot || '');
+    viewer.setAttribute('loading', 'eager');
     viewer.src = model.model_url;
     modal.classList.remove('hidden');
     document.body.classList.add('overflow-hidden');
@@ -139,7 +159,8 @@ async function loadMore(type, filters = getFilters()) {
   const state = cache[key];
   let models = await fetchCreations(type, state.offset, 6, category, search, order);
   if (models.length === 0 && state.offset === 0) {
-    models = getFallbackModels();
+    const start = type === 'popular' ? 0 : 6;
+    models = getFallbackModels(6, start);
   }
   state.offset += models.length;
   state.models = state.models.concat(models);
