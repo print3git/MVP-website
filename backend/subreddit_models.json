@@ -1,4 +1,3 @@
-
 {
   "default": {
     "subreddit": "subreddit",
@@ -6,40 +5,28 @@
     "quote": "I'm astonished at how high-quality the print<br />is"
   },
   "art": {
-
     "subreddit": "art",
     "glb": "models/reddit_art.glb",
     "quote": "Create artistic masterpieces<br />with print3!"
   },
-
   "3dprinting": {
-
     "subreddit": "3dprinting",
     "glb": "models/reddit_3dprinting.glb",
     "quote": "Turn your CAD files into reality<br />with print3!"
   },
-
   "gamedev": {
-
     "subreddit": "gamedev",
     "glb": "models/reddit_gamedev.glb",
     "quote": "Bring your game ideas to life<br />with print3!"
   },
-
-  {
+  "mechanicalkeyboards": {
     "subreddit": "mechanicalkeyboards",
     "glb": "models/reddit_mk.glb",
     "quote": "Craft custom keyboard parts<br />using print3!"
   },
-  {
+  "magic": {
     "subreddit": "magic",
     "glb": "https://modelviewer.dev/shared-assets/models/Astronaut.glb",
     "quote": "It feels like<br />magic"
-  },
-  {
-    "subreddit": "magic",
-    "glb": "https://modelviewer.dev/shared-assets/models/Astronaut.glb",
-    "quote": "A truly enchanting experience<br />from start to finish!"
-
   }
-]
+}
