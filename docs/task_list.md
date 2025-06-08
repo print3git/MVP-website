@@ -5,7 +5,6 @@
 - Use retargeting pixels to bring back visitors who left.
 - Include a clear value proposition and call-to-action in each ad.
 - Keep landing pages minimal with a single prominent "Start Generating" button.
-- Offer social login and guest mode so users can begin without account friction.
 
 ## Purchase & Checkout
 
