@@ -20,8 +20,15 @@ window.addEventListener('DOMContentLoaded', async () => {
   const sr = getParam('sr');
   const viewer = document.getElementById('viewer');
   const quoteEl = document.getElementById('subreddit-quote');
-  if (!sr) return;
-  const entry = await fetchSubredditInfo(sr);
-  if (entry && viewer) viewer.src = entry.glb;
-  if (entry && quoteEl) quoteEl.textContent = entry.quote;
+
+  let entry = null;
+  if (sr) {
+    entry = await fetchSubredditInfo(sr);
+    if (entry && viewer) viewer.src = entry.glb;
+  }
+
+  if (quoteEl) {
+    if (entry) quoteEl.textContent = entry.quote;
+    if (window.positionQuote) window.positionQuote();
+  }
 });
