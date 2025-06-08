@@ -24,7 +24,11 @@ window.addEventListener('DOMContentLoaded', async () => {
   const quoteEl = document.getElementById('subreddit-quote');
 
   const entry = await fetchSubredditInfo(sr);
-  if (entry && viewer) viewer.src = entry.glb;
+  if (entry && viewer) {
+    viewer.src = entry.glb;
+    localStorage.setItem('print3Model', entry.glb);
+    localStorage.removeItem('print3JobId');
+  }
 
   if (quoteEl) {
     const p = quoteEl.querySelector('p');

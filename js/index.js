@@ -369,6 +369,8 @@ window.addEventListener('DOMContentLoaded', async () => {
   const sr = new URLSearchParams(window.location.search).get('sr');
   if (!sr) {
     refs.viewer.src = FALLBACK_GLB;
+    localStorage.setItem('print3Model', FALLBACK_GLB);
+    localStorage.removeItem('print3JobId');
   }
   if (refs.viewer) {
     refs.viewer.addEventListener('progress', (e) => {
@@ -424,4 +426,16 @@ window.addEventListener('DOMContentLoaded', async () => {
       localStorage.setItem('promptTipDismissed', 'true');
     });
   }
+
+  // Ensure checkout uses the model currently shown in the viewer
+  refs.checkoutBtn?.addEventListener('click', () => {
+    if (refs.viewer?.src) {
+      localStorage.setItem('print3Model', refs.viewer.src);
+    }
+    if (lastJobId) {
+      localStorage.setItem('print3JobId', lastJobId);
+    } else {
+      localStorage.removeItem('print3JobId');
+    }
+  });
 });
