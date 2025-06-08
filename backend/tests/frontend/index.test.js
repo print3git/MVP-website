@@ -7,7 +7,10 @@ let html = fs.readFileSync(path.join(__dirname, '../../../index.html'), 'utf8');
 html = html
   .replace(/<script[^>]+src="https?:\/\/[^>]+><\/script>/g, '')
   .replace(/<link[^>]+href="https?:\/\/[^>]+>/g, '')
-  .replace(/<script[^>]+src="js\/(?:index|theme|subredditLanding)\.js"[^>]*><\/script>/g, '');
+  .replace(
+    /<script[^>]+src="js\/(?:index|theme|subredditLanding|modelViewerTouchFix)\.js"[^>]*><\/script>/g,
+    ''
+  );
 
 describe('index validatePrompt', () => {
   function setup() {

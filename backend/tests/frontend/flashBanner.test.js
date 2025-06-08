@@ -6,7 +6,8 @@ const { JSDOM } = require('jsdom');
 let html = fs.readFileSync(path.join(__dirname, '../../../payment.html'), 'utf8');
 html = html
   .replace(/<script[^>]+src="https?:\/\/[^>]+><\/script>/g, '')
-  .replace(/<link[^>]+href="https?:\/\/[^>]+>/g, '');
+  .replace(/<link[^>]+href="https?:\/\/[^>]+>/g, '')
+  .replace(/<script[^>]+src="js\/modelViewerTouchFix.js"[^>]*><\/script>/, '');
 
 describe('flash banner', () => {
   test('hides after countdown ends', async () => {
