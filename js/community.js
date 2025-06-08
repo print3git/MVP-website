@@ -54,7 +54,6 @@ async function fetchCreations(
   }
 }
 
-
 function getFallbackModels(count = 6, start = 0) {
   const base = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0';
 
@@ -80,18 +79,6 @@ function getFallbackModels(count = 6, start = 0) {
     job_id: `fallback-${start + i}`,
     snapshot: `${base}/${s.name}/screenshot/screenshot.${s.ext}`,
   }));
-}
-
-const prefetchedModels = new Set();
-function prefetchModel(url) {
-  if (prefetchedModels.has(url)) return;
-  const link = document.createElement('link');
-  link.rel = 'prefetch';
-  link.href = url;
-  link.as = 'fetch';
-  document.head.appendChild(link);
-  prefetchedModels.add(url);
-
 }
 
 const prefetchedModels = new Set();
