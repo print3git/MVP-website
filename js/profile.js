@@ -2,6 +2,10 @@ import { captureSnapshots } from './snapshot.js';
 
 const API_BASE = (window.API_ORIGIN || '') + '/api';
 
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
 function createCard(model) {
   const div = document.createElement('div');
   div.className =
@@ -39,6 +43,11 @@ async function createAccount(e) {
     if (!username) nameEl.classList.add('border-red-500');
     if (!email) emailEl.classList.add('border-red-500');
     if (!password) passEl.classList.add('border-red-500');
+    return;
+  }
+  if (!isValidEmail(email)) {
+    document.getElementById('ca-error').textContent = 'Invalid email format';
+    emailEl.classList.add('border-red-500');
     return;
   }
   const res = await fetch(`${API_BASE}/register`, {
