@@ -130,35 +130,35 @@
         <!-- social buttons -->
         <div class="flex space-x-2">
           <button
-            class="w-9 h-9 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
+            class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
             onclick="shareOn('twitter')"
             aria-label="Share on Twitter"
           >
             <i class="fab fa-twitter"></i>
           </button>
           <button
-            class="w-9 h-9 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
+            class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
             onclick="shareOn('facebook')"
             aria-label="Share on Facebook"
           >
             <i class="fab fa-facebook-f"></i>
           </button>
           <button
-            class="w-9 h-9 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
+            class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
             onclick="shareOn('reddit')"
             aria-label="Share on Reddit"
           >
             <i class="fab fa-reddit-alien"></i>
           </button>
           <button
-            class="w-9 h-9 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
+            class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
             onclick="shareOn('tiktok')"
             aria-label="Share on TikTok"
           >
             <i class="fab fa-tiktok"></i>
           </button>
           <button
-            class="w-9 h-9 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
+            class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
             onclick="shareOn('instagram')"
             aria-label="Share on Instagram"
           >
@@ -243,10 +243,13 @@
         <!-- subreddit quote -->
         <div
           id="subreddit-quote"
-          class="absolute left-full ml-4 flex text-sm text-gray-400 text-left leading-snug invisible"
+          class="flex text-sm text-gray-400 text-left leading-snug invisible mt-2 lg:mt-0 lg:absolute lg:left-full lg:ml-4 max-w-[22ch] lg:max-w-none"
         >
-          <p class="whitespace-nowrap">
-            "I'm astonished at how high-quality the print<br />is" – email from an
+          <p>
+            "I'm astonished at how high-quality<br class="lg:hidden" />
+            the print
+            <br class="hidden lg:block" />
+            is" – email from an<br class="lg:hidden" />
             <span class="text-white">r/subreddit</span> user
           </p>
         </div>
@@ -335,6 +338,11 @@
         const quote = document.getElementById('subreddit-quote');
         const checkout = document.getElementById('checkout-button');
         if (!quote || !checkout) return;
+
+        if (getComputedStyle(quote).position !== 'absolute') {
+          quote.classList.remove('invisible');
+          return;
+        }
 
         // bounding rectangles relative to viewport
         const wrapperRect = checkout.parentElement.getBoundingClientRect();
