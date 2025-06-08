@@ -10,6 +10,9 @@ describe('shareOn', () => {
     });
     global.window = dom.window;
     global.document = dom.window.document;
+    dom.window.navigator.share = undefined;
+    dom.window.localStorage = { getItem: () => null };
+    global.localStorage = dom.window.localStorage;
     let src = fs
       .readFileSync(path.join(__dirname, '../../../js/share.js'), 'utf8')
       .replace(/export \{[^}]+\};?/, '');
@@ -26,10 +29,10 @@ describe('shareOn', () => {
     ['instagram', 'instagram.com'],
   ];
 
-  test.each(cases)('opens %s share URL', (net, domain) => {
+  test.each(cases)('opens %s share URL', async (net, domain) => {
     const shareOn = load();
     global.window.open = jest.fn();
-    shareOn(net);
+    await shareOn(net);
     expect(global.window.open).toHaveBeenCalledWith(
       expect.stringContaining(domain),
       '_blank',
