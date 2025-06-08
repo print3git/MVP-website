@@ -52,3 +52,12 @@
 - Display thumbnails on `profile.html` using the snapshot value.
 - Allow clicking a thumbnail to view the 3D model.
 - Write tests covering the new endpoint behavior.
+
+## Discount Code System
+
+- Create a `discount_codes` database table with fields for code, amount/percent off, expiration, usage limits, and active flag.
+- Add an API endpoint to validate discount codes and return the discount amount.
+- Update the checkout page to include an optional discount code input box that applies validated codes.
+- Build an admin interface or script for creating and retiring codes securely.
+- Track code usage for auditing and store codes safely (e.g., hashed).
+- Expand the test suite to cover valid, expired, and invalid discount codes.
