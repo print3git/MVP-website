@@ -23,7 +23,6 @@ window.addEventListener('DOMContentLoaded', async () => {
   const viewer = document.getElementById('viewer');
   const quoteEl = document.getElementById('subreddit-quote');
 
-
   const entry = await fetchSubredditInfo(sr);
   if (entry && viewer) viewer.src = entry.glb;
 
