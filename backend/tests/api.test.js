@@ -452,3 +452,19 @@ test('POST /api/shipping-estimate returns mocked values and calls helper', async
   expect(res.body.etaDays).toBe(4);
   expect(getShippingEstimate).toHaveBeenCalledWith(body.destination, body.model);
 });
+
+test('POST /api/discount-code returns discount', async () => {
+  const res = await request(app).post('/api/discount-code').send({ code: 'SAVE5' });
+  expect(res.status).toBe(200);
+  expect(res.body.discount).toBe(500);
+});
+
+test('POST /api/discount-code invalid', async () => {
+  const res = await request(app).post('/api/discount-code').send({ code: 'BAD' });
+  expect(res.status).toBe(404);
+});
+
+test('POST /api/discount-code requires code', async () => {
+  const res = await request(app).post('/api/discount-code').send({});
+  expect(res.status).toBe(400);
+});
