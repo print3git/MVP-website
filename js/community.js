@@ -55,20 +55,31 @@ async function fetchCreations(
 }
 
 function getFallbackModels() {
-  const urls = [
-    'https://modelviewer.dev/shared-assets/models/Astronaut.glb',
-    'https://modelviewer.dev/shared-assets/models/RobotExpressive.glb',
-    'https://modelviewer.dev/shared-assets/models/Horse.glb',
+  const base =
+    'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0';
+  const samples = [
+    { name: 'DamagedHelmet', ext: 'png' },
+    { name: 'BoomBox', ext: 'jpg' },
+    { name: 'BarramundiFish', ext: 'jpg' },
+    { name: 'FlightHelmet', ext: 'jpg' },
+    { name: 'Avocado', ext: 'jpg' },
+    { name: 'AntiqueCamera', ext: 'png' },
+    { name: 'Lantern', ext: 'jpg' },
+    { name: 'WaterBottle', ext: 'jpg' },
+    { name: 'Corset', ext: 'jpg' },
+    { name: 'ToyCar', ext: 'jpg' },
+    { name: 'Duck', ext: 'png' },
+    { name: 'CesiumMan', ext: 'gif' },
   ];
   const models = [];
   for (let i = 0; i < 6; i++) {
-    const url = urls[i % urls.length];
+    const s = samples[i % samples.length];
     models.push({
-      model_url: url,
+      model_url: `${base}/${s.name}/glTF-Binary/${s.name}.glb`,
       likes: 0,
       id: `fallback-${i}`,
       job_id: `fallback-${i}`,
-      snapshot: '',
+      snapshot: `${base}/${s.name}/screenshot/screenshot.${s.ext}`,
     });
   }
   return models;
