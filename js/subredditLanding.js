@@ -30,7 +30,8 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 
   if (quoteEl) {
-    quoteEl.textContent = entry ? entry.quote : FALLBACK_QUOTE;
+    if (entry) quoteEl.textContent = entry.quote;
+
     if (window.positionQuote) window.positionQuote();
   }
 });
