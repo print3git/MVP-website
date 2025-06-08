@@ -23,7 +23,10 @@ const { Client } = require('pg');
       await client.query('UPDATE users SET password_hash=$2 WHERE username=$1', [username, hash]);
       id = rows[0].id;
     } else {
-      const ins = await client.query('INSERT INTO users(username,email,password_hash) VALUES($1,$2,$3) RETURNING id', [username, email, hash]);
+      const ins = await client.query(
+        'INSERT INTO users(username,email,password_hash) VALUES($1,$2,$3) RETURNING id',
+        [username, email, hash]
+      );
       id = ins.rows[0].id;
       await client.query('INSERT INTO user_profiles(user_id) VALUES($1)', [id]);
     }
