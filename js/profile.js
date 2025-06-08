@@ -85,9 +85,16 @@ async function captureSnapshots(container) {
 
 async function load() {
   const token = localStorage.getItem('token');
+  const logoutBtn = document.getElementById('logout-btn');
+  const accountLink = document.getElementById('account-link');
   if (!token) {
-    document.getElementById('create-account-form').classList.remove('hidden');
+    document.getElementById('auth-options').classList.remove('hidden');
+    logoutBtn?.classList.add('hidden');
+    accountLink?.classList.add('hidden');
     return;
+  } else {
+    logoutBtn?.classList.remove('hidden');
+    accountLink?.classList.remove('hidden');
   }
   const urlParams = new URLSearchParams(window.location.search);
   const user = urlParams.get('user');
@@ -120,6 +127,11 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   const form = document.getElementById('create-account-form');
   form?.addEventListener('submit', createAccount);
+  const showCreate = document.getElementById('show-create-btn');
+  showCreate?.addEventListener('click', () => {
+    document.getElementById('auth-options')?.classList.add('hidden');
+    document.getElementById('create-account-form')?.classList.remove('hidden');
+  });
   const logoutBtn = document.getElementById('logout-btn');
   logoutBtn?.addEventListener('click', () => {
     localStorage.removeItem('token');
