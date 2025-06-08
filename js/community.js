@@ -132,6 +132,8 @@ async function captureSnapshots(container) {
     if (img && img.src) continue;
     const glbUrl = card.dataset.model;
     const viewer = document.createElement('model-viewer');
+    // use anonymous CORS so snapshot works with remote GLBs
+    viewer.crossOrigin = 'anonymous';
     viewer.src = glbUrl;
     viewer.setAttribute(
       'environment-image',
