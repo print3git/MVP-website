@@ -56,12 +56,18 @@
           aria-label="Password"
         />
         <div id="error" class="text-red-400" aria-live="assertive"></div>
-        <button
-          class="bg-[#30D5C8] text-[#1A1A1D] font-semibold px-4 py-2 rounded-xl hover:bg-[#28b7a8] transition"
-          type="submit"
-        >
-          Login
-        </button>
+        <div class="flex items-center justify-between">
+          <button
+            class="bg-[#30D5C8] text-[#1A1A1D] font-semibold px-4 py-2 rounded-xl hover:bg-[#28b7a8] transition"
+            type="submit"
+          >
+            Login
+          </button>
+          <p class="text-sm text-white">
+            Don't have an account?
+            <a href="signup.html" class="font-bold text-[#30D5C8]">Sign up</a>
+          </p>
+        </div>
       </form>
     </main>
     <script type="module" src="js/login.js"></script>
