@@ -56,9 +56,7 @@ async function fetchCreations(
   }
 }
 
-function getFallbackModels() {
-
-
+function getFallbackModels(count = 6, start = 0) {
   const base = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0';
 
   const samples = [
@@ -75,18 +73,14 @@ function getFallbackModels() {
     { name: 'Duck', ext: 'png' },
     { name: 'CesiumMan', ext: 'gif' },
   ];
-  const models = [];
-  for (let i = 0; i < 6; i++) {
-    const s = samples[i % samples.length];
-    models.push({
-      model_url: `${base}/${s.name}/glTF-Binary/${s.name}.glb`,
-      likes: 0,
-      id: `fallback-${i}`,
-      job_id: `fallback-${i}`,
-      snapshot: `${base}/${s.name}/screenshot/screenshot.${s.ext}`,
-    });
-  }
-  return models;
+
+  return samples.slice(start, start + count).map((s, i) => ({
+    model_url: `${base}/${s.name}/glTF-Binary/${s.name}.glb`,
+    likes: 0,
+    id: `fallback-${start + i}`,
+    job_id: `fallback-${start + i}`,
+    snapshot: `${base}/${s.name}/screenshot/screenshot.${s.ext}`,
+  }));
 }
 
 const prefetchedModels = new Set();
@@ -128,6 +122,36 @@ function createCard(model) {
 }
 
 
+async function captureSnapshots(container) {
+  const cards = container.querySelectorAll('.model-card');
+  for (const card of cards) {
+    const img = card.querySelector('img');
+    if (img && img.src) continue;
+    const glbUrl = card.dataset.model;
+    const viewer = document.createElement('model-viewer');
+    viewer.crossOrigin = 'anonymous';
+    viewer.src = glbUrl;
+    viewer.setAttribute(
+      'environment-image',
+      'https://modelviewer.dev/shared-assets/environments/neutral.hdr'
+    );
+    viewer.style.position = 'fixed';
+    viewer.style.left = '-10000px';
+    viewer.style.width = '300px';
+    viewer.style.height = '300px';
+    document.body.appendChild(viewer);
+    try {
+      await viewer.updateComplete;
+      img.src = await viewer.toDataURL('image/png');
+    } catch (err) {
+      console.error('Failed to capture snapshot', err);
+    } finally {
+      viewer.remove();
+    }
+  }
+}
+
+
 function getFilters() {
   const category = document.getElementById('category').value;
   const search = document.getElementById('search')?.value || '';
@@ -142,7 +166,8 @@ async function loadMore(type, filters = getFilters()) {
   const state = cache[key];
   let models = await fetchCreations(type, state.offset, 6, category, search, order);
   if (models.length === 0 && state.offset === 0) {
-    models = getFallbackModels();
+    const start = type === 'popular' ? 0 : 6;
+    models = getFallbackModels(6, start);
   }
   state.offset += models.length;
   state.models = state.models.concat(models);
