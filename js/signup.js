@@ -1,5 +1,9 @@
 const API_BASE = (window.API_ORIGIN || '') + '/api';
 
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
 async function signup(e) {
   e.preventDefault();
   const nameEl = document.getElementById('su-name');
@@ -16,6 +20,11 @@ async function signup(e) {
     if (!username) nameEl.classList.add('border-red-500');
     if (!email) emailEl.classList.add('border-red-500');
     if (!password) passEl.classList.add('border-red-500');
+    return;
+  }
+  if (!isValidEmail(email)) {
+    document.getElementById('error').textContent = 'Invalid email format';
+    emailEl.classList.add('border-red-500');
     return;
   }
   const res = await fetch(`${API_BASE}/register`, {

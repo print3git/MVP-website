@@ -26,6 +26,7 @@ describe('signup form', () => {
     dom.window.document.getElementById('su-pass').value = 'p';
     dom.window.document.getElementById('signupForm').dispatchEvent(new dom.window.Event('submit'));
     await new Promise((r) => setTimeout(r, 0));
-    expect(dom.window.document.getElementById('error').textContent).toBe('fail');
+    expect(dom.window.document.getElementById('error').textContent).toBe('Invalid email format');
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 });
