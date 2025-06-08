@@ -55,7 +55,10 @@ async function fetchCreations(
 }
 
 function getFallbackModels() {
+
+
   const base = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0';
+
   const samples = [
     { name: 'DamagedHelmet', ext: 'png' },
     { name: 'BoomBox', ext: 'jpg' },
@@ -84,6 +87,17 @@ function getFallbackModels() {
   return models;
 }
 
+const prefetchedModels = new Set();
+function prefetchModel(url) {
+  if (prefetchedModels.has(url)) return;
+  const link = document.createElement('link');
+  link.rel = 'prefetch';
+  link.href = url;
+  link.as = 'fetch';
+  document.head.appendChild(link);
+  prefetchedModels.add(url);
+}
+
 function createCard(model) {
   const div = document.createElement('div');
   div.className =
@@ -91,15 +105,19 @@ function createCard(model) {
   div.dataset.model = model.model_url;
   div.dataset.job = model.job_id;
   div.innerHTML = `\n      <img src="${model.snapshot || ''}" alt="Model" class="w-full h-full object-contain pointer-events-none" />\n      <span class="sr-only">${model.title || 'Model'}</span>\n      <span class="absolute bottom-1 right-1 text-xs bg-black/50 px-1 rounded" id="likes-${model.id}">${model.likes}</span>\n      <button class="purchase absolute bottom-1 left-1 text-xs bg-blue-600 px-1 rounded">Buy</button>`;
+  prefetchModel(model.model_url);
   div.querySelector('.purchase').addEventListener('click', (e) => {
     e.stopPropagation();
     localStorage.setItem('print3Model', model.model_url);
     localStorage.setItem('print3JobId', model.job_id);
     window.location.href = 'payment.html';
   });
+  div.addEventListener('pointerenter', () => prefetchModel(model.model_url));
   div.addEventListener('click', () => {
     const modal = document.getElementById('model-modal');
     const viewer = modal.querySelector('model-viewer');
+    viewer.setAttribute('poster', model.snapshot || '');
+    viewer.setAttribute('loading', 'eager');
     viewer.src = model.model_url;
     modal.classList.remove('hidden');
     document.body.classList.add('overflow-hidden');
