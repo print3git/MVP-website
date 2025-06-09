@@ -171,6 +171,20 @@ Run `npm run test-ci` for the same tests using a single process, which matches t
 Run `npm run format` in `backend/` to apply Prettier formatting before committing.
 For significant changes, please open an issue first to discuss what you would like to change. Be sure to follow the code style enforced by Prettier.
 
+## Using Codex
+
+We sometimes rely on automated agents (such as the Codex agent) to make small
+changes. Agents must follow the steps in [AGENTS.md](AGENTS.md) before opening a
+pull request:
+
+1. Install dependencies with `npm ci` inside `backend/` (and
+   `backend/hunyuan_server/` if present).
+2. Run `npm run format` in `backend/`.
+3. Run `npm test` in `backend/` and include the results in the PR description.
+4. Check your diff with `git status --short` to verify no unrelated files were
+   modified.
+5. Add the format and test logs to the PR so reviewers can confirm.
+
 ## ToDo List
 
 All open tasks are tracked in [docs/task_list.md](docs/task_list.md).

@@ -2,9 +2,9 @@ name: Node CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build:
@@ -17,7 +17,7 @@ jobs:
         with:
           node-version: '18'
 
-      - run: npm install
+      - run: npm ci
         working-directory: backend
 
       - name: Install hunyuan_server deps (if exists)
@@ -25,10 +25,8 @@ jobs:
         working-directory: backend/hunyuan_server
         run: npm ci
 
-      - name: Skip broken test step temporarily
-        run: echo "Skipping 'npm test' - no valid test script or test files"
+      - run: npm run test-ci
         working-directory: backend
-
 
       - run: npx prettier --check "**/*.{js,jsx,json,md,html}"
         working-directory: backend
