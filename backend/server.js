@@ -21,7 +21,11 @@ const stripe = require('stripe')(config.stripeKey);
 const { enqueuePrint, processQueue, progressEmitter } = require('./queue/printQueue');
 const { sendMail } = require('./mail');
 const { getShippingEstimate } = require('./shipping');
-const { validateDiscountCode } = require('./discountCodes');
+const {
+  validateDiscountCode,
+  getValidDiscountCode,
+  incrementDiscountUsage,
+} = require('./discountCodes');
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'admin';
 
 const AUTH_SECRET = process.env.AUTH_SECRET || 'secret';
@@ -786,12 +790,12 @@ app.post('/api/shipping-estimate', async (req, res) => {
  * POST /api/discount-code
  * Validate a discount code and return the amount in cents
  */
-app.post('/api/discount-code', (req, res) => {
+app.post('/api/discount-code', async (req, res) => {
   const { code } = req.body;
   if (!code) {
     return res.status(400).json({ error: 'code required' });
   }
-  const amount = validateDiscountCode(code);
+  const amount = await validateDiscountCode(code);
   if (!amount) {
     return res.status(404).json({ error: 'Invalid code' });
   }
@@ -803,7 +807,7 @@ app.post('/api/discount-code', (req, res) => {
  * Create a Stripe Checkout session
  */
 app.post('/api/create-order', authOptional, async (req, res) => {
-  const { jobId, price, shippingInfo, qty, discount } = req.body;
+  const { jobId, price, shippingInfo, qty, discount, discountCode } = req.body;
   try {
     const job = await db.query('SELECT job_id FROM jobs WHERE job_id=$1', [jobId]);
     if (job.rows.length === 0) {
@@ -811,6 +815,16 @@ app.post('/api/create-order', authOptional, async (req, res) => {
     }
 
     let totalDiscount = discount || 0;
+    let discountCodeId = null;
+
+    if (discountCode) {
+      const row = await getValidDiscountCode(discountCode);
+      if (!row) {
+        return res.status(400).json({ error: 'Invalid discount code' });
+      }
+      totalDiscount += row.amount_cents;
+      discountCodeId = row.id;
+    }
 
     if (req.user) {
       const { rows: paid } = await db.query(
@@ -858,6 +872,10 @@ app.post('/api/create-order', authOptional, async (req, res) => {
         totalDiscount,
       ]
     );
+
+    if (discountCodeId) {
+      await incrementDiscountUsage(discountCodeId);
+    }
 
     res.json({ checkoutUrl: session.url });
   } catch (err) {
