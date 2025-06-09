@@ -354,6 +354,7 @@
       function positionQuote() {
         const quote = document.getElementById('subreddit-quote');
         const checkout = document.getElementById('checkout-button');
+        const error = document.getElementById('gen-error');
         if (!quote || !checkout) return;
 
         // bounding rectangles relative to the viewport
@@ -368,6 +369,15 @@
 
         quote.style.left = `${left}px`;
         quote.style.top = `${top}px`;
+
+        if (error) {
+          const quoteRect = quote.getBoundingClientRect();
+          const wrapperRectTop = wrapperRect.top;
+          const center = quoteRect.top + quoteRect.height / 2 - wrapperRectTop;
+          error.style.left = '-1rem';
+          error.style.top = `${center}px`;
+          error.style.transform = 'translateY(-50%)';
+        }
 
         quote.classList.remove('invisible');
       }
