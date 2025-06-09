@@ -35,56 +35,58 @@ function debounce(fn, delay) {
   };
 }
 var fetchCreations = window.fetchCreations;
-if (!fetchCreations) fetchCreations = async function (
-  type,
-  offset = 0,
-  limit = 9,
-  category = '',
-  search = '',
-  order = 'desc'
-) {
-  const query = new URLSearchParams({ limit, offset });
-  if (category) query.set('category', category);
-  if (search) query.set('search', search);
-  if (order && type === 'recent') query.set('order', order);
-  try {
-    const res = await fetch(`${API_BASE}/community/${type}?${query}`);
-    if (!res.ok) throw new Error('bad response');
-    return await res.json();
-  } catch (err) {
-    console.error('Failed to fetch creations', err);
-    return [];
-  }
-};
+if (!fetchCreations)
+  fetchCreations = async function (
+    type,
+    offset = 0,
+    limit = 9,
+    category = '',
+    search = '',
+    order = 'desc'
+  ) {
+    const query = new URLSearchParams({ limit, offset });
+    if (category) query.set('category', category);
+    if (search) query.set('search', search);
+    if (order && type === 'recent') query.set('order', order);
+    try {
+      const res = await fetch(`${API_BASE}/community/${type}?${query}`);
+      if (!res.ok) throw new Error('bad response');
+      return await res.json();
+    } catch (err) {
+      console.error('Failed to fetch creations', err);
+      return [];
+    }
+  };
 
 var getFallbackModels = window.getFallbackModels;
-if (!getFallbackModels) getFallbackModels = function (count = 9, start = 0) {
-  const base = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0';
+if (!getFallbackModels)
+  getFallbackModels = function (count = 9, start = 0) {
+    const base = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0';
 
-  const samples = [
-    { name: 'DamagedHelmet', ext: 'png' },
-    { name: 'BoomBox', ext: 'jpg' },
-    { name: 'BarramundiFish', ext: 'jpg' },
-    // FlightHelmet lacks a GLB; use a different sample that definitely has one
-    { name: 'Fox', ext: 'jpg' },
-    { name: 'Avocado', ext: 'jpg' },
-    { name: 'AntiqueCamera', ext: 'png' },
-    { name: 'Lantern', ext: 'jpg' },
-    { name: 'WaterBottle', ext: 'jpg' },
-    { name: 'Corset', ext: 'jpg' },
-    { name: 'ToyCar', ext: 'jpg' },
-    { name: 'Duck', ext: 'png' },
-    { name: 'CesiumMan', ext: 'gif' },
-  ];
+    const samples = [
+      { name: 'DamagedHelmet', ext: 'png' },
+      { name: 'BoomBox', ext: 'jpg' },
+      { name: 'BarramundiFish', ext: 'jpg' },
+      // FlightHelmet lacks a GLB; use a different sample that definitely has one
+      { name: 'Fox', ext: 'jpg' },
+      { name: 'Avocado', ext: 'jpg' },
+      { name: 'AntiqueCamera', ext: 'png' },
+      { name: 'Lantern', ext: 'jpg' },
+      { name: 'WaterBottle', ext: 'jpg' },
+      { name: 'Corset', ext: 'jpg' },
+      { name: 'ToyCar', ext: 'jpg' },
+      { name: 'Duck', ext: 'png' },
+      { name: 'CesiumMan', ext: 'gif' },
+    ];
 
-  return samples.slice(start, start + count).map((s, i) => ({
-    model_url: `${base}/${s.name}/glTF-Binary/${s.name}.glb`,
-    likes: 0,
-    id: `fallback-${start + i}`,
-    job_id: `fallback-${start + i}`,
-    snapshot: `${base}/${s.name}/screenshot/screenshot.${s.ext}`,
-  }));
-}
+    return samples.slice(start, start + count).map((s, i) => ({
+      model_url: `${base}/${s.name}/glTF-Binary/${s.name}.glb`,
+      likes: 0,
+      id: `fallback-${start + i}`,
+      job_id: `fallback-${start + i}`,
+      snapshot: `${base}/${s.name}/screenshot/screenshot.${s.ext}`,
+    }));
+  };
 
 const prefetchedModels = new Set();
 function prefetchModel(url) {
@@ -133,11 +135,6 @@ function createCard(model) {
   });
   return div;
 }
-
-
-
-
-
 
 function getFilters() {
   const category = document.getElementById('category').value;

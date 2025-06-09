@@ -19,9 +19,6 @@ function like(id) {
     });
 }
 
-
-
-
 async function load() {
   const res = await fetch(`${API_BASE}/competitions/active`);
   const list = document.getElementById('list');

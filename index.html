@@ -332,29 +332,29 @@
          edge of the checkout button and stays just below the viewer box -->
     <script>
       function positionQuote() {
-        const quote    = document.getElementById('subreddit-quote');
+        const quote = document.getElementById('subreddit-quote');
         const checkout = document.getElementById('checkout-button');
         if (!quote || !checkout) return;
 
         // bounding rectangles relative to the viewport
-        const wrapperRect  = checkout.parentElement.getBoundingClientRect(); // #preview-wrapper
+        const wrapperRect = checkout.parentElement.getBoundingClientRect(); // #preview-wrapper
         const checkoutRect = checkout.getBoundingClientRect();
 
         /* Horizontal: match the left edge of the Checkout button */
         const left = checkoutRect.left - wrapperRect.left;
 
         /* Vertical: place quote just below the viewer (16 px gap) */
-        const top  = wrapperRect.height + 16;
+        const top = wrapperRect.height + 16;
 
         quote.style.left = `${left}px`;
-        quote.style.top  = `${top}px`;
+        quote.style.top = `${top}px`;
 
         quote.classList.remove('invisible');
       }
 
       window.addEventListener('DOMContentLoaded', positionQuote);
-      window.addEventListener('load',           positionQuote);
-      window.addEventListener('resize',         positionQuote);
+      window.addEventListener('load', positionQuote);
+      window.addEventListener('resize', positionQuote);
     </script>
   </body>
 </html>
