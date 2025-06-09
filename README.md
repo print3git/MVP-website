@@ -181,7 +181,11 @@ pull request:
    `backend/hunyuan_server/` if present).
 2. Run `npm run format` in `backend/`.
 3. Run `npm test` in `backend/` and include the results in the PR description.
-4. Only modify files relevant to the task.
+
+4. Check your diff with `git status --short` to verify no unrelated files were
+   modified.
+5. Add the format and test logs to the PR so reviewers can confirm.
+
 
 ## ToDo List
 
