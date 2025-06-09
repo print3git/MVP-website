@@ -354,13 +354,14 @@
       });
     </script>
 
-    <!-- Position the subreddit quote so its left edge aligns with the left
-         edge of the checkout button and stays just below the viewer box -->
+    <!-- Position the subreddit quote next to the checkout button and keep
+         the error text mirrored against the box logo below the viewer -->
     <script type="module">
       function positionQuote() {
         const quote = document.getElementById('subreddit-quote');
         const checkout = document.getElementById('checkout-button');
         const error = document.getElementById('gen-error');
+        const logo = document.querySelector('img[alt="print3 cube"]');
         if (!quote || !checkout) return;
 
         // bounding rectangles relative to the viewport
@@ -376,12 +377,20 @@
         quote.style.left = `${left}px`;
         quote.style.top = `${top}px`;
 
-        if (error) {
+        if (error && logo) {
           const quoteRect = quote.getBoundingClientRect();
+          const logoRect = logo.getBoundingClientRect();
           const wrapperRectTop = wrapperRect.top;
           const center = quoteRect.top + quoteRect.height / 2 - wrapperRectTop;
-          const extensionRight = quoteRect.right - wrapperRect.right;
-          error.style.left = `${-extensionRight}px`;
+
+          // Mirror the spacing between the quote and the logo
+          const gap = quoteRect.left - logoRect.right;
+          const errorWidth = error.getBoundingClientRect().width;
+          const targetRight = logoRect.left - gap;
+          const leftPos = targetRight - errorWidth;
+          const leftOffset = leftPos - wrapperRect.left;
+
+          error.style.left = `${leftOffset}px`;
           error.style.top = `${center - 2}px`;
           error.style.transform = 'translateY(-50%)';
         }
