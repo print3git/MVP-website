@@ -209,9 +209,10 @@ refs.promptInput.addEventListener('keydown', (e) => {
 function syncUploadHeights() {
   if (!refs.dropZone || !refs.imagePreviewArea) return;
   const h = refs.dropZone.getBoundingClientRect().height;
-  // Keep preview thumbnails aligned with the drop zone height but
-  // allow the drop zone itself to size naturally via CSS.
+  // Keep preview thumbnails square and aligned with the drop zone
+  // height while allowing the drop zone itself to size naturally via CSS.
   refs.imagePreviewArea.style.height = h + 'px';
+  refs.imagePreviewArea.style.width = h + 'px';
 }
 
 function renderThumbnails(arr) {
@@ -224,7 +225,10 @@ function renderThumbnails(arr) {
   refs.imagePreviewArea.classList.remove('hidden');
   arr.forEach((url, i) => {
     const wrap = document.createElement('div');
-    wrap.className = 'relative';
+    // Make the wrapper fill the preview container so images and
+    // buttons are sized relative to it rather than their natural
+    // dimensions. This avoids oversized previews in Safari on iPad.
+    wrap.className = 'relative w-full h-full';
     const img = document.createElement('img');
     img.src = url;
     // Use object-contain so tall images fit within the square thumbnail
@@ -237,8 +241,10 @@ function renderThumbnails(arr) {
     btn.innerHTML = '<i class="fas fa-times"></i>';
     // Position the remove button fully inside the preview box so it
     // isn't clipped when the container has overflow-hidden.
+    // Keep the remove button inside the rounded corner so it isn't
+    // clipped by overflow hidden on the preview box.
     btn.className =
-      'absolute top-1 right-1 w-6 h-6 rounded-full bg-white text-black border border-black flex items-center justify-center z-10';
+      'absolute top-2 right-2 w-6 h-6 rounded-full bg-white text-black border border-black flex items-center justify-center z-10';
     btn.onclick = () => {
       arr.splice(i, 1);
       uploadedFiles.splice(i, 1);
