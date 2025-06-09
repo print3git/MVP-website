@@ -1,0 +1,49 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - run: npm ci
+        working-directory: backend
+      - name: Install hunyuan_server deps
+        if: ${{ hashFiles('backend/hunyuan_server/package.json') != '' }}
+        run: npm ci
+        working-directory: backend/hunyuan_server
+      - name: Format check
+        run: |
+          npm run format
+          git diff --quiet || (echo "::error::Formatting required" && exit 1)
+        working-directory: backend
+      - name: Run tests
+        run: npm run test-ci
+        working-directory: backend
+      - name: Comment on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = `❌ This PR broke Jest CI stability.
+
+Please:
+1. Fix or re-mock lingering async handles
+2. Ensure \`jest-localstorage-mock\` remains in setupFiles
+3. Run \`npm run format\`
+
+Then re-run \`npm run test-ci\`. CI must pass before merge is allowed.`;
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body
+            });
+
