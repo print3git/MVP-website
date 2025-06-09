@@ -46,16 +46,23 @@ function setup() {
   return dom;
 }
 
+let dom;
+afterEach(() => {
+  if (dom?.window?.close) dom.window.close();
+  delete global.window;
+  delete global.document;
+});
+
 describe('community helpers', () => {
   test('getFallbackModels returns 6 items', () => {
-    const dom = setup();
+    dom = setup();
     const list = dom.window.getFallbackModels();
     expect(list).toHaveLength(6);
     expect(list[0]).toHaveProperty('model_url');
   });
 
   test('fetchCreations returns empty on error', async () => {
-    const dom = setup();
+    dom = setup();
     dom.window.fetch = jest.fn(() => Promise.reject(new Error('fail')));
     const data = await dom.window.fetchCreations('recent');
     expect(data).toEqual([]);

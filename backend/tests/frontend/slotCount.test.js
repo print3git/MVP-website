@@ -10,6 +10,13 @@ html = html
   .replace(/<script[^>]+src="js\/payment.js"[^>]*><\/script>/, '')
   .replace(/<script[^>]+src="js\/modelViewerTouchFix.js"[^>]*><\/script>/, '');
 
+let dom;
+afterEach(() => {
+  if (dom?.window?.close) dom.window.close();
+  delete global.window;
+  delete global.document;
+});
+
 function cycleKey() {
   const tz = 'America/New_York';
   const now = new Date();
@@ -31,7 +38,7 @@ function cycleKey() {
 
 describe('slot count', () => {
   test('adjusts after purchase', async () => {
-    const dom = new JSDOM(html, {
+    dom = new JSDOM(html, {
       runScripts: 'dangerously',
       resources: 'usable',
       url: 'http://localhost/payment.html?session_id=1',
@@ -47,7 +54,7 @@ describe('slot count', () => {
   });
 
   test('uses stored purchase count', async () => {
-    const dom = new JSDOM(html, {
+    dom = new JSDOM(html, {
       runScripts: 'dangerously',
       resources: 'usable',
       url: 'http://localhost/payment.html',

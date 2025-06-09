@@ -3,8 +3,15 @@ const fs = require('fs');
 const path = require('path');
 const { JSDOM } = require('jsdom');
 
+let dom;
+afterEach(() => {
+  if (dom?.window?.close) dom.window.close();
+  delete global.window;
+  delete global.document;
+});
+
 function setup(url) {
-  const dom = new JSDOM('<div id="viewer"></div><div id="error"></div>', {
+  dom = new JSDOM('<div id="viewer"></div><div id="error"></div>', {
     runScripts: 'dangerously',
     url,
   });
@@ -22,7 +29,7 @@ function setup(url) {
 }
 
 test('loads model from API', async () => {
-  const dom = setup('http://localhost/share.html?slug=test');
+  dom = setup('http://localhost/share.html?slug=test');
   dom.window.fetch = jest.fn(() =>
     Promise.resolve({ ok: true, json: () => ({ model_url: 'foo.glb' }) })
   );
@@ -32,7 +39,7 @@ test('loads model from API', async () => {
 });
 
 test('shows error when slug missing', () => {
-  const dom = setup('http://localhost/share.html');
+  dom = setup('http://localhost/share.html');
   dom.window.document.dispatchEvent(new dom.window.Event('DOMContentLoaded'));
   expect(dom.window.document.getElementById('error').textContent).toBe('Missing share link');
 });

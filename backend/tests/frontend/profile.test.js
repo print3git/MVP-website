@@ -3,8 +3,15 @@ const fs = require('fs');
 const path = require('path');
 const { JSDOM } = require('jsdom');
 
+let dom;
+afterEach(() => {
+  if (dom?.window?.close) dom.window.close();
+  delete global.window;
+  delete global.document;
+});
+
 test('load displays models from API', async () => {
-  const dom = new JSDOM('<div id="models"></div>', {
+  dom = new JSDOM('<div id="models"></div>', {
     runScripts: 'dangerously',
     url: 'http://localhost/profile.html',
   });

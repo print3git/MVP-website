@@ -12,6 +12,13 @@ html = html
     ''
   );
 
+let dom;
+afterEach(() => {
+  if (dom?.window?.close) dom.window.close();
+  delete global.window;
+  delete global.document;
+});
+
 describe('index validatePrompt', () => {
   function setup() {
     const dom = new JSDOM(html, {
@@ -38,7 +45,7 @@ describe('index validatePrompt', () => {
   }
 
   test('rejects short prompt', () => {
-    const dom = setup();
+    dom = setup();
     const ok = dom.window.validatePrompt('abc');
     expect(ok).toBe(false);
     expect(dom.window.document.getElementById('gen-error').textContent).toBe(
@@ -47,14 +54,14 @@ describe('index validatePrompt', () => {
   });
 
   test('accepts valid prompt', () => {
-    const dom = setup();
+    dom = setup();
     const ok = dom.window.validatePrompt('hello world');
     expect(ok).toBe(true);
     expect(dom.window.document.getElementById('gen-error').textContent).toBe('');
   });
 
   test('rejects empty prompt without images', () => {
-    const dom = setup();
+    dom = setup();
     dom.window.uploadedFiles = [];
     const ok = dom.window.validatePrompt('');
     expect(ok).toBe(false);
@@ -64,7 +71,7 @@ describe('index validatePrompt', () => {
   });
 
   test('rejects prompts with line breaks', () => {
-    const dom = setup();
+    dom = setup();
     const ok = dom.window.validatePrompt('line1\nline2');
     expect(ok).toBe(false);
     expect(dom.window.document.getElementById('gen-error').textContent).toBe(
@@ -73,7 +80,7 @@ describe('index validatePrompt', () => {
   });
 
   test('rejects prompts with angle brackets', () => {
-    const dom = setup();
+    dom = setup();
     const ok = dom.window.validatePrompt('hello <world>');
     expect(ok).toBe(false);
     expect(dom.window.document.getElementById('gen-error').textContent).toBe(
@@ -82,7 +89,7 @@ describe('index validatePrompt', () => {
   });
 
   test('rejects overly long prompts', () => {
-    const dom = setup();
+    dom = setup();
     const longPrompt = 'a'.repeat(201);
     const ok = dom.window.validatePrompt(longPrompt);
     expect(ok).toBe(false);

@@ -8,9 +8,16 @@ html = html
   .replace(/<script[^>]+tailwind[^>]*><\/script>/, '')
   .replace(/<link[^>]+font-awesome[^>]+>/, '');
 
+let dom;
+afterEach(() => {
+  if (dom?.window?.close) dom.window.close();
+  delete global.window;
+  delete global.document;
+});
+
 describe('login form', () => {
   test('shows error on failed login', async () => {
-    const dom = new JSDOM(html, {
+    dom = new JSDOM(html, {
       runScripts: 'dangerously',
       resources: 'usable',
       url: 'http://localhost/login.html',

@@ -9,9 +9,16 @@ html = html
   .replace(/<link[^>]+href="https?:\/\/[^>]+>/g, '')
   .replace(/<script[^>]+src="js\/modelViewerTouchFix.js"[^>]*><\/script>/, '');
 
+let dom;
+afterEach(() => {
+  if (dom?.window?.close) dom.window.close();
+  delete global.window;
+  delete global.document;
+});
+
 describe('flash banner', () => {
   test('hides after countdown ends', async () => {
-    const dom = new JSDOM(html, {
+    dom = new JSDOM(html, {
       runScripts: 'dangerously',
       resources: 'usable',
       url: 'http://localhost/',
@@ -32,7 +39,7 @@ describe('flash banner', () => {
   });
 
   test('does not restart after expiration', async () => {
-    const dom = new JSDOM(html, {
+    dom = new JSDOM(html, {
       runScripts: 'dangerously',
       resources: 'usable',
       url: 'http://localhost/',
@@ -52,7 +59,7 @@ describe('flash banner', () => {
   });
 
   test('countdown shows 4:59 after one second', async () => {
-    const dom = new JSDOM(html, {
+    dom = new JSDOM(html, {
       runScripts: 'dangerously',
       resources: 'usable',
       url: 'http://localhost/',
@@ -71,7 +78,7 @@ describe('flash banner', () => {
   });
 
   test('banner hidden when chance disabled', async () => {
-    const dom = new JSDOM(html, {
+    dom = new JSDOM(html, {
       runScripts: 'dangerously',
       resources: 'usable',
       url: 'http://localhost/',
