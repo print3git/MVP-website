@@ -13,10 +13,18 @@ test('startCountdown closes past competitions', () => {
     .replace(/document\.addEventListener\('DOMContentLoaded'[\s\S]+$/, '');
   script += '\nwindow.startCountdown = startCountdown;';
   dom.window.eval(script);
+  const intervalIds = [];
+  const origInterval = dom.window.setInterval.bind(dom.window);
+  dom.window.setInterval = (...args) => {
+    const id = origInterval(...args);
+    intervalIds.push(id);
+    return id;
+  };
   const el = dom.window.document.getElementById('t');
   el.dataset.end = '2000-01-01';
   dom.window.startCountdown(el);
   expect(el.textContent).toBe('Closed');
+  intervalIds.forEach((id) => dom.window.clearInterval(id));
 });
 
 test('startCountdown formats remaining time', () => {
@@ -29,6 +37,13 @@ test('startCountdown formats remaining time', () => {
     .replace(/document\.addEventListener\('DOMContentLoaded'[\s\S]+$/, '');
   script += '\nwindow.startCountdown = startCountdown;';
   dom.window.eval(script);
+  const intervalIds = [];
+  const origInterval = dom.window.setInterval.bind(dom.window);
+  dom.window.setInterval = (...args) => {
+    const id = origInterval(...args);
+    intervalIds.push(id);
+    return id;
+  };
   const el = dom.window.document.getElementById('t');
   const future = new Date(Date.now() + 2 * 86400000);
   el.dataset.end = future.toISOString().slice(0, 10);
@@ -41,4 +56,5 @@ test('startCountdown formats remaining time', () => {
   const expected = `${d}d ${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
   dom.window.startCountdown(el);
   expect(el.textContent).toBe(expected);
+  intervalIds.forEach((id) => dom.window.clearInterval(id));
 });

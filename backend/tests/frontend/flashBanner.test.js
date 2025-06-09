@@ -18,6 +18,13 @@ describe('flash banner', () => {
     });
     global.window = dom.window;
     global.document = dom.window.document;
+    const timeouts = [];
+    const origTimeout = dom.window.setTimeout.bind(dom.window);
+    dom.window.setTimeout = (...args) => {
+      const id = origTimeout(...args);
+      timeouts.push(id);
+      return id;
+    };
     dom.window.sessionStorage.setItem('flashDiscountShow', '1');
     dom.window.localStorage.setItem('flashDiscountEnd', String(Date.now() + 1000));
     const scriptSrc = fs.readFileSync(path.join(__dirname, '../../../js/payment.js'), 'utf8');
@@ -29,6 +36,7 @@ describe('flash banner', () => {
     await new Promise((r) => setTimeout(r, 1100));
     expect(banner.hidden).toBe(true);
     expect(dom.window.localStorage.getItem('flashDiscountEnd')).toBe('0');
+    timeouts.forEach((id) => dom.window.clearTimeout(id));
   });
 
   test('does not restart after expiration', async () => {
@@ -39,6 +47,13 @@ describe('flash banner', () => {
     });
     global.window = dom.window;
     global.document = dom.window.document;
+    const timeouts = [];
+    const origTimeout = dom.window.setTimeout.bind(dom.window);
+    dom.window.setTimeout = (...args) => {
+      const id = origTimeout(...args);
+      timeouts.push(id);
+      return id;
+    };
     dom.window.sessionStorage.setItem('flashDiscountShow', '1');
     dom.window.localStorage.setItem('flashDiscountEnd', '0');
     const scriptSrc = fs.readFileSync(path.join(__dirname, '../../../js/payment.js'), 'utf8');
@@ -49,6 +64,7 @@ describe('flash banner', () => {
     expect(end).toBe('0');
     const banner = dom.window.document.getElementById('flash-banner');
     expect(banner.hidden).toBe(true);
+    timeouts.forEach((id) => dom.window.clearTimeout(id));
   });
 
   test('countdown shows 4:59 after one second', async () => {
@@ -59,6 +75,13 @@ describe('flash banner', () => {
     });
     global.window = dom.window;
     global.document = dom.window.document;
+    const timeouts = [];
+    const origTimeout = dom.window.setTimeout.bind(dom.window);
+    dom.window.setTimeout = (...args) => {
+      const id = origTimeout(...args);
+      timeouts.push(id);
+      return id;
+    };
     dom.window.sessionStorage.setItem('flashDiscountShow', '1');
     const scriptSrc = fs.readFileSync(path.join(__dirname, '../../../js/payment.js'), 'utf8');
     dom.window.eval(scriptSrc);
@@ -68,6 +91,7 @@ describe('flash banner', () => {
     expect(timerEl.textContent).toBe('5:00');
     await new Promise((r) => setTimeout(r, 1100));
     expect(timerEl.textContent).toBe('4:59');
+    timeouts.forEach((id) => dom.window.clearTimeout(id));
   });
 
   test('banner hidden when chance disabled', async () => {
@@ -78,6 +102,13 @@ describe('flash banner', () => {
     });
     global.window = dom.window;
     global.document = dom.window.document;
+    const timeouts = [];
+    const origTimeout = dom.window.setTimeout.bind(dom.window);
+    dom.window.setTimeout = (...args) => {
+      const id = origTimeout(...args);
+      timeouts.push(id);
+      return id;
+    };
     dom.window.sessionStorage.setItem('flashDiscountShow', '0');
     const scriptSrc = fs.readFileSync(path.join(__dirname, '../../../js/payment.js'), 'utf8');
     dom.window.eval(scriptSrc);
@@ -86,5 +117,6 @@ describe('flash banner', () => {
     const banner = dom.window.document.getElementById('flash-banner');
     expect(banner.hidden).toBe(true);
     expect(dom.window.localStorage.getItem('flashDiscountEnd')).toBe(null);
+    timeouts.forEach((id) => dom.window.clearTimeout(id));
   });
 });
