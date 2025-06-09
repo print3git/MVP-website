@@ -5,11 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Checkout – print3</title>
 
+    <!-- DNS preconnects to speed up third-party requests -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
+    <link rel="preconnect" href="https://js.stripe.com" crossorigin />
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link rel="preconnect" href="https://modelviewer.dev" crossorigin />
+
+    <!-- Preload 3D assets -->
+    <link
+      rel="preload"
+      href="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
+      as="fetch"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
+      as="fetch"
+      crossorigin
+    />
+
     <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com" defer></script>
 
     <!-- Stripe.js -->
-    <script src="https://js.stripe.com/v3/"></script>
+    <script src="https://js.stripe.com/v3/" defer></script>
 
     <!-- Font Awesome (optional, used only for back-arrow icon) -->
     <link
@@ -26,6 +47,7 @@
     <script
       nomodule
       src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer-legacy.js"
+      defer
     ></script>
   </head>
 
