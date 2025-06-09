@@ -380,8 +380,9 @@
           const quoteRect = quote.getBoundingClientRect();
           const wrapperRectTop = wrapperRect.top;
           const center = quoteRect.top + quoteRect.height / 2 - wrapperRectTop;
-          error.style.left = '-1rem';
-          error.style.top = `${center}px`;
+          const extensionRight = quoteRect.right - wrapperRect.right;
+          error.style.left = `${-extensionRight}px`;
+          error.style.top = `${center - 2}px`;
           error.style.transform = 'translateY(-50%)';
         }
 
