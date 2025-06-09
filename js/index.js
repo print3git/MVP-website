@@ -209,9 +209,10 @@ refs.promptInput.addEventListener('keydown', (e) => {
 function syncUploadHeights() {
   if (!refs.dropZone || !refs.imagePreviewArea) return;
   const h = refs.dropZone.getBoundingClientRect().height;
-  // Keep preview thumbnails aligned with the drop zone height but
-  // allow the drop zone itself to size naturally via CSS.
+  // Keep preview thumbnails square and aligned with the drop zone
+  // height while allowing the drop zone itself to size naturally via CSS.
   refs.imagePreviewArea.style.height = h + 'px';
+  refs.imagePreviewArea.style.width = h + 'px';
 }
 
 function renderThumbnails(arr) {
