@@ -365,7 +365,14 @@ refs.submitBtn.addEventListener('click', async () => {
     editsPending = false;
 
     refs.viewer.src = url;
-    await refs.viewer.updateComplete;
+    if (window.customElements?.whenDefined) {
+      try {
+        await customElements.whenDefined('model-viewer');
+      } catch {
+        /* ignore */
+      }
+    }
+    if (refs.viewer.updateComplete) await refs.viewer.updateComplete;
     showModel();
     setStep('model');
     hideDemo();
@@ -403,7 +410,14 @@ window.addEventListener('DOMContentLoaded', async () => {
         stopProgress();
       }
     });
-    await refs.viewer.updateComplete;
+    if (window.customElements?.whenDefined) {
+      try {
+        await customElements.whenDefined('model-viewer');
+      } catch {
+        /* ignore */
+      }
+    }
+    if (refs.viewer.updateComplete) await refs.viewer.updateComplete;
   }
   showModel();
   fetchProfile().then(() => {
