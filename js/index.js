@@ -410,11 +410,25 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   const prompt = localStorage.getItem('print3Prompt');
   const thumbs = JSON.parse(localStorage.getItem('print3Images') || '[]');
-  if (prompt) {
-    refs.promptInput.value = prompt;
 
-    refs.promptInput.dispatchEvent(new Event('input'));
-  } else {
+  const oldPlaceholders = [
+    'Describe your 3D print request…',
+    'Describe your idea or upload images…',
+    'Desribe your 3D print request…',
+    'Desribe your idea or upload images…',
+  ];
+  let usePlaceholder = true;
+  if (prompt) {
+    const isOld = oldPlaceholders.some((p) => prompt.startsWith(p));
+    if (!isOld) {
+      refs.promptInput.value = prompt;
+      refs.promptInput.dispatchEvent(new Event('input'));
+      usePlaceholder = false;
+    } else {
+      localStorage.removeItem('print3Prompt');
+    }
+  }
+  if (usePlaceholder) {
     // Keep placeholder text consistent with index.html
     refs.promptInput.placeholder = 'Text, image, or both — we\u2019ll 3D print it\u2026';
   }
