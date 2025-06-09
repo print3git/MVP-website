@@ -79,12 +79,19 @@ function qs(name) {
   return params.get(name);
 }
 
-async function createCheckout(quantity, discount, shippingInfo) {
+async function createCheckout(quantity, discount, discountCode, shippingInfo) {
   const jobId = localStorage.getItem('print3JobId');
   const res = await fetch(`${API_BASE}/create-order`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ jobId, price: PRICE, qty: quantity, discount, shippingInfo }),
+    body: JSON.stringify({
+      jobId,
+      price: PRICE,
+      qty: quantity,
+      discount,
+      discountCode,
+      shippingInfo,
+    }),
   });
   const data = await res.json();
   return data.checkoutUrl;
@@ -115,6 +122,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   const costEl = document.getElementById('cost-estimate');
   const etaEl = document.getElementById('eta-estimate');
   const slotEl = document.getElementById('slot-count');
+  const discountInput = document.getElementById('discount-code');
+  const discountMsg = document.getElementById('discount-msg');
+  const applyBtn = document.getElementById('apply-discount');
+  let discountCode = '';
+  let discountValue = 0;
   const sessionId = qs('session_id');
   if (sessionId) recordPurchase();
   let baseSlots = null;
@@ -281,6 +293,31 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById(id)?.addEventListener('change', updateEstimate);
   });
 
+  applyBtn?.addEventListener('click', async () => {
+    const code = discountInput.value.trim();
+    if (!code) return;
+    discountMsg.textContent = 'Checking…';
+    try {
+      const resp = await fetch(`${API_BASE}/discount-code`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code }),
+      });
+      if (resp.ok) {
+        const data = await resp.json();
+        discountCode = code;
+        discountValue = data.discount || 0;
+        discountMsg.textContent = `Code applied: -$${(discountValue / 100).toFixed(2)}`;
+      } else {
+        discountCode = '';
+        discountValue = 0;
+        discountMsg.textContent = 'Invalid code';
+      }
+    } catch {
+      discountMsg.textContent = 'Error validating code';
+    }
+  });
+
   document.getElementById('submit-payment').addEventListener('click', async () => {
     const qty = 1;
     let discount = 0;
@@ -295,7 +332,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       zip: document.getElementById('ship-zip').value,
       email: emailEl.value,
     };
-    const url = await createCheckout(qty, discount, shippingInfo);
+    const url = await createCheckout(qty, discount, discountCode, shippingInfo);
     if (stripe) {
       stripe.redirectToCheckout({ sessionId: url.split('session_id=')[1] });
     } else {
