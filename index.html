@@ -372,6 +372,9 @@
         quote.classList.remove('invisible');
       }
 
+      // Expose so subredditLanding.js can invoke it once the quote text loads
+      window.positionQuote = positionQuote;
+
       window.addEventListener('DOMContentLoaded', positionQuote);
       window.addEventListener('load', positionQuote);
       window.addEventListener('resize', positionQuote);
