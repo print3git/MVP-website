@@ -148,9 +148,11 @@ async function buyNow() {
 }
 
 function showError(msg) {
-  document.getElementById('gen-error').textContent = msg;
+  const el = document.getElementById('gen-error');
+  if (!el) return;
+  el.textContent = msg;
   if (typeof window !== 'undefined' && typeof window.positionQuote === 'function') {
-    window.positionQuote();
+    requestAnimationFrame(() => window.positionQuote());
   }
 }
 
