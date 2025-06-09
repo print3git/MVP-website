@@ -56,6 +56,7 @@ let uploadedFiles = [];
 let lastJobId = null;
 
 let savedProfile = null;
+let userProfile = null;
 
 // Track when the prompt or images have been modified after a generation
 let editsPending = false;
@@ -208,8 +209,9 @@ refs.promptInput.addEventListener('keydown', (e) => {
 function syncUploadHeights() {
   if (!refs.dropZone || !refs.imagePreviewArea) return;
   const h = refs.dropZone.getBoundingClientRect().height;
-  // Keep preview thumbnails aligned with the drop zone height but
-  // allow the drop zone itself to size naturally via CSS.
+  // Keep preview thumbnails aligned with the drop zone height and
+  // preserve the drop zone height once calculated.
+  refs.dropZone.style.height = h + 'px';
   refs.imagePreviewArea.style.height = h + 'px';
 }
 
