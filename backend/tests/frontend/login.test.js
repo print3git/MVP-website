@@ -9,8 +9,13 @@ html = html
   .replace(/<link[^>]+font-awesome[^>]+>/, '');
 
 describe('login form', () => {
+  let dom;
+  afterEach(() => {
+    if (dom?.window) dom.window.close();
+  });
+
   test('shows error on failed login', async () => {
-    const dom = new JSDOM(html, {
+    dom = new JSDOM(html, {
       runScripts: 'dangerously',
       resources: 'usable',
       url: 'http://localhost/login.html',

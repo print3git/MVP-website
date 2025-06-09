@@ -3,6 +3,10 @@ const fs = require('fs');
 const path = require('path');
 const { JSDOM } = require('jsdom');
 
+afterEach(() => {
+  if (global.window?.close) global.window.close();
+});
+
 function setup(url) {
   const dom = new JSDOM('<div id="viewer"></div><div id="error"></div>', {
     runScripts: 'dangerously',

@@ -9,6 +9,10 @@ html = html
   .replace(/<link[^>]+font-awesome[^>]+>/, '');
 
 describe('signup form', () => {
+  afterEach(() => {
+    if (global.window?.close) global.window.close();
+  });
+
   test('shows error on failed signup', async () => {
     const dom = new JSDOM(html, {
       runScripts: 'dangerously',

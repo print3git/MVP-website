@@ -3,6 +3,10 @@ const fs = require('fs');
 const path = require('path');
 const { JSDOM } = require('jsdom');
 
+afterEach(() => {
+  if (global.window?.close) global.window.close();
+});
+
 test('load displays models from API', async () => {
   const dom = new JSDOM('<div id="models"></div>', {
     runScripts: 'dangerously',

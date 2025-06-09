@@ -13,6 +13,10 @@ html = html
   );
 
 describe('index validatePrompt', () => {
+  afterEach(() => {
+    if (global.window?.close) global.window.close();
+  });
+
   function setup() {
     const dom = new JSDOM(html, {
       runScripts: 'dangerously',

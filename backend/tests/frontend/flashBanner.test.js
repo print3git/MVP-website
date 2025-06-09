@@ -10,6 +10,10 @@ html = html
   .replace(/<script[^>]+src="js\/modelViewerTouchFix.js"[^>]*><\/script>/, '');
 
 describe('flash banner', () => {
+  afterEach(() => {
+    if (global.window?.close) global.window.close();
+  });
+
   test('hides after countdown ends', async () => {
     const dom = new JSDOM(html, {
       runScripts: 'dangerously',

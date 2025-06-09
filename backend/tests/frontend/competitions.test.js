@@ -3,6 +3,10 @@ const fs = require('fs');
 const path = require('path');
 const { JSDOM } = require('jsdom');
 
+afterEach(() => {
+  if (global.window?.close) global.window.close();
+});
+
 test('startCountdown closes past competitions', () => {
   const dom = new JSDOM('<span id="t"></span>', { runScripts: 'dangerously' });
   global.window = dom.window;

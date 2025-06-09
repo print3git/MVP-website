@@ -30,6 +30,10 @@ function cycleKey() {
 }
 
 describe('slot count', () => {
+  afterEach(() => {
+    if (global.window?.close) global.window.close();
+  });
+
   test('adjusts after purchase', async () => {
     const dom = new JSDOM(html, {
       runScripts: 'dangerously',

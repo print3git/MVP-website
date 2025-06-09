@@ -47,6 +47,9 @@ function setup() {
 }
 
 describe('community helpers', () => {
+  afterEach(() => {
+    if (global.window?.close) global.window.close();
+  });
   test('getFallbackModels returns 6 items', () => {
     const dom = setup();
     const list = dom.window.getFallbackModels();

@@ -4,6 +4,10 @@ const path = require('path');
 const { JSDOM } = require('jsdom');
 
 describe('shareOn', () => {
+  afterEach(() => {
+    if (global.window?.close) global.window.close();
+  });
+
   function load() {
     const dom = new JSDOM('<!doctype html><html><body></body></html>', {
       runScripts: 'dangerously',
