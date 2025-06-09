@@ -244,7 +244,7 @@ function renderThumbnails(arr) {
     // Keep the remove button inside the rounded corner so it isn't
     // clipped by overflow hidden on the preview box.
     btn.className =
-      'absolute top-2 right-2 w-6 h-6 rounded-full bg-white text-black border border-black flex items-center justify-center z-10';
+      'absolute top-2 right-2 w-6 h-6 rounded-full bg-white text-black border border-black flex items-center justify-center z-20';
     btn.onclick = () => {
       arr.splice(i, 1);
       uploadedFiles.splice(i, 1);
