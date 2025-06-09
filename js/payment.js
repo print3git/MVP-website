@@ -280,7 +280,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   ['ship-address', 'ship-city', 'ship-zip'].forEach((id) => {
     document.getElementById(id)?.addEventListener('change', updateEstimate);
   });
-  updateEstimate();
 
   document.getElementById('submit-payment').addEventListener('click', async () => {
     const qty = 1;
