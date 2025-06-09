@@ -62,7 +62,16 @@
 - Track code usage for auditing and store codes safely (e.g., hashed).
 - Expand the test suite to cover valid, expired, and invalid discount codes.
 
-## Decreasing CAC
 
+## Decreasing CAC
 - Add real photo of printed object or user-generated image to hero section to reinforce the physical product.
 - Display pricing info near the prompt field such as "From $X / print" to reduce hesitation.
+
+
+## Referral Discount System
+- Replace the hard-coded list with database queries and record each successful use.
+- Validate codes against expiration dates and remaining uses.
+- Plan a database schema for tracking referral codes and the users who share them.
+- Add an API endpoint for generating referral links and applying associated discounts for new customers.
+- Decide on the credit/discount amounts for both referrer and referee and persist the data.
+- Integrate referral tracking into the checkout flow alongside discount codes.
