@@ -3,8 +3,10 @@ const fs = require('fs');
 const path = require('path');
 const { JSDOM } = require('jsdom');
 
+let dom;
+
 test('load displays models from API', async () => {
-  const dom = new JSDOM('<div id="models"></div>', {
+  dom = new JSDOM('<div id="models"></div>', {
     runScripts: 'dangerously',
     url: 'http://localhost/profile.html',
   });
@@ -27,4 +29,10 @@ test('load displays models from API', async () => {
   expect(children.length).toBe(1);
   expect(children[0].classList.contains('model-card')).toBe(true);
   expect(children[0].dataset.model).toBe('u');
+});
+
+afterEach(() => {
+  if (dom?.window) dom.window.close();
+  delete global.window;
+  delete global.document;
 });

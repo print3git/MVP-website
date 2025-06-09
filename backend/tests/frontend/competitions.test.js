@@ -3,8 +3,10 @@ const fs = require('fs');
 const path = require('path');
 const { JSDOM } = require('jsdom');
 
+let dom;
+
 test('startCountdown closes past competitions', () => {
-  const dom = new JSDOM('<span id="t"></span>', { runScripts: 'dangerously' });
+  dom = new JSDOM('<span id="t"></span>', { runScripts: 'dangerously' });
   global.window = dom.window;
   global.document = dom.window.document;
   let script = fs
@@ -20,7 +22,7 @@ test('startCountdown closes past competitions', () => {
 });
 
 test('startCountdown formats remaining time', () => {
-  const dom = new JSDOM('<span id="t"></span>', { runScripts: 'dangerously' });
+  dom = new JSDOM('<span id="t"></span>', { runScripts: 'dangerously' });
   global.window = dom.window;
   global.document = dom.window.document;
   let script = fs
@@ -41,4 +43,10 @@ test('startCountdown formats remaining time', () => {
   const expected = `${d}d ${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
   dom.window.startCountdown(el);
   expect(el.textContent).toBe(expected);
+});
+
+afterEach(() => {
+  if (dom?.window) dom.window.close();
+  delete global.window;
+  delete global.document;
 });

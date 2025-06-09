@@ -3,8 +3,10 @@ const fs = require('fs');
 const path = require('path');
 const { JSDOM } = require('jsdom');
 
+let dom;
+
 function setup() {
-  const dom = new JSDOM('<!doctype html><html><body></body></html>', { runScripts: 'dangerously' });
+  dom = new JSDOM('<!doctype html><html><body></body></html>', { runScripts: 'dangerously' });
   global.window = dom.window;
   global.document = dom.window.document;
 
@@ -59,5 +61,11 @@ describe('community helpers', () => {
     dom.window.fetch = jest.fn(() => Promise.reject(new Error('fail')));
     const data = await dom.window.fetchCreations('recent');
     expect(data).toEqual([]);
+  });
+
+  afterEach(() => {
+    if (dom?.window) dom.window.close();
+    delete global.window;
+    delete global.document;
   });
 });

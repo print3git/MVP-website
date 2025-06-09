@@ -3,6 +3,8 @@ const fs = require('fs');
 const path = require('path');
 const { JSDOM } = require('jsdom');
 
+let dom;
+
 let html = fs.readFileSync(path.join(__dirname, '../../../signup.html'), 'utf8');
 html = html
   .replace(/<script[^>]+tailwind[^>]*><\/script>/, '')
@@ -10,7 +12,7 @@ html = html
 
 describe('signup form', () => {
   test('shows error on failed signup', async () => {
-    const dom = new JSDOM(html, {
+    dom = new JSDOM(html, {
       runScripts: 'dangerously',
       resources: 'usable',
       url: 'http://localhost/signup.html',
@@ -30,5 +32,11 @@ describe('signup form', () => {
     await new Promise((r) => setTimeout(r, 0));
     expect(dom.window.document.getElementById('error').textContent).toBe('Invalid email format');
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  afterEach(() => {
+    if (dom?.window) dom.window.close();
+    delete global.window;
+    delete global.document;
   });
 });
