@@ -98,7 +98,7 @@ function stopProgress() {
 const hideAll = () => {
   refs.previewImg.style.display = 'none';
   refs.loader.style.display = 'none';
-  refs.viewer.style.visibility = 'hidden';
+  refs.viewer.style.display = 'none';
 };
 const showLoader = () => {
   hideAll();
@@ -107,7 +107,7 @@ const showLoader = () => {
 };
 const showModel = () => {
   hideAll();
-  refs.viewer.style.visibility = 'visible';
+  refs.viewer.style.display = 'block';
   stopProgress();
 };
 const hideDemo = () => {
