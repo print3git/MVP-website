@@ -234,8 +234,10 @@ function renderThumbnails(arr) {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.innerHTML = '<i class="fas fa-times"></i>';
+    // Position the remove button fully inside the preview box so it
+    // isn't clipped when the container has overflow-hidden.
     btn.className =
-      'absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white text-black border border-black flex items-center justify-center z-10';
+      'absolute top-1 right-1 w-6 h-6 rounded-full bg-white text-black border border-black flex items-center justify-center z-10';
     btn.onclick = () => {
       arr.splice(i, 1);
       uploadedFiles.splice(i, 1);
