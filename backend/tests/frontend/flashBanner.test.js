@@ -3,6 +3,14 @@ const fs = require('fs');
 const path = require('path');
 const { JSDOM } = require('jsdom');
 
+let dom;
+
+afterEach(() => {
+  if (dom?.window) dom.window.close();
+  delete global.window;
+  delete global.document;
+});
+
 let html = fs.readFileSync(path.join(__dirname, '../../../payment.html'), 'utf8');
 html = html
   .replace(/<script[^>]+src="https?:\/\/[^>]+><\/script>/g, '')
@@ -11,7 +19,7 @@ html = html
 
 describe('flash banner', () => {
   test('hides after countdown ends', async () => {
-    const dom = new JSDOM(html, {
+    dom = new JSDOM(html, {
       runScripts: 'dangerously',
       resources: 'usable',
       url: 'http://localhost/',
@@ -32,7 +40,7 @@ describe('flash banner', () => {
   });
 
   test('does not restart after expiration', async () => {
-    const dom = new JSDOM(html, {
+    dom = new JSDOM(html, {
       runScripts: 'dangerously',
       resources: 'usable',
       url: 'http://localhost/',
@@ -52,7 +60,7 @@ describe('flash banner', () => {
   });
 
   test('countdown shows 4:59 after one second', async () => {
-    const dom = new JSDOM(html, {
+    dom = new JSDOM(html, {
       runScripts: 'dangerously',
       resources: 'usable',
       url: 'http://localhost/',
@@ -71,7 +79,7 @@ describe('flash banner', () => {
   });
 
   test('banner hidden when chance disabled', async () => {
-    const dom = new JSDOM(html, {
+    dom = new JSDOM(html, {
       runScripts: 'dangerously',
       resources: 'usable',
       url: 'http://localhost/',
