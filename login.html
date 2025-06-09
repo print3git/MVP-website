@@ -19,8 +19,7 @@
   <body class="bg-[#1A1A1D] text-white font-sans flex flex-col min-h-screen">
     <header class="relative flex items-center justify-between py-4 px-6">
       <a
-        href="javascript:void(0)"
-        onclick="goBack()"
+        href="index.html"
         class="inline-flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-3xl px-5 py-2 text-lg font-medium hover:bg-[#3A3A3E] transition-shape"
       >
         <svg
@@ -113,9 +112,8 @@
     </main>
     <script type="module" src="js/login.js"></script>
     <script type="module">
-      import { shareOn, goBack } from './js/share.js';
+      import { shareOn } from './js/share.js';
       window.shareOn = shareOn;
-      window.goBack = goBack;
     </script>
   </body>
 </html>

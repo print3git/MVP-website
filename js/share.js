@@ -69,19 +69,7 @@ async function shareOn(network) {
   window.open(shareUrl, '_blank', 'noopener');
 }
 
-function goBack() {
-  if (document.referrer && document.referrer !== window.location.href) {
-    window.location.href = document.referrer;
-    return;
-  }
-  if (window.history.length > 1) {
-    window.history.back();
-  } else {
-    window.location.href = 'index.html';
-  }
-}
-
 if (typeof module !== 'undefined') {
-  module.exports = { shareOn, goBack };
+  module.exports = { shareOn };
 }
-export { shareOn, goBack };
+export { shareOn };
