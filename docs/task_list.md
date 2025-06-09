@@ -61,3 +61,8 @@
 - Build an admin interface or script for creating and retiring codes securely.
 - Track code usage for auditing and store codes safely (e.g., hashed).
 - Expand the test suite to cover valid, expired, and invalid discount codes.
+
+## Decreasing CAC
+
+- Add real photo of printed object or user-generated image to hero section to reinforce the physical product.
+- Display pricing info near the prompt field such as "From $X / print" to reduce hesitation.
