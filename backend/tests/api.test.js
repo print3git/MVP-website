@@ -365,7 +365,9 @@ test('/api/generate saves authenticated user id', async () => {
 test('/api/generate inserts community row', async () => {
   axios.post.mockResolvedValueOnce({ data: { glb_url: '/m.glb' } });
   await request(app).post('/api/generate').send({ prompt: 't' });
-  const communityCall = db.query.mock.calls.find((c) => c[0].includes('INSERT INTO community_creations'));
+  const communityCall = db.query.mock.calls.find((c) =>
+    c[0].includes('INSERT INTO community_creations')
+  );
   expect(communityCall).toBeDefined();
 });
 
@@ -474,12 +476,17 @@ test('POST /api/shipping-estimate returns mocked values and calls helper', async
 });
 
 test('POST /api/discount-code returns discount', async () => {
+  db.query.mockResolvedValueOnce({
+    rows: [{ id: 1, code: 'SAVE5', amount_cents: 500 }],
+  });
   const res = await request(app).post('/api/discount-code').send({ code: 'SAVE5' });
   expect(res.status).toBe(200);
   expect(res.body.discount).toBe(500);
+  expect(db.query).toHaveBeenCalledWith('SELECT * FROM discount_codes WHERE code=$1', ['SAVE5']);
 });
 
 test('POST /api/discount-code invalid', async () => {
+  db.query.mockResolvedValueOnce({ rows: [] });
   const res = await request(app).post('/api/discount-code').send({ code: 'BAD' });
   expect(res.status).toBe(404);
 });
@@ -487,4 +494,5 @@ test('POST /api/discount-code invalid', async () => {
 test('POST /api/discount-code requires code', async () => {
   const res = await request(app).post('/api/discount-code').send({});
   expect(res.status).toBe(400);
+  expect(db.query).not.toHaveBeenCalled();
 });
