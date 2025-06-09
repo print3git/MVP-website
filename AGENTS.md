@@ -12,5 +12,4 @@ These guidelines apply to all automated agents (e.g. the Codex agent) working on
 6. **Include logs** – paste the output of `npm test` (or `npm run test-ci`) and `npm run format` in the PR description so maintainers can verify the steps.
 
 ## PR notes
-
 Include a short summary of your changes and how you validated them (formatting and test output).
