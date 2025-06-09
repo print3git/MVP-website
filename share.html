@@ -19,16 +19,14 @@
     <script src="js/modelViewerTouchFix.js"></script>
     <script type="module" src="js/sharedModel.js"></script>
     <script type="module">
-      import { shareOn, goBack } from './js/share.js';
+      import { shareOn } from './js/share.js';
       window.shareOn = shareOn;
-      window.goBack = goBack;
     </script>
   </head>
   <body class="bg-[#1A1A1D] text-white font-sans flex flex-col min-h-screen">
     <header class="p-4 flex justify-between items-center">
       <a
-        href="javascript:void(0)"
-        onclick="goBack()"
+        href="index.html"
         class="flex items-center bg-[#2A2A2E] px-3 py-1 rounded-xl hover:bg-[#3A3A3E] transition"
       >
         <i class="fas fa-arrow-left mr-2"></i>Back
