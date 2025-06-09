@@ -117,6 +117,7 @@ function startCountdown(el) {
   }
   update();
   timer = setInterval(update, 60000);
+  return timer;
 }
 
 let currentId;

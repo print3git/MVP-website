@@ -15,8 +15,10 @@ test('startCountdown closes past competitions', () => {
   dom.window.eval(script);
   const el = dom.window.document.getElementById('t');
   el.dataset.end = '2000-01-01';
-  dom.window.startCountdown(el);
+  const timer = dom.window.startCountdown(el);
   expect(el.textContent).toBe('Closed');
+  clearInterval(timer);
+  dom.window.close();
 });
 
 test('startCountdown formats remaining time', () => {
@@ -39,6 +41,8 @@ test('startCountdown formats remaining time', () => {
   const h = Math.floor((diff % 86400000) / 3600000);
   const m = Math.floor((diff % 3600000) / 60000);
   const expected = `${d}d ${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
-  dom.window.startCountdown(el);
+  const timer = dom.window.startCountdown(el);
   expect(el.textContent).toBe(expected);
+  clearInterval(timer);
+  dom.window.close();
 });

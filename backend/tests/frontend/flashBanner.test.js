@@ -29,6 +29,8 @@ describe('flash banner', () => {
     await new Promise((r) => setTimeout(r, 1100));
     expect(banner.hidden).toBe(true);
     expect(dom.window.localStorage.getItem('flashDiscountEnd')).toBe('0');
+    dom.window.clearTimeout(dom.window.flashTimerId);
+    dom.window.close();
   });
 
   test('does not restart after expiration', async () => {
@@ -49,6 +51,8 @@ describe('flash banner', () => {
     expect(end).toBe('0');
     const banner = dom.window.document.getElementById('flash-banner');
     expect(banner.hidden).toBe(true);
+    dom.window.clearTimeout(dom.window.flashTimerId);
+    dom.window.close();
   });
 
   test('countdown shows 4:59 after one second', async () => {
@@ -68,6 +72,8 @@ describe('flash banner', () => {
     expect(timerEl.textContent).toBe('5:00');
     await new Promise((r) => setTimeout(r, 1100));
     expect(timerEl.textContent).toBe('4:59');
+    dom.window.clearTimeout(dom.window.flashTimerId);
+    dom.window.close();
   });
 
   test('banner hidden when chance disabled', async () => {
@@ -86,5 +92,7 @@ describe('flash banner', () => {
     const banner = dom.window.document.getElementById('flash-banner');
     expect(banner.hidden).toBe(true);
     expect(dom.window.localStorage.getItem('flashDiscountEnd')).toBe(null);
+    dom.window.clearTimeout(dom.window.flashTimerId);
+    dom.window.close();
   });
 });

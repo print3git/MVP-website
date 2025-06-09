@@ -224,6 +224,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     update();
     flashBanner.hidden = false;
+    return flashTimerId;
   }
   window.startFlashDiscount = startFlashDiscount;
 
