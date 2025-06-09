@@ -149,6 +149,9 @@ async function buyNow() {
 
 function showError(msg) {
   document.getElementById('gen-error').textContent = msg;
+  if (typeof window !== 'undefined' && typeof window.positionQuote === 'function') {
+    window.positionQuote();
+  }
 }
 
 function validatePrompt(p) {
