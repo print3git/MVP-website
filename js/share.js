@@ -48,9 +48,7 @@ async function shareOn(network) {
       shareUrl = `https://www.instagram.com/?url=${url}`;
       break;
   }
-  const modelUrl = typeof localStorage !== 'undefined'
-    ? localStorage.getItem('print3Model')
-    : null;
+  const modelUrl = typeof localStorage !== 'undefined' ? localStorage.getItem('print3Model') : null;
   if (navigator.share && modelUrl) {
     try {
       const dataUrl = await captureSnapshot(modelUrl);
