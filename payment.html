@@ -193,6 +193,23 @@
               />
             </div>
 
+            <div class="flex gap-2">
+              <input
+                id="discount-code"
+                class="flex-1 p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+                placeholder="Discount Code (optional)"
+                aria-label="Discount code"
+              />
+              <button
+                id="apply-discount"
+                type="button"
+                class="px-3 bg-[#30D5C8] text-[#1A1A1D] rounded-md hover:bg-[#28b7a8] transition"
+              >
+                Apply
+              </button>
+            </div>
+            <p id="discount-msg" class="text-xs text-center"></p>
+
             <div id="payment-element" class="text-center text-gray-400">
               [Stripe payment form will go here]
             </div>
