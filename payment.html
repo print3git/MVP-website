@@ -234,6 +234,26 @@
       </div>
     </main>
 
+    <div
+      id="exit-overlay"
+      class="fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50"
+    >
+      <div class="relative bg-white text-black p-6 rounded-xl w-80 text-center">
+        <button id="exit-close" class="absolute top-2 right-3 text-2xl">&times;</button>
+        <p class="mb-4 font-semibold">
+          Use code <span class="font-mono">REDDIT5</span> for 5% off—only valid for
+          the next <span id="exit-timer">5:00</span>.
+        </p>
+        <button
+          id="exit-apply"
+          type="button"
+          class="px-4 py-2 bg-[#30D5C8] text-[#1A1A1D] rounded-md hover:bg-[#28b7a8] transition"
+        >
+          Apply Code
+        </button>
+      </div>
+    </div>
+
     <!-- ─────────── Init -->
     <script src="js/modelViewerTouchFix.js"></script>
     <script type="module" src="js/payment.js"></script>

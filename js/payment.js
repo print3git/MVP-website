@@ -8,6 +8,7 @@ const API_BASE = (window.API_ORIGIN || '') + '/api';
 // Time zone used to reset local purchase counts at 1 AM Eastern
 const TZ = 'America/New_York';
 let flashTimerId = null;
+let exitTimerId = null;
 
 function getCycleKey() {
   const now = new Date();
@@ -227,6 +228,56 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
   window.startFlashDiscount = startFlashDiscount;
 
+  function startExitOverlay() {
+    const overlay = document.getElementById('exit-overlay');
+    const timer = document.getElementById('exit-timer');
+    if (!overlay || !timer) return;
+
+    const endStr = localStorage.getItem('exitOfferEnd');
+    if (endStr === '0') return;
+    let end = parseInt(endStr, 10);
+    if (!Number.isFinite(end)) return;
+    if (end <= Date.now()) {
+      localStorage.setItem('exitOfferEnd', '0');
+      return;
+    }
+
+    const update = () => {
+      const diff = end - Date.now();
+      if (diff <= 0) {
+        overlay.classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
+        localStorage.setItem('exitOfferEnd', '0');
+        if (exitTimerId) {
+          clearTimeout(exitTimerId);
+          exitTimerId = null;
+        }
+        return;
+      }
+      const diffSec = Math.ceil(diff / 1000);
+      const m = Math.floor(diffSec / 60);
+      const s = String(diffSec % 60).padStart(2, '0');
+      timer.textContent = `${m}:${s}`;
+      exitTimerId = setTimeout(update, 1000);
+    };
+
+    overlay.classList.remove('hidden');
+    document.body.classList.add('overflow-hidden');
+    update();
+  }
+
+  function triggerExitOverlay() {
+    if (sessionStorage.getItem('exitOfferShown')) return;
+    if (localStorage.getItem('exitOfferEnd') === '0') return;
+    const end = Date.now() + 5 * 60 * 1000;
+    localStorage.setItem('exitOfferEnd', String(end));
+    sessionStorage.setItem('exitOfferShown', '1');
+    startExitOverlay();
+  }
+
+  window.startExitOverlay = startExitOverlay;
+  window.triggerExitOverlay = triggerExitOverlay;
+
   const hideLoader = () => (loader.hidden = true);
 
   // Attach events immediately so we don't miss the "load" event even if the
@@ -292,6 +343,30 @@ document.addEventListener('DOMContentLoaded', async () => {
   ['ship-address', 'ship-city', 'ship-zip'].forEach((id) => {
     document.getElementById(id)?.addEventListener('change', updateEstimate);
   });
+
+  const exitOverlay = document.getElementById('exit-overlay');
+  const exitClose = document.getElementById('exit-close');
+  const exitApply = document.getElementById('exit-apply');
+
+  exitClose?.addEventListener('click', () => {
+    exitOverlay.classList.add('hidden');
+    document.body.classList.remove('overflow-hidden');
+    discountInput.value = 'REDDIT5';
+    localStorage.setItem('exitOfferEnd', '0');
+  });
+
+  exitApply?.addEventListener('click', () => {
+    discountInput.value = 'REDDIT5';
+    exitOverlay.classList.add('hidden');
+    document.body.classList.remove('overflow-hidden');
+    localStorage.setItem('exitOfferEnd', '0');
+  });
+
+  document.addEventListener('mouseout', (e) => {
+    if (!e.relatedTarget && e.clientY <= 0) triggerExitOverlay();
+  });
+
+  startExitOverlay();
 
   applyBtn?.addEventListener('click', async () => {
     const code = discountInput.value.trim();
