@@ -9,6 +9,35 @@ const API_BASE = (window.API_ORIGIN || '') + '/api';
 const TZ = 'America/New_York';
 let flashTimerId = null;
 
+function initAddressAutocomplete() {
+  const input = document.getElementById('ship-address');
+  if (!input || !window.google?.maps?.places) return;
+  const autocomplete = new google.maps.places.Autocomplete(input, {
+    types: ['address'],
+  });
+  autocomplete.addListener('place_changed', () => {
+    const place = autocomplete.getPlace();
+    if (!place || !place.address_components) return;
+    let city = '';
+    let country = '';
+    for (const comp of place.address_components) {
+      if (comp.types.includes('locality')) city = comp.short_name;
+      if (comp.types.includes('country')) country = comp.long_name;
+      if (comp.types.includes('postal_code')) {
+        const zip = document.getElementById('ship-zip');
+        if (zip) zip.value = comp.short_name;
+      }
+    }
+    const cityEl = document.getElementById('ship-city');
+    if (cityEl) cityEl.value = city && country ? `${city}, ${country}` : city || country;
+    if (window.updateEstimate) {
+      window.updateEstimate();
+    }
+  });
+}
+
+window.initAddressAutocomplete = initAddressAutocomplete;
+
 function getCycleKey() {
   const now = new Date();
   const dateFmt = new Intl.DateTimeFormat('en-US', {
@@ -172,6 +201,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       /* ignore */
     }
   }
+  window.updateEstimate = updateEstimate;
 
   function startFlashDiscount() {
     let show = sessionStorage.getItem('flashDiscountShow');
