@@ -3,6 +3,8 @@ const fs = require('fs');
 const path = require('path');
 const { JSDOM } = require('jsdom');
 
+let dom;
+
 let html = fs.readFileSync(path.join(__dirname, '../../../index.html'), 'utf8');
 html = html
   .replace(/<script[^>]+src="https?:\/\/[^>]+><\/script>/g, '')
@@ -14,7 +16,7 @@ html = html
 
 describe('index validatePrompt', () => {
   function setup() {
-    const dom = new JSDOM(html, {
+    dom = new JSDOM(html, {
       runScripts: 'dangerously',
       resources: 'usable',
       url: 'http://localhost/',
@@ -89,5 +91,11 @@ describe('index validatePrompt', () => {
     expect(dom.window.document.getElementById('gen-error').textContent).toBe(
       'Prompt must be under 200 characters'
     );
+  });
+
+  afterEach(() => {
+    if (dom?.window?.close) dom.window.close();
+    delete global.window;
+    delete global.document;
   });
 });

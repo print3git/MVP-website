@@ -3,9 +3,11 @@ const fs = require('fs');
 const path = require('path');
 const { JSDOM } = require('jsdom');
 
+let dom;
+
 describe('shareOn', () => {
   function load() {
-    const dom = new JSDOM('<!doctype html><html><body></body></html>', {
+    dom = new JSDOM('<!doctype html><html><body></body></html>', {
       runScripts: 'dangerously',
     });
     global.window = dom.window;
@@ -38,5 +40,11 @@ describe('shareOn', () => {
       '_blank',
       'noopener'
     );
+  });
+
+  afterEach(() => {
+    if (dom?.window?.close) dom.window.close();
+    delete global.window;
+    delete global.document;
   });
 });

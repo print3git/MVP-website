@@ -3,8 +3,10 @@ const fs = require('fs');
 const path = require('path');
 const { JSDOM } = require('jsdom');
 
+let dom;
+
 function setup(url) {
-  const dom = new JSDOM('<div id="viewer"></div><div id="error"></div>', {
+  dom = new JSDOM('<div id="viewer"></div><div id="error"></div>', {
     runScripts: 'dangerously',
     url,
   });
@@ -35,4 +37,10 @@ test('shows error when slug missing', () => {
   const dom = setup('http://localhost/share.html');
   dom.window.document.dispatchEvent(new dom.window.Event('DOMContentLoaded'));
   expect(dom.window.document.getElementById('error').textContent).toBe('Missing share link');
+});
+
+afterEach(() => {
+  if (dom?.window?.close) dom.window.close();
+  delete global.window;
+  delete global.document;
 });

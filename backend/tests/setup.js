@@ -1,3 +1,6 @@
+// Provide mock localStorage for all tests
+require('jest-localstorage-mock');
+
 const { TextEncoder, TextDecoder } = require('util');
 if (typeof global.TextEncoder === 'undefined') {
   global.TextEncoder = TextEncoder;

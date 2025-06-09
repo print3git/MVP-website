@@ -3,6 +3,8 @@ const fs = require('fs');
 const path = require('path');
 const { JSDOM } = require('jsdom');
 
+let dom;
+
 let html = fs.readFileSync(path.join(__dirname, '../../../login.html'), 'utf8');
 html = html
   .replace(/<script[^>]+tailwind[^>]*><\/script>/, '')
@@ -10,7 +12,7 @@ html = html
 
 describe('login form', () => {
   test('shows error on failed login', async () => {
-    const dom = new JSDOM(html, {
+    dom = new JSDOM(html, {
       runScripts: 'dangerously',
       resources: 'usable',
       url: 'http://localhost/login.html',
@@ -30,5 +32,11 @@ describe('login form', () => {
     dom.window.document.getElementById('loginForm').dispatchEvent(new dom.window.Event('submit'));
     await new Promise((r) => setTimeout(r, 0));
     expect(dom.window.document.getElementById('error').textContent).toBe('fail');
+  });
+
+  afterEach(() => {
+    if (dom?.window?.close) dom.window.close();
+    delete global.window;
+    delete global.document;
   });
 });

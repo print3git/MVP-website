@@ -3,6 +3,8 @@ const fs = require('fs');
 const path = require('path');
 const { JSDOM } = require('jsdom');
 
+let dom;
+
 let html = fs.readFileSync(path.join(__dirname, '../../../payment.html'), 'utf8');
 html = html
   .replace(/<script[^>]+src="https?:\/\/[^>]+><\/script>/g, '')
@@ -31,7 +33,7 @@ function cycleKey() {
 
 describe('slot count', () => {
   test('adjusts after purchase', async () => {
-    const dom = new JSDOM(html, {
+    dom = new JSDOM(html, {
       runScripts: 'dangerously',
       resources: 'usable',
       url: 'http://localhost/payment.html?session_id=1',
@@ -47,7 +49,7 @@ describe('slot count', () => {
   });
 
   test('uses stored purchase count', async () => {
-    const dom = new JSDOM(html, {
+    dom = new JSDOM(html, {
       runScripts: 'dangerously',
       resources: 'usable',
       url: 'http://localhost/payment.html',
@@ -61,5 +63,11 @@ describe('slot count', () => {
     dom.window.localStorage.setItem('slotPurchases', '2');
     await new Promise((r) => setTimeout(r, 0));
     expect(dom.window.document.getElementById('slot-count').textContent).toBe('4');
+  });
+
+  afterEach(() => {
+    if (dom?.window?.close) dom.window.close();
+    delete global.window;
+    delete global.document;
   });
 });
