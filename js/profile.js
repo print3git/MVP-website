@@ -66,9 +66,6 @@ async function createAccount(e) {
   }
 }
 
-
-
-
 async function load() {
   const token = localStorage.getItem('token');
   const logoutBtn = document.getElementById('logout-btn');

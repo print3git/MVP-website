@@ -18,14 +18,32 @@
     />
     <meta property="og:image" content="img/boxlogo.png" />
 
+    <!-- Preload hero images -->
+    <link rel="preload" href="img/textlogo.png" as="image" fetchpriority="high" />
+    <link rel="preload" href="img/boxlogo.png" as="image" fetchpriority="high" />
+
+    <!-- Preconnect to major CDNs -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" />
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+    <link rel="preconnect" href="https://modelviewer.dev" />
+
     <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com" defer></script>
 
     <!-- Font Awesome -->
     <link
-      rel="stylesheet"
+      rel="preload"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+      as="style"
+      onload="this.rel='stylesheet'"
     />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+      />
+    </noscript>
 
     <!-- Preload default model assets -->
     <link
@@ -46,10 +64,12 @@
     <script
       type="module"
       src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js"
+      defer
     ></script>
     <script
       nomodule
       src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer-legacy.js"
+      defer
     ></script>
 
     <style>
@@ -316,10 +336,10 @@
     </main>
 
     <!-- ▸▸▸ SCRIPTS ------------------------------------------------------ -->
-    <script src="js/subredditLanding.js"></script>
-    <script src="js/modelViewerTouchFix.js"></script>
+    <script src="js/subredditLanding.js" defer></script>
+    <script src="js/modelViewerTouchFix.js" defer></script>
     <script type="module" src="js/index.js"></script>
-    <script>
+    <script type="module">
       document.getElementById('profile-link')?.addEventListener('click', function (e) {
         if (!localStorage.getItem('token')) {
           e.preventDefault();
@@ -330,31 +350,31 @@
 
     <!-- Position the subreddit quote so its left edge aligns with the left
          edge of the checkout button and stays just below the viewer box -->
-    <script>
+    <script type="module">
       function positionQuote() {
-        const quote    = document.getElementById('subreddit-quote');
+        const quote = document.getElementById('subreddit-quote');
         const checkout = document.getElementById('checkout-button');
         if (!quote || !checkout) return;
 
         // bounding rectangles relative to the viewport
-        const wrapperRect  = checkout.parentElement.getBoundingClientRect(); // #preview-wrapper
+        const wrapperRect = checkout.parentElement.getBoundingClientRect(); // #preview-wrapper
         const checkoutRect = checkout.getBoundingClientRect();
 
         /* Horizontal: match the left edge of the Checkout button */
         const left = checkoutRect.left - wrapperRect.left;
 
         /* Vertical: place quote just below the viewer (16 px gap) */
-        const top  = wrapperRect.height + 16;
+        const top = wrapperRect.height + 16;
 
         quote.style.left = `${left}px`;
-        quote.style.top  = `${top}px`;
+        quote.style.top = `${top}px`;
 
         quote.classList.remove('invisible');
       }
 
       window.addEventListener('DOMContentLoaded', positionQuote);
-      window.addEventListener('load',           positionQuote);
-      window.addEventListener('resize',         positionQuote);
+      window.addEventListener('load', positionQuote);
+      window.addEventListener('resize', positionQuote);
     </script>
   </body>
 </html>
