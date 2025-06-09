@@ -175,15 +175,15 @@ For significant changes, please open an issue first to discuss what you would li
 
 We sometimes rely on automated agents (such as the Codex agent) to make small
 changes. Agents must follow the steps in [AGENTS.md](AGENTS.md) before opening a
-pull request:
+pull request. The easiest way is to run:
 
-1. Install dependencies with `npm ci` inside `backend/` (and
-   `backend/hunyuan_server/` if present).
-2. Run `npm run format` in `backend/`.
-3. Run `npm test` in `backend/` and include the results in the PR description.
+```bash
+./scripts/verify-agent.sh
+```
 
-4. Check your diff with `git status --short` to verify no unrelated files were
-   modified.
+This script installs dependencies, formats the code, runs the tests, and shows
+any changed files. Review the output for unexpected modifications and include it
+in your PR description so reviewers can confirm the checks ran successfully.
 5. Add the format and test logs to the PR so reviewers can confirm.
 
 

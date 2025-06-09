@@ -17,16 +17,7 @@ jobs:
         with:
           node-version: '18'
 
-      - run: npm ci
-        working-directory: backend
-
-      - name: Install hunyuan_server deps (if exists)
-        if: ${{ hashFiles('backend/hunyuan_server/package.json') != '' }}
-        working-directory: backend/hunyuan_server
-        run: npm ci
-
-      - run: npm run test-ci
-        working-directory: backend
+      - run: ./scripts/verify-agent.sh
 
       - run: npx prettier --check "**/*.{js,jsx,json,md,html}"
         working-directory: backend
