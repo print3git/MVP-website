@@ -415,7 +415,8 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     refs.promptInput.dispatchEvent(new Event('input'));
   } else {
-    refs.promptInput.placeholder = 'Describe your 3D print request…';
+    // Keep placeholder text consistent with index.html
+    refs.promptInput.placeholder = 'Text, image, or both — we\u2019ll 3D print it\u2026';
   }
   if (refs.examples) {
     refs.examples.textContent = `Try: ${EXAMPLES.join(' · ')}`;
