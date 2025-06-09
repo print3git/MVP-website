@@ -4,7 +4,9 @@ const path = require('path');
 const { JSDOM } = require('jsdom');
 
 let html = fs.readFileSync(path.join(__dirname, '../../../login.html'), 'utf8');
-html = html.replace(/<script[^>]+tailwind[^>]*><\/script>/, '');
+html = html
+  .replace(/<script[^>]+tailwind[^>]*><\/script>/, '')
+  .replace(/<link[^>]+font-awesome[^>]+>/, '');
 
 describe('login form', () => {
   test('shows error on failed login', async () => {
