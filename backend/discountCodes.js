@@ -1,12 +1,28 @@
-const DISCOUNT_CODES = {
-  SAVE5: 500,
-  SAVE10: 1000,
-};
+const db = require('./db');
 
-function validateDiscountCode(code) {
+async function getValidDiscountCode(code) {
   if (!code) return null;
   const key = String(code).trim().toUpperCase();
-  return DISCOUNT_CODES[key] || null;
+  const { rows } = await db.query('SELECT * FROM discount_codes WHERE code=$1', [key]);
+  const row = rows[0];
+  if (!row) return null;
+  if (row.expires_at && new Date(row.expires_at) < new Date()) return null;
+  if (row.max_uses !== null && row.uses >= row.max_uses) return null;
+  return row;
 }
 
-module.exports = { validateDiscountCode };
+async function validateDiscountCode(code) {
+  const row = await getValidDiscountCode(code);
+  return row ? row.amount_cents : null;
+}
+
+async function incrementDiscountUsage(id) {
+  if (!id) return;
+  await db.query('UPDATE discount_codes SET uses = uses + 1 WHERE id=$1', [id]);
+}
+
+module.exports = {
+  validateDiscountCode,
+  getValidDiscountCode,
+  incrementDiscountUsage,
+};

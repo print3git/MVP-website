@@ -61,3 +61,12 @@
 - Build an admin interface or script for creating and retiring codes securely.
 - Track code usage for auditing and store codes safely (e.g., hashed).
 - Expand the test suite to cover valid, expired, and invalid discount codes.
+- Replace the hard-coded list with database queries and record each successful use.
+- Validate codes against expiration dates and remaining uses.
+
+## Referral Discount System
+
+- Plan a database schema for tracking referral codes and the users who share them.
+- Add an API endpoint for generating referral links and applying associated discounts for new customers.
+- Decide on the credit/discount amounts for both referrer and referee and persist the data.
+- Integrate referral tracking into the checkout flow alongside discount codes.
