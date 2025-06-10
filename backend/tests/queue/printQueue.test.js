@@ -7,6 +7,11 @@ afterEach(() => {
   _getQueue().length = 0;
 });
 
+afterAll(() => {
+  jest.useRealTimers();
+  intervalSpy.mockRestore();
+});
+
 test('enqueuePrint schedules processing', () => {
   enqueuePrint('job1');
   expect(intervalSpy).toHaveBeenCalled();
