@@ -24,7 +24,7 @@ const stripeMock = {
 };
 Stripe.mockImplementation(() => stripeMock);
 
-const { progressEmitter } = require('../queue/printQueue');
+const { progressEmitter, reset } = require('../queue/printQueue');
 
 const request = require('supertest');
 const app = require('../server');
@@ -37,6 +37,10 @@ beforeEach(() => {
     id: 'cs_test',
     url: 'https://stripe.test',
   });
+});
+
+afterEach(() => {
+  reset();
 });
 
 test('GET /api/my/models returns models', async () => {

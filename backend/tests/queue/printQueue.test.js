@@ -1,10 +1,10 @@
-const { enqueuePrint, processQueue, _getQueue } = require('../../queue/printQueue');
+const { enqueuePrint, processQueue, _getQueue, reset } = require('../../queue/printQueue');
 
 jest.useFakeTimers();
 const intervalSpy = jest.spyOn(global, 'setInterval');
 
 afterEach(() => {
-  _getQueue().length = 0;
+  reset();
 });
 
 test('enqueuePrint schedules processing', () => {
