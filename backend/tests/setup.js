@@ -23,3 +23,10 @@ afterEach(() => {
     jest.useRealTimers();
   }
 });
+
+afterAll(() => {
+  // Log any active handles to help debug resources preventing Jest from exiting
+  // cleanly. These may include timers, sockets, or server instances.
+  // eslint-disable-next-line no-console
+  console.log('Active handles after test file:', process._getActiveHandles());
+});
