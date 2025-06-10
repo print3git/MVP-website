@@ -23,3 +23,7 @@ afterEach(() => {
     jest.useRealTimers();
   }
 });
+
+afterAll(() => {
+  console.log('Active handles:', process._getActiveHandles());
+});
