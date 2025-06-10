@@ -18,6 +18,8 @@ afterEach(() => {
   global.document = undefined;
   // restore real timers in case a test enabled fake timers
   if (jest.isMockFunction(setTimeout)) {
+    // clear any pending timers to avoid open handles
+    jest.clearAllTimers();
     jest.useRealTimers();
   }
 });
