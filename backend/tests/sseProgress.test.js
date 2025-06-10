@@ -9,10 +9,12 @@ const { progressEmitter } = require('../queue/printQueue');
 const app = require('../server');
 
 test('SSE progress endpoint streams updates', async () => {
-  const req = request(app).get('/api/progress/job1');
+  const server = app.listen(0);
+  const req = request(server).get('/api/progress/job1');
   setTimeout(() => {
     progressEmitter.emit('progress', { jobId: 'job1', progress: 100 });
   }, 50);
   const res = await req;
   expect(res.text).toContain('data: {"jobId":"job1","progress":100}');
+  await new Promise((resolve) => server.close(resolve));
 });
