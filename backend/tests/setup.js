@@ -23,3 +23,8 @@ afterEach(() => {
     jest.useRealTimers();
   }
 });
+
+afterAll(() => {
+  const http = require('http');
+  http.globalAgent.destroy();
+});
