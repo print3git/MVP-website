@@ -26,8 +26,13 @@ jobs:
         working-directory: backend/hunyuan_server
         run: npm ci
 
-      - run: npm run test-ci
+      - run: npm test
         working-directory: backend
+
+      - name: Test hunyuan_server (if exists)
+        if: ${{ hashFiles('backend/hunyuan_server/package.json') != '' }}
+        working-directory: backend/hunyuan_server
+        run: npm test
 
       - run: npx prettier --check "**/*.{js,jsx,json,md,html}"
         working-directory: backend
