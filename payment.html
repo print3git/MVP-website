@@ -287,8 +287,30 @@
       </div>
     </main>
 
+    <!-- Exit-intent discount overlay -->
+    <div
+      id="exit-discount-overlay"
+      class="fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50"
+    >
+      <div class="bg-[#2A2A2E] border border-white/10 rounded-3xl p-6 text-center">
+        <h2 class="text-xl font-semibold mb-2 text-white">Wait! Before you go…</h2>
+        <p class="mb-4 text-gray-300">
+          Use code <span class="text-white font-mono px-1">SAVE5</span> for 5% off your next order.
+        </p>
+        <button
+          id="exit-discount-close"
+          class="mt-2 px-4 py-2 rounded-md bg-[#30D5C8] text-[#1A1A1D] hover:bg-[#28b7a8] transition"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+
     <!-- ─────────── Init -->
-    <script src="js/modelViewerTouchFix.js" defer></script>
-    <script type="module" src="js/payment.js" defer></script>
+
+    <script src="js/modelViewerTouchFix.js"></script>
+    <script type="module" src="js/payment.js"></script>
+    <script type="module" src="js/exitDiscount.js"></script>
+
   </body>
 </html>
