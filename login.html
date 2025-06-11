@@ -77,11 +77,12 @@
       </div>
     </header>
     <main class="flex-1 flex items-center justify-center">
-      <form
-        id="loginForm"
-        class="relative space-y-4 bg-[#2A2A2E] border border-white/10 p-6 rounded-3xl w-96"
-        aria-label="Login form"
-      >
+      <div class="relative w-96">
+        <form
+          id="loginForm"
+          class="space-y-4 bg-[#2A2A2E] border border-white/10 p-6 rounded-3xl"
+          aria-label="Login form"
+        >
         <input
           id="li-name"
           class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
@@ -104,11 +105,7 @@
             >
               Login
             </button>
-            <div
-              id="error"
-              class="absolute top-full left-0 ml-4 mt-1 text-red-400 whitespace-nowrap"
-              aria-live="assertive"
-            ></div>
+
           </div>
           <p class="text-sm text-white mr-1">
             Don't have an account?
@@ -116,7 +113,14 @@
           </p>
         </div>
 
-      </form>
+        </form>
+        <div
+          id="error"
+          class="absolute top-full left-0 ml-4 mt-1 text-red-400 whitespace-nowrap"
+          aria-live="assertive"
+        ></div>
+      </div>
+
     </main>
     <script type="module" src="js/login.js"></script>
     <script type="module">
