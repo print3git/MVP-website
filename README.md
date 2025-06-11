@@ -187,6 +187,22 @@ Two endpoints provide lists of model jobs:
 Both accept optional `limit` and `offset` query parameters to paginate results.
 If omitted, the API returns up to 10 most recent models starting from offset 0.
 
+## Captioning Workflow
+
+The backend can generate a short title for each model using a separate caption
+service. Start this service alongside the main server:
+
+```bash
+npm run caption-service  # inside backend/
+```
+
+Once running, the caption service listens on `localhost:5001`. When a job
+finishes generating, the backend sends the snapshot image to this service for a
+descriptive sentence. That caption is then condensed into a short title by
+`utils/generateTitle.js`, which takes the first three unique words from the
+caption and capitalizes them. The result is stored in the `generated_title`
+column of the `jobs` table.
+
 ## Contributing
 
 We welcome pull requests! Please fork the repo and create a topic branch. Run
