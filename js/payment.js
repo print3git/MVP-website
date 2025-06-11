@@ -342,8 +342,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  document.getElementById('submit-payment').addEventListener('click', async () => {
-    const qty = 1;
+  const payHandler = async () => {
+    const basket = window.getBasket ? window.getBasket() : [];
+    const qty = Math.max(1, basket.length || 0);
     let discount = 0;
     const end = parseInt(localStorage.getItem('flashDiscountEnd'), 10) || 0;
     if (end && end > Date.now()) {
@@ -369,6 +370,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: emailEl.value }),
       });
+    }
+  };
+
+  document.getElementById('submit-payment').addEventListener('click', () => {
+    const popup = document.getElementById('bulk-discount-popup');
+    const closeBtn = document.getElementById('bulk-discount-close');
+    if (popup && closeBtn) {
+      popup.classList.remove('hidden');
+      const proceed = () => {
+        popup.classList.add('hidden');
+        closeBtn.removeEventListener('click', proceed);
+        payHandler();
+      };
+      closeBtn.addEventListener('click', proceed);
+    } else {
+      payHandler();
     }
   });
 });
