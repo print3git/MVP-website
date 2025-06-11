@@ -63,19 +63,23 @@ function renderList() {
   }
   items.forEach((it, idx) => {
     const div = document.createElement('div');
-    div.className = 'flex items-center mb-2';
+    div.className = 'relative group';
+
     const img = document.createElement('img');
     img.src = it.snapshot || it.modelUrl || '';
     img.alt = 'Model';
-    img.className = 'w-16 h-16 object-contain bg-[#2A2A2E] mr-2';
+    img.className =
+      'w-24 h-24 object-cover rounded-lg bg-[#2A2A2E] border border-white/20 cursor-pointer';
     img.addEventListener('click', () => showModel(it.modelUrl, it.snapshot));
+
     const btn = document.createElement('button');
     btn.textContent = 'Remove';
-    btn.className = 'remove text-xs px-2 py-1 bg-red-600 rounded';
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      removeFromBasket(idx);
-    });
+
+    btn.className =
+      'remove absolute bottom-1 right-1 text-xs px-2 py-1 bg-red-600 rounded opacity-80 group-hover:opacity-100';
+    btn.addEventListener('click', () => removeFromBasket(idx));
+
+
     div.appendChild(img);
     div.appendChild(btn);
     list.appendChild(div);
@@ -102,12 +106,13 @@ export function setupBasketUI() {
   overlay.id = 'basket-overlay';
   overlay.className = 'fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50';
   overlay.innerHTML = `\
+
     <div class="relative bg-[#2A2A2E] border border-white/10 rounded-3xl p-6 text-center w-72">
       <button id="basket-close" class="absolute top-2 right-2 text-white text-3xl w-8 h-8 flex items-center justify-center">
         <i class="fas fa-times-circle"></i>
       </button>
       <h2 class="text-xl font-semibold mb-2 text-white">Basket</h2>
-      <div id="basket-list" class="mb-4"></div>
+      <div id="basket-list" class="grid grid-cols-2 gap-3 mb-4"></div>
       <button id="basket-checkout" class="mb-2 px-4 py-2 rounded-md bg-[#30D5C8] text-[#1A1A1D]">Checkout</button>
     </div>`;
   document.body.appendChild(overlay);
