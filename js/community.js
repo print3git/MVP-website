@@ -152,6 +152,7 @@ function createCard(model) {
     const modal = document.getElementById('model-modal');
     const viewer = modal.querySelector('model-viewer');
     const checkoutBtn = document.getElementById('modal-checkout');
+    const addBasketBtn = document.getElementById('modal-add-basket');
     viewer.setAttribute('poster', model.snapshot || '');
     // Ensure the viewer fetches the model immediately
     viewer.setAttribute('fetchpriority', 'high');
@@ -160,6 +161,11 @@ function createCard(model) {
     if (checkoutBtn) {
       checkoutBtn.dataset.model = model.model_url;
       checkoutBtn.dataset.job = model.job_id;
+    }
+    if (addBasketBtn) {
+      addBasketBtn.dataset.model = model.model_url;
+      addBasketBtn.dataset.job = model.job_id;
+      addBasketBtn.dataset.snapshot = model.snapshot || '';
     }
     modal.classList.remove('hidden');
     document.body.classList.add('overflow-hidden');
