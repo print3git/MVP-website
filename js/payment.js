@@ -134,6 +134,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const materialRadios = document.querySelectorAll('#material-options input[name="material"]');
   const payBtn = document.getElementById('submit-payment');
   const singleLabel = document.getElementById('single-label');
+  const singleInput = document.getElementById('opt-single');
   const colorMenu = document.getElementById('single-color-menu');
   const singleButton = singleLabel?.querySelector('span');
   let discountCode = '';
@@ -155,10 +156,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   });
 
-  if (singleLabel && colorMenu && singleButton) {
-    singleLabel.addEventListener('click', (e) => {
-      if (document.getElementById('opt-single').checked) {
-        // Toggle menu visibility
+  if (singleInput && colorMenu && singleButton) {
+    singleInput.addEventListener('click', () => {
+      if (singleInput.checked) {
+        // Toggle menu visibility without double triggering
         colorMenu.classList.toggle('hidden');
       }
     });
