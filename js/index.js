@@ -386,7 +386,7 @@ refs.submitBtn.addEventListener('click', async () => {
   }
 });
 
-window.addEventListener('DOMContentLoaded', async () => {
+async function init() {
   syncUploadHeights();
   window.addEventListener('resize', syncUploadHeights);
   setStep('prompt');
@@ -480,4 +480,8 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
     if (window.setWizardStage) window.setWizardStage('purchase');
   });
-});
+}
+
+window.initIndexPage = init;
+
+window.addEventListener('DOMContentLoaded', init);
