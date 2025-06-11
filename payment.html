@@ -175,6 +175,59 @@
                 aria-label="Email"
               />
             </div>
+
+            <!-- Material/Size Options -->
+            <fieldset id="material-options" class="flex justify-around my-4">
+              <label class="cursor-pointer text-center">
+                <input
+                  type="radio"
+                  name="material"
+                  value="single"
+                  id="opt-single"
+                  class="sr-only peer"
+                  checked
+                />
+                <span
+                  class="w-24 h-24 flex flex-col items-center justify-center rounded-full border border-white/20 peer-checked:bg-[#30D5C8] peer-checked:text-[#1A1A1D]"
+                >
+                  <span class="font-semibold">£25</span>
+                  <span class="text-xs">1-colour</span>
+                </span>
+              </label>
+              <label class="cursor-pointer text-center">
+                <input
+                  type="radio"
+                  name="material"
+                  value="multi"
+                  id="opt-multi"
+                  class="sr-only peer"
+                />
+                <span
+                  class="w-24 h-24 flex flex-col items-center justify-center rounded-full border border-white/20 peer-checked:bg-[#30D5C8] peer-checked:text-[#1A1A1D]"
+                >
+                  <span class="font-semibold">£35</span>
+                  <span class="text-xs">multi-colour</span>
+                </span>
+              </label>
+              <label class="cursor-not-allowed text-center opacity-50">
+                <input
+                  type="radio"
+                  name="material"
+                  value="premium"
+                  id="opt-premium"
+                  class="sr-only peer"
+                  disabled
+                />
+                <span
+                  class="w-24 h-24 flex flex-col items-center justify-center rounded-full border border-white/20"
+                >
+                  <span class="font-semibold">£60</span>
+                  <span class="text-xs">premium</span>
+                </span>
+                <span class="block text-xs mt-1">coming soon</span>
+              </label>
+            </fieldset>
+
             <div class="flex gap-2">
               <input
                 id="ship-city"
@@ -254,8 +307,10 @@
     </div>
 
     <!-- ─────────── Init -->
+
     <script src="js/modelViewerTouchFix.js"></script>
     <script type="module" src="js/payment.js"></script>
     <script type="module" src="js/exitDiscount.js"></script>
+
   </body>
 </html>
