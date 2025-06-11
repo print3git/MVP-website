@@ -80,11 +80,13 @@ export function setupBasketUI() {
   overlay.id = 'basket-overlay';
   overlay.className = 'fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50';
   overlay.innerHTML = `\
-    <div class="bg-[#2A2A2E] border border-white/10 rounded-3xl p-6 text-center w-72">
+    <div class="relative bg-[#2A2A2E] border border-white/10 rounded-3xl p-6 text-center w-72">
+      <button id="basket-close" class="absolute top-2 right-2 text-white text-xl">
+        <i class="fas fa-times-circle"></i>
+      </button>
       <h2 class="text-xl font-semibold mb-2 text-white">Basket</h2>
       <div id="basket-list" class="mb-4"></div>
       <button id="basket-checkout" class="mb-2 px-4 py-2 rounded-md bg-[#30D5C8] text-[#1A1A1D]">Checkout</button>
-      <button id="basket-close" class="px-3 py-1 rounded-md bg-[#30D5C8] text-[#1A1A1D]">Close</button>
     </div>`;
   document.body.appendChild(overlay);
   overlay.querySelector('#basket-close').addEventListener('click', closeBasket);
