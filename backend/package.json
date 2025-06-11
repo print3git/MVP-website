@@ -12,6 +12,7 @@
     "create-admin": "node scripts/create-admin.js",
     "format": "prettier --write \"**/*.{js,jsx,json,md}\"",
     "send-reminders": "node scripts/send-purchase-reminders.js",
+    "cleanup-tokens": "node scripts/cleanup-password-resets.js",
     "lint": "eslint . --max-warnings=0"
   },
   "keywords": [],
