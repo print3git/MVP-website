@@ -17,6 +17,8 @@ This repository contains the early MVP code for print2's website and backend.
 - `STRIPE_PUBLISHABLE_KEY` – publishable key for Stripe.js on the frontend.
 - `STRIPE_WEBHOOK_SECRET` – signing secret for Stripe webhooks.
 - `HUNYUAN_API_KEY` – key for the Hunyuan3D API.
+- `SENDGRID_API_KEY` – API key for sending email via SendGrid.
+- `EMAIL_FROM` – address used for the "from" field in outgoing mail.
 - Optional: `PORT` and `HUNYUAN_PORT` to override the default ports.
 - Optional: `HUNYUAN_SERVER_URL` if your Hunyuan API runs on a custom URL.
 
@@ -132,6 +134,23 @@ exists:
 cd backend
 npm run migrate
 ```
+
+### Password Reset
+If `SENDGRID_API_KEY` and `EMAIL_FROM` are not set, reset emails are logged to stdout.
+
+Password reset tokens are stored in the `password_resets` table. After pulling
+the latest code, run the migrations so this table exists:
+
+```bash
+cd backend
+npm run migrate
+```
+
+Trigger a password reset email by sending a `POST` request to
+`/api/request-password-reset` with a JSON body containing `{ "email": "user@example.com" }`.
+The email includes a link to `reset-password.html?token=...`.
+Complete the flow by `POST`ing `{ "token": "...", "password": "newpass" }` to
+`/api/reset-password`.
 
 ### One-Click Checkout
 
