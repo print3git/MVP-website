@@ -128,17 +128,20 @@
             ></div>
           </div>
           <!-- delivery notice -->
-          <div class="mt-4 text-center text-sm text-gray-400/75">
+          <div class="mt-4 text-center text-sm text-gray-400/75 relative h-full">
             <p>
               Due to incredibly high demand, delivery may take 3+ weeks.<br />
               Please allow for this. –
               <span class="text-white">The print2 team: Jia and Matthew</span>
             </p>
 
-            <p class="mt-20">
-              ✅︎ If you don’t love it, we’ll reprint or refund you – no <br /> questions asked:
-              <span class="text-white">enquiries@domain.com</span>
-            </p>
+            <div class="absolute inset-x-0 bottom-0 pb-4">
+              <p class="mb-1">Trusted by thousands of makers</p>
+              <p>
+                ✅︎ If you don’t love it, we’ll reprint or refund you – no <br /> questions asked:
+                <span class="text-white">enquiries@domain.com</span>
+              </p>
+            </div>
           </div>
         </section>
 
@@ -178,7 +181,7 @@
 
             <!-- Material/Size Options -->
             <fieldset id="material-options" class="flex justify-around my-4">
-              <label class="cursor-pointer text-center">
+              <label id="single-label" class="cursor-pointer text-center relative">
                 <input
                   type="radio"
                   name="material"
@@ -191,8 +194,43 @@
                   class="w-24 h-24 flex flex-col items-center justify-center rounded-full border border-white/20 peer-checked:bg-[#30D5C8] peer-checked:text-[#1A1A1D]"
                 >
                   <span class="font-semibold">£25</span>
-                  <span class="text-xs">1-colour</span>
+                  <span class="text-xs">single colour</span>
                 </span>
+                <div
+                  id="single-color-menu"
+                  class="absolute left-1/2 -translate-x-1/2 top-full mt-2 flex gap-2 p-2 bg-[#2A2A2E] border border-white/20 rounded-3xl hidden"
+                >
+                  <button
+                    type="button"
+                    class="w-24 h-24 rounded-full border border-white/20"
+                    style="background-color:#f87171"
+                    data-color="#f87171"
+                  ></button>
+                  <button
+                    type="button"
+                    class="w-24 h-24 rounded-full border border-white/20"
+                    style="background-color:#34d399"
+                    data-color="#34d399"
+                  ></button>
+                  <button
+                    type="button"
+                    class="w-24 h-24 rounded-full border border-white/20"
+                    style="background-color:#60a5fa"
+                    data-color="#60a5fa"
+                  ></button>
+                  <button
+                    type="button"
+                    class="w-24 h-24 rounded-full border border-white/20"
+                    style="background-color:#fbbf24"
+                    data-color="#fbbf24"
+                  ></button>
+                  <button
+                    type="button"
+                    class="w-24 h-24 rounded-full border border-white/20"
+                    style="background-color:#a78bfa"
+                    data-color="#a78bfa"
+                  ></button>
+                </div>
               </label>
               <label class="cursor-pointer text-center">
                 <input

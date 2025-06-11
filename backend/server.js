@@ -30,6 +30,12 @@ const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'admin';
 
 const AUTH_SECRET = process.env.AUTH_SECRET || 'secret';
 
+function logError(...args) {
+  if (process.env.NODE_ENV !== 'test') {
+    console.error(...args);
+  }
+}
+
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
@@ -41,7 +47,7 @@ try {
   const raw = fs.readFileSync(modelsPath, 'utf8');
   subredditModels = JSON.parse(raw);
 } catch (err) {
-  console.error('Failed to load subreddit_models.json', err);
+  logError('Failed to load subreddit_models.json', err);
 }
 
 const app = express();
@@ -97,7 +103,7 @@ app.post('/api/register', async (req, res) => {
     const token = jwt.sign({ id: rows[0].id, username }, AUTH_SECRET);
     res.json({ token });
   } catch (err) {
-    console.error(err);
+    logError(err);
     res.status(500).json({ error: 'Registration failed' });
   }
 });
@@ -120,7 +126,7 @@ app.post('/api/login', async (req, res) => {
     const token = jwt.sign({ id: user.id, username }, AUTH_SECRET);
     res.json({ token });
   } catch (err) {
-    console.error(err);
+    logError(err);
     res.status(500).json({ error: 'Login failed' });
   }
 });
@@ -146,7 +152,7 @@ app.post('/api/request-password-reset', async (req, res) => {
     });
     res.sendStatus(204);
   } catch (err) {
-    console.error(err);
+    logError(err);
     res.status(500).json({ error: 'Failed to send reset email' });
   }
 });
@@ -171,7 +177,7 @@ app.post('/api/reset-password', async (req, res) => {
     await db.query('DELETE FROM password_resets WHERE token=$1', [token]);
     res.sendStatus(204);
   } catch (err) {
-    console.error(err);
+    logError(err);
     res.status(500).json({ error: 'Failed to reset password' });
   }
 });
@@ -194,7 +200,7 @@ app.get('/api/me', authRequired, async (req, res) => {
       profile: profile.rows[0] || {},
     });
   } catch (err) {
-    console.error(err);
+    logError(err);
     res.status(500).json({ error: 'Failed to fetch account' });
   }
 });
@@ -233,7 +239,7 @@ app.post('/api/generate', authOptional, upload.array('images'), async (req, res)
       });
       generatedUrl = resp.data.glb_url;
     } catch (err) {
-      console.error('Hunyuan service failed, using fallback', err.message);
+      logError('Hunyuan service failed, using fallback', err.message);
     }
 
     const autoTitle = generateTitle(prompt);
@@ -252,7 +258,7 @@ app.post('/api/generate', authOptional, upload.array('images'), async (req, res)
 
     res.json({ jobId, glb_url: generatedUrl });
   } catch (err) {
-    console.error(err);
+    logError(err);
     res.status(500).json({ error: 'Failed to generate model' });
   }
 });
@@ -271,7 +277,7 @@ app.get('/api/status', async (req, res) => {
     );
     res.json(rows);
   } catch (err) {
-    console.error(err);
+    logError(err);
     res.status(500).json({ error: 'Failed to fetch jobs' });
   }
 });
@@ -295,7 +301,7 @@ app.get('/api/status/:jobId', async (req, res) => {
       error: job.error,
     });
   } catch (err) {
-    console.error(err);
+    logError(err);
     res.status(500).json({ error: 'Failed to fetch job' });
   }
 });
@@ -381,7 +387,7 @@ app.get('/api/my/models', authRequired, async (req, res) => {
     );
     res.json(rows);
   } catch (err) {
-    console.error(err);
+    logError(err);
     res.status(500).json({ error: 'Failed to fetch models' });
   }
 });
@@ -398,7 +404,7 @@ app.get('/api/my/orders', authRequired, async (req, res) => {
     );
     res.json(rows);
   } catch (err) {
-    console.error(err);
+    logError(err);
     res.status(500).json({ error: 'Failed to fetch orders' });
   }
 });
@@ -411,7 +417,7 @@ app.get('/api/profile', authRequired, async (req, res) => {
     }
     res.json(rows[0]);
   } catch (err) {
-    console.error(err);
+    logError(err);
     res.status(500).json({ error: 'Failed to fetch profile' });
   }
 });
@@ -428,7 +434,7 @@ app.post('/api/profile', authRequired, async (req, res) => {
     );
     res.sendStatus(204);
   } catch (err) {
-    console.error(err);
+    logError(err);
     res.status(500).json({ error: 'Failed to update profile' });
   }
 });
@@ -456,7 +462,7 @@ app.get('/api/users/:username/models', async (req, res) => {
     );
     res.json(models.rows);
   } catch (err) {
-    console.error(err);
+    logError(err);
     res.status(500).json({ error: 'Failed to fetch models' });
   }
 });
@@ -473,7 +479,7 @@ app.get('/api/users/:username/profile', async (req, res) => {
     if (!rows.length) return res.status(404).json({ error: 'User not found' });
     res.json(rows[0]);
   } catch (err) {
-    console.error(err);
+    logError(err);
     res.status(500).json({ error: 'Failed to fetch profile' });
   }
 });
@@ -493,7 +499,7 @@ app.post('/api/models/:id/like', authRequired, async (req, res) => {
     const count = await db.query('SELECT COUNT(*) FROM likes WHERE model_id=$1', [modelId]);
     res.json({ likes: parseInt(count.rows[0].count, 10) });
   } catch (err) {
-    console.error(err);
+    logError(err);
     res.status(500).json({ error: 'Failed to update like' });
   }
 });
@@ -512,7 +518,7 @@ app.post('/api/models/:id/public', authRequired, async (req, res) => {
     if (!rows.length) return res.status(404).json({ error: 'Model not found' });
     res.json({ is_public: rows[0].is_public });
   } catch (err) {
-    console.error(err);
+    logError(err);
     res.status(500).json({ error: 'Failed to update model' });
   }
 });
@@ -524,7 +530,7 @@ app.post('/api/models/:id/share', authRequired, async (req, res) => {
     await db.insertShare(jobId, req.user.id, slug);
     res.json({ slug });
   } catch (err) {
-    console.error(err);
+    logError(err);
     res.status(500).json({ error: 'Failed to create share' });
   }
 });
@@ -541,7 +547,7 @@ app.delete('/api/models/:id', authRequired, async (req, res) => {
     await db.query('DELETE FROM shares WHERE job_id=$1', [jobId]);
     res.sendStatus(204);
   } catch (err) {
-    console.error(err);
+    logError(err);
     res.status(500).json({ error: 'Failed to delete model' });
   }
 });
@@ -561,7 +567,7 @@ app.get('/api/shared/:slug', async (req, res) => {
       prompt: rows[0].prompt,
     });
   } catch (err) {
-    console.error(err);
+    logError(err);
     res.status(500).json({ error: 'Failed to fetch share' });
   }
 });
@@ -589,7 +595,7 @@ app.get('/shared/:slug', async (req, res) => {
   </body>
 </html>`);
   } catch (err) {
-    console.error(err);
+    logError(err);
     res.status(500).send('Server error');
   }
 });
@@ -608,7 +614,7 @@ app.post('/api/community', authRequired, async (req, res) => {
     ]);
     res.sendStatus(201);
   } catch (err) {
-    console.error(err);
+    logError(err);
     res.status(500).json({ error: 'Failed to submit' });
   }
 });
@@ -639,7 +645,7 @@ app.get('/api/community/recent', async (req, res) => {
     ]);
     res.json(rows);
   } catch (err) {
-    console.error(err);
+    logError(err);
     res.status(500).json({ error: 'Failed to fetch creations' });
   }
 });
@@ -658,7 +664,7 @@ app.get('/api/community/popular', async (req, res) => {
     ]);
     res.json(rows);
   } catch (err) {
-    console.error(err);
+    logError(err);
     res.status(500).json({ error: 'Failed to fetch creations' });
   }
 });
@@ -670,7 +676,7 @@ app.get('/api/competitions/active', async (req, res) => {
     );
     res.json(rows);
   } catch (err) {
-    console.error(err);
+    logError(err);
     res.status(500).json({ error: 'Failed to fetch competitions' });
   }
 });
@@ -686,7 +692,7 @@ app.get('/api/competitions/past', async (req, res) => {
     );
     res.json(rows);
   } catch (err) {
-    console.error(err);
+    logError(err);
     res.status(500).json({ error: 'Failed to fetch past competitions' });
   }
 });
@@ -705,7 +711,7 @@ app.get('/api/competitions/:id/entries', async (req, res) => {
     );
     res.json(rows);
   } catch (err) {
-    console.error(err);
+    logError(err);
     res.status(500).json({ error: 'Failed to fetch leaderboard' });
   }
 });
@@ -722,7 +728,7 @@ app.get('/api/competitions/:id/comments', async (req, res) => {
     );
     res.json(rows);
   } catch (err) {
-    console.error(err);
+    logError(err);
     res.status(500).json({ error: 'Failed to fetch comments' });
   }
 });
@@ -739,7 +745,7 @@ app.post('/api/competitions/:id/comments', authRequired, async (req, res) => {
     );
     res.status(201).json(rows[0]);
   } catch (err) {
-    console.error(err);
+    logError(err);
     res.status(500).json({ error: 'Failed to post comment' });
   }
 });
@@ -753,7 +759,7 @@ app.post('/api/competitions/:id/enter', authRequired, async (req, res) => {
     );
     res.sendStatus(201);
   } catch (err) {
-    console.error(err);
+    logError(err);
     res.status(500).json({ error: 'Failed to submit entry' });
   }
 });
@@ -786,11 +792,11 @@ app.post('/api/admin/competitions', adminCheck, async (req, res) => {
         );
       }
     } catch (err) {
-      console.error('Failed to send competition notification', err);
+      logError('Failed to send competition notification', err);
     }
     res.json(comp);
   } catch (err) {
-    console.error(err);
+    logError(err);
     res.status(500).json({ error: 'Failed to create competition' });
   }
 });
@@ -804,7 +810,7 @@ app.put('/api/admin/competitions/:id', adminCheck, async (req, res) => {
     );
     res.json(rows[0]);
   } catch (err) {
-    console.error(err);
+    logError(err);
     res.status(500).json({ error: 'Failed to update competition' });
   }
 });
@@ -814,7 +820,7 @@ app.delete('/api/admin/competitions/:id', adminCheck, async (req, res) => {
     await db.query('DELETE FROM competitions WHERE id=$1', [req.params.id]);
     res.sendStatus(204);
   } catch (err) {
-    console.error(err);
+    logError(err);
     res.status(500).json({ error: 'Failed to delete competition' });
   }
 });
@@ -832,7 +838,7 @@ app.post('/api/shipping-estimate', async (req, res) => {
     const estimate = await getShippingEstimate(destination, model);
     res.json(estimate);
   } catch (err) {
-    console.error(err);
+    logError(err);
     res.status(500).json({ error: 'Failed to get shipping estimate' });
   }
 });
@@ -930,7 +936,7 @@ app.post('/api/create-order', authOptional, async (req, res) => {
 
     res.json({ checkoutUrl: session.url });
   } catch (err) {
-    console.error(err);
+    logError(err);
     res.status(500).json({ error: 'Failed to create order' });
   }
 });
@@ -949,7 +955,7 @@ app.post('/api/subscribe', async (req, res) => {
     await sendMail(email, 'Confirm Subscription', `Click to confirm: ${url}`);
     res.sendStatus(204);
   } catch (err) {
-    console.error(err);
+    logError(err);
     res.status(500).json({ error: 'Failed to subscribe' });
   }
 });
@@ -961,7 +967,7 @@ app.get('/api/confirm-subscription', async (req, res) => {
     await db.query('UPDATE mailing_list SET confirmed=TRUE WHERE token=$1', [token]);
     res.send('Subscription confirmed');
   } catch (err) {
-    console.error(err);
+    logError(err);
     res.status(500).send('Failed to confirm');
   }
 });
@@ -982,7 +988,7 @@ app.post('/api/webhook/sendgrid', async (req, res) => {
       }
     }
   } catch (err) {
-    console.error('Failed to process SendGrid webhook', err);
+    logError('Failed to process SendGrid webhook', err);
   }
   res.sendStatus(204);
 });
@@ -997,7 +1003,7 @@ app.post('/api/webhook/stripe', express.raw({ type: 'application/json' }), async
   try {
     event = stripe.webhooks.constructEvent(req.body, sig, config.stripeWebhook);
   } catch (err) {
-    console.error(err);
+    logError(err);
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
@@ -1021,7 +1027,7 @@ app.post('/api/webhook/stripe', express.raw({ type: 'application/json' }), async
         processQueue();
       }
     } catch (err) {
-      console.error(err);
+      logError(err);
     }
   }
   res.sendStatus(200);
@@ -1056,7 +1062,7 @@ async function checkCompetitionStart() {
       }
     }
   } catch (err) {
-    console.error('Failed to send start notifications', err);
+    logError('Failed to send start notifications', err);
   }
 }
 
