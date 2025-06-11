@@ -3,12 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login</title>
-    <meta property="og:title" content="Login – print3" />
-    <meta
-      property="og:description"
-      content="Access your print3 account to manage models and orders."
-    />
+    <title>Password Reset Request</title>
+    <meta property="og:title" content="Reset Password – print3" />
     <meta property="og:image" content="img/boxlogo.png" />
     <script src="https://cdn.tailwindcss.com"></script>
     <link
@@ -19,7 +15,7 @@
   <body class="bg-[#1A1A1D] text-white font-sans flex flex-col min-h-screen">
     <header class="relative flex items-center justify-between py-4 px-6">
       <a
-        href="index.html"
+        href="login.html"
         class="inline-flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-3xl px-5 py-2 text-lg font-medium hover:bg-[#3A3A3E] transition-shape"
       >
         <svg
@@ -36,7 +32,7 @@
       <h1
         class="absolute inset-x-0 top-1/2 -translate-y-1/2 text-center text-3xl font-semibold pointer-events-none"
       >
-        Login
+        Reset Password
       </h1>
       <div class="flex space-x-2">
         <button
@@ -78,47 +74,27 @@
     </header>
     <main class="flex-1 flex items-center justify-center">
       <form
-        id="loginForm"
-        class="relative space-y-4 bg-[#2A2A2E] border border-white/10 p-6 rounded-3xl w-96"
-        aria-label="Login form"
+        id="resetRequestForm"
+        class="space-y-4 bg-[#2A2A2E] border border-white/10 p-6 rounded-3xl w-96"
+        aria-label="Request password reset"
       >
         <input
-          id="li-name"
+          id="req-email"
+          type="email"
           class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
-          placeholder="Username or email"
-          aria-label="Username or email"
+          placeholder="Email"
+          aria-label="Email"
         />
-        <input
-          id="li-pass"
-          type="password"
-          class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
-          placeholder="Password"
-          aria-label="Password"
-        />
-        <div class="flex items-center justify-between">
-
-          <div class="relative flex flex-col items-start">
-            <button
-              class="bg-[#30D5C8] text-[#1A1A1D] font-semibold px-4 py-2 rounded-xl hover:bg-[#28b7a8] transition"
-              type="submit"
-            >
-              Login
-            </button>
-            <div
-              id="error"
-              class="absolute top-full left-0 ml-4 mt-1 text-red-400 whitespace-nowrap"
-              aria-live="assertive"
-            ></div>
-          </div>
-          <p class="text-sm text-white mr-1">
-            Don't have an account?
-            <a href="signup.html" class="font-bold text-[#30D5C8]">Sign up</a>
-          </p>
-        </div>
-
+        <div id="msg" class="text-red-400" aria-live="assertive"></div>
+        <button
+          class="bg-[#30D5C8] text-[#1A1A1D] font-semibold px-4 py-2 rounded-xl hover:bg-[#28b7a8] transition"
+          type="submit"
+        >
+          Send Reset Link
+        </button>
       </form>
     </main>
-    <script type="module" src="js/login.js"></script>
+    <script type="module" src="js/requestReset.js"></script>
     <script type="module">
       import { shareOn } from './js/share.js';
       window.shareOn = shareOn;
