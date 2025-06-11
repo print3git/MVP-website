@@ -41,6 +41,15 @@ jest.mock('../shipping', () => ({
 }));
 const { getShippingEstimate } = require('../shipping');
 
+jest.mock(
+  '../utils/captionService',
+  () => ({
+    generateCaption: jest.fn().mockResolvedValue('BLIP caption'),
+  }),
+  { virtual: true }
+);
+const { generateCaption } = require('../utils/captionService');
+
 const request = require('supertest');
 const app = require('../server');
 const fs = require('fs');
@@ -51,6 +60,7 @@ beforeEach(() => {
   axios.post.mockClear();
   enqueuePrint.mockClear();
   getShippingEstimate.mockClear();
+  generateCaption.mockClear();
 });
 
 afterEach(() => {
@@ -235,6 +245,23 @@ test('POST /api/community submits model', async () => {
   expect(db.query).toHaveBeenCalledWith(
     expect.stringContaining('INSERT INTO community_creations'),
     ['j1', 'Auto', '']
+  );
+});
+
+test('POST /api/community uses BLIP caption for title', async () => {
+  const caption = 'A BLIP caption';
+  generateCaption.mockResolvedValueOnce(caption);
+  db.query.mockResolvedValueOnce({ rows: [{ generated_title: caption }] });
+  db.query.mockResolvedValueOnce({});
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  const res = await request(app)
+    .post('/api/community')
+    .set('authorization', `Bearer ${token}`)
+    .send({ jobId: 'j1' });
+  expect(res.status).toBe(201);
+  expect(db.query).toHaveBeenCalledWith(
+    expect.stringContaining('INSERT INTO community_creations'),
+    ['j1', caption, '']
   );
 });
 
