@@ -1,6 +1,7 @@
 module.exports = {
   extends: ['@eslint/js', 'prettier'],
   env: { node: true, jest: true },
+  plugins: ['promise'],
   rules: {
     'no-restricted-syntax': [
       'error',
@@ -9,5 +10,6 @@ module.exports = {
       { selector: "CallExpression[callee.object.name='describe'][callee.property.name='skip']", message: 'Avoid describe.skip' },
       { selector: "CallExpression[callee.object.name='test'][callee.property.name='skip']", message: 'Avoid test.skip' },
     ],
+    'promise/no-floating-promises': 'error',
   },
 };
