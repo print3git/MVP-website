@@ -6,6 +6,7 @@ process.env.HUNYUAN_SERVER_URL = 'http://localhost:4000';
 
 jest.mock('../db', () => ({
   query: jest.fn().mockResolvedValue({ rows: [] }),
+  insertCommission: jest.fn().mockResolvedValue({}),
 }));
 const db = require('../db');
 
@@ -57,6 +58,7 @@ const stream = require('stream');
 
 beforeEach(() => {
   db.query.mockClear();
+  db.insertCommission.mockClear();
   axios.post.mockClear();
   enqueuePrint.mockClear();
   getShippingEstimate.mockClear();
@@ -85,7 +87,7 @@ test('GET /api/status returns job', async () => {
 });
 
 test('Stripe create-order flow', async () => {
-  db.query.mockResolvedValueOnce({ rows: [{ job_id: '1' }] });
+  db.query.mockResolvedValueOnce({ rows: [{ job_id: '1', user_id: 'u1' }] });
   db.query.mockResolvedValueOnce({});
   const res = await request(app).post('/api/create-order').send({ jobId: '1', price: 100 });
   expect(res.status).toBe(200);
@@ -93,7 +95,7 @@ test('Stripe create-order flow', async () => {
 });
 
 test('create-order applies discount', async () => {
-  db.query.mockResolvedValueOnce({ rows: [{ job_id: '1' }] });
+  db.query.mockResolvedValueOnce({ rows: [{ job_id: '1', user_id: 'u1' }] });
   db.query.mockResolvedValueOnce({});
   const res = await request(app)
     .post('/api/create-order')
@@ -115,7 +117,7 @@ test('create-order applies discount', async () => {
 
 test('create-order applies first-order discount', async () => {
   db.query
-    .mockResolvedValueOnce({ rows: [{ job_id: '1' }] })
+    .mockResolvedValueOnce({ rows: [{ job_id: '1', user_id: 'u1' }] })
     .mockResolvedValueOnce({ rows: [] })
     .mockResolvedValueOnce({})
     .mockResolvedValueOnce({});
@@ -457,7 +459,7 @@ test('POST /api/profile saves details', async () => {
 
 test('POST /api/create-order saves user id', async () => {
   db.query
-    .mockResolvedValueOnce({ rows: [{ job_id: '1' }] })
+    .mockResolvedValueOnce({ rows: [{ job_id: '1', user_id: 'u1' }] })
     .mockResolvedValueOnce({ rows: [{ id: 'o1' }] })
     .mockResolvedValueOnce({});
   const token = jwt.sign({ id: 'u1' }, 'secret');
@@ -467,6 +469,20 @@ test('POST /api/create-order saves user id', async () => {
     .send({ jobId: '1', price: 100 });
   const call = db.query.mock.calls.find((c) => c[0].includes('INSERT INTO orders'));
   expect(call[1][2]).toBe('u1');
+});
+
+test('create-order inserts commission for marketplace sale', async () => {
+  db.query
+    .mockResolvedValueOnce({ rows: [{ job_id: '1', user_id: 'seller' }] })
+    .mockResolvedValueOnce({ rows: [1] })
+    .mockResolvedValueOnce({});
+  db.insertCommission.mockResolvedValueOnce({});
+  const token = jwt.sign({ id: 'buyer' }, 'secret');
+  await request(app)
+    .post('/api/create-order')
+    .set('authorization', `Bearer ${token}`)
+    .send({ jobId: '1', price: 100 });
+  expect(db.insertCommission).toHaveBeenCalledWith('cs_test', '1', 'seller', 'buyer', 10);
 });
 
 test('GET /api/my/orders returns orders', async () => {
