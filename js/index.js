@@ -482,7 +482,6 @@ async function init() {
     if (window.setWizardStage) window.setWizardStage('purchase');
   });
 
-
   refs.addBasketBtn?.addEventListener('click', () => {
     if (!window.addToBasket) return;
     if (refs.viewer?.src) {
@@ -497,6 +496,6 @@ async function init() {
 }
 
 window.initIndexPage = init;
+
+
 window.addEventListener('DOMContentLoaded', init);
-
-
