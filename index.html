@@ -342,9 +342,14 @@
     </main>
 
     <!-- ▸▸▸ SCRIPTS ------------------------------------------------------ -->
-    <script src="js/subredditLanding.js" defer></script>
-    <script src="js/modelViewerTouchFix.js" defer></script>
-    <script type="module" src="js/index.js"></script>
+    <!-- Lazy-load non-critical scripts -->
+    <script type="module">
+      window.addEventListener('load', () => {
+        import('./js/modelViewerTouchFix.js');
+        import('./js/subredditLanding.js');
+        import('./js/index.js');
+      });
+    </script>
     <script type="module">
       document.getElementById('profile-link')?.addEventListener('click', function (e) {
         if (!localStorage.getItem('token')) {
