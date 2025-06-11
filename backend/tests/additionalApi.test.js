@@ -6,6 +6,7 @@ process.env.HUNYUAN_SERVER_URL = 'http://localhost:4000';
 
 jest.mock('../db', () => ({
   query: jest.fn().mockResolvedValue({ rows: [] }),
+  insertCommission: jest.fn().mockResolvedValue({}),
 }));
 const db = require('../db');
 
@@ -38,6 +39,7 @@ beforeAll(() => {
 
 beforeEach(() => {
   db.query.mockClear();
+  db.insertCommission.mockClear();
   axios.post.mockClear();
   sendMail.mockClear();
   stripeMock.checkout.sessions.create.mockResolvedValue({
