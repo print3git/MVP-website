@@ -72,7 +72,10 @@ function renderList() {
     const btn = document.createElement('button');
     btn.textContent = 'Remove';
     btn.className = 'remove text-xs px-2 py-1 bg-red-600 rounded';
-    btn.addEventListener('click', () => removeFromBasket(idx));
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      removeFromBasket(idx);
+    });
     div.appendChild(img);
     div.appendChild(btn);
     list.appendChild(div);
