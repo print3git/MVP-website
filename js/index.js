@@ -497,4 +497,5 @@ async function init() {
 
 window.initIndexPage = init;
 
+
 window.addEventListener('DOMContentLoaded', init);
