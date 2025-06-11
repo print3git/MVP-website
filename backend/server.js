@@ -249,9 +249,10 @@ app.post('/api/generate', authOptional, upload.array('images'), async (req, res)
       await page.setContent(html, { waitUntil: 'networkidle0' });
       await page.waitForSelector('model-viewer');
       await page
-        .waitForFunction(() => document.querySelector('model-viewer')?.modelIsVisible, {
-          timeout: 5000,
-        })
+        .waitForFunction(
+          "document.querySelector('model-viewer') && document.querySelector('model-viewer').modelIsVisible",
+          { timeout: 5000 }
+        )
         .catch(() => {});
       const buf = await page.screenshot({ type: 'png' });
       await browser.close();
