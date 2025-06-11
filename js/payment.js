@@ -3,7 +3,12 @@
 // once the DOM content is ready.
 let stripe = null;
 const FALLBACK_GLB = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
-const PRICE = 2000;
+const PRICES = {
+  single: 2500,
+  multi: 3500,
+  premium: 6000,
+};
+let selectedPrice = PRICES.single;
 const API_BASE = (window.API_ORIGIN || '') + '/api';
 // Time zone used to reset local purchase counts at 1 AM Eastern
 const TZ = 'America/New_York';
@@ -86,7 +91,7 @@ async function createCheckout(quantity, discount, discountCode, shippingInfo) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       jobId,
-      price: PRICE,
+      price: selectedPrice,
       qty: quantity,
       discount,
       discountCode,
@@ -125,8 +130,26 @@ document.addEventListener('DOMContentLoaded', async () => {
   const discountInput = document.getElementById('discount-code');
   const discountMsg = document.getElementById('discount-msg');
   const applyBtn = document.getElementById('apply-discount');
+  const materialRadios = document.querySelectorAll('#material-options input[name="material"]');
+  const payBtn = document.getElementById('submit-payment');
   let discountCode = '';
   let discountValue = 0;
+
+  function updatePayButton() {
+    if (payBtn) {
+      payBtn.textContent = `Pay £${(selectedPrice / 100).toFixed(0)}`;
+    }
+  }
+
+  materialRadios.forEach((r) => {
+    r.addEventListener('change', () => {
+      if (r.checked) {
+        selectedPrice = PRICES[r.value] || PRICES.single;
+        updatePayButton();
+      }
+    });
+  });
+  updatePayButton();
   const sessionId = qs('session_id');
   if (sessionId) recordPurchase();
   let baseSlots = null;
@@ -323,7 +346,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let discount = 0;
     const end = parseInt(localStorage.getItem('flashDiscountEnd'), 10) || 0;
     if (end && end > Date.now()) {
-      discount += Math.round(PRICE * 0.05);
+      discount += Math.round(selectedPrice * 0.05);
     }
     const shippingInfo = {
       name: document.getElementById('ship-name').value,
