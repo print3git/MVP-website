@@ -77,6 +77,12 @@ if (!getFallbackModels)
       { name: 'ToyCar', ext: 'jpg' },
       { name: 'Duck', ext: 'png' },
       { name: 'CesiumMan', ext: 'gif' },
+      { name: '2CylinderEngine', ext: 'png' },
+      { name: 'SheenChair', ext: 'jpg' },
+      { name: 'IridescenceLamp', ext: 'jpg' },
+      { name: 'ReciprocatingSaw', ext: 'png' },
+      { name: 'VertexColorTest', ext: 'png' },
+      { name: 'CesiumMilkTruck', ext: 'gif' },
     ];
 
     return samples.slice(start, start + count).map((s, i) => ({
@@ -148,9 +154,8 @@ async function loadMore(type, filters = getFilters()) {
   if (!cache[key]) cache[key] = { offset: 0, models: [] };
   const state = cache[key];
   let models = await fetchCreations(type, state.offset, 9, category, search, order);
-  if (models.length === 0 && state.offset === 0) {
-    const start = 0;
-    models = getFallbackModels(9, start);
+  if (models.length === 0) {
+    models = getFallbackModels(9, state.offset);
   }
   state.offset += models.length;
   state.models = state.models.concat(models);
