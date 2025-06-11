@@ -148,7 +148,8 @@ function createCard(model) {
     like(model.id);
   });
   div.addEventListener('pointerenter', () => prefetchModel(model.model_url));
-  div.addEventListener('click', () => {
+  div.addEventListener('click', (e) => {
+    e.stopPropagation();
     const modal = document.getElementById('model-modal');
     const viewer = modal.querySelector('model-viewer');
     const checkoutBtn = document.getElementById('modal-checkout');
