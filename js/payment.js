@@ -133,6 +133,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   const applyBtn = document.getElementById('apply-discount');
   const materialRadios = document.querySelectorAll('#material-options input[name="material"]');
   const payBtn = document.getElementById('submit-payment');
+  const singleLabel = document.getElementById('single-label');
+  const colorMenu = document.getElementById('single-color-menu');
+  const singleButton = singleLabel?.querySelector('span');
   let discountCode = '';
   let discountValue = 0;
 
@@ -147,9 +150,27 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (r.checked) {
         selectedPrice = PRICES[r.value] || PRICES.single;
         updatePayButton();
+        if (colorMenu) colorMenu.hidden = true;
       }
     });
   });
+
+  if (singleLabel && colorMenu && singleButton) {
+    singleLabel.addEventListener('click', (e) => {
+      if (document.getElementById('opt-single').checked) {
+        // Toggle menu visibility
+        colorMenu.hidden = !colorMenu.hidden;
+      }
+    });
+    colorMenu.addEventListener('click', (ev) => {
+      const btn = ev.target.closest('button[data-color]');
+      if (btn) {
+        const color = btn.dataset.color;
+        singleButton.style.backgroundColor = color;
+        colorMenu.hidden = true;
+      }
+    });
+  }
   updatePayButton();
   const sessionId = qs('session_id');
   if (sessionId) recordPurchase();
