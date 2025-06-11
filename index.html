@@ -360,7 +360,15 @@
       </div>
     </div>
 
+    <div id="wizard-banner" class="fixed bottom-0 left-0 right-0 flex divide-x divide-[#1A1A1D] text-[#1A1A1D] font-semibold bg-gradient-to-r from-teal-400 via-cyan-300 to-teal-500 z-40">
+      <div id="wizard-step-prompt" class="flex-1 text-center py-2">Create prompt</div>
+      <div id="wizard-step-building" class="flex-1 text-center py-2 opacity-50">Building model</div>
+      <div id="wizard-step-print" class="flex-1 text-center py-2 opacity-50">Print model</div>
+      <div id="wizard-step-purchase" class="flex-1 text-center py-2 opacity-50">Purchase model</div>
+    </div>
+
     <!-- ▸▸▸ SCRIPTS ------------------------------------------------------ -->
+<script type="module" src="js/wizard.js"></script>
     <!-- Lazy-load non-critical scripts -->
     <script type="module">
       window.addEventListener('load', () => {
