@@ -109,6 +109,10 @@ const showModel = () => {
   hideAll();
   refs.viewer.style.display = 'block';
   stopProgress();
+  // Force a render in case Safari paused the canvas while hidden
+  if (typeof refs.viewer.requestUpdate === 'function') {
+    refs.viewer.requestUpdate();
+  }
 };
 const hideDemo = () => {
   refs.demoNote && (refs.demoNote.style.display = 'none');
