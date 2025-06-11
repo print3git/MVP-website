@@ -21,6 +21,26 @@ function like(id) {
 
 const SEARCH_DELAY = 300;
 
+const STATE_KEY = 'print3CommunityState';
+
+function loadState() {
+  try {
+    const data = localStorage.getItem(STATE_KEY);
+    return data ? JSON.parse(data) : null;
+  } catch (err) {
+    console.error('Failed to parse saved community state', err);
+    return null;
+  }
+}
+
+function saveState() {
+  try {
+    localStorage.setItem(STATE_KEY, JSON.stringify(window.communityState));
+  } catch (err) {
+    console.error('Failed to save community state', err);
+  }
+}
+
 /**
  * Return a function that delays invoking `fn` until after `delay` ms
  * have elapsed since the last invocation.
@@ -175,6 +195,7 @@ async function loadMore(type, filters = getFilters()) {
       btn.classList.remove('hidden');
     }
   }
+  saveState();
 }
 
 function renderGrid(type, filters = getFilters()) {
@@ -212,10 +233,9 @@ function createObserver(type) {
 }
 
 function init() {
-  window.communityState = {
-    recent: { offset: 0, done: false, loading: false, observer: null },
-    popular: { offset: 0, done: false, loading: false, observer: null },
-  };
+  const saved = loadState();
+  window.communityState =
+    saved || { recent: {}, popular: {} };
 
   const popBtn = document.getElementById('popular-load');
   if (popBtn) popBtn.addEventListener('click', () => loadMore('popular'));
@@ -224,10 +244,8 @@ function init() {
   document.getElementById('category').addEventListener('change', () => {
     document.getElementById('recent-grid').innerHTML = '';
     document.getElementById('popular-grid').innerHTML = '';
-    window.communityState = {
-      recent: { offset: 0, done: false, loading: false, observer: null },
-      popular: { offset: 0, done: false, loading: false, observer: null },
-    };
+    window.communityState = { recent: {}, popular: {} };
+    saveState();
     loadMore('popular');
     loadMore('recent');
   });
@@ -236,10 +254,8 @@ function init() {
     sortSelect.addEventListener('change', () => {
       document.getElementById('recent-grid').innerHTML = '';
       document.getElementById('popular-grid').innerHTML = '';
-      window.communityState = {
-        recent: { offset: 0, done: false, loading: false, observer: null },
-        popular: { offset: 0, done: false, loading: false, observer: null },
-      };
+      window.communityState = { recent: {}, popular: {} };
+      saveState();
       loadMore('popular');
       loadMore('recent');
     });
@@ -249,18 +265,16 @@ function init() {
     function onSearchInput() {
       document.getElementById('recent-grid').innerHTML = '';
       document.getElementById('popular-grid').innerHTML = '';
-      window.communityState = {
-        recent: { offset: 0, done: false, loading: false, observer: null },
-        popular: { offset: 0, done: false, loading: false, observer: null },
-      };
+      window.communityState = { recent: {}, popular: {} };
+      saveState();
       loadMore('popular');
       loadMore('recent');
     }
 
     searchInput.addEventListener('input', debounce(onSearchInput, SEARCH_DELAY));
   }
-  loadMore('popular');
-  loadMore('recent');
+  renderGrid('popular');
+  renderGrid('recent');
 }
 
 export { like, init };
