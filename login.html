@@ -79,7 +79,7 @@
     <main class="flex-1 flex items-center justify-center">
       <form
         id="loginForm"
-        class="space-y-4 bg-[#2A2A2E] border border-white/10 p-6 rounded-3xl w-96"
+        class="relative space-y-4 bg-[#2A2A2E] border border-white/10 p-6 rounded-3xl w-96"
         aria-label="Login form"
       >
         <input
@@ -95,14 +95,20 @@
           placeholder="Password"
           aria-label="Password"
         />
-        <div id="error" class="text-red-400" aria-live="assertive"></div>
         <div class="flex items-center justify-between">
-          <button
-            class="bg-[#30D5C8] text-[#1A1A1D] font-semibold px-4 py-2 rounded-xl hover:bg-[#28b7a8] transition"
-            type="submit"
-          >
-            Login
-          </button>
+          <div class="relative flex items-center">
+            <button
+              class="bg-[#30D5C8] text-[#1A1A1D] font-semibold px-4 py-2 rounded-xl hover:bg-[#28b7a8] transition"
+              type="submit"
+            >
+              Login
+            </button>
+            <div
+              id="error"
+              class="absolute bottom-0 left-full ml-2 text-red-400 whitespace-nowrap"
+              aria-live="assertive"
+            ></div>
+          </div>
           <p class="text-sm text-white mr-1">
             Don't have an account?
             <a href="signup.html" class="font-bold text-[#30D5C8]">Sign up</a>
