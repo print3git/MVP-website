@@ -234,8 +234,7 @@ function createObserver(type) {
 
 function init() {
   const saved = loadState();
-  window.communityState =
-    saved || { recent: {}, popular: {} };
+  window.communityState = saved || { recent: {}, popular: {} };
 
   const popBtn = document.getElementById('popular-load');
   if (popBtn) popBtn.addEventListener('click', () => loadMore('popular'));
@@ -275,6 +274,11 @@ function init() {
   }
   renderGrid('popular');
   renderGrid('recent');
+
+  // Clear saved state when leaving the page so grids reset on next visit
+  window.addEventListener('pagehide', () => {
+    localStorage.removeItem(STATE_KEY);
+  });
 }
 
 export { like, init };
