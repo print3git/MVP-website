@@ -21,6 +21,7 @@ if (typeof global.setImmediate === 'undefined') {
   global.setImmediate = (cb) => setTimeout(cb, 0);
 }
 
+
 beforeEach(() => {
   jest.spyOn(console, 'error').mockImplementation((...args) => {
     throw new Error('console.error called: ' + args.join(' '));
@@ -29,9 +30,9 @@ beforeEach(() => {
 
 // Clean up between tests
 afterEach(() => {
-  if (console.error && console.error.mockRestore) {
-    console.error.mockRestore();
-  }
+
+  jest.restoreAllMocks();
+
   if (global.window && typeof global.window.close === 'function') {
     global.window.close();
   }
