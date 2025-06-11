@@ -74,9 +74,11 @@ function renderList() {
 
     const btn = document.createElement('button');
     btn.textContent = 'Remove';
+
     btn.className =
       'remove absolute bottom-1 right-1 text-xs px-2 py-1 bg-red-600 rounded opacity-80 group-hover:opacity-100';
     btn.addEventListener('click', () => removeFromBasket(idx));
+
 
     div.appendChild(img);
     div.appendChild(btn);
@@ -94,7 +96,7 @@ export function setupBasketUI() {
   const btn = document.createElement('button');
   btn.id = 'basket-button';
   btn.className =
-    'fixed bottom-4 left-4 bg-[#30D5C8] text-black p-3 rounded-full shadow-lg z-50 border border-black';
+    'fixed bottom-4 left-4 bg-[#30D5C8] text-black p-3 rounded-full shadow-lg z-50 border-2 border-black';
   btn.innerHTML =
     '<i class="fas fa-shopping-basket"></i> <span id="basket-count" class="ml-1"></span>';
   btn.addEventListener('click', openBasket);
