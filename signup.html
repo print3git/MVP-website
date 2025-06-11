@@ -77,11 +77,12 @@
       </div>
     </header>
     <main class="flex-1 flex items-center justify-center">
-      <form
-        id="signupForm"
-        class="relative space-y-4 bg-[#2A2A2E] border border-white/10 p-6 rounded-3xl w-96"
-        aria-label="Sign up form"
-      >
+      <div class="relative w-96">
+        <form
+          id="signupForm"
+          class="space-y-4 bg-[#2A2A2E] border border-white/10 p-6 rounded-3xl"
+          aria-label="Sign up form"
+        >
         <input
           id="su-email"
           type="email"
@@ -103,21 +104,22 @@
           aria-label="Password"
         />
         <div class="flex items-center">
-          <div class="relative flex items-center">
+          <div class="relative flex flex-col items-start">
             <button
               class="bg-[#30D5C8] text-[#1A1A1D] font-semibold px-4 py-2 rounded-xl hover:bg-[#28b7a8] transition"
               type="submit"
             >
               Sign Up
             </button>
-            <div
-              id="error"
-              class="absolute bottom-0 left-full ml-2 text-red-400 whitespace-nowrap"
-              aria-live="assertive"
-            ></div>
           </div>
         </div>
-      </form>
+        </form>
+        <div
+          id="error"
+          class="absolute top-full left-10 mt-1 text-red-400 whitespace-nowrap"
+          aria-live="assertive"
+        ></div>
+      </div>
     </main>
     <script type="module" src="js/signup.js"></script>
     <script type="module">
