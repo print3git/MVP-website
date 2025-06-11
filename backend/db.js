@@ -24,9 +24,32 @@ async function getShareByJobId(jobId) {
   return query('SELECT * FROM shares WHERE job_id=$1', [jobId]).then((res) => res.rows[0]);
 }
 
+async function insertCommission(
+  orderId,
+  modelId,
+  sellerUserId,
+  buyerUserId,
+  commissionCents,
+  status = 'pending'
+) {
+  return query(
+    'INSERT INTO model_commissions(order_id, model_id, seller_user_id, buyer_user_id, commission_cents, status) VALUES($1,$2,$3,$4,$5,$6) RETURNING *',
+    [orderId, modelId, sellerUserId, buyerUserId, commissionCents, status]
+  ).then((res) => res.rows[0]);
+}
+
+async function getCommissionsForUser(userId) {
+  return query(
+    'SELECT * FROM model_commissions WHERE seller_user_id=$1 OR buyer_user_id=$1 ORDER BY created_at DESC',
+    [userId]
+  ).then((res) => res.rows);
+}
+
 module.exports = {
   query,
   insertShare,
   getShareBySlug,
   getShareByJobId,
+  insertCommission,
+  getCommissionsForUser,
 };
