@@ -4,16 +4,7 @@ const { TextEncoder, TextDecoder } = require('util');
 require('jest-localstorage-mock');
 
 // Dump open handles shortly before CI’s global timeout to aid debugging
-setTimeout(
-  () => {
-    // eslint-disable-next-line no-console
-    console.log('Active handles before forced timeout:');
-    console.log(process._getActiveHandles());
-    // eslint-disable-next-line no-console
-    console.log('Pending requests:', process._getActiveRequests());
-  },
-  19.5 * 60 * 1000
-);
+// (removed now that the dump is captured on exit)
 
 // On GitHub Actions “Cancel workflow” → SIGTERM path
 process.on('SIGTERM', () => {

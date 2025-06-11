@@ -33,10 +33,8 @@ describe('shareOn', () => {
     const shareOn = load();
     global.window.open = jest.fn();
     await shareOn(net);
-    expect(global.window.open).toHaveBeenCalledWith(
-      expect.stringContaining(domain),
-      '_blank',
-      'noopener'
-    );
+    const calledUrl = global.window.open.mock.calls[0][0];
+    expect(calledUrl).toContain(domain);
+    expect(global.window.open).toHaveBeenCalledWith(calledUrl, '_blank', 'noopener');
   });
 });
