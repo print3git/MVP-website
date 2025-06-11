@@ -103,6 +103,7 @@ async function createCheckout(quantity, discount, discountCode, shippingInfo) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+  if (window.setWizardStage) window.setWizardStage('purchase');
   // Safely initialize Stripe once the DOM is ready. If the Stripe library
   // failed to load, we fall back to plain redirects.
   if (window.Stripe) {

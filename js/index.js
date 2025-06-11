@@ -136,6 +136,7 @@ async function fetchProfile() {
 
 async function buyNow() {
   if (!userProfile) return;
+  if (window.setWizardStage) window.setWizardStage('purchase');
   const jobId = localStorage.getItem('print3JobId');
   const res = await fetch('/api/create-order', {
     method: 'POST',
@@ -206,6 +207,7 @@ refs.promptInput.addEventListener('input', () => {
   editsPending = true;
   refs.buyNowBtn?.classList.add('hidden');
   setStep('prompt');
+  if (window.setWizardStage) window.setWizardStage('prompt');
 });
 
 refs.promptInput.addEventListener('keydown', (e) => {
@@ -357,6 +359,7 @@ refs.submitBtn.addEventListener('click', async () => {
   refs.buyNowBtn?.classList.add('hidden');
   refs.submitIcon.classList.replace('fa-arrow-up', 'fa-stop');
   showLoader();
+  if (window.setWizardStage) window.setWizardStage('building');
 
   try {
     localStorage.setItem('print3Prompt', prompt);
@@ -372,6 +375,7 @@ refs.submitBtn.addEventListener('click', async () => {
     await refs.viewer.updateComplete;
     showModel();
     setStep('model');
+    if (window.setWizardStage) window.setWizardStage('print');
     hideDemo();
 
     refs.checkoutBtn.classList.remove('hidden');
@@ -386,6 +390,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   syncUploadHeights();
   window.addEventListener('resize', syncUploadHeights);
   setStep('prompt');
+  if (window.setWizardStage) window.setWizardStage('prompt');
   showLoader();
   const sr = new URLSearchParams(window.location.search).get('sr');
   if (!sr) {
@@ -473,5 +478,6 @@ window.addEventListener('DOMContentLoaded', async () => {
     } else {
       localStorage.removeItem('print3JobId');
     }
+    if (window.setWizardStage) window.setWizardStage('purchase');
   });
 });
