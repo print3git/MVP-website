@@ -12,12 +12,18 @@ function createCard(model) {
     'model-card relative h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] flex items-center justify-center cursor-pointer';
   div.dataset.model = model.model_url;
   div.dataset.job = model.job_id;
-  div.innerHTML = `\n    <img src="${model.snapshot || ''}" alt="Model" class="w-full h-full object-contain pointer-events-none" />\n    <span class="sr-only">${model.prompt || 'Model'}</span>\n    <button class="purchase absolute bottom-1 left-1 text-xs bg-blue-600 px-1 rounded">Reorder</button>`;
+  div.innerHTML = `\n    <img src="${model.snapshot || ''}" alt="Model" class="w-full h-full object-contain pointer-events-none" />\n    <span class="sr-only">${model.prompt || 'Model'}</span>\n    <button class="purchase absolute bottom-1 left-1 text-xs bg-blue-600 px-1 rounded">Reorder</button>\n    <button class="add-basket absolute bottom-1 right-1 text-xs bg-green-600 px-1 rounded">Add</button>`;
   div.querySelector('.purchase').addEventListener('click', (e) => {
     e.stopPropagation();
     localStorage.setItem('print3Model', model.model_url);
     localStorage.setItem('print3JobId', model.job_id);
     window.location.href = 'payment.html';
+  });
+  div.querySelector('.add-basket').addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (window.addToBasket) {
+      window.addToBasket({ jobId: model.job_id, modelUrl: model.model_url, snapshot: model.snapshot });
+    }
   });
   div.addEventListener('click', () => {
     const modal = document.getElementById('model-modal');
