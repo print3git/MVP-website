@@ -37,4 +37,9 @@ afterEach(() => {
 });
 
 // Final diagnostic dump on normal Jest exit
-afterAll(() => {});
+// console.log('Active handles on exit:', process._getActiveHandles());
+// console.log('Pending requests on exit:', process._getActiveRequests());
+// console.log('Timeout Warning: ...');
+afterAll(() => {
+  // debug logs removed to keep test output clean
+});
