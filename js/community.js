@@ -234,6 +234,12 @@ function createObserver(type) {
 }
 
 function init() {
+  const nav = performance.getEntriesByType('navigation')[0];
+  const navType = nav ? nav.type : performance.navigation.type;
+  if (navType !== 'reload') {
+    localStorage.removeItem(STATE_KEY);
+  }
+
   const saved = loadState();
   window.communityState = saved || { recent: {}, popular: {} };
 
@@ -275,11 +281,6 @@ function init() {
   }
   renderGrid('popular');
   renderGrid('recent');
-
-  // Clear saved state when leaving the page so grids reset on next visit
-  window.addEventListener('pagehide', () => {
-    localStorage.removeItem(STATE_KEY);
-  });
 }
 
 export { like, init };
