@@ -1,5 +1,10 @@
 const { TextEncoder, TextDecoder } = require('util');
 require('jest-localstorage-mock');
+process.on('SIGTERM', () => {
+  // eslint-disable-next-line no-console
+  console.log('Active handles just before SIGTERM:', process._getActiveHandles());
+  process.exit(1);
+});
 if (typeof global.TextEncoder === 'undefined') {
   global.TextEncoder = TextEncoder;
 }
