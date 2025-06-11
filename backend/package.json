@@ -43,12 +43,6 @@
     "prettier": "^3.1.0",
     "supertest": "^7.1.1"
   },
-  "jest": {
-    "testEnvironment": "jsdom",
-    "setupFilesAfterEnv": [
-      "<rootDir>/tests/setup.js"
-    ]
-  },
   "engines": {
     "node": ">=18"
   }
