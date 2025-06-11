@@ -247,6 +247,18 @@
           if (e.key === 'Escape') close();
         });
 
+        document.addEventListener('click', (e) => {
+          if (modal.classList.contains('hidden')) return;
+          const container = modal.querySelector('div');
+          const basketBtn = document.getElementById('basket-button');
+          if (
+            !container.contains(e.target) &&
+            !(basketBtn && basketBtn.contains(e.target))
+          ) {
+            close();
+          }
+        });
+
         init();
       });
     </script>
