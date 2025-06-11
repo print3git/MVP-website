@@ -234,8 +234,17 @@ function createObserver(type) {
 }
 
 function init() {
-  const nav = performance.getEntriesByType('navigation')[0];
-  const navType = nav ? nav.type : performance.navigation.type;
+  let navType = 'navigate';
+  if (typeof performance !== 'undefined') {
+    const entries =
+      performance.getEntriesByType?.('navigation') || [];
+    if (entries.length && entries[0].type) {
+      navType = entries[0].type;
+    } else if (performance.navigation) {
+      if (performance.navigation.type === 1) navType = 'reload';
+      else if (performance.navigation.type === 2) navType = 'back_forward';
+    }
+  }
   if (navType !== 'reload') {
     localStorage.removeItem(STATE_KEY);
   }
