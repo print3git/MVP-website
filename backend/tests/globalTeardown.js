@@ -8,7 +8,7 @@ module.exports = async () => {
       leak.clear();
     }
   }
-  const ignored = [process.stdout, process.stderr];
+  const ignored = [process.stdout, process.stderr, process.stdin];
   const open = process._getActiveHandles().filter((h) => !ignored.includes(h));
   if (open.length) {
     console.error('\u274c Teardown detected lingering handles:', open);
