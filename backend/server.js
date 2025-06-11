@@ -19,7 +19,7 @@ const config = require('./config');
 const generateTitle = require('./utils/generateTitle');
 const stripe = require('stripe')(config.stripeKey);
 const { enqueuePrint, processQueue, progressEmitter } = require('./queue/printQueue');
-const { sendMail } = require('./mail');
+const { sendMail, sendTemplate } = require('./mail');
 const { getShippingEstimate } = require('./shipping');
 const {
   validateDiscountCode,
@@ -122,6 +122,57 @@ app.post('/api/login', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Login failed' });
+  }
+});
+
+app.post('/api/request-password-reset', async (req, res) => {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ error: 'Email required' });
+  try {
+    const { rows } = await db.query('SELECT id, username FROM users WHERE email=$1', [email]);
+    if (!rows.length) return res.sendStatus(204);
+    const user = rows[0];
+    const token = uuidv4();
+    const expires = new Date(Date.now() + 3600 * 1000);
+    await db.query('INSERT INTO password_resets(user_id, token, expires_at) VALUES($1,$2,$3)', [
+      user.id,
+      token,
+      expires,
+    ]);
+    const url = `${req.headers.origin}/reset-password.html?token=${token}`;
+    await sendTemplate(email, 'Password Reset', 'password_reset.txt', {
+      username: user.username,
+      reset_url: url,
+    });
+    res.sendStatus(204);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to send reset email' });
+  }
+});
+
+app.post('/api/reset-password', async (req, res) => {
+  const { token, password } = req.body;
+  if (!token || !password) {
+    return res.status(400).json({ error: 'Missing fields' });
+  }
+  try {
+    const { rows } = await db.query(
+      'SELECT user_id, expires_at FROM password_resets WHERE token=$1',
+      [token]
+    );
+    if (!rows.length) return res.status(400).json({ error: 'Invalid token' });
+    const reset = rows[0];
+    if (new Date(reset.expires_at) < new Date()) {
+      return res.status(400).json({ error: 'Token expired' });
+    }
+    const hash = await bcrypt.hash(password, 10);
+    await db.query('UPDATE users SET password_hash=$1 WHERE id=$2', [hash, reset.user_id]);
+    await db.query('DELETE FROM password_resets WHERE token=$1', [token]);
+    res.sendStatus(204);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to reset password' });
   }
 });
 
