@@ -63,7 +63,7 @@ function authOptional(req, res, next) {
   if (token) {
     try {
       req.user = jwt.verify(token, AUTH_SECRET);
-    } catch (err) {
+    } catch {
       // ignore invalid token
     }
   }

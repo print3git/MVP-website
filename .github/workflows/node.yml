@@ -28,6 +28,9 @@ jobs:
         working-directory: backend/hunyuan_server
         run: npm ci
 
+      - run: npm run lint
+        working-directory: backend
+
       - run: npm run test-ci
         working-directory: backend
 
