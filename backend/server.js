@@ -866,7 +866,7 @@ app.post('/api/discount-code', async (req, res) => {
 app.post('/api/create-order', authOptional, async (req, res) => {
   const { jobId, price, shippingInfo, qty, discount, discountCode } = req.body;
   try {
-    const job = await db.query('SELECT job_id FROM jobs WHERE job_id=$1', [jobId]);
+    const job = await db.query('SELECT job_id, user_id FROM jobs WHERE job_id=$1', [jobId]);
     if (job.rows.length === 0) {
       return res.status(404).json({ error: 'Job not found' });
     }
@@ -929,6 +929,11 @@ app.post('/api/create-order', authOptional, async (req, res) => {
         totalDiscount,
       ]
     );
+
+    if (req.user && job.rows[0].user_id && job.rows[0].user_id !== req.user.id) {
+      const commission = Math.round(total * 0.1);
+      await db.insertCommission(session.id, jobId, job.rows[0].user_id, req.user.id, commission);
+    }
 
     if (discountCodeId) {
       await incrementDiscountUsage(discountCodeId);
