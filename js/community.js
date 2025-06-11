@@ -202,7 +202,7 @@ function renderGrid(type, filters = getFilters()) {
   const { key } = filters;
   const grid = document.getElementById(`${type}-grid`);
   grid.innerHTML = '';
-  const state = window.communityState[type][key];
+  let state = window.communityState[type][key];
   if (state && state.models.length) {
     state.models.forEach((m) => grid.appendChild(createCard(m)));
     captureSnapshots(grid);
@@ -213,8 +213,9 @@ function renderGrid(type, filters = getFilters()) {
     }
   } else {
     loadMore(type, filters);
+    state = window.communityState[type][key];
   }
-  state.loading = false;
+  if (state) state.loading = false;
 }
 
 // IntersectionObserver support has been removed in favor of explicit "More"
