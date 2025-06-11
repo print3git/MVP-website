@@ -130,11 +130,16 @@ function createCard(model) {
   div.addEventListener('click', () => {
     const modal = document.getElementById('model-modal');
     const viewer = modal.querySelector('model-viewer');
+    const checkoutBtn = document.getElementById('modal-checkout');
     viewer.setAttribute('poster', model.snapshot || '');
     // Ensure the viewer fetches the model immediately
     viewer.setAttribute('fetchpriority', 'high');
     viewer.setAttribute('loading', 'eager');
     viewer.src = model.model_url;
+    if (checkoutBtn) {
+      checkoutBtn.dataset.model = model.model_url;
+      checkoutBtn.dataset.job = model.job_id;
+    }
     modal.classList.remove('hidden');
     document.body.classList.add('overflow-hidden');
   });
