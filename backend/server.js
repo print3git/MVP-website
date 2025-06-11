@@ -15,6 +15,7 @@ const db = require('./db');
 const axios = require('axios');
 const FormData = require('form-data');
 const fs = require('fs');
+const puppeteer = require('puppeteer');
 const config = require('./config');
 const generateTitle = require('./utils/generateTitle');
 const stripe = require('stripe')(config.stripeKey);
@@ -236,11 +237,38 @@ app.post('/api/generate', authOptional, upload.array('images'), async (req, res)
       console.error('Hunyuan service failed, using fallback', err.message);
     }
 
-    const autoTitle = generateTitle(prompt);
+    let captionTitle = generateTitle(prompt);
+    try {
+      const browser = await puppeteer.launch({
+        headless: 'new',
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      });
+      const page = await browser.newPage();
+      await page.setViewport({ width: 300, height: 300 });
+      const html = `<!doctype html><html><head><script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script><style>html,body{margin:0;padding:0}</style></head><body><model-viewer src="${generatedUrl}" style="width:300px;height:300px" camera-controls></model-viewer></body></html>`;
+      await page.setContent(html, { waitUntil: 'networkidle0' });
+      await page.waitForSelector('model-viewer');
+      await page
+        .waitForFunction(() => document.querySelector('model-viewer')?.modelIsVisible, {
+          timeout: 5000,
+        })
+        .catch(() => {});
+      const buf = await page.screenshot({ type: 'png' });
+      await browser.close();
+      const captionForm = new FormData();
+      captionForm.append('image', buf, { filename: 'snapshot.png' });
+      const capResp = await axios.post(`${config.hunyuanServerUrl}/caption`, captionForm, {
+        headers: captionForm.getHeaders(),
+      });
+      captionTitle = capResp.data.caption || captionTitle;
+    } catch (err) {
+      console.error('Failed to caption', err.message);
+    }
+
     await db.query('UPDATE jobs SET status=$1, model_url=$2, generated_title=$3 WHERE job_id=$4', [
       'complete',
       generatedUrl,
-      autoTitle,
+      captionTitle,
       jobId,
     ]);
 

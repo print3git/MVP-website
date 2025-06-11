@@ -13,6 +13,9 @@ jest.mock('axios');
 const axios = require('axios');
 const jwt = require('jsonwebtoken');
 
+jest.mock('puppeteer');
+const puppeteer = require('puppeteer');
+
 jest.mock('stripe');
 const Stripe = require('stripe');
 const stripeMock = {
@@ -49,6 +52,19 @@ const stream = require('stream');
 beforeEach(() => {
   db.query.mockClear();
   axios.post.mockClear();
+  const browserMock = {
+    newPage: async () => ({
+      setViewport: jest.fn(),
+      setContent: jest.fn(),
+      waitForSelector: jest.fn().mockResolvedValue(),
+      waitForFunction: jest.fn().mockResolvedValue(),
+      screenshot: jest.fn(async () => Buffer.from('img')),
+    }),
+    close: jest.fn().mockResolvedValue(),
+  };
+  puppeteer.launch.mockResolvedValue(browserMock);
+  global.__LEAKS__ = global.__LEAKS__ || [];
+  global.__LEAKS__.push(browserMock);
   enqueuePrint.mockClear();
   getShippingEstimate.mockClear();
 });
@@ -58,10 +74,14 @@ afterEach(() => {
 });
 
 test('POST /api/generate returns glb url', async () => {
-  axios.post.mockResolvedValue({ data: { glb_url: '/models/test.glb' } });
+  axios.post
+    .mockResolvedValueOnce({ data: { glb_url: '/models/test.glb' } })
+    .mockResolvedValueOnce({ data: { caption: 'cap' } });
   const res = await request(app).post('/api/generate').send({ prompt: 'test' });
   expect(res.status).toBe(200);
   expect(res.body.glb_url).toBe('/models/test.glb');
+  const call = axios.post.mock.calls.find((c) => c[0].includes('/caption'));
+  expect(call).toBeDefined();
 });
 
 test('GET /api/status returns job', async () => {
@@ -210,7 +230,9 @@ test('POST /api/generate accepts image upload', async () => {
 
   jest.spyOn(fs, 'unlink').mockImplementation((_, cb) => cb && cb());
 
-  axios.post.mockResolvedValue({ data: { glb_url: '/models/test.glb' } });
+  axios.post
+    .mockResolvedValueOnce({ data: { glb_url: '/models/test.glb' } })
+    .mockResolvedValueOnce({ data: { caption: 'cap' } });
   const res = await request(app)
     .post('/api/generate')
     .field('prompt', 'img test')
@@ -345,14 +367,18 @@ test('/api/generate 400 when no prompt or image', async () => {
 });
 
 test('/api/generate falls back on server failure', async () => {
-  axios.post.mockRejectedValueOnce(new Error('fail'));
+  axios.post
+    .mockRejectedValueOnce(new Error('fail'))
+    .mockResolvedValueOnce({ data: { caption: 'cap' } });
   const res = await request(app).post('/api/generate').send({ prompt: 't' });
   expect(res.status).toBe(200);
   expect(res.body.glb_url).toBe('https://modelviewer.dev/shared-assets/models/Astronaut.glb');
 });
 
 test('/api/generate saves authenticated user id', async () => {
-  axios.post.mockResolvedValueOnce({ data: { glb_url: '/m.glb' } });
+  axios.post
+    .mockResolvedValueOnce({ data: { glb_url: '/m.glb' } })
+    .mockResolvedValueOnce({ data: { caption: 'cap' } });
   const token = jwt.sign({ id: 'u1' }, 'secret');
   await request(app)
     .post('/api/generate')
@@ -363,7 +389,9 @@ test('/api/generate saves authenticated user id', async () => {
 });
 
 test('/api/generate inserts community row', async () => {
-  axios.post.mockResolvedValueOnce({ data: { glb_url: '/m.glb' } });
+  axios.post
+    .mockResolvedValueOnce({ data: { glb_url: '/m.glb' } })
+    .mockResolvedValueOnce({ data: { caption: 'cap' } });
   await request(app).post('/api/generate').send({ prompt: 't' });
   const communityCall = db.query.mock.calls.find((c) =>
     c[0].includes('INSERT INTO community_creations')
