@@ -29,10 +29,14 @@ export function clearBasket() {
 }
 function updateBadge() {
   const badge = document.getElementById('basket-count');
+  const btn = document.getElementById('basket-button');
   if (badge) {
     const n = getBasket().length;
     badge.textContent = String(n);
     badge.hidden = n === 0;
+    if (btn) btn.hidden = n === 0;
+  } else if (btn) {
+    btn.hidden = getBasket().length === 0;
   }
 }
 function renderList() {
@@ -88,6 +92,10 @@ export function setupBasketUI() {
   document.body.appendChild(overlay);
   overlay.querySelector('#basket-close').addEventListener('click', closeBasket);
   overlay.querySelector('#basket-checkout').addEventListener('click', () => {
+    const items = getBasket();
+    if (items.length > 0) {
+      localStorage.setItem('print3JobId', items[0].jobId);
+    }
     closeBasket();
     window.location.href = 'payment.html';
   });
@@ -96,3 +104,4 @@ export function setupBasketUI() {
 window.addEventListener('DOMContentLoaded', setupBasketUI);
 window.addToBasket = addToBasket;
 window.getBasket = getBasket;
+window.clearBasket = clearBasket;

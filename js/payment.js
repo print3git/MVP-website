@@ -334,7 +334,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  ['ship-address', 'ship-city', 'ship-zip'].forEach((id) => {
+    if (window.clearBasket) window.clearBasket();
+    const basket = window.getBasket ? window.getBasket() : [];
+    if (basket.length > 1 && popup && closeBtn) {
     document.getElementById(id)?.addEventListener('change', updateEstimate);
   });
 
