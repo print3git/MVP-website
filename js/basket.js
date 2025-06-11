@@ -70,7 +70,7 @@ function closeBasket() {
 export function setupBasketUI() {
   const btn = document.createElement('button');
   btn.id = 'basket-button';
-  btn.className = 'fixed bottom-4 left-4 bg-[#30D5C8] text-[#1A1A1D] p-3 rounded-full shadow-lg z-50';
+  btn.className = 'fixed bottom-4 left-4 bg-[#1f3b65] text-[#5ec2c5] p-3 rounded-full shadow-lg z-50';
   btn.innerHTML = '<i class="fas fa-shopping-basket"></i> <span id="basket-count" class="ml-1"></span>';
   btn.addEventListener('click', openBasket);
   document.body.appendChild(btn);
