@@ -5,8 +5,6 @@ require('jest-localstorage-mock');
 
 // On GitHub Actions “Cancel workflow” → SIGTERM path
 process.on('SIGTERM', () => {
-  // eslint-disable-next-line no-console
-  console.log('Active handles just before SIGTERM:', process._getActiveHandles());
   process.exit(1);
 });
 
@@ -39,9 +37,4 @@ afterEach(() => {
 });
 
 // Final diagnostic dump on normal Jest exit
-afterAll(() => {
-  // eslint-disable-next-line no-console
-  console.log('Active handles on exit:', process._getActiveHandles());
-  // eslint-disable-next-line no-console
-  console.log('Pending requests on exit:', process._getActiveRequests());
-});
+afterAll(() => {});
