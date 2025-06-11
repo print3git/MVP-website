@@ -1,0 +1,20 @@
+{
+  "name": "mvp-website",
+  "version": "1.0.0",
+  "description": "This repository contains the early MVP code for print2's website and backend.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky install"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "husky": "^8.0.0"
+  }
+}
