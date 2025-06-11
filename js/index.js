@@ -494,5 +494,9 @@ async function init() {
       window.addToBasket(item);
     }
   });
-});
+}
+
+window.initIndexPage = init;
+
+window.addEventListener('DOMContentLoaded', init);
 
