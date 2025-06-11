@@ -218,6 +218,7 @@
 
 
         checkoutBtn.addEventListener('click', () => {
+          sessionStorage.setItem('fromCommunity', '1');
           const model = checkoutBtn.dataset.model;
           const job = checkoutBtn.dataset.job;
           if (model) localStorage.setItem('print3Model', model);

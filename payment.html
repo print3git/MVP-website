@@ -64,6 +64,7 @@
     <!-- ─────────── Header -->
     <header class="relative z-10 px-6 py-4">
       <a
+        id="back-link"
         href="index.html"
         class="inline-flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-3xl px-5 py-2 text-lg font-medium hover:bg-[#3A3A3E] transition-shape"
       >
@@ -357,6 +358,24 @@
     <script type="module" src="js/wizard.js"></script>
     <script type="module" src="js/payment.js"></script>
     <script type="module" src="js/exitDiscount.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const link = document.getElementById('back-link');
+        if (!link) return;
+        let target = 'index.html';
+        const from = sessionStorage.getItem('fromCommunity');
+        sessionStorage.removeItem('fromCommunity');
+        try {
+          const ref = new URL(document.referrer);
+          if (from === '1' || ref.pathname.endsWith('CommunityCreations.html')) {
+            target = 'CommunityCreations.html';
+          }
+        } catch {
+          if (from === '1') target = 'CommunityCreations.html';
+        }
+        link.setAttribute('href', target);
+      });
+    </script>
 
   </body>
 </html>
