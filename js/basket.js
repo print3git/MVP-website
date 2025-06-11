@@ -104,8 +104,9 @@ export function setupBasketUI() {
   overlay.id = 'basket-overlay';
   overlay.className = 'fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50';
   overlay.innerHTML = `\
-    <div class="relative bg-[#2A2A2E] border border-white/10 rounded-3xl p-6 text-center w-80 max-h-[80vh] overflow-y-auto">
-      <button id="basket-close" class="absolute top-2 right-2 text-white text-xl">
+
+    <div class="relative bg-[#2A2A2E] border border-white/10 rounded-3xl p-6 text-center w-72">
+      <button id="basket-close" class="absolute top-2 right-2 text-white text-3xl w-8 h-8 flex items-center justify-center">
         <i class="fas fa-times-circle"></i>
       </button>
       <h2 class="text-xl font-semibold mb-2 text-white">Basket</h2>
