@@ -7,13 +7,12 @@ describe('shareOn', () => {
   function load() {
     const dom = new JSDOM('<!doctype html><html><body></body></html>', {
       runScripts: 'dangerously',
+      url: 'https://example.com/',
     });
     global.window = dom.window;
     global.document = dom.window.document;
     dom.window.navigator.share = undefined;
-    dom.window.localStorage = { getItem: () => null };
-    global.localStorage = dom.window.localStorage;
-    let src = fs
+    const src = fs
       .readFileSync(path.join(__dirname, '../../../js/share.js'), 'utf8')
       .replace(/export \{[^}]+\};?/, '');
     dom.window.eval(src);
