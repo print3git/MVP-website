@@ -33,6 +33,7 @@ const refs = {
   trending: $('trending-prompts'),
   checkoutBtn: $('checkout-button'),
   buyNowBtn: $('buy-now-button'),
+  addBasketBtn: $('add-basket-button'),
   stepPrompt: $('step-prompt'),
   stepModel: $('step-model'),
   stepBuy: $('step-buy'),
@@ -480,8 +481,18 @@ async function init() {
     }
     if (window.setWizardStage) window.setWizardStage('purchase');
   });
-}
 
-window.initIndexPage = init;
 
-window.addEventListener('DOMContentLoaded', init);
+  refs.addBasketBtn?.addEventListener('click', () => {
+    if (!window.addToBasket) return;
+    if (refs.viewer?.src) {
+      const item = {
+        jobId: lastJobId,
+        modelUrl: refs.viewer.src,
+        snapshot: refs.previewImg?.src,
+      };
+      window.addToBasket(item);
+    }
+  });
+});
+
