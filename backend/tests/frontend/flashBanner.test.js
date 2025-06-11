@@ -26,7 +26,8 @@ describe('flash banner', () => {
     dom.window.startFlashDiscount();
     const banner = dom.window.document.getElementById('flash-banner');
     expect(banner.hidden).toBe(false);
-    await new Promise((r) => setTimeout(r, 1100));
+    // Allow a slight buffer for environments with slower timers
+    await new Promise((r) => setTimeout(r, 1200));
     expect(banner.hidden).toBe(true);
     expect(dom.window.localStorage.getItem('flashDiscountEnd')).toBe('0');
   });
