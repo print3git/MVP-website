@@ -34,5 +34,18 @@ jobs:
       - run: npm run test-ci
         working-directory: backend
 
+      - run: npm run test-cov
+        working-directory: backend
+
+      - name: Check coverage threshold
+        run: |
+          pct=$(jq '.total.statements.pct' coverage/coverage-summary.json)
+          echo "statements: $pct%"
+          if (( $(echo "$pct < 90" | bc -l) )); then
+            echo "Coverage below 90%: $pct%"
+            exit 1
+          fi
+        working-directory: backend
+
       - run: npx prettier --check "**/*.{js,jsx,json,md,html}"
         working-directory: backend
