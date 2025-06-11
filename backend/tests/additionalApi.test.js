@@ -16,6 +16,9 @@ jest.mock('axios');
 const axios = require('axios');
 const jwt = require('jsonwebtoken');
 
+// Track timeouts for global teardown
+let progressTimer;
+
 jest.mock('stripe');
 const Stripe = require('stripe');
 const stripeMock = {
@@ -28,6 +31,10 @@ const { progressEmitter } = require('../queue/printQueue');
 
 const request = require('supertest');
 const app = require('../server');
+
+beforeAll(() => {
+  global.__LEAKS__ = global.__LEAKS__ || [];
+});
 
 beforeEach(() => {
   db.query.mockClear();
@@ -403,11 +410,16 @@ test('POST /api/admin/competitions unauthorized', async () => {
 
 test('SSE progress endpoint streams updates', async () => {
   const req = request(app).get('/api/progress/job1');
-  setTimeout(() => {
+  progressTimer = setTimeout(() => {
     progressEmitter.emit('progress', { jobId: 'job1', progress: 100 });
   }, 50);
+  global.__LEAKS__.push({ clear: () => clearTimeout(progressTimer) });
   const res = await req;
   expect(res.text).toContain('data: {"jobId":"job1","progress":100}');
+});
+
+afterAll(() => {
+  if (progressTimer) clearTimeout(progressTimer);
 });
 
 test('POST /api/create-order rejects unknown job', async () => {
