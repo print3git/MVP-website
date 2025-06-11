@@ -208,7 +208,6 @@
 
       document.addEventListener('DOMContentLoaded', () => {
         const modal = document.getElementById('model-modal');
-        const viewer = modal.querySelector('model-viewer');
         const checkoutBtn = document.getElementById('modal-checkout');
         const closeBtn = document.getElementById('close-modal');
 
@@ -217,16 +216,6 @@
           document.body.classList.remove('overflow-hidden');
         }
 
-        document.addEventListener('click', (e) => {
-          const card = e.target.closest('.model-card');
-          if (card) {
-            viewer.src = card.dataset.model;
-            checkoutBtn.dataset.model = card.dataset.model;
-            checkoutBtn.dataset.job = card.dataset.job;
-            modal.classList.remove('hidden');
-            document.body.classList.add('overflow-hidden');
-          }
-        });
 
         checkoutBtn.addEventListener('click', () => {
           const model = checkoutBtn.dataset.model;
