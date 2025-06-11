@@ -112,6 +112,13 @@ export function setupBasketUI() {
     window.location.href = 'payment.html';
   });
 
+  overlay.addEventListener('click', (e) => {
+    const container = overlay.querySelector('div');
+    if (!container.contains(e.target) && !btn.contains(e.target)) {
+      closeBasket();
+    }
+  });
+
   const viewerOverlay = document.createElement('div');
   viewerOverlay.id = 'basket-model-modal';
   viewerOverlay.className =
