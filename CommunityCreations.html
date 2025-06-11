@@ -199,6 +199,12 @@
             Print it for £25 →
           </a>
         </div>
+        <button
+          id="modal-add-basket"
+          class="absolute bottom-4 left-4 font-bold py-2 px-4 rounded-full shadow-md bg-[#30D5C8] text-[#1A1A1D]"
+        >
+          Add to Basket
+        </button>
       </div>
     </div>
     <script type="module">
@@ -209,6 +215,7 @@
       document.addEventListener('DOMContentLoaded', () => {
         const modal = document.getElementById('model-modal');
         const checkoutBtn = document.getElementById('modal-checkout');
+        const addBasketBtn = document.getElementById('modal-add-basket');
         const closeBtn = document.getElementById('close-modal');
 
         function close() {
@@ -223,6 +230,16 @@
           const job = checkoutBtn.dataset.job;
           if (model) localStorage.setItem('print3Model', model);
           if (job) localStorage.setItem('print3JobId', job);
+        });
+
+        addBasketBtn?.addEventListener('click', () => {
+          if (!window.addToBasket) return;
+          const model = addBasketBtn.dataset.model;
+          const job = addBasketBtn.dataset.job;
+          const snapshot = addBasketBtn.dataset.snapshot;
+          if (model) {
+            window.addToBasket({ jobId: job, modelUrl: model, snapshot });
+          }
         });
 
         closeBtn.addEventListener('click', close);
