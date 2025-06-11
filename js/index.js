@@ -159,7 +159,7 @@ function showError(msg) {
 function validatePrompt(p) {
   const txt = p ? p.trim() : '';
   if (!txt && uploadedFiles.length === 0) {
-    showError('Enter a prompt or upload images');
+    showError('Enter a prompt or upload image');
     refs.promptWrapper.classList.add('border-red-500');
     return false;
   }
