@@ -5,6 +5,10 @@ process.on('SIGTERM', () => {
   console.log('Active handles just before SIGTERM:', process._getActiveHandles());
   process.exit(1);
 });
+process.on('exit', (code) => {
+  // eslint-disable-next-line no-console
+  console.log('Active handles just before exit code', code, ':', process._getActiveHandles());
+});
 if (typeof global.TextEncoder === 'undefined') {
   global.TextEncoder = TextEncoder;
 }
