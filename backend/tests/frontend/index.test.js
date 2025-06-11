@@ -59,7 +59,7 @@ describe('index validatePrompt', () => {
     const ok = dom.window.validatePrompt('');
     expect(ok).toBe(false);
     expect(dom.window.document.getElementById('gen-error').textContent).toBe(
-      'Enter a prompt or upload images'
+      'Enter a prompt or upload image'
     );
   });
 
