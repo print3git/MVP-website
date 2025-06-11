@@ -137,6 +137,7 @@ function createCard(model) {
   div.innerHTML = `\n      <img src="${model.snapshot || ''}" alt="Model" loading="lazy" fetchpriority="low" class="w-full h-full object-contain pointer-events-none" />\n      <span class="sr-only">${model.title || 'Model'}</span>\n      <button class="like absolute bottom-1 right-1 text-xs bg-red-600 px-1 rounded">\u2665</button>\n      <span class="absolute bottom-8 right-1 text-xs bg-black/50 px-1 rounded" id="likes-${model.id}">${model.likes}</span>\n      <button class="purchase absolute bottom-1 left-1 font-bold text-sm py-1 px-2 rounded-full shadow-md transition" style="background-color: #1f3b65; color: #5ec2c5">Buy</button>`;
   div.querySelector('.purchase').addEventListener('click', (e) => {
     e.stopPropagation();
+    sessionStorage.setItem('fromCommunity', '1');
     localStorage.setItem('print3Model', model.model_url);
     localStorage.setItem('print3JobId', model.job_id);
     window.location.href = 'payment.html';
@@ -202,7 +203,7 @@ function renderGrid(type, filters = getFilters()) {
   const { key } = filters;
   const grid = document.getElementById(`${type}-grid`);
   grid.innerHTML = '';
-  const state = window.communityState[type][key];
+  let state = window.communityState[type][key];
   if (state && state.models.length) {
     state.models.forEach((m) => grid.appendChild(createCard(m)));
     captureSnapshots(grid);
@@ -213,8 +214,9 @@ function renderGrid(type, filters = getFilters()) {
     }
   } else {
     loadMore(type, filters);
+    state = window.communityState[type][key];
   }
-  state.loading = false;
+  if (state) state.loading = false;
 }
 
 // IntersectionObserver support has been removed in favor of explicit "More"

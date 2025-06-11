@@ -21,8 +21,18 @@ if (typeof global.setImmediate === 'undefined') {
   global.setImmediate = (cb) => setTimeout(cb, 0);
 }
 
+
+beforeEach(() => {
+  jest.spyOn(console, 'error').mockImplementation((...args) => {
+    throw new Error('console.error called: ' + args.join(' '));
+  });
+});
+
 // Clean up between tests
 afterEach(() => {
+
+  jest.restoreAllMocks();
+
   if (global.window && typeof global.window.close === 'function') {
     global.window.close();
   }
@@ -37,4 +47,9 @@ afterEach(() => {
 });
 
 // Final diagnostic dump on normal Jest exit
-afterAll(() => {});
+// console.log('Active handles on exit:', process._getActiveHandles());
+// console.log('Pending requests on exit:', process._getActiveRequests());
+// console.log('Timeout Warning: ...');
+afterAll(() => {
+  // debug logs removed to keep test output clean
+});

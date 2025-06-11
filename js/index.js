@@ -387,7 +387,7 @@ refs.submitBtn.addEventListener('click', async () => {
   }
 });
 
-window.addEventListener('DOMContentLoaded', async () => {
+async function init() {
   syncUploadHeights();
   window.addEventListener('resize', syncUploadHeights);
   setStep('prompt');
@@ -482,6 +482,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     if (window.setWizardStage) window.setWizardStage('purchase');
   });
 
+
   refs.addBasketBtn?.addEventListener('click', () => {
     if (!window.addToBasket) return;
     if (refs.viewer?.src) {
@@ -494,3 +495,4 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
   });
 });
+

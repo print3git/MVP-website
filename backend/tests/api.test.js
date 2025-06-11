@@ -170,6 +170,7 @@ test('Stripe webhook updates order and enqueues print', async () => {
 });
 
 test('Stripe webhook invalid signature', async () => {
+  jest.spyOn(console, 'error').mockImplementation(() => {});
   stripeMock.webhooks.constructEvent.mockImplementation(() => {
     throw new Error('bad sig');
   });
@@ -183,6 +184,7 @@ test('Stripe webhook invalid signature', async () => {
 });
 
 test('Stripe webhook invalid signature does not process', async () => {
+  jest.spyOn(console, 'error').mockImplementation(() => {});
   stripeMock.webhooks.constructEvent.mockImplementation(() => {
     throw new Error('bad sig');
   });
@@ -346,6 +348,7 @@ test('registration invalid email', async () => {
 });
 
 test('registration duplicate username', async () => {
+  jest.spyOn(console, 'error').mockImplementation(() => {});
   db.query.mockRejectedValueOnce(new Error('duplicate key'));
   const res = await request(app)
     .post('/api/register')
@@ -372,6 +375,7 @@ test('/api/generate 400 when no prompt or image', async () => {
 });
 
 test('/api/generate falls back on server failure', async () => {
+  jest.spyOn(console, 'error').mockImplementation(() => {});
   axios.post.mockRejectedValueOnce(new Error('fail'));
   const res = await request(app).post('/api/generate').send({ prompt: 't' });
   expect(res.status).toBe(200);
