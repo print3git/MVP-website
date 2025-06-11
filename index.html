@@ -380,7 +380,9 @@
       window.addEventListener('load', () => {
         import('./js/modelViewerTouchFix.js');
         import('./js/subredditLanding.js');
-        import('./js/index.js');
+        import('./js/index.js').then(() => {
+          window.initIndexPage && window.initIndexPage();
+        });
         import('./js/exitDiscount.js');
       });
     </script>
