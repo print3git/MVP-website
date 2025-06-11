@@ -4,7 +4,7 @@
   "main": "server.js",
   "scripts": {
     "test": "jest",
-    "test-ci": "jest --runInBand --detectOpenHandles --forceExit",
+    "test-ci": "jest --ci --runInBand --maxWorkers=2 --detectOpenHandles --forceExit",
     "start": "node server.js",
     "init-db": "node scripts/init-db.js",
     "migrate": "node scripts/run-migrations.js",
