@@ -342,6 +342,15 @@
         >
           Close
         </button>
+    </div>
+    </div>
+
+    <!-- Bulk discount info -->
+    <div id="bulk-discount-popup" class="fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50">
+      <div class="bg-[#2A2A2E] border border-white/10 rounded-3xl p-6 text-center">
+        <h2 class="text-xl font-semibold mb-2 text-white">Save on Prints</h2>
+        <p class="mb-4 text-gray-300">£7 off the 2nd print and £15 off the 3rd when bought together.</p>
+        <button id="bulk-discount-close" class="px-4 py-2 rounded-md bg-[#30D5C8] text-[#1A1A1D]">OK</button>
       </div>
     </div>
 
@@ -358,6 +367,7 @@
     <script type="module" src="js/wizard.js"></script>
     <script type="module" src="js/payment.js"></script>
     <script type="module" src="js/exitDiscount.js"></script>
+
     <script>
       document.addEventListener('DOMContentLoaded', () => {
         const link = document.getElementById('back-link');
@@ -376,6 +386,7 @@
         link.setAttribute('href', target);
       });
     </script>
+
 
   </body>
 </html>
