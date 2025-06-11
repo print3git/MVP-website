@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+npm run format --prefix backend && \
+npm run lint --prefix backend && \
+npm run test-ci --prefix backend
