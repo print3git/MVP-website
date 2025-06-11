@@ -403,9 +403,11 @@ test('POST /api/admin/competitions unauthorized', async () => {
 
 test('SSE progress endpoint streams updates', async () => {
   const req = request(app).get('/api/progress/job1');
-  setTimeout(() => {
+  const id = setTimeout(() => {
     progressEmitter.emit('progress', { jobId: 'job1', progress: 100 });
   }, 50);
+  global.__LEAKS__ = global.__LEAKS__ || [];
+  global.__LEAKS__.push({ clear: () => clearTimeout(id) });
   const res = await req;
   expect(res.text).toContain('data: {"jobId":"job1","progress":100}');
 });
