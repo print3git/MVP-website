@@ -150,7 +150,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (r.checked) {
         selectedPrice = PRICES[r.value] || PRICES.single;
         updatePayButton();
-        if (colorMenu) colorMenu.hidden = true;
+        if (colorMenu) colorMenu.classList.add('hidden');
       }
     });
   });
@@ -159,7 +159,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     singleLabel.addEventListener('click', (e) => {
       if (document.getElementById('opt-single').checked) {
         // Toggle menu visibility
-        colorMenu.hidden = !colorMenu.hidden;
+        colorMenu.classList.toggle('hidden');
       }
     });
     colorMenu.addEventListener('click', (ev) => {
@@ -167,7 +167,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (btn) {
         const color = btn.dataset.color;
         singleButton.style.backgroundColor = color;
-        colorMenu.hidden = true;
+        colorMenu.classList.add('hidden');
       }
     });
   }
