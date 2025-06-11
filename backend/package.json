@@ -5,7 +5,7 @@
   "scripts": {
     "test": "jest",
     "test-ci": "jest --ci --maxWorkers=2 --detectOpenHandles --forceExit",
-    "test-cov": "jest --ci --coverage",
+    "test-cov": "jest --ci --coverage --coverageReporters=json-summary",
     "start": "node server.js",
     "init-db": "node scripts/init-db.js",
     "migrate": "node scripts/run-migrations.js",
