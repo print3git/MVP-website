@@ -409,6 +409,28 @@ app.get('/api/my/orders', authRequired, async (req, res) => {
   }
 });
 
+app.get('/api/commissions', authRequired, async (req, res) => {
+  try {
+    const commissions = await db.getCommissionsForSeller(req.user.id);
+    const totalsRes = await db.query(
+      `SELECT
+         SUM(CASE WHEN status='pending' THEN commission_cents ELSE 0 END) AS pending,
+         SUM(CASE WHEN status='paid' THEN commission_cents ELSE 0 END) AS paid
+       FROM model_commissions WHERE seller_user_id=$1`,
+      [req.user.id]
+    );
+    const totals = totalsRes.rows[0] || {};
+    res.json({
+      commissions,
+      totalPending: parseInt(totals.pending, 10) || 0,
+      totalPaid: parseInt(totals.paid, 10) || 0,
+    });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to fetch commissions' });
+  }
+});
+
 app.get('/api/profile', authRequired, async (req, res) => {
   try {
     const { rows } = await db.query('SELECT * FROM user_profiles WHERE user_id=$1', [req.user.id]);
@@ -822,6 +844,17 @@ app.delete('/api/admin/competitions/:id', adminCheck, async (req, res) => {
   } catch (err) {
     logError(err);
     res.status(500).json({ error: 'Failed to delete competition' });
+  }
+});
+
+app.post('/api/commissions/:id/mark-paid', adminCheck, async (req, res) => {
+  try {
+    const row = await db.markCommissionPaid(req.params.id);
+    if (!row) return res.status(404).json({ error: 'Commission not found' });
+    res.json({ status: row.status });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to update commission' });
   }
 });
 

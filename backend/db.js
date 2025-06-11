@@ -45,6 +45,18 @@ async function getCommissionsForUser(userId) {
   ).then((res) => res.rows);
 }
 
+async function getCommissionsForSeller(userId) {
+  return query('SELECT * FROM model_commissions WHERE seller_user_id=$1 ORDER BY created_at DESC', [
+    userId,
+  ]).then((res) => res.rows);
+}
+
+async function markCommissionPaid(id) {
+  return query('UPDATE model_commissions SET status=$1 WHERE id=$2 RETURNING *', ['paid', id]).then(
+    (res) => res.rows[0]
+  );
+}
+
 module.exports = {
   query,
   insertShare,
@@ -52,4 +64,6 @@ module.exports = {
   getShareByJobId,
   insertCommission,
   getCommissionsForUser,
+  getCommissionsForSeller,
+  markCommissionPaid,
 };
