@@ -1,6 +1,15 @@
 'use strict';
 import { shareOn } from './share.js';
 
+function ensureModelViewerLoaded() {
+  if (window.customElements?.get('model-viewer')) return;
+  const s = document.createElement('script');
+  s.type = 'module';
+  s.src =
+    'https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js';
+  document.head.appendChild(s);
+}
+
 if (
   localStorage.getItem('hasGenerated') === 'true' ||
   localStorage.getItem('demoDismissed') === 'true'
@@ -413,6 +422,7 @@ refs.submitBtn.addEventListener('click', async () => {
 });
 
 async function init() {
+  ensureModelViewerLoaded();
   syncUploadHeights();
   window.addEventListener('resize', syncUploadHeights);
   setStep('prompt');
