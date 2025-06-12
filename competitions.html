@@ -265,9 +265,11 @@
         });
 
         closeBtn.addEventListener('click', close);
+
         document.addEventListener('keydown', (e) => {
           if (e.key === 'Escape') close();
         });
+
 
         document.addEventListener('click', (e) => {
           if (modal.classList.contains('hidden')) return;
@@ -280,6 +282,10 @@
             close();
           }
         });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') close();
+
       });
     </script>
     <script type="module" src="js/basket.js"></script>
