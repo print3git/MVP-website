@@ -235,6 +235,17 @@
         });
 
         closeBtn.addEventListener('click', close);
+        document.addEventListener('click', (e) => {
+          if (modal.classList.contains('hidden')) return;
+          const container = modal.querySelector('div');
+          const basketBtn = document.getElementById('basket-button');
+          if (
+            !container.contains(e.target) &&
+            !(basketBtn && basketBtn.contains(e.target))
+          ) {
+            close();
+          }
+        });
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') close();
       });
