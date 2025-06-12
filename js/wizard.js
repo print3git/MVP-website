@@ -22,17 +22,16 @@ export function updateWizard() {
   order.forEach((key, i) => {
     const el = document.getElementById(map[key]);
     if (!el) return;
+    el.classList.remove('bg-[#30D5C8]', 'bg-[#2A2A2E]', 'text-[#1A1A1D]', 'opacity-50');
     if (i < idx) {
       // Completed steps turn blue
-      el.classList.remove('opacity-50');
       el.classList.add('bg-[#30D5C8]', 'text-[#1A1A1D]');
     } else if (i === idx) {
-      // Current step is highlighted but not blue
-      el.classList.remove('opacity-50', 'bg-[#30D5C8]', 'text-[#1A1A1D]');
+      // Current step highlighted in grey
+      el.classList.add('bg-[#2A2A2E]');
     } else {
-      // Future steps are dimmed
-      el.classList.add('opacity-50');
-      el.classList.remove('bg-[#30D5C8]', 'text-[#1A1A1D]');
+      // Future steps have no background
+      el.classList.remove('bg-[#2A2A2E]', 'bg-[#30D5C8]');
     }
   });
 }
