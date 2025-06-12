@@ -134,6 +134,9 @@ const hideAll = () => {
   refs.previewImg.style.display = 'none';
   refs.loader.style.display = 'none';
   refs.viewer.style.display = 'none';
+  if (typeof refs.viewer.pause === 'function') {
+    refs.viewer.pause();
+  }
 };
 const showLoader = () => {
   hideAll();
@@ -143,6 +146,9 @@ const showLoader = () => {
 const showModel = () => {
   hideAll();
   refs.viewer.style.display = 'block';
+  if (typeof refs.viewer.play === 'function') {
+    refs.viewer.play();
+  }
   stopProgress();
   // Force a render in case Safari paused the canvas while hidden
   if (typeof refs.viewer.requestUpdate === 'function') {
