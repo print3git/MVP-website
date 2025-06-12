@@ -133,7 +133,8 @@ function stopProgress() {
 const hideAll = () => {
   refs.previewImg.style.display = 'none';
   refs.loader.style.display = 'none';
-  refs.viewer.style.visibility = 'hidden';
+  refs.viewer.style.opacity = '0';
+  refs.viewer.style.pointerEvents = 'none';
   if ('paused' in refs.viewer) {
     refs.viewer.paused = true;
   } else if (typeof refs.viewer.pause === 'function') {
@@ -148,7 +149,8 @@ const showLoader = () => {
 const showModel = () => {
   hideAll();
   refs.viewer.style.display = 'block';
-  refs.viewer.style.visibility = 'visible';
+  refs.viewer.style.opacity = '1';
+  refs.viewer.style.pointerEvents = 'auto';
   if ('paused' in refs.viewer) {
     refs.viewer.paused = false;
   } else if (typeof refs.viewer.play === 'function') {
