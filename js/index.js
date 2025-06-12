@@ -75,6 +75,13 @@ let progressInterval = null;
 let progressStart = null;
 let usingViewerProgress = false;
 
+function updateWizardFromInputs() {
+  if (!window.setWizardStage) return;
+  const hasPrompt = refs.promptInput.value.trim().length >= 5;
+  const hasImages = uploadedFiles.length > 0;
+  window.setWizardStage(hasPrompt || hasImages ? 'building' : 'prompt');
+}
+
 async function captureModelSnapshot(url) {
   if (!url) return null;
   const viewer = document.createElement('model-viewer');
@@ -248,7 +255,7 @@ refs.promptInput.addEventListener('input', () => {
   editsPending = true;
   refs.buyNowBtn?.classList.add('hidden');
   setStep('prompt');
-  if (window.setWizardStage) window.setWizardStage('prompt');
+  updateWizardFromInputs();
 });
 
 refs.promptInput.addEventListener('keydown', (e) => {
@@ -302,6 +309,7 @@ function renderThumbnails(arr) {
       uploadedFiles.splice(i, 1);
       localStorage.setItem('print3Images', JSON.stringify(arr));
       renderThumbnails(arr);
+      updateWizardFromInputs();
     };
     wrap.appendChild(btn);
     refs.imagePreviewArea.appendChild(wrap);
@@ -343,6 +351,7 @@ async function processFiles(files) {
   editsPending = true;
   refs.buyNowBtn?.classList.add('hidden');
   setStep('prompt');
+  updateWizardFromInputs();
 }
 
 refs.uploadInput.addEventListener('change', (e) => {
@@ -492,6 +501,7 @@ async function init() {
     refs.examples.textContent = `Try: ${EXAMPLES.join(' · ')}`;
   }
   if (thumbs.length) renderThumbnails(thumbs);
+  updateWizardFromInputs();
 
   if (refs.trending) {
     refs.trending.textContent = `Trending: ${TRENDING.join(' · ')}`;
