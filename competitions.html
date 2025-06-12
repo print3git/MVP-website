@@ -189,15 +189,28 @@
           auto-rotate
           class="w-full h-96 bg-[#2A2A2E] rounded-xl"
         ></model-viewer>
-        <a
-          id="modal-checkout"
-          href="payment.html"
-          class="absolute bottom-4 right-4 font-bold py-3 px-5 rounded-full shadow-md transition"
-          style="background-color: #1f3b65; color: #5ec2c5"
-          onmouseover="this.style.opacity='0.85'"
-          onmouseout="this.style.opacity='1'"
-          >Checkout</a
+        <div
+          id="modal-checkout-container"
+          class="absolute bottom-4 right-4 flex flex-col items-center"
         >
+          <p class="mb-3 text-sm text-gray-400">Free UK Shipping</p>
+          <a
+            id="modal-checkout"
+            href="payment.html"
+            class="font-bold py-3 px-5 rounded-full shadow-md transition"
+            style="background-color: #1f3b65; color: #5ec2c5"
+            onmouseover="this.style.opacity='0.85'"
+            onmouseout="this.style.opacity='1'"
+          >
+            Print it for £25 →
+          </a>
+        </div>
+        <button
+          id="modal-add-basket"
+          class="absolute bottom-4 left-4 font-bold py-2 px-4 rounded-full shadow-md bg-[#30D5C8] text-[#1A1A1D] border-2 border-black"
+        >
+          Add to Basket
+        </button>
       </div>
     </div>
     <script type="module" src="js/competitions.js"></script>
@@ -209,6 +222,7 @@
         const modal = document.getElementById('model-modal');
         const viewer = modal.querySelector('model-viewer');
         const checkoutBtn = document.getElementById('modal-checkout');
+        const addBasketBtn = document.getElementById('modal-add-basket');
         const closeBtn = document.getElementById('close-modal');
 
         function close() {
@@ -222,6 +236,12 @@
             viewer.src = card.dataset.model;
             checkoutBtn.dataset.model = card.dataset.model;
             checkoutBtn.dataset.job = card.dataset.job;
+            if (addBasketBtn) {
+              addBasketBtn.dataset.model = card.dataset.model;
+              addBasketBtn.dataset.job = card.dataset.job;
+              const img = card.querySelector('img');
+              if (img) addBasketBtn.dataset.snapshot = img.src;
+            }
             modal.classList.remove('hidden');
             document.body.classList.add('overflow-hidden');
           }
@@ -234,7 +254,23 @@
           if (job) localStorage.setItem('print3JobId', job);
         });
 
+        addBasketBtn?.addEventListener('click', () => {
+          if (!window.addToBasket) return;
+          const model = addBasketBtn.dataset.model;
+          const job = addBasketBtn.dataset.job;
+          const snapshot = addBasketBtn.dataset.snapshot;
+          if (model) {
+            window.addToBasket({ jobId: job, modelUrl: model, snapshot });
+          }
+        });
+
         closeBtn.addEventListener('click', close);
+
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') close();
+        });
+
+
         document.addEventListener('click', (e) => {
           if (modal.classList.contains('hidden')) return;
           const container = modal.querySelector('div');
@@ -246,10 +282,11 @@
             close();
           }
         });
+
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') close();
+
       });
-    });
     </script>
     <script type="module" src="js/basket.js"></script>
   </body>

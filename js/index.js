@@ -1,6 +1,15 @@
 'use strict';
 import { shareOn } from './share.js';
 
+function ensureModelViewerLoaded() {
+  if (window.customElements?.get('model-viewer')) return;
+  const s = document.createElement('script');
+  s.type = 'module';
+  s.src =
+    'https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js';
+  document.head.appendChild(s);
+}
+
 if (
   localStorage.getItem('hasGenerated') === 'true' ||
   localStorage.getItem('demoDismissed') === 'true'
@@ -65,6 +74,31 @@ let editsPending = false;
 let progressInterval = null;
 let progressStart = null;
 let usingViewerProgress = false;
+
+async function captureModelSnapshot(url) {
+  if (!url) return null;
+  const viewer = document.createElement('model-viewer');
+  viewer.crossOrigin = 'anonymous';
+  viewer.src = url;
+  viewer.setAttribute(
+    'environment-image',
+    'https://modelviewer.dev/shared-assets/environments/neutral.hdr'
+  );
+  viewer.style.position = 'fixed';
+  viewer.style.left = '-10000px';
+  viewer.style.width = '300px';
+  viewer.style.height = '300px';
+  document.body.appendChild(viewer);
+  try {
+    await viewer.updateComplete;
+    return await viewer.toDataURL('image/png');
+  } catch (err) {
+    console.error('Failed to capture snapshot', err);
+    return null;
+  } finally {
+    viewer.remove();
+  }
+}
 
 function startProgress(estimateMs = 20000) {
   if (!refs.progressWrapper) return;
@@ -388,6 +422,7 @@ refs.submitBtn.addEventListener('click', async () => {
 });
 
 async function init() {
+  ensureModelViewerLoaded();
   syncUploadHeights();
   window.addEventListener('resize', syncUploadHeights);
   setStep('prompt');
@@ -482,16 +517,14 @@ async function init() {
     if (window.setWizardStage) window.setWizardStage('purchase');
   });
 
-  refs.addBasketBtn?.addEventListener('click', () => {
-    if (!window.addToBasket) return;
-    if (refs.viewer?.src) {
-      const item = {
-        jobId: lastJobId,
-        modelUrl: refs.viewer.src,
-        snapshot: refs.previewImg?.src,
-      };
-      window.addToBasket(item);
+  refs.addBasketBtn?.addEventListener('click', async () => {
+    if (!window.addToBasket || !refs.viewer?.src) return;
+    let snapshot = refs.previewImg?.src;
+    if (!snapshot || snapshot.includes('placehold.co')) {
+      snapshot = await captureModelSnapshot(refs.viewer.src);
     }
+    const item = { jobId: lastJobId, modelUrl: refs.viewer.src, snapshot };
+    window.addToBasket(item);
   });
 }
 
