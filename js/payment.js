@@ -14,6 +14,15 @@ const API_BASE = (window.API_ORIGIN || '') + '/api';
 const TZ = 'America/New_York';
 let flashTimerId = null;
 
+function ensureModelViewerLoaded() {
+  if (window.customElements?.get('model-viewer')) return;
+  const s = document.createElement('script');
+  s.type = 'module';
+  s.src =
+    'https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js';
+  document.head.appendChild(s);
+}
+
 function getCycleKey() {
   const now = new Date();
   const dateFmt = new Intl.DateTimeFormat('en-US', {
@@ -103,6 +112,7 @@ async function createCheckout(quantity, discount, discountCode, shippingInfo) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+  ensureModelViewerLoaded();
   if (window.setWizardStage) window.setWizardStage('purchase');
   // Safely initialize Stripe once the DOM is ready. If the Stripe library
   // failed to load, we fall back to plain redirects.
