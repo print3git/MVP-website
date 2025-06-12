@@ -91,6 +91,32 @@
         <p><strong>Username:</strong> <span id="mp-username"></span></p>
         <p><strong>Email:</strong> <span id="mp-email"></span></p>
       </div>
+      <div
+        id="earnings"
+        class="bg-[#2A2A2E] border border-white/10 p-6 rounded-3xl w-96 mb-6"
+      >
+        <h2 class="text-lg font-semibold mb-2">Earnings</h2>
+        <table class="w-full text-sm mb-2">
+          <thead>
+            <tr>
+              <th class="text-left">Amount</th>
+              <th class="text-left">Status</th>
+              <th class="text-left">Date</th>
+            </tr>
+          </thead>
+          <tbody id="commission-body"></tbody>
+        </table>
+        <p class="text-sm mb-2">
+          Pending: $<span id="total-pending">0.00</span> | Paid: $<span id="total-paid">0.00</span>
+        </p>
+        <button
+          id="payout-btn"
+          class="bg-[#30D5C8] text-[#1A1A1D] font-semibold px-3 py-1 rounded-xl hover:bg-[#28b7a8]"
+        >
+          Request Payout
+        </button>
+        <p id="payout-msg" class="text-sm mt-2"></p>
+      </div>
       <div id="models" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
       <div id="models-sentinel" class="h-8"></div>
     </main>
