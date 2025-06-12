@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Link Stripe</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="p-4 bg-[#1A1A1D] text-white">
+    <button id="connect" class="bg-blue-600 px-4 py-2 rounded">Link Stripe Account</button>
+    <script type="module">
+      const btn = document.getElementById('connect');
+      btn.addEventListener('click', async () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          window.location.href = 'login.html';
+          return;
+        }
+        const res = await fetch('/api/stripe/connect', {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          window.location.href = data.url;
+        }
+      });
+    </script>
+  </body>
+</html>
