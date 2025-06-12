@@ -66,6 +66,31 @@ let progressInterval = null;
 let progressStart = null;
 let usingViewerProgress = false;
 
+async function captureModelSnapshot(url) {
+  if (!url) return null;
+  const viewer = document.createElement('model-viewer');
+  viewer.crossOrigin = 'anonymous';
+  viewer.src = url;
+  viewer.setAttribute(
+    'environment-image',
+    'https://modelviewer.dev/shared-assets/environments/neutral.hdr'
+  );
+  viewer.style.position = 'fixed';
+  viewer.style.left = '-10000px';
+  viewer.style.width = '300px';
+  viewer.style.height = '300px';
+  document.body.appendChild(viewer);
+  try {
+    await viewer.updateComplete;
+    return await viewer.toDataURL('image/png');
+  } catch (err) {
+    console.error('Failed to capture snapshot', err);
+    return null;
+  } finally {
+    viewer.remove();
+  }
+}
+
 function startProgress(estimateMs = 20000) {
   if (!refs.progressWrapper) return;
   progressStart = Date.now();
@@ -482,16 +507,14 @@ async function init() {
     if (window.setWizardStage) window.setWizardStage('purchase');
   });
 
-  refs.addBasketBtn?.addEventListener('click', () => {
-    if (!window.addToBasket) return;
-    if (refs.viewer?.src) {
-      const item = {
-        jobId: lastJobId,
-        modelUrl: refs.viewer.src,
-        snapshot: refs.previewImg?.src,
-      };
-      window.addToBasket(item);
+  refs.addBasketBtn?.addEventListener('click', async () => {
+    if (!window.addToBasket || !refs.viewer?.src) return;
+    let snapshot = refs.previewImg?.src;
+    if (!snapshot || snapshot.includes('placehold.co')) {
+      snapshot = await captureModelSnapshot(refs.viewer.src);
     }
+    const item = { jobId: lastJobId, modelUrl: refs.viewer.src, snapshot };
+    window.addToBasket(item);
   });
 }
 
