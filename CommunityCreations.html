@@ -188,6 +188,29 @@
           class="absolute bottom-4 right-4 flex flex-col items-center"
         >
           <p class="mb-3 text-sm text-gray-400">Free UK Shipping</p>
+          <div id="tier-toggle" class="flex gap-1 mb-2 text-xs">
+            <button
+              type="button"
+              data-tier="bronze"
+              class="tier-option px-2 py-1 rounded-full border border-white/20"
+            >
+              Bronze
+            </button>
+            <button
+              type="button"
+              data-tier="silver"
+              class="tier-option px-2 py-1 rounded-full border border-white/20"
+            >
+              Silver
+            </button>
+            <button
+              type="button"
+              data-tier="gold"
+              class="tier-option px-2 py-1 rounded-full border border-white/20"
+            >
+              Gold
+            </button>
+          </div>
           <a
             id="modal-checkout"
             href="payment.html"
@@ -196,8 +219,9 @@
             onmouseover="this.style.opacity='0.85'"
             onmouseout="this.style.opacity='1'"
           >
-          Print from £27.99 →
+            Print for £34.99 →
           </a>
+          <p id="tier-scarcity" class="mt-1 text-xs text-red-300">Only 3 left at this tier!</p>
         </div>
         <button
           id="modal-add-basket"
@@ -217,6 +241,33 @@
         const checkoutBtn = document.getElementById('modal-checkout');
         const addBasketBtn = document.getElementById('modal-add-basket');
         const closeBtn = document.getElementById('close-modal');
+        const tierToggle = document.getElementById('tier-toggle');
+
+        function setTier(tier) {
+          tierToggle
+            ?.querySelectorAll('button[data-tier]')
+            .forEach((btn) => {
+              const active = btn.dataset.tier === tier;
+              btn.classList.toggle('bg-[#5ec2c5]', active);
+              btn.classList.toggle('text-[#1A1A1D]', active);
+            });
+          if (checkoutBtn) {
+            const price = tier === 'bronze'
+              ? 27.99
+              : tier === 'gold'
+              ? 59.99
+              : 34.99;
+            checkoutBtn.textContent = `Print for £${price.toFixed(2)} →`;
+          }
+          const material =
+            tier === 'bronze' ? 'single' : tier === 'gold' ? 'premium' : 'multi';
+          localStorage.setItem('print3Material', material);
+        }
+
+        tierToggle?.addEventListener('click', (ev) => {
+          const btn = ev.target.closest('button[data-tier]');
+          if (btn) setTier(btn.dataset.tier);
+        });
 
         function close() {
           modal.classList.add('hidden');
@@ -259,6 +310,7 @@
           }
         });
 
+        setTier('silver');
         init();
       });
     </script>
