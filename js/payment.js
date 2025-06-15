@@ -292,9 +292,11 @@ async function initPaymentPage() {
   );
   if (storedRadio) storedRadio.checked = true;
   if (storedMaterial === 'single') {
-    if (colorMenu) colorMenu.classList.remove('hidden');
     if (singleButton && storedColor) {
       singleButton.style.backgroundColor = storedColor;
+      if (colorMenu) colorMenu.classList.add('hidden');
+    } else if (colorMenu) {
+      colorMenu.classList.remove('hidden');
     }
   } else if (colorMenu) {
     colorMenu.classList.add('hidden');
