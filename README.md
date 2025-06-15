@@ -21,12 +21,14 @@ This repository contains the early MVP code for print2's website and backend.
 - `EMAIL_FROM` – address used for the "from" field in outgoing mail.
 - Optional: `PORT` and `HUNYUAN_PORT` to override the default ports.
 - Optional: `HUNYUAN_SERVER_URL` if your Hunyuan API runs on a custom URL.
+ - Optional: `DALLE_SERVER_URL` if the DALL-E server runs on a custom URL.
 
-2. Install dependencies for both servers:
+2. Install dependencies for the servers:
 
    ```bash
    cd backend && npm install
    cd hunyuan_server && npm install
+   cd ../dalle_server && npm install
    ```
 
 3. Initialize the database:
@@ -50,6 +52,7 @@ This repository contains the early MVP code for print2's website and backend.
    ```bash
    npm start            # inside backend/
    cd hunyuan_server && npm start  # inside backend/hunyuan_server/
+   cd ../dalle_server && npm start  # inside backend/dalle_server/
    ```
 
 6. (Optional) Run the purchase reminder job periodically:
