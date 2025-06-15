@@ -88,6 +88,19 @@ function computeSlotsByTime() {
   return 1;
 }
 
+function computeColorSlotsByTime() {
+  const dtf = new Intl.DateTimeFormat('en-US', {
+    timeZone: TZ,
+    hour12: false,
+    hour: 'numeric',
+  });
+  const hour = parseInt(dtf.format(new Date()), 10);
+  if (hour >= 15) return 3;
+  if (hour >= 12) return 4;
+  if (hour >= 9) return 5;
+  return 6;
+}
+
 function qs(name) {
   const params = new URLSearchParams(window.location.search);
   return params.get(name);
@@ -138,6 +151,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const costEl = document.getElementById('cost-estimate');
   const etaEl = document.getElementById('eta-estimate');
   const slotEl = document.getElementById('slot-count');
+  const colorSlotEl = document.getElementById('color-slot-count');
   const discountInput = document.getElementById('discount-code');
   const discountMsg = document.getElementById('discount-msg');
   const applyBtn = document.getElementById('apply-discount');
@@ -206,6 +220,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     slotEl.textContent = adjustedSlots(baseSlots);
     slotEl.style.visibility = 'visible';
+  }
+
+  if (colorSlotEl) {
+    colorSlotEl.style.visibility = 'hidden';
+    colorSlotEl.textContent = computeColorSlotsByTime();
+    colorSlotEl.style.visibility = 'visible';
   }
 
   async function updateEstimate() {
