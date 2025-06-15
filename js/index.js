@@ -498,6 +498,15 @@ async function init() {
         stopProgress();
       }
     });
+    refs.viewer.addEventListener('load', showModel, { once: true });
+    refs.viewer.addEventListener(
+      'error',
+      () => {
+        refs.viewer.src = FALLBACK_GLB;
+        showModel();
+      },
+      { once: true }
+    );
     await refs.viewer.updateComplete;
   }
   showModel();
