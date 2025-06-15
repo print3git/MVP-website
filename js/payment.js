@@ -17,6 +17,13 @@ const TZ = 'America/New_York';
 let flashTimerId = null;
 let flashSale = null;
 
+// Restore previously selected material option and colour
+const storedMaterial = localStorage.getItem('print3Material');
+const storedColor = localStorage.getItem('print3Color');
+if (storedMaterial && PRICES[storedMaterial]) {
+  selectedPrice = PRICES[storedMaterial];
+}
+
 function selectedMaterialValue() {
   const r = document.querySelector('#material-options input[name="material"]:checked');
   return r ? r.value : 'multi';
@@ -280,6 +287,18 @@ async function initPaymentPage() {
   const singleInput = document.getElementById('opt-single');
   const colorMenu = document.getElementById('single-color-menu');
   const singleButton = singleLabel?.querySelector('span');
+  const storedRadio = document.querySelector(
+    `#material-options input[value="${storedMaterial}"]`
+  );
+  if (storedRadio) storedRadio.checked = true;
+  if (storedMaterial === 'single') {
+    if (colorMenu) colorMenu.classList.remove('hidden');
+    if (singleButton && storedColor) {
+      singleButton.style.backgroundColor = storedColor;
+    }
+  } else if (colorMenu) {
+    colorMenu.classList.add('hidden');
+  }
   initPlaceAutocomplete();
   let discountCode = '';
   let discountValue = 0;
@@ -325,6 +344,10 @@ async function initPaymentPage() {
     originalTextures = mats.map(
       (m) => m.pbrMetallicRoughness?.baseColorTexture?.texture || null
     );
+    if (storedMaterial === 'single' && storedColor) {
+      const factor = hexToFactor(storedColor);
+      if (factor) applyModelColor(factor);
+    }
   });
 
   function updatePayButton() {
@@ -339,6 +362,7 @@ async function initPaymentPage() {
         selectedPrice = PRICES[r.value] || PRICES.single;
         updatePayButton();
         updateFlashSaleBanner();
+        localStorage.setItem('print3Material', r.value);
         if (colorMenu) {
           if (r.value === 'single') {
             colorMenu.classList.remove('hidden');
@@ -347,6 +371,7 @@ async function initPaymentPage() {
             // Reset the single colour button when another option is selected
             if (singleButton) singleButton.style.backgroundColor = '';
             if (originalColor) applyModelColor(originalColor, true);
+            localStorage.removeItem('print3Color');
           }
         }
       }
@@ -367,6 +392,8 @@ async function initPaymentPage() {
         singleButton.style.backgroundColor = color;
         const factor = hexToFactor(color);
         if (factor) applyModelColor(factor);
+        localStorage.setItem('print3Color', color);
+        localStorage.setItem('print3Material', 'single');
         colorMenu.classList.add('hidden');
       }
     });
