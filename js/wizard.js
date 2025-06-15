@@ -10,12 +10,12 @@ export function setWizardStage(stage) {
 }
 
 export function updateWizard() {
-  const stage = localStorage.getItem(STAGE_KEY) || 'prompt';
-  const order = ['prompt', 'building', 'print', 'purchase'];
+  let stage = localStorage.getItem(STAGE_KEY) || 'prompt';
+  if (stage === 'print') stage = 'purchase';
+  const order = ['prompt', 'building', 'purchase'];
   const map = {
     prompt: 'wizard-step-prompt',
     building: 'wizard-step-building',
-    print: 'wizard-step-print',
     purchase: 'wizard-step-purchase',
   };
   const idx = order.indexOf(stage);
