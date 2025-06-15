@@ -171,7 +171,7 @@
             </div>
 
             <!-- Material/Size Options -->
-            <fieldset id="material-options" class="flex w-full justify-evenly my-4">
+            <fieldset id="material-options" class="flex w-full justify-between my-4">
               <label id="single-label" class="cursor-pointer text-center relative inline-block">
                 <input
                   type="radio"
@@ -187,44 +187,10 @@
                   <span class="font-semibold">£25</span>
                   <span class="text-xs">single colour</span>
                 </span>
-                <div
-                  id="single-color-menu"
-                  class="absolute inset-0 flex items-center justify-center gap-2 p-2 bg-[#2A2A2E] border border-white/20 rounded-3xl hidden"
-                >
-                  <button
-                    type="button"
-                    class="w-24 h-24 rounded-full border border-white/20"
-                    style="background-color:#f87171"
-                    data-color="#f87171"
-                  ></button>
-                  <button
-                    type="button"
-                    class="w-24 h-24 rounded-full border border-white/20"
-                    style="background-color:#34d399"
-                    data-color="#34d399"
-                  ></button>
-                  <button
-                    type="button"
-                    class="w-24 h-24 rounded-full border border-white/20"
-                    style="background-color:#60a5fa"
-                    data-color="#60a5fa"
-                  ></button>
-                  <button
-                    type="button"
-                    class="w-24 h-24 rounded-full border border-white/20"
-                    style="background-color:#fbbf24"
-                    data-color="#fbbf24"
-                  ></button>
-                  <button
-                    type="button"
-                    class="w-24 h-24 rounded-full border border-white/20"
-                    style="background-color:#a78bfa"
-                    data-color="#a78bfa"
-                  ></button>
-                </div>
               </label>
 
-              <label class="cursor-pointer text-center">
+              <!-- 👇 MIDDLE BUTTON: manually moved right by 26px here -->
+              <label class="cursor-pointer text-center relative">
                 <input
                   type="radio"
                   name="material"
@@ -233,13 +199,17 @@
                   class="sr-only peer"
                 />
                 <span
-                  class="w-24 h-24 flex flex-col items-center justify-center rounded-full border border-white/20 peer-checked:bg-[#30D5C8] peer-checked:text-[#1A1A1D]"
+                  class="w-24 h-24 flex flex-col items-center justify-center rounded-full border border-white/20
+                         peer-checked:bg-[#30D5C8] peer-checked:text-[#1A1A1D] relative left-[25.5px]"
                 >
                   <span class="font-semibold">£35</span>
                   <span class="text-xs">multi-colour</span>
                 </span>
-                <span class="block mt-1 text-xs text-red-300">
-                  Only <span id="color-slot-count" style="visibility: hidden"></span> coloured prints left
+                <!-- 👇 RED TEXT: manually moved right by 26px here; only this span shifts -->
+                <span
+                  class="block text-xs mt-1 text-red-300"
+                >
+                  Only 1<span id="color-slot-count" style="visibility: hidden"></span> coloured prints left
                 </span>
               </label>
 
