@@ -37,7 +37,7 @@ if (
 const API_BASE = (window.API_ORIGIN || '') + '/api';
 // Local fallback model used when generation fails or the viewer hasn't loaded a model yet.
 // Bundled locally so it works offline and avoids external network issues.
-const FALLBACK_GLB = 'models/Astronaut.glb';
+const FALLBACK_GLB = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
 const EXAMPLES = ['cute robot figurine', 'ornate chess piece', 'geometric flower vase'];
 const TRENDING = ['dragon statue', 'space rover', 'anime character'];
 const $ = (id) => document.getElementById(id);
