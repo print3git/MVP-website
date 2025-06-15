@@ -426,8 +426,9 @@
           .getBoundingClientRect();
         const checkoutRect = checkout.getBoundingClientRect();
 
-        /* Horizontal: match the left edge of the Checkout button */
-        const left = checkoutRect.left - wrapperRect.left;
+        /* Horizontal: match the left edge of the Checkout button
+           and shift slightly to the right (~12px) */
+        const left = checkoutRect.left - wrapperRect.left + 12;
 
         /* Vertical: place quote just below the viewer (16 px gap) */
         const top = wrapperRect.height + 16;
