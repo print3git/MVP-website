@@ -9,11 +9,35 @@ export function getBasket() {
 function saveBasket(items) {
   localStorage.setItem(KEY, JSON.stringify(items));
 }
-export function addToBasket(item) {
+export function addToBasket(item, opts = {}) {
   const items = getBasket();
-  items.push(item);
+  items.push({ ...item, auto: !!opts.auto });
   saveBasket(items);
   updateBadge();
+  renderList();
+}
+
+export function addAutoItem(item) {
+  const items = getBasket();
+  const idx = items.findIndex((it) => it.auto);
+  if (idx !== -1) {
+    items.splice(idx, 1);
+  }
+  items.push({ ...item, auto: true });
+  saveBasket(items);
+  updateBadge();
+  renderList();
+}
+
+export function manualizeItem(predicate) {
+  const items = getBasket();
+  const idx = items.findIndex((it) => it.auto && predicate(it));
+  if (idx !== -1) {
+    items[idx].auto = false;
+    saveBasket(items);
+  }
+  updateBadge();
+  renderList();
 }
 export function removeFromBasket(index) {
   const items = getBasket();
@@ -150,4 +174,6 @@ export function setupBasketUI() {
 }
 window.addEventListener('DOMContentLoaded', setupBasketUI);
 window.addToBasket = addToBasket;
+window.addAutoItem = addAutoItem;
+window.manualizeItem = manualizeItem;
 window.getBasket = getBasket;
