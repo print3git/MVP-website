@@ -2,7 +2,9 @@
 // page if the network request for Stripe fails. This variable will be assigned
 // once the DOM content is ready.
 let stripe = null;
-const FALLBACK_GLB = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
+// Use a bundled copy of the astronaut model so the payment page works offline
+// and is not dependent on external CDNs.
+const FALLBACK_GLB = 'models/Astronaut.glb';
 const PRICES = {
   single: 2500,
   multi: 3500,
