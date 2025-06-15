@@ -231,7 +231,7 @@ async function initPaymentPage() {
 
   function updatePayButton() {
     if (payBtn) {
-      payBtn.textContent = `Pay £${(selectedPrice / 100).toFixed(0)}`;
+      payBtn.textContent = `Pay £${(selectedPrice / 100).toFixed(2)}`;
     }
   }
 
