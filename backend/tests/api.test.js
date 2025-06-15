@@ -543,3 +543,15 @@ test('POST /api/discount-code requires code', async () => {
   expect(res.status).toBe(400);
   expect(db.query).not.toHaveBeenCalled();
 });
+
+test('POST /api/dalle returns image', async () => {
+  axios.post.mockResolvedValueOnce({ data: { image: 'data:image/png;base64,aaa' } });
+  const res = await request(app).post('/api/dalle').send({ prompt: 'cat' });
+  expect(res.status).toBe(200);
+  expect(res.body.image).toMatch(/^data:image\/png;base64,/);
+});
+
+test('POST /api/dalle requires prompt', async () => {
+  const res = await request(app).post('/api/dalle').send({});
+  expect(res.status).toBe(400);
+});
