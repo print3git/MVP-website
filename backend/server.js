@@ -100,8 +100,8 @@ app.post('/api/register', async (req, res) => {
       [username, email, hash]
     );
     await db.query('INSERT INTO user_profiles(user_id) VALUES($1)', [rows[0].id]);
-    const token = jwt.sign({ id: rows[0].id, username }, AUTH_SECRET);
-    res.json({ token });
+    const token = jwt.sign({ id: rows[0].id, username, isAdmin: false }, AUTH_SECRET);
+    res.json({ token, isAdmin: false });
   } catch (err) {
     logError(err);
     res.status(500).json({ error: 'Registration failed' });
@@ -139,8 +139,8 @@ app.post('/api/login', async (req, res) => {
     if (!match) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
-    const token = jwt.sign({ id: user.id, username }, AUTH_SECRET);
-    res.json({ token });
+    const token = jwt.sign({ id: user.id, username, isAdmin: user.is_admin === true }, AUTH_SECRET);
+    res.json({ token, isAdmin: user.is_admin === true });
   } catch (err) {
     logError(err);
     res.status(500).json({ error: 'Login failed' });
@@ -835,10 +835,14 @@ app.post('/api/competitions/:id/enter', authRequired, async (req, res) => {
 });
 
 function adminCheck(req, res, next) {
-  if (req.headers['x-admin-token'] !== ADMIN_TOKEN) {
-    return res.status(401).json({ error: 'Admin token required' });
-  }
-  next();
+  authOptional(req, res, () => {
+    const headerMatch = req.headers['x-admin-token'] === ADMIN_TOKEN;
+    const userAdmin = req.user && req.user.isAdmin === true;
+    if (!headerMatch && !userAdmin) {
+      return res.status(401).json({ error: 'Admin token required' });
+    }
+    next();
+  });
 }
 
 app.post('/api/admin/competitions', adminCheck, async (req, res) => {

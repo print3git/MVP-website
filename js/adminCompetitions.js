@@ -1,9 +1,19 @@
 function getToken() {
-  return localStorage.getItem('adminToken') || '';
+  return (
+    localStorage.getItem('adminToken') || localStorage.getItem('token') || ''
+  );
 }
 
 function setToken(token) {
   localStorage.setItem('adminToken', token);
+}
+
+function authHeaders() {
+  const admin = localStorage.getItem('adminToken');
+  if (admin) return { 'x-admin-token': admin };
+  const user = localStorage.getItem('token');
+  if (user) return { Authorization: `Bearer ${user}` };
+  return {};
 }
 
 const API_BASE = (window.API_ORIGIN || '') + '/api';
@@ -11,7 +21,9 @@ const API_BASE = (window.API_ORIGIN || '') + '/api';
 async function load() {
   const list = document.getElementById('list');
   list.textContent = 'Loading...';
-  const res = await fetch(`${API_BASE}/competitions/active`);
+  const res = await fetch(`${API_BASE}/competitions/active`, {
+    headers: authHeaders(),
+  });
   if (!res.ok) {
     list.textContent = 'Failed to load competitions';
     return;
@@ -43,7 +55,7 @@ async function load() {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'x-admin-token': getToken(),
+          ...authHeaders(),
         },
         body: JSON.stringify(body),
       });
@@ -58,7 +70,7 @@ async function load() {
 
 document.addEventListener('DOMContentLoaded', () => {
   const tokenInput = document.getElementById('token');
-  tokenInput.value = getToken();
+  tokenInput.value = localStorage.getItem('adminToken') || '';
   document.getElementById('set-token').addEventListener('click', () => {
     setToken(tokenInput.value.trim());
     load();
