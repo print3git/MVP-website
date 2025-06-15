@@ -52,6 +52,67 @@ async function loadMore() {
   state.loading = false;
 }
 
+async function loadCommissions() {
+  const token = localStorage.getItem('token');
+  if (!token) return;
+  try {
+    const res = await fetch(`${API_BASE}/commissions`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) return;
+    const data = await res.json();
+    const body = document.getElementById('commission-body');
+    body.innerHTML = '';
+    data.commissions.forEach((c) => {
+      const tr = document.createElement('tr');
+      const amount = (c.commission_cents / 100).toFixed(2);
+      const date = c.created_at
+        ? new Date(c.created_at).toLocaleDateString()
+        : '';
+      tr.innerHTML = `
+        <td class="px-2 py-1">$${amount}</td>
+        <td class="px-2 py-1 capitalize">${c.status}</td>
+        <td class="px-2 py-1">${date}</td>`;
+      body.appendChild(tr);
+    });
+    document.getElementById('total-pending').textContent = (
+      data.totalPending / 100
+    ).toFixed(2);
+    document.getElementById('total-paid').textContent = (
+      data.totalPaid / 100
+    ).toFixed(2);
+  } catch (err) {
+    console.error('Failed to load commissions', err);
+  }
+}
+
+async function requestPayout() {
+  const token = localStorage.getItem('token');
+  if (!token) return;
+  const msg = document.getElementById('payout-msg');
+  msg.textContent = '';
+  try {
+    const res = await fetch(`${API_BASE}/payouts`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (res.ok) {
+      msg.classList.remove('text-red-400');
+      msg.classList.add('text-green-400');
+      msg.textContent = 'Payout requested';
+    } else {
+      const data = await res.json();
+      msg.classList.remove('text-green-400');
+      msg.classList.add('text-red-400');
+      msg.textContent = data.error || 'Request failed';
+    }
+  } catch (err) {
+    msg.classList.remove('text-green-400');
+    msg.classList.add('text-red-400');
+    msg.textContent = 'Request failed';
+  }
+}
+
 function createObserver() {
   const sentinel = document.getElementById('models-sentinel');
   if (!sentinel) return;
@@ -77,6 +138,8 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.removeItem('token');
     window.location.href = 'index.html';
   });
+  document.getElementById('payout-btn')?.addEventListener('click', requestPayout);
+  loadCommissions();
   createObserver();
   loadMore();
 });
