@@ -75,6 +75,13 @@ let progressInterval = null;
 let progressStart = null;
 let usingViewerProgress = false;
 
+function updateWizardFromInputs() {
+  if (!window.setWizardStage) return;
+  const hasPrompt = refs.promptInput.value.trim().length >= 5;
+  const hasImages = uploadedFiles.length > 0;
+  window.setWizardStage(hasPrompt || hasImages ? 'building' : 'prompt');
+}
+
 async function captureModelSnapshot(url) {
   if (!url) return null;
   const viewer = document.createElement('model-viewer');
@@ -133,11 +140,13 @@ function stopProgress() {
 const hideAll = () => {
   refs.previewImg.style.display = 'none';
   refs.loader.style.display = 'none';
+
   refs.viewer.style.opacity = '0';
   refs.viewer.style.pointerEvents = 'none';
   if ('paused' in refs.viewer) {
     refs.viewer.paused = true;
   } else if (typeof refs.viewer.pause === 'function') {
+
     refs.viewer.pause();
   }
 };
@@ -149,11 +158,13 @@ const showLoader = () => {
 const showModel = () => {
   hideAll();
   refs.viewer.style.display = 'block';
+
   refs.viewer.style.opacity = '1';
   refs.viewer.style.pointerEvents = 'auto';
   if ('paused' in refs.viewer) {
     refs.viewer.paused = false;
   } else if (typeof refs.viewer.play === 'function') {
+
     refs.viewer.play();
   }
   stopProgress();
@@ -255,7 +266,7 @@ refs.promptInput.addEventListener('input', () => {
   editsPending = true;
   refs.buyNowBtn?.classList.add('hidden');
   setStep('prompt');
-  if (window.setWizardStage) window.setWizardStage('prompt');
+  updateWizardFromInputs();
 });
 
 refs.promptInput.addEventListener('keydown', (e) => {
@@ -309,6 +320,7 @@ function renderThumbnails(arr) {
       uploadedFiles.splice(i, 1);
       localStorage.setItem('print3Images', JSON.stringify(arr));
       renderThumbnails(arr);
+      updateWizardFromInputs();
     };
     wrap.appendChild(btn);
     refs.imagePreviewArea.appendChild(wrap);
@@ -350,6 +362,7 @@ async function processFiles(files) {
   editsPending = true;
   refs.buyNowBtn?.classList.add('hidden');
   setStep('prompt');
+  updateWizardFromInputs();
 }
 
 refs.uploadInput.addEventListener('change', (e) => {
@@ -422,8 +435,15 @@ refs.submitBtn.addEventListener('click', async () => {
     refs.viewer.src = url;
     await refs.viewer.updateComplete;
     showModel();
+    if (window.addAutoItem) {
+      let snapshot = refs.previewImg?.src;
+      if (!snapshot || snapshot.includes('placehold.co')) {
+        snapshot = await captureModelSnapshot(url);
+      }
+      window.addAutoItem({ jobId: lastJobId, modelUrl: url, snapshot });
+    }
     setStep('model');
-    if (window.setWizardStage) window.setWizardStage('print');
+    if (window.setWizardStage) window.setWizardStage('purchase');
     hideDemo();
 
     refs.checkoutBtn.classList.remove('hidden');
@@ -499,6 +519,7 @@ async function init() {
     refs.examples.textContent = `Try: ${EXAMPLES.join(' · ')}`;
   }
   if (thumbs.length) renderThumbnails(thumbs);
+  updateWizardFromInputs();
 
   if (refs.trending) {
     refs.trending.textContent = `Trending: ${TRENDING.join(' · ')}`;
@@ -537,7 +558,14 @@ async function init() {
       snapshot = await captureModelSnapshot(refs.viewer.src);
     }
     const item = { jobId: lastJobId, modelUrl: refs.viewer.src, snapshot };
-    window.addToBasket(item);
+    if (
+      window.manualizeItem &&
+      window.getBasket?.().some((it) => it.auto && it.modelUrl === item.modelUrl)
+    ) {
+      window.manualizeItem((it) => it.modelUrl === item.modelUrl);
+    } else {
+      window.addToBasket(item);
+    }
   });
 }
 

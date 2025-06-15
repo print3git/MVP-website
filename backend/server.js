@@ -460,6 +460,39 @@ app.post('/api/profile', authRequired, async (req, res) => {
   }
 });
 
+app.post('/api/stripe/connect', authRequired, async (req, res) => {
+  try {
+    const profileRes = await db.query(
+      'SELECT stripe_account_id FROM user_profiles WHERE user_id=$1',
+      [req.user.id]
+    );
+    let accountId = profileRes.rows[0] && profileRes.rows[0].stripe_account_id;
+    if (!accountId) {
+      const emailRes = await db.query('SELECT email FROM users WHERE id=$1', [req.user.id]);
+      const acct = await stripe.accounts.create({
+        type: 'express',
+        email: emailRes.rows[0] && emailRes.rows[0].email,
+      });
+      accountId = acct.id;
+      await db.query('UPDATE user_profiles SET stripe_account_id=$1 WHERE user_id=$2', [
+        accountId,
+        req.user.id,
+      ]);
+    }
+    const origin = req.headers.origin || '';
+    const link = await stripe.accountLinks.create({
+      account: accountId,
+      refresh_url: `${origin}/stripe-connect.html`,
+      return_url: `${origin}/my_profile.html`,
+      type: 'account_onboarding',
+    });
+    res.json({ url: link.url });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to create account link' });
+  }
+});
+
 app.get('/api/users/:username/models', async (req, res) => {
   const limit = parseInt(req.query.limit, 10) || 10;
   const offset = parseInt(req.query.offset, 10) || 0;
@@ -857,6 +890,38 @@ app.post('/api/commissions/:id/mark-paid', adminCheck, async (req, res) => {
   } catch (err) {
     logError(err);
     res.status(500).json({ error: 'Failed to update commission' });
+  }
+});
+
+app.post('/api/payouts', authRequired, async (req, res) => {
+  try {
+    const acctRes = await db.query('SELECT stripe_account_id FROM user_profiles WHERE user_id=$1', [
+      req.user.id,
+    ]);
+    const accountId = acctRes.rows[0] && acctRes.rows[0].stripe_account_id;
+    if (!accountId) {
+      return res.status(400).json({ error: 'Stripe account not linked' });
+    }
+    const pendingRes = await db.query(
+      'SELECT commission_cents FROM model_commissions WHERE seller_user_id=$1 AND status=$2',
+      [req.user.id, 'pending']
+    );
+    const total = pendingRes.rows.reduce((s, r) => s + r.commission_cents, 0);
+    if (total === 0) return res.json({ totalPaid: 0 });
+    const transfer = await stripe.transfers.create({
+      amount: total,
+      currency: 'usd',
+      destination: accountId,
+      description: 'Commission payout',
+    });
+    await db.query(
+      "UPDATE model_commissions SET status='paid' WHERE seller_user_id=$1 AND status='pending'",
+      [req.user.id]
+    );
+    res.json({ totalPaid: total, transferId: transfer.id });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Payout failed' });
   }
 });
 
