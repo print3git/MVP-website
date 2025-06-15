@@ -601,11 +601,10 @@ async function init() {
       .then((data) => {
         const prints = data?.printsSold ?? 42;
 
-        el.innerHTML = `\u{1F525} ${prints} prints sold<br>in last 24 h`;
+        el.textContent = `\u{1F525} ${prints} in last 24hrs`;
       })
       .catch(() => {
-        el.innerHTML =
-          '\u{1F525} 42 prints sold<br>in last 24 h';
+        el.textContent = '\u{1F525} 42 in last 24hrs';
 
       });
   }
