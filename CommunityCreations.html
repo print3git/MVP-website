@@ -192,23 +192,29 @@
             <button
               type="button"
               data-tier="bronze"
-              class="tier-option px-2 py-1 rounded-full border border-white/20"
+
+              class="tier-option px-2 py-1 rounded-full border border-white/20 opacity-50" style="background-color:#cd7f32"
             >
-              Bronze
+              1 colour
+
             </button>
             <button
               type="button"
               data-tier="silver"
-              class="tier-option px-2 py-1 rounded-full border border-white/20"
+
+              class="tier-option px-2 py-1 rounded-full border border-white/20 opacity-50" style="background-color:#c0c0c0"
             >
-              Silver
+              multicolour
+
             </button>
             <button
               type="button"
               data-tier="gold"
-              class="tier-option px-2 py-1 rounded-full border border-white/20"
+
+              class="tier-option px-2 py-1 rounded-full border border-white/20 opacity-50" style="background-color:#ffd700"
             >
-              Gold
+              premium
+
             </button>
           </div>
           <a
@@ -248,8 +254,12 @@
             ?.querySelectorAll('button[data-tier]')
             .forEach((btn) => {
               const active = btn.dataset.tier === tier;
-              btn.classList.toggle('bg-[#5ec2c5]', active);
-              btn.classList.toggle('text-[#1A1A1D]', active);
+
+              btn.classList.toggle("ring-2", active);
+              btn.classList.toggle("ring-white", active);
+              btn.classList.toggle("opacity-100", active);
+              btn.classList.toggle("opacity-50", !active);
+
             });
           if (checkoutBtn) {
             const price = tier === 'bronze'
