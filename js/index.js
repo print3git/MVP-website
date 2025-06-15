@@ -599,12 +599,12 @@ async function init() {
     fetch(`${API_BASE}/stats`)
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
-        const prints = data?.printsSold ?? 42;
+        const prints = data?.printsSold ?? 41;
 
         el.textContent = `\u{1F525} ${prints} in last 24 hr`;
       })
       .catch(() => {
-        el.textContent = '\u{1F525} 42 in last 24 hr';
+        el.textContent = '\u{1F525} 41 in last 24 hr';
 
       });
   }
