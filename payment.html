@@ -306,13 +306,16 @@
 
             <p id="cost-estimate" class="text-sm text-center"></p>
             <p id="eta-estimate" class="text-sm text-center"></p>
-            <button
-              id="submit-payment"
-              type="button"
-              class="w-full bg-[#30D5C8] text-[#1A1A1D] py-3 rounded-xl font-semibold hover:bg-[#28b7a8] transition"
-            >
-              Pay £34.99
-            </button>
+            <div class="flex items-center justify-center gap-2">
+              <button
+                id="submit-payment"
+                type="button"
+                class="bg-[#30D5C8] text-[#1A1A1D] py-3 px-5 rounded-xl font-semibold hover:bg-[#28b7a8] transition"
+              >
+                Pay £34.99
+              </button>
+              <span class="guarantee-badge text-sm">🛡️ Money-Back Guarantee</span>
+            </div>
           </form>
           <p class="mt-2 text-xs text-red-300 text-center">
             Only <span id="slot-count" style="visibility: hidden"></span> print slots remaining
