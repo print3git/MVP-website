@@ -15,6 +15,59 @@ const API_BASE = (window.API_ORIGIN || '') + '/api';
 // Time zone used to reset local purchase counts at 1 AM Eastern
 const TZ = 'America/New_York';
 let flashTimerId = null;
+let flashSale = null;
+
+function selectedMaterialValue() {
+  const r = document.querySelector('#material-options input[name="material"]:checked');
+  return r ? r.value : 'multi';
+}
+
+function updateFlashSaleBanner() {
+  const flashBanner = document.getElementById('flash-banner');
+  const flashTimer = document.getElementById('flash-timer');
+  if (!flashBanner || !flashTimer) return;
+  if (!flashSale) {
+    flashBanner.hidden = true;
+    return;
+  }
+  const end = new Date(flashSale.end_time).getTime();
+  if (Date.now() >= end || selectedMaterialValue() !== flashSale.product_type) {
+    flashBanner.hidden = true;
+    return;
+  }
+  flashBanner.innerHTML = `Flash sale! <span id="flash-timer">5:00</span> left - ${flashSale.discount_percent}% off`;
+  const timerEl = flashBanner.querySelector('#flash-timer');
+  const update = () => {
+    const diff = end - Date.now();
+    if (diff <= 0 || selectedMaterialValue() !== flashSale.product_type) {
+      flashBanner.hidden = true;
+      if (flashTimerId) {
+        clearTimeout(flashTimerId);
+        flashTimerId = null;
+      }
+      return;
+    }
+    const diffSec = Math.ceil(diff / 1000);
+    const m = Math.floor(diffSec / 60);
+    const s = String(diffSec % 60).padStart(2, '0');
+    timerEl.textContent = `${m}:${s}`;
+    flashTimerId = setTimeout(update, 1000);
+  };
+  update();
+  flashBanner.hidden = false;
+}
+
+async function fetchFlashSale() {
+  try {
+    const resp = await fetch(`${API_BASE}/flash-sale`);
+    if (resp.ok) {
+      flashSale = await resp.json();
+      updateFlashSaleBanner();
+      return;
+    }
+  } catch {}
+  startFlashDiscount();
+}
 
 function ensureModelViewerLoaded() {
   if (window.customElements?.get('model-viewer')) {
@@ -283,6 +336,7 @@ async function initPaymentPage() {
       if (r.checked) {
         selectedPrice = PRICES[r.value] || PRICES.single;
         updatePayButton();
+        updateFlashSaleBanner();
         if (colorMenu) {
           if (r.value === 'single') {
             colorMenu.classList.remove('hidden');
@@ -406,7 +460,7 @@ async function initPaymentPage() {
   }
 
   if (flashBanner) {
-    startFlashDiscount();
+    await fetchFlashSale();
   }
 
   // Prefill shipping fields from saved profile
@@ -467,6 +521,13 @@ async function initPaymentPage() {
     if (end && end > Date.now()) {
       discount += Math.round(selectedPrice * 0.05);
     }
+    if (
+      flashSale &&
+      Date.now() < new Date(flashSale.end_time).getTime() &&
+      selectedMaterialValue() === flashSale.product_type
+    ) {
+      discount += Math.round(selectedPrice * (flashSale.discount_percent / 100));
+    }
     const shippingInfo = {
       name: document.getElementById('ship-name').value,
       address: document.getElementById('ship-address').value,
@@ -489,6 +550,7 @@ async function initPaymentPage() {
       });
     }
   };
+  window.payHandler = payHandler;
 
   document.getElementById('submit-payment').addEventListener('click', () => {
     const popup = document.getElementById('bulk-discount-popup');

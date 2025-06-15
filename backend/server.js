@@ -979,6 +979,52 @@ app.post('/api/discount-code', async (req, res) => {
   res.json({ discount: amount });
 });
 
+app.get('/api/flash-sale', async (req, res) => {
+  try {
+    const { rows } = await db.query(
+      `SELECT * FROM flash_sales
+       WHERE active=TRUE AND start_time<=NOW() AND end_time>NOW()
+       ORDER BY start_time DESC LIMIT 1`
+    );
+    if (!rows.length) return res.sendStatus(404);
+    res.json(rows[0]);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to fetch flash sale' });
+  }
+});
+
+app.post('/api/admin/flash-sale', adminCheck, async (req, res) => {
+  const { discount_percent, product_type, start_time, end_time } = req.body;
+  if (discount_percent == null || !product_type || !start_time || !end_time) {
+    return res.status(400).json({ error: 'Missing fields' });
+  }
+  try {
+    const { rows } = await db.query(
+      `INSERT INTO flash_sales(discount_percent, product_type, start_time, end_time, active)
+       VALUES($1,$2,$3,$4,TRUE) RETURNING *`,
+      [discount_percent, product_type, start_time, end_time]
+    );
+    res.json(rows[0]);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to create sale' });
+  }
+});
+
+app.delete('/api/admin/flash-sale/:id', adminCheck, async (req, res) => {
+  try {
+    const { rows } = await db.query('UPDATE flash_sales SET active=FALSE WHERE id=$1 RETURNING *', [
+      req.params.id,
+    ]);
+    if (!rows.length) return res.status(404).json({ error: 'Not found' });
+    res.json(rows[0]);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to end sale' });
+  }
+});
+
 /**
  * POST /api/create-order
  * Create a Stripe Checkout session
