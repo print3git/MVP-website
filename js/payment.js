@@ -4,7 +4,7 @@
 let stripe = null;
 // Use a bundled copy of the astronaut model so the payment page works offline
 // and is not dependent on external CDNs.
-const FALLBACK_GLB = 'models/Astronaut.glb';
+const FALLBACK_GLB = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
 const PRICES = {
   single: 2500,
   multi: 3500,
