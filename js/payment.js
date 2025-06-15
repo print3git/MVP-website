@@ -6,9 +6,9 @@ let stripe = null;
 // and is not dependent on external CDNs.
 const FALLBACK_GLB = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
 const PRICES = {
-  single: 2500,
-  multi: 3500,
-  premium: 6000,
+  single: 2499,
+  multi: 3499,
+  premium: 5999,
 };
 let selectedPrice = PRICES.multi;
 const API_BASE = (window.API_ORIGIN || '') + '/api';
@@ -228,10 +228,41 @@ async function initPaymentPage() {
   const singleButton = singleLabel?.querySelector('span');
   let discountCode = '';
   let discountValue = 0;
+  let originalColor = null;
+
+  function hexToFactor(hex) {
+    const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return m
+      ? [
+          parseInt(m[1], 16) / 255,
+          parseInt(m[2], 16) / 255,
+          parseInt(m[3], 16) / 255,
+          1,
+        ]
+      : null;
+  }
+
+  function applyModelColor(factor) {
+    if (!viewer || !factor) return;
+    const apply = () => {
+      if (!viewer.model) return;
+      viewer.model.materials.forEach((mat) => {
+        mat.pbrMetallicRoughness.setBaseColorFactor(factor);
+      });
+    };
+    if (viewer.model) apply();
+    else viewer.addEventListener('load', apply, { once: true });
+  }
+
+  viewer.addEventListener('load', () => {
+    const mat = viewer.model?.materials?.[0];
+    if (mat?.pbrMetallicRoughness?.baseColorFactor)
+      originalColor = mat.pbrMetallicRoughness.baseColorFactor.slice();
+  });
 
   function updatePayButton() {
     if (payBtn) {
-      payBtn.textContent = `Pay £${(selectedPrice / 100).toFixed(0)}`;
+      payBtn.textContent = `Pay £${(selectedPrice / 100).toFixed(2)}`;
     }
   }
 
@@ -247,6 +278,7 @@ async function initPaymentPage() {
             colorMenu.classList.add('hidden');
             // Reset the single colour button when another option is selected
             if (singleButton) singleButton.style.backgroundColor = '';
+            if (originalColor) applyModelColor(originalColor);
           }
         }
       }
@@ -265,6 +297,8 @@ async function initPaymentPage() {
       if (btn) {
         const color = btn.dataset.color;
         singleButton.style.backgroundColor = color;
+        const factor = hexToFactor(color);
+        if (factor) applyModelColor(factor);
         colorMenu.classList.add('hidden');
       }
     });

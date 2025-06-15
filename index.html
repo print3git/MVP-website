@@ -259,7 +259,7 @@
               onmouseover="this.style.opacity='0.85'"
               onmouseout="this.style.opacity='1'"
             >
-              Print it for £25 →
+              Print for £24.99 →
             </a>
           </div>
           <button
@@ -367,12 +367,16 @@
         <button
           id="exit-discount-close"
           class="absolute -top-3 -right-3 w-[3rem] h-[3rem] rounded-full bg-white text-black flex items-center justify-center z-50"
+
           aria-label="Close"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
+
             class="w-7 h-7"
+
+         
             fill="none"
             stroke="currentColor"
             stroke-width="3"
@@ -426,8 +430,9 @@
           .getBoundingClientRect();
         const checkoutRect = checkout.getBoundingClientRect();
 
-        /* Horizontal: match the left edge of the Checkout button */
-        const left = checkoutRect.left - wrapperRect.left;
+        /* Horizontal: match the left edge of the Checkout button
+           and shift slightly to the right (~12px) */
+        const left = checkoutRect.left - wrapperRect.left + 12;
 
         /* Vertical: place quote just below the viewer (16 px gap) */
         const top = wrapperRect.height + 16;
