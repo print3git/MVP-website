@@ -34,6 +34,12 @@ export function updateWizard() {
       el.classList.remove('bg-[#2A2A2E]', 'bg-[#30D5C8]');
     }
   });
+
+  const slots = document.getElementById('wizard-slots');
+  if (slots) {
+    if (idx >= 2) slots.classList.remove('hidden');
+    else slots.classList.add('hidden');
+  }
 }
 
 document.addEventListener('DOMContentLoaded', updateWizard);
