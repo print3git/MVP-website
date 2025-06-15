@@ -96,7 +96,6 @@
           class="relative w-full md:w-1/2 max-w-lg h-80 bg-[#2A2A2E] border border-white/10 rounded-3xl overflow-visible"
         >
           <!-- fallback still-image (hidden)  -->
-
           <img
             id="preview-img"
             src="https://placehold.co/600x400/2A2A2E/2A2A2E?text="
@@ -106,7 +105,6 @@
           />
 
           <!-- The astronaut now loads eagerly and is always visible  -->
-
           <model-viewer
             id="viewer"
             src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
@@ -181,7 +179,7 @@
             </div>
 
             <!-- Material/Size Options -->
-            <fieldset id="material-options" class="flex justify-around my-4">
+            <fieldset id="material-options" class="flex justify-center space-x-8 my-4">
               <label id="single-label" class="cursor-pointer text-center relative inline-block">
                 <input
                   type="radio"
@@ -233,6 +231,7 @@
                   ></button>
                 </div>
               </label>
+
               <label class="cursor-pointer text-center">
                 <input
                   type="radio"
@@ -251,9 +250,7 @@
                   Only <span id="color-slot-count" style="visibility: hidden"></span> coloured prints left
                 </span>
               </label>
-              <p class="block mt-1 text-xs text-red-300 text-center">
-                Only <span id="color-slot-count" style="visibility: hidden"></span> coloured prints left
-              </p>
+
               <label class="cursor-not-allowed text-center opacity-50">
                 <input
                   type="radio"
@@ -348,7 +345,7 @@
         >
           Close
         </button>
-    </div>
+      </div>
     </div>
 
     <!-- Bulk discount info -->
@@ -367,12 +364,10 @@
     </div>
 
     <!-- ─────────── Init -->
-
     <script src="js/modelViewerTouchFix.js"></script>
     <script type="module" src="js/wizard.js"></script>
     <script type="module" src="js/payment.js"></script>
     <script type="module" src="js/exitDiscount.js"></script>
-
     <script>
       document.addEventListener('DOMContentLoaded', () => {
         const link = document.getElementById('back-link');
@@ -392,6 +387,5 @@
       });
     </script>
     <script type="module" src="js/basket.js"></script>
-
   </body>
 </html>
