@@ -175,16 +175,22 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (r.checked) {
         selectedPrice = PRICES[r.value] || PRICES.single;
         updatePayButton();
-        if (colorMenu) colorMenu.classList.add('hidden');
+        if (colorMenu) {
+          if (r.value === 'single') {
+            colorMenu.classList.remove('hidden');
+          } else {
+            colorMenu.classList.add('hidden');
+          }
+        }
       }
     });
   });
 
   if (singleInput && colorMenu && singleButton) {
     singleInput.addEventListener('click', () => {
-      if (singleInput.checked) {
-        // Toggle menu visibility without double triggering
-        colorMenu.classList.toggle('hidden');
+      // If already selected, allow reopening the color menu on click
+      if (singleInput.checked && colorMenu.classList.contains('hidden')) {
+        colorMenu.classList.remove('hidden');
       }
     });
     colorMenu.addEventListener('click', (ev) => {
