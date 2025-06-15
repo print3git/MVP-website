@@ -600,11 +600,13 @@ async function init() {
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
         const prints = data?.printsSold ?? 42;
+
         el.innerHTML = `\u{1F525} ${prints} prints sold<br>in last 24 h`;
       })
       .catch(() => {
         el.innerHTML =
           '\u{1F525} 42 prints sold<br>in last 24 h';
+
       });
   }
 
