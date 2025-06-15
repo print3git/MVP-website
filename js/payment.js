@@ -226,6 +226,7 @@ async function initPaymentPage() {
   const singleInput = document.getElementById('opt-single');
   const colorMenu = document.getElementById('single-color-menu');
   const singleButton = singleLabel?.querySelector('span');
+  initPlaceAutocomplete();
   let discountCode = '';
   let discountValue = 0;
   let originalColor = null;
@@ -366,6 +367,30 @@ async function initPaymentPage() {
     } catch {
       /* ignore */
     }
+  }
+
+  function initPlaceAutocomplete() {
+    const cityInput = document.getElementById('ship-city');
+    const zipInput = document.getElementById('ship-zip');
+    if (!cityInput || !window.google?.maps?.places) return;
+    const ac = new google.maps.places.Autocomplete(cityInput, {
+      types: ['(cities)'],
+    });
+    ac.addListener('place_changed', () => {
+      const place = ac.getPlace();
+      if (!place.address_components) return;
+      let city = '';
+      let country = '';
+      let postal = '';
+      place.address_components.forEach((c) => {
+        if (c.types.includes('locality')) city = c.long_name;
+        if (c.types.includes('country')) country = c.short_name;
+        if (c.types.includes('postal_code')) postal = c.long_name;
+      });
+      if (city && country) cityInput.value = `${city}, ${country}`;
+      if (postal && zipInput) zipInput.value = postal;
+      updateEstimate();
+    });
   }
 
   const hideLoader = () => (loader.hidden = true);
