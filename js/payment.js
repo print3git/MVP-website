@@ -10,7 +10,7 @@ const PRICES = {
   multi: 3500,
   premium: 6000,
 };
-let selectedPrice = PRICES.single;
+let selectedPrice = PRICES.multi;
 const API_BASE = (window.API_ORIGIN || '') + '/api';
 // Time zone used to reset local purchase counts at 1 AM Eastern
 const TZ = 'America/New_York';
