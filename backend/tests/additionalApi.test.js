@@ -472,3 +472,11 @@ test('GET /api/print-slots returns count', async () => {
   expect(res.status).toBe(200);
   expect(typeof res.body.slots).toBe('number');
 });
+
+test('GET /api/stats returns sales and rating', async () => {
+  db.query.mockResolvedValueOnce({ rows: [{ count: '42' }] });
+  const res = await request(app).get('/api/stats');
+  expect(res.status).toBe(200);
+  expect(res.body.printsSold).toBe(42);
+  expect(res.body.averageRating).toBe(4.8);
+});
