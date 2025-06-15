@@ -366,10 +366,21 @@
       <div class="relative bg-[#2A2A2E] border border-white/10 rounded-3xl p-6 text-center">
         <button
           id="exit-discount-close"
-          class="absolute top-2 right-2 text-white text-2xl"
+          class="absolute -top-3 -right-3 w-[3rem] h-[3rem] rounded-full bg-white text-black flex items-center justify-center z-50"
           aria-label="Close"
         >
-          &times;
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            class="w-7 h-7"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="3"
+            stroke-linecap="round"
+          >
+            <line x1="6" y1="6" x2="18" y2="18" />
+            <line x1="6" y1="18" x2="18" y2="6" />
+          </svg>
         </button>
         <h2 class="text-xl font-semibold mb-2 text-white">Wait! Before you go…</h2>
         <p class="mb-4 text-gray-300">
