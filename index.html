@@ -374,18 +374,11 @@
     </div>
 
     <!-- ▸▸▸ SCRIPTS ------------------------------------------------------ -->
-<script type="module" src="js/wizard.js"></script>
-    <!-- Lazy-load non-critical scripts -->
-    <script type="module">
-      window.addEventListener('load', () => {
-        import('./js/modelViewerTouchFix.js');
-        import('./js/subredditLanding.js');
-        import('./js/index.js').then(() => {
-          window.initIndexPage && window.initIndexPage();
-        });
-        import('./js/exitDiscount.js');
-      });
-    </script>
+    <script src="js/modelViewerTouchFix.js"></script>
+    <script type="module" src="js/wizard.js"></script>
+    <script type="module" src="js/index.js"></script>
+    <script type="module" src="js/subredditLanding.js"></script>
+    <script type="module" src="js/exitDiscount.js"></script>
     <script type="module">
       document.getElementById('profile-link')?.addEventListener('click', function (e) {
         if (!localStorage.getItem('token')) {
