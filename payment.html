@@ -165,6 +165,45 @@
 
             <!-- Material/Size Options -->
             <fieldset id="material-options" class="flex w-full justify-between my-4">
+              <label class="cursor-not-allowed text-center flex flex-col items-center w-1/3 opacity-50">
+                <input
+                  type="radio"
+                  name="material"
+                  value="premium"
+                  id="opt-premium"
+                  class="sr-only peer"
+                  disabled
+                />
+                <span
+                  class="w-24 h-24 flex flex-col items-center justify-center rounded-full border border-white/20 pt-0"
+                >
+                  <span class="font-semibold">£59.99</span>
+                  <span class="text-xs">premium</span>
+                </span>
+                <span class="block text-xs mt-1">coming soon</span>
+              </label>
+
+              <label class="cursor-pointer text-center relative flex flex-col items-center w-1/3">
+                <input
+                  type="radio"
+                  name="material"
+                  value="multi"
+                  id="opt-multi"
+                  class="sr-only peer"
+                  checked
+                />
+                <span
+                  class="w-24 h-24 flex flex-col items-center justify-center rounded-full border border-white/20
+                         peer-checked:border-4 peer-checked:border-green-500 pt-0"
+                >
+                  <span class="font-semibold">£34.99</span>
+                  <span class="text-xs">multi-colour</span>
+                </span>
+                <span class="block text-xs mt-1 text-red-300 w-24">
+                  Only <span id="color-slot-count" style="visibility: hidden"></span> coloured prints left
+                </span>
+              </label>
+
               <label id="single-label" class="cursor-pointer text-center relative flex flex-col items-center w-1/3">
                 <input
                   type="radio"
@@ -224,45 +263,6 @@
                     data-color="#ff00ff"
                   ></button>
                 </div>
-              </label>
-
-              <label class="cursor-pointer text-center relative flex flex-col items-center w-1/3">
-                <input
-                  type="radio"
-                  name="material"
-                  value="multi"
-                  id="opt-multi"
-                  class="sr-only peer"
-                  checked
-                />
-                <span
-                  class="w-24 h-24 flex flex-col items-center justify-center rounded-full border border-white/20
-                         peer-checked:border-4 peer-checked:border-green-500 pt-0"
-                >
-                  <span class="font-semibold">£34.99</span>
-                  <span class="text-xs">multi-colour</span>
-                </span>
-                <span class="block text-xs mt-1 text-red-300 w-24">
-                  Only <span id="color-slot-count" style="visibility: hidden"></span> coloured prints left
-                </span>
-              </label>
-
-              <label class="cursor-not-allowed text-center flex flex-col items-center w-1/3 opacity-50">
-                <input
-                  type="radio"
-                  name="material"
-                  value="premium"
-                  id="opt-premium"
-                  class="sr-only peer"
-                  disabled
-                />
-                <span
-                  class="w-24 h-24 flex flex-col items-center justify-center rounded-full border border-white/20 pt-0"
-                >
-                  <span class="font-semibold">£59.99</span>
-                  <span class="text-xs">premium</span>
-                </span>
-                <span class="block text-xs mt-1">coming soon</span>
               </label>
             </fieldset>
 
