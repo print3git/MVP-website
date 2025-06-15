@@ -17,12 +17,17 @@ const TZ = 'America/New_York';
 let flashTimerId = null;
 
 function ensureModelViewerLoaded() {
-  if (window.customElements?.get('model-viewer')) return;
-  const s = document.createElement('script');
-  s.type = 'module';
-  s.src =
-    'https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js';
-  document.head.appendChild(s);
+  if (window.customElements?.get('model-viewer')) {
+    return Promise.resolve();
+  }
+  return new Promise((resolve) => {
+    const s = document.createElement('script');
+    s.type = 'module';
+    s.src =
+      'https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js';
+    document.head.appendChild(s);
+    resolve();
+  });
 }
 
 function getCycleKey() {
@@ -126,8 +131,66 @@ async function createCheckout(quantity, discount, discountCode, shippingInfo) {
   return data.checkoutUrl;
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
-  ensureModelViewerLoaded();
+function startFlashDiscount() {
+  const flashBanner = document.getElementById('flash-banner');
+  const flashTimer = document.getElementById('flash-timer');
+  if (!flashBanner || !flashTimer) return;
+
+  let show = sessionStorage.getItem('flashDiscountShow');
+  if (!show) {
+    show = Math.random() < 0.5 ? '1' : '0';
+    sessionStorage.setItem('flashDiscountShow', show);
+  }
+  if (show === '0') {
+    flashBanner.hidden = true;
+    localStorage.removeItem('flashDiscountEnd');
+    return;
+  }
+
+  const endStr = localStorage.getItem('flashDiscountEnd');
+  if (endStr === '0') {
+    flashBanner.hidden = true;
+    return;
+  }
+  let end = parseInt(endStr, 10);
+
+  if (!Number.isFinite(end)) {
+    end = Date.now() + 5 * 60 * 1000;
+    localStorage.setItem('flashDiscountEnd', String(end));
+  } else if (end <= Date.now()) {
+    flashBanner.hidden = true;
+    localStorage.setItem('flashDiscountEnd', '0');
+    return;
+  }
+
+  if (flashTimerId) {
+    return;
+  }
+  const update = () => {
+    const diff = end - Date.now();
+    if (diff <= 0) {
+      flashBanner.hidden = true;
+      localStorage.setItem('flashDiscountEnd', '0');
+      if (flashTimerId) {
+        clearTimeout(flashTimerId);
+        flashTimerId = null;
+      }
+      return;
+    }
+    const diffSec = Math.ceil(diff / 1000);
+    const m = Math.floor(diffSec / 60);
+    const s = String(diffSec % 60).padStart(2, '0');
+    flashTimer.textContent = `${m}:${s}`;
+    flashTimerId = setTimeout(update, 1000);
+  };
+
+  update();
+  flashBanner.hidden = false;
+}
+window.startFlashDiscount = startFlashDiscount;
+
+async function initPaymentPage() {
+  await ensureModelViewerLoaded();
   if (window.setWizardStage) window.setWizardStage('purchase');
   // Safely initialize Stripe once the DOM is ready. If the Stripe library
   // failed to load, we fall back to plain redirects.
@@ -258,60 +321,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       /* ignore */
     }
   }
-
-  function startFlashDiscount() {
-    let show = sessionStorage.getItem('flashDiscountShow');
-    if (!show) {
-      show = Math.random() < 0.5 ? '1' : '0';
-      sessionStorage.setItem('flashDiscountShow', show);
-    }
-    if (show === '0') {
-      flashBanner.hidden = true;
-      localStorage.removeItem('flashDiscountEnd');
-      return;
-    }
-
-    const endStr = localStorage.getItem('flashDiscountEnd');
-    if (endStr === '0') {
-      flashBanner.hidden = true;
-      return;
-    }
-    let end = parseInt(endStr, 10);
-
-    if (!Number.isFinite(end)) {
-      end = Date.now() + 5 * 60 * 1000;
-      localStorage.setItem('flashDiscountEnd', String(end));
-    } else if (end <= Date.now()) {
-      flashBanner.hidden = true;
-      localStorage.setItem('flashDiscountEnd', '0');
-      return;
-    }
-
-    if (flashTimerId) {
-      return;
-    }
-    const update = () => {
-      const diff = end - Date.now();
-      if (diff <= 0) {
-        flashBanner.hidden = true;
-        localStorage.setItem('flashDiscountEnd', '0');
-        if (flashTimerId) {
-          clearTimeout(flashTimerId);
-          flashTimerId = null;
-        }
-        return;
-      }
-      const diffSec = Math.ceil(diff / 1000);
-      const m = Math.floor(diffSec / 60);
-      const s = String(diffSec % 60).padStart(2, '0');
-      flashTimer.textContent = `${m}:${s}`;
-      flashTimerId = setTimeout(update, 1000);
-    };
-
-    update();
-    flashBanner.hidden = false;
-  }
-  window.startFlashDiscount = startFlashDiscount;
 
   const hideLoader = () => (loader.hidden = true);
 
@@ -450,4 +459,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       payHandler();
     }
   });
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initPaymentPage);
+} else {
+  initPaymentPage();
+}
