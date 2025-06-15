@@ -10,39 +10,21 @@ import { shareOn } from './share.js';
  * network request errors out.
  */
 function ensureModelViewerLoaded() {
-  if (window.customElements?.get('model-viewer')) {
-    return Promise.resolve();
-  }
+  if (window.customElements?.get('model-viewer')) return;
+  const localUrl = 'js/model-viewer.min.js';
+  const cdnUrl =
+    'https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js';
+  const s = document.createElement('script');
+  s.type = 'module';
+  s.src = localUrl;
+  s.onerror = () => {
+    const fallback = document.createElement('script');
+    fallback.type = 'module';
+    fallback.src = cdnUrl;
+    document.head.appendChild(fallback);
+  };
+  document.head.appendChild(s);
 
-  return new Promise((resolve) => {
-    const finish = () => {
-      if (window.customElements?.whenDefined) {
-        customElements
-          .whenDefined('model-viewer')
-          .then(resolve)
-          .catch(() => resolve());
-      } else {
-        resolve();
-      }
-    };
-
-    const cdn = document.createElement('script');
-    cdn.type = 'module';
-    cdn.src =
-      'https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js';
-    cdn.setAttribute('data-model-viewer', '');
-    cdn.onload = finish;
-    cdn.onerror = () => {
-      // Network failed - fall back to bundled copy
-      const local = document.createElement('script');
-      local.type = 'module';
-      local.src = 'js/model-viewer.min.js';
-      local.setAttribute('data-model-viewer', '');
-      local.onload = finish;
-      document.head.appendChild(local);
-    };
-    document.head.appendChild(cdn);
-  });
 }
 
 if (
