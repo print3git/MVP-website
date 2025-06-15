@@ -101,7 +101,10 @@ function renderList() {
 
     btn.className =
       'remove absolute bottom-1 right-1 text-xs px-2 py-1 bg-red-600 rounded opacity-80 group-hover:opacity-100';
-    btn.addEventListener('click', () => removeFromBasket(idx));
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      removeFromBasket(idx);
+    });
 
 
     div.appendChild(img);
