@@ -1,13 +1,48 @@
 'use strict';
 import { shareOn } from './share.js';
 
+/**
+ * Load the <model-viewer> library if it hasn't already been loaded.
+ * Returns a promise that resolves once the custom element is defined.
+ *
+ * The CDN script occasionally fails to load in some environments. To make the
+ * viewer more robust, fall back to a local copy bundled under js/ if the
+ * network request errors out.
+ */
 function ensureModelViewerLoaded() {
-  if (window.customElements?.get('model-viewer')) return;
-  const s = document.createElement('script');
-  s.type = 'module';
-  s.src =
-    'https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js';
-  document.head.appendChild(s);
+  if (window.customElements?.get('model-viewer')) {
+    return Promise.resolve();
+  }
+
+  return new Promise((resolve) => {
+    const finish = () => {
+      if (window.customElements?.whenDefined) {
+        customElements
+          .whenDefined('model-viewer')
+          .then(resolve)
+          .catch(() => resolve());
+      } else {
+        resolve();
+      }
+    };
+
+    const cdn = document.createElement('script');
+    cdn.type = 'module';
+    cdn.src =
+      'https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js';
+    cdn.setAttribute('data-model-viewer', '');
+    cdn.onload = finish;
+    cdn.onerror = () => {
+      // Network failed - fall back to bundled copy
+      const local = document.createElement('script');
+      local.type = 'module';
+      local.src = 'js/model-viewer.min.js';
+      local.setAttribute('data-model-viewer', '');
+      local.onload = finish;
+      document.head.appendChild(local);
+    };
+    document.head.appendChild(cdn);
+  });
 }
 
 if (
@@ -18,7 +53,9 @@ if (
 }
 
 const API_BASE = (window.API_ORIGIN || '') + '/api';
-const FALLBACK_GLB = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
+// Local fallback model used when generation fails or the viewer hasn't loaded a model yet.
+// Bundled locally so it works offline and avoids external network issues.
+const FALLBACK_GLB = 'models/Astronaut.glb';
 const EXAMPLES = ['cute robot figurine', 'ornate chess piece', 'geometric flower vase'];
 const TRENDING = ['dragon statue', 'space rover', 'anime character'];
 const $ = (id) => document.getElementById(id);
@@ -453,7 +490,7 @@ refs.submitBtn.addEventListener('click', async () => {
 });
 
 async function init() {
-  ensureModelViewerLoaded();
+  await ensureModelViewerLoaded();
   syncUploadHeights();
   window.addEventListener('resize', syncUploadHeights);
   setStep('prompt');
