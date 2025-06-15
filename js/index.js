@@ -425,7 +425,7 @@ refs.submitBtn.addEventListener('click', async () => {
     await refs.viewer.updateComplete;
     showModel();
     setStep('model');
-    if (window.setWizardStage) window.setWizardStage('print');
+    if (window.setWizardStage) window.setWizardStage('purchase');
     hideDemo();
 
     refs.checkoutBtn.classList.remove('hidden');
