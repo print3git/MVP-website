@@ -151,6 +151,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const costEl = document.getElementById('cost-estimate');
   const etaEl = document.getElementById('eta-estimate');
   const slotEl = document.getElementById('slot-count');
+  const colorSlotText = document.getElementById('color-slot-text');
   const colorSlotEl = document.getElementById('color-slot-count');
   const discountInput = document.getElementById('discount-code');
   const discountMsg = document.getElementById('discount-msg');
@@ -222,10 +223,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     slotEl.style.visibility = 'visible';
   }
 
-  if (colorSlotEl) {
-    colorSlotEl.style.visibility = 'hidden';
+  if (colorSlotText && colorSlotEl) {
     colorSlotEl.textContent = computeColorSlotsByTime();
-    colorSlotEl.style.visibility = 'visible';
+    colorSlotText.style.visibility = 'visible';
   }
 
   async function updateEstimate() {
