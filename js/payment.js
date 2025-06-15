@@ -600,6 +600,19 @@ async function initPaymentPage() {
       payHandler();
     }
   });
+
+  const alignBadge = () => {
+    const badge = document.getElementById('money-back-badge');
+    if (!badge || !payBtn) return;
+    const btnRect = payBtn.getBoundingClientRect();
+    const container = badge.parentElement;
+    const containerRect = container && container.getBoundingClientRect();
+    if (!containerRect) return;
+    const offset = btnRect.top + btnRect.height / 2 - containerRect.top;
+    badge.style.top = offset - badge.offsetHeight / 2 + 'px';
+  };
+  alignBadge();
+  window.addEventListener('resize', alignBadge);
 }
 
 if (document.readyState === 'loading') {
