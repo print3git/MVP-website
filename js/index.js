@@ -432,7 +432,7 @@ refs.submitBtn.addEventListener('click', async () => {
       window.addAutoItem({ jobId: lastJobId, modelUrl: url, snapshot });
     }
     setStep('model');
-    if (window.setWizardStage) window.setWizardStage('print');
+    if (window.setWizardStage) window.setWizardStage('purchase');
     hideDemo();
 
     refs.checkoutBtn.classList.remove('hidden');
