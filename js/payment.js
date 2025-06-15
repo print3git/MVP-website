@@ -610,7 +610,9 @@ async function initPaymentPage() {
     if (!containerRect) return;
 
     const offset = btnRect.top + btnRect.height / 2 - containerRect.top;
-    badge.style.top = offset - badge.offsetHeight / 2 + 'px';
+    // Center the badge on the button and override the initial transform
+    badge.style.transform = 'translateY(-50%)';
+    badge.style.top = offset + 'px';
 
   };
   alignBadge();
