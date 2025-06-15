@@ -6,7 +6,7 @@ let stripe = null;
 // and is not dependent on external CDNs.
 const FALLBACK_GLB = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
 const PRICES = {
-  single: 2499,
+  single: 2799,
   multi: 3499,
   premium: 5999,
 };
