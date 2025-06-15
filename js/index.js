@@ -3,10 +3,18 @@ import { shareOn } from './share.js';
 
 function ensureModelViewerLoaded() {
   if (window.customElements?.get('model-viewer')) return;
+  const localUrl = 'js/model-viewer.min.js';
+  const cdnUrl =
+    'https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js';
   const s = document.createElement('script');
   s.type = 'module';
-  s.src =
-    'https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js';
+  s.src = localUrl;
+  s.onerror = () => {
+    const fallback = document.createElement('script');
+    fallback.type = 'module';
+    fallback.src = cdnUrl;
+    document.head.appendChild(fallback);
+  };
   document.head.appendChild(s);
 }
 
