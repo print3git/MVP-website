@@ -180,6 +180,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             colorMenu.classList.remove('hidden');
           } else {
             colorMenu.classList.add('hidden');
+            // Reset the single colour button when another option is selected
+            if (singleButton) singleButton.style.backgroundColor = '';
           }
         }
       }
