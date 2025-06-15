@@ -108,6 +108,22 @@ app.post('/api/register', async (req, res) => {
   }
 });
 
+/**
+ * POST /api/dalle
+ * Generate an image via the DALL-E mock service
+ */
+app.post('/api/dalle', async (req, res) => {
+  const { prompt } = req.body || {};
+  if (!prompt) return res.status(400).json({ error: 'Prompt required' });
+  try {
+    const resp = await axios.post(`${config.dalleServerUrl}/generate`, { prompt });
+    res.json({ image: resp.data.image });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to generate image' });
+  }
+});
+
 app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) {

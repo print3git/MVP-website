@@ -30,6 +30,16 @@
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      if (location.protocol === 'file:') {
+        document.body.innerHTML =
+          '<div style="font-family:sans-serif;padding:1em">' +
+          'This page uses ES module scripts and must be served over HTTP. ' +
+          'Run <code>npx http-server</code> or <code>python -m http.server</code> in the repository root, ' +
+          'then open <code>http://localhost:8080/index.html</code>.' +
+          '</div>';
+      }
+    </script>
 
     <!-- Font Awesome -->
     <link
