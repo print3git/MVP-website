@@ -1,6 +1,14 @@
 'use strict';
 import { shareOn } from './share.js';
 
+/**
+ * Load the <model-viewer> library if it hasn't already been loaded.
+ * Returns a promise that resolves once the custom element is defined.
+ *
+ * The CDN script occasionally fails to load in some environments. To make the
+ * viewer more robust, fall back to a local copy bundled under js/ if the
+ * network request errors out.
+ */
 function ensureModelViewerLoaded() {
   if (window.customElements?.get('model-viewer')) return;
   const localUrl = 'js/model-viewer.min.js';
@@ -16,6 +24,7 @@ function ensureModelViewerLoaded() {
     document.head.appendChild(fallback);
   };
   document.head.appendChild(s);
+
 }
 
 if (
@@ -26,7 +35,9 @@ if (
 }
 
 const API_BASE = (window.API_ORIGIN || '') + '/api';
-const FALLBACK_GLB = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
+// Local fallback model used when generation fails or the viewer hasn't loaded a model yet.
+// Bundled locally so it works offline and avoids external network issues.
+const FALLBACK_GLB = 'models/Astronaut.glb';
 const EXAMPLES = ['cute robot figurine', 'ornate chess piece', 'geometric flower vase'];
 const TRENDING = ['dragon statue', 'space rover', 'anime character'];
 const $ = (id) => document.getElementById(id);
@@ -461,7 +472,7 @@ refs.submitBtn.addEventListener('click', async () => {
 });
 
 async function init() {
-  ensureModelViewerLoaded();
+  await ensureModelViewerLoaded();
   syncUploadHeights();
   window.addEventListener('resize', syncUploadHeights);
   setStep('prompt');
