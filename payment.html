@@ -32,14 +32,14 @@
     <!-- Stripe.js -->
     <script src="https://js.stripe.com/v3/" defer></script>
 
-    <!-- Font Awesome (optional, used only for back-arrow icon) -->
+    <!-- Font Awesome (back-arrow icon) -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
       referrerpolicy="no-referrer"
     />
 
-    <!-- <model-viewer> -->
+    <!-- model-viewer -->
     <script
       type="module"
       src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js"
@@ -61,7 +61,7 @@
       Order within <span id="flash-timer">5:00</span> to get 5% off
     </div>
 
-    <!-- ─────────── Header -->
+    <!-- Header -->
     <header class="relative z-10 px-6 py-4">
       <a
         id="back-link"
@@ -81,8 +81,7 @@
       </a>
     </header>
 
-    <!-- ─────────── Main -->
-
+    <!-- Main -->
     <main class="flex-1 flex flex-col items-center justify-center px-4 space-y-8 -mt-40">
       <div id="success" class="hidden text-green-400 text-center">
         Payment successful!
@@ -90,12 +89,12 @@
       </div>
       <div id="cancel" class="hidden text-red-400 text-center">Payment cancelled.</div>
       <div class="flex flex-col md:flex-row items-start justify-center w-full max-w-4xl gap-8">
+
         <!-- Model Preview -->
         <section
           id="preview-wrapper"
           class="relative w-full md:w-1/2 max-w-lg h-80 bg-[#2A2A2E] border border-white/10 rounded-3xl overflow-visible"
         >
-          <!-- fallback still-image (hidden)  -->
           <img
             id="preview-img"
             src="https://placehold.co/600x400/2A2A2E/2A2A2E?text="
@@ -103,8 +102,6 @@
             style="display: none"
             alt="Preview image"
           />
-
-          <!-- The astronaut now loads eagerly and is always visible  -->
           <model-viewer
             id="viewer"
             src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
@@ -115,8 +112,6 @@
             loading="eager"
             style="width: 100%; height: 100%; display: block"
           ></model-viewer>
-
-          <!-- centred loader -->
           <div
             id="loader"
             class="absolute inset-0 flex items-center justify-center bg-[#2A2A2E]/80"
@@ -126,14 +121,12 @@
               class="h-10 w-10 border-4 border-white border-t-transparent rounded-full animate-spin"
             ></div>
           </div>
-          <!-- delivery notice -->
           <div class="mt-4 text-center text-sm text-gray-400/75 relative h-full">
             <p>
               Due to incredibly high demand, delivery may take 3+ weeks.<br />
               Please allow for this. –
               <span class="text-white">The print2 team: Jia and Matthew</span>
             </p>
-
             <div class="absolute inset-x-0 bottom-0 pb-4">
               <p class="mb-1">Trusted by thousands of makers</p>
               <p>
@@ -147,7 +140,6 @@
         <!-- Checkout Form -->
         <div class="w-full md:w-1/2 max-w-md bg-[#2A2A2E] border border-white/10 rounded-3xl p-6">
           <h2 class="text-2xl font-semibold mb-4 text-center">Checkout</h2>
-
           <form id="checkout-form" class="space-y-4">
             <div>
               <input
@@ -179,7 +171,7 @@
             </div>
 
             <!-- Material/Size Options -->
-            <fieldset id="material-options" class="flex justify-center space-x-8 my-4">
+            <fieldset id="material-options" class="flex justify-evenly my-4">
               <label id="single-label" class="cursor-pointer text-center relative inline-block">
                 <input
                   type="radio"
@@ -247,7 +239,8 @@
                   <span class="text-xs">multi-colour</span>
                 </span>
                 <span class="block mt-1 text-xs text-red-300">
-                  Only <span id="color-slot-count" style="visibility: hidden"></span> coloured prints left
+                  Only <span id="color-slot-count" style="visibility: hidden"></span> coloured prints
+                  left
                 </span>
               </label>
 
@@ -337,7 +330,8 @@
       <div class="bg-[#2A2A2E] border border-white/10 rounded-3xl p-6 text-center">
         <h2 class="text-xl font-semibold mb-2 text-white">Wait! Before you go…</h2>
         <p class="mb-4 text-gray-300">
-          Use code <span class="text-white font-mono px-1">SAVE5</span> for 5% off your next order.
+          Use code <span class="text-white font-mono px-1">SAVE5</span> for 5% off your next
+          order.
         </p>
         <button
           id="exit-discount-close"
@@ -349,41 +343,59 @@
     </div>
 
     <!-- Bulk discount info -->
-    <div id="bulk-discount-popup" class="fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50">
+    <div
+      id="bulk-discount-popup"
+      class="fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50"
+    >
       <div class="bg-[#2A2A2E] border border-white/10 rounded-3xl p-6 text-center">
         <h2 class="text-xl font-semibold mb-2 text-white">Save on Prints</h2>
-        <p class="mb-4 text-gray-300">£7 off the 2nd print and £15 off the 3rd when bought together.</p>
-        <button id="bulk-discount-close" class="px-4 py-2 rounded-md bg-[#30D5C8] text-[#1A1A1D]">OK</button>
+        <p class="mb-4 text-gray-300">
+          £7 off the 2nd print and £15 off the 3rd when bought together.
+        </p>
+        <button
+          id="bulk-discount-close"
+          class="px-4 py-2 rounded-md bg-[#30D5C8] text-[#1A1A1D]"
+        >
+          OK
+        </button>
       </div>
     </div>
 
-    <div id="wizard-banner" class="fixed bottom-0 left-0 right-0 flex divide-x divide-[#1A1A1D] text-white font-semibold bg-[#1A1A1D] z-40">
-      <div id="wizard-step-prompt" class="flex-1 text-center py-2 bg-[#2A2A2E]">Create prompt</div>
+    <div
+      id="wizard-banner"
+      class="fixed bottom-0 left-0 right-0 flex divide-x divide-[#1A1A1D] text-white font-semibold bg-[#1A1A1D] z-40"
+    >
+      <div id="wizard-step-prompt" class="flex-1 text-center py-2 bg-[#2A2A2E]">
+        Create prompt
+      </div>
       <div id="wizard-step-building" class="flex-1 text-center py-2">Building model</div>
       <div id="wizard-step-purchase" class="flex-1 text-center py-2">Purchase model</div>
     </div>
 
-    <!-- ─────────── Init -->
+    <!-- Init scripts -->
     <script src="js/modelViewerTouchFix.js"></script>
     <script type="module" src="js/wizard.js"></script>
     <script type="module" src="js/payment.js"></script>
     <script type="module" src="js/exitDiscount.js"></script>
     <script>
-      document.addEventListener('DOMContentLoaded', () => {
-        const link = document.getElementById('back-link');
+      document.addEventListener("DOMContentLoaded", () => {
+        const link = document.getElementById("back-link");
         if (!link) return;
-        let target = 'index.html';
-        const from = sessionStorage.getItem('fromCommunity');
-        sessionStorage.removeItem('fromCommunity');
+        let target = "index.html";
+        const from = sessionStorage.getItem("fromCommunity");
+        sessionStorage.removeItem("fromCommunity");
         try {
           const ref = new URL(document.referrer);
-          if (from === '1' || ref.pathname.endsWith('CommunityCreations.html')) {
-            target = 'CommunityCreations.html';
+          if (
+            from === "1" ||
+            ref.pathname.endsWith("CommunityCreations.html")
+          ) {
+            target = "CommunityCreations.html";
           }
         } catch {
-          if (from === '1') target = 'CommunityCreations.html';
+          if (from === "1") target = "CommunityCreations.html";
         }
-        link.setAttribute('href', target);
+        link.setAttribute("href", target);
       });
     </script>
     <script type="module" src="js/basket.js"></script>
