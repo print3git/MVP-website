@@ -424,6 +424,13 @@ refs.submitBtn.addEventListener('click', async () => {
     refs.viewer.src = url;
     await refs.viewer.updateComplete;
     showModel();
+    if (window.addAutoItem) {
+      let snapshot = refs.previewImg?.src;
+      if (!snapshot || snapshot.includes('placehold.co')) {
+        snapshot = await captureModelSnapshot(url);
+      }
+      window.addAutoItem({ jobId: lastJobId, modelUrl: url, snapshot });
+    }
     setStep('model');
     if (window.setWizardStage) window.setWizardStage('print');
     hideDemo();
@@ -540,7 +547,14 @@ async function init() {
       snapshot = await captureModelSnapshot(refs.viewer.src);
     }
     const item = { jobId: lastJobId, modelUrl: refs.viewer.src, snapshot };
-    window.addToBasket(item);
+    if (
+      window.manualizeItem &&
+      window.getBasket?.().some((it) => it.auto && it.modelUrl === item.modelUrl)
+    ) {
+      window.manualizeItem((it) => it.modelUrl === item.modelUrl);
+    } else {
+      window.addToBasket(item);
+    }
   });
 }
 
