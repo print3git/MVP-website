@@ -140,8 +140,13 @@ function stopProgress() {
 const hideAll = () => {
   refs.previewImg.style.display = 'none';
   refs.loader.style.display = 'none';
-  refs.viewer.style.display = 'none';
-  if (typeof refs.viewer.pause === 'function') {
+
+  refs.viewer.style.opacity = '0';
+  refs.viewer.style.pointerEvents = 'none';
+  if ('paused' in refs.viewer) {
+    refs.viewer.paused = true;
+  } else if (typeof refs.viewer.pause === 'function') {
+
     refs.viewer.pause();
   }
 };
@@ -153,7 +158,13 @@ const showLoader = () => {
 const showModel = () => {
   hideAll();
   refs.viewer.style.display = 'block';
-  if (typeof refs.viewer.play === 'function') {
+
+  refs.viewer.style.opacity = '1';
+  refs.viewer.style.pointerEvents = 'auto';
+  if ('paused' in refs.viewer) {
+    refs.viewer.paused = false;
+  } else if (typeof refs.viewer.play === 'function') {
+
     refs.viewer.play();
   }
   stopProgress();
