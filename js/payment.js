@@ -217,6 +217,7 @@ async function initPaymentPage() {
   const etaEl = document.getElementById('eta-estimate');
   const slotEl = document.getElementById('slot-count');
   const colorSlotEl = document.getElementById('color-slot-count');
+  const bulkSlotEl = document.getElementById('bulk-slot-count');
   const discountInput = document.getElementById('discount-code');
   const discountMsg = document.getElementById('discount-msg');
   const applyBtn = document.getElementById('apply-discount');
@@ -322,6 +323,9 @@ async function initPaymentPage() {
 
   if (slotEl) {
     slotEl.style.visibility = 'hidden';
+    if (bulkSlotEl) {
+      bulkSlotEl.style.visibility = 'hidden';
+    }
     // Compute a client-side slot count first so we have a reasonable value even
     // if the API fails or returns stale data.
     baseSlots = computeSlotsByTime();
@@ -339,6 +343,10 @@ async function initPaymentPage() {
     }
     slotEl.textContent = adjustedSlots(baseSlots);
     slotEl.style.visibility = 'visible';
+    if (bulkSlotEl) {
+      bulkSlotEl.textContent = adjustedSlots(baseSlots);
+      bulkSlotEl.style.visibility = 'visible';
+    }
   }
 
   if (colorSlotEl) {
