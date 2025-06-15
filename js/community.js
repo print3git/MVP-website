@@ -169,6 +169,16 @@ function createCard(model) {
       addBasketBtn.dataset.snapshot = model.snapshot || '';
     }
     modal.classList.remove('hidden');
+    const closeBtn = document.getElementById('close-modal');
+    const svg = closeBtn?.querySelector('svg');
+    if (closeBtn) {
+      closeBtn.classList.remove('w-[9rem]', 'h-[9rem]');
+      closeBtn.classList.add('w-[4.5rem]', 'h-[4.5rem]');
+    }
+    if (svg) {
+      svg.classList.remove('w-20', 'h-20');
+      svg.classList.add('w-10', 'h-10');
+    }
     document.body.classList.add('overflow-hidden');
   });
   return div;
