@@ -228,6 +228,37 @@ async function initPaymentPage() {
   const singleButton = singleLabel?.querySelector('span');
   let discountCode = '';
   let discountValue = 0;
+  let originalColor = null;
+
+  function hexToFactor(hex) {
+    const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return m
+      ? [
+          parseInt(m[1], 16) / 255,
+          parseInt(m[2], 16) / 255,
+          parseInt(m[3], 16) / 255,
+          1,
+        ]
+      : null;
+  }
+
+  function applyModelColor(factor) {
+    if (!viewer || !factor) return;
+    const apply = () => {
+      if (!viewer.model) return;
+      viewer.model.materials.forEach((mat) => {
+        mat.pbrMetallicRoughness.setBaseColorFactor(factor);
+      });
+    };
+    if (viewer.model) apply();
+    else viewer.addEventListener('load', apply, { once: true });
+  }
+
+  viewer.addEventListener('load', () => {
+    const mat = viewer.model?.materials?.[0];
+    if (mat?.pbrMetallicRoughness?.baseColorFactor)
+      originalColor = mat.pbrMetallicRoughness.baseColorFactor.slice();
+  });
 
   function updatePayButton() {
     if (payBtn) {
@@ -247,6 +278,7 @@ async function initPaymentPage() {
             colorMenu.classList.add('hidden');
             // Reset the single colour button when another option is selected
             if (singleButton) singleButton.style.backgroundColor = '';
+            if (originalColor) applyModelColor(originalColor);
           }
         }
       }
@@ -265,6 +297,8 @@ async function initPaymentPage() {
       if (btn) {
         const color = btn.dataset.color;
         singleButton.style.backgroundColor = color;
+        const factor = hexToFactor(color);
+        if (factor) applyModelColor(factor);
         colorMenu.classList.add('hidden');
       }
     });
