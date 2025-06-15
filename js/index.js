@@ -164,12 +164,10 @@ const hideAll = () => {
 
   refs.viewer.style.opacity = '0';
   refs.viewer.style.pointerEvents = 'none';
-  if ('paused' in refs.viewer) {
-    refs.viewer.paused = true;
-  } else if (typeof refs.viewer.pause === 'function') {
-
+  if (typeof refs.viewer.pause === 'function') {
     refs.viewer.pause();
   }
+
 };
 const showLoader = () => {
   hideAll();
@@ -182,12 +180,10 @@ const showModel = () => {
 
   refs.viewer.style.opacity = '1';
   refs.viewer.style.pointerEvents = 'auto';
-  if ('paused' in refs.viewer) {
-    refs.viewer.paused = false;
-  } else if (typeof refs.viewer.play === 'function') {
-
+  if (typeof refs.viewer.play === 'function') {
     refs.viewer.play();
   }
+
   stopProgress();
   // Force a render in case Safari paused the canvas while hidden
   if (typeof refs.viewer.requestUpdate === 'function') {
