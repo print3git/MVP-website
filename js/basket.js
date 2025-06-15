@@ -96,7 +96,11 @@ export function setupBasketUI() {
   const btn = document.createElement('button');
   btn.id = 'basket-button';
   btn.className =
-    'fixed bottom-4 right-4 bg-[#30D5C8] text-black p-3 rounded-full shadow-lg z-50 border-2 border-black';
+    'fixed bg-[#30D5C8] text-black p-3 rounded-full shadow-lg z-50 border-2 border-black';
+  // Position explicitly in case Tailwind JIT misses these classes
+  btn.style.bottom = '1rem';
+  btn.style.right = '1rem';
+  btn.style.left = 'auto';
   btn.innerHTML =
     '<i class="fas fa-shopping-basket"></i> <span id="basket-count" class="ml-1"></span>';
   btn.addEventListener('click', openBasket);
