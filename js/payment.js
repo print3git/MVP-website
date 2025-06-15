@@ -229,6 +229,7 @@ async function initPaymentPage() {
   let discountCode = '';
   let discountValue = 0;
   let originalColor = null;
+  let originalTextures = null;
 
   function hexToFactor(hex) {
     const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -242,12 +243,19 @@ async function initPaymentPage() {
       : null;
   }
 
-  function applyModelColor(factor) {
+  function applyModelColor(factor, restore = false) {
     if (!viewer || !factor) return;
     const apply = () => {
       if (!viewer.model) return;
-      viewer.model.materials.forEach((mat) => {
-        mat.pbrMetallicRoughness.setBaseColorFactor(factor);
+      viewer.model.materials.forEach((mat, i) => {
+        const pbr = mat.pbrMetallicRoughness;
+        if (!pbr) return;
+        if (pbr.setBaseColorFactor) pbr.setBaseColorFactor(factor);
+        const texObj = pbr.baseColorTexture;
+        if (texObj?.setTexture) {
+          const tex = restore ? originalTextures?.[i] || null : null;
+          texObj.setTexture(tex);
+        }
       });
     };
     if (viewer.model) apply();
@@ -255,9 +263,13 @@ async function initPaymentPage() {
   }
 
   viewer.addEventListener('load', () => {
-    const mat = viewer.model?.materials?.[0];
+    const mats = viewer.model?.materials || [];
+    const mat = mats[0];
     if (mat?.pbrMetallicRoughness?.baseColorFactor)
       originalColor = mat.pbrMetallicRoughness.baseColorFactor.slice();
+    originalTextures = mats.map(
+      (m) => m.pbrMetallicRoughness?.baseColorTexture?.texture || null
+    );
   });
 
   function updatePayButton() {
@@ -278,7 +290,7 @@ async function initPaymentPage() {
             colorMenu.classList.add('hidden');
             // Reset the single colour button when another option is selected
             if (singleButton) singleButton.style.backgroundColor = '';
-            if (originalColor) applyModelColor(originalColor);
+            if (originalColor) applyModelColor(originalColor, true);
           }
         }
       }
