@@ -98,6 +98,7 @@ function renderList() {
 
     const btn = document.createElement('button');
     btn.textContent = 'Remove';
+    btn.type = 'button';
 
     btn.className =
       'remove absolute bottom-1 right-1 text-xs px-2 py-1 bg-red-600 rounded opacity-80 group-hover:opacity-100';
@@ -121,6 +122,7 @@ function closeBasket() {
 }
 export function setupBasketUI() {
   const btn = document.createElement('button');
+  btn.type = 'button';
   btn.id = 'basket-button';
   btn.className =
     'fixed bottom-4 right-4 bg-[#30D5C8] text-black p-3 rounded-full shadow-lg z-50 border-2 border-black';
@@ -135,12 +137,12 @@ export function setupBasketUI() {
   overlay.innerHTML = `\
 
     <div class="relative bg-[#2A2A2E] border border-white/10 rounded-3xl p-6 text-center w-72">
-      <button id="basket-close" class="absolute -top-1 -right-1 text-white text-4xl w-9 h-9 flex items-center justify-center">
+      <button id="basket-close" type="button" class="absolute -top-1 -right-1 text-white text-4xl w-9 h-9 flex items-center justify-center">
         <i class="fas fa-times-circle"></i>
       </button>
       <h2 class="text-xl font-semibold mb-2 text-white">Basket</h2>
       <div id="basket-list" class="grid grid-cols-2 gap-3 mb-4"></div>
-      <button id="basket-checkout" class="mb-2 px-4 py-2 rounded-md bg-[#30D5C8] text-[#1A1A1D]">Checkout</button>
+      <button id="basket-checkout" type="button" class="mb-2 px-4 py-2 rounded-md bg-[#30D5C8] text-[#1A1A1D]">Checkout</button>
     </div>`;
   document.body.appendChild(overlay);
   overlay.querySelector('#basket-close').addEventListener('click', closeBasket);
