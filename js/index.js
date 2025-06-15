@@ -596,7 +596,14 @@ async function init() {
 
 window.initIndexPage = init;
 
-if (document.readyState !== 'loading') {
-  init();
+let _initialized = false;
+function start() {
+  if (!_initialized) {
+    _initialized = true;
+    init();
+  }
 }
-window.addEventListener('DOMContentLoaded', init);
+if (document.readyState !== 'loading') {
+  start();
+}
+window.addEventListener('DOMContentLoaded', start);
