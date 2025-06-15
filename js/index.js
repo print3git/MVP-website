@@ -77,9 +77,7 @@ let usingViewerProgress = false;
 
 function updateWizardFromInputs() {
   if (!window.setWizardStage) return;
-  const hasPrompt = refs.promptInput.value.trim().length >= 5;
-  const hasImages = uploadedFiles.length > 0;
-  window.setWizardStage(hasPrompt || hasImages ? 'building' : 'prompt');
+  window.setWizardStage('prompt');
 }
 
 async function captureModelSnapshot(url) {
@@ -508,7 +506,6 @@ async function init() {
     refs.examples.textContent = `Try: ${EXAMPLES.join(' · ')}`;
   }
   if (thumbs.length) renderThumbnails(thumbs);
-  updateWizardFromInputs();
 
   if (refs.trending) {
     refs.trending.textContent = `Trending: ${TRENDING.join(' · ')}`;
