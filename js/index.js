@@ -600,11 +600,13 @@ async function init() {
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
         const prints = data?.printsSold ?? 42;
-        el.innerHTML = `\u{1F525} ${prints} prints sold<br>in the last 24 h`;
+        const rating = data?.averageRating ?? 4.8;
+        el.textContent =
+          `\u{1F525} ${prints} prints sold in the last 24 h \u00A0 \u2022 \u00A0 \u2B50 ${rating}/5 average rating`;
       })
       .catch(() => {
-        el.innerHTML =
-          '\u{1F525} 42 prints sold<br>in the last 24 h';
+        el.textContent =
+          '\u{1F525} 42 prints sold in the last 24 h \u00A0 \u2022 \u00A0 \u2B50 4.8/5 average rating';
       });
   }
 
