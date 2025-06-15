@@ -22,6 +22,7 @@ async function login(e) {
   const data = await res.json();
   if (data.token) {
     localStorage.setItem('token', data.token);
+    if (data.isAdmin) localStorage.setItem('isAdmin', 'true');
     window.location.href = 'my_profile.html';
   } else {
     document.getElementById('error').textContent = data.error || 'Login failed';

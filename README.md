@@ -47,7 +47,13 @@ This repository contains the early MVP code for print2's website and backend.
    npm run create-admin  # inside backend/
    ```
 
-5. Start the servers in separate terminals:
+5. Configure the admin token used by protected endpoints:
+
+   Add `ADMIN_TOKEN=yoursecret` to `.env`. You can authenticate either by sending
+   this token in the `x-admin-token` header or by logging in with the admin
+   account and including the returned JWT in the `Authorization` header.
+
+6. Start the servers in separate terminals:
 
    ```bash
    npm start            # inside backend/
@@ -55,13 +61,13 @@ This repository contains the early MVP code for print2's website and backend.
    cd ../dalle_server && npm start  # inside backend/dalle_server/
    ```
 
-6. (Optional) Run the purchase reminder job periodically:
+7. (Optional) Run the purchase reminder job periodically:
 
    ```bash
    npm run send-reminders  # inside backend/
    ```
 
-7. (Optional) Clean up expired password reset tokens periodically:
+8. (Optional) Clean up expired password reset tokens periodically:
 
    ```bash
    npm run cleanup-tokens  # inside backend/
