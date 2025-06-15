@@ -608,8 +608,10 @@ async function initPaymentPage() {
     const container = badge.parentElement;
     const containerRect = container && container.getBoundingClientRect();
     if (!containerRect) return;
-    badge.style.top =
-      btnRect.top + btnRect.height / 2 - containerRect.top + 'px';
+
+    const offset = btnRect.top + btnRect.height / 2 - containerRect.top;
+    badge.style.top = offset - badge.offsetHeight / 2 + 'px';
+
   };
   alignBadge();
   window.addEventListener('resize', alignBadge);
