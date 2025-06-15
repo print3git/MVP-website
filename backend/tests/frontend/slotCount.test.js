@@ -43,6 +43,7 @@ describe('slot count', () => {
     dom.window.eval(scriptSrc);
     await new Promise((r) => setTimeout(r, 0));
     expect(dom.window.document.getElementById('slot-count').textContent).toBe('4');
+    expect(dom.window.document.getElementById('bulk-slot-count').textContent).toBe('4');
     expect(dom.window.localStorage.getItem('slotPurchases')).toBe('1');
   });
 
@@ -61,5 +62,6 @@ describe('slot count', () => {
     dom.window.localStorage.setItem('slotPurchases', '2');
     await new Promise((r) => setTimeout(r, 0));
     expect(dom.window.document.getElementById('slot-count').textContent).toBe('4');
+    expect(dom.window.document.getElementById('bulk-slot-count').textContent).toBe('4');
   });
 });

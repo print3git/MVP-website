@@ -32,6 +32,12 @@
     <!-- Stripe.js -->
     <script src="https://js.stripe.com/v3/" defer></script>
 
+    <!-- Google Maps Places Autocomplete -->
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places"
+      async
+    ></script>
+
     <!-- Font Awesome (back-arrow icon) -->
     <link
       rel="stylesheet"
@@ -199,7 +205,7 @@
                   <span class="font-semibold">£34.99</span>
                   <span class="text-xs">multi-colour</span>
                 </span>
-                <span class="block text-xs mt-1 text-red-300 w-28">
+                <span class="block text-xs mt-1 text-red-300 w-28 ml-px">
                   Only <span id="color-slot-count" style="visibility: hidden"></span> coloured prints left
                 </span>
               </label>
@@ -306,24 +312,30 @@
 
             <p id="cost-estimate" class="text-sm text-center"></p>
             <p id="eta-estimate" class="text-sm text-center"></p>
-            <button
-              id="submit-payment"
-              type="button"
-              class="w-full bg-[#30D5C8] text-[#1A1A1D] py-3 rounded-xl font-semibold hover:bg-[#28b7a8] transition"
-            >
-              Pay £34.99
-            </button>
+            <div class="flex items-center justify-center gap-2">
+              <button
+                id="submit-payment"
+                type="button"
+                class="bg-[#30D5C8] text-[#1A1A1D] py-3 px-5 rounded-xl font-semibold hover:bg-[#28b7a8] transition"
+              >
+                Pay £34.99
+              </button>
+              <span class="guarantee-badge text-sm">🛡️ Money-Back Guarantee</span>
+            </div>
           </form>
           <p class="mt-2 text-xs text-red-300 text-center">
             Only <span id="slot-count" style="visibility: hidden"></span> print slots remaining
           </p>
-        <div class="flex justify-center gap-4 mt-4 text-2xl text-white">
-          <i class="fas fa-lock" aria-label="Secure checkout"></i>
-          <i class="fas fa-shield-alt" aria-label="Money-back guarantee"></i>
+          <div class="flex justify-center gap-4 mt-4 text-2xl text-white">
+            <i class="fas fa-lock" aria-label="Secure checkout"></i>
+            <i class="fas fa-shield-alt" aria-label="Money-back guarantee"></i>
+          </div>
         </div>
+
       </div>
       <span class="guarantee-badge self-end md:ml-2 text-sm whitespace-nowrap">🛡️ Money-Back Guarantee</span>
       <div class="absolute left-0 bottom-4 w-full md:w-1/2 max-w-lg text-center text-sm text-gray-400/75">
+
 
         <p>
           Due to incredibly high demand, delivery may take 3+ weeks.<br />
@@ -375,9 +387,15 @@
     >
       <div class="bg-[#2A2A2E] border border-white/10 rounded-3xl p-6 text-center">
         <h2 class="text-xl font-semibold mb-2 text-white">Save on Prints</h2>
-        <p class="mb-4 text-gray-300">
-          £7 off the 2nd print and £15 off the 3rd when bought together.
+
+        <ul class="mb-4 text-gray-300 list-disc list-inside text-left">
+          <li>£7 off the 2nd print when buying two.</li>
+          <li>£15 off the 3rd print when buying three.</li>
+        </ul>
+        <p class="mb-4 text-xs text-red-300 text-center">
+          Only <span id="bulk-slot-count" style="visibility: hidden"></span> prints remaining
         </p>
+
         <button
           id="bulk-discount-close"
           class="px-4 py-2 rounded-md bg-[#30D5C8] text-[#1A1A1D]"
