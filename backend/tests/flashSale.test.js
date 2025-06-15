@@ -48,11 +48,15 @@ test('POST /api/admin/flash-sale creates sale', async () => {
     .set('x-admin-token', 'admin')
     .send(body);
   expect(res.status).toBe(200);
-  expect(db.query).toHaveBeenCalledWith(expect.stringContaining('INSERT INTO flash_sales'), [
+  expect(db.query).toHaveBeenNthCalledWith(
+    1,
+    'UPDATE flash_sales SET active=FALSE WHERE active=TRUE'
+  );
+  expect(db.query).toHaveBeenNthCalledWith(2, expect.stringContaining('INSERT INTO flash_sales'), [
     5,
     'single',
-    body.start_time,
-    body.end_time,
+    new Date(body.start_time).toISOString(),
+    new Date(body.end_time).toISOString(),
   ]);
 });
 

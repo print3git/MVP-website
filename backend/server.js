@@ -999,11 +999,17 @@ app.post('/api/admin/flash-sale', adminCheck, async (req, res) => {
   if (discount_percent == null || !product_type || !start_time || !end_time) {
     return res.status(400).json({ error: 'Missing fields' });
   }
+  const start = new Date(start_time);
+  const end = new Date(end_time);
+  if (!isFinite(start) || !isFinite(end) || start >= end) {
+    return res.status(400).json({ error: 'Invalid time range' });
+  }
   try {
+    await db.query('UPDATE flash_sales SET active=FALSE WHERE active=TRUE');
     const { rows } = await db.query(
       `INSERT INTO flash_sales(discount_percent, product_type, start_time, end_time, active)
        VALUES($1,$2,$3,$4,TRUE) RETURNING *`,
-      [discount_percent, product_type, start_time, end_time]
+      [discount_percent, product_type, start.toISOString(), end.toISOString()]
     );
     res.json(rows[0]);
   } catch (err) {
