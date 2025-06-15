@@ -313,6 +313,7 @@
         </div>
       </div>
       <div class="absolute left-0 bottom-4 w-full md:w-1/2 max-w-lg text-center text-sm text-gray-400/75">
+
         <p>
           Due to incredibly high demand, delivery may take 3+ weeks.<br />
           Please allow for this. –
@@ -327,17 +328,18 @@
       id="exit-discount-overlay"
       class="fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50"
     >
-      <div class="bg-[#2A2A2E] border border-white/10 rounded-3xl p-6 text-center">
+      <div class="relative bg-[#2A2A2E] border border-white/10 rounded-3xl p-6 text-center">
+        <button
+          id="exit-discount-close"
+          class="absolute top-2 right-2 text-white text-2xl"
+          aria-label="Close"
+        >
+          &times;
+        </button>
         <h2 class="text-xl font-semibold mb-2 text-white">Wait! Before you go…</h2>
         <p class="mb-4 text-gray-300">
           Use code <span class="text-white font-mono px-1">SAVE5</span> for 5% off your next order.
         </p>
-        <button
-          id="exit-discount-close"
-          class="mt-2 px-4 py-2 rounded-md bg-[#30D5C8] text-[#1A1A1D] hover:bg-[#28b7a8] transition"
-        >
-          Close
-        </button>
       </div>
     </div>
 
