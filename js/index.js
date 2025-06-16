@@ -701,6 +701,15 @@ async function init() {
 
   updateStats();
   setInterval(updateStats, 3600000);
+
+  const clubBadge = document.getElementById('print-club-badge');
+  const clubModal = document.getElementById('printclub-modal');
+  const clubClose = document.getElementById('printclub-close');
+  clubBadge?.addEventListener('click', () => clubModal?.classList.remove('hidden'));
+  clubClose?.addEventListener('click', () => clubModal?.classList.add('hidden'));
+  clubModal?.addEventListener('click', (e) => {
+    if (e.target === clubModal) clubModal.classList.add('hidden');
+  });
 }
 
 window.initIndexPage = init;
