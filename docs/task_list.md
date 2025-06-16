@@ -80,13 +80,21 @@
 
 ## Subscription Service
 
-- Design `subscriptions` and `subscription_usage` tables to store plan status and weekly print totals.
-- Build REST endpoints for subscribing, canceling, and checking remaining prints.
-- Integrate a Stripe plan priced around £140/mo and process webhooks for status updates.
-- Add a "Print Club £140/mo" badge in the site header that opens a modal describing the offer.
-- Place a radio option on the checkout page to join Print Club during purchase.
-- Show a progress bar on the account dashboard with prints used this week and an upgrade CTA.
-- Require prints to be redeemed in pairs and reset credits weekly without rollover.
-- Send monthly reminder emails to subscribers encouraging them to use remaining prints.
-- Track sign‑ups and churn; A/B test pricing (£140 vs £160) and monitor ARPU.
-- Offer a first‑month discount or referral credit to incentivize new subscribers.
+### Backend
+- Create a `subscriptions` table storing `user_id`, status, current period dates and Stripe IDs.
+- Create a `subscription_credits` table recording weekly credit totals and usage.
+- Build REST endpoints to subscribe, cancel, check status and fetch remaining credits.
+- Add webhook handlers for Stripe events so status updates sync automatically.
+- Enforce weekly credit resets and pair‑only redemptions in the business logic.
+
+### Frontend
+- Show a "Print Club £140/mo" badge in the header that opens an info modal.
+- Add a checkout radio option to join Print Club during a purchase.
+- Display a progress bar on the dashboard with credits used and a CTA to upgrade or manage the plan.
+- Provide a subscription settings page so users can cancel or update billing details.
+
+### Marketing & Analysis
+- Send monthly reminder emails nudging subscribers to redeem their prints.
+- Offer a first‑month discount or referral credit to attract new sign‑ups.
+- Track sign‑ups and churn; A/B test pricing (£140 vs £160) to maximize ARPU.
+- Show usage prompts near checkout or account pages when credits are expiring.
