@@ -39,6 +39,7 @@ if (
 }
 
 const API_BASE = (window.API_ORIGIN || '') + '/api';
+const TZ = 'America/New_York';
 // Local fallback model used when generation fails or the viewer hasn't loaded a model yet.
 // Bundled locally so it works offline and avoids external network issues.
 const FALLBACK_GLB = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
@@ -97,6 +98,82 @@ let editsPending = false;
 let progressInterval = null;
 let progressStart = null;
 let usingViewerProgress = false;
+
+function getCycleKey() {
+  const now = new Date();
+  const dateFmt = new Intl.DateTimeFormat('en-US', {
+    timeZone: TZ,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+  const hourFmt = new Intl.DateTimeFormat('en-US', {
+    timeZone: TZ,
+    hour: 'numeric',
+    hour12: false,
+  });
+  const dateStr = dateFmt.format(now);
+  const hour = parseInt(hourFmt.format(now), 10);
+  if (hour < 1) {
+    const prev = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    return dateFmt.format(prev);
+  }
+  return dateStr;
+}
+
+function resetPurchaseCount() {
+  const key = getCycleKey();
+  if (localStorage.getItem('slotCycle') !== key) {
+    localStorage.setItem('slotCycle', key);
+    localStorage.setItem('slotPurchases', '0');
+  }
+}
+
+function getPurchaseCount() {
+  resetPurchaseCount();
+  const n = parseInt(localStorage.getItem('slotPurchases'), 10);
+  return Number.isInteger(n) && n > 0 ? n : 0;
+}
+
+function adjustedSlots(base) {
+  const n = getPurchaseCount();
+  return Math.max(0, base - n);
+}
+
+function computeSlotsByTime() {
+  const dtf = new Intl.DateTimeFormat('en-US', {
+    timeZone: TZ,
+    hour12: false,
+    hour: 'numeric',
+  });
+  const hour = parseInt(dtf.format(new Date()), 10);
+  if (hour >= 1 && hour < 4) return 9;
+  if (hour >= 4 && hour < 7) return 8;
+  if (hour >= 7 && hour < 10) return 7;
+  if (hour >= 10 && hour < 13) return 6;
+  if (hour >= 13 && hour < 16) return 5;
+  if (hour >= 16 && hour < 19) return 4;
+  if (hour >= 19 && hour < 22) return 3;
+  if (hour >= 22 && hour < 24) return 2;
+  return 1;
+}
+
+async function updateWizardSlotCount() {
+  if (!window.setWizardSlotCount) return;
+  let baseSlots = computeSlotsByTime();
+  try {
+    const resp = await fetch(`${API_BASE}/print-slots`);
+    if (resp.ok) {
+      const data = await resp.json();
+      if (typeof data.slots === 'number') {
+        baseSlots = data.slots;
+      }
+    }
+  } catch {
+    // ignore errors
+  }
+  window.setWizardSlotCount(adjustedSlots(baseSlots));
+}
 
 function updateWizardFromInputs() {
   if (!window.setWizardStage) return;
@@ -477,6 +554,7 @@ async function init() {
   window.addEventListener('resize', syncUploadHeights);
   setStep('prompt');
   if (window.setWizardStage) window.setWizardStage('prompt');
+  updateWizardSlotCount();
   showLoader();
   const sr = new URLSearchParams(window.location.search).get('sr');
   if (!sr) {
