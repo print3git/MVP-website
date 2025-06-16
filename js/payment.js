@@ -347,7 +347,8 @@ async function initPaymentPage() {
     originalTextures = mats.map(
       (m) => m.pbrMetallicRoughness?.baseColorTexture?.texture || null
     );
-    if (storedMaterial === 'single' && storedColor) {
+    // Apply any stored single colour only if that option is currently selected
+    if (selectedMaterialValue() === 'single' && storedColor) {
       const factor = hexToFactor(storedColor);
       if (factor) applyModelColor(factor);
     }
