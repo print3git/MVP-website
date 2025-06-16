@@ -339,7 +339,7 @@ async function initPaymentPage() {
     else viewer.addEventListener('load', apply, { once: true });
   }
 
-  viewer.addEventListener('load', () => {
+  function captureOriginal() {
     const mats = viewer.model?.materials || [];
     const mat = mats[0];
     if (mat?.pbrMetallicRoughness?.baseColorFactor)
@@ -351,7 +351,10 @@ async function initPaymentPage() {
       const factor = hexToFactor(storedColor);
       if (factor) applyModelColor(factor);
     }
-  });
+  }
+
+  viewer.addEventListener('load', captureOriginal, { once: true });
+  if (viewer.model) captureOriginal();
 
   function updatePayButton() {
     if (payBtn) {
@@ -518,6 +521,12 @@ async function initPaymentPage() {
 
   if (sessionId) {
     successMsg.hidden = false;
+    const popup = document.getElementById('bulk-discount-popup');
+    const closeBtn = document.getElementById('bulk-discount-close');
+    if (popup && closeBtn) {
+      popup.classList.remove('hidden');
+      closeBtn.addEventListener('click', () => popup.classList.add('hidden'));
+    }
     return;
   }
   if (qs('cancel')) {
@@ -617,21 +626,9 @@ async function initPaymentPage() {
   };
   window.payHandler = payHandler;
 
-  document.getElementById('submit-payment').addEventListener('click', () => {
-    const popup = document.getElementById('bulk-discount-popup');
-    const closeBtn = document.getElementById('bulk-discount-close');
-    if (popup && closeBtn) {
-      popup.classList.remove('hidden');
-      const proceed = () => {
-        popup.classList.add('hidden');
-        closeBtn.removeEventListener('click', proceed);
-        payHandler();
-      };
-      closeBtn.addEventListener('click', proceed);
-    } else {
-      payHandler();
-    }
-  });
+  document
+    .getElementById('submit-payment')
+    .addEventListener('click', () => payHandler());
 
   const alignBadge = () => {
     const badge = document.getElementById('money-back-badge');

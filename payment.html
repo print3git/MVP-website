@@ -209,11 +209,11 @@
                   checked
                 />
                 <span
-                  class="w-28 h-28 flex flex-col items-center justify-center rounded-full border-4 border-white/20 shadow-xl
-                         peer-checked:border-green-500 pt-0"
+                  class="w-28 h-28 flex flex-col items-center justify-start rounded-full border-4 border-white/20 shadow-xl peer-checked:border-green-500 pt-1"
                 >
-                  <span class="font-semibold">£34.99</span>
-                  <span class="text-xs">multi-colour</span>
+                  <span class="font-semibold leading-none">£34.99</span>
+                  <span class="text-xs leading-tight">multi-colour</span>
+                  <span class="text-[10px] leading-tight text-center">+ your name etched<br />(optional)</span>
                 </span>
                 <span class="block text-xs mt-1 text-red-300 w-28">
                   Only <span id="color-slot-count" style="visibility: hidden"></span> coloured prints left
@@ -368,7 +368,7 @@
         </button>
         <h2 class="text-xl font-semibold mb-2 text-white">Wait! Before you go…</h2>
         <p class="mb-4 text-gray-300">
-          Use code <span class="text-white font-mono px-1">SAVE5</span> for 5% off your next order.
+          Use code <span class="text-white font-mono px-1">SAVE5</span> for 5% off.
         </p>
       </div>
     </div>
@@ -407,6 +407,7 @@
 
       <div id="wizard-step-purchase" class="flex-1 text-center py-2 flex justify-center items-center">
         <span id="wizard-slots" class="hidden text-xs text-red-300 mr-2 whitespace-nowrap"
+
           >Only 4 print slots remaining</span
         >
         <span>Purchase model</span>
