@@ -428,6 +428,8 @@ async function initPaymentPage() {
     }
     slotEl.textContent = adjustedSlots(baseSlots);
     slotEl.style.visibility = 'visible';
+    if (window.setWizardSlotCount)
+      window.setWizardSlotCount(adjustedSlots(baseSlots));
     if (bulkSlotEl) {
       bulkSlotEl.textContent = adjustedSlots(baseSlots);
       bulkSlotEl.style.visibility = 'visible';
