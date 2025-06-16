@@ -1,6 +1,18 @@
 'use strict';
 import { shareOn } from './share.js';
 
+function resetMaterialSelection() {
+  try {
+    localStorage.setItem('print3Material', 'multi');
+    localStorage.removeItem('print3Color');
+  } catch {
+    /* ignore quota errors */
+  }
+}
+
+resetMaterialSelection();
+window.addEventListener('pageshow', resetMaterialSelection);
+
 /**
  * Load the <model-viewer> library if it hasn't already been loaded.
  * Returns a promise that resolves once the custom element is defined.
