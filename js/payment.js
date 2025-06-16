@@ -34,7 +34,8 @@ function updateFlashSaleBanner() {
   const flashTimer = document.getElementById('flash-timer');
   if (!flashBanner || !flashTimer) return;
   if (!flashSale) {
-    flashBanner.hidden = true;
+    // No server-driven flash sale is active. Don't hide any existing banner
+    // (e.g. the local 5% discount) when the material selection changes.
     return;
   }
   const end = new Date(flashSale.end_time).getTime();
