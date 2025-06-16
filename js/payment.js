@@ -353,7 +353,7 @@ async function initPaymentPage() {
     }
   }
 
-  viewer.addEventListener('load', captureOriginal);
+  viewer.addEventListener('load', captureOriginal, { once: true });
   if (viewer.model) captureOriginal();
 
   function updatePayButton() {
