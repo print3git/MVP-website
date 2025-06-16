@@ -339,7 +339,7 @@ async function initPaymentPage() {
     else viewer.addEventListener('load', apply, { once: true });
   }
 
-  viewer.addEventListener('load', () => {
+  function captureOriginal() {
     const mats = viewer.model?.materials || [];
     const mat = mats[0];
     if (mat?.pbrMetallicRoughness?.baseColorFactor)
@@ -351,7 +351,10 @@ async function initPaymentPage() {
       const factor = hexToFactor(storedColor);
       if (factor) applyModelColor(factor);
     }
-  });
+  }
+
+  viewer.addEventListener('load', captureOriginal, { once: true });
+  if (viewer.model) captureOriginal();
 
   function updatePayButton() {
     if (payBtn) {
