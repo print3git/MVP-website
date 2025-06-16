@@ -527,6 +527,61 @@ app.post('/api/stripe/connect', authRequired, async (req, res) => {
   }
 });
 
+app.get('/api/subscription', authRequired, async (req, res) => {
+  try {
+    const sub = await db.getSubscription(req.user.id);
+    if (!sub) return res.json({ active: false });
+    res.json(sub);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to fetch subscription' });
+  }
+});
+
+app.post('/api/subscription', authRequired, async (req, res) => {
+  const { status, current_period_start, current_period_end, customer_id, subscription_id } =
+    req.body;
+  try {
+    const sub = await db.upsertSubscription(
+      req.user.id,
+      status || 'active',
+      current_period_start,
+      current_period_end,
+      customer_id,
+      subscription_id
+    );
+    await db.ensureCurrentWeekCredits(req.user.id, 2);
+    res.json(sub);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to create subscription' });
+  }
+});
+
+app.post('/api/subscription/cancel', authRequired, async (req, res) => {
+  try {
+    const sub = await db.cancelSubscription(req.user.id);
+    res.json(sub);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to cancel subscription' });
+  }
+});
+
+app.get('/api/subscription/credits', authRequired, async (req, res) => {
+  try {
+    await db.ensureCurrentWeekCredits(req.user.id, 2);
+    const credits = await db.getCurrentWeekCredits(req.user.id);
+    res.json({
+      remaining: credits.total_credits - credits.used_credits,
+      total: credits.total_credits,
+    });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to fetch credits' });
+  }
+});
+
 app.get('/api/users/:username/models', async (req, res) => {
   const limit = parseInt(req.query.limit, 10) || 10;
   const offset = parseInt(req.query.offset, 10) || 0;
@@ -1223,6 +1278,27 @@ app.post('/api/webhook/stripe', express.raw({ type: 'application/json' }), async
       }
     } catch (err) {
       logError(err);
+    }
+  }
+  if (event.type === 'customer.subscription.updated') {
+    const sub = event.data.object;
+    try {
+      const userRes = await db.query('SELECT id FROM users WHERE email=$1', [
+        sub.customer_email || '',
+      ]);
+      const userId = userRes.rows[0] && userRes.rows[0].id;
+      if (userId) {
+        await db.upsertSubscription(
+          userId,
+          sub.status,
+          new Date(sub.current_period_start * 1000).toISOString().slice(0, 10),
+          new Date(sub.current_period_end * 1000).toISOString().slice(0, 10),
+          sub.customer,
+          sub.id
+        );
+      }
+    } catch (err) {
+      logError('Failed to sync subscription', err);
     }
   }
   res.sendStatus(200);
