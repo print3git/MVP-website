@@ -83,3 +83,19 @@
   - For subscribers, show a countdown to their next free print.
   - Provide subscriber-only design previews.
   - Track consecutive weekly orders and badge streaks.
+
+## Mailing List Automation
+
+- Create `mailing_list` table with email, token, confirmed and unsubscribed flags.
+- Write a migration for the new table.
+- Add a model for mailing list entries.
+- Implement POST `/api/subscribe` to insert or update an address and send a confirmation email.
+  - Generate a unique token and store it with the address.
+- Implement GET `/api/confirm-subscription` to verify the token and mark the address confirmed.
+- Hook the subscribe endpoint into account creation.
+- Hook the subscribe endpoint into guest purchases.
+- Implement GET `/api/unsubscribe` to mark addresses unsubscribed.
+- Handle SendGrid webhooks to unsubscribe addresses on bounce or complaint.
+- Add `sync-mailing-list.js` script to push confirmed addresses to SendGrid.
+- Schedule the sync script to run daily.
+- Add tests for subscribe, confirm, unsubscribe and sync logic.
