@@ -9,7 +9,7 @@ function setupDom() {
   const html = fs
     .readFileSync(path.join(__dirname, '../../../payment.html'), 'utf8')
     .replace(/<script[^>]+src="https?:\/\/[^"]+"><\/script>/g, '')
-    .replace(/<link[^>]+href="https?:\/\/[^"]+>/g, '')
+    .replace(/<link[^>]+href="https?:\/\/[^"]+[^>]*>/g, '')
     .replace(/<script[^>]+src="js\/modelViewerTouchFix.js"[^>]*><\/script>/, '');
   const dom = new JSDOM(html, {
     runScripts: 'dangerously',
