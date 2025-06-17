@@ -75,10 +75,16 @@ const PRINTS_MAX = 50;
 const UINT32_MAX = 0xffffffff;
 
 async function computeDailyPrintsSold(date = new Date()) {
-  const eastern = new Date(
-    date.toLocaleString('en-US', { timeZone: TZ })
-  );
-  const dateStr = eastern.toISOString().slice(0, 10);
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: TZ,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(date);
+  const year = parts.find((p) => p.type === 'year').value;
+  const month = parts.find((p) => p.type === 'month').value;
+  const day = parts.find((p) => p.type === 'day').value;
+  const dateStr = `${year}-${month}-${day}`;
   const data = new TextEncoder().encode(dateStr);
   const hash = await crypto.subtle.digest('SHA-256', data);
   const int = new DataView(hash).getUint32(0);

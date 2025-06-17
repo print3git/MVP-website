@@ -4,9 +4,21 @@ const MIN = 30;
 const MAX = 50;
 let dailyPrintsSold = 0;
 
+function getEasternDateStr(date = new Date()) {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/New_York',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(date);
+  const year = parts.find((p) => p.type === 'year').value;
+  const month = parts.find((p) => p.type === 'month').value;
+  const day = parts.find((p) => p.type === 'day').value;
+  return `${year}-${month}-${day}`; // YYYY-MM-DD
+}
+
 function computeDailyPrintsSold(date = new Date()) {
-  const eastern = new Date(date.toLocaleString('en-US', { timeZone: 'America/New_York' }));
-  const dateStr = eastern.toISOString().slice(0, 10); // YYYY-MM-DD
+  const dateStr = getEasternDateStr(date);
   const hash = crypto.createHash('sha256').update(dateStr).digest('hex');
   const int = parseInt(hash.slice(0, 8), 16);
   const rand = int / 0xffffffff;
@@ -45,4 +57,5 @@ module.exports = {
   initDailyPrintsSold,
   getDailyPrintsSold,
   _setDailyPrintsSold,
+  getEasternDateStr,
 };
