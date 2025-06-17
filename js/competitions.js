@@ -2,6 +2,50 @@ import { captureSnapshots } from './snapshot.js';
 
 const API_BASE = (window.API_ORIGIN || '') + '/api';
 
+const prefetchedModels = new Set();
+function prefetchModel(url) {
+  if (prefetchedModels.has(url)) return;
+  const link = document.createElement('link');
+  link.rel = 'preload';
+  link.href = url;
+  link.as = 'fetch';
+  link.crossOrigin = 'anonymous';
+  link.fetchPriority = 'high';
+  document.head.appendChild(link);
+  prefetchedModels.add(url);
+}
+
+function openModel(card) {
+  const modal = document.getElementById('model-modal');
+  const viewer = modal?.querySelector('model-viewer');
+  const checkoutBtn = document.getElementById('modal-checkout');
+  const addBasketBtn = document.getElementById('modal-add-basket');
+  if (!modal || !viewer) return;
+  viewer.setAttribute('poster', card.querySelector('img')?.src || '');
+  viewer.setAttribute('fetchpriority', 'high');
+  viewer.setAttribute('loading', 'eager');
+  viewer.src = card.dataset.model;
+  if (checkoutBtn) {
+    checkoutBtn.dataset.model = card.dataset.model;
+    checkoutBtn.dataset.job = card.dataset.job;
+  }
+  if (addBasketBtn) {
+    addBasketBtn.dataset.model = card.dataset.model;
+    addBasketBtn.dataset.job = card.dataset.job;
+    const img = card.querySelector('img');
+    if (img) addBasketBtn.dataset.snapshot = img.src;
+  }
+  modal.classList.remove('hidden');
+  document.body.classList.add('overflow-hidden');
+}
+
+function purchase(modelUrl, jobId) {
+  sessionStorage.setItem('fromCommunity', '1');
+  localStorage.setItem('print3Model', modelUrl);
+  localStorage.setItem('print3JobId', jobId);
+  window.location.href = 'payment.html';
+}
+
 function like(id) {
   const token = localStorage.getItem('token');
   if (!token) {
@@ -82,14 +126,21 @@ async function loadLeaderboard(id, table, grid) {
     rows.forEach((r) => {
       const card = document.createElement('div');
       card.className =
-        'entry-card relative h-32 bg-[#2A2A2E] border border-white/10 rounded-xl flex items-center justify-center';
+        'entry-card relative h-32 bg-[#2A2A2E] border border-white/10 rounded-xl flex items-center justify-center cursor-pointer';
       card.dataset.model = r.model_url;
       card.dataset.job = r.model_id;
-      card.innerHTML = `<img src="" alt="Model" class="w-full h-full object-contain pointer-events-none" />\n      <button class="like absolute bottom-1 left-1 text-xs bg-red-600 px-1 rounded">\u2665</button>\n      <span class="absolute bottom-1 right-1 text-xs bg-black/50 px-1 rounded" id="likes-${r.model_id}">${r.likes}</span>`;
+      card.innerHTML = `<img src="" alt="Model" class="w-full h-full object-contain pointer-events-none" />\n      <button class="like absolute bottom-1 right-1 text-xs bg-red-600 px-1 rounded">\u2665</button>\n      <span class="absolute bottom-8 right-1 text-xs bg-black/50 px-1 rounded" id="likes-${r.model_id}">${r.likes}</span>\n      <button class="purchase absolute bottom-1 left-1 font-bold text-lg py-2 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]">Buy</button>`;
       card.querySelector('.like').addEventListener('click', (e) => {
         e.stopPropagation();
         like(r.model_id);
       });
+      const buyBtn = card.querySelector('.purchase');
+      buyBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        purchase(r.model_url, r.model_id);
+      });
+      card.addEventListener('pointerenter', () => prefetchModel(r.model_url));
+      card.addEventListener('click', () => openModel(card));
       grid.appendChild(card);
     });
     captureSnapshots(grid);
@@ -223,6 +274,24 @@ document.addEventListener('DOMContentLoaded', () => {
   form?.addEventListener('submit', submitEntry);
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeModal();
+  });
+  document.querySelectorAll('#winners-grid .model-card').forEach((card) => {
+    const likeBtn = card.querySelector('.like');
+    const buyBtn = card.querySelector('.purchase');
+    if (likeBtn) {
+      likeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        like(card.dataset.job);
+      });
+    }
+    if (buyBtn) {
+      buyBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        purchase(card.dataset.model, card.dataset.job);
+      });
+    }
+    card.addEventListener('pointerenter', () => prefetchModel(card.dataset.model));
+    card.addEventListener('click', () => openModel(card));
   });
   load();
 });

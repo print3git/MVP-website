@@ -7,7 +7,14 @@
     <meta property="og:title" content="Competitions – print3" />
     <meta property="og:description" content="Join print3 contests and showcase your 3D designs." />
     <meta property="og:image" content="img/boxlogo.png" />
+    <link rel="preconnect" href="https://modelviewer.dev" crossorigin />
     <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="preload"
+      href="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
+      as="fetch"
+      crossorigin
+    />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
@@ -123,6 +130,9 @@
             class="w-full h-full object-contain pointer-events-none"
           />
           <span class="absolute top-1 left-1 bg-black/60 text-xs px-1 rounded">Ended 05/25</span>
+          <button class="like absolute bottom-1 right-1 text-xs bg-red-600 px-1 rounded">♥</button>
+          <span class="absolute bottom-8 right-1 text-xs bg-black/50 px-1 rounded" id="likes-helmet">0</span>
+          <button class="purchase absolute bottom-1 left-1 font-bold text-lg py-2 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]">Buy</button>
         </div>
         <div
           class="model-card relative h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape flex items-center justify-center cursor-pointer"
@@ -135,6 +145,9 @@
             class="w-full h-full object-contain pointer-events-none"
           />
           <span class="absolute top-1 left-1 bg-black/60 text-xs px-1 rounded">Ended 03/24</span>
+          <button class="like absolute bottom-1 right-1 text-xs bg-red-600 px-1 rounded">♥</button>
+          <span class="absolute bottom-8 right-1 text-xs bg-black/50 px-1 rounded" id="likes-fox">0</span>
+          <button class="purchase absolute bottom-1 left-1 font-bold text-lg py-2 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]">Buy</button>
         </div>
         <div
           class="model-card relative h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape flex items-center justify-center cursor-pointer"
@@ -147,6 +160,9 @@
             class="w-full h-full object-contain pointer-events-none"
           />
           <span class="absolute top-1 left-1 bg-black/60 text-xs px-1 rounded">Ended 01/23</span>
+          <button class="like absolute bottom-1 right-1 text-xs bg-red-600 px-1 rounded">♥</button>
+          <span class="absolute bottom-8 right-1 text-xs bg-black/50 px-1 rounded" id="likes-boombox">0</span>
+          <button class="purchase absolute bottom-1 left-1 font-bold text-lg py-2 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]">Buy</button>
         </div>
       </div>
     </main>
@@ -301,26 +317,7 @@
           document.body.classList.remove('overflow-hidden');
         }
 
-        document.addEventListener('click', (e) => {
-          const card = e.target.closest('.model-card, .entry-card');
-          if (card) {
-            viewer.setAttribute('poster', card.querySelector('img')?.src || '');
-            // Ensure the viewer loads the model immediately
-            viewer.setAttribute('fetchpriority', 'high');
-            viewer.setAttribute('loading', 'eager');
-            viewer.src = card.dataset.model;
-            checkoutBtn.dataset.model = card.dataset.model;
-            checkoutBtn.dataset.job = card.dataset.job;
-            if (addBasketBtn) {
-              addBasketBtn.dataset.model = card.dataset.model;
-              addBasketBtn.dataset.job = card.dataset.job;
-              const img = card.querySelector('img');
-              if (img) addBasketBtn.dataset.snapshot = img.src;
-            }
-            modal.classList.remove('hidden');
-            document.body.classList.add('overflow-hidden');
-          }
-        });
+
 
         checkoutBtn.addEventListener('click', () => {
           sessionStorage.setItem('fromCommunity', '1');
