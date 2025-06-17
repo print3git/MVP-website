@@ -310,6 +310,7 @@ async function initPaymentPage() {
   const singleButton = singleLabel?.querySelector('span');
   const etchInput = document.getElementById('etch-name');
   const etchContainer = document.getElementById('etch-name-container');
+  const etchWarning = document.getElementById('etch-warning');
   const storedRadio = document.querySelector(`#material-options input[value="${storedMaterial}"]`);
   if (storedRadio) storedRadio.checked = true;
   updateEtchVisibility(storedMaterial);
@@ -376,6 +377,7 @@ async function initPaymentPage() {
     const warning = document.getElementById('etch-warning');
     if (val === 'multi' || val === 'premium') {
       etchInput.disabled = false;
+
       etchInput.classList.remove(
         'cursor-not-allowed',
         'border-red-500',
@@ -395,6 +397,8 @@ async function initPaymentPage() {
         'placeholder-red-300'
       );
       if (warning) warning.classList.remove('hidden');
+
+
     }
   }
 
