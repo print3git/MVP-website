@@ -97,29 +97,12 @@
         padding: 0;
         line-height: 1.75rem;
       }
-      #submit-button {
-        position: relative;
-        overflow: hidden;
-      }
-      #submit-button::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(
-          120deg,
-          rgba(255, 255, 255, 0) 0%,
-          rgba(255, 0, 255, 0.3) 15%,
-          rgba(0, 255, 255, 0.3) 85%,
-          rgba(255, 255, 255, 0) 100%
-        );
-        transform: translateX(-100%);
-        animation: shimmer 3s ease-in-out infinite;
-      }
-      @keyframes shimmer {
-        to {
-          transform: translateX(100%);
-        }
-      }
+      /*
+        Remove the pseudo-element and animation that created the
+        multicolored shimmer on the submit button. Keeping the
+        default styling ensures the arrow no longer flashes with
+        a rainbow effect.
+      */
       .has-generated #demo-note {
         display: none;
       }
