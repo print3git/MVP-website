@@ -1,7 +1,3 @@
-// use Jest’s fake timer implementation
-jest.useFakeTimers();
-
-
 /** @jest-environment node */
 const fs = require('fs');
 const path = require('path');
@@ -55,15 +51,12 @@ describe('flash banner', () => {
     expect(banner.hidden).toBe(true);
   });
 
-test('countdown shows 4:59 after one second', () => {
-  expect(timerEl.textContent).toBe('5:00');
-
-  // fast-forward 1.1 seconds
-  jest.advanceTimersByTime(1100);
-
-  expect(timerEl.textContent).toBe('4:59');
-});
-
+  test('countdown shows 4:59 after one second', async () => {
+    const dom = new JSDOM(html, {
+      runScripts: 'dangerously',
+      resources: 'usable',
+      url: 'http://localhost/',
+    });
     global.window = dom.window;
     global.document = dom.window.document;
     dom.window.sessionStorage.setItem('flashDiscountShow', '1');
