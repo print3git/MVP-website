@@ -124,7 +124,31 @@
         <p><strong>Username:</strong> <span id="mp-username"></span></p>
         <p><strong>Display Name:</strong> <span id="mp-display"></span></p>
         <p><strong>Email:</strong> <span id="mp-email"></span></p>
+        <img id="avatar-preview" class="w-24 h-24 rounded-full object-cover" />
+        <input id="avatar-input" type="file" accept="image/*" class="mt-2" />
+        <button id="avatar-upload" class="mt-2 px-3 py-1 bg-blue-600 rounded-xl">Upload Avatar</button>
       </div>
+
+      <form
+        id="profile-form"
+        class="space-y-2 bg-[#2A2A2E] border border-white/10 p-6 rounded-3xl w-96 mb-6"
+      >
+        <input
+          id="shipping-input"
+          class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+          placeholder="Shipping Address"
+        />
+        <input
+          id="payment-input"
+          class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+          placeholder="Payment Info"
+        />
+        <label class="inline-flex items-center">
+          <input type="checkbox" id="competition-toggle" class="mr-2" />
+          Email me about competitions
+        </label>
+        <button class="bg-blue-600 px-3 py-1 rounded-xl" type="submit">Save</button>
+      </form>
       <div id="earnings" class="bg-[#2A2A2E] border border-white/10 p-6 rounded-3xl w-96 mb-6">
         <h2 class="text-lg font-semibold mb-2">Earnings</h2>
         <table class="w-full text-sm mb-2">
@@ -164,6 +188,22 @@
           Upgrade
         </button>
       </div>
+
+      <div id="orders" class="bg-[#2A2A2E] border border-white/10 p-6 rounded-3xl w-full mb-6">
+        <h2 class="text-lg font-semibold mb-2">Past Orders</h2>
+        <table class="w-full text-sm">
+          <thead>
+            <tr>
+              <th class="text-left">Date</th>
+              <th class="text-left">Quantity</th>
+              <th class="text-left">Total</th>
+              <th class="text-left">Status</th>
+            </tr>
+          </thead>
+        <tbody id="orders-body"></tbody>
+        </table>
+      </div>
+      <button id="delete-account" class="bg-red-600 px-3 py-1 rounded-xl mb-6">Delete Account</button>
       <div id="models" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
       <div id="models-sentinel" class="h-8"></div>
     </main>
