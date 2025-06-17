@@ -85,8 +85,6 @@
 
 ## Print Club
 
-- Create `printclub.html` describing membership perks.
-- Pre-select the subscription option on `payment.html` when arriving from the Print Club page.
 - Show remaining weekly credits at checkout and update after purchase.
 - Deduct one credit when an order is placed using the subscription.
 - Add `weekly-reset.js` script to grant new credits each Monday.
@@ -131,22 +129,12 @@
 - Show purchase buttons for past winners.
   - Add a "Buy Print" button below each winning model in `competitions.html`.
   - Pre-fill `print3Model` and `print3JobId` in local storage when the button is clicked.
-- Promote Print Club on the competitions page.
-  - Insert a short banner explaining membership benefits with a sign-up link.
 - Offer a discount for printing your competition entry.
   - Generate a one-time code after an entry is submitted.
   - Display the code in the success message.
-- Capture emails for future promotions.
-  - Add a small mailing list form on the competitions page.
-  - POST addresses to `/api/subscribe` and show confirmation.
 - Add "Order Print" button under each past winner card on the competitions page.
   - When clicked, open the model modal with the winner's model and job ID.
   - Save the model ID to localStorage when proceeding to checkout.
-- Insert a banner at the top of the page promoting Print Club membership.
-  - Link the banner to the existing Print Club modal for sign-up.
-- Add social share icons (Twitter, Facebook, Reddit) to every active competition card.
-- Place an email form below the active competition list to subscribe to updates.
-  - Implement POST `/api/competitions/subscribe` to store the address and send a confirmation email.
 - After a user enters a competition, display a one-time discount code for printing their entry.
   - Provide `/api/competitions/:id/discount` endpoint to generate and return the code.
 - Create a "Trending Prints" section at the bottom that fetches models from `/api/trending` and shows Add to Basket buttons.
@@ -219,10 +207,6 @@
 
 ## User Profiles
 
-- Add a "Display name" input to `signup.html`.
-  - Update `js/signup.js` to include `displayName` in `/api/register` requests.
-  - Modify `/api/register` to save `display_name` in `user_profiles`.
-- Show the saved `display_name` on `my_profile.html` using data from `/api/me`.
 - Add avatar upload support.
   - Insert a file input on `my_profile.html`.
   - Create POST `/api/profile/avatar` to store the upload and return its URL.
@@ -238,15 +222,6 @@
 
 ## Earn Rewards Page
 
-- Replace the placeholder message on `earn-rewards.html` with a short program overview.
-- Show the user's referral link.
-  - Create `referral_links` table with `user_id` and `code`.
-  - Add GET `/api/referral-link` that returns or creates the code for the logged-in user.
-  - Write `js/rewards.js` to fetch the link and display it with a copy button.
-- Display the user's reward balance.
-  - Create `reward_points` table storing `user_id` and `points`.
-  - Add GET `/api/rewards` returning the balance.
-  - Update `js/rewards.js` to render the balance and a progress bar.
 - Allow point redemption for discount codes.
   - Add POST `/api/rewards/redeem` that deducts points and returns a code.
   - Insert a dropdown on the page listing available rewards.
