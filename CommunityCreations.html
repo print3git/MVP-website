@@ -257,6 +257,12 @@
         >
           Add to Basket
         </button>
+        <button
+          id="modal-copy-link"
+          class="absolute bottom-4 left-40 font-bold py-2 px-4 rounded-full shadow-md bg-[#2A2A2E] border border-white/20"
+        >
+          Copy Link
+        </button>
       </div>
     </div>
     <script type="module">
@@ -314,6 +320,14 @@
           if (model) {
             window.addToBasket({ jobId: job, modelUrl: model, snapshot });
           }
+        });
+
+        const copyBtn = document.getElementById('modal-copy-link');
+        copyBtn?.addEventListener('click', () => {
+          const id = copyBtn.dataset.id;
+          if (!id) return;
+          const url = `${window.location.origin}/community/model/${id}`;
+          navigator.clipboard.writeText(url).then(() => alert('Link copied'));
         });
 
         closeBtn.addEventListener('click', close);
