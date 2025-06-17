@@ -3,14 +3,10 @@
     "node": true,
     "es2021": true
   },
-  "extends": [
-    "eslint:recommended",
-    "prettier"
-  ],
+  "plugins": ["@eslint/js"],
+  "extends": ["plugin:@eslint/js/recommended", "prettier"],
   "parserOptions": {
     "ecmaVersion": 12
   },
-  "rules": {
-    // any overrides you like, or leave empty
-  }
+  "rules": {}
 }
