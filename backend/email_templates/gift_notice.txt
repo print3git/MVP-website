@@ -1,0 +1,5 @@
+Hi,
+
+A friend has sent you a 3D print from print3! We'll let you know when order {{orderId}} ships.
+
+Enjoy!

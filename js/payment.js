@@ -326,6 +326,12 @@ async function initPaymentPage() {
     colorMenu.classList.add('hidden');
   }
   initPlaceAutocomplete();
+  const surpriseToggle = document.getElementById('surprise-toggle');
+  const recipientField = document.getElementById('recipient-email-field');
+  surpriseToggle?.addEventListener('change', () => {
+    if (surpriseToggle.checked) recipientField?.classList.remove('hidden');
+    else recipientField?.classList.add('hidden');
+  });
   let discountCode = '';
   let discountValue = 0;
   let originalColor = null;
@@ -554,6 +560,10 @@ async function initPaymentPage() {
     const refDiv = document.getElementById('referral');
     const copyBtn = document.getElementById('copy-referral');
     const reorderBtn = document.getElementById('reorder-color');
+    const giftDiv = document.getElementById('gift-message');
+    const giftBtn = document.getElementById('send-gift');
+    const giftInput = document.getElementById('gift-email');
+    const giftSent = document.getElementById('gift-sent');
     const userId = getUserIdFromToken();
     if (refInput && refDiv && copyBtn && userId) {
       const link = `${window.location.origin}/index.html?ref=${encodeURIComponent(userId)}`;
@@ -564,6 +574,24 @@ async function initPaymentPage() {
         try {
           document.execCommand('copy');
         } catch {}
+      });
+    }
+    if (giftDiv && giftBtn && giftInput && giftSent) {
+      giftDiv.classList.remove('hidden');
+      giftBtn.addEventListener('click', async () => {
+        const email = giftInput.value.trim();
+        if (!email) return;
+        try {
+          await fetch(`${API_BASE}/send-gift`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sessionId, email }),
+          });
+          giftSent.textContent = 'Gift email sent!';
+        } catch {
+          giftSent.textContent = 'Failed to send';
+        }
+        giftSent.classList.remove('hidden');
       });
     }
     reorderBtn?.addEventListener('click', () => {
@@ -669,12 +697,21 @@ async function initPaymentPage() {
     ) {
       discount += Math.round(selectedPrice * (flashSale.discount_percent / 100));
     }
+    const counts = {};
+    basket.forEach((it) => {
+      if (it.jobId) counts[it.jobId] = (counts[it.jobId] || 0) + 1;
+    });
+    if (Object.values(counts).some((c) => c >= 2)) {
+      discount += 700;
+    }
     const shippingInfo = {
       name: document.getElementById('ship-name').value,
       address: document.getElementById('ship-address').value,
       city: document.getElementById('ship-city').value,
       zip: document.getElementById('ship-zip').value,
       email: emailEl.value,
+      surprise: surpriseToggle?.checked || false,
+      recipientEmail: document.getElementById('recipient-email')?.value || '',
     };
     const url = await createCheckout(qty, discount, discountCode, shippingInfo, referralId);
     if (stripe) {

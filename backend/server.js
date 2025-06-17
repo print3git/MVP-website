@@ -1239,6 +1239,20 @@ app.post('/api/subscribe', async (req, res) => {
   }
 });
 
+app.post('/api/send-gift', async (req, res) => {
+  const { sessionId, email } = req.body;
+  if (!sessionId || !email) return res.status(400).json({ error: 'Missing fields' });
+  try {
+    await sendTemplate(email, 'Your gift is on the way!', 'gift_notice.txt', {
+      orderId: sessionId,
+    });
+    res.sendStatus(204);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to send gift email' });
+  }
+});
+
 app.get('/api/confirm-subscription', async (req, res) => {
   const { token } = req.query;
   if (!token) return res.status(400).send('Invalid token');

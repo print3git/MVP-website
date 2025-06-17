@@ -70,10 +70,6 @@
 ## Repeat Purchase Incentives
 
 
-- Show gifting options at checkout and on delivery confirmation.
-  - Add a "This is a surprise" toggle for recipient details.
-  - Offer a discount when ordering two prints of the same model.
-  - Rotate limited-time seasonal bundles for gifting.
 - Run theme campaigns such as "Sci-fi month" or "D&D drop".
 
   - Award a badge when someone purchases three times in a month.
