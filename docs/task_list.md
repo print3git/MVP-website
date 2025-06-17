@@ -141,3 +141,25 @@
   - Provide `/api/competitions/:id/discount` endpoint to generate and return the code.
 - Create a "Trending Prints" section at the bottom that fetches models from `/api/trending` and shows Add to Basket buttons.
 
+## Performance & Loading Speed
+
+- Profile index.html and payment.html network requests.
+  - Use Chrome DevTools to document size and timing for each asset.
+  - Note the largest contributors to overall load time.
+- Speed up 3D viewer asset delivery.
+  - Convert Astronaut.glb to a Draco-compressed glTF file.
+  - Host the compressed glb and environment HDR on a CDN with gzip or Brotli.
+  - Add `<link rel="preload" as="fetch">` tags for the glb and HDR in index.html.
+  - Configure Cache-Control headers for long-lived caching of 3D assets.
+  - Provide a lightweight placeholder glb while the full model loads.
+  - Test whether `loading="lazy"` on `<model-viewer>` improves perceived speed.
+- Minify and bundle frontend scripts.
+  - Combine local modules into a single minified bundle.
+  - Self-host third-party libraries to avoid extra DNS lookups.
+  - Add `defer` to non-critical script tags.
+- Remove unused CSS and optimize images.
+  - Use a tree shaker to generate a trimmed Tailwind build.
+  - Convert large images to WebP and compress them.
+- Implement service worker caching.
+  - Precache static assets and the 3D model for offline use.
+  - Serve cached versions when the network is slow.
