@@ -18,6 +18,7 @@ const fs = require('fs');
 const config = require('./config');
 const generateTitle = require('./utils/generateTitle');
 const stripe = require('stripe')(config.stripeKey);
+const { initDailyPrintsSold, getDailyPrintsSold } = require('./utils/dailyPrints');
 const { enqueuePrint, processQueue, progressEmitter } = require('./queue/printQueue');
 const { sendMail, sendTemplate } = require('./mail');
 const { getShippingEstimate } = require('./shipping');
@@ -25,6 +26,7 @@ const {
   validateDiscountCode,
   getValidDiscountCode,
   incrementDiscountUsage,
+  createTimedCode,
 } = require('./discountCodes');
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'admin';
 
@@ -358,12 +360,9 @@ app.get('/api/print-slots', (req, res) => {
  * GET /api/stats
  * Return recent sales and average rating
  */
-app.get('/api/stats', async (req, res) => {
+app.get('/api/stats', (req, res) => {
   try {
-    const { rows } = await db.query(
-      "SELECT COUNT(*) FROM orders WHERE status='paid' AND created_at >= NOW() - INTERVAL '24 hours'"
-    );
-    const printsSold = parseInt(rows[0]?.count || '0', 10);
+    const printsSold = getDailyPrintsSold();
     const averageRating = 4.8;
     res.json({ printsSold, averageRating });
   } catch (err) {
@@ -1052,6 +1051,21 @@ app.post('/api/discount-code', async (req, res) => {
   res.json({ discount: amount });
 });
 
+/**
+ * POST /api/generate-discount
+ * Create a unique discount code valid for 48 hours
+ */
+app.post('/api/generate-discount', async (req, res) => {
+  const amount = req.body.amount_cents || 500;
+  try {
+    const code = await createTimedCode(amount, 48);
+    res.json({ code });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to generate code' });
+  }
+});
+
 app.get('/api/flash-sale', async (req, res) => {
   try {
     const { rows } = await db.query(
@@ -1342,6 +1356,7 @@ if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`API server listening on http://localhost:${PORT}`);
   });
+  initDailyPrintsSold();
   checkCompetitionStart();
   setInterval(checkCompetitionStart, 3600000);
 }
