@@ -570,6 +570,7 @@ async function initPaymentPage() {
   }
 
   loader.hidden = false;
+  // Assign the model source only after the load/error listeners are in place
   viewer.src = localStorage.getItem('print3Model') || FALLBACK_GLB;
 
   // Hide the overlay if nothing happens after a short delay
