@@ -24,6 +24,7 @@ describe('signup form', () => {
     dom.window.fetch = fetchMock;
     global.fetch = fetchMock;
     dom.window.document.getElementById('su-name').value = 'u';
+    dom.window.document.getElementById('su-display').value = 'User';
     dom.window.document.getElementById('su-email').value = 'e';
     dom.window.document.getElementById('su-pass').value = 'p';
     dom.window.document.getElementById('signupForm').dispatchEvent(new dom.window.Event('submit'));

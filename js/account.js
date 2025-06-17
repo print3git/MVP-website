@@ -13,6 +13,8 @@ async function loadProfile() {
   const data = await res.json();
   document.getElementById('mp-username').textContent = data.username;
   document.getElementById('mp-email').textContent = data.email;
+  const displayEl = document.getElementById('mp-display');
+  if (displayEl) displayEl.textContent = data.displayName || '';
 }
 
 async function loadSubscription() {
