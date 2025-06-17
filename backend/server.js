@@ -1152,6 +1152,7 @@ app.post('/api/create-order', authOptional, async (req, res) => {
           referral,
           `referral_${code}`,
         ]);
+
         const { rows: counts } = await db.query(
           "SELECT COUNT(*) FROM incentives WHERE user_id=$1 AND type LIKE 'referral_%'",
           [referral]
@@ -1170,6 +1171,7 @@ app.post('/api/create-order', authOptional, async (req, res) => {
             ]);
           }
         }
+
       } catch (err) {
         logError(err);
       }
