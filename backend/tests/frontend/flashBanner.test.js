@@ -1,8 +1,14 @@
-// use Jest’s fake timer implementation
-jest.useFakeTimers();
-
-
 /** @jest-environment node */
+// use Jest's fake timer implementation
+jest.useFakeTimers();
+const { act } = (() => {
+  try {
+    return require('react-dom/test-utils');
+  } catch {
+    // react-dom isn't installed in this project; provide a minimal fallback
+    return { act: (cb) => cb() };
+  }
+})();
 const fs = require('fs');
 const path = require('path');
 const { JSDOM } = require('jsdom');
@@ -14,7 +20,7 @@ html = html
   .replace(/<script[^>]+src="js\/modelViewerTouchFix.js"[^>]*><\/script>/, '');
 
 describe('flash banner', () => {
-  test('hides after countdown ends', async () => {
+  test('hides after countdown ends', () => {
     const dom = new JSDOM(html, {
       runScripts: 'dangerously',
       resources: 'usable',
@@ -22,6 +28,12 @@ describe('flash banner', () => {
     });
     global.window = dom.window;
     global.document = dom.window.document;
+    // ensure timers inside the JSDOM window use Jest's mocks
+    dom.window.setTimeout = setTimeout;
+    dom.window.clearTimeout = clearTimeout;
+    dom.window.setInterval = setInterval;
+    dom.window.clearInterval = clearInterval;
+    dom.window.Date = Date;
     dom.window.sessionStorage.setItem('flashDiscountShow', '1');
     dom.window.localStorage.setItem('flashDiscountEnd', String(Date.now() + 1000));
     const scriptSrc = fs.readFileSync(path.join(__dirname, '../../../js/payment.js'), 'utf8');
@@ -30,7 +42,11 @@ describe('flash banner', () => {
     dom.window.startFlashDiscount();
     const banner = dom.window.document.getElementById('flash-banner');
     expect(banner.hidden).toBe(false);
-    await new Promise((r) => setTimeout(r, 1100));
+
+    act(() => {
+      jest.advanceTimersByTime(1100);
+    });
+
     expect(banner.hidden).toBe(true);
     expect(dom.window.localStorage.getItem('flashDiscountEnd')).toBe('0');
   });
@@ -55,25 +71,32 @@ describe('flash banner', () => {
     expect(banner.hidden).toBe(true);
   });
 
-test('countdown shows 4:59 after one second', () => {
-  expect(timerEl.textContent).toBe('5:00');
-
-  // fast-forward 1.1 seconds
-  jest.advanceTimersByTime(1100);
-
-  expect(timerEl.textContent).toBe('4:59');
-});
-
+  test('countdown shows 4:59 after one second', () => {
+    const dom = new JSDOM(html, {
+      runScripts: 'dangerously',
+      resources: 'usable',
+      url: 'http://localhost/',
+    });
     global.window = dom.window;
     global.document = dom.window.document;
+    dom.window.setTimeout = setTimeout;
+    dom.window.clearTimeout = clearTimeout;
+    dom.window.setInterval = setInterval;
+    dom.window.clearInterval = clearInterval;
+    dom.window.Date = Date;
     dom.window.sessionStorage.setItem('flashDiscountShow', '1');
     const scriptSrc = fs.readFileSync(path.join(__dirname, '../../../js/payment.js'), 'utf8');
     dom.window.eval(scriptSrc);
     dom.window.document.dispatchEvent(new dom.window.Event('DOMContentLoaded'));
     dom.window.startFlashDiscount();
-    const timerEl = dom.window.document.getElementById('flash-timer');
+    let timerEl = dom.window.document.getElementById('flash-timer');
     expect(timerEl.textContent).toBe('5:00');
-    await new Promise((r) => setTimeout(r, 1100));
+
+    act(() => {
+      jest.advanceTimersByTime(1000);
+    });
+
+    timerEl = dom.window.document.getElementById('flash-timer');
     expect(timerEl.textContent).toBe('4:59');
   });
 
