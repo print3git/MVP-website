@@ -69,9 +69,33 @@
 ## Subscription Service
 
 - Require prints to be redeemed in pairs and reset credits weekly without rollover.
+  - Block checkout unless the quantity is even when paying with credits.
+  - Add `weekly-reset.js` script to allocate new credits each Monday.
+  - Schedule `npm run reset-credits` via cron.
 - Send monthly reminder emails to subscribers encouraging them to use remaining prints.
+  - Create `email_templates/reminder.txt` with a short message.
+  - Implement `scripts/send-printclub-reminders.js` to dispatch the emails.
 - Track sign‑ups and churn; A/B test pricing (£140 vs £160) and monitor ARPU.
+  - Record join and cancel events in a new `subscription_events` table.
+  - Add admin endpoint to report active members and churn.
+  - Randomly assign visitors to pricing variants and store which one they saw.
 - Offer a first‑month discount or referral credit to incentivize new subscribers.
+  - Apply a one-time 10% discount when a referral code is present.
+  - Display the discounted price on the sign-up form.
+
+## Print Club
+
+- Create `printclub.html` describing membership perks.
+- Add a "Print Club" link in the main navigation.
+- Pre-select the subscription option on `payment.html` when arriving from the Print Club page.
+- Show remaining weekly credits at checkout and update after purchase.
+- Deduct one credit when an order is placed using the subscription.
+- Add `weekly-reset.js` script to grant new credits each Monday.
+- Expose `npm run reset-credits` to run the reset script.
+- Send reminder emails two days before unused credits expire.
+- Record sign-up and cancellation events in `subscription_events` table.
+- Display a "Manage subscription" button on the profile page linking to the Stripe customer portal.
+- Add unit tests for credit deduction and weekly reset.
 
 ## Repeat Purchase Incentives
 
@@ -154,6 +178,9 @@
 - Compress and preload the environment map.
 - Serve assets over HTTP/2 or HTTP/3.
 - Measure load times with Lighthouse or real browser tests and track improvements.
+
+
+
 ## Social Sharing
 
 - Add share icons to the library page.
@@ -168,3 +195,45 @@
   - Create a `share_events` table with columns `share_id`, `network` and `timestamp`.
   - POST `/api/track/share` from `share.js` whenever a button is clicked.
   - Add a unit test verifying share events are recorded.
+
+
+
+## User Profiles
+
+- Add a "Display name" input to `signup.html`.
+  - Update `js/signup.js` to include `displayName` in `/api/register` requests.
+  - Modify `/api/register` to save `display_name` in `user_profiles`.
+- Show the saved `display_name` on `my_profile.html` using data from `/api/me`.
+- Add avatar upload support.
+  - Insert a file input on `my_profile.html`.
+  - Create POST `/api/profile/avatar` to store the upload and return its URL.
+  - Update `js/my_profile.js` to send the avatar and refresh the preview.
+- Provide fields for shipping address and payment info on `my_profile.html`.
+  - POST the entered details to `/api/profile`.
+- Display past orders in a table by calling `/api/my/orders`.
+- Add a toggle for competition email notifications linked to `/api/profile`.
+- Include a "Delete my account" button that calls DELETE `/api/account`.
+- Fetch `display_name` and `avatar_url` for `/profile.html` and show them at the top.
+
+
+
+## Earn Rewards Page
+
+- Replace the placeholder message on `earn-rewards.html` with a short program overview.
+- Show the user's referral link.
+  - Create `referral_links` table with `user_id` and `code`.
+  - Add GET `/api/referral-link` that returns or creates the code for the logged-in user.
+  - Write `js/rewards.js` to fetch the link and display it with a copy button.
+- Display the user's reward balance.
+  - Create `reward_points` table storing `user_id` and `points`.
+  - Add GET `/api/rewards` returning the balance.
+  - Update `js/rewards.js` to render the balance and a progress bar.
+- Allow point redemption for discount codes.
+  - Add POST `/api/rewards/redeem` that deducts points and returns a code.
+  - Insert a dropdown on the page listing available rewards.
+- Track referrals in the backend.
+  - Create `referral_events` table for clicks and signups.
+  - Add POST `/api/referral-click` to record each click.
+  - Add POST `/api/referral-signup` to award points after signup.
+- Add unit tests for all new rewards endpoints.
+
