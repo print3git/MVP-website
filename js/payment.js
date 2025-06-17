@@ -288,6 +288,7 @@ async function initPaymentPage() {
   const discountMsg = document.getElementById('discount-msg');
   const applyBtn = document.getElementById('apply-discount');
   const materialRadios = document.querySelectorAll('#material-options input[name="material"]');
+  const subscriptionRadios = document.querySelectorAll('#subscription-choice input[name="printclub"]');
   const payBtn = document.getElementById('submit-payment');
   const singleLabel = document.getElementById('single-label');
   const singleInput = document.getElementById('opt-single');
@@ -536,6 +537,7 @@ async function initPaymentPage() {
     const nextModal = document.getElementById('next-print-modal');
     const nextBtn = document.getElementById('next-print-btn');
     const nextText = document.getElementById('next-print-text');
+
     const discountSpan = document.getElementById('next-discount');
     if (nextModal && nextBtn && nextText && discountSpan) {
       const span = nextText.querySelector('span');
@@ -550,6 +552,7 @@ async function initPaymentPage() {
       } catch {
         discountSpan.textContent = 'SAVE5';
       }
+
       nextBtn.addEventListener('click', () => {
         localStorage.setItem('print3Prompt', suggestion);
         window.location.href = 'index.html';
@@ -650,6 +653,20 @@ async function initPaymentPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: emailEl.value }),
+      });
+    }
+
+    const joinClub =
+      Array.from(subscriptionRadios).find((r) => r.checked)?.value === 'join';
+    const token = localStorage.getItem('token');
+    if (joinClub && token) {
+      fetch(`${API_BASE}/subscription`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({}),
       });
     }
   };

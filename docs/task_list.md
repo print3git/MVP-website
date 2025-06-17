@@ -80,7 +80,7 @@
 
 ## Subscription Service
 
-- Place a radio option on the checkout page to join Print Club during purchase.
+
 - Show a progress bar on the account dashboard with prints used this week and an upgrade CTA.
 - Require prints to be redeemed in pairs and reset credits weekly without rollover.
 - Send monthly reminder emails to subscribers encouraging them to use remaining prints.
@@ -89,13 +89,13 @@
 
 ## Repeat Purchase Incentives
 
-- ~~Provide a discount code valid for the next 48 hours.~~
+
 - Show gifting options at checkout and on delivery confirmation.
   - Add a "This is a surprise" toggle for recipient details.
   - Offer a discount when ordering two prints of the same model.
   - Rotate limited-time seasonal bundles for gifting.
 - Run theme campaigns such as "Sci-fi month" or "D&D drop".
-  - ~~Present "You'll love this next one" prompts to encourage another order.~~
+
   - Award a badge when someone purchases three times in a month.
 - Build a personal library page listing all previous designs.
   - Enable one-click reorders from the library.
