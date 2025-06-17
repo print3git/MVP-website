@@ -319,7 +319,9 @@ async function initPaymentPage() {
   if (storedMaterial === 'single') {
     if (singleButton && storedColor) {
       singleButton.style.backgroundColor = storedColor;
+
       singleButton.style.borderColor = SINGLE_BORDER_COLOR;
+
     }
     if (colorMenu) {
       if (storedColor) colorMenu.classList.add('hidden');
@@ -458,7 +460,9 @@ async function initPaymentPage() {
       if (btn) {
         const color = btn.dataset.color;
         singleButton.style.backgroundColor = color;
+
         singleButton.style.borderColor = SINGLE_BORDER_COLOR;
+
         const factor = hexToFactor(color);
         if (factor) applyModelColor(factor);
         localStorage.setItem('print3Color', color);
