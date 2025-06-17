@@ -22,6 +22,17 @@ const NEXT_PROMPTS = [
   'geometric flower vase',
 ];
 
+function getUserIdFromToken() {
+  const token = localStorage.getItem('token');
+  if (!token) return null;
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.id || null;
+  } catch {
+    return null;
+  }
+}
+
 // Restore previously selected material option and colour
 const storedMaterial = localStorage.getItem('print3Material');
 const storedColor = localStorage.getItem('print3Color');
@@ -179,7 +190,7 @@ function qs(name) {
   return params.get(name);
 }
 
-async function createCheckout(quantity, discount, discountCode, shippingInfo) {
+async function createCheckout(quantity, discount, discountCode, shippingInfo, referral) {
   const jobId = localStorage.getItem('print3JobId');
   const res = await fetch(`${API_BASE}/create-order`, {
     method: 'POST',
@@ -191,6 +202,7 @@ async function createCheckout(quantity, discount, discountCode, shippingInfo) {
       discount,
       discountCode,
       shippingInfo,
+      referral,
     }),
   });
   const data = await res.json();
@@ -257,6 +269,7 @@ window.startFlashDiscount = startFlashDiscount;
 
 async function initPaymentPage() {
   await ensureModelViewerLoaded();
+  const referralId = localStorage.getItem('referrerId');
   if (window.setWizardStage) window.setWizardStage('purchase');
   // Safely initialize Stripe once the DOM is ready. If the Stripe library
   // failed to load, we fall back to plain redirects.
@@ -287,6 +300,9 @@ async function initPaymentPage() {
   const discountInput = document.getElementById('discount-code');
   const discountMsg = document.getElementById('discount-msg');
   const applyBtn = document.getElementById('apply-discount');
+  if (referralId && discountMsg) {
+    discountMsg.textContent = 'Referral discount applied';
+  }
   const materialRadios = document.querySelectorAll('#material-options input[name="material"]');
   const subscriptionRadios = document.querySelectorAll('#subscription-choice input[name="printclub"]');
   const payBtn = document.getElementById('submit-payment');
@@ -534,6 +550,25 @@ async function initPaymentPage() {
       popup.classList.remove('hidden');
       closeBtn.addEventListener('click', () => popup.classList.add('hidden'));
     }
+    const refInput = document.getElementById('referral-link');
+    const refDiv = document.getElementById('referral');
+    const copyBtn = document.getElementById('copy-referral');
+    const reorderBtn = document.getElementById('reorder-color');
+    const userId = getUserIdFromToken();
+    if (refInput && refDiv && copyBtn && userId) {
+      const link = `${window.location.origin}/index.html?ref=${encodeURIComponent(userId)}`;
+      refInput.value = link;
+      refDiv.classList.remove('hidden');
+      copyBtn.addEventListener('click', () => {
+        refInput.select();
+        try {
+          document.execCommand('copy');
+        } catch {}
+      });
+    }
+    reorderBtn?.addEventListener('click', () => {
+      window.location.href = 'payment.html';
+    });
     const nextModal = document.getElementById('next-print-modal');
     const nextBtn = document.getElementById('next-print-btn');
     const nextText = document.getElementById('next-print-text');
@@ -641,7 +676,7 @@ async function initPaymentPage() {
       zip: document.getElementById('ship-zip').value,
       email: emailEl.value,
     };
-    const url = await createCheckout(qty, discount, discountCode, shippingInfo);
+    const url = await createCheckout(qty, discount, discountCode, shippingInfo, referralId);
     if (stripe) {
       stripe.redirectToCheckout({ sessionId: url.split('session_id=')[1] });
     } else {
