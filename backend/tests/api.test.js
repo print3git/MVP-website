@@ -486,11 +486,13 @@ test('create-order inserts commission for marketplace sale', async () => {
 });
 
 test('GET /api/my/orders returns orders', async () => {
-  db.query.mockResolvedValueOnce({ rows: [{ session_id: 's1' }] });
+  db.query.mockResolvedValueOnce({ rows: [{ session_id: 's1', snapshot: 'img', prompt: 'p' }] });
   const token = jwt.sign({ id: 'u1' }, 'secret');
   const res = await request(app).get('/api/my/orders').set('authorization', `Bearer ${token}`);
   expect(res.status).toBe(200);
   expect(res.body[0].session_id).toBe('s1');
+  expect(res.body[0].snapshot).toBe('img');
+  expect(res.body[0].prompt).toBe('p');
 });
 
 test('GET /api/my/orders requires auth', async () => {
