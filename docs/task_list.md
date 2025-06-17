@@ -81,7 +81,7 @@
 ## Subscription Service
 
 
-- ~~Show a progress bar on the account dashboard with prints used this week and an upgrade CTA.~~
+
 - Require prints to be redeemed in pairs and reset credits weekly without rollover.
 - Send monthly reminder emails to subscribers encouraging them to use remaining prints.
 - Track sign‑ups and churn; A/B test pricing (£140 vs £160) and monitor ARPU.
@@ -97,11 +97,8 @@
 - Run theme campaigns such as "Sci-fi month" or "D&D drop".
 
   - Award a badge when someone purchases three times in a month.
-- Build a personal library page listing all previous designs.
-  - Enable one-click reorders from the library.
-  - Add a "Remix this model" button for spin-off prints.
   - Offer an optional monthly "time capsule" print.
-- Send automated post-purchase emails.
+  - Send automated post-purchase emails.
   - Showcase other users' creations for inspiration.
   - Include a direct reorder button in the email.
   - Send a follow-up reminder 5–7 days after delivery.
