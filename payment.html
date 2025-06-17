@@ -262,7 +262,7 @@
                 aria-label="Full Name"
               />
             </div>
-            <div id="etch-name-container">
+            <div id="etch-name-container" class="relative">
               <input
                 id="etch-name"
                 class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
@@ -271,14 +271,13 @@
                 aria-label="Etched Name"
                 disabled
               />
-              <p
+              <div
                 id="etch-warning"
-
-                class="mt-1 text-xs text-red-400 hidden"
+                class="pointer-events-none absolute inset-0 flex items-center hidden"
               >
-                Name etching requires the £34.99 option.
-
-              </p>
+                <div class="absolute inset-x-0 top-1/2 border-t-2 border-red-500 transform -translate-y-1/2"></div>
+                <span class="ml-2 text-xs text-red-400 whitespace-nowrap">name etching requires multicolour</span>
+              </div>
             </div>
             <div>
               <input
