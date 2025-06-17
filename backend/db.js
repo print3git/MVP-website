@@ -45,6 +45,71 @@ async function getCommissionsForUser(userId) {
   ).then((res) => res.rows);
 }
 
+function startOfWeek(d = new Date()) {
+  const date = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+  const day = date.getUTCDay();
+  const diff = date.getUTCDate() - day;
+  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), diff));
+}
+
+async function upsertSubscription(
+  userId,
+  status,
+  periodStart,
+  periodEnd,
+  customerId,
+  subscriptionId
+) {
+  return query(
+    `INSERT INTO subscriptions(user_id, status, current_period_start, current_period_end, stripe_customer_id, stripe_subscription_id)
+     VALUES($1,$2,$3,$4,$5,$6)
+     ON CONFLICT (user_id) DO UPDATE
+     SET status=$2, current_period_start=$3, current_period_end=$4, stripe_customer_id=$5, stripe_subscription_id=$6, updated_at=NOW()
+     RETURNING *`,
+    [userId, status, periodStart, periodEnd, customerId, subscriptionId]
+  ).then((res) => res.rows[0]);
+}
+
+async function cancelSubscription(userId) {
+  return query(`UPDATE subscriptions SET status='canceled' WHERE user_id=$1 RETURNING *`, [
+    userId,
+  ]).then((res) => res.rows[0]);
+}
+
+async function getSubscription(userId) {
+  return query('SELECT * FROM subscriptions WHERE user_id=$1', [userId]).then((res) => res.rows[0]);
+}
+
+async function ensureCurrentWeekCredits(userId, defaultCredits = 0) {
+  const week = startOfWeek();
+  const weekStr = week.toISOString().slice(0, 10);
+  await query(
+    `INSERT INTO subscription_credits(user_id, week_start, total_credits)
+     VALUES($1,$2,$3)
+     ON CONFLICT (user_id, week_start) DO NOTHING`,
+    [userId, weekStr, defaultCredits]
+  );
+}
+
+async function getCurrentWeekCredits(userId) {
+  const week = startOfWeek();
+  const weekStr = week.toISOString().slice(0, 10);
+  return query(
+    'SELECT total_credits, used_credits FROM subscription_credits WHERE user_id=$1 AND week_start=$2',
+    [userId, weekStr]
+  ).then((res) => res.rows[0]);
+}
+
+async function incrementCreditsUsed(userId, amount = 1) {
+  const week = startOfWeek();
+  const weekStr = week.toISOString().slice(0, 10);
+  await ensureCurrentWeekCredits(userId, 0);
+  return query(
+    `UPDATE subscription_credits SET used_credits=used_credits + $3 WHERE user_id=$1 AND week_start=$2`,
+    [userId, weekStr, amount]
+  );
+}
+
 module.exports = {
   query,
   insertShare,
@@ -52,4 +117,10 @@ module.exports = {
   getShareByJobId,
   insertCommission,
   getCommissionsForUser,
+  upsertSubscription,
+  cancelSubscription,
+  getSubscription,
+  ensureCurrentWeekCredits,
+  getCurrentWeekCredits,
+  incrementCreditsUsed,
 };
