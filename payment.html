@@ -273,29 +273,6 @@
               />
             </div>
 
-            <fieldset id="subscription-choice" class="flex gap-4 my-4 text-sm">
-              <label class="flex items-center gap-1">
-                <input
-                  type="radio"
-                  name="printclub"
-                  value="none"
-                  class="accent-[#30D5C8]"
-                  checked
-                />
-                One-time purchase
-              </label>
-              <label class="flex items-center gap-1">
-                <input
-                  type="radio"
-                  name="printclub"
-                  value="join"
-                  class="accent-[#30D5C8]"
-                />
-                Join Print Club £140/mo
-              </label>
-            </fieldset>
-
-
             <div class="flex gap-2">
               <input
                 id="discount-code"
@@ -312,6 +289,29 @@
               </button>
             </div>
             <p id="discount-msg" class="text-xs text-center"></p>
+
+            <fieldset id="subscription-choice" class="flex gap-4 my-4 text-sm">
+              <label class="flex items-center gap-1">
+                <input
+                  type="radio"
+                  name="printclub"
+                  value="none"
+                  class="accent-[#30D5C8]"
+                  checked
+                />
+                One-time purchase
+              </label>
+              <span class="px-2 font-semibold">OR</span>
+              <label class="flex items-center gap-1">
+                <input
+                  type="radio"
+                  name="printclub"
+                  value="join"
+                  class="accent-[#30D5C8]"
+                />
+                Join Print Club £140/mo
+              </label>
+            </fieldset>
 
             <div id="payment-element" class="text-center text-gray-400">
               [Stripe payment form will go here]
