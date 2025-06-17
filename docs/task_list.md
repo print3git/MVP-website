@@ -5,16 +5,12 @@
 - Use retargeting pixels to bring back visitors who left.
 - Include a clear value proposition and call-to-action in each ad.
 - Keep landing pages minimal with a single prominent "Start Generating" button.
-- Provide multiple quotes for each subreddit and rotate them on reload.
-- Use a distinct .glb model for each subreddit landing page.
 
 ## Purchase & Checkout
 
 - Offer multiple payment methods including Apple Pay and Google Pay.
 
-## Community & Sharing
 
-- Surface other users' models on profile pages with an option to buy prints.
 
 ## User Experience & Accessibility
 
@@ -29,14 +25,6 @@
   - Persist preferences to local storage.
   - Apply them on page load.
 
-## Mailing List
-
-- Decide on the signup trigger for collecting emails.
-- Sync the database with the mailing service automatically.
-- Provide an unsubscribe link in every email.
-- Test the full signup and confirmation flow end-to-end.
-- Monitor bounces and unsubscribes to keep the list clean.
-
 ## Creating urgency
 
 - Show dynamic "Only X left" or "Selling fast" notices.
@@ -48,21 +36,6 @@
 - Trigger exit-intent pop-ups warning "Sale ends tonight!" or offering a final code.
 - Show queue positions or a waitlist to encourage immediate checkout.
 - Let users opt in for notifications when a promotion is about to end.
-
-## Profile Models
-
-- Display thumbnails on `profile.html` using the snapshot value.
-- Allow clicking a thumbnail to view the 3D model.
-- Write tests covering the new endpoint behavior.
-
-## Discount Code System
-
-- Create a `discount_codes` database table with fields for code, amount/percent off, expiration, usage limits, and active flag.
-- Add an API endpoint to validate discount codes and return the discount amount.
-- Update the checkout page to include an optional discount code input box that applies validated codes.
-- Build an admin interface or script for creating and retiring codes securely.
-- Track code usage for auditing and store codes safely (e.g., hashed).
-- Expand the test suite to cover valid, expired, and invalid discount codes.
 
 ## Decreasing CAC
 
