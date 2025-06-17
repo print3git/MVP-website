@@ -80,7 +80,7 @@
 
 ## Subscription Service
 
-- Place a radio option on the checkout page to join Print Club during purchase.
+
 - Show a progress bar on the account dashboard with prints used this week and an upgrade CTA.
 - Require prints to be redeemed in pairs and reset credits weekly without rollover.
 - Send monthly reminder emails to subscribers encouraging them to use remaining prints.
