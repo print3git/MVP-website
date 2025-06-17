@@ -12,6 +12,7 @@ const PRICES = {
 };
 const PRINT_CLUB_PRICE = 14000;
 let selectedPrice = PRICES.multi;
+const SINGLE_BORDER_COLOR = '#60a5fa';
 const API_BASE = (window.API_ORIGIN || '') + '/api';
 // Time zone used to reset local purchase counts at 1 AM Eastern
 const TZ = 'America/New_York';
@@ -318,7 +319,9 @@ async function initPaymentPage() {
   if (storedMaterial === 'single') {
     if (singleButton && storedColor) {
       singleButton.style.backgroundColor = storedColor;
-      singleButton.style.borderColor = storedColor;
+
+      singleButton.style.borderColor = SINGLE_BORDER_COLOR;
+
     }
     if (colorMenu) {
       if (storedColor) colorMenu.classList.add('hidden');
@@ -457,7 +460,9 @@ async function initPaymentPage() {
       if (btn) {
         const color = btn.dataset.color;
         singleButton.style.backgroundColor = color;
-        singleButton.style.borderColor = color;
+
+        singleButton.style.borderColor = SINGLE_BORDER_COLOR;
+
         const factor = hexToFactor(color);
         if (factor) applyModelColor(factor);
         localStorage.setItem('print3Color', color);
