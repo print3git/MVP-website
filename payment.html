@@ -221,8 +221,10 @@
                 id="single-color-menu"
                 class="
                   absolute
-                    bottom-full mb-2
-                    left-1/2 -translate-x-1/2
+                    bottom-0           /* put the bottom of the menu at the bottom of the label */
+                    left-1/2           /* center it horizontally */
+                    -translate-x-1/2   /* shift left by 50% of its own width */
+                    -translate-y-1/2   /* shift up by 50% of its own height */
                   grid grid-cols-3 gap-2 p-2
                   bg-[#2A2A2E] border border-white/20
                   rounded-3xl w-32 h-32
@@ -260,6 +262,7 @@
                   data-color="#7c3aed"
                 ></button>
               </div>
+
             </label>
 
             </fieldset>
