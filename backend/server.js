@@ -1124,7 +1124,7 @@ app.delete('/api/admin/flash-sale/:id', adminCheck, async (req, res) => {
  * Create a Stripe Checkout session
  */
 app.post('/api/create-order', authOptional, async (req, res) => {
-  const { jobId, price, shippingInfo, qty, discount, discountCode, referral } = req.body;
+  const { jobId, price, shippingInfo, qty, discount, discountCode, referral, etchName } = req.body;
   try {
     const job = await db.query('SELECT job_id, user_id FROM jobs WHERE job_id=$1', [jobId]);
     if (job.rows.length === 0) {
@@ -1210,7 +1210,7 @@ app.post('/api/create-order', authOptional, async (req, res) => {
     });
 
     await db.query(
-      'INSERT INTO orders(session_id, job_id, user_id, price_cents, status, shipping_info, quantity, discount_cents) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',
+      'INSERT INTO orders(session_id, job_id, user_id, price_cents, status, shipping_info, quantity, discount_cents, etch_name) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)',
       [
         session.id,
         jobId,
@@ -1220,6 +1220,7 @@ app.post('/api/create-order', authOptional, async (req, res) => {
         shippingInfo || {},
         qty || 1,
         totalDiscount,
+        etchName || null,
       ]
     );
 

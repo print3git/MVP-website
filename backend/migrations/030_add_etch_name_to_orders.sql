@@ -1,0 +1,1 @@
+ALTER TABLE orders\n  ADD COLUMN IF NOT EXISTS etch_name TEXT;
