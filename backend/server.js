@@ -113,8 +113,8 @@ function authRequired(req, res, next) {
 }
 
 app.post('/api/register', async (req, res) => {
-  const { username, email, password } = req.body;
-  if (!username || !email || !password) {
+  const { username, displayName, email, password } = req.body;
+  if (!username || !displayName || !email || !password) {
     return res.status(400).json({ error: 'Missing fields' });
   }
   if (!isValidEmail(email)) {
@@ -126,7 +126,10 @@ app.post('/api/register', async (req, res) => {
       'INSERT INTO users(username,email,password_hash) VALUES($1,$2,$3) RETURNING id,username',
       [username, email, hash]
     );
-    await db.query('INSERT INTO user_profiles(user_id) VALUES($1)', [rows[0].id]);
+    await db.query('INSERT INTO user_profiles(user_id, display_name) VALUES($1,$2)', [
+      rows[0].id,
+      displayName,
+    ]);
     const token = jwt.sign({ id: rows[0].id, username, isAdmin: false }, AUTH_SECRET);
     res.json({ token, isAdmin: false });
   } catch (err) {
@@ -233,13 +236,15 @@ app.get('/api/me', authRequired, async (req, res) => {
     if (!rows.length) return res.status(404).json({ error: 'User not found' });
     const user = rows[0];
     const profile = await db.query(
-      'SELECT shipping_info, payment_info, competition_notify FROM user_profiles WHERE user_id=$1',
+      'SELECT display_name, avatar_url, shipping_info, payment_info, competition_notify FROM user_profiles WHERE user_id=$1',
       [req.user.id]
     );
     res.json({
       id: user.id,
       username: user.username,
       email: user.email,
+      displayName: profile.rows[0]?.display_name || null,
+      avatarUrl: profile.rows[0]?.avatar_url || null,
       profile: profile.rows[0] || {},
     });
   } catch (err) {
