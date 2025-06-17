@@ -89,10 +89,9 @@
 
 ## Repeat Purchase Incentives
 
-- Display a "Start your next one?" modal after checkout.
-  - Prefill the prompt box with a suggested idea.
-  - Provide a discount code valid for the next 48 hours.
-  - Include a "Refer a friend" link on the confirmation page.
+
+- Provide a discount code valid for the next 48 hours.
+
 - Show gifting options at checkout and on delivery confirmation.
   - Add a "This is a surprise" toggle for recipient details.
   - Offer a discount when ordering two prints of the same model.
