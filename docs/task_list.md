@@ -154,3 +154,24 @@
 - Compress and preload the environment map.
 - Serve assets over HTTP/2 or HTTP/3.
 - Measure load times with Lighthouse or real browser tests and track improvements.
+
+## Earn Rewards Page
+
+
+- Replace the placeholder message on `earn-rewards.html` with a short program overview.
+- Show the user's referral link.
+  - Create `referral_links` table with `user_id` and `code`.
+  - Add GET `/api/referral-link` that returns or creates the code for the logged-in user.
+  - Write `js/rewards.js` to fetch the link and display it with a copy button.
+- Display the user's reward balance.
+  - Create `reward_points` table storing `user_id` and `points`.
+  - Add GET `/api/rewards` returning the balance.
+  - Update `js/rewards.js` to render the balance and a progress bar.
+- Allow point redemption for discount codes.
+  - Add POST `/api/rewards/redeem` that deducts points and returns a code.
+  - Insert a dropdown on the page listing available rewards.
+- Track referrals in the backend.
+  - Create `referral_events` table for clicks and signups.
+  - Add POST `/api/referral-click` to record each click.
+  - Add POST `/api/referral-signup` to award points after signup.
+- Add unit tests for all new rewards endpoints.
