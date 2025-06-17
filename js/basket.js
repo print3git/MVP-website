@@ -61,11 +61,17 @@ function updateBadge() {
 }
 let viewerModal;
 let viewerEl;
+let viewerCheckoutBtn;
+let viewerTierToggle;
 
-function showModel(modelUrl, poster) {
+function showModel(modelUrl, poster, jobId) {
   if (!viewerModal || !viewerEl) return;
   if (poster) viewerEl.setAttribute('poster', poster);
   viewerEl.src = modelUrl;
+  if (viewerCheckoutBtn) {
+    viewerCheckoutBtn.dataset.model = modelUrl || '';
+    viewerCheckoutBtn.dataset.job = jobId || '';
+  }
   viewerModal.classList.remove('hidden');
   document.body.classList.add('overflow-hidden');
 }
@@ -94,7 +100,7 @@ function renderList() {
     img.alt = 'Model';
     img.className =
       'w-24 h-24 object-cover rounded-lg bg-[#2A2A2E] border border-white/20 cursor-pointer';
-    img.addEventListener('click', () => showModel(it.modelUrl, it.snapshot));
+    img.addEventListener('click', () => showModel(it.modelUrl, it.snapshot, it.jobId));
 
     const btn = document.createElement('button');
     btn.textContent = 'Remove';
@@ -180,11 +186,51 @@ export function setupBasketUI() {
         <span class="sr-only">Close</span>
       </button>
       <model-viewer src="" alt="3D model preview" environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr" camera-controls auto-rotate class="w-full h-96 bg-[#2A2A2E] rounded-xl"></model-viewer>
+      <div id="basket-checkout-container" class="absolute bottom-4 right-4 flex flex-col items-center">
+        <div id="basket-tier-toggle" class="flex gap-1 mb-2 text-xs">
+          <button type="button" data-tier="bronze" class="basket-tier-option px-2 py-1 rounded-full border border-white/20 opacity-50 text-black" style="background-color: #cd7f32">1 colour</button>
+          <button type="button" data-tier="silver" class="basket-tier-option px-2 py-1 rounded-full border border-white/20 opacity-50 text-black" style="background-color: #c0c0c0">multicolour</button>
+          <button type="button" data-tier="gold" class="basket-tier-option px-2 py-1 rounded-full border border-white/20 opacity-50 text-black" style="background-color: #ffd700">premium</button>
+        </div>
+        <a id="basket-model-checkout" href="payment.html" class="font-bold py-2 px-5 rounded-full shadow-md transition border-2 border-black" style="background-color: #30D5C8; color: #1A1A1D" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">Print for £34.99 →</a>
+      </div>
     </div>`;
   document.body.appendChild(viewerOverlay);
   viewerModal = viewerOverlay;
   viewerEl = viewerOverlay.querySelector('model-viewer');
+  viewerCheckoutBtn = viewerOverlay.querySelector('#basket-model-checkout');
+  viewerTierToggle = viewerOverlay.querySelector('#basket-tier-toggle');
   viewerOverlay.querySelector('#basket-model-close').addEventListener('click', hideModel);
+  viewerCheckoutBtn.addEventListener('click', () => {
+    const model = viewerCheckoutBtn.dataset.model;
+    const job = viewerCheckoutBtn.dataset.job;
+    if (model) localStorage.setItem('print3Model', model);
+    if (job) {
+      localStorage.setItem('print3JobId', job);
+    } else {
+      localStorage.removeItem('print3JobId');
+    }
+  });
+  function setTier(tier) {
+    viewerTierToggle?.querySelectorAll('button[data-tier]').forEach((btn) => {
+      const active = btn.dataset.tier === tier;
+      btn.classList.toggle('ring-2', active);
+      btn.classList.toggle('ring-white', active);
+      btn.classList.toggle('opacity-100', active);
+      btn.classList.toggle('opacity-50', !active);
+    });
+    if (viewerCheckoutBtn) {
+      const price = tier === 'bronze' ? 27.99 : tier === 'gold' ? 59.99 : 34.99;
+      viewerCheckoutBtn.textContent = `Print for £${price.toFixed(2)} →`;
+    }
+    const material = tier === 'bronze' ? 'single' : tier === 'gold' ? 'premium' : 'multi';
+    localStorage.setItem('print3Material', material);
+  }
+  viewerTierToggle?.addEventListener('click', (ev) => {
+    const btn = ev.target.closest('button[data-tier]');
+    if (btn) setTier(btn.dataset.tier);
+  });
+  setTier('silver');
 
   updateBadge();
 }
