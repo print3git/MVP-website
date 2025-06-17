@@ -1,6 +1,7 @@
 // backend/db.js
 require('dotenv').config();
 const { Pool } = require('pg');
+const { v4: uuidv4 } = require('uuid');
 const { dbUrl } = require('./config');
 const pool = new Pool({ connectionString: dbUrl });
 
@@ -110,6 +111,19 @@ async function incrementCreditsUsed(userId, amount = 1) {
   );
 }
 
+async function getOrCreateReferralLink(userId) {
+  const { rows } = await query('SELECT code FROM referral_links WHERE user_id=$1', [userId]);
+  if (rows.length) return rows[0].code;
+  const code = uuidv4().replace(/-/g, '').slice(0, 8);
+  await query('INSERT INTO referral_links(user_id, code) VALUES($1,$2)', [userId, code]);
+  return code;
+}
+
+async function getRewardPoints(userId) {
+  const { rows } = await query('SELECT points FROM reward_points WHERE user_id=$1', [userId]);
+  return rows.length ? parseInt(rows[0].points, 10) : 0;
+}
+
 module.exports = {
   query,
   insertShare,
@@ -123,4 +137,6 @@ module.exports = {
   ensureCurrentWeekCredits,
   getCurrentWeekCredits,
   incrementCreditsUsed,
+  getOrCreateReferralLink,
+  getRewardPoints,
 };
