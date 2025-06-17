@@ -154,3 +154,20 @@
 - Compress and preload the environment map.
 - Serve assets over HTTP/2 or HTTP/3.
 - Measure load times with Lighthouse or real browser tests and track improvements.
+
+## User Profiles
+
+- Add a "Display name" input to `signup.html`.
+  - Update `js/signup.js` to include `displayName` in `/api/register` requests.
+  - Modify `/api/register` to save `display_name` in `user_profiles`.
+- Show the saved `display_name` on `my_profile.html` using data from `/api/me`.
+- Add avatar upload support.
+  - Insert a file input on `my_profile.html`.
+  - Create POST `/api/profile/avatar` to store the upload and return its URL.
+  - Update `js/my_profile.js` to send the avatar and refresh the preview.
+- Provide fields for shipping address and payment info on `my_profile.html`.
+  - POST the entered details to `/api/profile`.
+- Display past orders in a table by calling `/api/my/orders`.
+- Add a toggle for competition email notifications linked to `/api/profile`.
+- Include a "Delete my account" button that calls DELETE `/api/account`.
+- Fetch `display_name` and `avatar_url` for `/profile.html` and show them at the top.
