@@ -397,6 +397,29 @@ test('POST /api/competitions/:id/enter allows repeat submission without error', 
   ]);
 });
 
+test('POST /api/competitions/:id/discount returns code', async () => {
+  db.query.mockResolvedValueOnce({ rows: [{}] }).mockResolvedValueOnce({ rows: [{ code: 'X1' }] });
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  const res = await request(app)
+    .post('/api/competitions/5/discount')
+    .set('authorization', `Bearer ${token}`)
+    .send({});
+  expect(res.status).toBe(200);
+  expect(res.body.code).toBe('X1');
+  const call = db.query.mock.calls.find((c) => c[0].includes('INSERT INTO discount_codes'));
+  expect(call).toBeTruthy();
+});
+
+test('POST /api/competitions/:id/discount requires entry', async () => {
+  db.query.mockResolvedValueOnce({ rows: [] });
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  const res = await request(app)
+    .post('/api/competitions/5/discount')
+    .set('authorization', `Bearer ${token}`)
+    .send({});
+  expect(res.status).toBe(400);
+});
+
 test('DELETE /api/admin/competitions/:id', async () => {
   db.query.mockResolvedValueOnce({});
   const res = await request(app).delete('/api/admin/competitions/5').set('x-admin-token', 'admin');

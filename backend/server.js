@@ -958,6 +958,23 @@ app.post('/api/competitions/:id/enter', authRequired, async (req, res) => {
   }
 });
 
+app.post('/api/competitions/:id/discount', authRequired, async (req, res) => {
+  try {
+    const { rows } = await db.query(
+      'SELECT 1 FROM competition_entries WHERE competition_id=$1 AND user_id=$2',
+      [req.params.id, req.user.id]
+    );
+    if (!rows.length) {
+      return res.status(400).json({ error: 'No entry found' });
+    }
+    const code = await createTimedCode(500, 48);
+    res.json({ code });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to generate discount' });
+  }
+});
+
 function adminCheck(req, res, next) {
   authOptional(req, res, () => {
     const headerMatch = req.headers['x-admin-token'] === ADMIN_TOKEN;
