@@ -133,6 +133,26 @@ test('create-order applies first-order discount', async () => {
   expect(orderInsert[1][7]).toBe(10);
 });
 
+test('create-order grants free print after three referrals', async () => {
+  db.query
+    .mockResolvedValueOnce({ rows: [{ job_id: '1', user_id: 'u1' }] })
+    .mockResolvedValueOnce({ rows: [{ code: 'REF123' }] })
+    .mockResolvedValueOnce({})
+    .mockResolvedValueOnce({ rows: [{ count: '3' }] })
+    .mockResolvedValueOnce({ rows: [] })
+    .mockResolvedValueOnce({ rows: [{ code: 'FREE1' }] })
+    .mockResolvedValueOnce({});
+
+  const res = await request(app)
+    .post('/api/create-order')
+    .send({ jobId: '1', price: 100, referral: 'u2' });
+
+  expect(res.status).toBe(200);
+  const incentiveCalls = db.query.mock.calls.filter((c) => c[0].includes('INSERT INTO incentives'));
+  expect(incentiveCalls).toHaveLength(2);
+  expect(incentiveCalls[1][1][1]).toMatch(/^free_/);
+});
+
 test('create-order rejects unknown job', async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
   const res = await request(app).post('/api/create-order').send({ jobId: 'bad' });

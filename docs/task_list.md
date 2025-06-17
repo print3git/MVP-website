@@ -56,7 +56,6 @@
 - Reward £5 off the next order when users post their print online and tag us.
   - Verify the tag before issuing the discount.
 - Place a QR code in each package linking to the referral page.
-- Grant a free print after three successful referrals.
 
 ## Subscription Service
 
