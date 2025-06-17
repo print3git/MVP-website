@@ -496,10 +496,10 @@
     </div>
 
     <!-- Init scripts -->
-    <script src="js/modelViewerTouchFix.js"></script>
-    <script type="module" src="js/wizard.js"></script>
-    <script type="module" src="js/payment.js"></script>
-    <script type="module" src="js/exitDiscount.js"></script>
+    <script src="js/modelViewerTouchFix.js" defer></script>
+    <script type="module" src="js/wizard.js" defer></script>
+    <script type="module" src="js/payment.js" defer></script>
+    <script type="module" src="js/exitDiscount.js" defer></script>
     <script>
       document.addEventListener('DOMContentLoaded', () => {
         const link = document.getElementById('back-link');
@@ -518,6 +518,11 @@
         link.setAttribute('href', target);
       });
     </script>
-    <script type="module" src="js/basket.js"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('service-worker.js');
+      }
+    </script>
+    <script type="module" src="js/basket.js" defer></script>
   </body>
 </html>
