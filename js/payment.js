@@ -288,6 +288,7 @@ async function initPaymentPage() {
   const discountMsg = document.getElementById('discount-msg');
   const applyBtn = document.getElementById('apply-discount');
   const materialRadios = document.querySelectorAll('#material-options input[name="material"]');
+  const subscriptionRadios = document.querySelectorAll('#subscription-choice input[name="printclub"]');
   const payBtn = document.getElementById('submit-payment');
   const singleLabel = document.getElementById('single-label');
   const singleInput = document.getElementById('opt-single');
@@ -640,6 +641,20 @@ async function initPaymentPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: emailEl.value }),
+      });
+    }
+
+    const joinClub =
+      Array.from(subscriptionRadios).find((r) => r.checked)?.value === 'join';
+    const token = localStorage.getItem('token');
+    if (joinClub && token) {
+      fetch(`${API_BASE}/subscription`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({}),
       });
     }
   };
