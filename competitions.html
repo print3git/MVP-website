@@ -103,6 +103,13 @@
       </div>
     </header>
     <main class="flex-1 p-4 space-y-6">
+      <div
+        id="printclub-banner"
+        class="bg-blue-600 text-white p-3 rounded-xl text-center hidden"
+      >
+        Join <strong>Print Club</strong> for weekly prints.
+        <a href="#" id="printclub-banner-link" class="underline">Learn more</a>
+      </div>
       <section class="bg-[#2A2A2E] p-4 rounded-xl">
         <p class="mb-2">
           Put your modelling skills to the test! Enter our themed contests, climb the leaderboard
@@ -117,6 +124,17 @@
       </section>
       <h2 class="text-2xl">Active Competitions</h2>
       <div id="list" class="space-y-4"></div>
+      <form id="comp-subscribe" class="flex space-x-2 mt-4 max-w-sm">
+        <input
+          type="email"
+          id="comp-email"
+          class="flex-1 bg-[#1A1A1D] border border-white/10 rounded px-2"
+          placeholder="Email for updates"
+          aria-label="Email address"
+        />
+        <button class="bg-[#30D5C8] text-[#1A1A1D] px-3 rounded">Subscribe</button>
+      </form>
+      <div id="comp-subscribe-msg" class="text-sm"></div>
       <h2 class="text-2xl mt-8">Past Winners</h2>
       <div id="winners-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4">
         <div

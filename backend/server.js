@@ -1285,6 +1285,25 @@ app.post('/api/subscribe', async (req, res) => {
   }
 });
 
+app.post('/api/competitions/subscribe', async (req, res) => {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ error: 'Email required' });
+  const token = uuidv4();
+  try {
+    await db.query(
+      `INSERT INTO mailing_list(email, token) VALUES($1,$2)
+       ON CONFLICT (email) DO UPDATE SET token=$2, confirmed=FALSE, unsubscribed=FALSE`,
+      [email, token]
+    );
+    const url = `${req.headers.origin}/api/confirm-subscription?token=${token}`;
+    await sendMail(email, 'Confirm Subscription', `Click to confirm: ${url}`);
+    res.sendStatus(204);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to subscribe' });
+  }
+});
+
 app.get('/api/confirm-subscription', async (req, res) => {
   const { token } = req.query;
   if (!token) return res.status(400).send('Invalid token');
