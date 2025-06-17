@@ -706,10 +706,10 @@ async function init() {
         const prints =
           typeof data?.printsSold === 'number' ? data.printsSold : randomPrints();
 
-        el.textContent = `\u{1F525} ${prints} prints sold in last 24 hrs`;
+        el.innerHTML = `\u{1F525} ${prints} prints sold<br>in last 24 hrs`;
       })
       .catch(() => {
-        el.textContent = `\u{1F525} ${randomPrints()} prints sold in last 24 hrs`;
+        el.innerHTML = `\u{1F525} ${randomPrints()} prints sold<br>in last 24 hrs`;
       });
   }
 
