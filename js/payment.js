@@ -757,6 +757,7 @@ async function initPaymentPage() {
     // Center the badge on the button and override the initial transform
     badge.style.transform = 'translateY(-50%)';
     badge.style.top = offset + 'px';
+    badge.style.visibility = 'visible';
   };
   alignBadge();
   window.addEventListener('resize', alignBadge);
