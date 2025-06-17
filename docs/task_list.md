@@ -139,3 +139,24 @@
 - After a user enters a competition, display a one-time discount code for printing their entry.
   - Provide `/api/competitions/:id/discount` endpoint to generate and return the code.
 - Create a "Trending Prints" section at the bottom that fetches models from `/api/trending` and shows Add to Basket buttons.
+## 3D Model Loading Performance
+
+- Optimize the `.glb` file used on `index.html` and `payment.html`.
+  - Remove unused meshes, nodes, and animations in a 3D tool.
+  - Reduce polygon count and lower texture resolution.
+  - Compress geometry with Draco or Meshopt and convert textures to KTX2/Basis.
+  - Export the optimized model and update the viewer `src` attribute.
+- Host the optimized model on a fast CDN or static server.
+  - Upload the file and configure CORS.
+  - Add a `<link rel="preconnect">` to the CDN in the page `<head>`.
+- Send strong caching headers for the model and environment map.
+  - Use hashed filenames and long `max-age` values.
+- Preload or prefetch the model asset.
+  - Include `<link rel="preload" as="fetch" crossorigin fetchpriority="high">`.
+- Implement service‑worker caching for the model and textures.
+- Lazy load the viewer with a poster image until the user interacts.
+- Use Level of Detail models, loading low poly first then swapping in higher quality.
+- Defer or async non‑essential scripts so the model loads earlier.
+- Compress and preload the environment map.
+- Serve assets over HTTP/2 or HTTP/3.
+- Measure load times with Lighthouse or real browser tests and track improvements.
