@@ -15,6 +15,30 @@ function prefetchModel(url) {
   prefetchedModels.add(url);
 }
 
+function openModel(card) {
+  const modal = document.getElementById('model-modal');
+  const viewer = modal?.querySelector('model-viewer');
+  const checkoutBtn = document.getElementById('modal-checkout');
+  const addBasketBtn = document.getElementById('modal-add-basket');
+  if (!modal || !viewer) return;
+  viewer.setAttribute('poster', card.querySelector('img')?.src || '');
+  viewer.setAttribute('fetchpriority', 'high');
+  viewer.setAttribute('loading', 'eager');
+  viewer.src = card.dataset.model;
+  if (checkoutBtn) {
+    checkoutBtn.dataset.model = card.dataset.model;
+    checkoutBtn.dataset.job = card.dataset.job;
+  }
+  if (addBasketBtn) {
+    addBasketBtn.dataset.model = card.dataset.model;
+    addBasketBtn.dataset.job = card.dataset.job;
+    const img = card.querySelector('img');
+    if (img) addBasketBtn.dataset.snapshot = img.src;
+  }
+  modal.classList.remove('hidden');
+  document.body.classList.add('overflow-hidden');
+}
+
 function purchase(modelUrl, jobId) {
   sessionStorage.setItem('fromCommunity', '1');
   localStorage.setItem('print3Model', modelUrl);
@@ -115,7 +139,13 @@ async function loadLeaderboard(id, table, grid) {
         e.stopPropagation();
         purchase(r.model_url, r.model_id);
       });
+      card.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const img = card.querySelector('img');
+        openModelModal(r.model_url, r.model_id, img ? img.src : '');
+      });
       card.addEventListener('pointerenter', () => prefetchModel(r.model_url));
+      card.addEventListener('click', () => openModel(card));
       grid.appendChild(card);
     });
     captureSnapshots(grid);
@@ -150,6 +180,28 @@ let modal;
 let form;
 let input;
 let errorEl;
+
+function openModelModal(url, jobId, snapshot) {
+  const modalEl = document.getElementById('model-modal');
+  const viewer = modalEl.querySelector('model-viewer');
+  const checkoutBtn = document.getElementById('modal-checkout');
+  const addBasketBtn = document.getElementById('modal-add-basket');
+  viewer.setAttribute('poster', snapshot || '');
+  viewer.setAttribute('fetchpriority', 'high');
+  viewer.setAttribute('loading', 'eager');
+  viewer.src = url;
+  if (checkoutBtn) {
+    checkoutBtn.dataset.model = url;
+    checkoutBtn.dataset.job = jobId;
+  }
+  if (addBasketBtn) {
+    addBasketBtn.dataset.model = url;
+    addBasketBtn.dataset.job = jobId;
+    if (snapshot) addBasketBtn.dataset.snapshot = snapshot;
+  }
+  modalEl.classList.remove('hidden');
+  document.body.classList.add('overflow-hidden');
+}
 
 function openModal(id) {
   currentId = id;
@@ -265,7 +317,13 @@ document.addEventListener('DOMContentLoaded', () => {
         purchase(card.dataset.model, card.dataset.job);
       });
     }
+    card.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const img = card.querySelector('img');
+      openModelModal(card.dataset.model, card.dataset.job, img ? img.src : '');
+    });
     card.addEventListener('pointerenter', () => prefetchModel(card.dataset.model));
+    card.addEventListener('click', () => openModel(card));
   });
   load();
 });
