@@ -318,6 +318,7 @@ async function initPaymentPage() {
   if (storedMaterial === 'single') {
     if (singleButton && storedColor) {
       singleButton.style.backgroundColor = storedColor;
+      singleButton.style.borderColor = storedColor;
     }
     if (colorMenu) {
       if (storedColor) colorMenu.classList.add('hidden');
@@ -428,7 +429,10 @@ async function initPaymentPage() {
           } else {
             colorMenu.classList.add('hidden');
             // Reset the single colour button when another option is selected
-            if (singleButton) singleButton.style.backgroundColor = '';
+            if (singleButton) {
+              singleButton.style.backgroundColor = '';
+              singleButton.style.borderColor = '';
+            }
             if (originalColor) applyModelColor(originalColor, true);
             localStorage.removeItem('print3Color');
           }
@@ -453,6 +457,7 @@ async function initPaymentPage() {
       if (btn) {
         const color = btn.dataset.color;
         singleButton.style.backgroundColor = color;
+        singleButton.style.borderColor = color;
         const factor = hexToFactor(color);
         if (factor) applyModelColor(factor);
         localStorage.setItem('print3Color', color);
