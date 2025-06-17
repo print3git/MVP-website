@@ -905,10 +905,8 @@ app.post('/api/community', authRequired, async (req, res) => {
     const { rows } = await db.query('SELECT generated_title FROM jobs WHERE job_id=$1', [jobId]);
     const autoTitle = rows[0] ? rows[0].generated_title : '';
     await db.query(
-
       'INSERT INTO community_creations(job_id, title, category, user_id) VALUES($1,$2,$3,$4)',
       [jobId, title || autoTitle, category || '', req.user.id]
-
     );
     res.sendStatus(201);
   } catch (err) {
@@ -925,16 +923,6 @@ function buildGalleryQuery(orderBy) {
           ON j.job_id=l.model_id
           WHERE ($3::text IS NULL OR c.category=$3)
             AND ($4::text IS NULL OR c.title ILIKE '%' || $4 || '%')
-          ORDER BY ${orderBy} LIMIT $1 OFFSET $2`;
-}
-
-function buildGalleryQueryForUser(orderBy) {
-  return `SELECT c.id, c.title, c.category, j.job_id, j.model_url, COALESCE(l.count,0) as likes
-          FROM community_creations c
-          JOIN jobs j ON c.job_id=j.job_id
-          LEFT JOIN (SELECT model_id, COUNT(*) as count FROM likes GROUP BY model_id) l
-          ON j.job_id=l.model_id
-          WHERE c.user_id=$3
           ORDER BY ${orderBy} LIMIT $1 OFFSET $2`;
 }
 
@@ -976,7 +964,6 @@ app.get('/api/community/popular', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch creations' });
   }
 });
-
 
 app.delete('/api/community/:id', authRequired, async (req, res) => {
   const id = req.params.id;
