@@ -522,3 +522,16 @@ test('GET /api/init-data returns slots, stats, and profile', async () => {
   expect(res.body.stats.printsSold).toBe(10);
   expect(res.body.profile.display_name).toBe('A');
 });
+
+test('GET /api/payment-init bundles payment data', async () => {
+  db.query
+    .mockResolvedValueOnce({ rows: [{ id: 1, discount_percent: 5 }] })
+    .mockResolvedValueOnce({ rows: [{ display_name: 'B', shipping_info: { name: 'J' } }] });
+  const token = jwt.sign({ id: 'u2' }, 'secret');
+  const res = await request(app).get('/api/payment-init').set('authorization', `Bearer ${token}`);
+  expect(res.status).toBe(200);
+  expect(typeof res.body.slots).toBe('number');
+  expect(res.body.flashSale.id).toBe(1);
+  expect(res.body.profile.display_name).toBe('B');
+  expect(res.body.publishableKey).toBeDefined();
+});
