@@ -81,6 +81,7 @@
 ## Subscription Service
 
 
+
 - Require prints to be redeemed in pairs and reset credits weekly without rollover.
 - Send monthly reminder emails to subscribers encouraging them to use remaining prints.
 - Track sign‑ups and churn; A/B test pricing (£140 vs £160) and monitor ARPU.
