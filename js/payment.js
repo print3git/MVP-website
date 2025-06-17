@@ -585,7 +585,7 @@ async function initPaymentPage() {
           await fetch(`${API_BASE}/send-gift`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sessionId, email }),
+            body: JSON.stringify({ orderId: sessionId, email }),
           });
           giftSent.textContent = 'Gift email sent!';
         } catch {

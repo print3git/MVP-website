@@ -1240,11 +1240,13 @@ app.post('/api/subscribe', async (req, res) => {
 });
 
 app.post('/api/send-gift', async (req, res) => {
-  const { sessionId, email } = req.body;
-  if (!sessionId || !email) return res.status(400).json({ error: 'Missing fields' });
+  const { orderId, email } = req.body;
+  if (!orderId || !email) {
+    return res.status(400).json({ error: 'Missing fields' });
+  }
   try {
     await sendTemplate(email, 'Your gift is on the way!', 'gift_notice.txt', {
-      orderId: sessionId,
+      orderId,
     });
     res.sendStatus(204);
   } catch (err) {
