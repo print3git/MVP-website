@@ -107,7 +107,6 @@ function renderList() {
       removeFromBasket(idx);
     });
 
-
     div.appendChild(img);
     div.appendChild(btn);
     list.appendChild(div);
