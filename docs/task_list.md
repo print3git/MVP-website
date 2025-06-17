@@ -106,3 +106,17 @@
 - Add `sync-mailing-list.js` script to push confirmed addresses to SendGrid.
 - Schedule the sync script to run daily.
 - Add unit tests for subscribe, confirm, unsubscribe, webhook handling and sync logic.
+
+## Competitions Profit Drivers
+
+- Show purchase buttons for past winners.
+  - Add a "Buy Print" button below each winning model in `competitions.html`.
+  - Pre-fill `print3Model` and `print3JobId` in local storage when the button is clicked.
+- Promote Print Club on the competitions page.
+  - Insert a short banner explaining membership benefits with a sign-up link.
+- Offer a discount for printing your competition entry.
+  - Generate a one-time code after an entry is submitted.
+  - Display the code in the success message.
+- Capture emails for future promotions.
+  - Add a small mailing list form on the competitions page.
+  - POST addresses to `/api/subscribe` and show confirmation.
