@@ -5,3 +5,4 @@ uploads/
 backend/hunyuan_server/uploads/
 *.log
 .DS_Store
+reports/
