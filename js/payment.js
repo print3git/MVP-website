@@ -374,15 +374,31 @@ async function initPaymentPage() {
 
   function updateEtchVisibility(val) {
     if (!etchInput || !etchContainer) return;
+    const warning = document.getElementById('etch-warning');
     if (val === 'multi' || val === 'premium') {
       etchInput.disabled = false;
-      etchInput.classList.remove('opacity-50', 'border-red-500', 'text-red-300');
-      if (etchWarning) etchWarning.classList.add('hidden');
+
+      etchInput.classList.remove(
+        'cursor-not-allowed',
+        'border-red-500',
+        'bg-red-900/20',
+        'text-red-300',
+        'placeholder-red-300'
+      );
+      if (warning) warning.classList.add('hidden');
     } else {
       etchInput.disabled = true;
       etchInput.value = '';
-      etchInput.classList.add('opacity-50', 'border-red-500', 'text-red-300');
-      if (etchWarning) etchWarning.classList.remove('hidden');
+      etchInput.classList.add(
+        'cursor-not-allowed',
+        'border-red-500',
+        'bg-red-900/20',
+        'text-red-300',
+        'placeholder-red-300'
+      );
+      if (warning) warning.classList.remove('hidden');
+
+
     }
   }
 
