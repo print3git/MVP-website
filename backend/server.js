@@ -801,11 +801,10 @@ app.post('/api/community', authRequired, async (req, res) => {
   try {
     const { rows } = await db.query('SELECT generated_title FROM jobs WHERE job_id=$1', [jobId]);
     const autoTitle = rows[0] ? rows[0].generated_title : '';
-    await db.query('INSERT INTO community_creations(job_id, title, category) VALUES($1,$2,$3)', [
-      jobId,
-      title || autoTitle,
-      category || '',
-    ]);
+    await db.query(
+      'INSERT INTO community_creations(job_id, user_id, title, category) VALUES($1,$2,$3,$4)',
+      [jobId, req.user.id, title || autoTitle, category || '']
+    );
     res.sendStatus(201);
   } catch (err) {
     logError(err);
@@ -821,6 +820,16 @@ function buildGalleryQuery(orderBy) {
           ON j.job_id=l.model_id
           WHERE ($3::text IS NULL OR c.category=$3)
             AND ($4::text IS NULL OR c.title ILIKE '%' || $4 || '%')
+          ORDER BY ${orderBy} LIMIT $1 OFFSET $2`;
+}
+
+function buildGalleryQueryForUser(orderBy) {
+  return `SELECT c.id, c.title, c.category, j.job_id, j.model_url, COALESCE(l.count,0) as likes
+          FROM community_creations c
+          JOIN jobs j ON c.job_id=j.job_id
+          LEFT JOIN (SELECT model_id, COUNT(*) as count FROM likes GROUP BY model_id) l
+          ON j.job_id=l.model_id
+          WHERE c.user_id=$3
           ORDER BY ${orderBy} LIMIT $1 OFFSET $2`;
 }
 
@@ -860,6 +869,36 @@ app.get('/api/community/popular', async (req, res) => {
   } catch (err) {
     logError(err);
     res.status(500).json({ error: 'Failed to fetch creations' });
+  }
+});
+
+app.get('/api/community/mine', authRequired, async (req, res) => {
+  const limit = parseInt(req.query.limit, 10) || 10;
+  const offset = parseInt(req.query.offset, 10) || 0;
+  try {
+    const { rows } = await db.query(buildGalleryQueryForUser('c.created_at DESC'), [
+      limit,
+      offset,
+      req.user.id,
+    ]);
+    res.json(rows);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to fetch creations' });
+  }
+});
+
+app.delete('/api/community/:id', authRequired, async (req, res) => {
+  try {
+    const { rows } = await db.query(
+      'DELETE FROM community_creations WHERE id=$1 AND user_id=$2 RETURNING id',
+      [req.params.id, req.user.id]
+    );
+    if (!rows.length) return res.status(404).json({ error: 'Not found' });
+    res.sendStatus(204);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to delete creation' });
   }
 });
 
