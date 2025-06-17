@@ -31,6 +31,7 @@ const {
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'admin';
 
 const AUTH_SECRET = process.env.AUTH_SECRET || 'secret';
+const DAILY_GENERATE_LIMIT = 50;
 
 function logError(...args) {
   if (process.env.NODE_ENV !== 'test') {
@@ -270,6 +271,17 @@ app.post('/api/generate', authOptional, upload.array('images'), async (req, res)
   const userId = req.user ? req.user.id : null;
 
   try {
+    if (userId) {
+      const countRes = await db.query(
+        "SELECT COUNT(*) FROM jobs WHERE user_id=$1 AND created_at >= (NOW() AT TIME ZONE 'America/New_York')::date",
+        [userId]
+      );
+      const count = countRes.rows.length ? parseInt(countRes.rows[0].count, 10) : 0;
+      if (count >= DAILY_GENERATE_LIMIT) {
+        return res.status(429).json({ error: 'Daily limit reached' });
+      }
+    }
+
     await db.query(
       'INSERT INTO jobs(job_id, prompt, image_ref, status, user_id, snapshot) VALUES ($1,$2,$3,$4,$5,$6)',
       [jobId, prompt, imageRef, 'pending', userId, snapshot]

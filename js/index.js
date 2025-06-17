@@ -540,13 +540,18 @@ async function fetchGlb(prompt, files) {
       method: 'POST',
       body: fd,
     });
+    if (r.status === 429) {
+      window.showLimitPopup?.();
+      throw new Error('limit');
+    }
     if (!r.ok) throw new Error();
     const data = await r.json();
     lastJobId = data.jobId;
     return data.glb_url;
   } catch (err) {
-    showError('Generation failed');
-
+    if (err.message !== 'limit') {
+      showError('Generation failed');
+    }
     return FALLBACK_GLB;
   }
 }
@@ -773,6 +778,14 @@ async function init() {
   clubModal?.addEventListener('click', (e) => {
     if (e.target === clubModal) clubModal.classList.add('hidden');
   });
+
+  const limitModal = document.getElementById('limit-popup');
+  const limitClose = document.getElementById('limit-close');
+  limitClose?.addEventListener('click', () => limitModal?.classList.add('hidden'));
+  limitModal?.addEventListener('click', (e) => {
+    if (e.target === limitModal) limitModal.classList.add('hidden');
+  });
+  window.showLimitPopup = () => limitModal?.classList.remove('hidden');
 }
 
 window.initIndexPage = init;

@@ -428,6 +428,16 @@ test('/api/generate saves authenticated user id', async () => {
   expect(insertCall[1][4]).toBe('u1');
 });
 
+test('/api/generate enforces daily limit', async () => {
+  db.query.mockResolvedValueOnce({ rows: [{ count: '50' }] });
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  const res = await request(app)
+    .post('/api/generate')
+    .set('authorization', `Bearer ${token}`)
+    .send({ prompt: 't' });
+  expect(res.status).toBe(429);
+});
+
 test('/api/generate inserts community row', async () => {
   axios.post.mockResolvedValueOnce({ data: { glb_url: '/m.glb' } });
   await request(app).post('/api/generate').send({ prompt: 't' });
