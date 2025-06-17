@@ -377,7 +377,6 @@ async function initPaymentPage() {
     const warning = document.getElementById('etch-warning');
     if (val === 'multi' || val === 'premium') {
       etchInput.disabled = false;
-
       etchInput.classList.remove(
         'cursor-not-allowed',
         'border-amber-500',
@@ -389,8 +388,8 @@ async function initPaymentPage() {
     } else {
       etchInput.disabled = true;
       etchInput.value = '';
-      etchInput.classList.add(
-        'cursor-not-allowed',
+      etchInput.classList.add('cursor-not-allowed');
+      etchInput.classList.remove(
         'border-amber-500',
         'bg-amber-900/20',
         'text-amber-300',
