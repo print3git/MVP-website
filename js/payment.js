@@ -305,6 +305,12 @@ async function initPaymentPage() {
   const subscriptionRadios = document.querySelectorAll(
     '#subscription-choice input[name="printclub"]'
   );
+  const plan = qs('plan');
+  if (plan === 'printclub') {
+    subscriptionRadios.forEach((r) => {
+      if (r.value === 'join') r.checked = true;
+    });
+  }
   const payBtn = document.getElementById('submit-payment');
   const singleLabel = document.getElementById('single-label');
   const singleInput = document.getElementById('opt-single');
