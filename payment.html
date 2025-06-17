@@ -83,10 +83,17 @@
 
     <!-- Main -->
     <main class="flex-1 flex flex-col items-center justify-center px-4 space-y-8 -mt-40">
-      <div id="success" class="hidden text-green-400 text-center">
-        Payment successful!
+      <div id="success" class="hidden text-green-400 text-center space-y-2">
+        <p>Payment successful!</p>
         <a href="profile.html" class="underline block">View profile</a>
-        <a href="share.html" class="underline block">Refer a friend</a>
+        <div id="referral" class="hidden space-y-1">
+          <span>Your referral link:</span>
+          <div class="flex justify-center items-center space-x-2">
+            <input id="referral-link" readonly class="bg-[#2A2A2E] px-2 py-1 rounded text-white w-64" />
+            <button id="copy-referral" class="px-2 py-1 bg-[#30D5C8] text-[#1A1A1D] rounded">Copy</button>
+          </div>
+        </div>
+        <button id="reorder-color" class="underline">Order another color</button>
       </div>
       <div id="cancel" class="hidden text-red-400 text-center">Payment cancelled.</div>
       <div class="relative flex flex-col md:flex-row items-start justify-center w-full max-w-4xl gap-8">
