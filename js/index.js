@@ -269,7 +269,6 @@ const hideAll = () => {
   if (typeof refs.viewer.pause === 'function') {
     refs.viewer.pause();
   }
-
 };
 const showLoader = () => {
   hideAll();
@@ -703,8 +702,10 @@ async function init() {
     fetch(`${API_BASE}/stats`)
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
+
         const prints =
           typeof data?.printsSold === 'number' ? data.printsSold : randomPrints();
+
         el.textContent = `\u{1F525} ${prints} prints sold in last 24 hrs`;
       })
       .catch(() => {
