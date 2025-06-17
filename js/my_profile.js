@@ -52,6 +52,87 @@ async function loadMore() {
   state.loading = false;
 }
 
+async function loadProfileDetails() {
+  const token = localStorage.getItem('token');
+  if (!token) return;
+  const res = await fetch(`${API_BASE}/me`, { headers: { Authorization: `Bearer ${token}` } });
+  if (!res.ok) return;
+  const data = await res.json();
+  if (data.avatarUrl) {
+    const avatar = document.getElementById('avatar-preview');
+    if (avatar) avatar.src = data.avatarUrl;
+  }
+  if (data.profile) {
+    document.getElementById('shipping-input').value = data.profile.shipping_info?.address || '';
+    document.getElementById('payment-input').value = data.profile.payment_info?.details || '';
+    document.getElementById('competition-toggle').checked = data.profile.competition_notify !== false;
+  }
+}
+
+async function uploadAvatar(e) {
+  e.preventDefault();
+  const token = localStorage.getItem('token');
+  const file = document.getElementById('avatar-input').files[0];
+  if (!token || !file) return;
+  const form = new FormData();
+  form.append('avatar', file);
+  const res = await fetch(`${API_BASE}/profile/avatar`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: form,
+  });
+  if (res.ok) {
+    const data = await res.json();
+    document.getElementById('avatar-preview').src = data.url;
+  }
+}
+
+async function saveProfile(e) {
+  e.preventDefault();
+  const token = localStorage.getItem('token');
+  if (!token) return;
+  const shipping = document.getElementById('shipping-input').value.trim();
+  const payment = document.getElementById('payment-input').value.trim();
+  const notify = document.getElementById('competition-toggle').checked;
+  await fetch(`${API_BASE}/profile`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify({
+      shippingInfo: { address: shipping },
+      paymentInfo: { details: payment },
+      competitionNotify: notify,
+    }),
+  });
+}
+
+async function loadOrders() {
+  const token = localStorage.getItem('token');
+  if (!token) return;
+  const res = await fetch(`${API_BASE}/my/orders`, { headers: { Authorization: `Bearer ${token}` } });
+  if (!res.ok) return;
+  const orders = await res.json();
+  const body = document.getElementById('orders-body');
+  body.innerHTML = '';
+  orders.forEach((o) => {
+    const tr = document.createElement('tr');
+    const date = o.created_at ? new Date(o.created_at).toLocaleDateString() : '';
+    const total = ((o.price_cents - (o.discount_cents || 0)) / 100).toFixed(2);
+    tr.innerHTML = `<td class="px-2 py-1">${date}</td><td class="px-2 py-1">${o.quantity}</td><td class="px-2 py-1">$${total}</td><td class="px-2 py-1">${o.status}</td>`;
+    body.appendChild(tr);
+  });
+}
+
+async function deleteAccount() {
+  if (!confirm('Delete account permanently?')) return;
+  const token = localStorage.getItem('token');
+  if (!token) return;
+  const res = await fetch(`${API_BASE}/account`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
+  if (res.ok) {
+    localStorage.removeItem('token');
+    window.location.href = 'index.html';
+  }
+}
+
 async function loadCommissions() {
   const token = localStorage.getItem('token');
   if (!token) return;
@@ -156,8 +237,13 @@ document.addEventListener('DOMContentLoaded', () => {
     window.location.href = 'index.html';
   });
   document.getElementById('payout-btn')?.addEventListener('click', requestPayout);
+  document.getElementById('avatar-upload')?.addEventListener('click', uploadAvatar);
+  document.getElementById('profile-form')?.addEventListener('submit', saveProfile);
+  document.getElementById('delete-account')?.addEventListener('click', deleteAccount);
   loadCommissions();
   createObserver();
   loadMore();
   loadCredits();
+  loadProfileDetails();
+  loadOrders();
 });
