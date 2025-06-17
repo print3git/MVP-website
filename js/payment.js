@@ -10,6 +10,7 @@ const PRICES = {
   multi: 3499,
   premium: 5999,
 };
+const PRINT_CLUB_PRICE = 14000;
 let selectedPrice = PRICES.multi;
 const API_BASE = (window.API_ORIGIN || '') + '/api';
 // Time zone used to reset local purchase counts at 1 AM Eastern
@@ -402,7 +403,13 @@ async function initPaymentPage() {
   }
 
   function updatePayButton() {
-    if (payBtn) {
+    if (!payBtn) return;
+    const joinClub =
+      Array.from(subscriptionRadios).find((r) => r.checked)?.value === 'join';
+    if (joinClub) {
+      payBtn.textContent =
+        `Join Print Club – Pay £${(PRINT_CLUB_PRICE / 100).toFixed(2)}`;
+    } else {
       payBtn.textContent = `Pay £${(selectedPrice / 100).toFixed(2)}`;
     }
   }
@@ -428,6 +435,10 @@ async function initPaymentPage() {
         }
       }
     });
+  });
+
+  subscriptionRadios.forEach((r) => {
+    r.addEventListener('change', updatePayButton);
   });
 
   if (singleInput && colorMenu && singleButton) {
