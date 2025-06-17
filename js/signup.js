@@ -40,6 +40,14 @@ async function signup(e) {
   const data = await res.json();
   if (data.token) {
     localStorage.setItem('token', data.token);
+    const ref = localStorage.getItem('referrerId');
+    if (ref) {
+      fetch(`${API_BASE}/referral-signup`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: ref }),
+      }).catch(() => {});
+    }
     if (optIn) {
       fetch(`${API_BASE}/subscribe`, {
         method: 'POST',
