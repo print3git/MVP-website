@@ -87,3 +87,37 @@
   - For subscribers, show a countdown to their next free print.
   - Provide subscriber-only design previews.
   - Track consecutive weekly orders and badge streaks.
+
+## Competitions Monetization
+
+- Add Print Club sign-up banner to encourage subscriptions.
+  - Insert a CTA banner below the page header with a "Join Print Club" button.
+  - Link the button to signup.html#printclub.
+  - Record banner clicks for analytics.
+- Include a "Buy print" button on each leaderboard entry.
+  - Extend competitions.js to render a button below each entry card.
+  - On click, store the model ID to localStorage and redirect to payment.html.
+- Display a discount code after a user submits an entry.
+  - Show a banner with code `CONTEST10` once the entry POST succeeds.
+  - Provide a dismiss option and expire the code after use.
+- Showcase previous winners with purchase links.
+  - Add a carousel of past winning models near the bottom of the page.
+  - Each slide links directly to the payment page for that model.
+- Add an email signup form for competition announcements.
+  - Simple field and submit button posting to /api/mailing-list.
+  - Show a confirmation message on success.
+- Support entry fees for premium competitions.
+  - Allow admins to specify a price when creating a competition.
+  - Require payment before an entry is accepted.
+- Cross-sell printing accessories on the competitions page.
+  - Insert a small banner linking to the accessories store.
+  - Display it below the active competitions list.
+- Offer digital model downloads for a fee.
+  - Provide a "Buy STL" option if the entry has a downloadable file.
+  - Serve the file after Stripe checkout completes.
+- Display real-time counters for prints sold from competitions.
+  - Fetch purchase counts via an API endpoint.
+  - Show the number near the leaderboard to create social proof.
+- Reserve an advertisement slot for sponsors.
+  - Add a 300x250 ad container in the sidebar.
+  - Allow partner companies to place ads during each contest.
