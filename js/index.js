@@ -8,6 +8,11 @@ import { shareOn } from './share.js';
     const ref = params.get('ref');
     if (ref) {
       localStorage.setItem('referrerId', ref);
+      fetch(`${API_BASE}/referral-click`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: ref }),
+      }).catch(() => {});
     }
   } catch {
     /* ignore errors */

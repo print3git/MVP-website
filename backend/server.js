@@ -28,6 +28,7 @@ const {
   incrementDiscountUsage,
   createTimedCode,
 } = require('./discountCodes');
+const REWARD_OPTIONS = { 100: 500, 200: 1000 };
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'admin';
 
 const AUTH_SECRET = process.env.AUTH_SECRET || 'secret';
@@ -623,6 +624,35 @@ app.get('/api/referral-link', authRequired, async (req, res) => {
   }
 });
 
+app.post('/api/referral-click', async (req, res) => {
+  const { code } = req.body || {};
+  if (!code) return res.status(400).json({ error: 'Missing code' });
+  try {
+    const referrer = await db.getUserIdForReferral(code);
+    if (!referrer) return res.status(404).json({ error: 'Invalid code' });
+    await db.insertReferralEvent(referrer, 'click');
+    res.json({ success: true });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to record click' });
+  }
+});
+
+app.post('/api/referral-signup', async (req, res) => {
+  const { code } = req.body || {};
+  if (!code) return res.status(400).json({ error: 'Missing code' });
+  try {
+    const referrer = await db.getUserIdForReferral(code);
+    if (!referrer) return res.status(404).json({ error: 'Invalid code' });
+    await db.insertReferralEvent(referrer, 'signup');
+    await db.adjustRewardPoints(referrer, 10);
+    res.json({ success: true });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to record signup' });
+  }
+});
+
 app.get('/api/rewards', authRequired, async (req, res) => {
   try {
     const points = await db.getRewardPoints(req.user.id);
@@ -630,6 +660,24 @@ app.get('/api/rewards', authRequired, async (req, res) => {
   } catch (err) {
     logError(err);
     res.status(500).json({ error: 'Failed to fetch rewards' });
+  }
+});
+
+app.post('/api/rewards/redeem', authRequired, async (req, res) => {
+  const cost = parseInt(req.body.points, 10);
+  const discount = REWARD_OPTIONS[cost];
+  if (!discount) return res.status(400).json({ error: 'Invalid reward' });
+  try {
+    const current = await db.getRewardPoints(req.user.id);
+    if (current < cost) {
+      return res.status(400).json({ error: 'Insufficient points' });
+    }
+    await db.adjustRewardPoints(req.user.id, -cost);
+    const code = await createTimedCode(discount, 168);
+    res.json({ code });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to redeem reward' });
   }
 });
 
