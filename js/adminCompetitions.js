@@ -1,7 +1,5 @@
 function getToken() {
-  return (
-    localStorage.getItem('adminToken') || localStorage.getItem('token') || ''
-  );
+  return localStorage.getItem('adminToken') || localStorage.getItem('token') || '';
 }
 
 function setToken(token) {

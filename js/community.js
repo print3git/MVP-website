@@ -254,8 +254,7 @@ function createObserver(type) {
 function init() {
   let navType = 'navigate';
   if (typeof performance !== 'undefined') {
-    const entries =
-      performance.getEntriesByType?.('navigation') || [];
+    const entries = performance.getEntriesByType?.('navigation') || [];
     if (entries.length && entries[0].type) {
       navType = entries[0].type;
     } else if (performance.navigation) {

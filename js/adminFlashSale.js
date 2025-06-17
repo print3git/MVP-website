@@ -1,7 +1,5 @@
 function getToken() {
-  return (
-    localStorage.getItem('adminToken') || localStorage.getItem('token') || ''
-  );
+  return localStorage.getItem('adminToken') || localStorage.getItem('token') || '';
 }
 
 function setToken(token) {
@@ -65,7 +63,9 @@ async function load() {
         product_type: div.querySelector('#prod').value,
         discount_percent: parseInt(div.querySelector('#disc').value, 10),
         start_time: new Date(now).toISOString(),
-        end_time: new Date(now + parseInt(div.querySelector('#mins').value, 10) * 60000).toISOString(),
+        end_time: new Date(
+          now + parseInt(div.querySelector('#mins').value, 10) * 60000
+        ).toISOString(),
       };
       const resp = await fetch(`${API_BASE}/admin/flash-sale`, {
         method: 'POST',
