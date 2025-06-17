@@ -403,6 +403,31 @@ app.get('/api/init-data', authOptional, async (req, res) => {
   }
 });
 
+app.get('/api/payment-init', authOptional, async (req, res) => {
+  const result = {
+    slots: computePrintSlots(),
+    publishableKey: config.stripePublishable,
+  };
+  try {
+    const { rows: saleRows } = await db.query(
+      `SELECT * FROM flash_sales
+       WHERE active=TRUE AND start_time<=NOW() AND end_time>NOW()
+       ORDER BY start_time DESC LIMIT 1`
+    );
+    if (saleRows.length) result.flashSale = saleRows[0];
+    if (req.user) {
+      const { rows } = await db.query('SELECT * FROM user_profiles WHERE user_id=$1', [
+        req.user.id,
+      ]);
+      if (rows.length) result.profile = rows[0];
+    }
+    res.json(result);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to load payment data' });
+  }
+});
+
 /**
  * GET /api/subreddit/:name
  * Retrieve model and quote for a subreddit
