@@ -28,6 +28,7 @@ const {
   incrementDiscountUsage,
   createTimedCode,
 } = require('./discountCodes');
+const REWARD_OPTIONS = { 100: 500, 200: 1000 };
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'admin';
 
 const AUTH_SECRET = process.env.AUTH_SECRET || 'secret';
@@ -402,6 +403,31 @@ app.get('/api/init-data', authOptional, async (req, res) => {
   }
 });
 
+app.get('/api/payment-init', authOptional, async (req, res) => {
+  const result = {
+    slots: computePrintSlots(),
+    publishableKey: config.stripePublishable,
+  };
+  try {
+    const { rows: saleRows } = await db.query(
+      `SELECT * FROM flash_sales
+       WHERE active=TRUE AND start_time<=NOW() AND end_time>NOW()
+       ORDER BY start_time DESC LIMIT 1`
+    );
+    if (saleRows.length) result.flashSale = saleRows[0];
+    if (req.user) {
+      const { rows } = await db.query('SELECT * FROM user_profiles WHERE user_id=$1', [
+        req.user.id,
+      ]);
+      if (rows.length) result.profile = rows[0];
+    }
+    res.json(result);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to load payment data' });
+  }
+});
+
 /**
  * GET /api/subreddit/:name
  * Retrieve model and quote for a subreddit
@@ -525,6 +551,36 @@ app.post('/api/profile', authRequired, async (req, res) => {
   }
 });
 
+app.post('/api/profile/avatar', authRequired, upload.single('avatar'), async (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+  try {
+    const url = `/uploads/${req.file.filename}`;
+    await db.query(
+      `INSERT INTO user_profiles(user_id, avatar_url)
+       VALUES($1,$2)
+       ON CONFLICT (user_id) DO UPDATE SET avatar_url=$2`,
+      [req.user.id, url]
+    );
+    res.json({ url });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to upload avatar' });
+  }
+});
+
+app.delete('/api/account', authRequired, async (req, res) => {
+  try {
+    await db.query('DELETE FROM jobs WHERE user_id=$1', [req.user.id]);
+    await db.query('DELETE FROM orders WHERE user_id=$1', [req.user.id]);
+    await db.query('DELETE FROM user_profiles WHERE user_id=$1', [req.user.id]);
+    await db.query('DELETE FROM users WHERE id=$1', [req.user.id]);
+    res.sendStatus(204);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to delete account' });
+  }
+});
+
 app.post('/api/stripe/connect', authRequired, async (req, res) => {
   try {
     const profileRes = await db.query(
@@ -623,6 +679,35 @@ app.get('/api/referral-link', authRequired, async (req, res) => {
   }
 });
 
+app.post('/api/referral-click', async (req, res) => {
+  const { code } = req.body || {};
+  if (!code) return res.status(400).json({ error: 'Missing code' });
+  try {
+    const referrer = await db.getUserIdForReferral(code);
+    if (!referrer) return res.status(404).json({ error: 'Invalid code' });
+    await db.insertReferralEvent(referrer, 'click');
+    res.json({ success: true });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to record click' });
+  }
+});
+
+app.post('/api/referral-signup', async (req, res) => {
+  const { code } = req.body || {};
+  if (!code) return res.status(400).json({ error: 'Missing code' });
+  try {
+    const referrer = await db.getUserIdForReferral(code);
+    if (!referrer) return res.status(404).json({ error: 'Invalid code' });
+    await db.insertReferralEvent(referrer, 'signup');
+    await db.adjustRewardPoints(referrer, 10);
+    res.json({ success: true });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to record signup' });
+  }
+});
+
 app.get('/api/rewards', authRequired, async (req, res) => {
   try {
     const points = await db.getRewardPoints(req.user.id);
@@ -630,6 +715,24 @@ app.get('/api/rewards', authRequired, async (req, res) => {
   } catch (err) {
     logError(err);
     res.status(500).json({ error: 'Failed to fetch rewards' });
+  }
+});
+
+app.post('/api/rewards/redeem', authRequired, async (req, res) => {
+  const cost = parseInt(req.body.points, 10);
+  const discount = REWARD_OPTIONS[cost];
+  if (!discount) return res.status(400).json({ error: 'Invalid reward' });
+  try {
+    const current = await db.getRewardPoints(req.user.id);
+    if (current < cost) {
+      return res.status(400).json({ error: 'Insufficient points' });
+    }
+    await db.adjustRewardPoints(req.user.id, -cost);
+    const code = await createTimedCode(discount, 168);
+    res.json({ code });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to redeem reward' });
   }
 });
 
@@ -666,7 +769,7 @@ app.get('/api/users/:username/profile', async (req, res) => {
     const { rows } = await db.query(
       `SELECT p.display_name, p.avatar_url
        FROM users u
-       JOIN user_profiles p ON u.username=p.username
+       JOIN user_profiles p ON u.id=p.user_id
        WHERE u.username=$1`,
       [req.params.username]
     );
@@ -802,8 +905,10 @@ app.post('/api/community', authRequired, async (req, res) => {
     const { rows } = await db.query('SELECT generated_title FROM jobs WHERE job_id=$1', [jobId]);
     const autoTitle = rows[0] ? rows[0].generated_title : '';
     await db.query(
+
       'INSERT INTO community_creations(job_id, title, category, user_id) VALUES($1,$2,$3,$4)',
       [jobId, title || autoTitle, category || '', req.user.id]
+
     );
     res.sendStatus(201);
   } catch (err) {
@@ -820,6 +925,16 @@ function buildGalleryQuery(orderBy) {
           ON j.job_id=l.model_id
           WHERE ($3::text IS NULL OR c.category=$3)
             AND ($4::text IS NULL OR c.title ILIKE '%' || $4 || '%')
+          ORDER BY ${orderBy} LIMIT $1 OFFSET $2`;
+}
+
+function buildGalleryQueryForUser(orderBy) {
+  return `SELECT c.id, c.title, c.category, j.job_id, j.model_url, COALESCE(l.count,0) as likes
+          FROM community_creations c
+          JOIN jobs j ON c.job_id=j.job_id
+          LEFT JOIN (SELECT model_id, COUNT(*) as count FROM likes GROUP BY model_id) l
+          ON j.job_id=l.model_id
+          WHERE c.user_id=$3
           ORDER BY ${orderBy} LIMIT $1 OFFSET $2`;
 }
 
@@ -862,6 +977,7 @@ app.get('/api/community/popular', async (req, res) => {
   }
 });
 
+
 app.delete('/api/community/:id', authRequired, async (req, res) => {
   const id = req.params.id;
   try {
@@ -870,6 +986,7 @@ app.delete('/api/community/:id', authRequired, async (req, res) => {
       [id, req.user.id]
     );
     if (!rows.length) return res.status(404).json({ error: 'Creation not found' });
+
     res.sendStatus(204);
   } catch (err) {
     logError(err);
@@ -969,6 +1086,23 @@ app.post('/api/competitions/:id/enter', authRequired, async (req, res) => {
   } catch (err) {
     logError(err);
     res.status(500).json({ error: 'Failed to submit entry' });
+  }
+});
+
+app.post('/api/competitions/:id/discount', authRequired, async (req, res) => {
+  try {
+    const { rows } = await db.query(
+      'SELECT 1 FROM competition_entries WHERE competition_id=$1 AND user_id=$2',
+      [req.params.id, req.user.id]
+    );
+    if (!rows.length) {
+      return res.status(400).json({ error: 'No entry found' });
+    }
+    const code = await createTimedCode(500, 48);
+    res.json({ code });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to generate discount' });
   }
 });
 

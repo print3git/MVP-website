@@ -34,5 +34,31 @@ function copyReferral() {
   document.execCommand('copy');
 }
 
+async function redeemReward() {
+  const sel = document.getElementById('reward-select');
+  if (!sel) return;
+  const points = parseInt(sel.value, 10);
+  const token = localStorage.getItem('token');
+  if (!token || !points) return;
+  try {
+    const res = await fetch(`${API_BASE}/rewards/redeem`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ points }),
+    });
+    if (res.ok) {
+      const { code } = await res.json();
+      alert(`Your discount code: ${code}`);
+      loadRewards();
+    }
+  } catch (err) {
+    console.error('Failed to redeem', err);
+  }
+}
+
 window.copyReferral = copyReferral;
+window.redeemReward = redeemReward;
 window.addEventListener('DOMContentLoaded', loadRewards);
