@@ -139,6 +139,32 @@
 - After a user enters a competition, display a one-time discount code for printing their entry.
   - Provide `/api/competitions/:id/discount` endpoint to generate and return the code.
 - Create a "Trending Prints" section at the bottom that fetches models from `/api/trending` and shows Add to Basket buttons.
+
+## Competitions Core Features
+
+- Add migrations for the competitions schema.
+  - Create a `competitions` table storing name, dates, prize description and winner model ID.
+  - Create a `competition_entries` table linking competitions to submitted models and users.
+  - Create a `competition_comments` table with text and timestamps.
+  - Add a `start_notification_sent` boolean column to `competitions`.
+- Implement REST endpoints.
+  - `GET /api/competitions/active` returns current and upcoming contests.
+  - `GET /api/competitions/past` lists previous competitions and winners.
+  - `GET /api/competitions/:id/entries` fetches leaderboard rows ordered by likes.
+  - `POST /api/competitions/:id/enter` submits a model to a contest.
+  - `GET /api/competitions/:id/comments` lists discussion messages.
+  - `POST /api/competitions/:id/comments` posts a new comment (auth required).
+  - `POST /api/admin/competitions` creates a competition.
+  - `PUT /api/admin/competitions/:id` updates an existing competition.
+  - `DELETE /api/admin/competitions/:id` removes a competition.
+- Send start-of-voting emails hourly.
+  - Run `checkCompetitionStart` on an interval and email subscribed users when voting opens.
+- Build the competitions page UI.
+  - List active competitions with a countdown timer and entry button.
+  - Show a modal form that posts entries to the API.
+  - Display leaderboard data with like buttons and open-model previews.
+  - Render a comments section with a submission form.
+  - Present a grid of past winners linking to their models.
 ## 3D Model Loading Performance
 
 - Optimize the `.glb` file used on `index.html` and `payment.html`.
