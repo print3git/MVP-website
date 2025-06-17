@@ -428,7 +428,8 @@ app.get('/api/my/models', authRequired, async (req, res) => {
 app.get('/api/my/orders', authRequired, async (req, res) => {
   try {
     const { rows } = await db.query(
-      `SELECT o.session_id, o.job_id, o.price_cents, o.status, o.quantity, o.discount_cents, o.created_at, j.model_url
+      `SELECT o.session_id, o.job_id, o.price_cents, o.status, o.quantity, o.discount_cents, o.created_at,
+              j.model_url, j.snapshot, j.prompt
        FROM orders o
        JOIN jobs j ON o.job_id=j.job_id
        WHERE o.user_id=$1

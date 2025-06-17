@@ -96,11 +96,8 @@
 - Run theme campaigns such as "Sci-fi month" or "D&D drop".
 
   - Award a badge when someone purchases three times in a month.
-- Build a personal library page listing all previous designs.
-  - Enable one-click reorders from the library.
-  - Add a "Remix this model" button for spin-off prints.
   - Offer an optional monthly "time capsule" print.
-- Send automated post-purchase emails.
+  - Send automated post-purchase emails.
   - Showcase other users' creations for inspiration.
   - Include a direct reorder button in the email.
   - Send a follow-up reminder 5–7 days after delivery.
