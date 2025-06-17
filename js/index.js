@@ -698,14 +698,18 @@ async function init() {
   function updateStats() {
     const el = document.getElementById('stats-ticker');
     if (!el) return;
+    const randomPrints = () => Math.floor(Math.random() * (50 - 30 + 1)) + 30;
     fetch(`${API_BASE}/stats`)
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
-        const prints = typeof data?.printsSold === 'number' ? data.printsSold : 41;
+
+        const prints =
+          typeof data?.printsSold === 'number' ? data.printsSold : randomPrints();
+
         el.textContent = `\u{1F525} ${prints} prints sold in last 24 hrs`;
       })
       .catch(() => {
-        el.textContent = '\u{1F525} 41 prints sold in last 24 hrs';
+        el.textContent = `\u{1F525} ${randomPrints()} prints sold in last 24 hrs`;
       });
   }
 
