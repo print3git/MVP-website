@@ -25,6 +25,7 @@ const {
   validateDiscountCode,
   getValidDiscountCode,
   incrementDiscountUsage,
+  createTimedCode,
 } = require('./discountCodes');
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'admin';
 
@@ -1050,6 +1051,21 @@ app.post('/api/discount-code', async (req, res) => {
     return res.status(404).json({ error: 'Invalid code' });
   }
   res.json({ discount: amount });
+});
+
+/**
+ * POST /api/generate-discount
+ * Create a unique discount code valid for 48 hours
+ */
+app.post('/api/generate-discount', async (req, res) => {
+  const amount = req.body.amount_cents || 500;
+  try {
+    const code = await createTimedCode(amount, 48);
+    res.json({ code });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to generate code' });
+  }
 });
 
 app.get('/api/flash-sale', async (req, res) => {

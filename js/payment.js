@@ -537,10 +537,22 @@ async function initPaymentPage() {
     const nextModal = document.getElementById('next-print-modal');
     const nextBtn = document.getElementById('next-print-btn');
     const nextText = document.getElementById('next-print-text');
-    if (nextModal && nextBtn && nextText) {
+
+    const discountSpan = document.getElementById('next-discount');
+    if (nextModal && nextBtn && nextText && discountSpan) {
       const span = nextText.querySelector('span');
       const suggestion = NEXT_PROMPTS[Math.floor(Math.random() * NEXT_PROMPTS.length)];
       if (span) span.textContent = suggestion;
+      try {
+        const resp = await fetch(`${API_BASE}/generate-discount`, { method: 'POST' });
+        if (resp.ok) {
+          const data = await resp.json();
+          discountSpan.textContent = data.code;
+        }
+      } catch {
+        discountSpan.textContent = 'SAVE5';
+      }
+
       nextBtn.addEventListener('click', () => {
         localStorage.setItem('print3Prompt', suggestion);
         window.location.href = 'index.html';
