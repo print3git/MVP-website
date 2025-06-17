@@ -256,7 +256,28 @@ async function submitEntry(e) {
     },
     body: JSON.stringify({ modelId }),
   });
-  if (res.ok) closeModal();
+  if (res.ok) {
+    closeModal();
+    const msg = document.getElementById('entry-success');
+    if (msg) {
+      try {
+        const resp = await fetch(
+          `${API_BASE}/competitions/${currentId}/discount`,
+          {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        if (resp.ok) {
+          const data = await resp.json();
+          msg.textContent = `Discount code: ${data.code}`;
+          msg.classList.remove('hidden');
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  }
 }
 
 async function loadComments(id, container) {
