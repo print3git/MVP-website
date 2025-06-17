@@ -15,6 +15,30 @@ function prefetchModel(url) {
   prefetchedModels.add(url);
 }
 
+function openModel(card) {
+  const modal = document.getElementById('model-modal');
+  const viewer = modal?.querySelector('model-viewer');
+  const checkoutBtn = document.getElementById('modal-checkout');
+  const addBasketBtn = document.getElementById('modal-add-basket');
+  if (!modal || !viewer) return;
+  viewer.setAttribute('poster', card.querySelector('img')?.src || '');
+  viewer.setAttribute('fetchpriority', 'high');
+  viewer.setAttribute('loading', 'eager');
+  viewer.src = card.dataset.model;
+  if (checkoutBtn) {
+    checkoutBtn.dataset.model = card.dataset.model;
+    checkoutBtn.dataset.job = card.dataset.job;
+  }
+  if (addBasketBtn) {
+    addBasketBtn.dataset.model = card.dataset.model;
+    addBasketBtn.dataset.job = card.dataset.job;
+    const img = card.querySelector('img');
+    if (img) addBasketBtn.dataset.snapshot = img.src;
+  }
+  modal.classList.remove('hidden');
+  document.body.classList.add('overflow-hidden');
+}
+
 function purchase(modelUrl, jobId) {
   sessionStorage.setItem('fromCommunity', '1');
   localStorage.setItem('print3Model', modelUrl);
@@ -116,6 +140,7 @@ async function loadLeaderboard(id, table, grid) {
         purchase(r.model_url, r.model_id);
       });
       card.addEventListener('pointerenter', () => prefetchModel(r.model_url));
+      card.addEventListener('click', () => openModel(card));
       grid.appendChild(card);
     });
     captureSnapshots(grid);
@@ -266,6 +291,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
     card.addEventListener('pointerenter', () => prefetchModel(card.dataset.model));
+    card.addEventListener('click', () => openModel(card));
   });
   load();
 });
