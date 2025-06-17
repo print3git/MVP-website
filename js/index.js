@@ -689,14 +689,11 @@ async function init() {
     fetch(`${API_BASE}/stats`)
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
-        const prints = data?.printsSold ?? 41;
-
-        el.textContent = `\u{1F525} ${prints} in last 24 hr`;
+        if (typeof data?.printsSold === 'number') {
+          el.textContent = `\u{1F525} ${data.printsSold} in last 24 hr`;
+        }
       })
-      .catch(() => {
-        el.textContent = '\u{1F525} 41 in last 24 hr';
-
-      });
+      .catch(() => {});
   }
 
   updateStats();

@@ -474,7 +474,8 @@ test('GET /api/print-slots returns count', async () => {
 });
 
 test('GET /api/stats returns sales and rating', async () => {
-  db.query.mockResolvedValueOnce({ rows: [{ count: '42' }] });
+  const { _setDailyPrintsSold } = require('../utils/dailyPrints');
+  _setDailyPrintsSold(42);
   const res = await request(app).get('/api/stats');
   expect(res.status).toBe(200);
   expect(res.body.printsSold).toBe(42);
