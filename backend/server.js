@@ -57,7 +57,14 @@ app.use(morgan('dev'));
 app.use(compression());
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, '..')));
+const staticOptions = {
+  setHeaders(res, filePath) {
+    if (/\.(?:glb|hdr|js|css|png|jpe?g|gif|svg)$/i.test(filePath)) {
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    }
+  },
+};
+app.use(express.static(path.join(__dirname, '..'), staticOptions));
 const uploadsDir = path.join(__dirname, '..', 'uploads');
 fs.mkdirSync(uploadsDir, { recursive: true });
 const upload = multer({ dest: uploadsDir });

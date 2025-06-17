@@ -15,6 +15,7 @@ function prefetchModel(url) {
   prefetchedModels.add(url);
 }
 
+
 function openViewer(modelUrl, jobId, snapshot = '') {
   const modal = document.getElementById('model-modal');
   const viewer = modal.querySelector('model-viewer');
@@ -44,6 +45,7 @@ function openViewer(modelUrl, jobId, snapshot = '') {
     svg.classList.remove('w-20', 'h-20');
     svg.classList.add('w-10', 'h-10');
   }
+
   document.body.classList.add('overflow-hidden');
 }
 
@@ -147,10 +149,17 @@ async function loadLeaderboard(id, table, grid) {
         e.stopPropagation();
         purchase(r.model_url, r.model_id);
       });
+      card.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const img = card.querySelector('img');
+        openModelModal(r.model_url, r.model_id, img ? img.src : '');
+      });
       card.addEventListener('pointerenter', () => prefetchModel(r.model_url));
+
       card.addEventListener('click', () =>
         openViewer(r.model_url, r.model_id, card.querySelector('img')?.src || '')
       );
+
       grid.appendChild(card);
     });
     captureSnapshots(grid);
@@ -185,6 +194,28 @@ let modal;
 let form;
 let input;
 let errorEl;
+
+function openModelModal(url, jobId, snapshot) {
+  const modalEl = document.getElementById('model-modal');
+  const viewer = modalEl.querySelector('model-viewer');
+  const checkoutBtn = document.getElementById('modal-checkout');
+  const addBasketBtn = document.getElementById('modal-add-basket');
+  viewer.setAttribute('poster', snapshot || '');
+  viewer.setAttribute('fetchpriority', 'high');
+  viewer.setAttribute('loading', 'eager');
+  viewer.src = url;
+  if (checkoutBtn) {
+    checkoutBtn.dataset.model = url;
+    checkoutBtn.dataset.job = jobId;
+  }
+  if (addBasketBtn) {
+    addBasketBtn.dataset.model = url;
+    addBasketBtn.dataset.job = jobId;
+    if (snapshot) addBasketBtn.dataset.snapshot = snapshot;
+  }
+  modalEl.classList.remove('hidden');
+  document.body.classList.add('overflow-hidden');
+}
 
 function openModal(id) {
   currentId = id;
@@ -300,10 +331,17 @@ document.addEventListener('DOMContentLoaded', () => {
         purchase(card.dataset.model, card.dataset.job);
       });
     }
+    card.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const img = card.querySelector('img');
+      openModelModal(card.dataset.model, card.dataset.job, img ? img.src : '');
+    });
     card.addEventListener('pointerenter', () => prefetchModel(card.dataset.model));
+
     card.addEventListener('click', () =>
       openViewer(card.dataset.model, card.dataset.job, card.querySelector('img')?.src || '')
     );
+
   });
   load();
 });
