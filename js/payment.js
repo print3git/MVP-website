@@ -384,6 +384,10 @@ async function initPaymentPage() {
       etchInput.disabled = false;
       etchInput.classList.remove(
         'cursor-not-allowed',
+        'border-[#30D5C8]',
+        'bg-[#30D5C8]/20',
+        'text-[#30D5C8]',
+        'placeholder-[#30D5C8]',
         'border-amber-500',
         'bg-amber-900/20',
         'text-amber-300',
@@ -395,10 +399,10 @@ async function initPaymentPage() {
       etchInput.value = '';
       etchInput.classList.add('cursor-not-allowed');
       etchInput.classList.add(
-        'border-amber-500',
-        'bg-amber-900/20',
-        'text-amber-300',
-        'placeholder-amber-300'
+        'border-[#30D5C8]',
+        'bg-[#30D5C8]/20',
+        'text-[#30D5C8]',
+        'placeholder-[#30D5C8]'
       );
       if (warning) warning.classList.remove('hidden');
 
