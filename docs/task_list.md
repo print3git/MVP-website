@@ -83,3 +83,29 @@
   - For subscribers, show a countdown to their next free print.
   - Provide subscriber-only design previews.
   - Track consecutive weekly orders and badge streaks.
+## Competitions Profit & Sales
+
+- Allow direct print purchases for competition entries.
+  - Add "Print from £27.99" button on each entry card in `competitions.js`.
+  - When clicked, open the existing print viewer modal with purchase options.
+  - Ensure dataset attributes (model URL, job ID) are passed to `basket.js`.
+
+- Reward participants with a one-time discount code.
+  - Create `POST /api/competitions/:id/reward` to generate a code in the backend.
+  - After `submitEntry()` succeeds, fetch the code and show it in the modal.
+  - Make the code valid for a single print for 7 days.
+
+- Upsell the Print Club membership.
+  - Show a short banner after the user enters a competition highlighting the membership.
+  - Include a link to sign up on `payment.html`.
+  - Track click-throughs for analytics.
+
+- Collect emails for future competitions.
+  - Add a small subscription form on the competitions page.
+  - Use the existing `/api/subscribe` endpoint to store addresses.
+  - Display a confirmation message on success.
+
+- Promote past winners with a purchase gallery.
+  - Build a grid of winning entries with "Add to Basket" buttons.
+  - Reuse the modal viewer from `competitions.html`.
+  - Link each item directly to the checkout flow.
