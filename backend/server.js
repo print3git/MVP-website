@@ -1171,7 +1171,6 @@ app.post('/api/create-order', authOptional, async (req, res) => {
             ]);
           }
         }
-
       } catch (err) {
         logError(err);
       }

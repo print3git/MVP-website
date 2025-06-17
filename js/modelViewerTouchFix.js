@@ -1,7 +1,5 @@
 function applyTouchFix() {
-  document
-    .querySelectorAll('model-viewer')
-    .forEach((el) => (el.style.touchAction = 'none'));
+  document.querySelectorAll('model-viewer').forEach((el) => (el.style.touchAction = 'none'));
 
   let active = false;
 
