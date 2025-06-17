@@ -22,7 +22,7 @@ async function processNextJob(client) {
   if (!jobId) return;
 
   const { rows } = await client.query(
-    `SELECT j.model_url, o.shipping_info
+    `SELECT j.model_url, o.shipping_info, o.etch_name
        FROM jobs j
        JOIN orders o ON j.job_id=o.job_id
       WHERE j.job_id=$1`,
@@ -30,10 +30,11 @@ async function processNextJob(client) {
   );
   if (!rows.length) return;
 
-  const { model_url: modelUrl, shipping_info: shipping } = rows[0];
-  const etchName = shipping && shipping.etchName;
+
+  const { model_url: modelUrl, shipping_info: shipping, etch_name } = rows[0];
   try {
-    await axios.post(PRINTER_API_URL, { modelUrl, shipping, etchName });
+    await axios.post(PRINTER_API_URL, { modelUrl, shipping, etchName: etch_name });
+
     await client.query('UPDATE jobs SET status=$1, error=NULL WHERE job_id=$2', ['sent', jobId]);
   } catch (err) {
     await client.query('UPDATE jobs SET error=$1 WHERE job_id=$2', [err.message, jobId]);
