@@ -5,7 +5,6 @@ const axios = require('axios');
 
 const mockClient = { connect: jest.fn(), query: jest.fn() };
 jest.mock('pg', () => ({ Client: jest.fn(() => mockClient) }));
-const { Client } = require('pg');
 
 const { run } = require('../../queue/printWorker');
 
