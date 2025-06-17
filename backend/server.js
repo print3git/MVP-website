@@ -72,6 +72,24 @@ const upload = multer({ dest: uploadsDir });
 const PORT = config.port;
 const FALLBACK_GLB = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
 
+function computePrintSlots(date = new Date()) {
+  const dtf = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/New_York',
+    hour12: false,
+    hour: 'numeric',
+  });
+  const hour = parseInt(dtf.format(date), 10);
+  if (hour >= 1 && hour < 4) return 9;
+  if (hour >= 4 && hour < 7) return 8;
+  if (hour >= 7 && hour < 10) return 7;
+  if (hour >= 10 && hour < 13) return 6;
+  if (hour >= 13 && hour < 16) return 5;
+  if (hour >= 16 && hour < 19) return 4;
+  if (hour >= 19 && hour < 22) return 3;
+  if (hour >= 22 && hour < 24) return 2;
+  return 1; // 12am - 1am
+}
+
 function authOptional(req, res, next) {
   const auth = req.headers.authorization || '';
   const token = auth.startsWith('Bearer ') ? auth.slice(7) : null;
@@ -344,23 +362,7 @@ app.get('/api/config/stripe', (req, res) => {
  * Return the current number of available print slots
  */
 app.get('/api/print-slots', (req, res) => {
-  const dtf = new Intl.DateTimeFormat('en-US', {
-    timeZone: 'America/New_York',
-    hour12: false,
-    hour: 'numeric',
-  });
-  const hour = parseInt(dtf.format(new Date()), 10);
-  let slots;
-  if (hour >= 1 && hour < 4) slots = 9;
-  else if (hour >= 4 && hour < 7) slots = 8;
-  else if (hour >= 7 && hour < 10) slots = 7;
-  else if (hour >= 10 && hour < 13) slots = 6;
-  else if (hour >= 13 && hour < 16) slots = 5;
-  else if (hour >= 16 && hour < 19) slots = 4;
-  else if (hour >= 19 && hour < 22) slots = 3;
-  else if (hour >= 22 && hour < 24) slots = 2;
-  else slots = 1; // 12am - 1am
-  res.json({ slots });
+  res.json({ slots: computePrintSlots() });
 });
 
 /**
@@ -375,6 +377,23 @@ app.get('/api/stats', (req, res) => {
   } catch (err) {
     logError(err);
     res.status(500).json({ error: 'Failed to fetch stats' });
+  }
+});
+
+app.get('/api/init-data', authOptional, async (req, res) => {
+  const result = { slots: computePrintSlots() };
+  try {
+    result.stats = { printsSold: getDailyPrintsSold(), averageRating: 4.8 };
+    if (req.user) {
+      const { rows } = await db.query('SELECT * FROM user_profiles WHERE user_id=$1', [
+        req.user.id,
+      ]);
+      if (rows.length) result.profile = rows[0];
+    }
+    res.json(result);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to load init data' });
   }
 });
 

@@ -213,6 +213,18 @@ async function updateWizardSlotCount() {
   window.setWizardSlotCount(adjustedSlots(baseSlots));
 }
 
+async function fetchInitData() {
+  try {
+    const token = localStorage.getItem('token');
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    const res = await fetch(`${API_BASE}/init-data`, { headers });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
 function updateWizardFromInputs() {
   if (!window.setWizardStage) return;
   window.setWizardStage('prompt');
@@ -591,8 +603,35 @@ async function init() {
   window.addEventListener('resize', syncUploadHeights);
   setStep('prompt');
   if (window.setWizardStage) window.setWizardStage('prompt');
-  updateWizardSlotCount();
   showLoader();
+  const initData = await fetchInitData();
+  if (initData) {
+    if (window.setWizardSlotCount)
+      window.setWizardSlotCount(adjustedSlots(initData.slots));
+    if (initData.profile) {
+      userProfile = initData.profile;
+      if (refs.buyNowBtn) {
+        refs.buyNowBtn.classList.remove('hidden');
+        refs.buyNowBtn.addEventListener('click', buyNow);
+      }
+    }
+    const el = document.getElementById('stats-ticker');
+    if (el) {
+      const prints =
+        typeof initData.stats?.printsSold === 'number'
+          ? initData.stats.printsSold
+          : await computeDailyPrintsSold();
+      el.innerHTML = `<i class="fas fa-fire mr-1"></i> ${prints} prints sold<br>in last 24 hrs`;
+    }
+  } else {
+    updateWizardSlotCount();
+    fetchProfile().then(() => {
+      if (userProfile && refs.buyNowBtn) {
+        refs.buyNowBtn.classList.remove('hidden');
+        refs.buyNowBtn.addEventListener('click', buyNow);
+      }
+    });
+  }
   const sr = new URLSearchParams(window.location.search).get('sr');
   if (!sr) {
     refs.viewer.src = FALLBACK_GLB;

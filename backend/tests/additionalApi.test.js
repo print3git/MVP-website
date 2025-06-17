@@ -487,3 +487,15 @@ test('static assets send cache headers', async () => {
   expect(res.status).toBe(200);
   expect(res.headers['cache-control']).toBe('public, max-age=31536000, immutable');
 });
+
+test('GET /api/init-data returns slots, stats, and profile', async () => {
+  const { _setDailyPrintsSold } = require('../utils/dailyPrints');
+  _setDailyPrintsSold(10);
+  db.query.mockResolvedValueOnce({ rows: [{ display_name: 'A' }] });
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  const res = await request(app).get('/api/init-data').set('authorization', `Bearer ${token}`);
+  expect(res.status).toBe(200);
+  expect(typeof res.body.slots).toBe('number');
+  expect(res.body.stats.printsSold).toBe(10);
+  expect(res.body.profile.display_name).toBe('A');
+});
