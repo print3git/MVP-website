@@ -268,6 +268,13 @@ test('GET /api/community/popular uses correct ordering', async () => {
   ]);
 });
 
+test('GET /api/community/model/:id returns model', async () => {
+  db.query.mockResolvedValueOnce({ rows: [{ id: 'c1', model_url: 'u' }] });
+  const res = await request(app).get('/api/community/model/c1');
+  expect(res.status).toBe(200);
+  expect(res.body.id).toBe('c1');
+});
+
 test('GET /api/competitions/active', async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
   const res = await request(app).get('/api/competitions/active');
