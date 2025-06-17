@@ -170,6 +170,10 @@ function createCard(model) {
       addBasketBtn.dataset.job = model.job_id;
       addBasketBtn.dataset.snapshot = model.snapshot || '';
     }
+    const copyBtn = document.getElementById('modal-copy-link');
+    if (copyBtn) {
+      copyBtn.dataset.id = model.id;
+    }
     modal.classList.remove('hidden');
     const closeBtn = document.getElementById('close-modal');
     const svg = closeBtn?.querySelector('svg');

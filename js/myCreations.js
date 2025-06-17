@@ -15,7 +15,11 @@ function createCard(model) {
   div.addEventListener('click', () => {
     const modal = document.getElementById('model-modal');
     const viewer = modal.querySelector('model-viewer');
+    const copyBtn = document.getElementById('modal-copy-link');
     viewer.src = model.model_url;
+    if (copyBtn) {
+      copyBtn.dataset.id = model.id;
+    }
     modal.classList.remove('hidden');
     document.body.classList.add('overflow-hidden');
   });
@@ -77,6 +81,7 @@ function createObserver() {
 document.addEventListener('DOMContentLoaded', () => {
   const modal = document.getElementById('model-modal');
   const closeBtn = document.getElementById('close-modal');
+  const copyBtn = document.getElementById('modal-copy-link');
   function close() {
     modal.classList.add('hidden');
     document.body.classList.remove('overflow-hidden');
@@ -84,6 +89,12 @@ document.addEventListener('DOMContentLoaded', () => {
   closeBtn.addEventListener('click', close);
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') close();
+  });
+  copyBtn?.addEventListener('click', () => {
+    const id = copyBtn.dataset.id;
+    if (!id) return;
+    const url = `${window.location.origin}/community/model/${id}`;
+    navigator.clipboard.writeText(url).then(() => alert('Link copied'));
   });
   createObserver();
   loadMore();
