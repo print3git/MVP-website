@@ -380,10 +380,10 @@ async function initPaymentPage() {
 
       etchInput.classList.remove(
         'cursor-not-allowed',
-        'border-red-500',
-        'bg-red-900/20',
-        'text-red-300',
-        'placeholder-red-300'
+        'border-amber-500',
+        'bg-amber-900/20',
+        'text-amber-300',
+        'placeholder-amber-300'
       );
       if (warning) warning.classList.add('hidden');
     } else {
@@ -391,10 +391,10 @@ async function initPaymentPage() {
       etchInput.value = '';
       etchInput.classList.add(
         'cursor-not-allowed',
-        'border-red-500',
-        'bg-red-900/20',
-        'text-red-300',
-        'placeholder-red-300'
+        'border-amber-500',
+        'bg-amber-900/20',
+        'text-amber-300',
+        'placeholder-amber-300'
       );
       if (warning) warning.classList.remove('hidden');
 
