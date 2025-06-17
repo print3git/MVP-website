@@ -86,14 +86,28 @@
       </div>
     </header>
     <main class="flex-1 flex items-center justify-center px-4">
-      <div class="max-w-lg text-center">
-        <p class="text-lg">Rewards for supporting print3 are coming soon. Check back later!</p>
+      <div class="max-w-lg space-y-4 text-center">
+        <p class="text-lg">
+          Invite friends to try print3 using your personal link below. When they sign up and place orders you'll earn points that can be redeemed for discounts on future prints.
+        </p>
+        <div>
+          <label class="block text-sm mb-1">Your referral link</label>
+          <div class="flex">
+            <input id="referral-link" class="flex-1 bg-[#2A2A2E] border border-white/10 rounded-l-xl px-2 py-1" readonly />
+            <button class="bg-blue-600 px-3 rounded-r-xl" onclick="copyReferral()">Copy</button>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm mb-1">Reward Points: <span id="reward-points">0</span></label>
+          <progress id="reward-progress" value="0" max="100" class="w-full h-3"></progress>
+        </div>
       </div>
     </main>
     <script type="module">
       import { shareOn } from './js/share.js';
       window.shareOn = shareOn;
     </script>
+    <script type="module" src="js/rewards.js"></script>
     <div
       id="printclub-modal"
       class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden"

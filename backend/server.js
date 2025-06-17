@@ -608,6 +608,26 @@ app.get('/api/subscription/credits', authRequired, async (req, res) => {
   }
 });
 
+app.get('/api/referral-link', authRequired, async (req, res) => {
+  try {
+    const code = await db.getOrCreateReferralLink(req.user.id);
+    res.json({ code });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to fetch referral link' });
+  }
+});
+
+app.get('/api/rewards', authRequired, async (req, res) => {
+  try {
+    const points = await db.getRewardPoints(req.user.id);
+    res.json({ points });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to fetch rewards' });
+  }
+});
+
 app.get('/api/users/:username/models', async (req, res) => {
   const limit = parseInt(req.query.limit, 10) || 10;
   const offset = parseInt(req.query.offset, 10) || 0;
