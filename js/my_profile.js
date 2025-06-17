@@ -66,21 +66,15 @@ async function loadCommissions() {
     data.commissions.forEach((c) => {
       const tr = document.createElement('tr');
       const amount = (c.commission_cents / 100).toFixed(2);
-      const date = c.created_at
-        ? new Date(c.created_at).toLocaleDateString()
-        : '';
+      const date = c.created_at ? new Date(c.created_at).toLocaleDateString() : '';
       tr.innerHTML = `
         <td class="px-2 py-1">$${amount}</td>
         <td class="px-2 py-1 capitalize">${c.status}</td>
         <td class="px-2 py-1">${date}</td>`;
       body.appendChild(tr);
     });
-    document.getElementById('total-pending').textContent = (
-      data.totalPending / 100
-    ).toFixed(2);
-    document.getElementById('total-paid').textContent = (
-      data.totalPaid / 100
-    ).toFixed(2);
+    document.getElementById('total-pending').textContent = (data.totalPending / 100).toFixed(2);
+    document.getElementById('total-paid').textContent = (data.totalPaid / 100).toFixed(2);
   } catch (err) {
     console.error('Failed to load commissions', err);
   }

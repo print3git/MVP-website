@@ -22,7 +22,11 @@ function createCard(model) {
   div.querySelector('.add-basket').addEventListener('click', (e) => {
     e.stopPropagation();
     if (window.addToBasket) {
-      window.addToBasket({ jobId: model.job_id, modelUrl: model.model_url, snapshot: model.snapshot });
+      window.addToBasket({
+        jobId: model.job_id,
+        modelUrl: model.model_url,
+        snapshot: model.snapshot,
+      });
     }
   });
   div.addEventListener('click', () => {

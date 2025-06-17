@@ -10,8 +10,6 @@
 
 - Offer multiple payment methods including Apple Pay and Google Pay.
 
-
-
 ## User Experience & Accessibility
 
 - Ensure accessibility with ARIA labels and contrast.
@@ -60,15 +58,12 @@
 
 ## Subscription Service
 
-
-
 - Require prints to be redeemed in pairs and reset credits weekly without rollover.
 - Send monthly reminder emails to subscribers encouraging them to use remaining prints.
 - Track sign‑ups and churn; A/B test pricing (£140 vs £160) and monitor ARPU.
 - Offer a first‑month discount or referral credit to incentivize new subscribers.
 
 ## Repeat Purchase Incentives
-
 
 - Show gifting options at checkout and on delivery confirmation.
   - Add a "This is a surprise" toggle for recipient details.
@@ -82,6 +77,7 @@
   - Showcase other users' creations for inspiration.
   - Include a direct reorder button in the email.
   - Send a follow-up reminder 5–7 days after delivery.
+
 - Add loyalty features to the account area.
   - Grant a badge after four total purchases.
   - Highlight a "Print of the week" for quick purchase.
