@@ -69,9 +69,33 @@
 ## Subscription Service
 
 - Require prints to be redeemed in pairs and reset credits weekly without rollover.
+  - Block checkout unless the quantity is even when paying with credits.
+  - Add `weekly-reset.js` script to allocate new credits each Monday.
+  - Schedule `npm run reset-credits` via cron.
 - Send monthly reminder emails to subscribers encouraging them to use remaining prints.
+  - Create `email_templates/reminder.txt` with a short message.
+  - Implement `scripts/send-printclub-reminders.js` to dispatch the emails.
 - Track sign‑ups and churn; A/B test pricing (£140 vs £160) and monitor ARPU.
+  - Record join and cancel events in a new `subscription_events` table.
+  - Add admin endpoint to report active members and churn.
+  - Randomly assign visitors to pricing variants and store which one they saw.
 - Offer a first‑month discount or referral credit to incentivize new subscribers.
+  - Apply a one-time 10% discount when a referral code is present.
+  - Display the discounted price on the sign-up form.
+
+## Print Club
+
+- Create `printclub.html` describing membership perks.
+- Add a "Print Club" link in the main navigation.
+- Pre-select the subscription option on `payment.html` when arriving from the Print Club page.
+- Show remaining weekly credits at checkout and update after purchase.
+- Deduct one credit when an order is placed using the subscription.
+- Add `weekly-reset.js` script to grant new credits each Monday.
+- Expose `npm run reset-credits` to run the reset script.
+- Send reminder emails two days before unused credits expire.
+- Record sign-up and cancellation events in `subscription_events` table.
+- Display a "Manage subscription" button on the profile page linking to the Stripe customer portal.
+- Add unit tests for credit deduction and weekly reset.
 
 ## Repeat Purchase Incentives
 
