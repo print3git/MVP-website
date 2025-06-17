@@ -72,10 +72,7 @@
 
   - Award a badge when someone purchases three times in a month.
   - Offer an optional monthly "time capsule" print.
-  - Send automated post-purchase emails.
   - Showcase other users' creations for inspiration.
-  - Include a direct reorder button in the email.
-  - Send a follow-up reminder 5–7 days after delivery.
 
 - Add loyalty features to the account area.
   - Grant a badge after four total purchases.
