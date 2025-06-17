@@ -310,26 +310,7 @@
           document.body.classList.remove('overflow-hidden');
         }
 
-        document.addEventListener('click', (e) => {
-          const card = e.target.closest('.model-card, .entry-card');
-          if (card) {
-            viewer.setAttribute('poster', card.querySelector('img')?.src || '');
-            // Ensure the viewer loads the model immediately
-            viewer.setAttribute('fetchpriority', 'high');
-            viewer.setAttribute('loading', 'eager');
-            viewer.src = card.dataset.model;
-            checkoutBtn.dataset.model = card.dataset.model;
-            checkoutBtn.dataset.job = card.dataset.job;
-            if (addBasketBtn) {
-              addBasketBtn.dataset.model = card.dataset.model;
-              addBasketBtn.dataset.job = card.dataset.job;
-              const img = card.querySelector('img');
-              if (img) addBasketBtn.dataset.snapshot = img.src;
-            }
-            modal.classList.remove('hidden');
-            document.body.classList.add('overflow-hidden');
-          }
-        });
+
 
         checkoutBtn.addEventListener('click', () => {
           sessionStorage.setItem('fromCommunity', '1');
