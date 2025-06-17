@@ -1,6 +1,19 @@
 'use strict';
 import { shareOn } from './share.js';
 
+// Save referrer ID from query string for later checkout discount
+(() => {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const ref = params.get('ref');
+    if (ref) {
+      localStorage.setItem('referrerId', ref);
+    }
+  } catch {
+    /* ignore errors */
+  }
+})();
+
 function resetMaterialSelection() {
   try {
     localStorage.setItem('print3Material', 'multi');

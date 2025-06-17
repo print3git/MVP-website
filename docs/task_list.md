@@ -53,11 +53,8 @@
 
 ## Post-Purchase Referral Engine
 
-- Show a referral link after checkout that gives the friend 10% off and the buyer 10% credit back.
-  - Include a copy-to-clipboard button for the link.
 - Reward £5 off the next order when users post their print online and tag us.
   - Verify the tag before issuing the discount.
-- Add a one-click "order another color" button on the confirmation page.
 - Place a QR code in each package linking to the referral page.
 - Grant a free print after three successful referrals.
 
