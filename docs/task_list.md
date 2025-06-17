@@ -80,12 +80,6 @@
 
 ## Subscription Service
 
-- Design `subscriptions` and `subscription_usage` tables to store plan status and weekly print totals.
-- Build REST endpoints for subscribing, canceling, and checking remaining prints.
-- Integrate a Stripe plan priced around £140/mo and process webhooks for status updates.
-- Add a "Print Club £140/mo" badge in the site header that opens a modal describing the offer.
-- Place a radio option on the checkout page to join Print Club during purchase.
-- Show a progress bar on the account dashboard with prints used this week and an upgrade CTA.
 - Require prints to be redeemed in pairs and reset credits weekly without rollover.
 - Send monthly reminder emails to subscribers encouraging them to use remaining prints.
 - Track sign‑ups and churn; A/B test pricing (£140 vs £160) and monitor ARPU.
