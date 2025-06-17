@@ -1,0 +1,7 @@
+Hi {{username}},
+
+We hope you're enjoying your recent print. If you'd like another copy or want to share the experience with a friend, you can easily reorder below:
+
+{{reorder_url}}
+
+Thanks for supporting our community!
