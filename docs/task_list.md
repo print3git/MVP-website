@@ -206,8 +206,6 @@
 - Serve assets over HTTP/2 or HTTP/3.
 - Measure load times with Lighthouse or real browser tests and track improvements.
 
-
-
 ## Social Sharing
 
 - Add share icons to the library page.
@@ -222,6 +220,8 @@
   - Create a `share_events` table with columns `share_id`, `network` and `timestamp`.
   - POST `/api/track/share` from `share.js` whenever a button is clicked.
   - Add a unit test verifying share events are recorded.
+
+
 
 
 
