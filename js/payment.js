@@ -373,13 +373,28 @@ async function initPaymentPage() {
 
   function updateEtchVisibility(val) {
     if (!etchInput || !etchContainer) return;
+    const warning = document.getElementById('etch-warning');
     if (val === 'multi' || val === 'premium') {
-      etchContainer.classList.remove('hidden');
       etchInput.disabled = false;
+      etchInput.classList.remove(
+        'cursor-not-allowed',
+        'border-red-500',
+        'bg-red-900/20',
+        'text-red-300',
+        'placeholder-red-300'
+      );
+      if (warning) warning.classList.add('hidden');
     } else {
-      etchContainer.classList.add('hidden');
       etchInput.disabled = true;
       etchInput.value = '';
+      etchInput.classList.add(
+        'cursor-not-allowed',
+        'border-red-500',
+        'bg-red-900/20',
+        'text-red-300',
+        'placeholder-red-300'
+      );
+      if (warning) warning.classList.remove('hidden');
     }
   }
 
