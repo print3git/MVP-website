@@ -491,6 +491,15 @@ test('POST /api/create-order saves user id', async () => {
   expect(call[1][2]).toBe('u1');
 });
 
+test('POST /api/create-order saves etch name', async () => {
+  db.query
+    .mockResolvedValueOnce({ rows: [{ job_id: '1', user_id: 'u1' }] })
+    .mockResolvedValueOnce({});
+  await request(app).post('/api/create-order').send({ jobId: '1', price: 100, etchName: 'Bob' });
+  const call = db.query.mock.calls.find((c) => c[0].includes('INSERT INTO orders'));
+  expect(call[1][8]).toBe('Bob');
+});
+
 test('create-order inserts commission for marketplace sale', async () => {
   db.query
     .mockResolvedValueOnce({ rows: [{ job_id: '1', user_id: 'seller' }] })
