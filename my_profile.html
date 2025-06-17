@@ -125,6 +125,24 @@
         </button>
         <p id="payout-msg" class="text-sm mt-2"></p>
       </div>
+      <div
+        id="subscription-progress"
+        class="hidden bg-[#2A2A2E] border border-white/10 p-6 rounded-3xl w-96 mb-6"
+      >
+        <h2 class="text-lg font-semibold mb-2">Print Club Credits</h2>
+        <div class="w-full h-2 bg-gray-700 rounded mb-2">
+          <div id="credit-bar" class="h-full bg-green-400 rounded" style="width: 0%"></div>
+        </div>
+        <p class="text-sm mb-2">
+          <span id="credits-used">0</span> of <span id="credits-total">0</span> prints used this week
+        </p>
+        <a
+          id="manage-subscription"
+          href="payment.html"
+          class="underline text-blue-400 text-sm"
+          >Join Print Club</a
+        >
+      </div>
       <div id="models" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
       <div id="models-sentinel" class="h-8"></div>
     </main>
