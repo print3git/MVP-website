@@ -4,7 +4,13 @@ let dailyPrintsSold = Math.floor(Math.random() * (MAX - MIN + 1)) + MIN;
 
 function scheduleNextUpdate() {
   const now = new Date();
-  const easternNow = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+  const offsetMs =
+    new Date(
+      now.toLocaleString('en-US', {
+        timeZone: 'America/New_York',
+      })
+    ) - now;
+  const easternNow = new Date(now.getTime() + offsetMs);
   const next = new Date(easternNow);
   next.setHours(23, 59, 0, 0);
   if (easternNow >= next) {
