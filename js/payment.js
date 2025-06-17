@@ -67,7 +67,7 @@ function updateFlashSaleBanner() {
       }
       return;
     }
-    const diffSec = Math.ceil(diff / 1000);
+    const diffSec = Math.floor(diff / 1000);
     const m = Math.floor(diffSec / 60);
     const s = String(diffSec % 60).padStart(2, '0');
     timerEl.textContent = `${m}:${s}`;
@@ -251,7 +251,7 @@ function startFlashDiscount() {
       }
       return;
     }
-    const diffSec = Math.ceil(diff / 1000);
+    const diffSec = Math.floor(diff / 1000);
     const m = Math.floor(diffSec / 60);
     const s = String(diffSec % 60).padStart(2, '0');
     flashTimer.textContent = `${m}:${s}`;

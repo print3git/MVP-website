@@ -51,7 +51,7 @@ describe('flash banner', () => {
     expect(banner.hidden).toBe(true);
   });
 
-  test('countdown shows 4:59 after one second', async () => {
+  test('countdown shows 4:58 after one second', async () => {
     const dom = new JSDOM(html, {
       runScripts: 'dangerously',
       resources: 'usable',
@@ -67,7 +67,7 @@ describe('flash banner', () => {
     const timerEl = dom.window.document.getElementById('flash-timer');
     expect(timerEl.textContent).toBe('5:00');
     await new Promise((r) => setTimeout(r, 1100));
-    expect(timerEl.textContent).toBe('4:59');
+    expect(timerEl.textContent).toBe('4:58');
   });
 
   test('banner hidden when chance disabled', async () => {
