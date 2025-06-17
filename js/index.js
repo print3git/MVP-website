@@ -606,8 +606,7 @@ async function init() {
   showLoader();
   const initData = await fetchInitData();
   if (initData) {
-    if (window.setWizardSlotCount)
-      window.setWizardSlotCount(adjustedSlots(initData.slots));
+    if (window.setWizardSlotCount) window.setWizardSlotCount(adjustedSlots(initData.slots));
     if (initData.profile) {
       userProfile = initData.profile;
       if (refs.buyNowBtn) {
@@ -615,14 +614,7 @@ async function init() {
         refs.buyNowBtn.addEventListener('click', buyNow);
       }
     }
-    const el = document.getElementById('stats-ticker');
-    if (el) {
-      const prints =
-        typeof initData.stats?.printsSold === 'number'
-          ? initData.stats.printsSold
-          : await computeDailyPrintsSold();
-      el.innerHTML = `<i class="fas fa-fire mr-1"></i> ${prints} prints sold<br>in last 24 hrs`;
-    }
+    await updateStats(initData.stats);
   } else {
     updateWizardSlotCount();
     fetchProfile().then(() => {
@@ -631,6 +623,7 @@ async function init() {
         refs.buyNowBtn.addEventListener('click', buyNow);
       }
     });
+    await updateStats();
   }
   const sr = new URLSearchParams(window.location.search).get('sr');
   if (!sr) {
@@ -747,27 +740,29 @@ async function init() {
     }
   });
 
-  async function updateStats() {
+  async function updateStats(initial) {
     const el = document.getElementById('stats-ticker');
     if (!el) return;
-    try {
-      const res = await fetch(`${API_BASE}/stats`);
-      let prints;
-      if (res.ok) {
-        const data = await res.json();
-        prints =
-          typeof data?.printsSold === 'number' ? data.printsSold : await computeDailyPrintsSold();
-      } else {
+    let prints;
+    if (initial && typeof initial.printsSold === 'number') {
+      prints = initial.printsSold;
+    } else {
+      try {
+        const res = await fetch(`${API_BASE}/stats`);
+        if (res.ok) {
+          const data = await res.json();
+          prints =
+            typeof data?.printsSold === 'number' ? data.printsSold : await computeDailyPrintsSold();
+        } else {
+          prints = await computeDailyPrintsSold();
+        }
+      } catch {
         prints = await computeDailyPrintsSold();
       }
-      el.innerHTML = `<i class="fas fa-fire mr-1"></i> ${prints} prints sold<br>in last 24 hrs`;
-    } catch {
-      const prints = await computeDailyPrintsSold();
-      el.innerHTML = `<i class="fas fa-fire mr-1"></i> ${prints} prints sold<br>in last 24 hrs`;
     }
+    el.innerHTML = `<i class="fas fa-fire mr-1"></i> ${prints} prints sold<br>in last 24 hrs`;
   }
 
-  updateStats();
   setInterval(updateStats, 3600000);
 
   const clubBadge = document.getElementById('print-club-badge');
