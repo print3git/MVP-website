@@ -17,29 +17,27 @@
     />
   </head>
   <body class="bg-[#1A1A1D] text-white font-sans flex flex-col min-h-screen">
-    <header class="relative flex items-center justify-between py-4 px-6">
-      <a
-        href="index.html"
-        class="inline-flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-3xl px-5 py-2 text-lg font-medium hover:bg-[#3A3A3E] transition-shape"
-      >
-        <svg
-          class="w-4 h-4 mr-2 flex-shrink-0"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          viewBox="0 0 24 24"
+    <header class="relative flex items-center py-4 px-6">
+      <div class="flex items-center flex-1">
+        <a
+          href="index.html"
+          class="inline-flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-3xl px-5 py-2 text-lg font-medium hover:bg-[#3A3A3E] transition-shape"
         >
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-        </svg>
-        Back
-      </a>
-      <h1
-        class="absolute inset-x-0 top-1/2 -translate-y-1/2 text-center text-3xl font-semibold pointer-events-none"
-      >
-        Login
-      </h1>
-      <div class="flex items-center space-x-4">
+          <svg
+            class="w-4 h-4 mr-2 flex-shrink-0"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+          Back
+        </a>
+        <h1 class="flex-1 text-center text-3xl font-semibold">Login</h1>
         <a href="earn-rewards.html" id="earn-rewards-badge" class="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-3xl px-3 py-2 text-sm transition-shape">[🎉 NEW] Earn Rewards</a>
+      </div>
+      <div class="flex items-center space-x-4 ml-4">
 
         <button
           id="print-club-badge"
