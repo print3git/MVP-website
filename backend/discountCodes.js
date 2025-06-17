@@ -1,4 +1,5 @@
 const db = require('./db');
+const { v4: uuidv4 } = require('uuid');
 
 async function getValidDiscountCode(code) {
   if (!code) return null;
@@ -21,8 +22,19 @@ async function incrementDiscountUsage(id) {
   await db.query('UPDATE discount_codes SET uses = uses + 1 WHERE id=$1', [id]);
 }
 
+async function createTimedCode(amountCents, hours = 48) {
+  const code = uuidv4().split('-')[0].toUpperCase();
+  const expires = new Date(Date.now() + hours * 3600 * 1000).toISOString();
+  const { rows } = await db.query(
+    'INSERT INTO discount_codes(code, amount_cents, expires_at, max_uses) VALUES($1,$2,$3,$4) RETURNING code',
+    [code, amountCents, expires, 1]
+  );
+  return rows[0].code;
+}
+
 module.exports = {
   validateDiscountCode,
   getValidDiscountCode,
   incrementDiscountUsage,
+  createTimedCode,
 };

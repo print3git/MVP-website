@@ -544,6 +544,15 @@ test('POST /api/discount-code requires code', async () => {
   expect(db.query).not.toHaveBeenCalled();
 });
 
+test('POST /api/generate-discount creates code', async () => {
+  db.query.mockResolvedValueOnce({ rows: [{ code: 'ABCD1234' }] });
+  const res = await request(app).post('/api/generate-discount').send({});
+  expect(res.status).toBe(200);
+  expect(res.body.code).toBe('ABCD1234');
+  const call = db.query.mock.calls.find((c) => c[0].includes('INSERT INTO discount_codes'));
+  expect(call).toBeTruthy();
+});
+
 test('POST /api/dalle returns image', async () => {
   axios.post.mockResolvedValueOnce({ data: { image: 'data:image/png;base64,aaa' } });
   const res = await request(app).post('/api/dalle').send({ prompt: 'cat' });
