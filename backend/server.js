@@ -525,6 +525,36 @@ app.post('/api/profile', authRequired, async (req, res) => {
   }
 });
 
+app.post('/api/profile/avatar', authRequired, upload.single('avatar'), async (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+  try {
+    const url = `/uploads/${req.file.filename}`;
+    await db.query(
+      `INSERT INTO user_profiles(user_id, avatar_url)
+       VALUES($1,$2)
+       ON CONFLICT (user_id) DO UPDATE SET avatar_url=$2`,
+      [req.user.id, url]
+    );
+    res.json({ url });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to upload avatar' });
+  }
+});
+
+app.delete('/api/account', authRequired, async (req, res) => {
+  try {
+    await db.query('DELETE FROM jobs WHERE user_id=$1', [req.user.id]);
+    await db.query('DELETE FROM orders WHERE user_id=$1', [req.user.id]);
+    await db.query('DELETE FROM user_profiles WHERE user_id=$1', [req.user.id]);
+    await db.query('DELETE FROM users WHERE id=$1', [req.user.id]);
+    res.sendStatus(204);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to delete account' });
+  }
+});
+
 app.post('/api/stripe/connect', authRequired, async (req, res) => {
   try {
     const profileRes = await db.query(
@@ -666,7 +696,7 @@ app.get('/api/users/:username/profile', async (req, res) => {
     const { rows } = await db.query(
       `SELECT p.display_name, p.avatar_url
        FROM users u
-       JOIN user_profiles p ON u.username=p.username
+       JOIN user_profiles p ON u.id=p.user_id
        WHERE u.username=$1`,
       [req.params.username]
     );

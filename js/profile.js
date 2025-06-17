@@ -107,6 +107,26 @@ async function load() {
   captureSnapshots(container);
 }
 
+async function loadProfileHeader() {
+  const token = localStorage.getItem('token');
+  const urlParams = new URLSearchParams(window.location.search);
+  const user = urlParams.get('user');
+  let endpoint;
+  if (user) {
+    endpoint = `${API_BASE}/users/${encodeURIComponent(user)}/profile`;
+  } else {
+    endpoint = `${API_BASE}/profile`;
+  }
+  const res = await fetch(endpoint, user ? {} : { headers: { Authorization: `Bearer ${token}` } });
+  if (!res.ok) return;
+  const data = await res.json();
+  document.getElementById('profile-name').textContent = data.display_name || 'Profile';
+  const avatar = document.getElementById('profile-avatar');
+  const display = document.getElementById('profile-display');
+  if (avatar && data.avatar_url) avatar.src = data.avatar_url;
+  if (display) display.textContent = data.display_name || '';
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   const modal = document.getElementById('model-modal');
   const closeBtn = document.getElementById('close-modal');
@@ -130,5 +150,6 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.removeItem('token');
     window.location.href = 'index.html';
   });
+  loadProfileHeader();
   load();
 });
