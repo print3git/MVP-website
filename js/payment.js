@@ -31,6 +31,25 @@ function getUserIdFromToken() {
   }
 }
 
+async function loadCreditInfo() {
+  const token = localStorage.getItem('token');
+  if (!token) return;
+  try {
+    const res = await fetch(`${API_BASE}/subscription/credits`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) return;
+    const data = await res.json();
+    const el = document.getElementById('credit-info');
+    if (el) {
+      el.textContent = `Print Club credits: ${data.remaining} of ${data.total} remaining`;
+      el.classList.remove('hidden');
+    }
+  } catch {
+    /* ignore */
+  }
+}
+
 // Restore previously selected material option and colour
 const storedMaterial = localStorage.getItem('print3Material');
 const storedColor = localStorage.getItem('print3Color');
@@ -483,7 +502,10 @@ async function initPaymentPage() {
   }
   updatePayButton();
   const sessionId = qs('session_id');
-  if (sessionId) recordPurchase();
+  if (sessionId) {
+    recordPurchase();
+    await loadCreditInfo();
+  }
   let baseSlots = null;
 
   if (slotEl) {
@@ -678,6 +700,8 @@ async function initPaymentPage() {
       /* ignore profile errors */
     }
   }
+
+  await loadCreditInfo();
 
   ['ship-address', 'ship-city', 'ship-zip'].forEach((id) => {
     document.getElementById(id)?.addEventListener('change', updateEstimate);

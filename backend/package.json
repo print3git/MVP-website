@@ -15,7 +15,8 @@
     "send-followups": "node scripts/send-post-purchase-followups.js",
     "cleanup-tokens": "node scripts/cleanup-password-resets.js",
     "measure-load": "node scripts/measure-load.js",
-    "lint": "eslint . --max-warnings=0"
+    "lint": "eslint . --max-warnings=0",
+    "reset-credits": "node scripts/weekly-reset.js"
   },
   "keywords": [],
   "author": "",

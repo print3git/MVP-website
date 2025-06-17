@@ -1395,6 +1395,16 @@ app.post('/api/webhook/stripe', express.raw({ type: 'application/json' }), async
         enqueuePrint(jobId);
         processQueue();
       }
+      const { rows: orderRows } = await db.query('SELECT user_id FROM orders WHERE session_id=$1', [
+        sessionId,
+      ]);
+      const userId = orderRows[0] && orderRows[0].user_id;
+      if (userId) {
+        const sub = await db.getSubscription(userId);
+        if (sub && sub.status === 'active') {
+          await db.incrementCreditsUsed(userId);
+        }
+      }
     } catch (err) {
       logError(err);
     }
