@@ -70,6 +70,21 @@ const TZ = 'America/New_York';
 const FALLBACK_GLB = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
 const EXAMPLES = ['cute robot figurine', 'ornate chess piece', 'geometric flower vase'];
 const TRENDING = ['dragon statue', 'space rover', 'anime character'];
+const PRINTS_MIN = 30;
+const PRINTS_MAX = 50;
+const UINT32_MAX = 0xffffffff;
+
+async function computeDailyPrintsSold(date = new Date()) {
+  const eastern = new Date(
+    date.toLocaleString('en-US', { timeZone: TZ })
+  );
+  const dateStr = eastern.toISOString().slice(0, 10);
+  const data = new TextEncoder().encode(dateStr);
+  const hash = await crypto.subtle.digest('SHA-256', data);
+  const int = new DataView(hash).getUint32(0);
+  const rand = int / UINT32_MAX;
+  return Math.floor(rand * (PRINTS_MAX - PRINTS_MIN + 1)) + PRINTS_MIN;
+}
 const $ = (id) => document.getElementById(id);
 const refs = {
   previewImg: $('preview-img'),
@@ -695,22 +710,28 @@ async function init() {
     }
   });
 
-  function updateStats() {
+  async function updateStats() {
     const el = document.getElementById('stats-ticker');
     if (!el) return;
-    const randomPrints = () => Math.floor(Math.random() * (50 - 30 + 1)) + 30;
-    fetch(`${API_BASE}/stats`)
-      .then((r) => (r.ok ? r.json() : null))
-      .then((data) => {
 
-        const prints =
-          typeof data?.printsSold === 'number' ? data.printsSold : randomPrints();
+    try {
+      const res = await fetch(`${API_BASE}/stats`);
+      let prints;
+      if (res.ok) {
+        const data = await res.json();
+        prints =
+          typeof data?.printsSold === 'number'
+            ? data.printsSold
+            : await computeDailyPrintsSold();
+      } else {
+        prints = await computeDailyPrintsSold();
+      }
+      el.textContent = `\u{1F525} ${prints} prints sold in last 24 hrs`;
+    } catch {
+      const prints = await computeDailyPrintsSold();
+      el.textContent = `\u{1F525} ${prints} prints sold in last 24 hrs`;
+    }
 
-        el.innerHTML = `\u{1F525} ${prints} prints sold<br>in last 24 hrs`;
-      })
-      .catch(() => {
-        el.innerHTML = `\u{1F525} ${randomPrints()} prints sold<br>in last 24 hrs`;
-      });
   }
 
   updateStats();
