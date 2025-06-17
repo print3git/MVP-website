@@ -115,7 +115,6 @@
 - Schedule the sync script to run daily.
 - Add unit tests for subscribe, confirm, unsubscribe, webhook handling and sync logic.
 
-
 ## Competitions Profit Drivers
 
 - Show purchase buttons for past winners.
@@ -140,4 +139,3 @@
 - After a user enters a competition, display a one-time discount code for printing their entry.
   - Provide `/api/competitions/:id/discount` endpoint to generate and return the code.
 - Create a "Trending Prints" section at the bottom that fetches models from `/api/trending` and shows Add to Basket buttons.
-
