@@ -18,6 +18,7 @@ const fs = require('fs');
 const config = require('./config');
 const generateTitle = require('./utils/generateTitle');
 const stripe = require('stripe')(config.stripeKey);
+const { initDailyPrintsSold, getDailyPrintsSold } = require('./utils/dailyPrints');
 const { enqueuePrint, processQueue, progressEmitter } = require('./queue/printQueue');
 const { sendMail, sendTemplate } = require('./mail');
 const { getShippingEstimate } = require('./shipping');
@@ -359,12 +360,9 @@ app.get('/api/print-slots', (req, res) => {
  * GET /api/stats
  * Return recent sales and average rating
  */
-app.get('/api/stats', async (req, res) => {
+app.get('/api/stats', (req, res) => {
   try {
-    const { rows } = await db.query(
-      "SELECT COUNT(*) FROM orders WHERE status='paid' AND created_at >= NOW() - INTERVAL '24 hours'"
-    );
-    const printsSold = parseInt(rows[0]?.count || '0', 10);
+    const printsSold = getDailyPrintsSold();
     const averageRating = 4.8;
     res.json({ printsSold, averageRating });
   } catch (err) {
@@ -1358,6 +1356,7 @@ if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`API server listening on http://localhost:${PORT}`);
   });
+  initDailyPrintsSold();
   checkCompetitionStart();
   setInterval(checkCompetitionStart, 3600000);
 }
