@@ -1152,6 +1152,25 @@ app.post('/api/create-order', authOptional, async (req, res) => {
           referral,
           `referral_${code}`,
         ]);
+
+        const { rows: counts } = await db.query(
+          "SELECT COUNT(*) FROM incentives WHERE user_id=$1 AND type LIKE 'referral_%'",
+          [referral]
+        );
+        const referralCount = parseInt(counts[0].count, 10) || 0;
+        if (referralCount >= 3) {
+          const { rows: existing } = await db.query(
+            "SELECT 1 FROM incentives WHERE user_id=$1 AND type LIKE 'free_%' LIMIT 1",
+            [referral]
+          );
+          if (existing.length === 0) {
+            const freeCode = await createTimedCode(Math.round((price || 0) * (qty || 1)), 720);
+            await db.query('INSERT INTO incentives(user_id, type) VALUES($1,$2)', [
+              referral,
+              `free_${freeCode}`,
+            ]);
+          }
+        }
       } catch (err) {
         logError(err);
       }

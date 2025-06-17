@@ -26,12 +26,10 @@ async function resetPassword(e) {
     if (res.status === 204) {
       document.getElementById('msg').classList.remove('text-red-400');
       document.getElementById('msg').classList.add('text-green-400');
-      document.getElementById('msg').textContent =
-        'Password updated. You may now log in.';
+      document.getElementById('msg').textContent = 'Password updated. You may now log in.';
     } else {
       const data = await res.json();
-      document.getElementById('msg').textContent =
-        data.error || 'Failed to reset password';
+      document.getElementById('msg').textContent = data.error || 'Failed to reset password';
       passEl.classList.add('border-red-500');
     }
   } catch (err) {
@@ -42,9 +40,7 @@ async function resetPassword(e) {
   }
 }
 
-document
-  .getElementById('resetPasswordForm')
-  .addEventListener('submit', resetPassword);
+document.getElementById('resetPasswordForm').addEventListener('submit', resetPassword);
 
 if (!token) {
   document.getElementById('msg').textContent = 'Invalid or expired link';

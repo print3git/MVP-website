@@ -16,11 +16,7 @@ const API_BASE = (window.API_ORIGIN || '') + '/api';
 const TZ = 'America/New_York';
 let flashTimerId = null;
 let flashSale = null;
-const NEXT_PROMPTS = [
-  'cute robot figurine',
-  'ornate chess piece',
-  'geometric flower vase',
-];
+const NEXT_PROMPTS = ['cute robot figurine', 'ornate chess piece', 'geometric flower vase'];
 
 function getUserIdFromToken() {
   const token = localStorage.getItem('token');
@@ -100,8 +96,7 @@ function ensureModelViewerLoaded() {
   return new Promise((resolve) => {
     const s = document.createElement('script');
     s.type = 'module';
-    s.src =
-      'https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js';
+    s.src = 'https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js';
     document.head.appendChild(s);
     resolve();
   });
@@ -304,15 +299,15 @@ async function initPaymentPage() {
     discountMsg.textContent = 'Referral discount applied';
   }
   const materialRadios = document.querySelectorAll('#material-options input[name="material"]');
-  const subscriptionRadios = document.querySelectorAll('#subscription-choice input[name="printclub"]');
+  const subscriptionRadios = document.querySelectorAll(
+    '#subscription-choice input[name="printclub"]'
+  );
   const payBtn = document.getElementById('submit-payment');
   const singleLabel = document.getElementById('single-label');
   const singleInput = document.getElementById('opt-single');
   const colorMenu = document.getElementById('single-color-menu');
   const singleButton = singleLabel?.querySelector('span');
-  const storedRadio = document.querySelector(
-    `#material-options input[value="${storedMaterial}"]`
-  );
+  const storedRadio = document.querySelector(`#material-options input[value="${storedMaterial}"]`);
   if (storedRadio) storedRadio.checked = true;
   if (storedMaterial === 'single') {
     if (singleButton && storedColor) {
@@ -340,12 +335,7 @@ async function initPaymentPage() {
   function hexToFactor(hex) {
     const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     return m
-      ? [
-          parseInt(m[1], 16) / 255,
-          parseInt(m[2], 16) / 255,
-          parseInt(m[3], 16) / 255,
-          1,
-        ]
+      ? [parseInt(m[1], 16) / 255, parseInt(m[2], 16) / 255, parseInt(m[3], 16) / 255, 1]
       : null;
   }
 
@@ -373,9 +363,7 @@ async function initPaymentPage() {
     const mat = mats[0];
     if (mat?.pbrMetallicRoughness?.baseColorFactor)
       originalColor = mat.pbrMetallicRoughness.baseColorFactor.slice();
-    originalTextures = mats.map(
-      (m) => m.pbrMetallicRoughness?.baseColorTexture?.texture || null
-    );
+    originalTextures = mats.map((m) => m.pbrMetallicRoughness?.baseColorTexture?.texture || null);
     if (storedMaterial === 'single' && storedColor) {
       const factor = hexToFactor(storedColor);
       if (factor) applyModelColor(factor);
@@ -460,8 +448,7 @@ async function initPaymentPage() {
     }
     slotEl.textContent = adjustedSlots(baseSlots);
     slotEl.style.visibility = 'visible';
-    if (window.setWizardSlotCount)
-      window.setWizardSlotCount(adjustedSlots(baseSlots));
+    if (window.setWizardSlotCount) window.setWizardSlotCount(adjustedSlots(baseSlots));
     if (bulkSlotEl) {
       bulkSlotEl.textContent = adjustedSlots(baseSlots);
       bulkSlotEl.style.visibility = 'visible';
@@ -728,8 +715,7 @@ async function initPaymentPage() {
       });
     }
 
-    const joinClub =
-      Array.from(subscriptionRadios).find((r) => r.checked)?.value === 'join';
+    const joinClub = Array.from(subscriptionRadios).find((r) => r.checked)?.value === 'join';
     const token = localStorage.getItem('token');
     if (joinClub && token) {
       fetch(`${API_BASE}/subscription`, {
@@ -744,9 +730,7 @@ async function initPaymentPage() {
   };
   window.payHandler = payHandler;
 
-  document
-    .getElementById('submit-payment')
-    .addEventListener('click', () => payHandler());
+  document.getElementById('submit-payment').addEventListener('click', () => payHandler());
 
   const alignBadge = () => {
     const badge = document.getElementById('money-back-badge');
@@ -760,7 +744,6 @@ async function initPaymentPage() {
     // Center the badge on the button and override the initial transform
     badge.style.transform = 'translateY(-50%)';
     badge.style.top = offset + 'px';
-
   };
   alignBadge();
   window.addEventListener('resize', alignBadge);

@@ -81,7 +81,6 @@
       defer
     ></script>
 
-
     <style>
       html,
       body {
@@ -209,7 +208,10 @@
     </header>
 
     <!-- ▸▸▸ MAIN --------------------------------------------------------- -->
-    <main class="flex-1 flex flex-col items-center justify-start gap-8 px-4 lg:px-16" style="margin-top: -2.5rem;">
+    <main
+      class="flex-1 flex flex-col items-center justify-start gap-8 px-4 lg:px-16"
+      style="margin-top: -2.5rem"
+    >
       <!-- 3-D preview ---------------------------------------------------- -->
       <div class="relative flex justify-center w-full max-w-lg">
         <section
@@ -274,10 +276,10 @@
           >
             Add to Basket
           </button>
-        <button
-          id="buy-now-button"
-          class="hidden absolute bottom-4 right-32 font-bold py-3 px-5 rounded-full shadow-md transition"
-          style="background-color: #5ec2c5; color: #1f3b65"
+          <button
+            id="buy-now-button"
+            class="hidden absolute bottom-4 right-32 font-bold py-3 px-5 rounded-full shadow-md transition"
+            style="background-color: #5ec2c5; color: #1f3b65"
           >
             Buy&nbsp;Now
           </button>
@@ -373,16 +375,12 @@
         <button
           id="exit-discount-close"
           class="absolute -top-3 -right-3 w-[3rem] h-[3rem] rounded-full bg-white text-black flex items-center justify-center z-50"
-
           aria-label="Close"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
-
             class="w-7 h-7"
-
-         
             fill="none"
             stroke="currentColor"
             stroke-width="3"
@@ -399,12 +397,20 @@
       </div>
     </div>
 
-    <div id="wizard-banner" class="fixed bottom-0 left-0 right-0 flex divide-x divide-[#1A1A1D] text-white font-semibold bg-[#1A1A1D] z-40">
+    <div
+      id="wizard-banner"
+      class="fixed bottom-0 left-0 right-0 flex divide-x divide-[#1A1A1D] text-white font-semibold bg-[#1A1A1D] z-40"
+    >
       <div id="wizard-step-prompt" class="flex-1 text-center py-2 bg-[#2A2A2E]">Create prompt</div>
       <div id="wizard-step-building" class="flex-1 text-center py-2">Building model</div>
 
-      <div id="wizard-step-purchase" class="flex-1 text-center py-2 flex justify-center items-center">
-        <span id="wizard-slots" class="hidden text-red-500 mr-2 whitespace-nowrap">Only 4 print slots remaining</span>
+      <div
+        id="wizard-step-purchase"
+        class="flex-1 text-center py-2 flex justify-center items-center"
+      >
+        <span id="wizard-slots" class="hidden text-red-500 mr-2 whitespace-nowrap"
+          >Only 4 print slots remaining</span
+        >
         <span>Purchase model</span>
       </div>
     </div>
@@ -444,9 +450,7 @@
         if (!quote || !checkout) return;
 
         // bounding rectangles relative to the viewport
-        const wrapperRect = document
-          .getElementById('preview-wrapper')
-          .getBoundingClientRect();
+        const wrapperRect = document.getElementById('preview-wrapper').getBoundingClientRect();
         const checkoutRect = checkout.getBoundingClientRect();
 
         /* Horizontal: match the left edge of the Checkout button
@@ -483,30 +487,21 @@
       // Expose so subredditLanding.js can invoke it once the quote text loads
       window.positionQuote = positionQuote;
 
-    window.addEventListener('DOMContentLoaded', positionQuote);
-    window.addEventListener('load', positionQuote);
-    window.addEventListener('resize', positionQuote);
+      window.addEventListener('DOMContentLoaded', positionQuote);
+      window.addEventListener('load', positionQuote);
+      window.addEventListener('resize', positionQuote);
     </script>
     <div
       id="printclub-modal"
       class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden"
     >
-
       <div class="bg-[#2A2A2E] p-6 rounded-xl max-w-sm text-center">
-
         <h2 class="text-2xl font-semibold mb-2">Print Club</h2>
         <p class="mb-4">
-          Get two prints every week for just £140/month. Unused credits expire
-          weekly.
+          Get two prints every week for just £140/month. Unused credits expire weekly.
         </p>
 
-        <button
-          id="printclub-close"
-          class="mt-2 px-4 py-2 bg-blue-600 rounded-3xl"
-        >
-          Close
-        </button>
-
+        <button id="printclub-close" class="mt-2 px-4 py-2 bg-blue-600 rounded-3xl">Close</button>
       </div>
     </div>
     <script type="module" src="js/basket.js"></script>

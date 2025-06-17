@@ -62,43 +62,43 @@
           Print Club £140/mo
         </button>
         <div class="flex space-x-2">
-        <button
-          class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
-          onclick="shareOn('twitter')"
-          aria-label="Share on Twitter"
-        >
-          <i class="fab fa-twitter"></i>
-        </button>
-        <button
-          class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
-          onclick="shareOn('facebook')"
-          aria-label="Share on Facebook"
-        >
-          <i class="fab fa-facebook-f"></i>
-        </button>
-        <button
-          class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
-          onclick="shareOn('reddit')"
-          aria-label="Share on Reddit"
-        >
-          <i class="fab fa-reddit-alien"></i>
-        </button>
-        <button
-          class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
-          onclick="shareOn('tiktok')"
-          aria-label="Share on TikTok"
-        >
-          <i class="fab fa-tiktok"></i>
-        </button>
-        <button
-          class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
-          onclick="shareOn('instagram')"
-          aria-label="Share on Instagram"
-        >
-          <i class="fab fa-instagram"></i>
-        </button>
+          <button
+            class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
+            onclick="shareOn('twitter')"
+            aria-label="Share on Twitter"
+          >
+            <i class="fab fa-twitter"></i>
+          </button>
+          <button
+            class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
+            onclick="shareOn('facebook')"
+            aria-label="Share on Facebook"
+          >
+            <i class="fab fa-facebook-f"></i>
+          </button>
+          <button
+            class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
+            onclick="shareOn('reddit')"
+            aria-label="Share on Reddit"
+          >
+            <i class="fab fa-reddit-alien"></i>
+          </button>
+          <button
+            class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
+            onclick="shareOn('tiktok')"
+            aria-label="Share on TikTok"
+          >
+            <i class="fab fa-tiktok"></i>
+          </button>
+          <button
+            class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
+            onclick="shareOn('instagram')"
+            aria-label="Share on Instagram"
+          >
+            <i class="fab fa-instagram"></i>
+          </button>
+        </div>
       </div>
-    </div>
     </header>
 
     <!-- Content -->
@@ -203,34 +203,31 @@
           id="modal-checkout-container"
           class="absolute bottom-4 right-4 flex flex-col items-center"
         >
-        <div id="tier-toggle" class="flex gap-1 mb-2 text-xs">
-          <button
-            type="button"
-            data-tier="bronze"
-
-            class="tier-option px-2 py-1 rounded-full border border-white/20 opacity-50 text-black" style="background-color:#cd7f32"
-          >
-            1 colour
-
-          </button>
-          <button
-            type="button"
-            data-tier="silver"
-
-            class="tier-option px-2 py-1 rounded-full border border-white/20 opacity-50 text-black" style="background-color:#c0c0c0"
-          >
-            multicolour
-
-          </button>
-          <button
-            type="button"
-            data-tier="gold"
-
-            class="tier-option px-2 py-1 rounded-full border border-white/20 opacity-50 text-black" style="background-color:#ffd700"
-          >
-            premium
-
-          </button>
+          <div id="tier-toggle" class="flex gap-1 mb-2 text-xs">
+            <button
+              type="button"
+              data-tier="bronze"
+              class="tier-option px-2 py-1 rounded-full border border-white/20 opacity-50 text-black"
+              style="background-color: #cd7f32"
+            >
+              1 colour
+            </button>
+            <button
+              type="button"
+              data-tier="silver"
+              class="tier-option px-2 py-1 rounded-full border border-white/20 opacity-50 text-black"
+              style="background-color: #c0c0c0"
+            >
+              multicolour
+            </button>
+            <button
+              type="button"
+              data-tier="gold"
+              class="tier-option px-2 py-1 rounded-full border border-white/20 opacity-50 text-black"
+              style="background-color: #ffd700"
+            >
+              premium
+            </button>
           </div>
           <a
             id="modal-checkout"
@@ -264,27 +261,19 @@
         const tierToggle = document.getElementById('tier-toggle');
 
         function setTier(tier) {
-          tierToggle
-            ?.querySelectorAll('button[data-tier]')
-            .forEach((btn) => {
-              const active = btn.dataset.tier === tier;
+          tierToggle?.querySelectorAll('button[data-tier]').forEach((btn) => {
+            const active = btn.dataset.tier === tier;
 
-              btn.classList.toggle("ring-2", active);
-              btn.classList.toggle("ring-white", active);
-              btn.classList.toggle("opacity-100", active);
-              btn.classList.toggle("opacity-50", !active);
-
-            });
+            btn.classList.toggle('ring-2', active);
+            btn.classList.toggle('ring-white', active);
+            btn.classList.toggle('opacity-100', active);
+            btn.classList.toggle('opacity-50', !active);
+          });
           if (checkoutBtn) {
-            const price = tier === 'bronze'
-              ? 27.99
-              : tier === 'gold'
-              ? 59.99
-              : 34.99;
+            const price = tier === 'bronze' ? 27.99 : tier === 'gold' ? 59.99 : 34.99;
             checkoutBtn.textContent = `Print for £${price.toFixed(2)} →`;
           }
-          const material =
-            tier === 'bronze' ? 'single' : tier === 'gold' ? 'premium' : 'multi';
+          const material = tier === 'bronze' ? 'single' : tier === 'gold' ? 'premium' : 'multi';
           localStorage.setItem('print3Material', material);
         }
 
@@ -297,7 +286,6 @@
           modal.classList.add('hidden');
           document.body.classList.remove('overflow-hidden');
         }
-
 
         checkoutBtn.addEventListener('click', () => {
           sessionStorage.setItem('fromCommunity', '1');
@@ -326,10 +314,7 @@
           if (modal.classList.contains('hidden')) return;
           const container = modal.querySelector('div');
           const basketBtn = document.getElementById('basket-button');
-          if (
-            !container.contains(e.target) &&
-            !(basketBtn && basketBtn.contains(e.target))
-          ) {
+          if (!container.contains(e.target) && !(basketBtn && basketBtn.contains(e.target))) {
             close();
           }
         });
@@ -345,12 +330,9 @@
       <div class="bg-[#2A2A2E] p-6 rounded-xl max-w-sm text-center">
         <h2 class="text-2xl font-semibold mb-2">Print Club</h2>
         <p class="mb-4">
-          Get two prints every week for just £140/month. Unused credits expire
-          weekly.
+          Get two prints every week for just £140/month. Unused credits expire weekly.
         </p>
-        <button id="printclub-close" class="mt-2 px-4 py-2 bg-blue-600 rounded-3xl">
-          Close
-        </button>
+        <button id="printclub-close" class="mt-2 px-4 py-2 bg-blue-600 rounded-3xl">Close</button>
       </div>
     </div>
     <script type="module" src="js/printclub.js"></script>
