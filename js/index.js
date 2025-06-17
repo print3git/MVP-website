@@ -721,10 +721,10 @@ async function init() {
       } else {
         prints = await computeDailyPrintsSold();
       }
-      el.innerHTML = `\u{1F525} ${prints} prints sold<br>in last 24 hrs`;
+      el.innerHTML = `${prints} prints sold<br>in last 24 hrs \u{1F525}`;
     } catch {
       const prints = await computeDailyPrintsSold();
-      el.innerHTML = `\u{1F525} ${prints} prints sold<br>in last 24 hrs`;
+      el.innerHTML = `${prints} prints sold<br>in last 24 hrs \u{1F525}`;
     }
   }
 
