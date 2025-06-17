@@ -242,8 +242,9 @@
         }
 
         document.addEventListener('click', (e) => {
-          const card = e.target.closest('.model-card');
+          const card = e.target.closest('.model-card, .entry-card');
           if (card) {
+            viewer.setAttribute("poster", card.querySelector("img")?.src || "");
             viewer.src = card.dataset.model;
             checkoutBtn.dataset.model = card.dataset.model;
             checkoutBtn.dataset.job = card.dataset.job;
