@@ -268,7 +268,9 @@ test('POST /api/community submits model', async () => {
   expect(res.status).toBe(201);
   expect(db.query).toHaveBeenCalledWith(
     expect.stringContaining('INSERT INTO community_creations'),
-    ['j1', 'Auto', '']
+
+    
+    ['j1', 'Auto', '', 'u1']
   );
 });
 
@@ -285,7 +287,9 @@ test('POST /api/community uses BLIP caption for title', async () => {
   expect(res.status).toBe(201);
   expect(db.query).toHaveBeenCalledWith(
     expect.stringContaining('INSERT INTO community_creations'),
-    ['j1', caption, '']
+
+    ['j1', caption, '', 'u1']
+
   );
 });
 

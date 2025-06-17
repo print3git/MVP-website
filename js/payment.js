@@ -31,6 +31,7 @@ function getUserIdFromToken() {
   }
 }
 
+
 async function loadCreditInfo() {
   const token = localStorage.getItem('token');
   if (!token) return;
@@ -48,6 +49,7 @@ async function loadCreditInfo() {
   } catch {
     /* ignore */
   }
+
 }
 
 // Restore previously selected material option and colour
@@ -288,18 +290,11 @@ async function initPaymentPage() {
   await ensureModelViewerLoaded();
   const referralId = localStorage.getItem('referrerId');
   if (window.setWizardStage) window.setWizardStage('purchase');
-  // Safely initialize Stripe once the DOM is ready. If the Stripe library
-  // failed to load, we fall back to plain redirects.
-  if (window.Stripe) {
+  const initData = await fetchPaymentInit();
+  if (window.Stripe && initData.publishableKey) {
     try {
-      const resp = await fetch(`${API_BASE}/config/stripe`);
-      const data = await resp.json();
-      if (data.publishableKey) {
-        stripe = window.Stripe(data.publishableKey);
-      }
-    } catch {
-      // ignore if the config request fails
-    }
+      stripe = window.Stripe(initData.publishableKey);
+    } catch {}
   }
   const loader = document.getElementById('loader');
   const viewer = document.getElementById('viewer');
@@ -516,17 +511,8 @@ async function initPaymentPage() {
     // Compute a client-side slot count first so we have a reasonable value even
     // if the API fails or returns stale data.
     baseSlots = computeSlotsByTime();
-    try {
-      const resp = await fetch(`${API_BASE}/print-slots`);
-      if (resp.ok) {
-        const data = await resp.json();
-
-        if (typeof data.slots === 'number') {
-          baseSlots = data.slots;
-        }
-      }
-    } catch {
-      // ignore slot errors and fall back to the computed time-based value
+    if (typeof initData.slots === 'number') {
+      baseSlots = initData.slots;
     }
     slotEl.textContent = adjustedSlots(baseSlots);
     slotEl.style.visibility = 'visible';
@@ -676,29 +662,19 @@ async function initPaymentPage() {
     cancelMsg.hidden = false;
   }
 
-  if (flashBanner) {
-    await fetchFlashSale();
+  if (flashBanner && initData.flashSale) {
+    flashSale = initData.flashSale;
+    updateFlashSaleBanner();
   }
 
   // Prefill shipping fields from saved profile
-  const token = localStorage.getItem('token');
-  if (token) {
-    try {
-      const resp = await fetch(`${API_BASE}/profile`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (resp.ok) {
-        const profile = await resp.json();
-        const ship = profile.shipping_info || {};
-        if (ship.name) document.getElementById('ship-name').value = ship.name;
-        if (ship.address) document.getElementById('ship-address').value = ship.address;
-        if (ship.city) document.getElementById('ship-city').value = ship.city;
-        if (ship.zip) document.getElementById('ship-zip').value = ship.zip;
-        await updateEstimate();
-      }
-    } catch {
-      /* ignore profile errors */
-    }
+  if (initData.profile) {
+    const ship = initData.profile.shipping_info || {};
+    if (ship.name) document.getElementById('ship-name').value = ship.name;
+    if (ship.address) document.getElementById('ship-address').value = ship.address;
+    if (ship.city) document.getElementById('ship-city').value = ship.city;
+    if (ship.zip) document.getElementById('ship-zip').value = ship.zip;
+    await updateEstimate();
   }
 
   await loadCreditInfo();

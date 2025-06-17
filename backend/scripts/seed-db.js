@@ -16,12 +16,22 @@ const { Client } = require('pg');
       ['00000000-0000-0000-0000-000000000000', 'Example', {}, {}]
     );
     await client.query(
-      'INSERT INTO community_creations(job_id, title, category) VALUES($1,$2,$3) ON CONFLICT DO NOTHING',
-      ['00000000-0000-0000-0000-000000000000', 'Example Model', 'demo']
+      'INSERT INTO community_creations(job_id, title, category, user_id) VALUES($1,$2,$3,$4) ON CONFLICT DO NOTHING',
+      [
+        '00000000-0000-0000-0000-000000000000',
+        'Example Model',
+        'demo',
+        '00000000-0000-0000-0000-000000000000',
+      ]
     );
     await client.query(
-      'INSERT INTO community_creations(job_id, title, category) VALUES($1,$2,$3) ON CONFLICT DO NOTHING',
-      ['00000000-0000-0000-0000-000000000000', 'Another Model', 'demo']
+      'INSERT INTO community_creations(job_id, title, category, user_id) VALUES($1,$2,$3,$4) ON CONFLICT DO NOTHING',
+      [
+        '00000000-0000-0000-0000-000000000000',
+        'Another Model',
+        'demo',
+        '00000000-0000-0000-0000-000000000000',
+      ]
     );
     // Seed data inserted
   } finally {
