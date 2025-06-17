@@ -388,8 +388,8 @@ async function initPaymentPage() {
     } else {
       etchInput.disabled = true;
       etchInput.value = '';
-      etchInput.classList.add('cursor-not-allowed');
-      etchInput.classList.remove(
+      etchInput.classList.add(
+        'cursor-not-allowed',
         'border-amber-500',
         'bg-amber-900/20',
         'text-amber-300',
