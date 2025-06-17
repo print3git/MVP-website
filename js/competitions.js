@@ -96,6 +96,8 @@ async function load() {
       <div class="flex space-x-2">
         <button data-id="${c.id}" class="enter bg-[#30D5C8] text-[#1A1A1D] px-3 py-1 rounded">Enter</button>
         <button onclick="shareOn('twitter')" aria-label="Share on Twitter" class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#1A1A1D] border border-white/10 rounded hover:bg-[#3A3A3E]"><i class="fab fa-twitter"></i></button>
+        <button onclick="shareOn('facebook')" aria-label="Share on Facebook" class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#1A1A1D] border border-white/10 rounded hover:bg-[#3A3A3E]"><i class="fab fa-facebook-f"></i></button>
+        <button onclick="shareOn('reddit')" aria-label="Share on Reddit" class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#1A1A1D] border border-white/10 rounded hover:bg-[#3A3A3E]"><i class="fab fa-reddit-alien"></i></button>
       </div>
       <table class="leaderboard w-full mt-4 text-sm"></table>
 
@@ -344,4 +346,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
   });
   load();
+  const subForm = document.getElementById('comp-subscribe');
+  const emailInput = document.getElementById('comp-email');
+  const msgEl = document.getElementById('comp-subscribe-msg');
+  subForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = emailInput.value.trim();
+    if (!email) return;
+    msgEl.textContent = '';
+    const res = await fetch(`${API_BASE}/competitions/subscribe`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    if (res.ok) {
+      msgEl.textContent = 'Check your inbox to confirm!';
+      emailInput.value = '';
+    } else {
+      const data = await res.json().catch(() => ({}));
+      msgEl.textContent = data.error || 'Subscription failed';
+    }
+  });
 });
