@@ -300,8 +300,8 @@ app.post('/api/generate', authOptional, upload.array('images'), async (req, res)
 
     // Automatically add new models to the community gallery
     await db.query(
-      'INSERT INTO community_creations(job_id, title, category) SELECT $1,$2,$3 WHERE NOT EXISTS (SELECT 1 FROM community_creations WHERE job_id=$1)',
-      [jobId, prompt || '', '']
+      'INSERT INTO community_creations(job_id, title, category, user_id) SELECT $1,$2,$3,$4 WHERE NOT EXISTS (SELECT 1 FROM community_creations WHERE job_id=$1)',
+      [jobId, prompt || '', '', userId]
     );
 
     res.json({ jobId, glb_url: generatedUrl });
@@ -801,11 +801,10 @@ app.post('/api/community', authRequired, async (req, res) => {
   try {
     const { rows } = await db.query('SELECT generated_title FROM jobs WHERE job_id=$1', [jobId]);
     const autoTitle = rows[0] ? rows[0].generated_title : '';
-    await db.query('INSERT INTO community_creations(job_id, title, category) VALUES($1,$2,$3)', [
-      jobId,
-      title || autoTitle,
-      category || '',
-    ]);
+    await db.query(
+      'INSERT INTO community_creations(job_id, title, category, user_id) VALUES($1,$2,$3,$4)',
+      [jobId, title || autoTitle, category || '', req.user.id]
+    );
     res.sendStatus(201);
   } catch (err) {
     logError(err);
@@ -860,6 +859,21 @@ app.get('/api/community/popular', async (req, res) => {
   } catch (err) {
     logError(err);
     res.status(500).json({ error: 'Failed to fetch creations' });
+  }
+});
+
+app.delete('/api/community/:id', authRequired, async (req, res) => {
+  const id = req.params.id;
+  try {
+    const { rows } = await db.query(
+      'DELETE FROM community_creations WHERE id=$1 AND user_id=$2 RETURNING id',
+      [id, req.user.id]
+    );
+    if (!rows.length) return res.status(404).json({ error: 'Creation not found' });
+    res.sendStatus(204);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to delete creation' });
   }
 });
 
