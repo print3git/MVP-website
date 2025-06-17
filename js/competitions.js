@@ -15,6 +15,38 @@ function prefetchModel(url) {
   prefetchedModels.add(url);
 }
 
+function openViewer(modelUrl, jobId, snapshot = '') {
+  const modal = document.getElementById('model-modal');
+  const viewer = modal.querySelector('model-viewer');
+  const checkoutBtn = document.getElementById('modal-checkout');
+  const addBasketBtn = document.getElementById('modal-add-basket');
+  viewer.setAttribute('poster', snapshot);
+  viewer.setAttribute('fetchpriority', 'high');
+  viewer.setAttribute('loading', 'eager');
+  viewer.src = modelUrl;
+  if (checkoutBtn) {
+    checkoutBtn.dataset.model = modelUrl;
+    checkoutBtn.dataset.job = jobId;
+  }
+  if (addBasketBtn) {
+    addBasketBtn.dataset.model = modelUrl;
+    addBasketBtn.dataset.job = jobId;
+    addBasketBtn.dataset.snapshot = snapshot;
+  }
+  modal.classList.remove('hidden');
+  const closeBtn = document.getElementById('close-modal');
+  const svg = closeBtn?.querySelector('svg');
+  if (closeBtn) {
+    closeBtn.classList.remove('w-[9rem]', 'h-[9rem]');
+    closeBtn.classList.add('w-[4.5rem]', 'h-[4.5rem]');
+  }
+  if (svg) {
+    svg.classList.remove('w-20', 'h-20');
+    svg.classList.add('w-10', 'h-10');
+  }
+  document.body.classList.add('overflow-hidden');
+}
+
 function purchase(modelUrl, jobId) {
   sessionStorage.setItem('fromCommunity', '1');
   localStorage.setItem('print3Model', modelUrl);
@@ -116,6 +148,9 @@ async function loadLeaderboard(id, table, grid) {
         purchase(r.model_url, r.model_id);
       });
       card.addEventListener('pointerenter', () => prefetchModel(r.model_url));
+      card.addEventListener('click', () =>
+        openViewer(r.model_url, r.model_id, card.querySelector('img')?.src || '')
+      );
       grid.appendChild(card);
     });
     captureSnapshots(grid);
@@ -266,6 +301,9 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
     card.addEventListener('pointerenter', () => prefetchModel(card.dataset.model));
+    card.addEventListener('click', () =>
+      openViewer(card.dataset.model, card.dataset.job, card.querySelector('img')?.src || '')
+    );
   });
   load();
 });
