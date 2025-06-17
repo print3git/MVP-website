@@ -85,7 +85,8 @@
     <main class="flex-1 flex flex-col items-center justify-center px-4 space-y-8 -mt-40">
       <div id="success" class="hidden text-green-400 text-center">
         Payment successful!
-        <a href="profile.html" class="underline">View profile</a>
+        <a href="profile.html" class="underline block">View profile</a>
+        <a href="share.html" class="underline block">Refer a friend</a>
       </div>
       <div id="cancel" class="hidden text-red-400 text-center">Payment cancelled.</div>
       <div class="relative flex flex-col md:flex-row items-start justify-center w-full max-w-4xl gap-8">
@@ -393,6 +394,28 @@
         >
           OK
         </button>
+      </div>
+    </div>
+
+    <!-- Next print suggestion -->
+    <div
+      id="next-print-modal"
+      class="fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50"
+    >
+      <div class="bg-[#2A2A2E] border border-white/10 rounded-3xl p-6 text-center">
+        <h2 class="text-xl font-semibold mb-2 text-white">Start your next one?</h2>
+        <p id="next-print-text" class="mb-4 text-gray-300">
+          Try this prompt: <span class="text-white font-mono"></span>
+        </p>
+        <button
+          id="next-print-btn"
+          class="px-4 py-2 mb-2 rounded-md bg-[#30D5C8] text-[#1A1A1D]"
+        >
+          Create it
+        </button>
+        <p class="text-sm text-gray-400">
+          Use code <span class="text-white font-mono px-1">SAVE5</span> within 48&nbsp;h
+        </p>
       </div>
     </div>
 
