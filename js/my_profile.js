@@ -113,6 +113,29 @@ async function requestPayout() {
   }
 }
 
+async function loadCredits() {
+  const token = localStorage.getItem('token');
+  if (!token) return;
+  try {
+    const res = await fetch(`${API_BASE}/subscription/credits`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) return;
+    const data = await res.json();
+    const used = data.total - data.remaining;
+    const bar = document.getElementById('progress-bar');
+    const text = document.getElementById('progress-text');
+    const percent = data.total ? Math.min(100, (used / data.total) * 100) : 0;
+    if (bar) bar.style.width = `${percent}%`;
+    if (text) text.textContent = `${used} of ${data.total} prints used`;
+    if (data.remaining === 0) {
+      document.getElementById('upgrade-cta')?.classList.remove('hidden');
+    }
+  } catch (err) {
+    console.error('Failed to load credits', err);
+  }
+}
+
 function createObserver() {
   const sentinel = document.getElementById('models-sentinel');
   if (!sentinel) return;
@@ -142,4 +165,5 @@ document.addEventListener('DOMContentLoaded', () => {
   loadCommissions();
   createObserver();
   loadMore();
+  loadCredits();
 });

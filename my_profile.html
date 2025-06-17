@@ -125,6 +125,22 @@
         </button>
         <p id="payout-msg" class="text-sm mt-2"></p>
       </div>
+      <div
+        id="subscription-progress"
+        class="bg-[#2A2A2E] border border-white/10 p-6 rounded-3xl w-96 mb-6"
+      >
+        <h2 class="text-lg font-semibold mb-2">Print Club Usage</h2>
+        <div class="w-full bg-white/20 rounded h-4">
+          <div id="progress-bar" class="bg-blue-600 h-full rounded" style="width: 0%"></div>
+        </div>
+        <p id="progress-text" class="text-sm mt-2"></p>
+        <button
+          id="upgrade-cta"
+          class="hidden mt-2 px-3 py-1 bg-gradient-to-r from-purple-500 to-pink-500 rounded-3xl"
+        >
+          Upgrade
+        </button>
+      </div>
       <div id="models" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
       <div id="models-sentinel" class="h-8"></div>
     </main>
