@@ -1124,7 +1124,7 @@ app.delete('/api/admin/flash-sale/:id', adminCheck, async (req, res) => {
  * Create a Stripe Checkout session
  */
 app.post('/api/create-order', authOptional, async (req, res) => {
-  const { jobId, price, shippingInfo, qty, discount, discountCode } = req.body;
+  const { jobId, price, shippingInfo, qty, discount, discountCode, referral } = req.body;
   try {
     const job = await db.query('SELECT job_id, user_id FROM jobs WHERE job_id=$1', [jobId]);
     if (job.rows.length === 0) {
@@ -1141,6 +1141,20 @@ app.post('/api/create-order', authOptional, async (req, res) => {
       }
       totalDiscount += row.amount_cents;
       discountCodeId = row.id;
+    }
+
+    if (referral && (!req.user || referral !== req.user.id)) {
+      const refDisc = Math.round((price || 0) * (qty || 1) * 0.1);
+      totalDiscount += refDisc;
+      try {
+        const code = await createTimedCode(refDisc, 720);
+        await db.query('INSERT INTO incentives(user_id, type) VALUES($1,$2)', [
+          referral,
+          `referral_${code}`,
+        ]);
+      } catch (err) {
+        logError(err);
+      }
     }
 
     if (req.user) {
