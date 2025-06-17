@@ -185,7 +185,7 @@ function qs(name) {
   return params.get(name);
 }
 
-async function createCheckout(quantity, discount, discountCode, shippingInfo, referral) {
+async function createCheckout(quantity, discount, discountCode, shippingInfo, referral, etchName) {
   const jobId = localStorage.getItem('print3JobId');
   const res = await fetch(`${API_BASE}/create-order`, {
     method: 'POST',
@@ -198,6 +198,7 @@ async function createCheckout(quantity, discount, discountCode, shippingInfo, re
       discountCode,
       shippingInfo,
       referral,
+      etchName,
     }),
   });
   const data = await res.json();
@@ -307,8 +308,11 @@ async function initPaymentPage() {
   const singleInput = document.getElementById('opt-single');
   const colorMenu = document.getElementById('single-color-menu');
   const singleButton = singleLabel?.querySelector('span');
+  const etchInput = document.getElementById('etch-name');
+  const etchContainer = document.getElementById('etch-name-container');
   const storedRadio = document.querySelector(`#material-options input[value="${storedMaterial}"]`);
   if (storedRadio) storedRadio.checked = true;
+  updateEtchVisibility(storedMaterial);
   if (storedMaterial === 'single') {
     if (singleButton && storedColor) {
       singleButton.style.backgroundColor = storedColor;
@@ -367,6 +371,18 @@ async function initPaymentPage() {
   viewer.addEventListener('load', captureOriginal, { once: true });
   if (viewer.model) captureOriginal();
 
+  function updateEtchVisibility(val) {
+    if (!etchInput || !etchContainer) return;
+    if (val === 'multi' || val === 'premium') {
+      etchContainer.classList.remove('hidden');
+      etchInput.disabled = false;
+    } else {
+      etchContainer.classList.add('hidden');
+      etchInput.disabled = true;
+      etchInput.value = '';
+    }
+  }
+
   function updatePayButton() {
     if (payBtn) {
       payBtn.textContent = `Pay £${(selectedPrice / 100).toFixed(2)}`;
@@ -380,6 +396,7 @@ async function initPaymentPage() {
         updatePayButton();
         updateFlashSaleBanner();
         localStorage.setItem('print3Material', r.value);
+        updateEtchVisibility(r.value);
         if (colorMenu) {
           if (r.value === 'single') {
             colorMenu.classList.remove('hidden');
@@ -663,7 +680,21 @@ async function initPaymentPage() {
       zip: document.getElementById('ship-zip').value,
       email: emailEl.value,
     };
-    const url = await createCheckout(qty, discount, discountCode, shippingInfo, referralId);
+    let etchName = '';
+    if (etchInput && !etchInput.disabled) {
+      etchName = etchInput.value
+        .replace(/[^a-z0-9 ]/gi, '')
+        .slice(0, 20)
+        .trim();
+    }
+    const url = await createCheckout(
+      qty,
+      discount,
+      discountCode,
+      shippingInfo,
+      referralId,
+      etchName || undefined
+    );
     if (stripe) {
       stripe.redirectToCheckout({ sessionId: url.split('session_id=')[1] });
     } else {

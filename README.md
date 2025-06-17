@@ -237,6 +237,11 @@ pull request:
    modified.
 5. Add the format and test logs to the PR so reviewers can confirm.
 
+## Printer Service
+
+The print worker posts completed jobs to an external printer API. See
+[docs/printer_api.md](docs/printer_api.md) for the expected request format.
+
 ## ToDo List
 
 All open tasks are tracked in [docs/task_list.md](docs/task_list.md).
