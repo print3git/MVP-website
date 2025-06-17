@@ -249,6 +249,9 @@
           const card = e.target.closest('.model-card, .entry-card');
           if (card) {
             viewer.setAttribute('poster', card.querySelector('img')?.src || '');
+            // Ensure the viewer loads the model immediately
+            viewer.setAttribute('fetchpriority', 'high');
+            viewer.setAttribute('loading', 'eager');
             viewer.src = card.dataset.model;
             checkoutBtn.dataset.model = card.dataset.model;
             checkoutBtn.dataset.job = card.dataset.job;
