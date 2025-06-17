@@ -490,6 +490,20 @@
       window.addEventListener('resize', positionQuote);
     </script>
     <div
+      id="limit-popup"
+      class="fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50"
+    >
+      <div class="bg-[#2A2A2E] border border-white/10 rounded-3xl p-6 text-center">
+        <h2 class="text-xl font-semibold mb-2 text-white">Daily Limit Reached</h2>
+        <p class="mb-4 text-gray-300">
+          You used all 50 free models for today. Buy a print to get 50 more.
+        </p>
+        <button id="limit-close" class="px-4 py-2 rounded-md bg-[#30D5C8] text-[#1A1A1D]">
+          OK
+        </button>
+      </div>
+    </div>
+    <div
       id="printclub-modal"
       class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden"
     >

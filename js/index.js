@@ -540,12 +540,25 @@ async function fetchGlb(prompt, files) {
       method: 'POST',
       body: fd,
     });
-    if (!r.ok) throw new Error();
+    if (!r.ok) {
+      if (r.status === 429) {
+        const popup = document.getElementById('limit-popup');
+        const close = document.getElementById('limit-close');
+        popup?.classList.remove('hidden');
+        close?.addEventListener('click', () => popup.classList.add('hidden'), {
+          once: true,
+        });
+        throw new Error('limit');
+      }
+      throw new Error();
+    }
     const data = await r.json();
     lastJobId = data.jobId;
     return data.glb_url;
   } catch (err) {
-    showError('Generation failed');
+    if (err.message !== 'limit') {
+      showError('Generation failed');
+    }
 
     return FALLBACK_GLB;
   }

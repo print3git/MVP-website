@@ -270,6 +270,17 @@ app.post('/api/generate', authOptional, upload.array('images'), async (req, res)
   const userId = req.user ? req.user.id : null;
 
   try {
+    if (userId) {
+      const { rows } = await db.query(
+        'SELECT COUNT(*) FROM jobs WHERE user_id=$1 AND created_at >= CURRENT_DATE',
+        [userId]
+      );
+      const count = rows.length ? parseInt(rows[0].count, 10) : 0;
+      if (count >= 50) {
+        return res.status(429).json({ error: 'daily limit reached' });
+      }
+    }
+
     await db.query(
       'INSERT INTO jobs(job_id, prompt, image_ref, status, user_id, snapshot) VALUES ($1,$2,$3,$4,$5,$6)',
       [jobId, prompt, imageRef, 'pending', userId, snapshot]

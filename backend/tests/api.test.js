@@ -76,6 +76,17 @@ test('POST /api/generate returns glb url', async () => {
   expect(res.body.glb_url).toBe('/models/test.glb');
 });
 
+test('POST /api/generate enforces daily limit', async () => {
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  db.query.mockResolvedValueOnce({ rows: [{ count: '50' }] });
+  const res = await request(app)
+    .post('/api/generate')
+    .set('authorization', `Bearer ${token}`)
+    .send({ prompt: 'test' });
+  expect(res.status).toBe(429);
+  expect(res.body.error).toBe('daily limit reached');
+});
+
 test('GET /api/status returns job', async () => {
   db.query.mockResolvedValueOnce({
     rows: [{ job_id: '1', status: 'complete', model_url: 'url', generated_title: 'Auto' }],
