@@ -481,3 +481,9 @@ test('GET /api/stats returns sales and rating', async () => {
   expect(res.body.printsSold).toBe(42);
   expect(res.body.averageRating).toBe(4.8);
 });
+
+test('static assets send cache headers', async () => {
+  const res = await request(app).get('/js/index.js');
+  expect(res.status).toBe(200);
+  expect(res.headers['cache-control']).toBe('public, max-age=31536000, immutable');
+});
