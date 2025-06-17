@@ -146,6 +146,16 @@ export function setupBasketUI() {
   document.body.appendChild(overlay);
   overlay.querySelector('#basket-close').addEventListener('click', closeBasket);
   overlay.querySelector('#basket-checkout').addEventListener('click', () => {
+    const items = getBasket();
+    if (items.length > 0) {
+      const { modelUrl, jobId } = items[0];
+      if (modelUrl) localStorage.setItem('print3Model', modelUrl);
+      if (jobId) {
+        localStorage.setItem('print3JobId', jobId);
+      } else {
+        localStorage.removeItem('print3JobId');
+      }
+    }
     closeBasket();
     window.location.href = 'payment.html';
   });
