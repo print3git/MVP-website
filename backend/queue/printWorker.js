@@ -30,7 +30,6 @@ async function processNextJob(client) {
   );
   if (!rows.length) return;
 
-
   const { model_url: modelUrl, shipping_info: shipping, etch_name } = rows[0];
   try {
     await axios.post(PRINTER_API_URL, { modelUrl, shipping, etchName: etch_name });

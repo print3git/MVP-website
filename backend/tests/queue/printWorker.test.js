@@ -1,4 +1,3 @@
-
 process.env.DB_URL = 'postgres://user:pass@localhost/db';
 process.env.PRINTER_API_URL = 'http://printer';
 
@@ -37,6 +36,5 @@ test('worker posts etch name to printer API', async () => {
     modelUrl: 'm',
     shipping: { a: 1 },
     etchName: 'Name',
-
   });
 });
