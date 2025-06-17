@@ -164,6 +164,7 @@
   - Provide `/api/competitions/:id/discount` endpoint to generate and return the code.
 - Create a "Trending Prints" section at the bottom that fetches models from `/api/trending` and shows Add to Basket buttons.
 
+
 ## Competitions Engagement
 
 - Show a countdown timer next to each active competition.
@@ -190,6 +191,7 @@
 - Add an entry gallery grid.
   - Fetch entries from `/api/competitions/:id/entries`.
   - Show paginated thumbnails linking to the model modal.
+
 ## 3D Model Loading Performance
 
 - Optimize the `.glb` file used on `index.html` and `payment.html`.
