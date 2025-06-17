@@ -205,10 +205,43 @@
           class="w-full h-96 bg-[#2A2A2E] rounded-xl"
         ></model-viewer>
         <div
+          id="model-stats"
+          class="absolute top-2 left-2 text-xs bg-black/60 text-white px-2 py-1 rounded z-10 pointer-events-none"
+        >
+          <span id="likes-count">❤️ 12 likes</span>
+          •
+          <span id="print-count">🛒 4 prints sold</span>
+        </div>
+        <div
           id="modal-checkout-container"
           class="absolute bottom-4 right-4 flex flex-col items-center"
         >
-          <p class="mb-3 text-sm text-gray-400">Free UK Shipping</p>
+          <div id="tier-toggle" class="flex gap-1 mb-2 text-xs">
+            <button
+              type="button"
+              data-tier="bronze"
+              class="tier-option px-2 py-1 rounded-full border border-white/20 opacity-50 text-black"
+              style="background-color: #cd7f32"
+            >
+              1 colour
+            </button>
+            <button
+              type="button"
+              data-tier="silver"
+              class="tier-option px-2 py-1 rounded-full border border-white/20 opacity-50 text-black"
+              style="background-color: #c0c0c0"
+            >
+              multicolour
+            </button>
+            <button
+              type="button"
+              data-tier="gold"
+              class="tier-option px-2 py-1 rounded-full border border-white/20 opacity-50 text-black"
+              style="background-color: #ffd700"
+            >
+              premium
+            </button>
+          </div>
           <a
             id="modal-checkout"
             href="payment.html"
@@ -217,7 +250,7 @@
             onmouseover="this.style.opacity='0.85'"
             onmouseout="this.style.opacity='1'"
           >
-            Print from £27.99 →
+            Print for £34.99 →
           </a>
         </div>
         <button
@@ -239,6 +272,29 @@
         const checkoutBtn = document.getElementById('modal-checkout');
         const addBasketBtn = document.getElementById('modal-add-basket');
         const closeBtn = document.getElementById('close-modal');
+        const tierToggle = document.getElementById('tier-toggle');
+
+        function setTier(tier) {
+          tierToggle?.querySelectorAll('button[data-tier]').forEach((btn) => {
+            const active = btn.dataset.tier === tier;
+
+            btn.classList.toggle('ring-2', active);
+            btn.classList.toggle('ring-white', active);
+            btn.classList.toggle('opacity-100', active);
+            btn.classList.toggle('opacity-50', !active);
+          });
+          if (checkoutBtn) {
+            const price = tier === 'bronze' ? 27.99 : tier === 'gold' ? 59.99 : 34.99;
+            checkoutBtn.textContent = `Print for £${price.toFixed(2)} →`;
+          }
+          const material = tier === 'bronze' ? 'single' : tier === 'gold' ? 'premium' : 'multi';
+          localStorage.setItem('print3Material', material);
+        }
+
+        tierToggle?.addEventListener('click', (ev) => {
+          const btn = ev.target.closest('button[data-tier]');
+          if (btn) setTier(btn.dataset.tier);
+        });
 
         function close() {
           modal.classList.add('hidden');
@@ -267,6 +323,7 @@
         });
 
         checkoutBtn.addEventListener('click', () => {
+          sessionStorage.setItem('fromCommunity', '1');
           const model = checkoutBtn.dataset.model;
           const job = checkoutBtn.dataset.job;
           if (model) localStorage.setItem('print3Model', model);
@@ -301,6 +358,7 @@
         document.addEventListener('keydown', (e) => {
           if (e.key === 'Escape') close();
         });
+        setTier('silver');
       });
     </script>
     <div
