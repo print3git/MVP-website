@@ -373,13 +373,26 @@ async function initPaymentPage() {
 
   function updateEtchVisibility(val) {
     if (!etchInput || !etchContainer) return;
+    etchContainer.classList.remove('hidden');
     if (val === 'multi' || val === 'premium') {
-      etchContainer.classList.remove('hidden');
       etchInput.disabled = false;
+      etchInput.placeholder = 'Name for etching (optional)';
+      etchInput.classList.remove(
+        'opacity-50',
+        'border-red-500',
+        'text-red-300',
+        'placeholder-red-300'
+      );
     } else {
-      etchContainer.classList.add('hidden');
       etchInput.disabled = true;
       etchInput.value = '';
+      etchInput.placeholder = 'Upgrade to £34.99 for name etching';
+      etchInput.classList.add(
+        'opacity-50',
+        'border-red-500',
+        'text-red-300',
+        'placeholder-red-300'
+      );
     }
   }
 
