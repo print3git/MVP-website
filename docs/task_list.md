@@ -139,6 +139,33 @@
 - After a user enters a competition, display a one-time discount code for printing their entry.
   - Provide `/api/competitions/:id/discount` endpoint to generate and return the code.
 - Create a "Trending Prints" section at the bottom that fetches models from `/api/trending` and shows Add to Basket buttons.
+
+## Competitions Engagement
+
+- Show a countdown timer next to each active competition.
+  - Include `deadline` in the competitions API response.
+  - Update `competitions.js` to refresh the timer every second.
+- Highlight winners with a short interview section.
+  - Pull winner info from `/api/competitions/winners`.
+  - Display image and quote below the winners list.
+- Email users when a new competition opens or voting begins.
+  - Add a subscribe checkbox on the competitions page.
+  - Send notifications via `/api/competitions/notify`.
+- Allow visitors to vote on entries.
+  - POST votes to `/api/competitions/:id/vote`.
+  - Show vote counts on each entry card.
+- Rotate featured themes monthly.
+  - Store a `theme` field in the competition record.
+  - Display the current theme at the top of the page.
+- Provide prize coupons to top entries.
+  - Generate a coupon code when a winner is picked.
+  - Email the prize code to the winner.
+- Update the leaderboard in real time.
+  - Poll `/api/competitions/:id/leaderboard` every minute.
+  - Replace the leaderboard section with fresh data.
+- Add an entry gallery grid.
+  - Fetch entries from `/api/competitions/:id/entries`.
+  - Show paginated thumbnails linking to the model modal.
 ## 3D Model Loading Performance
 
 - Optimize the `.glb` file used on `index.html` and `payment.html`.
