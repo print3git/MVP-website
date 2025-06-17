@@ -106,3 +106,16 @@
 - Add `sync-mailing-list.js` script to push confirmed addresses to SendGrid.
 - Schedule the sync script to run daily.
 - Add unit tests for subscribe, confirm, unsubscribe, webhook handling and sync logic.
+## Competitions Page Profit Drivers
+
+- Add "Order Print" button under each past winner card on the competitions page.
+  - When clicked, open the model modal with the winner's model and job ID.
+  - Save the model ID to localStorage when proceeding to checkout.
+- Insert a banner at the top of the page promoting Print Club membership.
+  - Link the banner to the existing Print Club modal for sign-up.
+- Add social share icons (Twitter, Facebook, Reddit) to every active competition card.
+- Place an email form below the active competition list to subscribe to updates.
+  - Implement POST `/api/competitions/subscribe` to store the address and send a confirmation email.
+- After a user enters a competition, display a one-time discount code for printing their entry.
+  - Provide `/api/competitions/:id/discount` endpoint to generate and return the code.
+- Create a "Trending Prints" section at the bottom that fetches models from `/api/trending` and shows Add to Basket buttons.
