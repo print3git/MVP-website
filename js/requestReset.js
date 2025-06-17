@@ -31,8 +31,7 @@ async function sendRequest(e) {
         'If the address is registered, a reset link has been sent.';
     } else {
       const data = await res.json();
-      document.getElementById('msg').textContent =
-        data.error || 'Failed to send email';
+      document.getElementById('msg').textContent = data.error || 'Failed to send email';
     }
   } catch (err) {
     document.getElementById('msg').textContent = 'Failed to send email';
@@ -41,6 +40,4 @@ async function sendRequest(e) {
   }
 }
 
-document
-  .getElementById('resetRequestForm')
-  .addEventListener('submit', sendRequest);
+document.getElementById('resetRequestForm').addEventListener('submit', sendRequest);

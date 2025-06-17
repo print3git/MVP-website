@@ -21,7 +21,7 @@ This repository contains the early MVP code for print2's website and backend.
 - `EMAIL_FROM` – address used for the "from" field in outgoing mail.
 - Optional: `PORT` and `HUNYUAN_PORT` to override the default ports.
 - Optional: `HUNYUAN_SERVER_URL` if your Hunyuan API runs on a custom URL.
- - Optional: `DALLE_SERVER_URL` if the DALL-E server runs on a custom URL.
+- Optional: `DALLE_SERVER_URL` if the DALL-E server runs on a custom URL.
 
 2. Install dependencies for the servers:
 
@@ -151,6 +151,7 @@ npm run migrate
 ```
 
 ### Password Reset
+
 If `SENDGRID_API_KEY` and `EMAIL_FROM` are not set, reset emails are logged to stdout.
 
 Password reset tokens are stored in the `password_resets` table. After pulling
@@ -235,7 +236,6 @@ pull request:
 4. Check your diff with `git status --short` to verify no unrelated files were
    modified.
 5. Add the format and test logs to the PR so reviewers can confirm.
-
 
 ## ToDo List
 
