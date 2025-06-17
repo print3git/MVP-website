@@ -124,6 +124,27 @@ async function getRewardPoints(userId) {
   return rows.length ? parseInt(rows[0].points, 10) : 0;
 }
 
+async function adjustRewardPoints(userId, delta) {
+  const { rows } = await query(
+    `INSERT INTO reward_points(user_id, points)
+     VALUES($1, $2)
+     ON CONFLICT (user_id)
+     DO UPDATE SET points = reward_points.points + EXCLUDED.points
+     RETURNING points`,
+    [userId, delta]
+  );
+  return parseInt(rows[0].points, 10);
+}
+
+async function getUserIdForReferral(code) {
+  const { rows } = await query('SELECT user_id FROM referral_links WHERE code=$1', [code]);
+  return rows.length ? rows[0].user_id : null;
+}
+
+async function insertReferralEvent(referrerId, type) {
+  await query('INSERT INTO referral_events(referrer_id, type) VALUES($1,$2)', [referrerId, type]);
+}
+
 module.exports = {
   query,
   insertShare,
@@ -139,4 +160,7 @@ module.exports = {
   incrementCreditsUsed,
   getOrCreateReferralLink,
   getRewardPoints,
+  adjustRewardPoints,
+  getUserIdForReferral,
+  insertReferralEvent,
 };
