@@ -6,7 +6,9 @@ requests. The request body is JSON with the following fields:
 ```json
 {
   "modelUrl": "https://example.com/models/<file>.glb",
-  "shipping": { /* arbitrary shipping details */ },
+  "shipping": {
+    /* arbitrary shipping details */
+  },
   "etchName": "optional name to etch on the model"
 }
 ```
