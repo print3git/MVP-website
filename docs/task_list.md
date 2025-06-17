@@ -6,6 +6,17 @@
 - Include a clear value proposition and call-to-action in each ad.
 - Keep landing pages minimal with a single prominent "Start Generating" button.
 
+## Analytics & Attribution
+
+- Create `ad_clicks` table with columns `id`, `subreddit`, `session_id`, and `timestamp`.
+- Add POST `/api/track/ad-click` to insert a row when a visitor arrives with an `sr` parameter.
+- Create `cart_events` table storing `id`, `session_id`, `model_id`, `subreddit`, and `timestamp`.
+- Record Add to Cart actions via POST `/api/track/cart`.
+- Create `checkout_events` table with `id`, `session_id`, `subreddit`, `step`, and `timestamp`.
+- Log events for checkout start and completion through POST `/api/track/checkout`.
+- Implement GET `/api/metrics/conversion` to compute CTR, ATC, and checkout rates per subreddit.
+- Add unit tests for the new endpoints and database logic.
+
 ## Purchase & Checkout
 
 - Offer multiple payment methods including Apple Pay and Google Pay.
