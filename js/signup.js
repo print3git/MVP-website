@@ -11,9 +11,7 @@ async function signup(e) {
   const emailEl = document.getElementById('su-email');
   const passEl = document.getElementById('su-pass');
   const optInEl = document.getElementById('signup-mailing');
-  [nameEl, displayEl, emailEl, passEl].forEach((el) =>
-    el.classList.remove('border-red-500')
-  );
+  [nameEl, displayEl, emailEl, passEl].forEach((el) => el.classList.remove('border-red-500'));
   const username = nameEl.value.trim();
   const displayName = displayEl.value.trim();
   const email = emailEl.value.trim();

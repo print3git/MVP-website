@@ -905,10 +905,8 @@ app.post('/api/community', authRequired, async (req, res) => {
     const { rows } = await db.query('SELECT generated_title FROM jobs WHERE job_id=$1', [jobId]);
     const autoTitle = rows[0] ? rows[0].generated_title : '';
     await db.query(
-
       'INSERT INTO community_creations(job_id, title, category, user_id) VALUES($1,$2,$3,$4)',
       [jobId, title || autoTitle, category || '', req.user.id]
-
     );
     res.sendStatus(201);
   } catch (err) {
@@ -976,7 +974,6 @@ app.get('/api/community/popular', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch creations' });
   }
 });
-
 
 app.delete('/api/community/:id', authRequired, async (req, res) => {
   const id = req.params.id;

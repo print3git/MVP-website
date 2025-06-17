@@ -15,7 +15,6 @@ function prefetchModel(url) {
   prefetchedModels.add(url);
 }
 
-
 function openViewer(modelUrl, jobId, snapshot = '') {
   const modal = document.getElementById('model-modal');
   const viewer = modal.querySelector('model-viewer');
@@ -261,13 +260,10 @@ async function submitEntry(e) {
     const msg = document.getElementById('entry-success');
     if (msg) {
       try {
-        const resp = await fetch(
-          `${API_BASE}/competitions/${currentId}/discount`,
-          {
-            method: 'POST',
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        const resp = await fetch(`${API_BASE}/competitions/${currentId}/discount`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` },
+        });
         if (resp.ok) {
           const data = await resp.json();
           msg.textContent = `Discount code: ${data.code}`;
@@ -364,7 +360,6 @@ document.addEventListener('DOMContentLoaded', () => {
     card.addEventListener('click', () =>
       openViewer(card.dataset.model, card.dataset.job, card.querySelector('img')?.src || '')
     );
-
   });
   load();
   const subForm = document.getElementById('comp-subscribe');

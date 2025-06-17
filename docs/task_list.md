@@ -139,7 +139,6 @@
   - Provide `/api/competitions/:id/discount` endpoint to generate and return the code.
 - Create a "Trending Prints" section at the bottom that fetches models from `/api/trending` and shows Add to Basket buttons.
 
-
 ## Competitions Engagement
 
 - Show a countdown timer next to each active competition.
@@ -183,8 +182,6 @@
 - Serve assets over HTTP/2 or HTTP/3.
 - Measure load times with Lighthouse or real browser tests and track improvements.
 
-
-
 ## Social Sharing
 
 - Add share icons to the library page.
@@ -200,11 +197,6 @@
   - POST `/api/track/share` from `share.js` whenever a button is clicked.
   - Add a unit test verifying share events are recorded.
 
-
-
-
-
-
 ## User Profiles
 
 - Add avatar upload support.
@@ -218,8 +210,6 @@
 - Include a "Delete my account" button that calls DELETE `/api/account`.
 - Fetch `display_name` and `avatar_url` for `/profile.html` and show them at the top.
 
-
-
 ## Earn Rewards Page
 
 - Allow point redemption for discount codes.
@@ -230,6 +220,7 @@
   - Add POST `/api/referral-click` to record each click.
   - Add POST `/api/referral-signup` to award points after signup.
 - Add unit tests for all new rewards endpoints.
+
 ## Community Creations
 
 - Link creations to the uploader.
@@ -248,4 +239,3 @@
 - Enable sharing individual models.
   - GET `/community/model/:id` to show one model with share metadata.
   - Add a copy-link button in the modal.
-

@@ -33,7 +33,11 @@
     <script src="https://js.stripe.com/v3/" defer></script>
 
     <!-- Font Awesome (back-arrow icon) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" referrerpolicy="no-referrer">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      referrerpolicy="no-referrer"
+    />
 
     <!-- model-viewer -->
     <script
@@ -194,72 +198,60 @@
                 </span>
               </label>
 
-                         <label
-              id="single-label"
-              class="cursor-pointer text-center relative flex flex-col items-center w-1/3"
-            >
-              <input
-                type="radio"
-                name="material"
-                value="single"
-                id="opt-single"
-                class="sr-only peer"
-              />
-              <span
-                class="w-24 h-24 flex flex-col items-center justify-center rounded-full border border-white/20 peer-checked:border-4 peer-checked:border-[#30D5C8] pt-0"
+              <label
+                id="single-label"
+                class="cursor-pointer text-center relative flex flex-col items-center w-1/3"
               >
-                <span class="font-semibold">£27.99</span>
-                <span class="text-xs">single colour</span>
-              </span>
-            
-              <div
-                id="single-color-menu"
-                class="
-                  absolute
-                    bottom-0
-                    left-1/2
-                    -translate-x-1/2
-                    -translate-y-[35%]
-                  grid grid-cols-3 gap-2 p-2
-                  bg-[#2A2A2E] border border-white/20
-                  rounded-3xl w-28 h-28
-                  z-20 hidden
-                "
-              >
-                <button
-                  type="button"
-                  class="w-8 h-8 rounded-full border border-white/20"
-                  style="background-color: #f87171"
-                  data-color="#ff0000"
-                ></button>
-                <button
-                  type="button"
-                  class="w-8 h-8 rounded-full border border-white/20"
-                  style="background-color: #34d399"
-                  data-color="#00ff00"
-                ></button>
-                <button
-                  type="button"
-                  class="w-8 h-8 rounded-full border border-white/20"
-                  style="background-color: #60a5fa"
-                  data-color="#0000ff"
-                ></button>
-                <button
-                  type="button"
-                  class="w-8 h-8 rounded-full border border-white/20"
-                  style="background-color: #fbbf24"
-                  data-color="#ffff00"
-                ></button>
-                <button
-                  type="button"
-                  class="w-8 h-8 rounded-full border border-white/20"
-                  style="background-color: #7c3aed"
-                  data-color="#7c3aed"
-                ></button>
-              </div>
+                <input
+                  type="radio"
+                  name="material"
+                  value="single"
+                  id="opt-single"
+                  class="sr-only peer"
+                />
+                <span
+                  class="w-24 h-24 flex flex-col items-center justify-center rounded-full border border-white/20 peer-checked:border-4 peer-checked:border-[#30D5C8] pt-0"
+                >
+                  <span class="font-semibold">£27.99</span>
+                  <span class="text-xs">single colour</span>
+                </span>
 
-            </label>
-
+                <div
+                  id="single-color-menu"
+                  class="absolute bottom-0 left-1/2 -translate-x-1/2 -translate-y-[35%] grid grid-cols-3 gap-2 p-2 bg-[#2A2A2E] border border-white/20 rounded-3xl w-28 h-28 z-20 hidden"
+                >
+                  <button
+                    type="button"
+                    class="w-8 h-8 rounded-full border border-white/20"
+                    style="background-color: #f87171"
+                    data-color="#ff0000"
+                  ></button>
+                  <button
+                    type="button"
+                    class="w-8 h-8 rounded-full border border-white/20"
+                    style="background-color: #34d399"
+                    data-color="#00ff00"
+                  ></button>
+                  <button
+                    type="button"
+                    class="w-8 h-8 rounded-full border border-white/20"
+                    style="background-color: #60a5fa"
+                    data-color="#0000ff"
+                  ></button>
+                  <button
+                    type="button"
+                    class="w-8 h-8 rounded-full border border-white/20"
+                    style="background-color: #fbbf24"
+                    data-color="#ffff00"
+                  ></button>
+                  <button
+                    type="button"
+                    class="w-8 h-8 rounded-full border border-white/20"
+                    style="background-color: #7c3aed"
+                    data-color="#7c3aed"
+                  ></button>
+                </div>
+              </label>
             </fieldset>
             <div>
               <input
@@ -283,10 +275,8 @@
                 id="etch-warning"
                 class="pointer-events-none absolute inset-y-0 left-0 flex items-center gap-2 pl-2 hidden"
               >
-
                 <div class="border-t-2 border-[#30D5C8] w-[20ch]"></div>
                 <span class="text-sm text-[#30D5C8] whitespace-nowrap">Requires multicolour</span>
-
               </div>
             </div>
             <div>
@@ -388,17 +378,17 @@
           </div>
 
           <!-- repositioned badge -->
-            <div
-              id="money-back-badge"
-              style="
-                position: absolute;
-                left: calc(100% + 0.55cm);
-                top: 85%;
-                transform: translateY(-72%);
-                visibility: hidden;
-              "
-              class="whitespace-nowrap text-sm pointer-events-none"
-            >
+          <div
+            id="money-back-badge"
+            style="
+              position: absolute;
+              left: calc(100% + 0.55cm);
+              top: 85%;
+              transform: translateY(-72%);
+              visibility: hidden;
+            "
+            class="whitespace-nowrap text-sm pointer-events-none"
+          >
             <p>🔒 Secure Checkout</p>
             <p>🛡️ Money-Back Guarantee</p>
             <p>🚚 Free UK Shipping</p>

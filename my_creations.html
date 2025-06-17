@@ -19,9 +19,15 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
     />
     <!-- Google <model-viewer> -->
-    <script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js"></script>
+    <script
+      type="module"
+      src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js"
+    ></script>
     <script src="js/modelViewerTouchFix.js"></script>
-    <script nomodule src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer-legacy.js"></script>
+    <script
+      nomodule
+      src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer-legacy.js"
+    ></script>
   </head>
   <body class="bg-[#1A1A1D] text-white font-sans flex flex-col min-h-screen">
     <header class="relative flex items-center py-4 px-6">
@@ -47,16 +53,38 @@
       <div id="mine-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
       <div id="mine-sentinel" class="h-8"></div>
     </main>
-    <div id="model-modal" class="fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50">
+    <div
+      id="model-modal"
+      class="fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50"
+    >
       <div class="relative w-11/12 max-w-3xl">
-        <button id="close-modal" class="absolute -top-4 -right-4 w-[4.5rem] h-[4.5rem] rounded-full bg-white text-black flex items-center justify-center z-50" type="button">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-10 h-10" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+        <button
+          id="close-modal"
+          class="absolute -top-4 -right-4 w-[4.5rem] h-[4.5rem] rounded-full bg-white text-black flex items-center justify-center z-50"
+          type="button"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            class="w-10 h-10"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="3"
+            stroke-linecap="round"
+          >
             <line x1="6" y1="6" x2="18" y2="18" />
             <line x1="6" y1="18" x2="18" y2="6" />
           </svg>
           <span class="sr-only">Close</span>
         </button>
-        <model-viewer src="" alt="3D model preview" environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr" camera-controls auto-rotate class="w-full h-96 bg-[#2A2A2E] rounded-xl"></model-viewer>
+        <model-viewer
+          src=""
+          alt="3D model preview"
+          environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
+          camera-controls
+          auto-rotate
+          class="w-full h-96 bg-[#2A2A2E] rounded-xl"
+        ></model-viewer>
       </div>
     </div>
     <script type="module" src="js/myCreations.js"></script>

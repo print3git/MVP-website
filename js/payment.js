@@ -330,7 +330,6 @@ async function initPaymentPage() {
       singleButton.style.backgroundColor = storedColor;
 
       singleButton.style.borderColor = SINGLE_BORDER_COLOR;
-
     }
     if (colorMenu) {
       if (storedColor) colorMenu.classList.add('hidden');
@@ -414,18 +413,14 @@ async function initPaymentPage() {
         'placeholder-[#30D5C8]'
       );
       if (warning) warning.classList.remove('hidden');
-
-
     }
   }
 
   function updatePayButton() {
     if (!payBtn) return;
-    const joinClub =
-      Array.from(subscriptionRadios).find((r) => r.checked)?.value === 'join';
+    const joinClub = Array.from(subscriptionRadios).find((r) => r.checked)?.value === 'join';
     if (joinClub) {
-      payBtn.textContent =
-        `Join Print Club – Pay £${(PRINT_CLUB_PRICE / 100).toFixed(2)}`;
+      payBtn.textContent = `Join Print Club – Pay £${(PRINT_CLUB_PRICE / 100).toFixed(2)}`;
     } else {
       payBtn.textContent = `Pay £${(selectedPrice / 100).toFixed(2)}`;
     }

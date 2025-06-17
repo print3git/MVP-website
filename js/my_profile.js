@@ -65,7 +65,8 @@ async function loadProfileDetails() {
   if (data.profile) {
     document.getElementById('shipping-input').value = data.profile.shipping_info?.address || '';
     document.getElementById('payment-input').value = data.profile.payment_info?.details || '';
-    document.getElementById('competition-toggle').checked = data.profile.competition_notify !== false;
+    document.getElementById('competition-toggle').checked =
+      data.profile.competition_notify !== false;
   }
 }
 
@@ -108,7 +109,9 @@ async function saveProfile(e) {
 async function loadOrders() {
   const token = localStorage.getItem('token');
   if (!token) return;
-  const res = await fetch(`${API_BASE}/my/orders`, { headers: { Authorization: `Bearer ${token}` } });
+  const res = await fetch(`${API_BASE}/my/orders`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
   if (!res.ok) return;
   const orders = await res.json();
   const body = document.getElementById('orders-body');
@@ -126,7 +129,10 @@ async function deleteAccount() {
   if (!confirm('Delete account permanently?')) return;
   const token = localStorage.getItem('token');
   if (!token) return;
-  const res = await fetch(`${API_BASE}/account`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
+  const res = await fetch(`${API_BASE}/account`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  });
   if (res.ok) {
     localStorage.removeItem('token');
     window.location.href = 'index.html';

@@ -103,10 +103,7 @@
       </div>
     </header>
     <main class="flex-1 p-4 space-y-6">
-      <div
-        id="printclub-banner"
-        class="bg-blue-600 text-white p-3 rounded-xl text-center hidden"
-      >
+      <div id="printclub-banner" class="bg-blue-600 text-white p-3 rounded-xl text-center hidden">
         Join <strong>Print Club</strong> for weekly prints.
         <a href="#" id="printclub-banner-link" class="underline">Learn more</a>
       </div>
@@ -150,8 +147,14 @@
           />
           <span class="absolute top-1 left-1 bg-black/60 text-xs px-1 rounded">Ended 05/25</span>
           <button class="like absolute bottom-1 right-1 text-xs bg-red-600 px-1 rounded">♥</button>
-          <span class="absolute bottom-8 right-1 text-xs bg-black/50 px-1 rounded" id="likes-helmet">0</span>
-          <button class="purchase absolute bottom-1 left-1 font-bold text-lg py-2 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]">Buy</button>
+          <span class="absolute bottom-8 right-1 text-xs bg-black/50 px-1 rounded" id="likes-helmet"
+            >0</span
+          >
+          <button
+            class="purchase absolute bottom-1 left-1 font-bold text-lg py-2 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]"
+          >
+            Buy
+          </button>
         </div>
         <div
           class="model-card relative h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape flex items-center justify-center cursor-pointer"
@@ -165,8 +168,14 @@
           />
           <span class="absolute top-1 left-1 bg-black/60 text-xs px-1 rounded">Ended 03/24</span>
           <button class="like absolute bottom-1 right-1 text-xs bg-red-600 px-1 rounded">♥</button>
-          <span class="absolute bottom-8 right-1 text-xs bg-black/50 px-1 rounded" id="likes-fox">0</span>
-          <button class="purchase absolute bottom-1 left-1 font-bold text-lg py-2 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]">Buy</button>
+          <span class="absolute bottom-8 right-1 text-xs bg-black/50 px-1 rounded" id="likes-fox"
+            >0</span
+          >
+          <button
+            class="purchase absolute bottom-1 left-1 font-bold text-lg py-2 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]"
+          >
+            Buy
+          </button>
         </div>
         <div
           class="model-card relative h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape flex items-center justify-center cursor-pointer"
@@ -180,8 +189,16 @@
           />
           <span class="absolute top-1 left-1 bg-black/60 text-xs px-1 rounded">Ended 01/23</span>
           <button class="like absolute bottom-1 right-1 text-xs bg-red-600 px-1 rounded">♥</button>
-          <span class="absolute bottom-8 right-1 text-xs bg-black/50 px-1 rounded" id="likes-boombox">0</span>
-          <button class="purchase absolute bottom-1 left-1 font-bold text-lg py-2 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]">Buy</button>
+          <span
+            class="absolute bottom-8 right-1 text-xs bg-black/50 px-1 rounded"
+            id="likes-boombox"
+            >0</span
+          >
+          <button
+            class="purchase absolute bottom-1 left-1 font-bold text-lg py-2 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]"
+          >
+            Buy
+          </button>
         </div>
       </div>
     </main>
@@ -281,7 +298,7 @@
             id="modal-checkout"
             href="payment.html"
             class="font-bold py-3 px-5 rounded-full shadow-md transition border-2 border-black"
-            style="background-color: #30D5C8; color: #1A1A1D"
+            style="background-color: #30d5c8; color: #1a1a1d"
             onmouseover="this.style.opacity='0.85'"
             onmouseout="this.style.opacity='1'"
           >
@@ -335,8 +352,6 @@
           modal.classList.add('hidden');
           document.body.classList.remove('overflow-hidden');
         }
-
-
 
         checkoutBtn.addEventListener('click', () => {
           sessionStorage.setItem('fromCommunity', '1');
