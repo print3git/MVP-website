@@ -20,7 +20,6 @@ beforeEach(() => {
 });
 
 test('worker posts etch name to printer API', async () => {
-  const client = new Client();
   mClient.query
     .mockResolvedValueOnce({ rows: [{ job_id: 'j1' }] })
     .mockResolvedValueOnce({
