@@ -9,8 +9,15 @@ jest.mock('../db', () => ({
   insertCommission: jest.fn(),
   getOrCreateReferralLink: jest.fn(),
   getRewardPoints: jest.fn(),
+  adjustRewardPoints: jest.fn(),
+  getUserIdForReferral: jest.fn(),
+  insertReferralEvent: jest.fn(),
 }));
 const db = require('../db');
+jest.mock('../discountCodes', () => ({
+  createTimedCode: jest.fn().mockResolvedValue('DISC123'),
+}));
+const { createTimedCode } = require('../discountCodes');
 
 const jwt = require('jsonwebtoken');
 const request = require('supertest');
@@ -36,4 +43,32 @@ test('GET /api/rewards returns points', async () => {
   expect(res.status).toBe(200);
   expect(res.body.points).toBe(42);
   expect(db.getRewardPoints).toHaveBeenCalledWith('u1');
+});
+
+test('POST /api/rewards/redeem returns code', async () => {
+  db.getRewardPoints.mockResolvedValue(150);
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  const res = await request(app)
+    .post('/api/rewards/redeem')
+    .set('authorization', `Bearer ${token}`)
+    .send({ points: 100 });
+  expect(res.status).toBe(200);
+  expect(res.body.code).toBe('DISC123');
+  expect(db.adjustRewardPoints).toHaveBeenCalledWith('u1', -100);
+  expect(createTimedCode).toHaveBeenCalled();
+});
+
+test('POST /api/referral-click records event', async () => {
+  db.getUserIdForReferral.mockResolvedValue('u1');
+  const res = await request(app).post('/api/referral-click').send({ code: 'abc' });
+  expect(res.status).toBe(200);
+  expect(db.insertReferralEvent).toHaveBeenCalledWith('u1', 'click');
+});
+
+test('POST /api/referral-signup awards points', async () => {
+  db.getUserIdForReferral.mockResolvedValue('u1');
+  const res = await request(app).post('/api/referral-signup').send({ code: 'abc' });
+  expect(res.status).toBe(200);
+  expect(db.insertReferralEvent).toHaveBeenCalledWith('u1', 'signup');
+  expect(db.adjustRewardPoints).toHaveBeenCalledWith('u1', 10);
 });

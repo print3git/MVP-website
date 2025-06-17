@@ -417,6 +417,29 @@ test('POST /api/competitions/:id/enter allows repeat submission without error', 
   ]);
 });
 
+test('POST /api/competitions/:id/discount returns code', async () => {
+  db.query.mockResolvedValueOnce({ rows: [{}] }).mockResolvedValueOnce({ rows: [{ code: 'X1' }] });
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  const res = await request(app)
+    .post('/api/competitions/5/discount')
+    .set('authorization', `Bearer ${token}`)
+    .send({});
+  expect(res.status).toBe(200);
+  expect(res.body.code).toBe('X1');
+  const call = db.query.mock.calls.find((c) => c[0].includes('INSERT INTO discount_codes'));
+  expect(call).toBeTruthy();
+});
+
+test('POST /api/competitions/:id/discount requires entry', async () => {
+  db.query.mockResolvedValueOnce({ rows: [] });
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  const res = await request(app)
+    .post('/api/competitions/5/discount')
+    .set('authorization', `Bearer ${token}`)
+    .send({});
+  expect(res.status).toBe(400);
+});
+
 test('DELETE /api/admin/competitions/:id', async () => {
   db.query.mockResolvedValueOnce({});
   const res = await request(app).delete('/api/admin/competitions/5').set('x-admin-token', 'admin');
@@ -518,4 +541,17 @@ test('GET /api/init-data returns slots, stats, and profile', async () => {
   expect(typeof res.body.slots).toBe('number');
   expect(res.body.stats.printsSold).toBe(10);
   expect(res.body.profile.display_name).toBe('A');
+});
+
+test('GET /api/payment-init bundles payment data', async () => {
+  db.query
+    .mockResolvedValueOnce({ rows: [{ id: 1, discount_percent: 5 }] })
+    .mockResolvedValueOnce({ rows: [{ display_name: 'B', shipping_info: { name: 'J' } }] });
+  const token = jwt.sign({ id: 'u2' }, 'secret');
+  const res = await request(app).get('/api/payment-init').set('authorization', `Bearer ${token}`);
+  expect(res.status).toBe(200);
+  expect(typeof res.body.slots).toBe('number');
+  expect(res.body.flashSale.id).toBe(1);
+  expect(res.body.profile.display_name).toBe('B');
+  expect(res.body.publishableKey).toBeDefined();
 });
