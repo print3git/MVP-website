@@ -230,6 +230,26 @@ test('DELETE /api/models/:id 404 when missing', async () => {
   expect(res.status).toBe(404);
 });
 
+test('DELETE /api/community/:id deletes creation', async () => {
+  db.query.mockResolvedValueOnce({ rows: [{ id: 'c1' }] });
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  const res = await request(app)
+    .delete('/api/community/c1')
+    .set('authorization', `Bearer ${token}`);
+  expect(res.status).toBe(204);
+  const call = db.query.mock.calls[0][0];
+  expect(call).toContain('DELETE FROM community_creations');
+});
+
+test('DELETE /api/community/:id 404 when missing', async () => {
+  db.query.mockResolvedValueOnce({ rows: [] });
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  const res = await request(app)
+    .delete('/api/community/bad')
+    .set('authorization', `Bearer ${token}`);
+  expect(res.status).toBe(404);
+});
+
 test('GET /api/community/recent pagination and category', async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
 
