@@ -1642,6 +1642,62 @@ app.delete('/api/admin/flash-sale/:id', adminCheck, async (req, res) => {
   }
 });
 
+app.get('/api/admin/hubs', adminCheck, async (req, res) => {
+  try {
+    const hubs = await db.listPrinterHubs();
+    const result = [];
+    for (const hub of hubs) {
+      const printers = await db.getPrintersByHub(hub.id);
+      result.push({ ...hub, printers });
+    }
+    res.json(result);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to fetch hubs' });
+  }
+});
+
+app.post('/api/admin/hubs', adminCheck, async (req, res) => {
+  const { name, location, operator } = req.body || {};
+  if (!name) return res.status(400).json({ error: 'Missing name' });
+  try {
+    const hub = await db.createPrinterHub(name, location || null, operator || null);
+    res.json(hub);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to create hub' });
+  }
+});
+
+app.post('/api/admin/hubs/:id/printers', adminCheck, async (req, res) => {
+  const { serial } = req.body || {};
+  if (!serial) return res.status(400).json({ error: 'Missing serial' });
+  try {
+    const printer = await db.addPrinter(serial, req.params.id);
+    res.json(printer);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to add printer' });
+  }
+});
+
+app.post('/api/admin/hubs/:id/shipments', adminCheck, async (req, res) => {
+  const { carrier, trackingNumber, status } = req.body || {};
+  if (!carrier || !trackingNumber) return res.status(400).json({ error: 'Missing fields' });
+  try {
+    const shipment = await db.insertHubShipment(
+      req.params.id,
+      carrier,
+      trackingNumber,
+      status || null
+    );
+    res.json(shipment);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to record shipment' });
+  }
+});
+
 app.get('/api/admin/subscription-metrics', adminCheck, async (req, res) => {
   try {
     const metrics = await db.getSubscriptionMetrics();
