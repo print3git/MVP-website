@@ -10,7 +10,12 @@ const PRICES = {
   multi: 3499,
   premium: 5999,
 };
-const PRINT_CLUB_PRICE = 14000;
+let PRICING_VARIANT = localStorage.getItem('pricingVariant');
+if (!PRICING_VARIANT) {
+  PRICING_VARIANT = Math.random() < 0.5 ? 'A' : 'B';
+  localStorage.setItem('pricingVariant', PRICING_VARIANT);
+}
+const PRINT_CLUB_PRICE = PRICING_VARIANT === 'B' ? 16000 : 14000;
 let selectedPrice = PRICES.multi;
 const SINGLE_BORDER_COLOR = '#60a5fa';
 const API_BASE = (window.API_ORIGIN || '') + '/api';
@@ -338,6 +343,8 @@ async function initPaymentPage() {
   const discountInput = document.getElementById('discount-code');
   const discountMsg = document.getElementById('discount-msg');
   const applyBtn = document.getElementById('apply-discount');
+  const surpriseToggle = document.getElementById('surprise-toggle');
+  const recipientFields = document.getElementById('recipient-fields');
   loadCheckoutCredits();
   if (referralId && discountMsg) {
     discountMsg.textContent = 'Referral discount applied';
@@ -351,6 +358,14 @@ async function initPaymentPage() {
     subscriptionRadios.forEach((r) => {
       if (r.value === 'join') r.checked = true;
     });
+  }
+  if (surpriseToggle && recipientFields) {
+    const toggle = () => {
+      if (surpriseToggle.checked) recipientFields.classList.add('hidden');
+      else recipientFields.classList.remove('hidden');
+    };
+    surpriseToggle.addEventListener('change', toggle);
+    toggle();
   }
   const payBtn = document.getElementById('submit-payment');
   const singleLabel = document.getElementById('single-label');
@@ -743,8 +758,10 @@ async function initPaymentPage() {
         body: JSON.stringify({ sessionId, subreddit, step: 'start' }),
       }).catch(() => {});
     }
-    const basket = window.getBasket ? window.getBasket() : [];
-    const qty = Math.max(1, basket.length || 0);
+    const qty = Math.max(
+      1,
+      parseInt(document.getElementById('print-qty')?.value || '1', 10)
+    );
     let discount = 0;
     const end = parseInt(localStorage.getItem('flashDiscountEnd'), 10) || 0;
     if (end && end > Date.now()) {
@@ -757,12 +774,20 @@ async function initPaymentPage() {
     ) {
       discount += Math.round(selectedPrice * (flashSale.discount_percent / 100));
     }
+    if (qty >= 2) {
+      discount += Math.round(selectedPrice * 0.1);
+      document.getElementById('bulk-discount-msg')?.classList.remove('hidden');
+    } else {
+      document.getElementById('bulk-discount-msg')?.classList.add('hidden');
+    }
     const shippingInfo = {
       name: document.getElementById('ship-name').value,
       address: document.getElementById('ship-address').value,
       city: document.getElementById('ship-city').value,
       zip: document.getElementById('ship-zip').value,
       email: emailEl.value,
+      surprise: document.getElementById('surprise-toggle')?.checked || false,
+      recipientEmail: document.getElementById('recipient-email')?.value || '',
     };
     let etchName = '';
     if (etchInput && !etchInput.disabled) {
@@ -809,7 +834,10 @@ async function initPaymentPage() {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({}),
+        body: JSON.stringify({
+          variant: PRICING_VARIANT,
+          price_cents: PRINT_CLUB_PRICE,
+        }),
       });
     }
   };

@@ -14,6 +14,8 @@ jest.mock('../db', () => ({
   ensureCurrentWeekCredits: jest.fn(),
   getCurrentWeekCredits: jest.fn().mockResolvedValue({ total_credits: 2, used_credits: 1 }),
   incrementCreditsUsed: jest.fn(),
+  insertSubscriptionEvent: jest.fn(),
+  getSubscriptionMetrics: jest.fn(),
 }));
 const db = require('../db');
 
@@ -32,6 +34,8 @@ beforeEach(() => {
   db.getSubscription.mockClear();
   db.ensureCurrentWeekCredits.mockClear();
   db.getCurrentWeekCredits.mockClear();
+  db.insertSubscriptionEvent.mockClear();
+  db.getSubscriptionMetrics.mockClear();
 });
 
 test('GET /api/subscription returns subscription', async () => {
@@ -79,4 +83,19 @@ test('POST /api/subscription/portal 404 without customer', async () => {
     .post('/api/subscription/portal')
     .set('authorization', `Bearer ${token}`);
   expect(res.status).toBe(404);
+});
+
+test('GET /api/admin/subscription-metrics requires admin', async () => {
+  const res = await request(app).get('/api/admin/subscription-metrics');
+  expect(res.status).toBe(401);
+});
+
+test('GET /api/admin/subscription-metrics returns data', async () => {
+  db.getSubscriptionMetrics.mockResolvedValueOnce({ active: 5, churn_last_30_days: 2 });
+  const res = await request(app)
+    .get('/api/admin/subscription-metrics')
+    .set('x-admin-token', 'admin');
+  expect(res.status).toBe(200);
+  expect(res.body.active).toBe(5);
+  expect(res.body.churn_last_30_days).toBe(2);
 });

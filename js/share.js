@@ -1,3 +1,5 @@
+const API_BASE = (window.API_ORIGIN || '') + '/api';
+
 async function captureSnapshot(glbUrl) {
   if (!glbUrl) return null;
   const viewer = document.createElement('model-viewer');
@@ -47,6 +49,19 @@ async function shareOn(network) {
     case 'instagram':
       shareUrl = `https://www.instagram.com/?url=${url}`;
       break;
+  }
+  if (typeof fetch === 'function') {
+    try {
+      const shareId =
+        typeof localStorage !== 'undefined' ? localStorage.getItem('shareId') : null;
+      await fetch(`${API_BASE}/track/share`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ shareId, network }),
+      });
+    } catch (err) {
+      console.error('Failed to track share', err);
+    }
   }
   const modelUrl = typeof localStorage !== 'undefined' ? localStorage.getItem('print3Model') : null;
   if (navigator.share && modelUrl) {

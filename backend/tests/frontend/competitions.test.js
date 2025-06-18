@@ -34,6 +34,7 @@ test('startCountdown formats remaining time', () => {
   el.dataset.deadline = future.toISOString();
   dom.window.startCountdown(el);
   const now = new Date();
+
   let diff = new Date(el.dataset.deadline) - now;
   let remaining = Math.round(diff / 1000);
   const d = Math.floor(remaining / 86400);

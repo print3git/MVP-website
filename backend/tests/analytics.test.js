@@ -10,6 +10,7 @@ jest.mock('../db', () => ({
   insertAdClick: jest.fn(),
   insertCartEvent: jest.fn(),
   insertCheckoutEvent: jest.fn(),
+  insertShareEvent: jest.fn(),
   getConversionMetrics: jest.fn(),
   insertSubscriptionEvent: jest.fn(),
 }));
@@ -44,6 +45,14 @@ test('POST /api/track/checkout records step', async () => {
     .send({ sessionId: 's1', subreddit: 'funny', step: 'start' });
   expect(res.status).toBe(200);
   expect(db.insertCheckoutEvent).toHaveBeenCalledWith('s1', 'funny', 'start');
+});
+
+test('POST /api/track/share records event', async () => {
+  const res = await request(app)
+    .post('/api/track/share')
+    .send({ shareId: 'sh1', network: 'facebook' });
+  expect(res.status).toBe(200);
+  expect(db.insertShareEvent).toHaveBeenCalledWith('sh1', 'facebook');
 });
 
 test('GET /api/metrics/conversion returns metrics', async () => {

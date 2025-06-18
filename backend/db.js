@@ -169,6 +169,31 @@ async function insertCheckoutEvent(sessionId, subreddit, step) {
   );
 }
 
+async function insertSubscriptionEvent(userId, event, variant, priceCents) {
+  await query(
+    'INSERT INTO subscription_events(user_id, event, variant, price_cents) VALUES($1,$2,$3,$4)',
+    [userId, event, variant, priceCents]
+  );
+}
+
+async function getSubscriptionMetrics() {
+  const active = await query("SELECT COUNT(*) FROM subscriptions WHERE status='active'");
+  const churn = await query(
+    "SELECT COUNT(*) FROM subscription_events WHERE event='cancel' AND created_at >= NOW() - INTERVAL '30 days'"
+  );
+  return {
+    active: parseInt(active.rows[0].count, 10),
+    churn_last_30_days: parseInt(churn.rows[0].count, 10),
+  };
+}
+
+async function insertShareEvent(shareId, network) {
+  await query('INSERT INTO share_events(share_id, network, timestamp) VALUES($1,$2,NOW())', [
+    shareId,
+    network,
+  ]);
+}
+
 async function getConversionMetrics() {
   const clicks = await query('SELECT subreddit, COUNT(*) AS c FROM ad_clicks GROUP BY subreddit');
   const carts = await query('SELECT subreddit, COUNT(*) AS c FROM cart_events GROUP BY subreddit');
@@ -226,6 +251,16 @@ async function verifySocialShare(id, discountCode) {
   return rows[0];
 }
 
+async function getRewardOptions() {
+  const { rows } = await query('SELECT points, amount_cents FROM reward_options ORDER BY points');
+  return rows;
+}
+
+async function getRewardOption(points) {
+  const { rows } = await query('SELECT amount_cents FROM reward_options WHERE points=$1', [points]);
+  return rows[0] || null;
+}
+
 async function getUserCreations(userId, limit = 10, offset = 0) {
   const { rows } = await query(
     `SELECT c.id, c.title, c.category, j.job_id, j.model_url
@@ -271,6 +306,8 @@ module.exports = {
   insertAdClick,
   insertCartEvent,
   insertCheckoutEvent,
+  insertSubscriptionEvent,
+  getSubscriptionMetrics,
   getConversionMetrics,
   cancelSubscription,
   getSubscription,
@@ -283,6 +320,7 @@ module.exports = {
   adjustRewardPoints,
   getUserIdForReferral,
   insertReferralEvent,
+  insertShareEvent,
   upsertMailingListEntry,
   confirmMailingListEntry,
   unsubscribeMailingListEntry,
@@ -291,4 +329,6 @@ module.exports = {
   getUserCreations,
   insertCommunityComment,
   getCommunityComments,
+  getRewardOptions,
+  getRewardOption,
 };

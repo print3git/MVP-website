@@ -10,6 +10,8 @@ jest.mock('../db', () => ({
   getOrCreateReferralLink: jest.fn(),
   getRewardPoints: jest.fn(),
   adjustRewardPoints: jest.fn(),
+  getRewardOption: jest.fn(),
+  getRewardOptions: jest.fn(),
   getUserIdForReferral: jest.fn(),
   insertReferralEvent: jest.fn(),
   insertSubscriptionEvent: jest.fn(),
@@ -48,6 +50,7 @@ test('GET /api/rewards returns points', async () => {
 
 test('POST /api/rewards/redeem returns code', async () => {
   db.getRewardPoints.mockResolvedValue(150);
+  db.getRewardOption.mockResolvedValue({ amount_cents: 500 });
   const token = jwt.sign({ id: 'u1' }, 'secret');
   const res = await request(app)
     .post('/api/rewards/redeem')
@@ -56,6 +59,7 @@ test('POST /api/rewards/redeem returns code', async () => {
   expect(res.status).toBe(200);
   expect(res.body.code).toBe('DISC123');
   expect(db.adjustRewardPoints).toHaveBeenCalledWith('u1', -100);
+  expect(db.getRewardOption).toHaveBeenCalledWith(100);
   expect(createTimedCode).toHaveBeenCalled();
 });
 
@@ -64,6 +68,14 @@ test('POST /api/referral-click records event', async () => {
   const res = await request(app).post('/api/referral-click').send({ code: 'abc' });
   expect(res.status).toBe(200);
   expect(db.insertReferralEvent).toHaveBeenCalledWith('u1', 'click');
+});
+
+test('GET /api/rewards/options returns list', async () => {
+  db.getRewardOptions.mockResolvedValue([{ points: 100, amount_cents: 500 }]);
+  const res = await request(app).get('/api/rewards/options');
+  expect(res.status).toBe(200);
+  expect(res.body.options).toHaveLength(1);
+  expect(db.getRewardOptions).toHaveBeenCalled();
 });
 
 test('POST /api/referral-signup awards points', async () => {
