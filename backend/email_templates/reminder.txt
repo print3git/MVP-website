@@ -1,0 +1,5 @@
+Hi {{username}},
+
+You still have unused Print Club credits this month. Be sure to redeem your prints before they reset!
+
+Thanks for being a member.
