@@ -238,6 +238,23 @@ async function getConversionMetrics() {
   }));
 }
 
+async function getProfitMetrics() {
+  const { rows } = await query(
+    `SELECT o.subreddit,
+            SUM(o.price_cents - o.discount_cents) AS revenue_cents,
+            SUM(pc.cost_cents * o.quantity) AS cost_cents
+       FROM orders o
+       LEFT JOIN pricing_costs pc ON pc.product_type = o.product_type
+      GROUP BY o.subreddit`
+  );
+  return rows.map((r) => ({
+    subreddit: r.subreddit,
+    revenue: parseInt(r.revenue_cents, 10) || 0,
+    cost: parseInt(r.cost_cents, 10) || 0,
+    profit: (parseInt(r.revenue_cents, 10) || 0) - (parseInt(r.cost_cents, 10) || 0),
+  }));
+}
+
 async function upsertMailingListEntry(email, token) {
   await query(
     `INSERT INTO mailing_list(email, token)
@@ -343,6 +360,7 @@ module.exports = {
   insertReferredOrder,
   insertShareEvent,
   insertPageView,
+  getProfitMetrics,
   upsertMailingListEntry,
   confirmMailingListEntry,
   unsubscribeMailingListEntry,
