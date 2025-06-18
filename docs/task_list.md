@@ -242,12 +242,6 @@
 
 ## Distributed Printing Infrastructure
 
-- Create unified tables for orders, printer hubs, printers, jobs, inventory and metrics.
-- Poll each printer via OctoPrint to collect queue length, status and error codes.
-- Store printer telemetry in the central database.
-- Implement heartbeat checks to flag offline printers.
-- Display per-printer status in the admin dashboard.
-
 ## Load Balancer & Routing
 
 - Route new orders to the nearest hub based on customer location.
