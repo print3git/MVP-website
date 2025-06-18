@@ -257,6 +257,7 @@ python scripts/update_locks.py
 ```
 
 This populates `CURRENT_LOCKS.json` with the files modified by all open PRs.
+The file maps each PR number to the list of paths it touches.
 Agents must consult this file and avoid modifying paths locked by other PRs.
 The `update_locks` workflow keeps it up to date every few minutes. Pull requests
 are automatically rebased and merged via the merge queue when CI passes.
