@@ -599,3 +599,10 @@ test('GET /api/payment-init bundles payment data', async () => {
   expect(res.body.profile.display_name).toBe('B');
   expect(res.body.publishableKey).toBeDefined();
 });
+
+test('GET /api/trending returns list', async () => {
+  db.query.mockResolvedValueOnce({ rows: [{ job_id: 'j1', model_url: '/m.glb' }] });
+  const res = await request(app).get('/api/trending');
+  expect(res.status).toBe(200);
+  expect(res.body[0].job_id).toBe('j1');
+});
