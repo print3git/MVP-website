@@ -172,14 +172,7 @@
 
 ## AI Advert Generation
 
-- Maintain JSON template library for ad text patterns.
-- Generate ad copy variants using an LLM with subreddit context.
-- Produce image thumbnails through a diffusion model API.
-- Display proposed ads in an approval dashboard.
-- Allow edits to copy or images before approval.
-- Submit approved ads to Reddit Ads API automatically.
 - Discover related subreddits via Reddit API to suggest new targets.
-- Store approval or rejection events for each generated ad.
 
 ## Fulfillment Capacity Forecasting
 
