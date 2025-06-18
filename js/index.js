@@ -773,7 +773,9 @@ async function init() {
   const clubBadge = document.getElementById('print-club-badge');
   const clubModal = document.getElementById('printclub-modal');
   const clubClose = document.getElementById('printclub-close');
-  clubBadge?.addEventListener('click', () => clubModal?.classList.remove('hidden'));
+  clubBadge?.addEventListener('click', () => {
+    window.location.href = 'printclub.html';
+  });
   clubClose?.addEventListener('click', () => clubModal?.classList.add('hidden'));
   clubModal?.addEventListener('click', (e) => {
     if (e.target === clubModal) clubModal.classList.add('hidden');
