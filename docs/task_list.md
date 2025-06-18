@@ -426,4 +426,3 @@
 - Include a tracking link in shipping confirmation.
 - Offer automatic reprint if a print fails quality checks.
 - Survey customers after delivery for feedback.
-- ✅ Husky pre-commit hooks pass
