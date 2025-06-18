@@ -245,3 +245,18 @@ The print worker posts completed jobs to an external printer API. See
 ## ToDo List
 
 All open tasks are tracked in [docs/task_list.md](docs/task_list.md).
+
+## Automated Agent Coordination
+
+This repository includes scripts and workflows to help Codex agents work together.
+See [AGENT_PROTOCOL.md](AGENT_PROTOCOL.md) for the full protocol. Before making any
+changes, set `GITHUB_TOKEN` and `GITHUB_REPOSITORY` in your environment and run:
+
+```bash
+python scripts/update_locks.py
+```
+
+This populates `CURRENT_LOCKS.json` with the files modified by all open PRs.
+Agents must consult this file and avoid modifying paths locked by other PRs.
+The `update_locks` workflow keeps it up to date every few minutes. Pull requests
+are automatically rebased and merged via the merge queue when CI passes.
