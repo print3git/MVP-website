@@ -42,3 +42,18 @@ test('pauses when CAC far above threshold', async () => {
   expect(axios.post).toHaveBeenCalledWith('http://ads/campaigns/1/pause', null, expect.any(Object));
   expect(db.insertScalingEvent).toHaveBeenCalledWith('fun', 1000, 0, 'pause');
 });
+
+test('decreases budget when CAC slightly above threshold', async () => {
+  axios.get.mockResolvedValueOnce({
+    data: [{ subreddit: 'fun', campaign_id: '1', spend_cents: 700, budget_cents: 1000 }],
+  });
+  db.query.mockResolvedValueOnce({ rows: [{ count: '1' }] });
+  axios.post.mockResolvedValue({});
+  await run();
+  expect(axios.post).toHaveBeenCalledWith(
+    'http://ads/campaigns/1/budget',
+    { budget_cents: 800 },
+    expect.any(Object)
+  );
+  expect(db.insertScalingEvent).toHaveBeenCalledWith('fun', 1000, 800, 'decrease');
+});
