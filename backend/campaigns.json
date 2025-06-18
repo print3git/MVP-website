@@ -1,0 +1,8 @@
+{
+  "theme": "Sci-fi Month",
+  "bundle": {
+    "name": "Holiday Gift Pack",
+    "discount_percent": 15,
+    "expires": "2024-12-31"
+  }
+}

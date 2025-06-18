@@ -18,6 +18,7 @@ const fs = require('fs');
 const config = require('./config');
 const generateTitle = require('./utils/generateTitle');
 const stripe = require('stripe')(config.stripeKey);
+const campaigns = require('./campaigns.json');
 const { initDailyPrintsSold, getDailyPrintsSold } = require('./utils/dailyPrints');
 const { enqueuePrint, processQueue, progressEmitter } = require('./queue/printQueue');
 const { sendMail, sendTemplate } = require('./mail');
@@ -404,8 +405,12 @@ app.get('/api/stats', (req, res) => {
   }
 });
 
+app.get('/api/campaign', (req, res) => {
+  res.json(campaigns);
+});
+
 app.get('/api/init-data', authOptional, async (req, res) => {
-  const result = { slots: computePrintSlots() };
+  const result = { slots: computePrintSlots(), campaign: campaigns };
   try {
     result.stats = { printsSold: getDailyPrintsSold(), averageRating: 4.8 };
     if (req.user) {
@@ -425,6 +430,7 @@ app.get('/api/payment-init', authOptional, async (req, res) => {
   const result = {
     slots: computePrintSlots(),
     publishableKey: config.stripePublishable,
+    campaign: campaigns,
   };
   try {
     const { rows: saleRows } = await db.query(
