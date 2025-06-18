@@ -32,6 +32,7 @@ const {
 } = require('./discountCodes');
 const { verifyTag } = require('./social');
 const QRCode = require('qrcode');
+const generateAdCopy = require('./utils/generateAdCopy');
 
 const syncMailingList = require('./scripts/sync-mailing-list');
 const runScalingEngine = require('./scalingEngine');
@@ -67,6 +68,19 @@ try {
   competitionWinners = JSON.parse(raw);
 } catch (err) {
   logError('Failed to load competition_winners.json', err);
+}
+
+let generatedAds = [];
+const adsPath = path.join(__dirname, 'generated_ads.json');
+try {
+  const raw = fs.readFileSync(adsPath, 'utf8');
+  generatedAds = JSON.parse(raw);
+} catch (err) {
+  logError('Failed to load generated_ads.json', err);
+}
+
+function saveGeneratedAds() {
+  fs.writeFileSync(adsPath, JSON.stringify(generatedAds, null, 2));
 }
 
 const app = express();
@@ -1790,6 +1804,63 @@ app.post('/api/admin/hubs/:id/shipments', adminCheck, async (req, res) => {
     logError(err);
     res.status(500).json({ error: 'Failed to record shipment' });
   }
+});
+
+app.post('/api/admin/ads/generate', adminCheck, async (req, res) => {
+  const { subreddit, context } = req.body || {};
+  if (!subreddit) return res.status(400).json({ error: 'Missing subreddit' });
+  try {
+    const copy = await generateAdCopy(subreddit, context || '');
+    const dalleUrl = process.env.DALLE_API_URL || 'http://localhost:5002/generate';
+    let image = null;
+    try {
+      const { data } = await axios.post(dalleUrl, { prompt: `ad thumbnail for ${subreddit}` });
+      image = data.image;
+    } catch (err) {
+      logError('Failed to generate image', err);
+    }
+    const ad = { id: uuidv4(), subreddit, copy, image, status: 'pending' };
+    generatedAds.push(ad);
+    saveGeneratedAds();
+    res.json(ad);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to generate ad' });
+  }
+});
+
+app.get('/api/admin/ads/pending', adminCheck, (req, res) => {
+  res.json(generatedAds.filter((a) => a.status === 'pending'));
+});
+
+function submitToReddit(ad) {
+  const apiUrl = process.env.REDDIT_ADS_API_URL;
+  const token = process.env.REDDIT_ADS_API_TOKEN;
+  if (!apiUrl || !token) return Promise.resolve();
+  return axios
+    .post(
+      `${apiUrl}/ads`,
+      { subreddit: ad.subreddit, copy: ad.copy, image: ad.image },
+      { headers: { Authorization: `Bearer ${token}` } }
+    )
+    .catch((err) => logError('Failed to submit ad', err));
+}
+
+app.post('/api/admin/ads/:id/approve', adminCheck, async (req, res) => {
+  const ad = generatedAds.find((a) => a.id === req.params.id);
+  if (!ad) return res.status(404).json({ error: 'Not found' });
+  ad.status = 'approved';
+  saveGeneratedAds();
+  await submitToReddit(ad);
+  res.json(ad);
+});
+
+app.post('/api/admin/ads/:id/reject', adminCheck, (req, res) => {
+  const ad = generatedAds.find((a) => a.id === req.params.id);
+  if (!ad) return res.status(404).json({ error: 'Not found' });
+  ad.status = 'rejected';
+  saveGeneratedAds();
+  res.json(ad);
 });
 
 app.get('/api/admin/subscription-metrics', adminCheck, async (req, res) => {
