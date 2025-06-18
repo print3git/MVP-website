@@ -301,8 +301,20 @@ async function initPaymentPage() {
   const discountInput = document.getElementById('discount-code');
   const discountMsg = document.getElementById('discount-msg');
   const applyBtn = document.getElementById('apply-discount');
+  const surpriseToggle = document.getElementById('surprise-toggle');
+  const recipientEmail = document.getElementById('recipient-email');
+  const recipientWrapper = document.getElementById('recipient-email-wrapper');
+  const surpriseMsg = document.getElementById('surprise-msg');
   if (referralId && discountMsg) {
     discountMsg.textContent = 'Referral discount applied';
+  }
+  const basketPreview = window.getBasket ? window.getBasket() : [];
+  if (
+    discountMsg &&
+    basketPreview.length >= 2 &&
+    basketPreview.every((it) => it.jobId && it.jobId === basketPreview[0].jobId)
+  ) {
+    discountMsg.textContent = '2x same model discount applied';
   }
   const materialRadios = document.querySelectorAll('#material-options input[name="material"]');
   const subscriptionRadios = document.querySelectorAll(
@@ -325,6 +337,12 @@ async function initPaymentPage() {
   const storedRadio = document.querySelector(`#material-options input[value="${storedMaterial}"]`);
   if (storedRadio) storedRadio.checked = true;
   updateEtchVisibility(storedMaterial);
+  if (surpriseToggle && recipientWrapper) {
+    recipientWrapper.classList.toggle('hidden', !surpriseToggle.checked);
+    surpriseToggle.addEventListener('change', () => {
+      recipientWrapper.classList.toggle('hidden', !surpriseToggle.checked);
+    });
+  }
   if (storedMaterial === 'single') {
     if (singleButton && storedColor) {
       singleButton.style.backgroundColor = storedColor;
@@ -592,6 +610,10 @@ async function initPaymentPage() {
 
   if (sessionId) {
     successMsg.hidden = false;
+    if (surpriseMsg && sessionStorage.getItem('surpriseGift') === '1') {
+      surpriseMsg.classList.remove('hidden');
+      sessionStorage.removeItem('surpriseGift');
+    }
     const popup = document.getElementById('bulk-discount-popup');
     const closeBtn = document.getElementById('bulk-discount-close');
     if (popup && closeBtn) {
@@ -696,6 +718,9 @@ async function initPaymentPage() {
     const basket = window.getBasket ? window.getBasket() : [];
     const qty = Math.max(1, basket.length || 0);
     let discount = 0;
+    const sameModel =
+      basket.length >= 2 &&
+      basket.every((it) => it.jobId && it.jobId === basket[0].jobId);
     const end = parseInt(localStorage.getItem('flashDiscountEnd'), 10) || 0;
     if (end && end > Date.now()) {
       discount += Math.round(selectedPrice * 0.05);
@@ -707,12 +732,18 @@ async function initPaymentPage() {
     ) {
       discount += Math.round(selectedPrice * (flashSale.discount_percent / 100));
     }
+    if (sameModel) {
+      discount += Math.round(selectedPrice * 0.1);
+      if (discountMsg) discountMsg.textContent = '2x same model discount applied';
+    }
     const shippingInfo = {
       name: document.getElementById('ship-name').value,
       address: document.getElementById('ship-address').value,
       city: document.getElementById('ship-city').value,
       zip: document.getElementById('ship-zip').value,
       email: emailEl.value,
+      surprise: !!surpriseToggle?.checked,
+      recipientEmail: recipientEmail?.value || '',
     };
     let etchName = '';
     if (etchInput && !etchInput.disabled) {
@@ -720,6 +751,11 @@ async function initPaymentPage() {
         .replace(/[^a-z0-9 ]/gi, '')
         .slice(0, 20)
         .trim();
+    }
+    if (surpriseToggle?.checked) {
+      sessionStorage.setItem('surpriseGift', '1');
+    } else {
+      sessionStorage.removeItem('surpriseGift');
     }
     const url = await createCheckout(
       qty,
