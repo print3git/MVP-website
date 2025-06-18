@@ -655,6 +655,23 @@ app.post('/api/subscription/cancel', authRequired, async (req, res) => {
   }
 });
 
+app.post('/api/subscription/portal', authRequired, async (req, res) => {
+  try {
+    const sub = await db.getSubscription(req.user.id);
+    if (!sub || !sub.stripe_customer_id) {
+      return res.status(404).json({ error: 'Subscription not found' });
+    }
+    const session = await stripe.billingPortal.sessions.create({
+      customer: sub.stripe_customer_id,
+      return_url: `${req.headers.origin}/my_profile.html`,
+    });
+    res.json({ url: session.url });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to create portal session' });
+  }
+});
+
 app.get('/api/subscription/credits', authRequired, async (req, res) => {
   try {
     await db.ensureCurrentWeekCredits(req.user.id, 2);
