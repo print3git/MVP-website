@@ -23,6 +23,40 @@ const SEARCH_DELAY = 300;
 
 const STATE_KEY = 'print3CommunityState';
 
+async function fetchComments(id) {
+  try {
+    const res = await fetch(`${API_BASE}/community/${id}/comments`);
+    if (!res.ok) return [];
+    return await res.json();
+  } catch (err) {
+    console.error('Failed to fetch comments', err);
+    return [];
+  }
+}
+
+async function postComment(id, text) {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    alert('Login required');
+    return null;
+  }
+  try {
+    const res = await fetch(`${API_BASE}/community/${id}/comment`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ text }),
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (err) {
+    console.error('Failed to post comment', err);
+    return null;
+  }
+}
+
 function loadState() {
   try {
     const data = localStorage.getItem(STATE_KEY);
@@ -39,6 +73,18 @@ function saveState() {
   } catch (err) {
     console.error('Failed to save community state', err);
   }
+}
+
+async function renderComments(id) {
+  const list = document.getElementById('comments-list');
+  if (!list) return;
+  list.innerHTML = '';
+  const comments = await fetchComments(id);
+  comments.forEach((c) => {
+    const li = document.createElement('li');
+    li.textContent = `${c.username}: ${c.text}`;
+    list.appendChild(li);
+  });
 }
 
 /**
@@ -156,6 +202,8 @@ function createCard(model) {
     const viewer = modal.querySelector('model-viewer');
     const checkoutBtn = document.getElementById('modal-checkout');
     const addBasketBtn = document.getElementById('modal-add-basket');
+    const submitBtn = document.getElementById('comment-submit');
+    const input = document.getElementById('comment-input');
     viewer.setAttribute('poster', model.snapshot || '');
     // Ensure the viewer fetches the model immediately
     viewer.setAttribute('fetchpriority', 'high');
@@ -173,6 +221,11 @@ function createCard(model) {
     const copyBtn = document.getElementById('modal-copy-link');
     if (copyBtn) {
       copyBtn.dataset.id = model.id;
+    }
+    if (submitBtn) {
+      submitBtn.dataset.id = model.id;
+      input.value = '';
+      renderComments(model.id);
     }
     modal.classList.remove('hidden');
     const closeBtn = document.getElementById('close-modal');
@@ -279,6 +332,24 @@ function init() {
   if (popBtn) popBtn.addEventListener('click', () => loadMore('popular'));
   const recentBtn = document.getElementById('recent-load');
   if (recentBtn) recentBtn.addEventListener('click', () => loadMore('recent'));
+  const form = document.getElementById('comment-form');
+  if (form && !localStorage.getItem('token')) {
+    form.classList.add('hidden');
+  }
+  const submitBtn = document.getElementById('comment-submit');
+  if (submitBtn) {
+    submitBtn.addEventListener('click', async () => {
+      const id = submitBtn.dataset.id;
+      const input = document.getElementById('comment-input');
+      const text = input.value.trim();
+      if (!id || !text) return;
+      const res = await postComment(id, text);
+      if (res) {
+        input.value = '';
+        renderComments(id);
+      }
+    });
+  }
   document.getElementById('category').addEventListener('change', () => {
     document.getElementById('recent-grid').innerHTML = '';
     document.getElementById('popular-grid').innerHTML = '';

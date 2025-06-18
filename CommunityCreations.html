@@ -263,6 +263,18 @@
         >
           Copy Link
         </button>
+        <div class="mt-4 bg-[#2A2A2E] p-4 rounded-xl">
+          <ul id="comments-list" class="space-y-1 max-h-48 overflow-y-auto text-sm"></ul>
+          <div id="comment-form" class="flex gap-2 mt-2">
+            <input
+              type="text"
+              id="comment-input"
+              placeholder="Add a comment..."
+              class="flex-1 bg-[#1A1A1D] border border-white/20 rounded px-2 py-1"
+            />
+            <button id="comment-submit" class="px-3 py-1 bg-blue-600 rounded">Post</button>
+          </div>
+        </div>
       </div>
     </div>
     <script type="module">
