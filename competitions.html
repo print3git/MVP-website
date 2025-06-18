@@ -310,6 +310,8 @@
         const addBasketBtn = document.getElementById('modal-add-basket');
         const closeBtn = document.getElementById('close-modal');
         const tierToggle = document.getElementById('tier-toggle');
+        let dragStarted = false;
+        let dragExited = false;
 
         function setTier(tier) {
           tierToggle?.querySelectorAll('button[data-tier]').forEach((btn) => {
@@ -358,6 +360,19 @@
           }
         });
 
+        viewer.addEventListener('pointerdown', () => {
+          dragStarted = true;
+        });
+        document.addEventListener('pointerup', (e) => {
+          if (dragStarted) {
+            const container = modal.querySelector('div');
+            if (!container.contains(e.target)) {
+              dragExited = true;
+            }
+            dragStarted = false;
+          }
+        });
+
         closeBtn.addEventListener('click', close);
 
         document.addEventListener('keydown', (e) => {
@@ -368,6 +383,10 @@
           if (modal.classList.contains('hidden')) return;
           const container = modal.querySelector('div');
           const basketBtn = document.getElementById('basket-button');
+          if (dragExited) {
+            dragExited = false;
+            return;
+          }
           if (!container.contains(e.target) && !(basketBtn && basketBtn.contains(e.target))) {
             close();
           }
