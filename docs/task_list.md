@@ -115,14 +115,7 @@
 
 ## Mailing List Automation
 
-- Add a model for mailing list entries.
-- Call the subscribe endpoint when new accounts are created.
-- Call the subscribe endpoint during guest checkout.
-- Implement GET `/api/unsubscribe` endpoint:
-  - Look up the address by token.
-  - Mark the address as unsubscribed.
-- Schedule the sync script to run daily.
-- Add unit tests for subscribe, confirm, unsubscribe, webhook handling and sync logic.
+- Add unit tests for confirm, webhook handling and sync logic.
 
 ## Competitions Profit Drivers
 
