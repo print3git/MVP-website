@@ -914,6 +914,18 @@ app.post('/api/track/ad-click', async (req, res) => {
   }
 });
 
+app.post('/api/track/page', async (req, res) => {
+  const { sessionId, subreddit, utmSource, utmMedium, utmCampaign } = req.body || {};
+  if (!sessionId) return res.status(400).json({ error: 'Missing params' });
+  try {
+    await db.insertPageView(sessionId, subreddit || null, utmSource, utmMedium, utmCampaign);
+    res.json({ success: true });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to record page view' });
+  }
+});
+
 app.post('/api/track/cart', async (req, res) => {
   const { sessionId, modelId, subreddit } = req.body || {};
   if (!sessionId || !modelId || !subreddit)
@@ -1717,7 +1729,7 @@ app.post('/api/create-order', authOptional, async (req, res) => {
       await db.incrementCreditsUsed(req.user.id, 1);
       const sessionId = uuidv4();
       await db.query(
-        'INSERT INTO orders(session_id, job_id, user_id, price_cents, status, shipping_info, quantity, discount_cents, etch_name) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)',
+        'INSERT INTO orders(session_id, job_id, user_id, price_cents, status, shipping_info, quantity, discount_cents, etch_name, utm_source, utm_medium, utm_campaign, subreddit) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)',
         [
           sessionId,
           jobId,
@@ -1728,6 +1740,10 @@ app.post('/api/create-order', authOptional, async (req, res) => {
           qty || 1,
           0,
           etchName || null,
+          req.body.utmSource || null,
+          req.body.utmMedium || null,
+          req.body.utmCampaign || null,
+          req.body.adSubreddit || null,
         ]
       );
       enqueuePrint(jobId);
@@ -1773,7 +1789,7 @@ app.post('/api/create-order', authOptional, async (req, res) => {
     });
 
     await db.query(
-      'INSERT INTO orders(session_id, job_id, user_id, price_cents, status, shipping_info, quantity, discount_cents, etch_name) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)',
+      'INSERT INTO orders(session_id, job_id, user_id, price_cents, status, shipping_info, quantity, discount_cents, etch_name, utm_source, utm_medium, utm_campaign, subreddit) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)',
       [
         session.id,
         jobId,
@@ -1784,6 +1800,10 @@ app.post('/api/create-order', authOptional, async (req, res) => {
         qty || 1,
         totalDiscount,
         etchName || null,
+        req.body.utmSource || null,
+        req.body.utmMedium || null,
+        req.body.utmCampaign || null,
+        req.body.adSubreddit || null,
       ]
     );
     if (referral && (!req.user || referral !== req.user.id)) {
