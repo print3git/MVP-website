@@ -145,6 +145,7 @@ async function insertReferralEvent(referrerId, type) {
   await query('INSERT INTO referral_events(referrer_id, type) VALUES($1,$2)', [referrerId, type]);
 }
 
+
 async function insertAdClick(subreddit, sessionId) {
   await query('INSERT INTO ad_clicks(subreddit, session_id) VALUES($1,$2)', [subreddit, sessionId]);
 }
@@ -197,6 +198,7 @@ async function getConversionMetrics() {
     atc: r.cart_events ? r.checkout_start / r.cart_events : 0,
     checkout: r.checkout_start ? r.checkout_complete / r.checkout_start : 0,
   }));
+
 }
 
 module.exports = {
@@ -217,8 +219,11 @@ module.exports = {
   adjustRewardPoints,
   getUserIdForReferral,
   insertReferralEvent,
+
   insertAdClick,
   insertCartEvent,
   insertCheckoutEvent,
   getConversionMetrics,
+
+ 
 };
