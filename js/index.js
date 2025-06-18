@@ -144,9 +144,23 @@ const TZ = 'America/New_York';
 const FALLBACK_GLB = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
 const EXAMPLES = ['cute robot figurine', 'ornate chess piece', 'geometric flower vase'];
 const TRENDING = ['dragon statue', 'space rover', 'anime character'];
+const THEME_CAMPAIGNS = [
+  { name: 'Sci-fi Month', tagline: 'Explore out-of-this-world designs!' },
+  { name: 'D&D Drop', tagline: 'Epic minis all month long!' },
+  { name: 'Fantasy February', tagline: 'Dragons and castles galore!' },
+];
 const PRINTS_MIN = 30;
 const PRINTS_MAX = 50;
 const UINT32_MAX = 0xffffffff;
+
+function showThemeBanner() {
+  const banner = document.getElementById('theme-banner');
+  if (!banner) return;
+  const idx = new Date().getMonth() % THEME_CAMPAIGNS.length;
+  const theme = THEME_CAMPAIGNS[idx];
+  banner.textContent = `${theme.name} – ${theme.tagline}`;
+  banner.hidden = false;
+}
 
 async function computeDailyPrintsSold(date = new Date()) {
   const eastern = new Date(date.toLocaleString('en-US', { timeZone: TZ }));
@@ -706,6 +720,7 @@ async function init() {
       }
     }
     await updateStats(initData.stats);
+    showThemeBanner();
   } else {
     updateWizardSlotCount();
     fetchProfile().then(() => {
@@ -715,6 +730,7 @@ async function init() {
       }
     });
     await updateStats();
+    showThemeBanner();
   }
   const sr = new URLSearchParams(window.location.search).get('sr');
   if (!sr) {
