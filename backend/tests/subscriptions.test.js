@@ -16,6 +16,11 @@ jest.mock('../db', () => ({
 }));
 const db = require('../db');
 
+jest.mock('stripe');
+const Stripe = require('stripe');
+const stripeMock = { billingPortal: { sessions: { create: jest.fn() } } };
+Stripe.mockImplementation(() => stripeMock);
+
 const request = require('supertest');
 const app = require('../server');
 const jwt = require('jsonwebtoken');
@@ -54,12 +59,25 @@ test('GET /api/subscription/credits returns remaining', async () => {
   expect(res.body.remaining).toBe(1);
 });
 
-test('GET /api/subscription/summary returns subscription and credits', async () => {
+
+test('POST /api/subscription/portal returns url', async () => {
+  db.getSubscription.mockResolvedValueOnce({ stripe_customer_id: 'cus_1' });
+  stripeMock.billingPortal.sessions.create.mockResolvedValueOnce({ url: 'u' });
   const token = jwt.sign({ id: 'u1' }, 'secret');
   const res = await request(app)
-    .get('/api/subscription/summary')
+    .post('/api/subscription/portal')
     .set('authorization', `Bearer ${token}`);
   expect(res.status).toBe(200);
-  expect(res.body.subscription.status).toBe('active');
-  expect(res.body.credits.remaining).toBe(1);
+  expect(res.body.url).toBe('u');
+  expect(stripeMock.billingPortal.sessions.create).toHaveBeenCalled();
+});
+
+test('POST /api/subscription/portal 404 without customer', async () => {
+  db.getSubscription.mockResolvedValueOnce(null);
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  const res = await request(app)
+    .post('/api/subscription/portal')
+    .set('authorization', `Bearer ${token}`);
+  expect(res.status).toBe(404);
+
 });
