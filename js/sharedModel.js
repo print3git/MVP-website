@@ -18,7 +18,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!res.ok) throw new Error('bad');
     const data = await res.json();
     const viewer = document.getElementById('viewer');
+    if (data.snapshot) {
+      viewer.setAttribute('poster', data.snapshot);
+    }
     viewer.src = data.model_url;
+    const copyBtn = document.getElementById('copy-link');
+    copyBtn?.addEventListener('click', () => {
+      navigator.clipboard.writeText(window.location.href).then(() => alert('Link copied'));
+    });
   } catch (err) {
     document.getElementById('error').textContent = 'Failed to load model';
   }

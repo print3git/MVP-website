@@ -189,6 +189,73 @@ async function getConversionMetrics() {
   }));
 }
 
+async function upsertMailingListEntry(email, token) {
+  await query(
+    `INSERT INTO mailing_list(email, token)
+     VALUES($1,$2)
+     ON CONFLICT (email) DO UPDATE SET token=$2, unsubscribed=FALSE`,
+    [email, token]
+  );
+}
+
+async function confirmMailingListEntry(token) {
+  await query('UPDATE mailing_list SET confirmed=TRUE WHERE token=$1', [token]);
+}
+
+async function unsubscribeMailingListEntry(token) {
+  await query('UPDATE mailing_list SET unsubscribed=TRUE WHERE token=$1', [token]);
+}
+
+async function insertSocialShare(userId, orderId, url) {
+  const { rows } = await query(
+    'INSERT INTO social_shares(user_id, order_id, post_url) VALUES($1,$2,$3) RETURNING id, verified',
+    [userId, orderId, url]
+  );
+  return rows[0];
+}
+
+async function verifySocialShare(id, discountCode) {
+  const { rows } = await query(
+    'UPDATE social_shares SET verified=TRUE, discount_code=$2 WHERE id=$1 RETURNING user_id',
+    [id, discountCode]
+  );
+  return rows[0];
+}
+
+async function getUserCreations(userId, limit = 10, offset = 0) {
+  const { rows } = await query(
+    `SELECT c.id, c.title, c.category, j.job_id, j.model_url
+     FROM community_creations c
+     JOIN jobs j ON c.job_id=j.job_id
+     WHERE c.user_id=$1
+     ORDER BY c.created_at DESC
+     LIMIT $2 OFFSET $3`,
+    [userId, limit, offset]
+  );
+  return rows;
+}
+
+async function insertCommunityComment(modelId, userId, text) {
+  const { rows } = await query(
+    'INSERT INTO community_comments(model_id, user_id, text) VALUES($1,$2,$3) RETURNING id, text, created_at',
+    [modelId, userId, text]
+  );
+  return rows[0];
+}
+
+async function getCommunityComments(modelId, limit = 20) {
+  const { rows } = await query(
+    `SELECT cc.id, cc.text, cc.created_at, u.username
+     FROM community_comments cc
+     JOIN users u ON cc.user_id=u.id
+     WHERE cc.model_id=$1
+     ORDER BY cc.created_at ASC
+     LIMIT $2`,
+    [modelId, limit]
+  );
+  return rows;
+}
+
 module.exports = {
   query,
   insertShare,
@@ -211,4 +278,12 @@ module.exports = {
   adjustRewardPoints,
   getUserIdForReferral,
   insertReferralEvent,
+  upsertMailingListEntry,
+  confirmMailingListEntry,
+  unsubscribeMailingListEntry,
+  insertSocialShare,
+  verifySocialShare,
+  getUserCreations,
+  insertCommunityComment,
+  getCommunityComments,
 };
