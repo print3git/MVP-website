@@ -281,6 +281,31 @@ async function getRewardOption(points) {
   return rows[0] || null;
 }
 
+async function updatePrinterStatus(id, status) {
+  await query('UPDATE printers SET status=$1, last_seen=NOW() WHERE id=$2', [status, id]);
+}
+
+async function getIdlePrinters() {
+  const { rows } = await query(
+    "SELECT id, api_url FROM printers WHERE status='idle' ORDER BY last_seen DESC"
+  );
+  return rows;
+}
+
+async function getNextPendingPrintJob() {
+  const { rows } = await query(
+    "SELECT id, gcode_path FROM print_jobs WHERE status='pending' ORDER BY created_at ASC LIMIT 1"
+  );
+  return rows[0] || null;
+}
+
+async function assignJobToPrinter(jobId, printerId) {
+  await query(
+    "UPDATE print_jobs SET printer_id=$2, status='queued', updated_at=NOW() WHERE id=$1",
+    [jobId, printerId]
+  );
+}
+
 async function getUserCreations(userId, limit = 10, offset = 0) {
   const { rows } = await query(
     `SELECT c.id, c.title, c.category, j.job_id, j.model_url
@@ -353,4 +378,8 @@ module.exports = {
   getCommunityComments,
   getRewardOptions,
   getRewardOption,
+  updatePrinterStatus,
+  getIdlePrinters,
+  getNextPendingPrintJob,
+  assignJobToPrinter,
 };

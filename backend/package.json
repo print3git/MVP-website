@@ -18,6 +18,8 @@
     "cleanup-tokens": "node scripts/cleanup-password-resets.js",
     "measure-load": "node scripts/measure-load.js",
     "generate-referral-qr": "node scripts/generate-referral-qr.js",
+    "poll-printers": "node scripts/poll-printers.js",
+    "assign-print-jobs": "node scripts/assign-print-jobs.js",
     "lint": "eslint . --max-warnings=0"
   },
   "keywords": [],
