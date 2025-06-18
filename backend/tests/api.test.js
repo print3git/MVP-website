@@ -7,6 +7,8 @@ process.env.HUNYUAN_SERVER_URL = 'http://localhost:4000';
 jest.mock('../db', () => ({
   query: jest.fn().mockResolvedValue({ rows: [] }),
   insertCommission: jest.fn().mockResolvedValue({}),
+  ensureCurrentWeekCredits: jest.fn(),
+  getCurrentWeekCredits: jest.fn().mockResolvedValue({ total_credits: 2, used_credits: 1 }),
 }));
 const db = require('../db');
 
@@ -63,6 +65,8 @@ beforeEach(() => {
   enqueuePrint.mockClear();
   getShippingEstimate.mockClear();
   generateCaption.mockClear();
+  db.ensureCurrentWeekCredits.mockClear();
+  db.getCurrentWeekCredits.mockClear();
 });
 
 afterEach(() => {
@@ -609,4 +613,22 @@ test('POST /api/dalle returns image', async () => {
 test('POST /api/dalle requires prompt', async () => {
   const res = await request(app).post('/api/dalle').send({});
   expect(res.status).toBe(400);
+});
+
+test('GET /api/dashboard returns aggregated info', async () => {
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  db.query
+    .mockResolvedValueOnce({ rows: [{ id: 'u1', username: 'alice', email: 'a@e.com' }] })
+    .mockResolvedValueOnce({
+      rows: [
+        { avatar_url: 'a.png', shipping_info: {}, payment_info: {}, competition_notify: true },
+      ],
+    })
+    .mockResolvedValueOnce({ rows: [{ id: 1 }] })
+    .mockResolvedValueOnce({ rows: [{ id: 'c1', commission_cents: 10, status: 'pending' }] });
+  const res = await request(app).get('/api/dashboard').set('authorization', `Bearer ${token}`);
+  expect(res.status).toBe(200);
+  expect(res.body.orders).toHaveLength(1);
+  expect(res.body.commissions.totalPending).toBe(10);
+  expect(res.body.credits.remaining).toBe(1);
 });
