@@ -996,6 +996,23 @@ app.get('/api/community/popular', async (req, res) => {
   }
 });
 
+app.get('/api/trending', async (req, res) => {
+  try {
+    const { rows } = await db.query(
+      `SELECT j.job_id, j.model_url, j.snapshot, COUNT(o.session_id) AS sales
+       FROM jobs j
+       LEFT JOIN orders o ON j.job_id=o.job_id AND o.status='paid'
+       GROUP BY j.job_id, j.model_url, j.snapshot
+       ORDER BY sales DESC
+       LIMIT 6`
+    );
+    res.json(rows);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to fetch trending prints' });
+  }
+});
+
 app.delete('/api/community/:id', authRequired, async (req, res) => {
   const id = req.params.id;
   try {
@@ -1044,7 +1061,7 @@ app.get('/api/competitions/active', async (req, res) => {
 app.get('/api/competitions/past', async (req, res) => {
   try {
     const { rows } = await db.query(
-      `SELECT c.id, c.name, c.end_date, j.model_url
+      `SELECT c.id, c.name, c.end_date, j.model_url, j.snapshot, c.winner_model_id
        FROM competitions c
        LEFT JOIN jobs j ON c.winner_model_id=j.job_id
        WHERE c.end_date < CURRENT_DATE AND c.winner_model_id IS NOT NULL
