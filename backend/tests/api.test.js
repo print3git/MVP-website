@@ -6,14 +6,21 @@ process.env.HUNYUAN_SERVER_URL = 'http://localhost:4000';
 
 jest.mock('../db', () => ({
   query: jest.fn().mockResolvedValue({ rows: [] }),
-  insertCommission: jest.fn().mockResolvedValue({}),  
+  insertCommission: jest.fn().mockResolvedValue({}),
   upsertSubscription: jest.fn(),
   cancelSubscription: jest.fn(),
   getSubscription: jest.fn(),
   ensureCurrentWeekCredits: jest.fn(),
   getCurrentWeekCredits: jest.fn(),
   incrementCreditsUsed: jest.fn(),
-
+  upsertMailingListEntry: jest.fn(),
+  confirmMailingListEntry: jest.fn(),
+  unsubscribeMailingListEntry: jest.fn(),
+  getUserCreations: jest.fn(),
+  insertCommunityComment: jest.fn(),
+  getCommunityComments: jest.fn(),
+  insertSocialShare: jest.fn(),
+  verifySocialShare: jest.fn(),
 }));
 const db = require('../db');
 
@@ -685,6 +692,7 @@ test('GET /api/dashboard returns aggregated info', async () => {
     })
     .mockResolvedValueOnce({ rows: [{ id: 1 }] })
     .mockResolvedValueOnce({ rows: [{ id: 'c1', commission_cents: 10, status: 'pending' }] });
+  db.getCurrentWeekCredits.mockResolvedValueOnce({ total_credits: 2, used_credits: 1 });
   const res = await request(app).get('/api/dashboard').set('authorization', `Bearer ${token}`);
   expect(res.status).toBe(200);
   expect(res.body.orders).toHaveLength(1);
