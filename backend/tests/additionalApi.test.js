@@ -348,29 +348,29 @@ test('GET /api/competitions/past ordering', async () => {
 });
 
 test('GET /api/competitions/:id/entries', async () => {
-  db.query.mockResolvedValueOnce({ rows: [{ model_id: 'm1', likes: 3 }] });
+  db.query.mockResolvedValueOnce({ rows: [{ model_id: 'm1', votes: 3 }] });
   const res = await request(app).get('/api/competitions/5/entries');
   expect(res.status).toBe(200);
-  expect(res.body[0].likes).toBe(3);
+  expect(res.body[0].votes).toBe(3);
 });
 
 test('GET /api/competitions/:id/entries order', async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
   await request(app).get('/api/competitions/5/entries');
-  expect(db.query).toHaveBeenCalledWith(expect.stringContaining('ORDER BY likes DESC'), ['5']);
+  expect(db.query).toHaveBeenCalledWith(expect.stringContaining('ORDER BY votes DESC'), ['5']);
 });
 
 test('GET /api/competitions/:id/entries leaderboard order', async () => {
   db.query.mockResolvedValueOnce({
     rows: [
-      { model_id: 'm2', likes: 10 },
-      { model_id: 'm1', likes: 5 },
-      { model_id: 'm3', likes: 1 },
+      { model_id: 'm2', votes: 10 },
+      { model_id: 'm1', votes: 5 },
+      { model_id: 'm3', votes: 1 },
     ],
   });
   const res = await request(app).get('/api/competitions/5/entries');
   expect(res.status).toBe(200);
-  expect(res.body.map((e) => e.likes)).toEqual([10, 5, 1]);
+  expect(res.body.map((e) => e.votes)).toEqual([10, 5, 1]);
 });
 
 test('GET /api/competitions/:id/comments', async () => {
@@ -479,6 +479,31 @@ test('POST /api/competitions/:id/discount requires entry', async () => {
   expect(res.status).toBe(400);
 });
 
+test('POST /api/competitions/:id/vote stores vote', async () => {
+  db.query.mockResolvedValueOnce({}).mockResolvedValueOnce({ rows: [{ count: '1' }] });
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  const res = await request(app)
+    .post('/api/competitions/5/vote')
+    .set('authorization', `Bearer ${token}`)
+    .send({ modelId: 'm1' });
+  expect(res.status).toBe(200);
+  expect(res.body.votes).toBe(1);
+});
+
+test('POST /api/competitions/:id/vote requires modelId', async () => {
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  const res = await request(app)
+    .post('/api/competitions/5/vote')
+    .set('authorization', `Bearer ${token}`)
+    .send({});
+  expect(res.status).toBe(400);
+});
+
+test('POST /api/competitions/:id/vote requires auth', async () => {
+  const res = await request(app).post('/api/competitions/5/vote').send({ modelId: 'm1' });
+  expect(res.status).toBe(401);
+});
+
 test('DELETE /api/admin/competitions/:id', async () => {
   db.query.mockResolvedValueOnce({});
   const res = await request(app).delete('/api/admin/competitions/5').set('x-admin-token', 'admin');
@@ -552,6 +577,16 @@ test('checkCompetitionStart sends voting emails', async () => {
   expect(call[1][0]).toBe('c1');
 });
 
+test('POST /api/competitions/notify sends emails', async () => {
+  db.query.mockResolvedValueOnce({ rows: [{ email: 'a@a.com' }, { email: 'b@b.com' }] });
+  const res = await request(app)
+    .post('/api/competitions/notify')
+    .set('x-admin-token', 'admin')
+    .send({ subject: 'Hi', message: 'Hello' });
+  expect(res.status).toBe(204);
+  expect(sendMail).toHaveBeenCalledWith('a@a.com', 'Hi', 'Hello');
+});
+
 test('GET /api/print-slots returns count', async () => {
   const res = await request(app).get('/api/print-slots');
   expect(res.status).toBe(200);
@@ -596,6 +631,12 @@ test('GET /api/payment-init bundles payment data', async () => {
   expect(res.body.flashSale.id).toBe(1);
   expect(res.body.profile.display_name).toBe('B');
   expect(res.body.publishableKey).toBeDefined();
+});
+
+test('GET /api/campaign returns campaign info', async () => {
+  const res = await request(app).get('/api/campaign');
+  expect(res.status).toBe(200);
+  expect(res.body.theme).toBeDefined();
 });
 
 test('GET /api/trending returns list', async () => {

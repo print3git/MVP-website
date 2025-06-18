@@ -238,6 +238,23 @@ async function getConversionMetrics() {
   }));
 }
 
+async function getProfitMetrics() {
+  const { rows } = await query(
+    `SELECT o.subreddit,
+            SUM(o.price_cents - o.discount_cents) AS revenue_cents,
+            SUM(pc.cost_cents * o.quantity) AS cost_cents
+       FROM orders o
+       LEFT JOIN pricing_costs pc ON pc.product_type = o.product_type
+      GROUP BY o.subreddit`
+  );
+  return rows.map((r) => ({
+    subreddit: r.subreddit,
+    revenue: parseInt(r.revenue_cents, 10) || 0,
+    cost: parseInt(r.cost_cents, 10) || 0,
+    profit: (parseInt(r.revenue_cents, 10) || 0) - (parseInt(r.cost_cents, 10) || 0),
+  }));
+}
+
 async function upsertMailingListEntry(email, token) {
   await query(
     `INSERT INTO mailing_list(email, token)
@@ -279,6 +296,21 @@ async function getRewardOptions() {
 async function getRewardOption(points) {
   const { rows } = await query('SELECT amount_cents FROM reward_options WHERE points=$1', [points]);
   return rows[0] || null;
+}
+
+async function insertScalingEvent(subreddit, oldBudget, newBudget, reason) {
+  await query(
+    'INSERT INTO scaling_events(subreddit, old_budget_cents, new_budget_cents, reason) VALUES($1,$2,$3,$4)',
+    [subreddit, oldBudget, newBudget, reason]
+  );
+}
+
+async function getScalingEvents(limit = 50) {
+  const { rows } = await query(
+    'SELECT subreddit, old_budget_cents, new_budget_cents, reason, created_at FROM scaling_events ORDER BY created_at DESC LIMIT $1',
+    [limit]
+  );
+  return rows;
 }
 
 async function getUserCreations(userId, limit = 10, offset = 0) {
@@ -377,6 +409,7 @@ module.exports = {
   insertReferredOrder,
   insertShareEvent,
   insertPageView,
+  getProfitMetrics,
   upsertMailingListEntry,
   confirmMailingListEntry,
   unsubscribeMailingListEntry,

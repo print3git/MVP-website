@@ -113,7 +113,9 @@ test('GET /api/status returns job', async () => {
 test('Stripe create-order flow', async () => {
   db.query.mockResolvedValueOnce({ rows: [{ job_id: '1', user_id: 'u1' }] });
   db.query.mockResolvedValueOnce({});
-  const res = await request(app).post('/api/create-order').send({ jobId: '1', price: 100 });
+  const res = await request(app)
+    .post('/api/create-order')
+    .send({ jobId: '1', price: 100, productType: 'single' });
   expect(res.status).toBe(200);
   expect(res.body.checkoutUrl).toBe('https://stripe.test');
 });
@@ -123,7 +125,7 @@ test('create-order applies discount', async () => {
   db.query.mockResolvedValueOnce({});
   const res = await request(app)
     .post('/api/create-order')
-    .send({ jobId: '1', price: 100, qty: 2, discount: 20 });
+    .send({ jobId: '1', price: 100, qty: 2, discount: 20, productType: 'single' });
   expect(res.status).toBe(200);
   expect(stripeMock.checkout.sessions.create).toHaveBeenCalledWith(
     expect.objectContaining({
@@ -142,7 +144,9 @@ test('create-order applies discount', async () => {
 test('create-order quantity discount', async () => {
   db.query.mockResolvedValueOnce({ rows: [{ job_id: '1', user_id: 'u1' }] });
   db.query.mockResolvedValueOnce({});
-  const res = await request(app).post('/api/create-order').send({ jobId: '1', price: 100, qty: 2 });
+  const res = await request(app)
+    .post('/api/create-order')
+    .send({ jobId: '1', price: 100, qty: 2, productType: 'single' });
   expect(res.status).toBe(200);
   const createCall = stripeMock.checkout.sessions.create.mock.calls.pop()[0];
   expect(createCall.line_items[0].price_data.unit_amount).toBe(190);
@@ -161,7 +165,7 @@ test('create-order applies first-order discount', async () => {
   await request(app)
     .post('/api/create-order')
     .set('authorization', `Bearer ${token}`)
-    .send({ jobId: '1', price: 100, qty: 1 });
+    .send({ jobId: '1', price: 100, qty: 1, productType: 'single' });
   const createCall = stripeMock.checkout.sessions.create.mock.calls.pop()[0];
   expect(createCall.line_items[0].price_data.unit_amount).toBe(90);
   const orderInsert = db.query.mock.calls.find((c) => c[0].includes('INSERT INTO orders'));
@@ -181,7 +185,7 @@ test('create-order grants free print after three referrals', async () => {
 
   const res = await request(app)
     .post('/api/create-order')
-    .send({ jobId: '1', price: 100, referral: 'u2' });
+    .send({ jobId: '1', price: 100, referral: 'u2', productType: 'single' });
 
   expect(res.status).toBe(200);
   const incentiveCalls = db.query.mock.calls.filter((c) => c[0].includes('INSERT INTO incentives'));
@@ -570,7 +574,7 @@ test('POST /api/create-order saves user id', async () => {
   await request(app)
     .post('/api/create-order')
     .set('authorization', `Bearer ${token}`)
-    .send({ jobId: '1', price: 100 });
+    .send({ jobId: '1', price: 100, productType: 'single' });
   const call = db.query.mock.calls.find((c) => c[0].includes('INSERT INTO orders'));
   expect(call[1][2]).toBe('u1');
 });
@@ -579,7 +583,9 @@ test('POST /api/create-order saves etch name', async () => {
   db.query
     .mockResolvedValueOnce({ rows: [{ job_id: '1', user_id: 'u1' }] })
     .mockResolvedValueOnce({});
-  await request(app).post('/api/create-order').send({ jobId: '1', price: 100, etchName: 'Bob' });
+  await request(app)
+    .post('/api/create-order')
+    .send({ jobId: '1', price: 100, etchName: 'Bob', productType: 'single' });
   const call = db.query.mock.calls.find((c) => c[0].includes('INSERT INTO orders'));
   expect(call[1][8]).toBe('Bob');
 });
@@ -588,21 +594,20 @@ test('POST /api/create-order saves UTM params', async () => {
   db.query
     .mockResolvedValueOnce({ rows: [{ job_id: '1', user_id: null }] })
     .mockResolvedValueOnce({});
-  await request(app)
-    .post('/api/create-order')
-    .send({
-      jobId: '1',
-      price: 100,
-      utmSource: 'g',
-      utmMedium: 'cpc',
-      utmCampaign: 'summer',
-      adSubreddit: 'funny',
-    });
+  await request(app).post('/api/create-order').send({
+    jobId: '1',
+    price: 100,
+    productType: 'single',
+    utmSource: 'g',
+    utmMedium: 'cpc',
+    utmCampaign: 'summer',
+    adSubreddit: 'funny',
+  });
   const call = db.query.mock.calls.find((c) => c[0].includes('INSERT INTO orders'));
-  expect(call[1][9]).toBe('g');
-  expect(call[1][10]).toBe('cpc');
-  expect(call[1][11]).toBe('summer');
-  expect(call[1][12]).toBe('funny');
+  expect(call[1][10]).toBe('g');
+  expect(call[1][11]).toBe('cpc');
+  expect(call[1][12]).toBe('summer');
+  expect(call[1][13]).toBe('funny');
 });
 
 test('create-order inserts commission for marketplace sale', async () => {
@@ -615,7 +620,7 @@ test('create-order inserts commission for marketplace sale', async () => {
   await request(app)
     .post('/api/create-order')
     .set('authorization', `Bearer ${token}`)
-    .send({ jobId: '1', price: 100 });
+    .send({ jobId: '1', price: 100, productType: 'single' });
   expect(db.insertCommission).toHaveBeenCalledWith('cs_test', '1', 'seller', 'buyer', 10);
 });
 
@@ -629,7 +634,7 @@ test('create-order using credit deducts balance', async () => {
   const res = await request(app)
     .post('/api/create-order')
     .set('authorization', `Bearer ${token}`)
-    .send({ jobId: '1', useCredit: true, qty: 2 });
+    .send({ jobId: '1', useCredit: true, qty: 2, productType: 'single' });
   expect(res.status).toBe(200);
   expect(res.body.success).toBe(true);
   expect(db.incrementCreditsUsed).toHaveBeenCalledWith('u1', 1);
@@ -643,7 +648,7 @@ test('create-order using credit rejects odd quantity', async () => {
   const res = await request(app)
     .post('/api/create-order')
     .set('authorization', `Bearer ${token}`)
-    .send({ jobId: '1', useCredit: true, qty: 1 });
+    .send({ jobId: '1', useCredit: true, qty: 1, productType: 'single' });
   expect(res.status).toBe(400);
 });
 

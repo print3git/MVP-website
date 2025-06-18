@@ -24,6 +24,15 @@ const TZ = 'America/New_York';
 let flashTimerId = null;
 let flashSale = null;
 const NEXT_PROMPTS = ['cute robot figurine', 'ornate chess piece', 'geometric flower vase'];
+const SEASONAL_BUNDLES = [
+  {
+    name: 'Winter Wonderland Bundle',
+    detail: 'Free snowman stand with gift prints',
+  },
+  { name: 'Spring Bloom Bundle', detail: 'Includes floral gift wrap' },
+  { name: 'Summer Fun Bundle', detail: 'Beach-themed gift card included' },
+  { name: 'Autumn Harvest Bundle', detail: 'Leaf pattern gift wrap' },
+];
 
 function getUserIdFromToken() {
   const token = localStorage.getItem('token');
@@ -230,6 +239,20 @@ async function loadCheckoutCredits() {
   } catch {}
 }
 
+async function fetchCampaignBundle() {
+  try {
+    const res = await fetch(`${API_BASE}/campaign`);
+    if (!res.ok) return;
+    const data = await res.json();
+    const banner = document.getElementById('bundle-banner');
+    if (banner && data.bundle && !banner.dataset.set) {
+      banner.textContent = `${data.bundle.name} - ${data.bundle.discount_percent}% off`;
+      banner.classList.remove('hidden');
+      banner.dataset.set = '1';
+    }
+  } catch {}
+}
+
 async function createCheckout(
   quantity,
   discount,
@@ -253,6 +276,7 @@ async function createCheckout(
       referral,
       etchName,
       useCredit,
+      productType: selectedMaterialValue(),
       utmSource: localStorage.getItem('utm_source') || undefined,
       utmMedium: localStorage.getItem('utm_medium') || undefined,
       utmCampaign: localStorage.getItem('utm_campaign') || undefined,
@@ -346,12 +370,20 @@ async function initPaymentPage() {
   const bulkSlotEl = document.getElementById('bulk-slot-count');
   const discountInput = document.getElementById('discount-code');
   const discountMsg = document.getElementById('discount-msg');
+  const seasonalBundleEl = document.getElementById('seasonal-bundle');
   const applyBtn = document.getElementById('apply-discount');
   const surpriseToggle = document.getElementById('surprise-toggle');
   const recipientFields = document.getElementById('recipient-fields');
+  fetchCampaignBundle();
   loadCheckoutCredits();
   if (referralId && discountMsg) {
     discountMsg.textContent = 'Referral discount applied';
+  }
+  if (seasonalBundleEl) {
+    const idx = new Date().getMonth() % SEASONAL_BUNDLES.length;
+    const bundle = SEASONAL_BUNDLES[idx];
+    seasonalBundleEl.textContent = `${bundle.name}: ${bundle.detail}`;
+    seasonalBundleEl.hidden = false;
   }
   const materialRadios = document.querySelectorAll('#material-options input[name="material"]');
   const subscriptionRadios = document.querySelectorAll(

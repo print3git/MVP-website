@@ -1,5 +1,5 @@
 process.env.DB_URL = 'postgres://user:pass@localhost/db';
-process.env.PRINTER_API_URL = 'http://printer';
+process.env.PRINTER_URLS = 'http://printer';
 
 jest.useFakeTimers();
 
@@ -11,12 +11,17 @@ Client.mockImplementation(() => mClient);
 jest.mock('axios');
 const axios = require('axios');
 
+jest.mock('../../printers/octoprint', () => ({
+  getPrinterStatus: jest.fn().mockResolvedValue('idle'),
+}));
+
 const { run } = require('../../queue/printWorker');
 
 beforeEach(() => {
   mClient.connect.mockReset();
   mClient.query.mockReset();
   axios.post.mockReset();
+  require('../../printers/octoprint').getPrinterStatus.mockResolvedValue('idle');
 });
 
 test('worker posts etch name to printer API', async () => {
