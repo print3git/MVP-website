@@ -4,7 +4,6 @@ const closeBtn = document.getElementById('printclub-close');
 const bannerLink = document.getElementById('printclub-banner-link');
 const API_BASE = (window.API_ORIGIN || '') + '/api';
 
-badge?.addEventListener('click', () => modal?.classList.remove('hidden'));
 bannerLink?.addEventListener('click', (e) => {
   e.preventDefault();
   modal?.classList.remove('hidden');
