@@ -19,6 +19,13 @@ const TZ = 'America/New_York';
 let flashTimerId = null;
 let flashSale = null;
 const NEXT_PROMPTS = ['cute robot figurine', 'ornate chess piece', 'geometric flower vase'];
+const SEASONAL_BUNDLES = [
+  { name: "Spring Gift Pack", start: "2025-03-01", end: "2025-05-01" },
+  { name: "Summer Fun Bundle", start: "2025-05-01", end: "2025-08-01" },
+  { name: "Autumn Adventure Bundle", start: "2025-08-01", end: "2025-10-01" },
+  { name: "Holiday Bundle", start: "2025-11-15", end: "2026-01-05" },
+];
+
 
 function getUserIdFromToken() {
   const token = localStorage.getItem('token');
@@ -279,6 +286,15 @@ function startFlashDiscount() {
 
   if (flashTimerId) {
     return;
+  }
+  const bundleBanner = document.getElementById("bundle-banner");
+  if (bundleBanner) {
+    const now = Date.now();
+    const active = SEASONAL_BUNDLES.find((b) => new Date(b.start).getTime() <= now && now < new Date(b.end).getTime());
+    if (active) {
+      bundleBanner.textContent = `Limited-time: ${active.name}`;
+      bundleBanner.hidden = false;
+    }
   }
   const update = () => {
     const diff = end - Date.now();

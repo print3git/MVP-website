@@ -75,6 +75,10 @@ const TZ = 'America/New_York';
 const FALLBACK_GLB = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
 const EXAMPLES = ['cute robot figurine', 'ornate chess piece', 'geometric flower vase'];
 const TRENDING = ['dragon statue', 'space rover', 'anime character'];
+const THEME_CAMPAIGNS = [
+  { name: "Sci-fi Month", start: "2025-06-01", end: "2025-06-30" },
+  { name: "D&D Drop", start: "2025-07-01", end: "2025-07-31" },
+];
 const PRINTS_MIN = 30;
 const PRINTS_MAX = 50;
 const UINT32_MAX = 0xffffffff;
@@ -112,6 +116,7 @@ const refs = {
   addBasketBtn: $('add-basket-button'),
   stepPrompt: $('step-prompt'),
   stepModel: $('step-model'),
+    themeBanner: $("theme-banner"),
   stepBuy: $('step-buy'),
 };
 
@@ -700,6 +705,14 @@ async function init() {
 
   if (refs.trending) {
     refs.trending.textContent = `Trending: ${TRENDING.join(' · ')}`;
+  }
+  if (refs.themeBanner) {
+    const now = Date.now();
+    const active = THEME_CAMPAIGNS.find((t) => new Date(t.start).getTime() <= now && now < new Date(t.end).getTime());
+    if (active) {
+      refs.themeBanner.textContent = `${active.name} is live!`;
+      refs.themeBanner.hidden = false;
+    }
   }
   if (refs.promptTip && !localStorage.getItem('promptTipDismissed')) {
     refs.promptInput.addEventListener(
