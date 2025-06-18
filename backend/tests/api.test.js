@@ -7,6 +7,12 @@ process.env.HUNYUAN_SERVER_URL = 'http://localhost:4000';
 jest.mock('../db', () => ({
   query: jest.fn().mockResolvedValue({ rows: [] }),
   insertCommission: jest.fn().mockResolvedValue({}),
+  upsertSubscription: jest.fn(),
+  cancelSubscription: jest.fn(),
+  getSubscription: jest.fn(),
+  ensureCurrentWeekCredits: jest.fn(),
+  getCurrentWeekCredits: jest.fn(),
+  incrementCreditsUsed: jest.fn(),
 }));
 const db = require('../db');
 
@@ -527,6 +533,22 @@ test('create-order inserts commission for marketplace sale', async () => {
     .set('authorization', `Bearer ${token}`)
     .send({ jobId: '1', price: 100 });
   expect(db.insertCommission).toHaveBeenCalledWith('cs_test', '1', 'seller', 'buyer', 10);
+});
+
+test('create-order using credit deducts balance', async () => {
+  db.query
+    .mockResolvedValueOnce({ rows: [{ job_id: '1', user_id: 'u1' }] })
+    .mockResolvedValueOnce({});
+  db.getSubscription.mockResolvedValueOnce({ id: 's1', status: 'active' });
+  db.getCurrentWeekCredits.mockResolvedValueOnce({ total_credits: 2, used_credits: 1 });
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  const res = await request(app)
+    .post('/api/create-order')
+    .set('authorization', `Bearer ${token}`)
+    .send({ jobId: '1', useCredit: true });
+  expect(res.status).toBe(200);
+  expect(res.body.success).toBe(true);
+  expect(db.incrementCreditsUsed).toHaveBeenCalledWith('u1', 1);
 });
 
 test('GET /api/my/orders returns orders', async () => {

@@ -1358,7 +1358,8 @@ app.delete('/api/admin/flash-sale/:id', adminCheck, async (req, res) => {
  * Create a Stripe Checkout session
  */
 app.post('/api/create-order', authOptional, async (req, res) => {
-  const { jobId, price, shippingInfo, qty, discount, discountCode, referral, etchName } = req.body;
+  const { jobId, price, shippingInfo, qty, discount, discountCode, referral, etchName, useCredit } =
+    req.body;
   try {
     const job = await db.query('SELECT job_id, user_id FROM jobs WHERE job_id=$1', [jobId]);
     if (job.rows.length === 0) {
@@ -1408,6 +1409,40 @@ app.post('/api/create-order', authOptional, async (req, res) => {
       } catch (err) {
         logError(err);
       }
+    }
+
+    if (useCredit) {
+      if (!req.user) {
+        return res.status(401).json({ error: 'Unauthorized' });
+      }
+      const sub = await db.getSubscription(req.user.id);
+      if (!sub || sub.status !== 'active') {
+        return res.status(400).json({ error: 'No active subscription' });
+      }
+      await db.ensureCurrentWeekCredits(req.user.id, 2);
+      const credits = await db.getCurrentWeekCredits(req.user.id);
+      if (credits.total_credits - credits.used_credits <= 0) {
+        return res.status(400).json({ error: 'No credits remaining' });
+      }
+      await db.incrementCreditsUsed(req.user.id, 1);
+      const sessionId = uuidv4();
+      await db.query(
+        'INSERT INTO orders(session_id, job_id, user_id, price_cents, status, shipping_info, quantity, discount_cents, etch_name) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)',
+        [
+          sessionId,
+          jobId,
+          req.user.id,
+          0,
+          'paid',
+          shippingInfo || {},
+          qty || 1,
+          0,
+          etchName || null,
+        ]
+      );
+      enqueuePrint(jobId);
+      processQueue();
+      return res.json({ success: true });
     }
 
     if (req.user) {
