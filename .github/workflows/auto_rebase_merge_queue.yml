@@ -40,8 +40,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Queue for merge
-        uses: peter-evans/merge-queue@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          merge-method: squash
-          delete-branch: true
+        uses: autifyhq/merge-queue-action@v0.1.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
