@@ -69,6 +69,63 @@ async function loadProfileDetails() {
   }
 }
 
+async function loadDashboard() {
+  const token = localStorage.getItem('token');
+  if (!token) return;
+  try {
+    const res = await fetch(`${API_BASE}/dashboard`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) return;
+    const data = await res.json();
+    if (data.profile) {
+      document.getElementById('shipping-input').value = data.profile.shipping_info?.address || '';
+      document.getElementById('payment-input').value = data.profile.payment_info?.details || '';
+      document.getElementById('competition-toggle').checked = data.profile.competition_notify !== false;
+      if (data.profile.avatar_url) {
+        document.getElementById('avatar-preview').src = data.profile.avatar_url;
+      }
+    }
+    if (data.orders) {
+      const body = document.getElementById('orders-body');
+      body.innerHTML = '';
+      data.orders.forEach((o) => {
+        const tr = document.createElement('tr');
+        const date = o.created_at ? new Date(o.created_at).toLocaleDateString() : '';
+        const total = ((o.price_cents - (o.discount_cents || 0)) / 100).toFixed(2);
+        tr.innerHTML = `<td class="px-2 py-1">${date}</td><td class="px-2 py-1">${o.quantity}</td><td class="px-2 py-1">$${total}</td><td class="px-2 py-1">${o.status}</td>`;
+        body.appendChild(tr);
+      });
+    }
+    if (data.commissions) {
+      const body = document.getElementById('commission-body');
+      body.innerHTML = '';
+      data.commissions.commissions.forEach((c) => {
+        const tr = document.createElement('tr');
+        const amount = (c.commission_cents / 100).toFixed(2);
+        const date = c.created_at ? new Date(c.created_at).toLocaleDateString() : '';
+        tr.innerHTML = `<td class="px-2 py-1">$${amount}</td><td class="px-2 py-1 capitalize">${c.status}</td><td class="px-2 py-1">${date}</td>`;
+        body.appendChild(tr);
+      });
+      document.getElementById('total-pending').textContent = (data.commissions.totalPending / 100).toFixed(2);
+      document.getElementById('total-paid').textContent = (data.commissions.totalPaid / 100).toFixed(2);
+    }
+    if (data.credits) {
+      const used = data.credits.total - data.credits.remaining;
+      const bar = document.getElementById('progress-bar');
+      const text = document.getElementById('progress-text');
+      const percent = data.credits.total ? Math.min(100, (used / data.credits.total) * 100) : 0;
+      if (bar) bar.style.width = `${percent}%`;
+      if (text) text.textContent = `${used} of ${data.credits.total} prints used`;
+      if (data.credits.remaining === 0) {
+        document.getElementById('upgrade-cta')?.classList.remove('hidden');
+      }
+    }
+  } catch (err) {
+    console.error('Failed to load dashboard', err);
+  }
+}
+
 async function uploadAvatar(e) {
   e.preventDefault();
   const token = localStorage.getItem('token');
@@ -240,10 +297,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('avatar-upload')?.addEventListener('click', uploadAvatar);
   document.getElementById('profile-form')?.addEventListener('submit', saveProfile);
   document.getElementById('delete-account')?.addEventListener('click', deleteAccount);
-  loadCommissions();
   createObserver();
   loadMore();
-  loadCredits();
-  loadProfileDetails();
-  loadOrders();
+  loadDashboard();
 });
