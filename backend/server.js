@@ -693,19 +693,52 @@ app.get('/api/subscription/credits', authRequired, async (req, res) => {
   }
 });
 
-app.get('/api/subscription/summary', authRequired, async (req, res) => {
+
+app.get('/api/dashboard', authRequired, async (req, res) => {
   try {
-    const subscription = (await db.getSubscription(req.user.id)) || { active: false };
     await db.ensureCurrentWeekCredits(req.user.id, 2);
-    const creditsRow = await db.getCurrentWeekCredits(req.user.id);
-    const credits = {
-      remaining: creditsRow.total_credits - creditsRow.used_credits,
-      total: creditsRow.total_credits,
-    };
-    res.json({ subscription, credits });
+    const [user, profileRows, ordersRows, commissionsRows, credits] = await Promise.all([
+      db.query('SELECT id, username, email FROM users WHERE id=$1', [req.user.id]),
+      db.query(
+        'SELECT display_name, avatar_url, shipping_info, payment_info, competition_notify FROM user_profiles WHERE user_id=$1',
+        [req.user.id]
+      ),
+      db.query(
+        `SELECT o.session_id, o.job_id, o.price_cents, o.status, o.quantity, o.discount_cents, o.created_at,
+                j.model_url, j.snapshot, j.prompt
+         FROM orders o
+         JOIN jobs j ON o.job_id=j.job_id
+         WHERE o.user_id=$1
+         ORDER BY o.created_at DESC`,
+        [req.user.id]
+      ),
+      db.query('SELECT * FROM model_commissions WHERE seller_user_id=$1 ORDER BY created_at DESC', [
+        req.user.id,
+      ]),
+      db.getCurrentWeekCredits(req.user.id),
+    ]);
+    const totals = commissionsRows.rows.reduce(
+      (acc, row) => {
+        if (row.status === 'paid') acc.totalPaid += row.commission_cents;
+        else if (row.status === 'pending') acc.totalPending += row.commission_cents;
+        return acc;
+      },
+      { totalPending: 0, totalPaid: 0 }
+    );
+    res.json({
+      profile: profileRows.rows[0] || {},
+      user: user.rows[0],
+      orders: ordersRows.rows,
+      commissions: { commissions: commissionsRows.rows, ...totals },
+      credits: {
+        remaining: credits.total_credits - credits.used_credits,
+        total: credits.total_credits,
+      },
+    });
   } catch (err) {
     logError(err);
-    res.status(500).json({ error: 'Failed to fetch summary' });
+    res.status(500).json({ error: 'Failed to fetch dashboard' });
+
   }
 });
 
