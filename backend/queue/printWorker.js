@@ -28,7 +28,7 @@ async function findIdlePrinter() {
     try {
       const status = await getPrinterStatus(url, OCTOPRINT_API_KEY);
       if (status === 'idle') return url;
-    } catch (err) {
+    } catch (_err) {
       // ignore
     }
   }

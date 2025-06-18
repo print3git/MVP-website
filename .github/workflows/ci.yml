@@ -29,14 +29,7 @@ jobs:
       - name: Install Husky hooks
         run: npm run prepare
 
-      - name: Format with Prettier
-        run: npm run format
-
-      - name: Check for merge-conflict markers
-        run: npm run check-conflicts
-
-      - name: Run ESLint
-        run: npm run lint
-        working-directory: backend
+      - name: Run CI
+        run: npm run ci
 
       # ← you can add additional steps here, like your tests

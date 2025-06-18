@@ -420,6 +420,8 @@ module.exports = {
   getCommunityComments,
   getRewardOptions,
   getRewardOption,
+  insertScalingEvent,
+  getScalingEvents,
   createPrinterHub,
   listPrinterHubs,
   addPrinter,
