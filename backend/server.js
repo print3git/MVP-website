@@ -1000,6 +1000,7 @@ app.get('/api/community/mine', authRequired, async (req, res) => {
   const limit = parseInt(req.query.limit, 10) || 10;
   const offset = parseInt(req.query.offset, 10) || 0;
   try {
+
     const { rows } = await db.query(
       `SELECT c.id, c.title, c.category, j.job_id, j.model_url
        FROM community_creations c
@@ -1009,6 +1010,7 @@ app.get('/api/community/mine', authRequired, async (req, res) => {
        LIMIT $2 OFFSET $3`,
       [req.user.id, limit, offset]
     );
+s = await db.getUserCreations(req.user.id, limit, offset);
     res.json(rows);
   } catch (err) {
     logError(err);
@@ -1051,6 +1053,7 @@ app.get('/api/community/model/:id', async (req, res) => {
 
 app.get('/api/community/:id/comments', async (req, res) => {
   try {
+
     const { rows } = await db.query(
       `SELECT cc.id, cc.text, cc.created_at, u.username
        FROM community_comments cc
@@ -1061,6 +1064,7 @@ app.get('/api/community/:id/comments', async (req, res) => {
       [req.params.id]
     );
     res.json(rows);
+
   } catch (err) {
     logError(err);
     res.status(500).json({ error: 'Failed to fetch comments' });
@@ -1068,6 +1072,7 @@ app.get('/api/community/:id/comments', async (req, res) => {
 });
 
 app.post('/api/community/:id/comment', authRequired, async (req, res) => {
+
   const { text } = req.body;
   if (!text) return res.status(400).json({ error: 'text required' });
   try {
@@ -1078,6 +1083,7 @@ app.post('/api/community/:id/comment', authRequired, async (req, res) => {
       [req.params.id, req.user.id, text]
     );
     res.status(201).json(rows[0]);
+
   } catch (err) {
     logError(err);
     res.status(500).json({ error: 'Failed to post comment' });
