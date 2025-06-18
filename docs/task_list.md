@@ -119,15 +119,9 @@
 
 ## Competitions Profit Drivers
 
-- Show purchase buttons for past winners.
-  - Add a "Buy Print" button below each winning model in `competitions.html`.
-  - Pre-fill `print3Model` and `print3JobId` in local storage when the button is clicked.
 - Offer a discount for printing your competition entry.
   - Generate a one-time code after an entry is submitted.
   - Display the code in the success message.
-- Add "Order Print" button under each past winner card on the competitions page.
-  - When clicked, open the model modal with the winner's model and job ID.
-  - Save the model ID to localStorage when proceeding to checkout.
 - After a user enters a competition, display a one-time discount code for printing their entry.
   - Provide `/api/competitions/:id/discount` endpoint to generate and return the code.
 - Create a "Trending Prints" section at the bottom that fetches models from `/api/trending` and shows Add to Basket buttons.

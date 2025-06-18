@@ -15,7 +15,6 @@ function prefetchModel(url) {
   prefetchedModels.add(url);
 }
 
-
 function openViewer(modelUrl, jobId, snapshot = '') {
   const modal = document.getElementById('model-modal');
   const viewer = modal.querySelector('model-viewer');
@@ -267,13 +266,10 @@ async function submitEntry(e) {
     const msg = document.getElementById('entry-success');
     if (msg) {
       try {
-        const resp = await fetch(
-          `${API_BASE}/competitions/${currentId}/discount`,
-          {
-            method: 'POST',
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        const resp = await fetch(`${API_BASE}/competitions/${currentId}/discount`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` },
+        });
         if (resp.ok) {
           const data = await resp.json();
           msg.textContent = `Discount code: ${data.code}`;
@@ -331,14 +327,14 @@ async function loadPast() {
     div.innerHTML = `<h3 class="text-lg">${c.name}</h3>
       <div class="model-card relative h-32 border border-white/10 rounded-xl flex items-center justify-center cursor-pointer" data-model="${c.model_url}" data-job="${c.winner_model_id}">
         <img src="${c.snapshot || ''}" alt="Winning model" class="w-full h-full object-contain pointer-events-none" />
-        <button class="order absolute bottom-1 left-1 font-bold text-lg py-2 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]">Buy Print</button>
-      </div>`;
+      </div>
+      <button class="order font-bold text-lg py-2 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]">Order Print</button>`;
     container.appendChild(div);
     const card = div.querySelector('.model-card');
     const btn = div.querySelector('.order');
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
-      purchase(c.model_url, c.winner_model_id);
+      openModelModal(c.model_url, c.winner_model_id, c.snapshot || '');
     });
     card.addEventListener('click', () => {
       openModelModal(c.model_url, c.winner_model_id, c.snapshot || '');
@@ -355,14 +351,16 @@ async function loadTrending() {
   const items = await res.json();
   items.forEach((i) => {
     const card = document.createElement('div');
-    card.className = 'relative h-32 bg-[#2A2A2E] border border-white/10 rounded-xl flex items-center justify-center cursor-pointer';
+    card.className =
+      'relative h-32 bg-[#2A2A2E] border border-white/10 rounded-xl flex items-center justify-center cursor-pointer';
     card.dataset.model = i.model_url;
     card.dataset.job = i.job_id;
     if (i.snapshot) {
       card.innerHTML = `<img src="${i.snapshot}" alt="Model" class="w-full h-full object-contain pointer-events-none" />`;
     }
     const btn = document.createElement('button');
-    btn.className = 'add absolute bottom-1 left-1 font-bold text-lg py-2 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]';
+    btn.className =
+      'add absolute bottom-1 left-1 font-bold text-lg py-2 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]';
     btn.textContent = 'Add to Basket';
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -404,7 +402,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   document.querySelectorAll('#winners-grid .model-card').forEach((card) => {
     const likeBtn = card.querySelector('.like');
-    const buyBtn = card.querySelector('.purchase');
+    const buyBtn = card.parentElement.querySelector('.purchase');
     if (likeBtn) {
       likeBtn.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -414,7 +412,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (buyBtn) {
       buyBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        purchase(card.dataset.model, card.dataset.job);
+        const img = card.querySelector('img');
+        openModelModal(card.dataset.model, card.dataset.job, img ? img.src : '');
       });
     }
     card.addEventListener('click', (e) => {
@@ -427,7 +426,6 @@ document.addEventListener('DOMContentLoaded', () => {
     card.addEventListener('click', () =>
       openViewer(card.dataset.model, card.dataset.job, card.querySelector('img')?.src || '')
     );
-
   });
   load();
   loadPast();
