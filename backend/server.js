@@ -28,6 +28,7 @@ const {
   incrementDiscountUsage,
   createTimedCode,
 } = require('./discountCodes');
+const syncMailingList = require('./scripts/sync-mailing-list');
 const REWARD_OPTIONS = { 100: 500, 200: 1000 };
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'admin';
 
@@ -131,6 +132,10 @@ app.post('/api/register', async (req, res) => {
       rows[0].id,
       displayName,
     ]);
+    const mlToken = uuidv4();
+    await db.upsertMailingListEntry(email, mlToken);
+    const confirmUrl = `${req.headers.origin}/api/confirm-subscription?token=${mlToken}`;
+    await sendMail(email, 'Confirm Subscription', `Click to confirm: ${confirmUrl}`);
     const token = jwt.sign({ id: rows[0].id, username, isAdmin: false }, AUTH_SECRET);
     res.json({ token, isAdmin: false });
   } catch (err) {
@@ -1540,11 +1545,7 @@ app.post('/api/subscribe', async (req, res) => {
   if (!email) return res.status(400).json({ error: 'Email required' });
   const token = uuidv4();
   try {
-    await db.query(
-      `INSERT INTO mailing_list(email, token) VALUES($1,$2)
-       ON CONFLICT (email) DO UPDATE SET token=$2, confirmed=FALSE`,
-      [email, token]
-    );
+    await db.upsertMailingListEntry(email, token);
     const url = `${req.headers.origin}/api/confirm-subscription?token=${token}`;
     await sendMail(email, 'Confirm Subscription', `Click to confirm: ${url}`);
     res.sendStatus(204);
@@ -1559,11 +1560,7 @@ app.post('/api/competitions/subscribe', async (req, res) => {
   if (!email) return res.status(400).json({ error: 'Email required' });
   const token = uuidv4();
   try {
-    await db.query(
-      `INSERT INTO mailing_list(email, token) VALUES($1,$2)
-       ON CONFLICT (email) DO UPDATE SET token=$2, confirmed=FALSE, unsubscribed=FALSE`,
-      [email, token]
-    );
+    await db.upsertMailingListEntry(email, token);
     const url = `${req.headers.origin}/api/confirm-subscription?token=${token}`;
     await sendMail(email, 'Confirm Subscription', `Click to confirm: ${url}`);
     res.sendStatus(204);
@@ -1577,11 +1574,23 @@ app.get('/api/confirm-subscription', async (req, res) => {
   const { token } = req.query;
   if (!token) return res.status(400).send('Invalid token');
   try {
-    await db.query('UPDATE mailing_list SET confirmed=TRUE WHERE token=$1', [token]);
+    await db.confirmMailingListEntry(token);
     res.send('Subscription confirmed');
   } catch (err) {
     logError(err);
     res.status(500).send('Failed to confirm');
+  }
+});
+
+app.get('/api/unsubscribe', async (req, res) => {
+  const { token } = req.query;
+  if (!token) return res.status(400).send('Invalid token');
+  try {
+    await db.unsubscribeMailingListEntry(token);
+    res.send('You have been unsubscribed');
+  } catch (err) {
+    logError(err);
+    res.status(500).send('Failed to unsubscribe');
   }
 });
 
@@ -1708,6 +1717,13 @@ if (require.main === module) {
   initDailyPrintsSold();
   checkCompetitionStart();
   setInterval(checkCompetitionStart, 3600000);
+  syncMailingList().catch((err) => logError('Mail sync failed', err));
+  setInterval(
+    () => {
+      syncMailingList().catch((err) => logError('Mail sync failed', err));
+    },
+    24 * 3600 * 1000
+  );
 }
 
 module.exports = app;

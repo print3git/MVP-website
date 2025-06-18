@@ -7,12 +7,16 @@ process.env.HUNYUAN_SERVER_URL = 'http://localhost:4000';
 jest.mock('../db', () => ({
   query: jest.fn().mockResolvedValue({ rows: [] }),
   insertCommission: jest.fn().mockResolvedValue({}),
-  getUserCreations: jest.fn().mockResolvedValue([]),
-  insertCommunityComment: jest.fn().mockResolvedValue({}),
-  getCommunityComments: jest.fn().mockResolvedValue([]),
+
+  upsertMailingListEntry: jest.fn().mockResolvedValue({}),
+  confirmMailingListEntry: jest.fn().mockResolvedValue({}),
+  unsubscribeMailingListEntry: jest.fn().mockResolvedValue({}),
+
 }));
 const db = require('../db');
 
+jest.mock('../mail', () => ({ sendMail: jest.fn() }));
+const { sendMail } = require('../mail');
 jest.mock('axios');
 const axios = require('axios');
 const jwt = require('jsonwebtoken');
@@ -62,6 +66,10 @@ const stream = require('stream');
 beforeEach(() => {
   db.query.mockClear();
   db.insertCommission.mockClear();
+  db.upsertMailingListEntry.mockClear();
+  db.confirmMailingListEntry.mockClear();
+  db.unsubscribeMailingListEntry.mockClear();
+  sendMail.mockClear();
   axios.post.mockClear();
   enqueuePrint.mockClear();
   getShippingEstimate.mockClear();
