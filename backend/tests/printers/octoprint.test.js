@@ -1,5 +1,6 @@
 jest.mock('axios');
 const axios = require('axios');
+
 jest.mock('form-data', () => {
   return jest.fn().mockImplementation(() => ({
     append: jest.fn(),
@@ -10,6 +11,7 @@ jest.mock('fs');
 const fs = require('fs');
 const FormData = require('form-data');
 const { getPrinterStatus, uploadAndPrint } = require('../../printers/octoprint');
+
 
 test('returns printing when state text contains printing', async () => {
   axios.get.mockResolvedValue({ data: { state: { text: 'Printing' } } });
@@ -32,6 +34,7 @@ test('returns error on offline', async () => {
   const status = await getPrinterStatus('http://p');
   expect(status).toBe('error');
 });
+
 
 test('uploads gcode and starts print', async () => {
   fs.createReadStream.mockReturnValue('stream');
