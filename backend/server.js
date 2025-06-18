@@ -1034,7 +1034,12 @@ app.get('/api/competitions/active', async (req, res) => {
     const { rows } = await db.query(
       'SELECT * FROM competitions WHERE end_date >= CURRENT_DATE ORDER BY start_date'
     );
-    res.json(rows);
+    const comps = rows.map((c) => {
+      const deadline = new Date(c.end_date);
+      deadline.setUTCHours(23, 59, 59, 0);
+      return { ...c, deadline: deadline.toISOString() };
+    });
+    res.json(comps);
   } catch (err) {
     logError(err);
     res.status(500).json({ error: 'Failed to fetch competitions' });
@@ -1233,7 +1238,7 @@ app.post('/api/payouts', authRequired, async (req, res) => {
       'SELECT commission_cents FROM model_commissions WHERE seller_user_id=$1 AND status=$2',
       [req.user.id, 'pending']
     );
-    const total = pendingRes.rows.reduce((s, r) => s + r.commission_cents, 0);
+    const total = pendingRes.rows.reduce((sum, r) => sum + r.commission_cents, 0);
     if (total === 0) return res.json({ totalPaid: 0 });
     const transfer = await stripe.transfers.create({
       amount: total,
