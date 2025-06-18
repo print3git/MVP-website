@@ -18,6 +18,7 @@
     "cleanup-tokens": "node scripts/cleanup-password-resets.js",
     "measure-load": "node scripts/measure-load.js",
     "generate-referral-qr": "node scripts/generate-referral-qr.js",
+    "summarize-orders": "node scripts/summarize-orders.js",
     "lint": "eslint . --max-warnings=0"
   },
   "keywords": [],
