@@ -145,6 +145,20 @@ async function insertReferralEvent(referrerId, type) {
   await query('INSERT INTO referral_events(referrer_id, type) VALUES($1,$2)', [referrerId, type]);
 }
 
+async function insertSocialShare(userId, orderId, postUrl) {
+  return query(
+    'INSERT INTO social_shares(user_id, order_id, post_url) VALUES($1,$2,$3) RETURNING *',
+    [userId, orderId, postUrl]
+  ).then((res) => res.rows[0]);
+}
+
+async function verifySocialShare(id, discountCode) {
+  return query(
+    'UPDATE social_shares SET verified=TRUE, discount_code=$2 WHERE id=$1 RETURNING user_id',
+    [id, discountCode]
+  ).then((res) => res.rows[0]);
+}
+
 module.exports = {
   query,
   insertShare,
@@ -163,4 +177,6 @@ module.exports = {
   adjustRewardPoints,
   getUserIdForReferral,
   insertReferralEvent,
+  insertSocialShare,
+  verifySocialShare,
 };

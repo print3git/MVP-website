@@ -708,6 +708,37 @@ app.post('/api/referral-signup', async (req, res) => {
   }
 });
 
+app.post('/api/social-shares', authRequired, async (req, res) => {
+  const { orderId, url } = req.body || {};
+  if (!orderId || !url) {
+    return res.status(400).json({ error: 'orderId and url required' });
+  }
+  try {
+    const row = await db.insertSocialShare(req.user.id, orderId, url);
+    res.status(201).json({ id: row.id, verified: row.verified });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to submit share' });
+  }
+});
+
+app.post('/api/admin/social-shares/:id/verify', adminCheck, async (req, res) => {
+  const { id } = req.params;
+  try {
+    const code = await createTimedCode(500, 168);
+    const row = await db.verifySocialShare(id, code);
+    if (!row) return res.status(404).json({ error: 'Share not found' });
+    await db.query('INSERT INTO incentives(user_id, type) VALUES($1,$2)', [
+      row.user_id,
+      `post_share_${code}`,
+    ]);
+    res.json({ code });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to verify share' });
+  }
+});
+
 app.get('/api/rewards', authRequired, async (req, res) => {
   try {
     const points = await db.getRewardPoints(req.user.id);
