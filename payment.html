@@ -95,6 +95,7 @@
             </button>
           </div>
         </div>
+        <p id="surprise-msg" class="hidden">Your surprise gift is on the way!</p>
         <button id="reorder-color" class="underline">Order another color</button>
       </div>
       <div id="cancel" class="hidden text-red-400 text-center">Payment cancelled.</div>
@@ -323,6 +324,28 @@
                 placeholder="ZIP"
                 autocomplete="postal-code"
                 aria-label="ZIP code"
+              />
+            </div>
+
+            <div class="flex items-center gap-2 my-2">
+              <input type="checkbox" id="surprise-toggle" class="accent-[#30D5C8]" />
+              <label for="surprise-toggle" class="text-sm">This is a surprise</label>
+            </div>
+            <div id="recipient-fields" class="space-y-2 hidden">
+              <input
+                id="recipient-name"
+                class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+                placeholder="Recipient Name"
+                autocomplete="name"
+                aria-label="Recipient Name"
+              />
+              <input
+                id="recipient-email"
+                type="email"
+                class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+                placeholder="Recipient Email (for updates)"
+                autocomplete="email"
+                aria-label="Recipient Email"
               />
             </div>
 

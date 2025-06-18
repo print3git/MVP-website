@@ -338,6 +338,9 @@ async function initPaymentPage() {
   const discountInput = document.getElementById('discount-code');
   const discountMsg = document.getElementById('discount-msg');
   const applyBtn = document.getElementById('apply-discount');
+  const surpriseToggle = document.getElementById('surprise-toggle');
+  const recipientFields = document.getElementById('recipient-fields');
+  const surpriseMsgEl = document.getElementById('surprise-msg');
   loadCheckoutCredits();
   if (referralId && discountMsg) {
     discountMsg.textContent = 'Referral discount applied';
@@ -362,6 +365,11 @@ async function initPaymentPage() {
   const etchWarning = document.getElementById('etch-warning');
   const storedRadio = document.querySelector(`#material-options input[value="${storedMaterial}"]`);
   if (storedRadio) storedRadio.checked = true;
+  if (surpriseToggle && recipientFields) {
+    surpriseToggle.addEventListener('change', () => {
+      recipientFields.classList.toggle('hidden', !surpriseToggle.checked);
+    });
+  }
   updateEtchVisibility(storedMaterial);
   if (storedMaterial === 'single') {
     if (singleButton && storedColor) {
@@ -633,6 +641,10 @@ async function initPaymentPage() {
 
   if (sessionId) {
     successMsg.hidden = false;
+    if (surpriseMsgEl && localStorage.getItem('surpriseGift') === '1') {
+      surpriseMsgEl.classList.remove('hidden');
+      localStorage.removeItem('surpriseGift');
+    }
     const popup = document.getElementById('bulk-discount-popup');
     const closeBtn = document.getElementById('bulk-discount-close');
     if (popup && closeBtn) {
@@ -757,6 +769,8 @@ async function initPaymentPage() {
     ) {
       discount += Math.round(selectedPrice * (flashSale.discount_percent / 100));
     }
+    if (qty === 2) discount += 700;
+    else if (qty >= 3) discount += 1500;
     const shippingInfo = {
       name: document.getElementById('ship-name').value,
       address: document.getElementById('ship-address').value,
@@ -764,6 +778,14 @@ async function initPaymentPage() {
       zip: document.getElementById('ship-zip').value,
       email: emailEl.value,
     };
+    if (surpriseToggle?.checked) {
+      shippingInfo.surprise = true;
+      shippingInfo.recipientName = document.getElementById('recipient-name').value;
+      shippingInfo.recipientEmail = document.getElementById('recipient-email').value;
+      localStorage.setItem('surpriseGift', '1');
+    } else {
+      localStorage.removeItem('surpriseGift');
+    }
     let etchName = '';
     if (etchInput && !etchInput.disabled) {
       etchName = etchInput.value
