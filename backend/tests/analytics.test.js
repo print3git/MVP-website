@@ -13,6 +13,7 @@ jest.mock('../db', () => ({
   insertShareEvent: jest.fn(),
   insertPageView: jest.fn(),
   getConversionMetrics: jest.fn(),
+  getProfitMetrics: jest.fn(),
   getOrCreateOrderReferralLink: jest.fn(),
   insertReferredOrder: jest.fn(),
 }));
@@ -58,15 +59,13 @@ test('POST /api/track/share records event', async () => {
 });
 
 test('POST /api/track/page records view', async () => {
-  const res = await request(app)
-    .post('/api/track/page')
-    .send({
-      sessionId: 's1',
-      subreddit: 'funny',
-      utmSource: 'g',
-      utmMedium: 'cpc',
-      utmCampaign: 'summer',
-    });
+  const res = await request(app).post('/api/track/page').send({
+    sessionId: 's1',
+    subreddit: 'funny',
+    utmSource: 'g',
+    utmMedium: 'cpc',
+    utmCampaign: 'summer',
+  });
   expect(res.status).toBe(200);
   expect(db.insertPageView).toHaveBeenCalledWith('s1', 'funny', 'g', 'cpc', 'summer');
 });
@@ -77,4 +76,12 @@ test('GET /api/metrics/conversion returns metrics', async () => {
   expect(res.status).toBe(200);
   expect(res.body[0].subreddit).toBe('funny');
   expect(db.getConversionMetrics).toHaveBeenCalled();
+});
+
+test('GET /api/metrics/profit returns data', async () => {
+  db.getProfitMetrics.mockResolvedValue([{ subreddit: 'funny', profit: 100 }]);
+  const res = await request(app).get('/api/metrics/profit');
+  expect(res.status).toBe(200);
+  expect(res.body[0].profit).toBe(100);
+  expect(db.getProfitMetrics).toHaveBeenCalled();
 });

@@ -17,7 +17,6 @@ beforeEach(() => {
   sendTemplate.mockClear();
 });
 
-
 test('sends reminders when credits unused and near reset', async () => {
   jest.useFakeTimers().setSystemTime(new Date('2024-01-06T12:00:00Z'));
   mClient.query.mockResolvedValueOnce({ rows: [{ email: 'a@a.com', username: 'alice' }] });
