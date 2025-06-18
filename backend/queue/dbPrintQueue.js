@@ -1,11 +1,10 @@
 const db = require('../db');
 
-async function enqueuePrint(jobId, orderId, shippingInfo) {
-  await db.query('INSERT INTO print_jobs(job_id, order_id, shipping_info) VALUES($1,$2,$3)', [
-    jobId,
-    orderId,
-    shippingInfo,
-  ]);
+async function enqueuePrint(jobId, orderId, shippingInfo, printerId = null, gcodePath = null) {
+  await db.query(
+    'INSERT INTO print_jobs(job_id, order_id, shipping_info, printer_id, gcode_path) VALUES($1,$2,$3,$4,$5)',
+    [jobId, orderId, shippingInfo, printerId, gcodePath]
+  );
 }
 
 async function getNextPendingJob() {

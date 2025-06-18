@@ -212,10 +212,6 @@
 
 ## Autonomous 3D Printing
 
-- Create `print_jobs` table with order ID, printer ID, status, and G-code path.
-- Monitor printer status via OctoPrint or Klipper API.
-- Assign new jobs to idle printers automatically.
-- Upload generated G-code and start printing.
 - Update job status when printing completes via webhook.
 - Slice STL/GLB files into G-code after order placement.
 - Show printer queues and status on a dashboard.
