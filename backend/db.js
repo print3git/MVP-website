@@ -81,6 +81,10 @@ async function getSubscription(userId) {
   return query('SELECT * FROM subscriptions WHERE user_id=$1', [userId]).then((res) => res.rows[0]);
 }
 
+async function insertSubscriptionEvent(userId, event) {
+  await query('INSERT INTO subscription_events(user_id, event) VALUES($1,$2)', [userId, event]);
+}
+
 async function ensureCurrentWeekCredits(userId, defaultCredits = 0) {
   const week = startOfWeek();
   const weekStr = week.toISOString().slice(0, 10);
@@ -270,6 +274,7 @@ module.exports = {
   getConversionMetrics,
   cancelSubscription,
   getSubscription,
+  insertSubscriptionEvent,
   ensureCurrentWeekCredits,
   getCurrentWeekCredits,
   incrementCreditsUsed,

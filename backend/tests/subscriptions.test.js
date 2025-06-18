@@ -10,6 +10,7 @@ jest.mock('../db', () => ({
   upsertSubscription: jest.fn().mockResolvedValue({ id: 's1', status: 'active' }),
   cancelSubscription: jest.fn().mockResolvedValue({ id: 's1', status: 'canceled' }),
   getSubscription: jest.fn().mockResolvedValue({ id: 's1', status: 'active' }),
+  insertSubscriptionEvent: jest.fn(),
   ensureCurrentWeekCredits: jest.fn(),
   getCurrentWeekCredits: jest.fn().mockResolvedValue({ total_credits: 2, used_credits: 1 }),
   incrementCreditsUsed: jest.fn(),

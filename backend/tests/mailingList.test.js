@@ -10,6 +10,7 @@ jest.mock('../db', () => ({
   unsubscribeMailingListEntry: jest.fn().mockResolvedValue({}),
   query: jest.fn().mockResolvedValue({ rows: [] }),
   insertCommission: jest.fn().mockResolvedValue({}),
+  insertSubscriptionEvent: jest.fn(),
 }));
 const db = require('../db');
 

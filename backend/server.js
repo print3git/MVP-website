@@ -645,6 +645,7 @@ app.post('/api/subscription', authRequired, async (req, res) => {
       customer_id,
       subscription_id
     );
+    await db.insertSubscriptionEvent(req.user.id, 'signup');
     await db.ensureCurrentWeekCredits(req.user.id, 2);
     res.json(sub);
   } catch (err) {
@@ -656,6 +657,7 @@ app.post('/api/subscription', authRequired, async (req, res) => {
 app.post('/api/subscription/cancel', authRequired, async (req, res) => {
   try {
     const sub = await db.cancelSubscription(req.user.id);
+    await db.insertSubscriptionEvent(req.user.id, 'cancel');
     res.json(sub);
   } catch (err) {
     logError(err);

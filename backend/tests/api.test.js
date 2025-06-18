@@ -10,6 +10,7 @@ jest.mock('../db', () => ({
   upsertSubscription: jest.fn(),
   cancelSubscription: jest.fn(),
   getSubscription: jest.fn(),
+  insertSubscriptionEvent: jest.fn(),
   ensureCurrentWeekCredits: jest.fn(),
   getCurrentWeekCredits: jest.fn(),
   incrementCreditsUsed: jest.fn(),

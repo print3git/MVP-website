@@ -12,6 +12,7 @@ jest.mock('../db', () => ({
   adjustRewardPoints: jest.fn(),
   getUserIdForReferral: jest.fn(),
   insertReferralEvent: jest.fn(),
+  insertSubscriptionEvent: jest.fn(),
 }));
 const db = require('../db');
 jest.mock('../discountCodes', () => ({
