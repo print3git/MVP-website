@@ -1,8 +1,14 @@
 require('dotenv').config();
 const { Client } = require('pg');
 const axios = require('axios');
+const { getPrinterStatus } = require('../printers/octoprint');
 
-const PRINTER_API_URL = process.env.PRINTER_API_URL || 'http://localhost:5000/print';
+const DEFAULT_PRINTER_URL = process.env.PRINTER_API_URL || 'http://localhost:5000/print';
+const PRINTER_URLS = (process.env.PRINTER_URLS || DEFAULT_PRINTER_URL)
+  .split(',')
+  .map((u) => u.trim())
+  .filter(Boolean);
+const OCTOPRINT_API_KEY = process.env.OCTOPRINT_API_KEY || '';
 const POLL_INTERVAL_MS = 5000;
 
 async function getNextPendingJob(client) {
@@ -15,6 +21,18 @@ async function getNextPendingJob(client) {
       LIMIT 1`
   );
   return rows[0] && rows[0].job_id;
+}
+
+async function findIdlePrinter() {
+  for (const url of PRINTER_URLS) {
+    try {
+      const status = await getPrinterStatus(url, OCTOPRINT_API_KEY);
+      if (status === 'idle') return url;
+    } catch (err) {
+      // ignore
+    }
+  }
+  return null;
 }
 
 async function processNextJob(client) {
@@ -32,7 +50,11 @@ async function processNextJob(client) {
 
   const { model_url: modelUrl, shipping_info: shipping, etch_name } = rows[0];
   try {
-    await axios.post(PRINTER_API_URL, { modelUrl, shipping, etchName: etch_name });
+    const printerUrl = await findIdlePrinter();
+    if (!printerUrl) {
+      return;
+    }
+    await axios.post(printerUrl, { modelUrl, shipping, etchName: etch_name });
 
     await client.query('UPDATE jobs SET status=$1, error=NULL WHERE job_id=$2', ['sent', jobId]);
   } catch (err) {
