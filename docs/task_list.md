@@ -132,7 +132,6 @@
   - Provide `/api/competitions/:id/discount` endpoint to generate and return the code.
 - Create a "Trending Prints" section at the bottom that fetches models from `/api/trending` and shows Add to Basket buttons.
 
-
 ## Competitions Engagement
 
 - Show a countdown timer next to each active competition.
@@ -176,8 +175,6 @@
 - Serve assets over HTTP/2 or HTTP/3.
 - Measure load times with Lighthouse or real browser tests and track improvements.
 
-
-
 ## Social Sharing
 
 - Add share icons to the library page.
@@ -204,6 +201,7 @@
 - Add unit tests covering profit calculations and data import.
 
 ## Automated Scaling Engine
+
 - Fetch campaign performance hourly via cron.
 - Compute marginal CAC per subreddit.
 - Compare CAC to profit per sale with thresholds.
@@ -213,6 +211,7 @@
 - Expose an admin endpoint listing recent scaling actions.
 
 ## Autonomous 3D Printing
+
 - Create `print_jobs` table with order ID, printer ID, status, and G-code path.
 - Monitor printer status via OctoPrint or Klipper API.
 - Assign new jobs to idle printers automatically.
@@ -223,6 +222,7 @@
 - Notify operator when a printer requires manual clearing.
 
 ## AI Advert Generation
+
 - Maintain JSON template library for ad text patterns.
 - Generate ad copy variants using an LLM with subreddit context.
 - Produce image thumbnails through a diffusion model API.
@@ -233,12 +233,15 @@
 - Store approval or rejection events for each generated ad.
 
 ## Fulfillment Capacity Forecasting
+
 - Summarize daily orders per location via a batch job.
 - Estimate printer hours required from the order volume.
 - Compare demand to available printer capacity.
 - Alert via email when capacity is at risk.
 - Graph forecasted demand vs. capacity in the admin panel.
+
 ## Distributed Printing Infrastructure
+
 - Create unified tables for orders, printer hubs, printers, jobs, inventory and metrics.
 - Poll each printer via OctoPrint to collect queue length, status and error codes.
 - Store printer telemetry in the central database.
@@ -246,12 +249,14 @@
 - Display per-printer status in the admin dashboard.
 
 ## Load Balancer & Routing
+
 - Route new orders to the nearest hub based on customer location.
 - Consider printer queue length and health when routing jobs.
 - Overflow excess prints to secondary hubs automatically.
 - Add unit tests verifying routing decisions.
 
 ## Scaling Triggers & Procurement
+
 - Calculate average queue saturation per hub daily.
 - Generate purchase orders when saturation stays above threshold.
 - Email vendors with pre-filled printer order details.
@@ -259,6 +264,7 @@
 - Schedule new hub deployment when regional demand exceeds capacity.
 
 ## Hub Deployment Kit
+
 - Preconfigure printers with SD images and calibration files.
 - Bundle setup guides and monitoring scripts in each kit.
 - Build dashboard to assign operators and track shipments.
@@ -266,71 +272,84 @@
 - Record printer serial numbers and hub location.
 
 ## Operations Dashboard
+
 - Show printer load, backlog and daily capacity per hub.
 - Display printer errors and maintenance alerts.
 - Summarize upcoming scaling triggers.
 - Restrict access to founders only.
 
 ## Business Intelligence
+
 - Aggregate CAC, ROAS and profit per subreddit.
 - Graph daily profit and capacity utilisation.
 - Email a weekly PDF summary to founders.
 - Highlight anomalies in sales or printer uptime.
 
 ## Printer Monitoring & Maintenance
+
 - Stream camera feeds for all printers.
 - Detect failed prints via computer vision and trigger reprints.
 - Log maintenance events and schedule nozzle swaps.
 - Alert when a printer's failure rate rises above threshold.
 
 ## Packaging Automation
+
 - Feed finished prints into automated bagging machines.
 - Connect bagged items to a boxing conveyor.
 - Print and apply shipping labels automatically.
 - Track shipments through the carrier API.
 
 ## Customer Service Automation
+
 - Create a FAQ response bot for common queries.
 - Send automatic order status and delay notifications.
 - Issue goodwill coupons if service-level targets are missed.
 - Escalate unresolved tickets to the founders.
 
 ## Viral Referral System
+
 - Generate referral links for each purchase.
 - Record referred orders and credit rewards.
 - Prompt customers to share photos with pre-filled captions.
 - Auto-moderate shared content for policy violations.
 
 ## Legal & Accounting Automation
+
 - Track revenue by country for tax calculations.
 - Compute VAT or GST owed per region.
 - Flag prohibited shipping destinations automatically.
 - Export monthly accounting data for the accountant.
 
 ## Marketplace & Licensing (Future)
+
 - Build designer submission portal for new models.
 - Validate uploaded STLs automatically.
 - Implement revenue share and royalty tracking.
 - Apply licensed models to the storefront automatically.
 
 ## Robotic Print Handling
+
 - Install robotic arms to remove finished prints from beds.
 - Integrate vision inspection for surface defects.
 - Retry failed removals and log incidents.
 - Place accepted prints on the bagging conveyor.
 
 ## Operator Management
+
 - Provide secure login for remote operators.
 - Display daily task checklists per hub.
 - Record start and end times for each shift.
 - Alert founders if tasks remain incomplete.
 
 ## Printer Control & Recovery
+
 - Enable remote restart and shutdown commands.
 - Run periodic firmware updates over the network.
 - Schedule automatic calibration prints.
 - Switch jobs to a backup printer on failure.
+
 ## Inventory Monitoring & Restocking
+
 - Track filament usage per print and update hub inventory.
 - Monitor packaging supply levels (bags, boxes, labels).
 - Alert when any material drops below a threshold.
@@ -339,6 +358,7 @@
 - Display inventory dashboard showing stock and delivery ETA.
 
 ## Predictive Maintenance
+
 - Record nozzle temperature and print time metrics.
 - Calculate mean time between failures per printer.
 - Forecast next service date from usage hours.
@@ -346,6 +366,7 @@
 - Notify founders if predicted failure risk exceeds threshold.
 
 ## Remote Operator Onboarding
+
 - Maintain a roster of approved remote operators.
 - Provide a standard training checklist on signup.
 - Allow assigning operators to hubs through the dashboard.
@@ -353,6 +374,7 @@
 - Flag missing tasks for review.
 
 ## Physical Space Logistics
+
 - Keep a database of rentable spaces by region and cost.
 - Provide template rental agreements.
 - Trigger a search for new space when expansion is scheduled.
@@ -360,6 +382,7 @@
 - Remind founders of lease renewal dates.
 
 ## Printer Load Monitoring Enhancements
+
 - Record idle time and utilization statistics per printer.
 - Store historical queue length and average completion times.
 - Expose API endpoint for live printer metrics.
@@ -367,6 +390,7 @@
 - Trigger scaling alerts when sustained utilisation exceeds 80%.
 
 ## Procurement Automation Enhancements
+
 - Generate purchase order PDFs with printer models and quantities.
 - Email vendors with shipping details for approval.
 - Track order acknowledgements and estimated arrival dates.
@@ -374,6 +398,7 @@
 - Flag overdue printer deliveries.
 
 ## Hub Deployment Automation
+
 - Create a step-by-step checklist for new hub setup.
 - Preload Raspberry Pi images on SD cards for printers.
 - Auto-register new printers in the monitoring system.
@@ -381,6 +406,7 @@
 - Mark the hub live after all printers pass a test print.
 
 ## Global Operations Reporting
+
 - Produce a daily capacity report summarizing each hub.
 - Summarize orders pending vs fulfilled.
 - Email a weekly "state of company" PDF with key metrics.
@@ -388,13 +414,16 @@
 - Archive all reports in cloud storage.
 
 ## Carrier Pickup Integration
+
 - Schedule carrier pickups via API based on daily volume.
 - Generate manifests for each pickup.
 - Notify carriers automatically if volume increases.
 - Track pickup confirmation or failures.
 
 ## Customer Communication Automation
+
 - Send an email or SMS when a print finishes.
 - Include a tracking link in shipping confirmation.
 - Offer automatic reprint if a print fails quality checks.
 - Survey customers after delivery for feedback.
+- ✅ Husky pre-commit hooks pass

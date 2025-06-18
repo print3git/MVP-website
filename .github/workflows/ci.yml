@@ -17,15 +17,13 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - run: npm ci
-        working-directory: backend
-      - name: Install hunyuan_server deps
-        if: ${{ hashFiles('backend/hunyuan_server/package.json') != '' }}
-        working-directory: backend/hunyuan_server
-        run: npm ci
-      - run: npm run format:check
-      - name: Formatting summary
-        if: failure()
-        run: echo 'Please run "npm run format" locally and commit the changes.' >> $GITHUB_STEP_SUMMARY
-      - run: npm run lint
-      - run: npm test
-        working-directory: backend
+
+
+      - name: Install Husky hooks
+        run: npm run prepare
+
+      - name: Run CI
+        run: npm run ci
+
+      # ← you can add additional steps here, like your tests
+
