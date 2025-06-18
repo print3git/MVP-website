@@ -56,20 +56,22 @@ function purchase(modelUrl, jobId) {
   window.location.href = 'payment.html';
 }
 
-function like(id) {
+function vote(id) {
   const token = localStorage.getItem('token');
   if (!token) {
     alert('Login required');
     return;
   }
-  fetch(`${API_BASE}/models/${id}/like`, {
+  const compId = currentId;
+  fetch(`${API_BASE}/competitions/${compId}/vote`, {
     method: 'POST',
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ modelId: id }),
   })
     .then((r) => r.json())
     .then((d) => {
-      const span = document.querySelector(`#likes-${id}`);
-      if (span) span.textContent = d.likes;
+      const span = document.querySelector(`#votes-${id}`);
+      if (span && d.votes !== undefined) span.textContent = d.votes;
     });
 }
 
@@ -131,7 +133,7 @@ async function loadLeaderboard(id, table, grid) {
   if (!res.ok) return;
   const rows = await res.json();
   table.innerHTML = rows
-    .map((r, i) => `<tr><td>${i + 1}</td><td>${r.model_id}</td><td>${r.likes}</td></tr>`)
+    .map((r, i) => `<tr><td>${i + 1}</td><td>${r.model_id}</td><td>${r.votes}</td></tr>`)
     .join('');
   if (grid) {
     grid.innerHTML = '';
@@ -141,10 +143,10 @@ async function loadLeaderboard(id, table, grid) {
         'entry-card relative h-32 bg-[#2A2A2E] border border-white/10 rounded-xl flex items-center justify-center cursor-pointer';
       card.dataset.model = r.model_url;
       card.dataset.job = r.model_id;
-      card.innerHTML = `<img src="" alt="Model" class="w-full h-full object-contain pointer-events-none" />\n      <button class="like absolute bottom-1 right-1 text-xs bg-red-600 px-1 rounded">\u2665</button>\n      <span class="absolute bottom-8 right-1 text-xs bg-black/50 px-1 rounded" id="likes-${r.model_id}">${r.likes}</span>\n      <button class="purchase absolute bottom-1 left-1 font-bold text-lg py-2 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]">Buy</button>`;
+      card.innerHTML = `<img src="" alt="Model" class="w-full h-full object-contain pointer-events-none" />\n      <button class="like absolute bottom-1 right-1 text-xs bg-red-600 px-1 rounded">\u2665</button>\n      <span class="absolute bottom-8 right-1 text-xs bg-black/50 px-1 rounded" id="votes-${r.model_id}">${r.votes}</span>\n      <button class="purchase absolute bottom-1 left-1 font-bold text-lg py-2 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]">Buy</button>`;
       card.querySelector('.like').addEventListener('click', (e) => {
         e.stopPropagation();
-        like(r.model_id);
+        vote(r.model_id);
       });
       const buyBtn = card.querySelector('.purchase');
       buyBtn.addEventListener('click', (e) => {
@@ -406,7 +408,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (likeBtn) {
       likeBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        like(card.dataset.job);
+        vote(card.dataset.job);
       });
     }
     if (buyBtn) {

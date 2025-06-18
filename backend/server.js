@@ -1360,13 +1360,17 @@ app.get('/api/competitions/winners', (req, res) => {
 app.get('/api/competitions/:id/entries', async (req, res) => {
   try {
     const { rows } = await db.query(
-      `SELECT e.model_id, j.model_url, COALESCE(l.count,0) as likes
+      `SELECT e.model_id, j.model_url, COALESCE(v.count,0) as votes
        FROM competition_entries e
        JOIN jobs j ON e.model_id=j.job_id
-       LEFT JOIN (SELECT model_id, COUNT(*) as count FROM likes GROUP BY model_id) l
-       ON e.model_id=l.model_id
+       LEFT JOIN (
+         SELECT model_id, COUNT(*) as count
+         FROM competition_votes
+         WHERE competition_id=$1
+         GROUP BY model_id
+       ) v ON e.model_id=v.model_id
        WHERE e.competition_id=$1
-       ORDER BY likes DESC`,
+       ORDER BY votes DESC`,
       [req.params.id]
     );
     res.json(rows);
@@ -1438,6 +1442,28 @@ app.post('/api/competitions/:id/discount', authRequired, async (req, res) => {
   } catch (err) {
     logError(err);
     res.status(500).json({ error: 'Failed to generate discount' });
+  }
+});
+
+app.post('/api/competitions/:id/vote', authRequired, async (req, res) => {
+  const { modelId } = req.body;
+  if (!modelId) return res.status(400).json({ error: 'modelId required' });
+  const compId = req.params.id;
+  try {
+    await db.query(
+      `INSERT INTO competition_votes(competition_id, model_id, user_id)
+       VALUES($1,$2,$3)
+       ON CONFLICT DO NOTHING`,
+      [compId, modelId, req.user.id]
+    );
+    const count = await db.query(
+      'SELECT COUNT(*) FROM competition_votes WHERE competition_id=$1 AND model_id=$2',
+      [compId, modelId]
+    );
+    res.json({ votes: parseInt(count.rows[0].count, 10) });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to submit vote' });
   }
 });
 
@@ -1876,6 +1902,23 @@ app.post('/api/competitions/subscribe', async (req, res) => {
   } catch (err) {
     logError(err);
     res.status(500).json({ error: 'Failed to subscribe' });
+  }
+});
+
+app.post('/api/competitions/notify', adminCheck, async (req, res) => {
+  const { subject, message } = req.body;
+  if (!subject || !message) return res.status(400).json({ error: 'Missing fields' });
+  try {
+    const { rows } = await db.query(
+      'SELECT email FROM mailing_list WHERE confirmed=TRUE AND unsubscribed=FALSE'
+    );
+    for (const r of rows) {
+      await sendMail(r.email, subject, message);
+    }
+    res.sendStatus(204);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to send notifications' });
   }
 });
 
