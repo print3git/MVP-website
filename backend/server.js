@@ -32,7 +32,6 @@ const { verifyTag } = require('./social');
 
 const syncMailingList = require('./scripts/sync-mailing-list');
 
-const REWARD_OPTIONS = { 100: 500, 200: 1000 };
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'admin';
 
 const AUTH_SECRET = process.env.AUTH_SECRET || 'secret';
@@ -844,9 +843,26 @@ app.get('/api/rewards', authRequired, async (req, res) => {
   }
 });
 
+app.get('/api/rewards/options', async (req, res) => {
+  try {
+    const options = await db.getRewardOptions();
+    res.json({ options });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to fetch options' });
+  }
+});
+
 app.post('/api/rewards/redeem', authRequired, async (req, res) => {
   const cost = parseInt(req.body.points, 10);
-  const discount = REWARD_OPTIONS[cost];
+  let discount = null;
+  try {
+    const opt = await db.getRewardOption(cost);
+    discount = opt ? opt.amount_cents : null;
+  } catch (err) {
+    logError(err);
+    return res.status(500).json({ error: 'Failed to fetch reward options' });
+  }
   if (!discount) return res.status(400).json({ error: 'Invalid reward' });
   try {
     const current = await db.getRewardPoints(req.user.id);
@@ -896,6 +912,18 @@ app.post('/api/track/checkout', async (req, res) => {
   } catch (err) {
     logError(err);
     res.status(500).json({ error: 'Failed to record checkout' });
+  }
+});
+
+app.post('/api/track/share', async (req, res) => {
+  const { shareId, network } = req.body || {};
+  if (!shareId || !network) return res.status(400).json({ error: 'Missing params' });
+  try {
+    await db.insertShareEvent(shareId, network);
+    res.json({ success: true });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to record share' });
   }
 });
 

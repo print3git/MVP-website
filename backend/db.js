@@ -165,6 +165,7 @@ async function insertCheckoutEvent(sessionId, subreddit, step) {
   );
 }
 
+<<<<<<< jtyxgr-codex/execute-next-subtasks-for-subscription-service
 async function insertSubscriptionEvent(userId, event, variant, priceCents) {
   await query(
     'INSERT INTO subscription_events(user_id, event, variant, price_cents) VALUES($1,$2,$3,$4)',
@@ -181,6 +182,13 @@ async function getSubscriptionMetrics() {
     active: parseInt(active.rows[0].count, 10),
     churn_last_30_days: parseInt(churn.rows[0].count, 10),
   };
+=======
+async function insertShareEvent(shareId, network) {
+  await query('INSERT INTO share_events(share_id, network, timestamp) VALUES($1,$2,NOW())', [
+    shareId,
+    network,
+  ]);
+>>>>>>> main
 }
 
 async function getConversionMetrics() {
@@ -238,6 +246,16 @@ async function verifySocialShare(id, discountCode) {
     [id, discountCode]
   );
   return rows[0];
+}
+
+async function getRewardOptions() {
+  const { rows } = await query('SELECT points, amount_cents FROM reward_options ORDER BY points');
+  return rows;
+}
+
+async function getRewardOption(points) {
+  const { rows } = await query('SELECT amount_cents FROM reward_options WHERE points=$1', [points]);
+  return rows[0] || null;
 }
 
 async function getUserCreations(userId, limit = 10, offset = 0) {
@@ -298,6 +316,7 @@ module.exports = {
   adjustRewardPoints,
   getUserIdForReferral,
   insertReferralEvent,
+  insertShareEvent,
   upsertMailingListEntry,
   confirmMailingListEntry,
   unsubscribeMailingListEntry,
@@ -306,4 +325,6 @@ module.exports = {
   getUserCreations,
   insertCommunityComment,
   getCommunityComments,
+  getRewardOptions,
+  getRewardOption,
 };
