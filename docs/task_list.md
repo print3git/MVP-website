@@ -4,7 +4,6 @@
 - Target ads to demographics most likely to convert.
 - Use retargeting pixels to bring back visitors who left.
 - Include a clear value proposition and call-to-action in each ad.
-- Keep landing pages minimal with a single prominent "Start Generating" button.
 
 ## Analytics & Attribution
 
