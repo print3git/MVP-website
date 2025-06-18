@@ -144,6 +144,50 @@ async function getUserIdForReferral(code) {
 async function insertReferralEvent(referrerId, type) {
   await query('INSERT INTO referral_events(referrer_id, type) VALUES($1,$2)', [referrerId, type]);
 }
+async function insertAdClick(subreddit, sessionId) {
+  await query('INSERT INTO ad_clicks(subreddit, session_id, timestamp) VALUES($1,$2,NOW())', [
+    subreddit,
+    sessionId,
+  ]);
+}
+
+async function insertCartEvent(sessionId, modelId, subreddit) {
+  await query(
+    'INSERT INTO cart_events(session_id, model_id, subreddit, timestamp) VALUES($1,$2,$3,NOW())',
+    [sessionId, modelId, subreddit]
+  );
+}
+
+async function insertCheckoutEvent(sessionId, subreddit, step) {
+  await query(
+    'INSERT INTO checkout_events(session_id, subreddit, step, timestamp) VALUES($1,$2,$3,NOW())',
+    [sessionId, subreddit, step]
+  );
+}
+
+async function getConversionMetrics() {
+  const clicks = await query('SELECT subreddit, COUNT(*) AS c FROM ad_clicks GROUP BY subreddit');
+  const carts = await query('SELECT subreddit, COUNT(*) AS c FROM cart_events GROUP BY subreddit');
+  const completes = await query(
+    "SELECT subreddit, COUNT(*) FILTER (WHERE step='complete') AS c FROM checkout_events GROUP BY subreddit"
+  );
+  const map = {};
+  for (const row of clicks.rows)
+    map[row.subreddit] = { clicks: parseInt(row.c, 10), carts: 0, completes: 0 };
+  for (const row of carts.rows) {
+    map[row.subreddit] = map[row.subreddit] || { clicks: 0, carts: 0, completes: 0 };
+    map[row.subreddit].carts = parseInt(row.c, 10);
+  }
+  for (const row of completes.rows) {
+    map[row.subreddit] = map[row.subreddit] || { clicks: 0, carts: 0, completes: 0 };
+    map[row.subreddit].completes = parseInt(row.c, 10);
+  }
+  return Object.entries(map).map(([subreddit, d]) => ({
+    subreddit,
+    atcRate: d.clicks ? d.carts / d.clicks : 0,
+    checkoutRate: d.clicks ? d.completes / d.clicks : 0,
+  }));
+}
 
 module.exports = {
   query,
@@ -153,6 +197,10 @@ module.exports = {
   insertCommission,
   getCommissionsForUser,
   upsertSubscription,
+  insertAdClick,
+  insertCartEvent,
+  insertCheckoutEvent,
+  getConversionMetrics,
   cancelSubscription,
   getSubscription,
   ensureCurrentWeekCredits,
