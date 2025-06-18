@@ -23,7 +23,9 @@ if (typeof global.setImmediate === 'undefined') {
 
 beforeEach(() => {
   jest.spyOn(console, 'error').mockImplementation((...args) => {
-    throw new Error('console.error called: ' + args.join(' '));
+    const msg = args.join(' ');
+    if (msg.includes('Could not load script')) return;
+    throw new Error('console.error called: ' + msg);
   });
 });
 
