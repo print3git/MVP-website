@@ -13,8 +13,11 @@
     "format": "prettier --write \"**/*.{js,jsx,json,md}\"",
     "send-reminders": "node scripts/send-purchase-reminders.js",
     "send-followups": "node scripts/send-post-purchase-followups.js",
+    "reset-credits": "node scripts/weekly-reset.js",
+    "send-printclub-reminders": "node scripts/send-printclub-reminders.js",
     "cleanup-tokens": "node scripts/cleanup-password-resets.js",
     "measure-load": "node scripts/measure-load.js",
+    "generate-referral-qr": "node scripts/generate-referral-qr.js",
     "lint": "eslint . --max-warnings=0"
   },
   "keywords": [],
@@ -36,6 +39,7 @@
     "nodemailer": "^7.0.3",
     "nodemailer-sendgrid": "^1.0.0",
     "pg": "^8.16.0",
+    "qrcode": "^1.5.3",
     "stripe": "^18.2.1",
     "uuid": "^11.1.0"
   },
