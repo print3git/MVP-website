@@ -299,6 +299,20 @@
                 aria-label="Email"
               />
             </div>
+            <label class="flex items-center gap-2 text-sm my-2">
+              <input type="checkbox" id="surprise-toggle" class="accent-[#30D5C8]" />
+              This is a surprise
+            </label>
+            <div id="recipient-fields" class="mb-2">
+              <input
+                id="recipient-email"
+                type="email"
+                class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+                placeholder="Recipient Email (optional)"
+                autocomplete="email"
+                aria-label="Recipient Email"
+              />
+            </div>
             <div>
               <input
                 id="ship-address"
@@ -324,6 +338,19 @@
                 autocomplete="postal-code"
                 aria-label="ZIP code"
               />
+            </div>
+
+            <div class="flex items-center gap-2 my-2 text-sm">
+              <label for="print-qty">Quantity</label>
+              <select
+                id="print-qty"
+                class="p-1 rounded-md bg-[#1A1A1D] border border-white/10"
+                aria-label="Quantity"
+              >
+                <option value="1">1</option>
+                <option value="2">2</option>
+              </select>
+              <span id="bulk-discount-msg" class="text-[#30D5C8] hidden">10% off second print!</span>
             </div>
 
             <div class="flex gap-2">
