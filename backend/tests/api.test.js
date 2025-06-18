@@ -7,9 +7,16 @@ process.env.HUNYUAN_SERVER_URL = 'http://localhost:4000';
 jest.mock('../db', () => ({
   query: jest.fn().mockResolvedValue({ rows: [] }),
   insertCommission: jest.fn().mockResolvedValue({}),
+
+  upsertMailingListEntry: jest.fn().mockResolvedValue({}),
+  confirmMailingListEntry: jest.fn().mockResolvedValue({}),
+  unsubscribeMailingListEntry: jest.fn().mockResolvedValue({}),
+
 }));
 const db = require('../db');
 
+jest.mock('../mail', () => ({ sendMail: jest.fn() }));
+const { sendMail } = require('../mail');
 jest.mock('axios');
 const axios = require('axios');
 const jwt = require('jsonwebtoken');
@@ -59,6 +66,10 @@ const stream = require('stream');
 beforeEach(() => {
   db.query.mockClear();
   db.insertCommission.mockClear();
+  db.upsertMailingListEntry.mockClear();
+  db.confirmMailingListEntry.mockClear();
+  db.unsubscribeMailingListEntry.mockClear();
+  sendMail.mockClear();
   axios.post.mockClear();
   enqueuePrint.mockClear();
   getShippingEstimate.mockClear();
@@ -331,6 +342,38 @@ test('GET /api/community/recent pagination and category', async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
   await request(app).get('/api/community/recent?limit=5&offset=2&category=art&search=bot');
   expect(db.query).toHaveBeenCalledWith(expect.any(String), [5, 2, 'art', 'bot']);
+});
+
+test('GET /api/community/mine returns creations', async () => {
+  db.getUserCreations.mockResolvedValueOnce([]);
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  await request(app).get('/api/community/mine').set('authorization', `Bearer ${token}`);
+  expect(db.getUserCreations).toHaveBeenCalledWith('u1', 10, 0);
+});
+
+test('POST /api/community/:id/comment requires auth', async () => {
+  const res = await request(app).post('/api/community/5/comment').send({ text: 'hi' });
+  expect(res.status).toBe(401);
+});
+
+test('POST /api/community/:id/comment', async () => {
+  db.insertCommunityComment.mockResolvedValueOnce({ id: 'c1', text: 'hi' });
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  const res = await request(app)
+    .post('/api/community/5/comment')
+    .set('authorization', `Bearer ${token}`)
+    .send({ text: 'hi' });
+  expect(res.status).toBe(201);
+  expect(res.body.text).toBe('hi');
+  expect(db.insertCommunityComment).toHaveBeenCalledWith('5', 'u1', 'hi');
+});
+
+test('GET /api/community/:id/comments', async () => {
+  db.getCommunityComments.mockResolvedValueOnce([{ id: 'c1', text: 'hello' }]);
+  const res = await request(app).get('/api/community/5/comments');
+  expect(res.status).toBe(200);
+  expect(res.body[0].text).toBe('hello');
+  expect(db.getCommunityComments).toHaveBeenCalledWith('5');
 });
 
 test('Admin create competition', async () => {
