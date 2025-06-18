@@ -721,6 +721,18 @@ async function initPaymentPage() {
     reorderBtn?.addEventListener('click', () => {
       window.location.href = 'payment.html';
     });
+    const giftDiv = document.getElementById('gift-options');
+    const giftBtn = document.getElementById('gift-order');
+    if (giftDiv && giftBtn && surpriseToggle && recipientFields) {
+      giftDiv.classList.remove('hidden');
+      giftBtn.addEventListener('click', () => {
+        surpriseToggle.checked = false;
+        recipientFields.classList.remove('hidden');
+        document.getElementById('checkout-form')?.scrollIntoView({
+          behavior: 'smooth',
+        });
+      });
+    }
     const nextModal = document.getElementById('next-print-modal');
     const nextBtn = document.getElementById('next-print-btn');
     const nextText = document.getElementById('next-print-text');
