@@ -1,42 +1,31 @@
 name: CI
 
 on:
-  pull_request:
-    branches: [ main ]
   push:
-    branches: [ main ]
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
-  test-and-lint:
+  build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Check out code
-        uses: actions/checkout@v3
-
-      - name: Use Node.js
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: '18'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Install backend deps
-        run: npm ci
+          node-version: 20
+          cache: 'npm'
+      - run: npm ci
+      - run: npm ci
         working-directory: backend
-
-      - name: Install Husky hooks
-        run: npm run prepare
-
-      - name: Format with Prettier
-        run: npm run format
-
-      - name: Check for merge-conflict markers
-        run: npm run check-conflicts
-
-      - name: Run ESLint
-        run: npm run lint
+      - name: Install hunyuan_server deps
+        if: ${{ hashFiles('backend/hunyuan_server/package.json') != '' }}
+        working-directory: backend/hunyuan_server
+        run: npm ci
+      - run: npm run format:check
+      - name: Formatting summary
+        if: failure()
+        run: echo 'Please run "npm run format" locally and commit the changes.' >> $GITHUB_STEP_SUMMARY
+      - run: npm run lint
+      - run: npm test
         working-directory: backend
-
-      # ← you can add additional steps here, like your tests
