@@ -145,6 +145,23 @@ async function insertReferralEvent(referrerId, type) {
   await query('INSERT INTO referral_events(referrer_id, type) VALUES($1,$2)', [referrerId, type]);
 }
 
+async function upsertMailingListEntry(email, token) {
+  return query(
+    `INSERT INTO mailing_list(email, token)
+     VALUES($1,$2)
+     ON CONFLICT (email) DO UPDATE SET token=$2, confirmed=FALSE, unsubscribed=FALSE`,
+    [email, token]
+  );
+}
+
+async function confirmMailingListEntry(token) {
+  return query('UPDATE mailing_list SET confirmed=TRUE WHERE token=$1', [token]);
+}
+
+async function unsubscribeMailingListEntry(token) {
+  return query('UPDATE mailing_list SET unsubscribed=TRUE WHERE token=$1', [token]);
+}
+
 module.exports = {
   query,
   insertShare,
@@ -163,4 +180,7 @@ module.exports = {
   adjustRewardPoints,
   getUserIdForReferral,
   insertReferralEvent,
+  upsertMailingListEntry,
+  confirmMailingListEntry,
+  unsubscribeMailingListEntry,
 };
