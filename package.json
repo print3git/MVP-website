@@ -8,9 +8,11 @@
   },
   "scripts": {
     "prepare": "husky install",
-    "format": "prettier --write \"**/*.{js,jsx,json,md,html,html}\"",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix",
     "check-conflicts": "! grep -R --include=*.js --include=*.jsx --include=*.ts --include=*.tsx '^(<{7}|={7}|>{7})' .",
-    "lint": "npm run check-conflicts && eslint . --max-warnings=0",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -24,12 +26,17 @@
     "eslint-config-prettier": "^8.10.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.2",
-    "prettier": "^3.5.3"
+    "prettier": "^3.5.3",
+    "@commitlint/cli": "^19.2.1",
+    "@commitlint/config-conventional": "^19.2.1",
+    "eslint-plugin-promise": "^7.2.1"
   },
   "lint-staged": {
-    "*.{js,jsx,json,md,html}": [
-      "npm run lint",
-      "npx prettier --check \"**/*.{js,jsx,json,md,html}\""
+    "*.{js,jsx,ts,tsx}": [
+      "npm run lint"
+    ],
+    "*.{js,jsx,json,md,html,css}": [
+      "npm run format"
     ]
   }
 }
