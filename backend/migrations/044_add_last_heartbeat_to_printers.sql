@@ -1,0 +1,1 @@
+ALTER TABLE printers ADD COLUMN IF NOT EXISTS last_heartbeat TIMESTAMPTZ;
