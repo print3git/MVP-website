@@ -1652,6 +1652,24 @@ app.get('/api/admin/subscription-metrics', adminCheck, async (req, res) => {
   }
 });
 
+app.get('/api/admin/operations', adminCheck, async (req, res) => {
+  try {
+    const metrics = await db.getOperationsMetrics();
+    const capacity = 20;
+    const hub = {
+      name: 'Main',
+      backlog: metrics.backlog,
+      capacity,
+      load: metrics.backlog / capacity,
+    };
+    const scaling = hub.load > 0.8 ? 'Demand high - consider scaling' : 'Capacity OK';
+    res.json({ hubs: [hub], errors: metrics.errors, scaling });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to fetch metrics' });
+  }
+});
+
 /**
  * POST /api/create-order
  * Create a Stripe Checkout session

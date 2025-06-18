@@ -281,6 +281,17 @@ async function getRewardOption(points) {
   return rows[0] || null;
 }
 
+async function getOperationsMetrics() {
+  const backlogRes = await query("SELECT COUNT(*) FROM print_jobs WHERE status!='complete'");
+  const errorsRes = await query(
+    "SELECT job_id, error FROM jobs WHERE error IS NOT NULL AND error<>'' ORDER BY updated_at DESC LIMIT 5"
+  );
+  return {
+    backlog: parseInt(backlogRes.rows[0].count, 10),
+    errors: errorsRes.rows,
+  };
+}
+
 async function getUserCreations(userId, limit = 10, offset = 0) {
   const { rows } = await query(
     `SELECT c.id, c.title, c.category, j.job_id, j.model_url
@@ -353,4 +364,5 @@ module.exports = {
   getCommunityComments,
   getRewardOptions,
   getRewardOption,
+  getOperationsMetrics,
 };
