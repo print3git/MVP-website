@@ -245,3 +245,95 @@
 - Compare demand to available printer capacity.
 - Alert via email when capacity is at risk.
 - Graph forecasted demand vs. capacity in the admin panel.
+## Distributed Printing Infrastructure
+- Create unified tables for orders, printer hubs, printers, jobs, inventory and metrics.
+- Poll each printer via OctoPrint to collect queue length, status and error codes.
+- Store printer telemetry in the central database.
+- Implement heartbeat checks to flag offline printers.
+- Display per-printer status in the admin dashboard.
+
+## Load Balancer & Routing
+- Route new orders to the nearest hub based on customer location.
+- Consider printer queue length and health when routing jobs.
+- Overflow excess prints to secondary hubs automatically.
+- Add unit tests verifying routing decisions.
+
+## Scaling Triggers & Procurement
+- Calculate average queue saturation per hub daily.
+- Generate purchase orders when saturation stays above threshold.
+- Email vendors with pre-filled printer order details.
+- Integrate vendor APIs to place orders automatically.
+- Schedule new hub deployment when regional demand exceeds capacity.
+
+## Hub Deployment Kit
+- Preconfigure printers with SD images and calibration files.
+- Bundle setup guides and monitoring scripts in each kit.
+- Build dashboard to assign operators and track shipments.
+- Automate camera and network configuration on arrival.
+- Record printer serial numbers and hub location.
+
+## Operations Dashboard
+- Show printer load, backlog and daily capacity per hub.
+- Display printer errors and maintenance alerts.
+- Summarize upcoming scaling triggers.
+- Restrict access to founders only.
+
+## Business Intelligence
+- Aggregate CAC, ROAS and profit per subreddit.
+- Graph daily profit and capacity utilisation.
+- Email a weekly PDF summary to founders.
+- Highlight anomalies in sales or printer uptime.
+
+## Printer Monitoring & Maintenance
+- Stream camera feeds for all printers.
+- Detect failed prints via computer vision and trigger reprints.
+- Log maintenance events and schedule nozzle swaps.
+- Alert when a printer's failure rate rises above threshold.
+
+## Packaging Automation
+- Feed finished prints into automated bagging machines.
+- Connect bagged items to a boxing conveyor.
+- Print and apply shipping labels automatically.
+- Track shipments through the carrier API.
+
+## Customer Service Automation
+- Create a FAQ response bot for common queries.
+- Send automatic order status and delay notifications.
+- Issue goodwill coupons if service-level targets are missed.
+- Escalate unresolved tickets to the founders.
+
+## Viral Referral System
+- Generate referral links for each purchase.
+- Record referred orders and credit rewards.
+- Prompt customers to share photos with pre-filled captions.
+- Auto-moderate shared content for policy violations.
+
+## Legal & Accounting Automation
+- Track revenue by country for tax calculations.
+- Compute VAT or GST owed per region.
+- Flag prohibited shipping destinations automatically.
+- Export monthly accounting data for the accountant.
+
+## Marketplace & Licensing (Future)
+- Build designer submission portal for new models.
+- Validate uploaded STLs automatically.
+- Implement revenue share and royalty tracking.
+- Apply licensed models to the storefront automatically.
+
+## Robotic Print Handling
+- Install robotic arms to remove finished prints from beds.
+- Integrate vision inspection for surface defects.
+- Retry failed removals and log incidents.
+- Place accepted prints on the bagging conveyor.
+
+## Operator Management
+- Provide secure login for remote operators.
+- Display daily task checklists per hub.
+- Record start and end times for each shift.
+- Alert founders if tasks remain incomplete.
+
+## Printer Control & Recovery
+- Enable remote restart and shutdown commands.
+- Run periodic firmware updates over the network.
+- Schedule automatic calibration prints.
+- Switch jobs to a backup printer on failure.
