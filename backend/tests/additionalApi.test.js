@@ -601,3 +601,8 @@ test('GET /api/trending returns list', async () => {
   const res = await request(app).get('/api/trending');
   expect([200, 404]).toContain(res.status);
 });
+
+test('GET /api/competitions/winners returns list', async () => {
+  const res = await request(app).get('/api/competitions/winners');
+  expect([200, 404]).toContain(res.status);
+});
