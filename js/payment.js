@@ -253,6 +253,7 @@ async function createCheckout(
       referral,
       etchName,
       useCredit,
+      productType: selectedMaterialValue(),
       utmSource: localStorage.getItem('utm_source') || undefined,
       utmMedium: localStorage.getItem('utm_medium') || undefined,
       utmCampaign: localStorage.getItem('utm_campaign') || undefined,
