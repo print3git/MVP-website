@@ -298,6 +298,55 @@ async function getRewardOption(points) {
   return rows[0] || null;
 }
 
+async function insertAdSpend(subreddit, date, spendCents) {
+  await query(
+    `INSERT INTO ad_spend(subreddit, date, spend_cents)
+     VALUES($1,$2,$3)
+     ON CONFLICT (subreddit, date) DO UPDATE SET spend_cents=$3`,
+    [subreddit, date, spendCents]
+  );
+}
+
+async function getBusinessIntelligenceMetrics() {
+  const profits = await getProfitMetrics();
+  const spend = await query(
+    'SELECT subreddit, SUM(spend_cents) AS spend_cents FROM ad_spend GROUP BY subreddit'
+  );
+  const orders = await query(
+    "SELECT subreddit, COUNT(*) AS count FROM orders WHERE status='paid' GROUP BY subreddit"
+  );
+  const map = {};
+  for (const p of profits) {
+    map[p.subreddit] = { revenue: p.revenue, cost: p.cost, profit: p.profit, spend: 0, orders: 0 };
+  }
+  for (const row of spend.rows) {
+    map[row.subreddit] = map[row.subreddit] || {
+      revenue: 0,
+      cost: 0,
+      profit: 0,
+      spend: 0,
+      orders: 0,
+    };
+    map[row.subreddit].spend = parseInt(row.spend_cents, 10) || 0;
+  }
+  for (const row of orders.rows) {
+    map[row.subreddit] = map[row.subreddit] || {
+      revenue: 0,
+      cost: 0,
+      profit: 0,
+      spend: 0,
+      orders: 0,
+    };
+    map[row.subreddit].orders = parseInt(row.count, 10) || 0;
+  }
+  return Object.entries(map).map(([subreddit, d]) => ({
+    subreddit,
+    cac: d.orders ? d.spend / d.orders : 0,
+    roas: d.spend ? d.revenue / d.spend : 0,
+    profit: d.profit,
+  }));
+}
+
 async function insertScalingEvent(subreddit, oldBudget, newBudget, reason) {
   await query(
     'INSERT INTO scaling_events(subreddit, old_budget_cents, new_budget_cents, reason) VALUES($1,$2,$3,$4)',
@@ -427,4 +476,6 @@ module.exports = {
   addPrinter,
   getPrintersByHub,
   insertHubShipment,
+  insertAdSpend,
+  getBusinessIntelligenceMetrics,
 };
