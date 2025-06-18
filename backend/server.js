@@ -29,7 +29,6 @@ const {
   createTimedCode,
 } = require('./discountCodes');
 
-const { verifyTag } = require('./social');
 const syncMailingList = require('./scripts/sync-mailing-list');
 
 const REWARD_OPTIONS = { 100: 500, 200: 1000 };
