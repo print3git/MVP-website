@@ -21,6 +21,7 @@ const app = require('../server');
 
 beforeEach(() => {
   db.upsertMailingListEntry.mockClear();
+  db.confirmMailingListEntry.mockClear();
   db.unsubscribeMailingListEntry.mockClear();
   sendMail.mockClear();
 });
@@ -40,4 +41,20 @@ test('GET /api/unsubscribe marks unsubscribed', async () => {
   const res = await request(app).get('/api/unsubscribe?token=t1');
   expect(res.text).toMatch(/unsubscribed/i);
   expect(db.unsubscribeMailingListEntry).toHaveBeenCalledWith('t1');
+});
+
+test('GET /api/confirm-subscription confirms address', async () => {
+  const res = await request(app).get('/api/confirm-subscription?token=tok1');
+  expect(res.text).toMatch(/confirm/i);
+  expect(db.confirmMailingListEntry).toHaveBeenCalledWith('tok1');
+});
+
+test('POST /api/webhook/sendgrid handles bounce', async () => {
+  await request(app)
+    .post('/api/webhook/sendgrid')
+    .send([{ event: 'bounce', email: 'a@a.com' }]);
+  expect(db.query).toHaveBeenCalledWith(
+    'UPDATE mailing_list SET unsubscribed=TRUE WHERE email=$1',
+    ['a@a.com']
+  );
 });
