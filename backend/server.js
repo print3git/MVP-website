@@ -28,6 +28,7 @@ const {
   incrementDiscountUsage,
   createTimedCode,
 } = require('./discountCodes');
+const syncMailingList = require('./scripts/sync-mailing-list');
 const REWARD_OPTIONS = { 100: 500, 200: 1000 };
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'admin';
 
@@ -131,6 +132,10 @@ app.post('/api/register', async (req, res) => {
       rows[0].id,
       displayName,
     ]);
+    const mlToken = uuidv4();
+    await db.upsertMailingListEntry(email, mlToken);
+    const confirmUrl = `${req.headers.origin}/api/confirm-subscription?token=${mlToken}`;
+    await sendMail(email, 'Confirm Subscription', `Click to confirm: ${confirmUrl}`);
     const token = jwt.sign({ id: rows[0].id, username, isAdmin: false }, AUTH_SECRET);
     res.json({ token, isAdmin: false });
   } catch (err) {
@@ -853,15 +858,17 @@ app.get('/api/shared/:slug', async (req, res) => {
   try {
     const share = await db.getShareBySlug(req.params.slug);
     if (!share) return res.status(404).json({ error: 'Share not found' });
-    const { rows } = await db.query('SELECT prompt, model_url FROM jobs WHERE job_id=$1', [
-      share.job_id,
-    ]);
+    const { rows } = await db.query(
+      'SELECT prompt, model_url, snapshot FROM jobs WHERE job_id=$1',
+      [share.job_id]
+    );
     if (!rows.length) return res.status(404).json({ error: 'Share not found' });
     res.json({
       jobId: share.job_id,
       slug: share.slug,
       model_url: rows[0].model_url,
       prompt: rows[0].prompt,
+      snapshot: rows[0].snapshot,
     });
   } catch (err) {
     logError(err);
@@ -873,11 +880,14 @@ app.get('/shared/:slug', async (req, res) => {
   try {
     const share = await db.getShareBySlug(req.params.slug);
     if (!share) return res.status(404).send('Not found');
-    const { rows } = await db.query('SELECT prompt, model_url FROM jobs WHERE job_id=$1', [
-      share.job_id,
-    ]);
+    const { rows } = await db.query(
+      'SELECT prompt, model_url, snapshot FROM jobs WHERE job_id=$1',
+      [share.job_id]
+    );
     const prompt = rows[0]?.prompt || 'Shared model';
-    const ogImage = `${req.protocol}://${req.get('host')}/img/boxlogo.png`;
+    const ogImage = rows[0]?.snapshot
+      ? `${req.protocol}://${req.get('host')}${rows[0].snapshot}`
+      : `${req.protocol}://${req.get('host')}/img/boxlogo.png`;
     res.send(`<!doctype html>
 <html lang="en">
   <head>
@@ -996,20 +1006,26 @@ app.get('/api/community/popular', async (req, res) => {
   }
 });
 
-app.get('/api/trending', async (req, res) => {
+app.get('/api/community/mine', authRequired, async (req, res) => {
+  const limit = parseInt(req.query.limit, 10) || 10;
+  const offset = parseInt(req.query.offset, 10) || 0;
   try {
+
     const { rows } = await db.query(
-      `SELECT j.job_id, j.model_url, j.snapshot, COUNT(o.session_id) AS sales
-       FROM jobs j
-       LEFT JOIN orders o ON j.job_id=o.job_id AND o.status='paid'
-       GROUP BY j.job_id, j.model_url, j.snapshot
-       ORDER BY sales DESC
-       LIMIT 6`
+      `SELECT c.id, c.title, c.category, j.job_id, j.model_url
+       FROM community_creations c
+       JOIN jobs j ON c.job_id=j.job_id
+       WHERE c.user_id=$1
+       ORDER BY c.created_at DESC
+       LIMIT $2 OFFSET $3`,
+      [req.user.id, limit, offset]
     );
+s = await db.getUserCreations(req.user.id, limit, offset);
     res.json(rows);
   } catch (err) {
     logError(err);
-    res.status(500).json({ error: 'Failed to fetch trending prints' });
+    res.status(500).json({ error: 'Failed to fetch creations' });
+
   }
 });
 
@@ -1043,6 +1059,45 @@ app.get('/api/community/model/:id', async (req, res) => {
   } catch (err) {
     logError(err);
     res.status(500).json({ error: 'Failed to fetch model' });
+  }
+});
+
+app.get('/api/community/:id/comments', async (req, res) => {
+  try {
+
+    const { rows } = await db.query(
+      `SELECT cc.id, cc.text, cc.created_at, u.username
+       FROM community_comments cc
+       JOIN users u ON cc.user_id=u.id
+       WHERE cc.model_id=$1
+       ORDER BY cc.created_at DESC
+       LIMIT 20`,
+      [req.params.id]
+    );
+    res.json(rows);
+
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to fetch comments' });
+  }
+});
+
+app.post('/api/community/:id/comment', authRequired, async (req, res) => {
+
+  const { text } = req.body;
+  if (!text) return res.status(400).json({ error: 'text required' });
+  try {
+    const { rows } = await db.query(
+      `INSERT INTO community_comments(model_id, user_id, text)
+       VALUES($1,$2,$3)
+       RETURNING id, text, created_at`,
+      [req.params.id, req.user.id, text]
+    );
+    res.status(201).json(rows[0]);
+
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to post comment' });
   }
 });
 
@@ -1496,11 +1551,7 @@ app.post('/api/subscribe', async (req, res) => {
   if (!email) return res.status(400).json({ error: 'Email required' });
   const token = uuidv4();
   try {
-    await db.query(
-      `INSERT INTO mailing_list(email, token) VALUES($1,$2)
-       ON CONFLICT (email) DO UPDATE SET token=$2, confirmed=FALSE`,
-      [email, token]
-    );
+    await db.upsertMailingListEntry(email, token);
     const url = `${req.headers.origin}/api/confirm-subscription?token=${token}`;
     await sendMail(email, 'Confirm Subscription', `Click to confirm: ${url}`);
     res.sendStatus(204);
@@ -1515,11 +1566,7 @@ app.post('/api/competitions/subscribe', async (req, res) => {
   if (!email) return res.status(400).json({ error: 'Email required' });
   const token = uuidv4();
   try {
-    await db.query(
-      `INSERT INTO mailing_list(email, token) VALUES($1,$2)
-       ON CONFLICT (email) DO UPDATE SET token=$2, confirmed=FALSE, unsubscribed=FALSE`,
-      [email, token]
-    );
+    await db.upsertMailingListEntry(email, token);
     const url = `${req.headers.origin}/api/confirm-subscription?token=${token}`;
     await sendMail(email, 'Confirm Subscription', `Click to confirm: ${url}`);
     res.sendStatus(204);
@@ -1533,11 +1580,23 @@ app.get('/api/confirm-subscription', async (req, res) => {
   const { token } = req.query;
   if (!token) return res.status(400).send('Invalid token');
   try {
-    await db.query('UPDATE mailing_list SET confirmed=TRUE WHERE token=$1', [token]);
+    await db.confirmMailingListEntry(token);
     res.send('Subscription confirmed');
   } catch (err) {
     logError(err);
     res.status(500).send('Failed to confirm');
+  }
+});
+
+app.get('/api/unsubscribe', async (req, res) => {
+  const { token } = req.query;
+  if (!token) return res.status(400).send('Invalid token');
+  try {
+    await db.unsubscribeMailingListEntry(token);
+    res.send('You have been unsubscribed');
+  } catch (err) {
+    logError(err);
+    res.status(500).send('Failed to unsubscribe');
   }
 });
 
@@ -1664,6 +1723,13 @@ if (require.main === module) {
   initDailyPrintsSold();
   checkCompetitionStart();
   setInterval(checkCompetitionStart, 3600000);
+  syncMailingList().catch((err) => logError('Mail sync failed', err));
+  setInterval(
+    () => {
+      syncMailingList().catch((err) => logError('Mail sync failed', err));
+    },
+    24 * 3600 * 1000
+  );
 }
 
 module.exports = app;

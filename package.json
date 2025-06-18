@@ -22,6 +22,13 @@
     "eslint": "^8.44.0",
     "eslint-config-prettier": "^8.10.0",
     "husky": "^8.0.0",
+    "lint-staged": "^16.1.2",
     "prettier": "^3.5.3"
+  },
+  "lint-staged": {
+    "*.{js,jsx,json,md,html}": [
+      "npm run lint",
+      "npx prettier --check \"**/*.{js,jsx,json,md,html}\""
+    ]
   }
 }
