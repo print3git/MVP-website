@@ -10,6 +10,8 @@ jest.mock('../db', () => ({
   getUserCreations: jest.fn(),
   insertCommunityComment: jest.fn(),
   getCommunityComments: jest.fn(),
+  getOrCreateOrderReferralLink: jest.fn(),
+  insertReferredOrder: jest.fn(),
 }));
 const db = require('../db');
 

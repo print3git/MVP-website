@@ -4,7 +4,11 @@ process.env.DB_URL = 'postgres://user:pass@localhost/db';
 process.env.HUNYUAN_API_KEY = 'test';
 process.env.HUNYUAN_SERVER_URL = 'http://localhost:4000';
 
-jest.mock('../db', () => ({ query: jest.fn().mockResolvedValue({ rows: [] }) }));
+jest.mock('../db', () => ({
+  query: jest.fn().mockResolvedValue({ rows: [] }),
+  getOrCreateOrderReferralLink: jest.fn(),
+  insertReferredOrder: jest.fn(),
+}));
 const db = require('../db');
 
 jest.mock('../mail', () => ({ sendTemplate: jest.fn() }));
