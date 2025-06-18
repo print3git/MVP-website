@@ -7,6 +7,7 @@
     <meta property="og:title" content="Earn Rewards – print2" />
     <meta property="og:description" content="Learn how to earn rewards on print2." />
     <meta property="og:image" content="img/boxlogo.png" />
+    <script src="js/applyColorScheme.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link
       rel="stylesheet"
@@ -90,10 +91,10 @@
           Invite friends to try print2 using your personal link below. When they sign up and place orders you'll earn points that can be redeemed for discounts on future prints.
         </p>
         <div>
-          <label class="block text-sm mb-1">Your referral link</label>
+          <label for="referral-link" class="block text-sm mb-1">Your referral link</label>
           <div class="flex">
-            <input id="referral-link" class="flex-1 bg-[#2A2A2E] border border-white/10 rounded-l-xl px-2 py-1" readonly />
-            <button class="bg-blue-600 px-3 rounded-r-xl" onclick="copyReferral()">Copy</button>
+            <input id="referral-link" aria-label="Referral link" class="flex-1 bg-[#2A2A2E] border border-white/10 rounded-l-xl px-2 py-1" readonly />
+            <button aria-label="Copy referral link" class="bg-blue-600 px-3 rounded-r-xl" onclick="copyReferral()">Copy</button>
           </div>
         </div>
         <div>
