@@ -353,6 +353,14 @@ async function initPaymentPage() {
   const subscriptionRadios = document.querySelectorAll(
     '#subscription-choice input[name="printclub"]'
   );
+  const priceSpan = document.getElementById('printclub-price');
+  const hasReferral = Boolean(localStorage.getItem('referrerId'));
+  if (priceSpan) {
+    const first = (PRINT_CLUB_PRICE * 0.9) / 100;
+    priceSpan.textContent = hasReferral
+      ? `Join Print Club £${first.toFixed(2)} first month`
+      : `Join Print Club £${(PRINT_CLUB_PRICE / 100).toFixed(2)}/mo`;
+  }
   const plan = qs('plan');
   if (plan === 'printclub') {
     subscriptionRadios.forEach((r) => {
@@ -477,8 +485,12 @@ async function initPaymentPage() {
     const joinClub =
       Array.from(subscriptionRadios).find((r) => r.checked)?.value === 'join';
     if (joinClub) {
-      payBtn.textContent =
-        `Join Print Club – Pay £${(PRINT_CLUB_PRICE / 100).toFixed(2)}`;
+      const hasReferral = Boolean(localStorage.getItem('referrerId'));
+      const price = hasReferral
+        ? (PRINT_CLUB_PRICE * 0.9) / 100
+        : PRINT_CLUB_PRICE / 100;
+      const suffix = hasReferral ? ' first month' : '';
+      payBtn.textContent = `Join Print Club – Pay £${price.toFixed(2)}${suffix}`;
     } else {
       payBtn.textContent = `Pay £${(selectedPrice / 100).toFixed(2)}`;
     }

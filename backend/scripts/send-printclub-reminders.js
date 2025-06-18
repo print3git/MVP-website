@@ -8,19 +8,35 @@ function startOfWeek(d = new Date()) {
   const diff = date.getUTCDate() - day;
   return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), diff));
 }
-async function sendReminders(now = new Date()) {
-  if (now.getUTCDay() !== 6) return; // only send on Saturday
+
+
+function daysUntilNextReset() {
+  const today = new Date();
+  const nextWeekStart = new Date(startOfWeek(today).getTime() + 7 * 24 * 60 * 60 * 1000);
+  return Math.ceil((nextWeekStart - today) / (24 * 60 * 60 * 1000));
+}
+
+async function sendReminders() {
+  if (daysUntilNextReset() > 2) return;
+
+
   const client = new Client({ connectionString: process.env.DB_URL });
   await client.connect();
+  const week = startOfWeek();
+  const weekStr = week.toISOString().slice(0, 10);
   try {
     const week = startOfWeek(now);
     const weekStr = week.toISOString().slice(0, 10);
     const { rows } = await client.query(
       `SELECT u.email, u.username
-         FROM subscriptions s
-         JOIN users u ON s.user_id=u.id
-         JOIN subscription_credits c ON c.user_id=s.user_id AND c.week_start=$1
-        WHERE s.status='active' AND c.total_credits - c.used_credits > 0`,
+
+         FROM subscription_credits c
+         JOIN subscriptions s ON c.user_id=s.user_id
+         JOIN users u ON c.user_id=u.id
+        WHERE s.status='active'
+          AND c.week_start=$1
+          AND c.total_credits - c.used_credits > 0`,
+
       [weekStr]
     );
     for (const row of rows) {

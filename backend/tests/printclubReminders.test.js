@@ -17,19 +17,23 @@ beforeEach(() => {
   sendTemplate.mockClear();
 });
 
-test('sends reminders on Saturday when credits remain', async () => {
-  const saturday = new Date('2024-06-01T12:00:00Z');
+
+test('sends reminders when credits unused and near reset', async () => {
+  jest.useFakeTimers().setSystemTime(new Date('2024-01-06T12:00:00Z'));
   mClient.query.mockResolvedValueOnce({ rows: [{ email: 'a@a.com', username: 'alice' }] });
-  await run(saturday);
-  expect(mClient.connect).toHaveBeenCalled();
+  await run();
+
   expect(sendTemplate).toHaveBeenCalledWith('a@a.com', 'Print Club Reminder', 'reminder.txt', {
     username: 'alice',
   });
   expect(mClient.end).toHaveBeenCalled();
+  jest.useRealTimers();
 });
 
-test('does nothing on non-Saturday', async () => {
-  const friday = new Date('2024-05-31T12:00:00Z');
-  await run(friday);
+test('exits early when reset is far away', async () => {
+  jest.useFakeTimers().setSystemTime(new Date('2024-01-02T12:00:00Z'));
+  await run();
   expect(mClient.connect).not.toHaveBeenCalled();
+  expect(sendTemplate).not.toHaveBeenCalled();
+  jest.useRealTimers();
 });
