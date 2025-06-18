@@ -54,12 +54,11 @@
           >[🎉 NEW] Earn Rewards</a
         >
 
-        <button
+        <a
+          href="printclub.html"
           id="print-club-badge"
           class="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-3xl px-3 py-2 text-sm transition-shape"
-        >
-          Print Club £140/mo
-        </button>
+          >Print Club £140/mo</a>
         <div class="flex space-x-2">
           <button
             class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
@@ -125,23 +124,32 @@
         <p><strong>Display Name:</strong> <span id="mp-display"></span></p>
         <p><strong>Email:</strong> <span id="mp-email"></span></p>
         <img id="avatar-preview" class="w-24 h-24 rounded-full object-cover" />
-        <input id="avatar-input" type="file" accept="image/*" class="mt-2" />
+        <input
+          id="avatar-input"
+          type="file"
+          accept="image/*"
+          class="mt-2"
+          aria-label="Avatar image"
+        />
         <button id="avatar-upload" class="mt-2 px-3 py-1 bg-blue-600 rounded-xl">Upload Avatar</button>
       </div>
 
       <form
         id="profile-form"
         class="space-y-2 bg-[#2A2A2E] border border-white/10 p-6 rounded-3xl w-96 mb-6"
+        aria-label="Profile settings"
       >
         <input
           id="shipping-input"
           class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
           placeholder="Shipping Address"
+          aria-label="Shipping address"
         />
         <input
           id="payment-input"
           class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
           placeholder="Payment Info"
+          aria-label="Payment info"
         />
         <label class="inline-flex items-center">
           <input type="checkbox" id="competition-toggle" class="mr-2" />
@@ -187,6 +195,10 @@
         >
           Upgrade
         </button>
+        <button
+          id="manage-subscription"
+          class="mt-2 px-3 py-1 bg-blue-600 rounded-3xl"
+        ></button>
       </div>
 
       <div id="orders" class="bg-[#2A2A2E] border border-white/10 p-6 rounded-3xl w-full mb-6">
