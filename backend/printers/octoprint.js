@@ -34,7 +34,6 @@ async function getPrinterStatus(baseUrl, apiKey = '') {
   return info.status;
 }
 
-
 async function uploadAndPrint(baseUrl, filePath, apiKey = '') {
   const sanitized = baseUrl.replace(/\/$/, '');
   const uploadUrl = `${sanitized}/api/files/local`;
