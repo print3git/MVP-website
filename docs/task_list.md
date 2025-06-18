@@ -183,8 +183,6 @@
 
 ## Fulfillment Capacity Forecasting
 
-- Summarize daily orders per location via a batch job.
-- Estimate printer hours required from the order volume.
 - Compare demand to available printer capacity.
 - Alert via email when capacity is at risk.
 - Graph forecasted demand vs. capacity in the admin panel.
