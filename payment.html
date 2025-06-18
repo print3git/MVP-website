@@ -130,7 +130,7 @@
               class="h-10 w-10 border-4 border-white border-t-transparent rounded-full animate-spin"
             ></div>
           </div>
-          <div class="mt-4 text-center text-sm text-gray-400/75 relative h-full">
+          <div class="mt-4 text-center text-sm text-gray-200/90 relative h-full">
             <p class="mb-1">Trusted by <span class="text-white">thousands of makers:</span></p>
             <p>
               ✅︎ If you don’t love it, we’ll reprint or refund you – no <br />
@@ -364,7 +364,16 @@
               </label>
             </fieldset>
 
+
+            <div id="credit-option" class="my-2 text-sm hidden">
+              <label class="flex items-center gap-1">
+                <input type="checkbox" id="use-credit" class="accent-[#30D5C8]" />
+                Use Print Club credit (<span id="credits-remaining">0</span> left this week)
+              </label>
+            </div>
+
             <div id="payment-element" class="text-center text-gray-400">
+
               [Stripe payment form will go here]
             </div>
 
@@ -406,7 +415,7 @@
         </div>
 
         <div
-          class="absolute left-0 bottom-4 w-full md:w-1/2 max-w-lg text-center text-sm text-gray-400/75"
+          class="absolute left-0 bottom-4 w-full md:w-1/2 max-w-lg text-center text-sm text-gray-200/90"
         >
           <p>
             Due to incredibly high demand, delivery may take 3+ weeks.<br />
@@ -481,7 +490,7 @@
         <button id="next-print-btn" class="px-4 py-2 mb-2 rounded-md bg-[#30D5C8] text-[#1A1A1D]">
           Create it
         </button>
-        <p class="text-sm text-gray-400">
+        <p class="text-sm text-gray-200">
           Use code <span id="next-discount" class="text-white font-mono px-1"></span> within
           48&nbsp;h
         </p>
