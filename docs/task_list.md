@@ -221,31 +221,10 @@
 
 
 ## Earn Rewards Page
-
-- Allow point redemption for discount codes.
-  - Add POST `/api/rewards/redeem` that deducts points and returns a code.
-  - Insert a dropdown on the page listing available rewards.
-- Track referrals in the backend.
-  - Create `referral_events` table for clicks and signups.
-  - Add POST `/api/referral-click` to record each click.
-  - Add POST `/api/referral-signup` to award points after signup.
-- Add unit tests for all new rewards endpoints.
 ## Community Creations
 
-- Link creations to the uploader.
-  - Add `user_id` column to `community_creations`.
-  - Insert the logged in user's id in `/api/community`.
-- Allow deletion of a submission.
-  - Add DELETE `/api/community/:id` restricted to the owner.
-  - Show a delete button next to each item on "My Creations".
 - Support comments on models.
   - Create `community_comments` table (`id`, `model_id`, `user_id`, `text`, `created_at`).
   - POST `/api/community/:id/comment` to add a comment.
   - GET `/api/community/:id/comments` returning the newest 20.
-- Provide a personal gallery.
-  - GET `/api/community/mine` listing the logged in user's creations.
-  - Add `my_creations.html` reusing the community grid.
-- Enable sharing individual models.
-  - GET `/community/model/:id` to show one model with share metadata.
-  - Add a copy-link button in the modal.
 
