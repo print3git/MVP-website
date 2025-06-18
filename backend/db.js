@@ -145,7 +145,38 @@ async function insertReferralEvent(referrerId, type) {
   await query('INSERT INTO referral_events(referrer_id, type) VALUES($1,$2)', [referrerId, type]);
 }
 
+async function upsertMailingListEntry(email, token) {
+  await query(
+    `INSERT INTO mailing_list(email, token)
+     VALUES($1,$2)
+     ON CONFLICT (email) DO UPDATE SET token=$2, unsubscribed=FALSE`,
+    [email, token]
+  );
+}
 
+async function confirmMailingListEntry(token) {
+  await query('UPDATE mailing_list SET confirmed=TRUE WHERE token=$1', [token]);
+}
+
+async function unsubscribeMailingListEntry(token) {
+  await query('UPDATE mailing_list SET unsubscribed=TRUE WHERE token=$1', [token]);
+}
+
+async function insertSocialShare(userId, orderId, url) {
+  const { rows } = await query(
+    'INSERT INTO social_shares(user_id, order_id, post_url) VALUES($1,$2,$3) RETURNING id, verified',
+    [userId, orderId, url]
+  );
+  return rows[0];
+}
+
+async function verifySocialShare(id, discountCode) {
+  const { rows } = await query(
+    'UPDATE social_shares SET verified=TRUE, discount_code=$2 WHERE id=$1 RETURNING user_id',
+    [id, discountCode]
+  );
+  return rows[0];
+}
 
 async function getUserCreations(userId, limit = 10, offset = 0) {
   const { rows } = await query(
@@ -199,6 +230,12 @@ module.exports = {
   adjustRewardPoints,
   getUserIdForReferral,
   insertReferralEvent,
+  upsertMailingListEntry,
+  confirmMailingListEntry,
+  unsubscribeMailingListEntry,
   insertSocialShare,
   verifySocialShare,
+  getUserCreations,
+  insertCommunityComment,
+  getCommunityComments,
 };
