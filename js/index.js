@@ -359,6 +359,23 @@ async function buyNow() {
   window.location.href = data.checkoutUrl;
 }
 
+async function updatePrintClubBadge(el) {
+  const token = localStorage.getItem('token');
+  if (!el || !token) return;
+  try {
+    const res = await fetch(`${API_BASE}/subscription`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) return;
+    const sub = await res.json();
+    if (sub && sub.status !== 'canceled' && sub.active !== false) {
+      el.textContent = 'Print Club';
+    }
+  } catch {
+    /* ignore errors */
+  }
+}
+
 function showError(msg) {
   const el = document.getElementById('gen-error');
   if (!el) return;
@@ -773,6 +790,7 @@ async function init() {
   const clubBadge = document.getElementById('print-club-badge');
   const clubModal = document.getElementById('printclub-modal');
   const clubClose = document.getElementById('printclub-close');
+  updatePrintClubBadge(clubBadge);
   clubBadge?.addEventListener('click', () => clubModal?.classList.remove('hidden'));
   clubClose?.addEventListener('click', () => clubModal?.classList.add('hidden'));
   clubModal?.addEventListener('click', (e) => {
