@@ -245,3 +245,89 @@
 - Compare demand to available printer capacity.
 - Alert via email when capacity is at risk.
 - Graph forecasted demand vs. capacity in the admin panel.
+
+## Printer Load Monitoring
+- Install OctoPrint on each printer and verify API access.
+- Create `printers` table storing hub, model, and IP address.
+- Poll each printer for queue length and status every minute.
+- Record estimated time remaining and error codes to `printer_stats`.
+- Log idle time when a printer has no active job.
+- Expose GET `/api/printers/status` returning aggregated data.
+
+## Print Job Routing
+- Map printers to geographic hubs in the database.
+- Assign new orders to the nearest hub with available capacity.
+- Reassign orders if the selected hub queue exceeds threshold.
+- Persist assigned printer ID with each order record.
+- Provide admin override to change a job's hub.
+
+## Auto-Expansion Triggers
+- Calculate average queue saturation per hub daily.
+- If saturation >80% for three days, create expansion alert.
+- Email recommended printer purchase quantity to founders.
+- Flag hubs with error rate above 5% for technician visit.
+- Log all expansion events in `scaling_events` table.
+
+## Printer Procurement Automation
+- Generate PDF purchase orders for new printers automatically.
+- Email vendors with attached purchase order for approval.
+- Track outstanding printer deliveries in `purchase_orders`.
+- Update inventory counts when delivery is confirmed.
+- Integrate vendor API for direct ordering when available.
+
+## Hub Deployment Kit
+- Build Raspberry Pi images preconfigured with OctoPrint.
+- Package setup guide and calibration scripts with each kit.
+- Create script to register a new hub and its printers in the DB.
+- Auto-create monitoring accounts for the new hub.
+- Ship printers and accessories together as a labeled kit.
+
+## Global Operations Dashboard
+- Display printer utilization metrics per hub.
+- List orders queued, printing, and shipped in real time.
+- Show upcoming scaling triggers and outstanding purchase orders.
+- Visualize printer health and recent error logs.
+- Graph daily production capacity against demand.
+
+## Business Intelligence
+- Aggregate ad spend, revenue, and profit by subreddit.
+- Compute CAC and ROAS trends per region.
+- Send weekly performance summary email to founders.
+- Provide CSV export of key metrics for further analysis.
+
+## Packaging Automation
+- Print shipping label automatically when a job finishes.
+- Queue completed prints for the bagging station.
+- Scan barcode on bag to mark item packaged.
+- Route packaged items to boxing queue automatically.
+- Record packaging errors and flag for review.
+
+## Shipping Automation
+- Schedule daily carrier pickup via shipping API.
+- Send tracking email to customer when label is generated.
+- Update order status based on carrier tracking events.
+- Log shipping cost and delivery time for each order.
+
+## Customer Service Automation
+- Auto-reply to "where is my order" emails with tracking link.
+- Provide chatbot answering common questions on the site.
+- Auto-issue goodwill coupons when shipments are delayed.
+- Escalate unresolved tickets to founders after 24 hours.
+
+## Compliance & Accounting
+- Track sales per country to calculate VAT owed.
+- Generate monthly accounting report summarizing taxes.
+- Flag restricted shipping regions for certain items.
+- Store compliance logs for future audits.
+
+## Creator Marketplace
+- Allow designers to submit models through an upload form.
+- Validate submitted STLs and reject invalid files.
+- Track royalty percentage and payouts per creator.
+- Generate monthly payout statements and send via email.
+
+## Print Handling Robotics (Future)
+- Prototype robotic arm script for automatic print removal.
+- Train vision model to detect failed prints on the bed.
+- Integrate robotic removal with bagging station control.
+- Evaluate per-hub cost and update ROI model.
