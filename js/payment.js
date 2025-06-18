@@ -10,7 +10,12 @@ const PRICES = {
   multi: 3499,
   premium: 5999,
 };
-const PRINT_CLUB_PRICE = 14000;
+let PRICING_VARIANT = localStorage.getItem('pricingVariant');
+if (!PRICING_VARIANT) {
+  PRICING_VARIANT = Math.random() < 0.5 ? 'A' : 'B';
+  localStorage.setItem('pricingVariant', PRICING_VARIANT);
+}
+const PRINT_CLUB_PRICE = PRICING_VARIANT === 'B' ? 16000 : 14000;
 let selectedPrice = PRICES.multi;
 const SINGLE_BORDER_COLOR = '#60a5fa';
 const API_BASE = (window.API_ORIGIN || '') + '/api';
@@ -809,7 +814,10 @@ async function initPaymentPage() {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({}),
+        body: JSON.stringify({
+          variant: PRICING_VARIANT,
+          price_cents: PRINT_CLUB_PRICE,
+        }),
       });
     }
   };

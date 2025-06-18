@@ -165,11 +165,30 @@ async function insertCheckoutEvent(sessionId, subreddit, step) {
   );
 }
 
+<<<<<<< jtyxgr-codex/execute-next-subtasks-for-subscription-service
+async function insertSubscriptionEvent(userId, event, variant, priceCents) {
+  await query(
+    'INSERT INTO subscription_events(user_id, event, variant, price_cents) VALUES($1,$2,$3,$4)',
+    [userId, event, variant, priceCents]
+  );
+}
+
+async function getSubscriptionMetrics() {
+  const active = await query("SELECT COUNT(*) FROM subscriptions WHERE status='active'");
+  const churn = await query(
+    "SELECT COUNT(*) FROM subscription_events WHERE event='cancel' AND created_at >= NOW() - INTERVAL '30 days'"
+  );
+  return {
+    active: parseInt(active.rows[0].count, 10),
+    churn_last_30_days: parseInt(churn.rows[0].count, 10),
+  };
+=======
 async function insertShareEvent(shareId, network) {
   await query('INSERT INTO share_events(share_id, network, timestamp) VALUES($1,$2,NOW())', [
     shareId,
     network,
   ]);
+>>>>>>> main
 }
 
 async function getConversionMetrics() {
@@ -284,6 +303,8 @@ module.exports = {
   insertAdClick,
   insertCartEvent,
   insertCheckoutEvent,
+  insertSubscriptionEvent,
+  getSubscriptionMetrics,
   getConversionMetrics,
   cancelSubscription,
   getSubscription,
