@@ -422,6 +422,7 @@ async function buyNow() {
       price: 2000,
       qty: 1,
       shippingInfo: userProfile.shipping_info,
+      productType: 'single',
     }),
   });
   const data = await res.json();
