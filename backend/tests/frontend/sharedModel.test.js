@@ -24,11 +24,13 @@ function setup(url) {
 test('loads model from API', async () => {
   const dom = setup('http://localhost/share.html?slug=test');
   dom.window.fetch = jest.fn(() =>
-    Promise.resolve({ ok: true, json: () => ({ model_url: 'foo.glb' }) })
+    Promise.resolve({ ok: true, json: () => ({ model_url: 'foo.glb', snapshot: '/s.png' }) })
   );
   dom.window.document.dispatchEvent(new dom.window.Event('DOMContentLoaded'));
   await new Promise((r) => setTimeout(r, 0));
-  expect(dom.window.document.getElementById('viewer').src).toContain('foo.glb');
+  const viewer = dom.window.document.getElementById('viewer');
+  expect(viewer.src).toContain('foo.glb');
+  expect(viewer.getAttribute('poster')).toBe('/s.png');
 });
 
 test('shows error when slug missing', () => {
