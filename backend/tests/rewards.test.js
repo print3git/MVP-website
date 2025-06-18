@@ -85,6 +85,8 @@ test('POST /api/referral-signup awards points', async () => {
   expect(res.status).toBe(200);
   expect(db.insertReferralEvent).toHaveBeenCalledWith('u1', 'signup');
   expect(db.adjustRewardPoints).toHaveBeenCalledWith('u1', 10);
+  expect(res.body.code).toBe('DISC123');
+  expect(createTimedCode).toHaveBeenCalled();
 });
 
 test('GET /api/orders/:id/referral-link returns code', async () => {
