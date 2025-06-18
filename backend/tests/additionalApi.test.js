@@ -328,6 +328,7 @@ test('GET /api/competitions/active returns upcoming comps', async () => {
   expect(res.status).toBe(200);
   expect(res.body[0].id).toBe('1');
   expect(res.body[0].start_date).toBe('2099-01-01');
+  expect(res.body[0].deadline).toBe('2099-01-31T23:59:59.000Z');
 });
 
 test('GET /api/competitions/past', async () => {

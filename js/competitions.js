@@ -92,7 +92,7 @@ async function load() {
     div.className = 'bg-[#2A2A2E] p-4 rounded-xl space-y-2';
     div.innerHTML = `<h2 class="text-xl">${c.name}</h2>
       <p>${c.prize_description || ''}</p>
-      <p class="text-sm"><span class="countdown" data-end="${c.end_date}"></span> left</p>
+      <p class="text-sm"><span class="countdown" data-deadline="${c.deadline}"></span> left</p>
       <div class="flex space-x-2">
         <button data-id="${c.id}" class="enter bg-[#30D5C8] text-[#1A1A1D] px-3 py-1 rounded">Enter</button>
         <button onclick="shareOn('twitter')" aria-label="Share on Twitter" class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#1A1A1D] border border-white/10 rounded hover:bg-[#3A3A3E]"><i class="fab fa-twitter"></i></button>
@@ -173,7 +173,7 @@ function zeroPad(num) {
 }
 
 function startCountdown(el) {
-  const end = new Date(el.dataset.end + 'T23:59:59');
+  const end = new Date(el.dataset.deadline);
   let timer;
   function update() {
     const diff = end - new Date();
@@ -185,10 +185,11 @@ function startCountdown(el) {
     const d = Math.floor(diff / 86400000);
     const h = Math.floor((diff % 86400000) / 3600000);
     const m = Math.floor((diff % 3600000) / 60000);
-    el.textContent = `${d}d ${zeroPad(h)}:${zeroPad(m)}`;
+    const s = Math.floor((diff % 60000) / 1000);
+    el.textContent = `${d}d ${zeroPad(h)}:${zeroPad(m)}:${zeroPad(s)}`;
   }
   update();
-  timer = setInterval(update, 60000);
+  timer = setInterval(update, 1000);
 }
 
 let currentId;
