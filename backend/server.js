@@ -858,15 +858,17 @@ app.get('/api/shared/:slug', async (req, res) => {
   try {
     const share = await db.getShareBySlug(req.params.slug);
     if (!share) return res.status(404).json({ error: 'Share not found' });
-    const { rows } = await db.query('SELECT prompt, model_url FROM jobs WHERE job_id=$1', [
-      share.job_id,
-    ]);
+    const { rows } = await db.query(
+      'SELECT prompt, model_url, snapshot FROM jobs WHERE job_id=$1',
+      [share.job_id]
+    );
     if (!rows.length) return res.status(404).json({ error: 'Share not found' });
     res.json({
       jobId: share.job_id,
       slug: share.slug,
       model_url: rows[0].model_url,
       prompt: rows[0].prompt,
+      snapshot: rows[0].snapshot,
     });
   } catch (err) {
     logError(err);
@@ -878,11 +880,14 @@ app.get('/shared/:slug', async (req, res) => {
   try {
     const share = await db.getShareBySlug(req.params.slug);
     if (!share) return res.status(404).send('Not found');
-    const { rows } = await db.query('SELECT prompt, model_url FROM jobs WHERE job_id=$1', [
-      share.job_id,
-    ]);
+    const { rows } = await db.query(
+      'SELECT prompt, model_url, snapshot FROM jobs WHERE job_id=$1',
+      [share.job_id]
+    );
     const prompt = rows[0]?.prompt || 'Shared model';
-    const ogImage = `${req.protocol}://${req.get('host')}/img/boxlogo.png`;
+    const ogImage = rows[0]?.snapshot
+      ? `${req.protocol}://${req.get('host')}${rows[0].snapshot}`
+      : `${req.protocol}://${req.get('host')}/img/boxlogo.png`;
     res.send(`<!doctype html>
 <html lang="en">
   <head>
