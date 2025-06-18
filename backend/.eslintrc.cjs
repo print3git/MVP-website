@@ -1,5 +1,5 @@
 module.exports = {
-  extends: ['@eslint/js', 'prettier'],
+  extends: ['eslint:recommended', 'prettier'],
   env: { node: true, jest: true },
   plugins: ['promise'],
   rules: {
@@ -11,5 +11,9 @@ module.exports = {
       { selector: "CallExpression[callee.object.name='test'][callee.property.name='skip']", message: 'Avoid test.skip' },
     ],
     'promise/no-floating-promises': 'error',
+    'no-unused-vars': [
+      'error',
+      { argsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' },
+    ],
   },
 };

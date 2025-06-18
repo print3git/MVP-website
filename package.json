@@ -10,8 +10,9 @@
     "prepare": "husky install",
     "format": "prettier --write \"**/*.{js,jsx,json,md,html,html}\"",
     "check-conflicts": "! grep -R --include=*.js --include=*.jsx --include=*.ts --include=*.tsx '^(<{7}|={7}|>{7})' .",
-    "lint": "npm run check-conflicts && eslint . --max-warnings=0",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "npm run check-conflicts && npm run lint --prefix backend",
+    "test": "npm test --prefix backend",
+    "ci": "npm run format && npm run lint && npm test"
   },
   "keywords": [],
   "author": "",
@@ -28,8 +29,8 @@
   },
   "lint-staged": {
     "*.{js,jsx,json,md,html}": [
-      "npm run lint",
-      "npx prettier --check \"**/*.{js,jsx,json,md,html}\""
+      "npm run format",
+      "npm run lint"
     ]
   }
 }
