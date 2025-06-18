@@ -221,31 +221,57 @@
 
 
 ## Earn Rewards Page
-
-- Allow point redemption for discount codes.
-  - Add POST `/api/rewards/redeem` that deducts points and returns a code.
-  - Insert a dropdown on the page listing available rewards.
-- Track referrals in the backend.
-  - Create `referral_events` table for clicks and signups.
-  - Add POST `/api/referral-click` to record each click.
-  - Add POST `/api/referral-signup` to award points after signup.
-- Add unit tests for all new rewards endpoints.
 ## Community Creations
 
-- Link creations to the uploader.
-  - Add `user_id` column to `community_creations`.
-  - Insert the logged in user's id in `/api/community`.
-- Allow deletion of a submission.
-  - Add DELETE `/api/community/:id` restricted to the owner.
-  - Show a delete button next to each item on "My Creations".
 - Support comments on models.
   - Create `community_comments` table (`id`, `model_id`, `user_id`, `text`, `created_at`).
   - POST `/api/community/:id/comment` to add a comment.
   - GET `/api/community/:id/comments` returning the newest 20.
-- Provide a personal gallery.
-  - GET `/api/community/mine` listing the logged in user's creations.
-  - Add `my_creations.html` reusing the community grid.
-- Enable sharing individual models.
-  - GET `/community/model/:id` to show one model with share metadata.
-  - Add a copy-link button in the modal.
 
+## Profit & CAC Tracking
+- Add UTM parameters to all ad URLs.
+- Capture UTM parameters in the session on landing.
+- Store UTM and subreddit values with each order.
+- Log page view, add to cart, and purchase events with session IDs.
+- Pull daily spend and impressions from the Reddit Ads API.
+- Compute views, CTR, add-to-cart rate, and checkout rate per subreddit.
+- Record cost of goods sold for each pricing tier.
+- Calculate profit per order and CAC metrics.
+- Display aggregated profit by subreddit in an admin dashboard.
+- Add unit tests covering profit calculations and data import.
+
+## Automated Scaling Engine
+- Fetch campaign performance hourly via cron.
+- Compute marginal CAC per subreddit.
+- Compare CAC to profit per sale with thresholds.
+- Increase or decrease budgets via Reddit Ads API accordingly.
+- Pause campaigns when CAC exceeds profit threshold.
+- Log each budget change to a `scaling_events` table.
+- Expose an admin endpoint listing recent scaling actions.
+
+## Autonomous 3D Printing
+- Create `print_jobs` table with order ID, printer ID, status, and G-code path.
+- Monitor printer status via OctoPrint or Klipper API.
+- Assign new jobs to idle printers automatically.
+- Upload generated G-code and start printing.
+- Update job status when printing completes via webhook.
+- Slice STL/GLB files into G-code after order placement.
+- Show printer queues and status on a dashboard.
+- Notify operator when a printer requires manual clearing.
+
+## AI Advert Generation
+- Maintain JSON template library for ad text patterns.
+- Generate ad copy variants using an LLM with subreddit context.
+- Produce image thumbnails through a diffusion model API.
+- Display proposed ads in an approval dashboard.
+- Allow edits to copy or images before approval.
+- Submit approved ads to Reddit Ads API automatically.
+- Discover related subreddits via Reddit API to suggest new targets.
+- Store approval or rejection events for each generated ad.
+
+## Fulfillment Capacity Forecasting
+- Summarize daily orders per location via a batch job.
+- Estimate printer hours required from the order volume.
+- Compare demand to available printer capacity.
+- Alert via email when capacity is at risk.
+- Graph forecasted demand vs. capacity in the admin panel.
