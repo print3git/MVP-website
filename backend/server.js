@@ -1393,7 +1393,7 @@ app.get('/api/competitions/active', async (req, res) => {
 app.get('/api/competitions/past', async (req, res) => {
   try {
     const { rows } = await db.query(
-      `SELECT c.id, c.name, c.end_date, j.model_url, j.snapshot, c.winner_model_id
+      `SELECT c.id, c.name, c.end_date, c.theme, j.model_url, j.snapshot, c.winner_model_id
        FROM competitions c
        LEFT JOIN jobs j ON c.winner_model_id=j.job_id
        WHERE c.end_date < CURRENT_DATE AND c.winner_model_id IS NOT NULL
@@ -1536,12 +1536,12 @@ function adminCheck(req, res, next) {
 }
 
 app.post('/api/admin/competitions', adminCheck, async (req, res) => {
-  const { name, start_date, end_date, prize_description } = req.body;
+  const { name, start_date, end_date, prize_description, theme } = req.body;
   try {
     const { rows } = await db.query(
-      `INSERT INTO competitions(name,start_date,end_date,prize_description)
-       VALUES($1,$2,$3,$4) RETURNING *`,
-      [name, start_date, end_date, prize_description]
+      `INSERT INTO competitions(name,start_date,end_date,prize_description,theme)
+       VALUES($1,$2,$3,$4,$5) RETURNING *`,
+      [name, start_date, end_date, prize_description, theme]
     );
     const comp = rows[0];
     try {
@@ -1566,13 +1566,36 @@ app.post('/api/admin/competitions', adminCheck, async (req, res) => {
 });
 
 app.put('/api/admin/competitions/:id', adminCheck, async (req, res) => {
-  const { name, start_date, end_date, prize_description, winner_model_id } = req.body;
+  const { name, start_date, end_date, prize_description, winner_model_id, theme } = req.body;
   try {
+    const prev = await db.query('SELECT winner_model_id FROM competitions WHERE id=$1', [
+      req.params.id,
+    ]);
+    const prevWinner = prev.rows[0] && prev.rows[0].winner_model_id;
     const { rows } = await db.query(
-      `UPDATE competitions SET name=$1, start_date=$2, end_date=$3, prize_description=$4, winner_model_id=$5, updated_at=NOW() WHERE id=$6 RETURNING *`,
-      [name, start_date, end_date, prize_description, winner_model_id, req.params.id]
+      `UPDATE competitions SET name=$1, start_date=$2, end_date=$3, prize_description=$4, winner_model_id=$5, theme=$6, updated_at=NOW() WHERE id=$7 RETURNING *`,
+      [name, start_date, end_date, prize_description, winner_model_id, theme, req.params.id]
     );
-    res.json(rows[0]);
+    const comp = rows[0];
+    if (!prevWinner && winner_model_id) {
+      try {
+        const userRes = await db.query(
+          'SELECT u.email FROM users u JOIN jobs j ON u.id=j.user_id WHERE j.job_id=$1',
+          [winner_model_id]
+        );
+        if (userRes.rows.length) {
+          const code = await createTimedCode(500, 168);
+          await sendMail(
+            userRes.rows[0].email,
+            'Competition Prize',
+            `Congratulations! Use code ${code} to claim your prize.`
+          );
+        }
+      } catch (err) {
+        logError('Failed to send prize code', err);
+      }
+    }
+    res.json(comp);
   } catch (err) {
     logError(err);
     res.status(500).json({ error: 'Failed to update competition' });
@@ -1837,6 +1860,10 @@ app.post('/api/create-order', authOptional, async (req, res) => {
 
     let totalDiscount = discount || 0;
     let discountCodeId = null;
+    let referrerId = null;
+    if (referral) {
+      referrerId = await db.getUserIdForReferral(referral);
+    }
 
     if (discountCode) {
       const row = await getValidDiscountCode(discountCode);
@@ -1847,30 +1874,30 @@ app.post('/api/create-order', authOptional, async (req, res) => {
       discountCodeId = row.id;
     }
 
-    if (referral && (!req.user || referral !== req.user.id)) {
+    if (referrerId && (!req.user || referrerId !== req.user.id)) {
       const refDisc = Math.round((price || 0) * (qty || 1) * 0.1);
       totalDiscount += refDisc;
       try {
         const code = await createTimedCode(refDisc, 720);
         await db.query('INSERT INTO incentives(user_id, type) VALUES($1,$2)', [
-          referral,
+          referrerId,
           `referral_${code}`,
         ]);
 
         const { rows: counts } = await db.query(
           "SELECT COUNT(*) FROM incentives WHERE user_id=$1 AND type LIKE 'referral_%'",
-          [referral]
+          [referrerId]
         );
         const referralCount = parseInt(counts[0].count, 10) || 0;
         if (referralCount >= 3) {
           const { rows: existing } = await db.query(
             "SELECT 1 FROM incentives WHERE user_id=$1 AND type LIKE 'free_%' LIMIT 1",
-            [referral]
+            [referrerId]
           );
           if (existing.length === 0) {
             const freeCode = await createTimedCode(Math.round((price || 0) * (qty || 1)), 720);
             await db.query('INSERT INTO incentives(user_id, type) VALUES($1,$2)', [
-              referral,
+              referrerId,
               `free_${freeCode}`,
             ]);
           }
@@ -1978,8 +2005,8 @@ app.post('/api/create-order', authOptional, async (req, res) => {
         req.body.adSubreddit || null,
       ]
     );
-    if (referral && (!req.user || referral !== req.user.id)) {
-      await db.insertReferredOrder(session.id, referral);
+    if (referrerId && (!req.user || referrerId !== req.user.id)) {
+      await db.insertReferredOrder(session.id, referrerId);
     }
 
     if (req.user && job.rows[0].user_id && job.rows[0].user_id !== req.user.id) {
