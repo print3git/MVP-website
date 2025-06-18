@@ -2,6 +2,7 @@
 
 require('dotenv').config();
 const express = require('express');
+const http2 = require('http2');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const multer = require('multer');
@@ -18,6 +19,7 @@ const fs = require('fs');
 const config = require('./config');
 const generateTitle = require('./utils/generateTitle');
 const stripe = require('stripe')(config.stripeKey);
+const campaigns = require('./campaigns.json');
 const { initDailyPrintsSold, getDailyPrintsSold } = require('./utils/dailyPrints');
 const { enqueuePrint, processQueue, progressEmitter } = require('./queue/printQueue');
 const { sendMail, sendTemplate } = require('./mail');
@@ -29,8 +31,10 @@ const {
   createTimedCode,
 } = require('./discountCodes');
 const { verifyTag } = require('./social');
+const QRCode = require('qrcode');
 
 const syncMailingList = require('./scripts/sync-mailing-list');
+const runScalingEngine = require('./scalingEngine');
 
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'admin';
 
@@ -402,8 +406,12 @@ app.get('/api/stats', (req, res) => {
   }
 });
 
+app.get('/api/campaign', (req, res) => {
+  res.json(campaigns);
+});
+
 app.get('/api/init-data', authOptional, async (req, res) => {
-  const result = { slots: computePrintSlots() };
+  const result = { slots: computePrintSlots(), campaign: campaigns };
   try {
     result.stats = { printsSold: getDailyPrintsSold(), averageRating: 4.8 };
     if (req.user) {
@@ -423,6 +431,7 @@ app.get('/api/payment-init', authOptional, async (req, res) => {
   const result = {
     slots: computePrintSlots(),
     publishableKey: config.stripePublishable,
+    campaign: campaigns,
   };
   try {
     const { rows: saleRows } = await db.query(
@@ -711,6 +720,26 @@ app.get('/api/subscription/credits', authRequired, async (req, res) => {
   }
 });
 
+app.get('/api/subscription/summary', authRequired, async (req, res) => {
+  try {
+    await db.ensureCurrentWeekCredits(req.user.id, 2);
+    const [sub, credits] = await Promise.all([
+      db.getSubscription(req.user.id),
+      db.getCurrentWeekCredits(req.user.id),
+    ]);
+    res.json({
+      subscription: sub || { active: false },
+      credits: {
+        remaining: credits.total_credits - credits.used_credits,
+        total: credits.total_credits,
+      },
+    });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to fetch subscription summary' });
+  }
+});
+
 app.get('/api/dashboard', authRequired, async (req, res) => {
   try {
     await db.ensureCurrentWeekCredits(req.user.id, 2);
@@ -783,6 +812,24 @@ app.get('/api/orders/:id/referral-link', authRequired, async (req, res) => {
   }
 });
 
+app.get('/api/orders/:id/referral-qr', authRequired, async (req, res) => {
+  const { id } = req.params;
+  try {
+    const { rows } = await db.query('SELECT user_id FROM orders WHERE session_id=$1', [id]);
+    if (!rows.length || rows[0].user_id !== req.user.id) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+    const code = await db.getOrCreateOrderReferralLink(id);
+    const base = req.headers.origin || process.env.SITE_URL || 'http://localhost:3000';
+    const url = `${base}?ref=${code}`;
+    const png = await QRCode.toBuffer(url, { width: 256 });
+    res.type('png').send(png);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to generate QR code' });
+  }
+});
+
 app.post('/api/referral-click', async (req, res) => {
   const { code } = req.body || {};
   if (!code) return res.status(400).json({ error: 'Missing code' });
@@ -805,7 +852,8 @@ app.post('/api/referral-signup', async (req, res) => {
     if (!referrer) return res.status(404).json({ error: 'Invalid code' });
     await db.insertReferralEvent(referrer, 'signup');
     await db.adjustRewardPoints(referrer, 10);
-    res.json({ success: true });
+    const discountCode = await createTimedCode(500, 168);
+    res.json({ code: discountCode });
   } catch (err) {
     logError(err);
     res.status(500).json({ error: 'Failed to record signup' });
@@ -970,6 +1018,16 @@ app.get('/api/metrics/conversion', async (req, res) => {
   } catch (err) {
     logError(err);
     res.status(500).json({ error: 'Failed to fetch metrics' });
+  }
+});
+
+app.get('/api/metrics/profit', async (req, res) => {
+  try {
+    const data = await db.getProfitMetrics();
+    res.json(data);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to fetch profit metrics' });
   }
 });
 
@@ -1349,13 +1407,17 @@ app.get('/api/competitions/winners', (req, res) => {
 app.get('/api/competitions/:id/entries', async (req, res) => {
   try {
     const { rows } = await db.query(
-      `SELECT e.model_id, j.model_url, COALESCE(l.count,0) as likes
+      `SELECT e.model_id, j.model_url, COALESCE(v.count,0) as votes
        FROM competition_entries e
        JOIN jobs j ON e.model_id=j.job_id
-       LEFT JOIN (SELECT model_id, COUNT(*) as count FROM likes GROUP BY model_id) l
-       ON e.model_id=l.model_id
+       LEFT JOIN (
+         SELECT model_id, COUNT(*) as count
+         FROM competition_votes
+         WHERE competition_id=$1
+         GROUP BY model_id
+       ) v ON e.model_id=v.model_id
        WHERE e.competition_id=$1
-       ORDER BY likes DESC`,
+       ORDER BY votes DESC`,
       [req.params.id]
     );
     res.json(rows);
@@ -1427,6 +1489,28 @@ app.post('/api/competitions/:id/discount', authRequired, async (req, res) => {
   } catch (err) {
     logError(err);
     res.status(500).json({ error: 'Failed to generate discount' });
+  }
+});
+
+app.post('/api/competitions/:id/vote', authRequired, async (req, res) => {
+  const { modelId } = req.body;
+  if (!modelId) return res.status(400).json({ error: 'modelId required' });
+  const compId = req.params.id;
+  try {
+    await db.query(
+      `INSERT INTO competition_votes(competition_id, model_id, user_id)
+       VALUES($1,$2,$3)
+       ON CONFLICT DO NOTHING`,
+      [compId, modelId, req.user.id]
+    );
+    const count = await db.query(
+      'SELECT COUNT(*) FROM competition_votes WHERE competition_id=$1 AND model_id=$2',
+      [compId, modelId]
+    );
+    res.json({ votes: parseInt(count.rows[0].count, 10) });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to submit vote' });
   }
 });
 
@@ -1708,6 +1792,16 @@ app.get('/api/admin/subscription-metrics', adminCheck, async (req, res) => {
   }
 });
 
+app.get('/api/admin/scaling-events', adminCheck, async (req, res) => {
+  try {
+    const events = await db.getScalingEvents(50);
+    res.json(events);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to fetch events' });
+  }
+});
+
 /**
  * POST /api/create-order
  * Create a Stripe Checkout session
@@ -1785,7 +1879,7 @@ app.post('/api/create-order', authOptional, async (req, res) => {
       await db.incrementCreditsUsed(req.user.id, 1);
       const sessionId = uuidv4();
       await db.query(
-        'INSERT INTO orders(session_id, job_id, user_id, price_cents, status, shipping_info, quantity, discount_cents, etch_name, utm_source, utm_medium, utm_campaign, subreddit) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)',
+        'INSERT INTO orders(session_id, job_id, user_id, price_cents, status, shipping_info, quantity, discount_cents, etch_name, product_type, utm_source, utm_medium, utm_campaign, subreddit) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)',
         [
           sessionId,
           jobId,
@@ -1796,6 +1890,7 @@ app.post('/api/create-order', authOptional, async (req, res) => {
           qty || 1,
           0,
           etchName || null,
+          req.body.productType || null,
           req.body.utmSource || null,
           req.body.utmMedium || null,
           req.body.utmCampaign || null,
@@ -1845,7 +1940,7 @@ app.post('/api/create-order', authOptional, async (req, res) => {
     });
 
     await db.query(
-      'INSERT INTO orders(session_id, job_id, user_id, price_cents, status, shipping_info, quantity, discount_cents, etch_name, utm_source, utm_medium, utm_campaign, subreddit) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)',
+      'INSERT INTO orders(session_id, job_id, user_id, price_cents, status, shipping_info, quantity, discount_cents, etch_name, product_type, utm_source, utm_medium, utm_campaign, subreddit) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)',
       [
         session.id,
         jobId,
@@ -1856,6 +1951,7 @@ app.post('/api/create-order', authOptional, async (req, res) => {
         qty || 1,
         totalDiscount,
         etchName || null,
+        req.body.productType || null,
         req.body.utmSource || null,
         req.body.utmMedium || null,
         req.body.utmCampaign || null,
@@ -1909,6 +2005,23 @@ app.post('/api/competitions/subscribe', async (req, res) => {
   } catch (err) {
     logError(err);
     res.status(500).json({ error: 'Failed to subscribe' });
+  }
+});
+
+app.post('/api/competitions/notify', adminCheck, async (req, res) => {
+  const { subject, message } = req.body;
+  if (!subject || !message) return res.status(400).json({ error: 'Missing fields' });
+  try {
+    const { rows } = await db.query(
+      'SELECT email FROM mailing_list WHERE confirmed=TRUE AND unsubscribed=FALSE'
+    );
+    for (const r of rows) {
+      await sendMail(r.email, subject, message);
+    }
+    res.sendStatus(204);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to send notifications' });
   }
 });
 
@@ -2053,12 +2166,23 @@ async function checkCompetitionStart() {
 
 // Start the server if this file is run directly
 if (require.main === module) {
-  app.listen(PORT, () => {
-    console.log(`API server listening on http://localhost:${PORT}`);
-  });
+  if (process.env.HTTP2 === 'true') {
+    const server = http2.createServer({ allowHTTP1: true }, app);
+    server.listen(PORT, () => {
+      console.log(`API server listening on http://localhost:${PORT} (HTTP/2)`);
+    });
+  } else {
+    app.listen(PORT, () => {
+      console.log(`API server listening on http://localhost:${PORT}`);
+    });
+  }
   initDailyPrintsSold();
   checkCompetitionStart();
   setInterval(checkCompetitionStart, 3600000);
+  runScalingEngine().catch((err) => logError('Scaling engine failed', err));
+  setInterval(() => {
+    runScalingEngine().catch((err) => logError('Scaling engine failed', err));
+  }, 3600000);
   syncMailingList().catch((err) => logError('Mail sync failed', err));
   setInterval(
     () => {

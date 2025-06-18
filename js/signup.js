@@ -46,7 +46,14 @@ async function signup(e) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code: ref }),
-      }).catch(() => {});
+      })
+        .then((r) => r.json())
+        .then((d) => {
+          if (d.code) {
+            alert(`Your referral discount code: ${d.code}`);
+          }
+        })
+        .catch(() => {});
     }
     if (optIn) {
       fetch(`${API_BASE}/subscribe`, {
