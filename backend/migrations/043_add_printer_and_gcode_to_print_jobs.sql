@@ -1,0 +1,3 @@
+ALTER TABLE print_jobs
+  ADD COLUMN IF NOT EXISTS printer_id INTEGER REFERENCES printers(id),
+  ADD COLUMN IF NOT EXISTS gcode_path TEXT;
