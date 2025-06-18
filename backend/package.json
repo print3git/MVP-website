@@ -15,7 +15,9 @@
     "send-followups": "node scripts/send-post-purchase-followups.js",
     "cleanup-tokens": "node scripts/cleanup-password-resets.js",
     "measure-load": "node scripts/measure-load.js",
-    "reset-credits": "node scripts/weekly-reset.js",
+
+    "generate-referral-qr": "node scripts/generate-referral-qr.js",
+
     "lint": "eslint . --max-warnings=0"
   },
   "keywords": [],
@@ -37,6 +39,7 @@
     "nodemailer": "^7.0.3",
     "nodemailer-sendgrid": "^1.0.0",
     "pg": "^8.16.0",
+    "qrcode": "^1.5.3",
     "stripe": "^18.2.1",
     "uuid": "^11.1.0"
   },
