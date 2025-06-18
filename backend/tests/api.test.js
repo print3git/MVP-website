@@ -21,6 +21,8 @@ jest.mock('../db', () => ({
   getCommunityComments: jest.fn(),
   insertSocialShare: jest.fn(),
   verifySocialShare: jest.fn(),
+  getOrCreateOrderReferralLink: jest.fn(),
+  insertReferredOrder: jest.fn(),
 }));
 const db = require('../db');
 
@@ -185,6 +187,7 @@ test('create-order grants free print after three referrals', async () => {
   const incentiveCalls = db.query.mock.calls.filter((c) => c[0].includes('INSERT INTO incentives'));
   expect(incentiveCalls).toHaveLength(2);
   expect(incentiveCalls[1][1][1]).toMatch(/^free_/);
+  expect(db.insertReferredOrder).toHaveBeenCalled();
 });
 
 test('create-order rejects unknown job', async () => {

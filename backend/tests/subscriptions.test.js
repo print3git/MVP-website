@@ -15,6 +15,8 @@ jest.mock('../db', () => ({
   incrementCreditsUsed: jest.fn(),
   insertSubscriptionEvent: jest.fn(),
   getSubscriptionMetrics: jest.fn(),
+  getOrCreateOrderReferralLink: jest.fn(),
+  insertReferredOrder: jest.fn(),
 }));
 const db = require('../db');
 

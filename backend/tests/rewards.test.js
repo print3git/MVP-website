@@ -14,6 +14,8 @@ jest.mock('../db', () => ({
   getRewardOptions: jest.fn(),
   getUserIdForReferral: jest.fn(),
   insertReferralEvent: jest.fn(),
+  getOrCreateOrderReferralLink: jest.fn(),
+  insertReferredOrder: jest.fn(),
 }));
 const db = require('../db');
 jest.mock('../discountCodes', () => ({
@@ -83,4 +85,16 @@ test('POST /api/referral-signup awards points', async () => {
   expect(res.status).toBe(200);
   expect(db.insertReferralEvent).toHaveBeenCalledWith('u1', 'signup');
   expect(db.adjustRewardPoints).toHaveBeenCalledWith('u1', 10);
+});
+
+test('GET /api/orders/:id/referral-link returns code', async () => {
+  db.query.mockResolvedValueOnce({ rows: [{ user_id: 'u1' }] });
+  db.getOrCreateOrderReferralLink.mockResolvedValue('orderabc');
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  const res = await request(app)
+    .get('/api/orders/o1/referral-link')
+    .set('authorization', `Bearer ${token}`);
+  expect(res.status).toBe(200);
+  expect(res.body.code).toBe('orderabc');
+  expect(db.getOrCreateOrderReferralLink).toHaveBeenCalledWith('o1');
 });

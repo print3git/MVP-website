@@ -144,6 +144,23 @@ async function getUserIdForReferral(code) {
 async function insertReferralEvent(referrerId, type) {
   await query('INSERT INTO referral_events(referrer_id, type) VALUES($1,$2)', [referrerId, type]);
 }
+
+async function getOrCreateOrderReferralLink(orderId) {
+  const { rows } = await query('SELECT code FROM order_referral_links WHERE order_id=$1', [
+    orderId,
+  ]);
+  if (rows.length) return rows[0].code;
+  const code = uuidv4().replace(/-/g, '').slice(0, 8);
+  await query('INSERT INTO order_referral_links(order_id, code) VALUES($1,$2)', [orderId, code]);
+  return code;
+}
+
+async function insertReferredOrder(orderId, referrerId) {
+  await query('INSERT INTO referred_orders(order_id, referrer_id) VALUES($1,$2)', [
+    orderId,
+    referrerId,
+  ]);
+}
 async function insertAdClick(subreddit, sessionId) {
   await query('INSERT INTO ad_clicks(subreddit, session_id, timestamp) VALUES($1,$2,NOW())', [
     subreddit,
@@ -315,6 +332,8 @@ module.exports = {
   adjustRewardPoints,
   getUserIdForReferral,
   insertReferralEvent,
+  getOrCreateOrderReferralLink,
+  insertReferredOrder,
   insertShareEvent,
   upsertMailingListEntry,
   confirmMailingListEntry,
