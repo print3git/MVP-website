@@ -1,15 +1,34 @@
 const axios = require('axios');
 
-async function getPrinterStatus(baseUrl, apiKey = '') {
-  const url = `${baseUrl.replace(/\/$/, '')}/api/printer`;
-  const res = await axios.get(url, {
-    headers: apiKey ? { 'X-Api-Key': apiKey } : {},
-    timeout: 5000,
-  });
-  const text = ((res.data && res.data.state && res.data.state.text) || '').toLowerCase();
-  if (text.includes('printing') || text.includes('busy')) return 'printing';
-  if (text.includes('error') || text.includes('offline')) return 'error';
-  return 'idle';
+async function getPrinterInfo(baseUrl, apiKey = '') {
+  const root = baseUrl.replace(/\/$/, '');
+  const headers = apiKey ? { 'X-Api-Key': apiKey } : {};
+  const printerRes = await axios.get(`${root}/api/printer`, { headers, timeout: 5000 });
+  let status = 'idle';
+  const text = (
+    (printerRes.data && printerRes.data.state && printerRes.data.state.text) ||
+    ''
+  ).toLowerCase();
+  if (text.includes('printing') || text.includes('busy')) status = 'printing';
+  if (text.includes('error') || text.includes('offline')) status = 'error';
+
+  let queueLength = 0;
+  try {
+    const jobRes = await axios.get(`${root}/api/job`, { headers, timeout: 5000 });
+    if (jobRes.data && jobRes.data.job && jobRes.data.job.file && jobRes.data.job.file.name) {
+      queueLength = 1;
+    }
+  } catch (_) {
+    // ignore
+  }
+
+  const error = printerRes.data?.state?.error || null;
+  return { status, queueLength, error };
 }
 
-module.exports = { getPrinterStatus };
+async function getPrinterStatus(baseUrl, apiKey = '') {
+  const info = await getPrinterInfo(baseUrl, apiKey);
+  return info.status;
+}
+
+module.exports = { getPrinterStatus, getPrinterInfo };

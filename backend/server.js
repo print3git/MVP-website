@@ -1792,6 +1792,16 @@ app.post('/api/admin/hubs/:id/shipments', adminCheck, async (req, res) => {
   }
 });
 
+app.get('/api/admin/printer-metrics', adminCheck, async (req, res) => {
+  try {
+    const metrics = await db.getLatestPrinterMetrics();
+    res.json(metrics);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to fetch metrics' });
+  }
+});
+
 app.get('/api/admin/subscription-metrics', adminCheck, async (req, res) => {
   try {
     const metrics = await db.getSubscriptionMetrics();
