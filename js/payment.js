@@ -230,6 +230,20 @@ async function loadCheckoutCredits() {
   } catch {}
 }
 
+async function fetchCampaignBundle() {
+  try {
+    const res = await fetch(`${API_BASE}/campaign`);
+    if (!res.ok) return;
+    const data = await res.json();
+    const banner = document.getElementById('bundle-banner');
+    if (banner && data.bundle && !banner.dataset.set) {
+      banner.textContent = `${data.bundle.name} - ${data.bundle.discount_percent}% off`;
+      banner.classList.remove('hidden');
+      banner.dataset.set = '1';
+    }
+  } catch {}
+}
+
 async function createCheckout(
   quantity,
   discount,
@@ -350,6 +364,7 @@ async function initPaymentPage() {
   const applyBtn = document.getElementById('apply-discount');
   const surpriseToggle = document.getElementById('surprise-toggle');
   const recipientFields = document.getElementById('recipient-fields');
+  fetchCampaignBundle();
   loadCheckoutCredits();
   if (referralId && discountMsg) {
     discountMsg.textContent = 'Referral discount applied';
