@@ -6,6 +6,7 @@ This repository uses a shared file locking mechanism and automated workflows so 
 
 ## Task Assignment by Group
 - Maintainers may assign agents to groups (e.g. `docs`, `backend`, `frontend`).
+- Groups generally correspond to the repository's top-level directories.
 - Agents must only modify files within their assigned group unless explicitly instructed otherwise.
 
 ## File Locking
