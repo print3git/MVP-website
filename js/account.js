@@ -31,7 +31,9 @@ async function loadSubscription() {
     if (!sub || sub.active === false || sub.status === 'canceled') {
       if (manage) {
         manage.textContent = 'Join Print Club';
-        manage.href = 'payment.html';
+        manage.onclick = () => {
+          window.location.href = 'payment.html';
+        };
       }
       return;
     }
@@ -44,10 +46,26 @@ async function loadSubscription() {
     document.getElementById('credits-total').textContent = credits.total;
     if (manage) {
       manage.textContent = 'Manage subscription';
-      manage.href = 'subscription_settings.html';
+      manage.onclick = openPortal;
     }
   } catch (err) {
     console.error('Failed to load subscription info', err);
+  }
+}
+
+async function openPortal() {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    window.location.href = 'login.html';
+    return;
+  }
+  const res = await fetch(`${API_BASE}/subscription/portal`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (res.ok) {
+    const data = await res.json();
+    window.location.href = data.url;
   }
 }
 
