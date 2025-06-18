@@ -381,6 +381,26 @@ async function insertHubShipment(hubId, carrier, trackingNumber, status) {
   return rows[0];
 }
 
+async function upsertOrderLocationSummary(date, state, count, hours) {
+  const { rows } = await query(
+    `INSERT INTO order_location_summary(summary_date, state, order_count, estimated_hours)
+     VALUES($1,$2,$3,$4)
+     ON CONFLICT (summary_date, state)
+     DO UPDATE SET order_count=$3, estimated_hours=$4, updated_at=NOW()
+     RETURNING *`,
+    [date, state, count, hours]
+  );
+  return rows[0];
+}
+
+async function getOrderLocationSummary(date) {
+  const { rows } = await query(
+    'SELECT state, order_count, estimated_hours FROM order_location_summary WHERE summary_date=$1 ORDER BY state',
+    [date]
+  );
+  return rows;
+}
+
 module.exports = {
   query,
   insertShare,
@@ -427,4 +447,6 @@ module.exports = {
   addPrinter,
   getPrintersByHub,
   insertHubShipment,
+  upsertOrderLocationSummary,
+  getOrderLocationSummary,
 };
