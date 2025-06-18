@@ -511,7 +511,7 @@ test('POST /api/create-order rejects unknown job', async () => {
 });
 
 test('GET /api/shared/:slug returns data', async () => {
-  db.getShareBySlug = jest.fn().mockResolvedValue({ job_id: 'j1', slug: 's1' });
+  db.getShareBySlug = jest.fn().mockResolvedValue({ id: 2, job_id: 'j1', slug: 's1' });
   db.query.mockResolvedValueOnce({
     rows: [{ prompt: 'p', model_url: '/m.glb', snapshot: '/s.png' }],
   });
@@ -519,6 +519,7 @@ test('GET /api/shared/:slug returns data', async () => {
   expect(res.status).toBe(200);
   expect(res.body.model_url).toBe('/m.glb');
   expect(res.body.snapshot).toBe('/s.png');
+  expect(res.body.shareId).toBe(2);
 });
 
 test('GET /api/shared/:slug 404 when missing', async () => {

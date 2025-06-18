@@ -18,6 +18,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!res.ok) throw new Error('bad');
     const data = await res.json();
     const viewer = document.getElementById('viewer');
+    if (data.shareId) {
+      window.shareId = data.shareId;
+    }
     if (data.snapshot) {
       viewer.setAttribute('poster', data.snapshot);
     }

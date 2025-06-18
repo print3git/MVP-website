@@ -67,6 +67,13 @@ async function shareOn(network) {
     }
   }
   window.open(shareUrl, '_blank', 'noopener');
+  if (window.shareId) {
+    fetch('/api/track/share', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ shareId: window.shareId, network }),
+    }).catch(() => {});
+  }
 }
 
 if (typeof module !== 'undefined') {

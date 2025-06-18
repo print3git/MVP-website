@@ -890,6 +890,18 @@ app.post('/api/track/checkout', async (req, res) => {
   }
 });
 
+app.post('/api/track/share', async (req, res) => {
+  const { shareId, network } = req.body || {};
+  if (!shareId || !network) return res.status(400).json({ error: 'Missing params' });
+  try {
+    await db.insertShareEvent(shareId, network);
+    res.json({ success: true });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to record share' });
+  }
+});
+
 app.get('/api/metrics/conversion', async (req, res) => {
   try {
     const data = await db.getConversionMetrics();
@@ -1024,6 +1036,7 @@ app.get('/api/shared/:slug', async (req, res) => {
     if (!rows.length) return res.status(404).json({ error: 'Share not found' });
     res.json({
       jobId: share.job_id,
+      shareId: share.id,
       slug: share.slug,
       model_url: rows[0].model_url,
       prompt: rows[0].prompt,
