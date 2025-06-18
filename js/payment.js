@@ -197,7 +197,34 @@ function qs(name) {
   return params.get(name);
 }
 
-async function createCheckout(quantity, discount, discountCode, shippingInfo, referral, etchName) {
+async function loadCheckoutCredits() {
+  const token = localStorage.getItem('token');
+  if (!token) return;
+  try {
+    const res = await fetch(`${API_BASE}/subscription/credits`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) return;
+    const data = await res.json();
+    const container = document.getElementById('credit-option');
+    const span = document.getElementById('credits-remaining');
+    if (container && span) {
+      span.textContent = data.remaining;
+      if (data.remaining > 0) container.classList.remove('hidden');
+      else container.classList.add('hidden');
+    }
+  } catch {}
+}
+
+async function createCheckout(
+  quantity,
+  discount,
+  discountCode,
+  shippingInfo,
+  referral,
+  etchName,
+  useCredit
+) {
   const jobId = localStorage.getItem('print3JobId');
   const res = await fetch(`${API_BASE}/create-order`, {
     method: 'POST',
@@ -211,10 +238,11 @@ async function createCheckout(quantity, discount, discountCode, shippingInfo, re
       shippingInfo,
       referral,
       etchName,
+      useCredit,
     }),
   });
   const data = await res.json();
-  return data.checkoutUrl;
+  return data;
 }
 
 function startFlashDiscount() {
@@ -301,6 +329,7 @@ async function initPaymentPage() {
   const discountInput = document.getElementById('discount-code');
   const discountMsg = document.getElementById('discount-msg');
   const applyBtn = document.getElementById('apply-discount');
+  loadCheckoutCredits();
   if (referralId && discountMsg) {
     discountMsg.textContent = 'Referral discount applied';
   }
@@ -486,7 +515,10 @@ async function initPaymentPage() {
   }
   updatePayButton();
   const sessionId = qs('session_id');
-  if (sessionId) recordPurchase();
+  if (sessionId) {
+    recordPurchase();
+    await loadCheckoutCredits();
+  }
   let baseSlots = null;
 
   if (slotEl) {
@@ -721,19 +753,26 @@ async function initPaymentPage() {
         .slice(0, 20)
         .trim();
     }
-    const url = await createCheckout(
+    const useCredit = document.getElementById('use-credit')?.checked;
+    const data = await createCheckout(
       qty,
       discount,
       discountCode,
       shippingInfo,
       referralId,
-      etchName || undefined
+      etchName || undefined,
+      useCredit
     );
-    if (stripe) {
-      stripe.redirectToCheckout({ sessionId: url.split('session_id=')[1] });
-    } else {
-      // Fallback if Stripe failed to load: just navigate to the checkout URL
-      window.location.href = url;
+    if (useCredit && data.success) {
+      recordPurchase();
+      await loadCheckoutCredits();
+      successMsg.hidden = false;
+    } else if (data.checkoutUrl) {
+      if (stripe) {
+        stripe.redirectToCheckout({ sessionId: data.checkoutUrl.split('session_id=')[1] });
+      } else {
+        window.location.href = data.checkoutUrl;
+      }
     }
     if (emailEl.value) {
       fetch(`${API_BASE}/subscribe`, {

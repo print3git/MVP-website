@@ -21,25 +21,22 @@ async function loadSubscription() {
   const token = localStorage.getItem('token');
   if (!token) return;
   try {
-    const subRes = await fetch(`${API_BASE}/subscription`, {
+    const resp = await fetch(`${API_BASE}/subscription/summary`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    if (!subRes.ok) return;
-    const sub = await subRes.json();
+    if (!resp.ok) return;
+    const { subscription: sub, credits } = await resp.json();
     const container = document.getElementById('subscription-progress');
     const manage = document.getElementById('manage-subscription');
     if (!sub || sub.active === false || sub.status === 'canceled') {
       if (manage) {
         manage.textContent = 'Join Print Club';
-        manage.href = 'payment.html';
+        manage.onclick = () => {
+          window.location.href = 'payment.html';
+        };
       }
       return;
     }
-    const creditsRes = await fetch(`${API_BASE}/subscription/credits`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!creditsRes.ok) return;
-    const credits = await creditsRes.json();
     if (container) container.classList.remove('hidden');
     const used = credits.total - credits.remaining;
     const pct = credits.total ? (used / credits.total) * 100 : 0;
@@ -49,10 +46,26 @@ async function loadSubscription() {
     document.getElementById('credits-total').textContent = credits.total;
     if (manage) {
       manage.textContent = 'Manage subscription';
-      manage.href = 'subscription_settings.html';
+      manage.onclick = openPortal;
     }
   } catch (err) {
     console.error('Failed to load subscription info', err);
+  }
+}
+
+async function openPortal() {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    window.location.href = 'login.html';
+    return;
+  }
+  const res = await fetch(`${API_BASE}/subscription/portal`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (res.ok) {
+    const data = await res.json();
+    window.location.href = data.url;
   }
 }
 

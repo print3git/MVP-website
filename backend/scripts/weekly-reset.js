@@ -8,6 +8,7 @@ function startOfWeek(d = new Date()) {
   return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), diff));
 }
 
+
 async function resetCredits() {
   const client = new Client({ connectionString: process.env.DB_URL });
   await client.connect();
@@ -21,6 +22,7 @@ async function resetCredits() {
        ON CONFLICT (user_id, week_start) DO NOTHING`,
       [weekStr]
     );
+
   } finally {
     await client.end();
   }
