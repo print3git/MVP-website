@@ -4,7 +4,6 @@
 - Target ads to demographics most likely to convert.
 - Use retargeting pixels to bring back visitors who left.
 - Include a clear value proposition and call-to-action in each ad.
-- Keep landing pages minimal with a single prominent "Start Generating" button.
 
 ## Analytics & Attribution
 
@@ -51,14 +50,7 @@
 - Add real photo of printed object or user-generated image to hero section to reinforce the physical product.
 - Display pricing info near the prompt field such as "From $X / print" to reduce hesitation.
 
-## Referral Discount System
 
-- Replace the hard-coded list with database queries and record each successful use.
-- Validate codes against expiration dates and remaining uses.
-- Plan a database schema for tracking referral codes and the users who share them.
-- Add an API endpoint for generating referral links and applying associated discounts for new customers.
-- Decide on the credit/discount amounts for both referrer and referee and persist the data.
-- Integrate referral tracking into the checkout flow alongside discount codes.
 
 ## Post-Purchase Referral Engine
 
@@ -83,32 +75,20 @@
   - Apply a one-time 10% discount when a referral code is present.
   - Display the discounted price on the sign-up form.
 
+
 ## Repeat Purchase Incentives
-
-- Show gifting options at checkout and on delivery confirmation.
-  - Add a "This is a surprise" toggle for recipient details.
-  - Offer a discount when ordering two prints of the same model.
-  - Rotate limited-time seasonal bundles for gifting.
-- Run theme campaigns such as "Sci-fi month" or "D&D drop".
-
   - Award a badge when someone purchases three times in a month.
   - Offer an optional monthly "time capsule" print.
   - Showcase other users' creations for inspiration.
-
 - Add loyalty features to the account area.
-  - Grant a badge after four total purchases.
   - Highlight a "Print of the week" for quick purchase.
   - For subscribers, show a countdown to their next free print.
   - Provide subscriber-only design previews.
   - Track consecutive weekly orders and badge streaks.
-
 ## Mailing List Automation
-
 - Add unit tests for confirm, webhook handling and sync logic.
-
 ## Competitions Profit Drivers
 
-- Show purchase buttons for past winners.
   - Add a "Buy Print" button below each winning model in `competitions.html`.
   - Pre-fill `print3Model` and `print3JobId` in local storage when the button is clicked.
 - Offer a discount for printing your competition entry.
