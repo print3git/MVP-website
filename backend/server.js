@@ -633,8 +633,15 @@ app.get('/api/subscription', authRequired, async (req, res) => {
 });
 
 app.post('/api/subscription', authRequired, async (req, res) => {
-  const { status, current_period_start, current_period_end, customer_id, subscription_id } =
-    req.body;
+  const {
+    status,
+    current_period_start,
+    current_period_end,
+    customer_id,
+    subscription_id,
+    variant,
+    price_cents,
+  } = req.body;
   try {
     const sub = await db.upsertSubscription(
       req.user.id,
@@ -645,6 +652,7 @@ app.post('/api/subscription', authRequired, async (req, res) => {
       subscription_id
     );
     await db.ensureCurrentWeekCredits(req.user.id, 2);
+    await db.insertSubscriptionEvent(req.user.id, 'join', variant, price_cents);
     res.json(sub);
   } catch (err) {
     logError(err);
@@ -655,6 +663,7 @@ app.post('/api/subscription', authRequired, async (req, res) => {
 app.post('/api/subscription/cancel', authRequired, async (req, res) => {
   try {
     const sub = await db.cancelSubscription(req.user.id);
+    await db.insertSubscriptionEvent(req.user.id, 'cancel', null, null);
     res.json(sub);
   } catch (err) {
     logError(err);
@@ -1589,6 +1598,16 @@ app.delete('/api/admin/flash-sale/:id', adminCheck, async (req, res) => {
   }
 });
 
+app.get('/api/admin/subscription-metrics', adminCheck, async (req, res) => {
+  try {
+    const metrics = await db.getSubscriptionMetrics();
+    res.json(metrics);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to fetch metrics' });
+  }
+});
+
 /**
  * POST /api/create-order
  * Create a Stripe Checkout session
@@ -1654,6 +1673,9 @@ app.post('/api/create-order', authOptional, async (req, res) => {
       const sub = await db.getSubscription(req.user.id);
       if (!sub || sub.status !== 'active') {
         return res.status(400).json({ error: 'No active subscription' });
+      }
+      if ((qty || 1) % 2 !== 0) {
+        return res.status(400).json({ error: 'Credits must be redeemed in pairs' });
       }
       await db.ensureCurrentWeekCredits(req.user.id, 2);
       const credits = await db.getCurrentWeekCredits(req.user.id);

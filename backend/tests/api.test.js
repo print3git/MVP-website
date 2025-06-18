@@ -593,10 +593,22 @@ test('create-order using credit deducts balance', async () => {
   const res = await request(app)
     .post('/api/create-order')
     .set('authorization', `Bearer ${token}`)
-    .send({ jobId: '1', useCredit: true });
+    .send({ jobId: '1', useCredit: true, qty: 2 });
   expect(res.status).toBe(200);
   expect(res.body.success).toBe(true);
   expect(db.incrementCreditsUsed).toHaveBeenCalledWith('u1', 1);
+});
+
+test('create-order using credit rejects odd quantity', async () => {
+  db.query.mockResolvedValueOnce({ rows: [{ job_id: '1', user_id: 'u1' }] });
+  db.getSubscription.mockResolvedValueOnce({ id: 's1', status: 'active' });
+  db.getCurrentWeekCredits.mockResolvedValueOnce({ total_credits: 2, used_credits: 0 });
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  const res = await request(app)
+    .post('/api/create-order')
+    .set('authorization', `Bearer ${token}`)
+    .send({ jobId: '1', useCredit: true, qty: 1 });
+  expect(res.status).toBe(400);
 });
 
 test('GET /api/my/orders returns orders', async () => {
@@ -697,5 +709,5 @@ test('GET /api/dashboard returns aggregated info', async () => {
   expect(res.status).toBe(200);
   expect(res.body.orders).toHaveLength(1);
   expect(res.body.commissions.totalPending).toBe(10);
-  expect(res.body.credits.remaining).toBe(1);
+  expect(res.body.credits.remaining).toBe(2);
 });
