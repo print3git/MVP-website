@@ -4,7 +4,6 @@
 - Target ads to demographics most likely to convert.
 - Use retargeting pixels to bring back visitors who left.
 - Include a clear value proposition and call-to-action in each ad.
-- Keep landing pages minimal with a single prominent "Start Generating" button.
 
 ## Analytics & Attribution
 
@@ -51,14 +50,7 @@
 - Add real photo of printed object or user-generated image to hero section to reinforce the physical product.
 - Display pricing info near the prompt field such as "From $X / print" to reduce hesitation.
 
-## Referral Discount System
 
-- Replace the hard-coded list with database queries and record each successful use.
-- Validate codes against expiration dates and remaining uses.
-- Plan a database schema for tracking referral codes and the users who share them.
-- Add an API endpoint for generating referral links and applying associated discounts for new customers.
-- Decide on the credit/discount amounts for both referrer and referee and persist the data.
-- Integrate referral tracking into the checkout flow alongside discount codes.
 
 ## Post-Purchase Referral Engine
 
@@ -83,43 +75,20 @@
   - Apply a one-time 10% discount when a referral code is present.
   - Display the discounted price on the sign-up form.
 
-## Print Club
-
-- Show remaining weekly credits at checkout and update after purchase.
-- Deduct one credit when an order is placed using the subscription.
-- Add `weekly-reset.js` script to grant new credits each Monday.
-- Expose `npm run reset-credits` to run the reset script.
-- Send reminder emails two days before unused credits expire.
-- Record sign-up and cancellation events in `subscription_events` table.
-- Display a "Manage subscription" button on the profile page linking to the Stripe customer portal.
-- Add unit tests for credit deduction and weekly reset.
 
 ## Repeat Purchase Incentives
-
-- Show gifting options at checkout and on delivery confirmation.
-  - Add a "This is a surprise" toggle for recipient details.
-  - Offer a discount when ordering two prints of the same model.
-  - Rotate limited-time seasonal bundles for gifting.
-- Run theme campaigns such as "Sci-fi month" or "D&D drop".
-
   - Award a badge when someone purchases three times in a month.
   - Offer an optional monthly "time capsule" print.
   - Showcase other users' creations for inspiration.
-
 - Add loyalty features to the account area.
-  - Grant a badge after four total purchases.
   - Highlight a "Print of the week" for quick purchase.
   - For subscribers, show a countdown to their next free print.
   - Provide subscriber-only design previews.
   - Track consecutive weekly orders and badge streaks.
-
 ## Mailing List Automation
-
 - Add unit tests for confirm, webhook handling and sync logic.
-
 ## Competitions Profit Drivers
 
-- Show purchase buttons for past winners.
   - Add a "Buy Print" button below each winning model in `competitions.html`.
   - Pre-fill `print3Model` and `print3JobId` in local storage when the button is clicked.
 - Offer a discount for printing your competition entry.
@@ -146,12 +115,6 @@
 - Allow visitors to vote on entries.
   - POST votes to `/api/competitions/:id/vote`.
   - Show vote counts on each entry card.
-- Rotate featured themes monthly.
-  - Store a `theme` field in the competition record.
-  - Display the current theme at the top of the page.
-- Provide prize coupons to top entries.
-  - Generate a coupon code when a winner is picked.
-  - Email the prize code to the winner.
 - Update the leaderboard in real time.
   - Poll `/api/competitions/:id/leaderboard` every minute.
   - Replace the leaderboard section with fresh data.
@@ -200,22 +163,8 @@
 - Display aggregated profit by subreddit in an admin dashboard.
 - Add unit tests covering profit calculations and data import.
 
-## Automated Scaling Engine
-
-- Fetch campaign performance hourly via cron.
-- Compute marginal CAC per subreddit.
-- Compare CAC to profit per sale with thresholds.
-- Increase or decrease budgets via Reddit Ads API accordingly.
-- Pause campaigns when CAC exceeds profit threshold.
-- Log each budget change to a `scaling_events` table.
-- Expose an admin endpoint listing recent scaling actions.
-
 ## Autonomous 3D Printing
 
-- Create `print_jobs` table with order ID, printer ID, status, and G-code path.
-- Monitor printer status via OctoPrint or Klipper API.
-- Assign new jobs to idle printers automatically.
-- Upload generated G-code and start printing.
 - Update job status when printing completes via webhook.
 - Slice STL/GLB files into G-code after order placement.
 - Show printer queues and status on a dashboard.
@@ -227,19 +176,11 @@
 
 ## Fulfillment Capacity Forecasting
 
-- Summarize daily orders per location via a batch job.
-- Estimate printer hours required from the order volume.
 - Compare demand to available printer capacity.
 - Alert via email when capacity is at risk.
 - Graph forecasted demand vs. capacity in the admin panel.
 
 ## Distributed Printing Infrastructure
-
-- Create unified tables for orders, printer hubs, printers, jobs, inventory and metrics.
-- Poll each printer via OctoPrint to collect queue length, status and error codes.
-- Store printer telemetry in the central database.
-- Implement heartbeat checks to flag offline printers.
-- Display per-printer status in the admin dashboard.
 
 ## Load Balancer & Routing
 

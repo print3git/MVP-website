@@ -422,12 +422,48 @@ async function getPrintersByHub(hubId) {
   return rows;
 }
 
+async function insertPrinterMetric(printerId, status, queueLength, error) {
+  await query(
+    'INSERT INTO printer_metrics(printer_id, status, queue_length, error) VALUES($1,$2,$3,$4)',
+    [printerId, status, queueLength, error]
+  );
+}
+
+async function getLatestPrinterMetrics() {
+  const { rows } = await query(
+    `SELECT DISTINCT ON (printer_id) printer_id, status, queue_length, error, created_at
+     FROM printer_metrics
+     ORDER BY printer_id, created_at DESC`
+  );
+  return rows;
+}
+
 async function insertHubShipment(hubId, carrier, trackingNumber, status) {
   const { rows } = await query(
     'INSERT INTO hub_shipments(hub_id, carrier, tracking_number, status) VALUES($1,$2,$3,$4) RETURNING *',
     [hubId, carrier, trackingNumber, status]
   );
   return rows[0];
+}
+
+async function upsertOrderLocationSummary(date, state, count, hours) {
+  const { rows } = await query(
+    `INSERT INTO order_location_summary(summary_date, state, order_count, estimated_hours)
+     VALUES($1,$2,$3,$4)
+     ON CONFLICT (summary_date, state)
+     DO UPDATE SET order_count=$3, estimated_hours=$4, updated_at=NOW()
+     RETURNING *`,
+    [date, state, count, hours]
+  );
+  return rows[0];
+}
+
+async function getOrderLocationSummary(date) {
+  const { rows } = await query(
+    'SELECT state, order_count, estimated_hours FROM order_location_summary WHERE summary_date=$1 ORDER BY state',
+    [date]
+  );
+  return rows;
 }
 
 module.exports = {
@@ -476,6 +512,6 @@ module.exports = {
   addPrinter,
   getPrintersByHub,
   insertHubShipment,
-  insertAdSpend,
-  getBusinessIntelligenceMetrics,
+  upsertOrderLocationSummary,
+  getOrderLocationSummary,
 };
