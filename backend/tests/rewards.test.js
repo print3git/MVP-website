@@ -98,3 +98,15 @@ test('GET /api/orders/:id/referral-link returns code', async () => {
   expect(res.body.code).toBe('orderabc');
   expect(db.getOrCreateOrderReferralLink).toHaveBeenCalledWith('o1');
 });
+
+test('GET /api/orders/:id/referral-qr returns png', async () => {
+  db.query.mockResolvedValueOnce({ rows: [{ user_id: 'u1' }] });
+  db.getOrCreateOrderReferralLink.mockResolvedValue('orderabc');
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  const res = await request(app)
+    .get('/api/orders/o1/referral-qr')
+    .set('authorization', `Bearer ${token}`);
+  expect(res.status).toBe(200);
+  expect(res.headers['content-type']).toBe('image/png');
+  expect(db.getOrCreateOrderReferralLink).toHaveBeenCalledWith('o1');
+});

@@ -29,6 +29,7 @@ const {
   createTimedCode,
 } = require('./discountCodes');
 const { verifyTag } = require('./social');
+const QRCode = require('qrcode');
 
 const syncMailingList = require('./scripts/sync-mailing-list');
 const runScalingEngine = require('./scalingEngine');
@@ -781,6 +782,24 @@ app.get('/api/orders/:id/referral-link', authRequired, async (req, res) => {
   } catch (err) {
     logError(err);
     res.status(500).json({ error: 'Failed to fetch referral link' });
+  }
+});
+
+app.get('/api/orders/:id/referral-qr', authRequired, async (req, res) => {
+  const { id } = req.params;
+  try {
+    const { rows } = await db.query('SELECT user_id FROM orders WHERE session_id=$1', [id]);
+    if (!rows.length || rows[0].user_id !== req.user.id) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+    const code = await db.getOrCreateOrderReferralLink(id);
+    const base = req.headers.origin || process.env.SITE_URL || 'http://localhost:3000';
+    const url = `${base}?ref=${code}`;
+    const png = await QRCode.toBuffer(url, { width: 256 });
+    res.type('png').send(png);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to generate QR code' });
   }
 });
 
