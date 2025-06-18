@@ -337,3 +337,71 @@
 - Run periodic firmware updates over the network.
 - Schedule automatic calibration prints.
 - Switch jobs to a backup printer on failure.
+## Inventory Monitoring & Restocking
+- Track filament usage per print and update hub inventory.
+- Monitor packaging supply levels (bags, boxes, labels).
+- Alert when any material drops below a threshold.
+- Auto-generate purchase orders for filament and packaging.
+- Integrate vendor API to place restock orders.
+- Display inventory dashboard showing stock and delivery ETA.
+
+## Predictive Maintenance
+- Record nozzle temperature and print time metrics.
+- Calculate mean time between failures per printer.
+- Forecast next service date from usage hours.
+- Schedule maintenance windows when printers are idle.
+- Notify founders if predicted failure risk exceeds threshold.
+
+## Remote Operator Onboarding
+- Maintain a roster of approved remote operators.
+- Provide a standard training checklist on signup.
+- Allow assigning operators to hubs through the dashboard.
+- Track completion of daily tasks per operator.
+- Flag missing tasks for review.
+
+## Physical Space Logistics
+- Keep a database of rentable spaces by region and cost.
+- Provide template rental agreements.
+- Trigger a search for new space when expansion is scheduled.
+- Generate rental paperwork automatically for approval.
+- Remind founders of lease renewal dates.
+
+## Printer Load Monitoring Enhancements
+- Record idle time and utilization statistics per printer.
+- Store historical queue length and average completion times.
+- Expose API endpoint for live printer metrics.
+- Visualise utilisation trends in the dashboard.
+- Trigger scaling alerts when sustained utilisation exceeds 80%.
+
+## Procurement Automation Enhancements
+- Generate purchase order PDFs with printer models and quantities.
+- Email vendors with shipping details for approval.
+- Track order acknowledgements and estimated arrival dates.
+- Update dashboard with shipping status for each order.
+- Flag overdue printer deliveries.
+
+## Hub Deployment Automation
+- Create a step-by-step checklist for new hub setup.
+- Preload Raspberry Pi images on SD cards for printers.
+- Auto-register new printers in the monitoring system.
+- Verify network connectivity and camera streams automatically.
+- Mark the hub live after all printers pass a test print.
+
+## Global Operations Reporting
+- Produce a daily capacity report summarizing each hub.
+- Summarize orders pending vs fulfilled.
+- Email a weekly "state of company" PDF with key metrics.
+- Highlight hubs with repeated errors or downtime.
+- Archive all reports in cloud storage.
+
+## Carrier Pickup Integration
+- Schedule carrier pickups via API based on daily volume.
+- Generate manifests for each pickup.
+- Notify carriers automatically if volume increases.
+- Track pickup confirmation or failures.
+
+## Customer Communication Automation
+- Send an email or SMS when a print finishes.
+- Include a tracking link in shipping confirmation.
+- Offer automatic reprint if a print fails quality checks.
+- Survey customers after delivery for feedback.
