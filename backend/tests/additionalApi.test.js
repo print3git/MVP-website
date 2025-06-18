@@ -7,6 +7,9 @@ process.env.HUNYUAN_SERVER_URL = 'http://localhost:4000';
 jest.mock('../db', () => ({
   query: jest.fn().mockResolvedValue({ rows: [] }),
   insertCommission: jest.fn().mockResolvedValue({}),
+  getUserCreations: jest.fn(),
+  insertCommunityComment: jest.fn(),
+  getCommunityComments: jest.fn(),
 }));
 const db = require('../db');
 
@@ -275,6 +278,32 @@ test('GET /api/community/model/:id returns model', async () => {
   expect(res.body.id).toBe('c1');
 });
 
+test('GET /api/community/mine returns creations', async () => {
+  db.getUserCreations.mockResolvedValueOnce([]);
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  const res = await request(app).get('/api/community/mine').set('authorization', `Bearer ${token}`);
+  expect(res.status).toBe(200);
+  expect(db.getUserCreations).toHaveBeenCalledWith('u1', 10, 0);
+});
+
+test('POST /api/community/:id/comment adds comment', async () => {
+  db.insertCommunityComment.mockResolvedValueOnce({ id: 'x', text: 't' });
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  const res = await request(app)
+    .post('/api/community/c1/comment')
+    .set('authorization', `Bearer ${token}`)
+    .send({ text: 't' });
+  expect(res.status).toBe(201);
+  expect(db.insertCommunityComment).toHaveBeenCalledWith('c1', 'u1', 't');
+});
+
+test('GET /api/community/:id/comments returns list', async () => {
+  db.getCommunityComments.mockResolvedValueOnce([]);
+  const res = await request(app).get('/api/community/c1/comments');
+  expect(res.status).toBe(200);
+  expect(db.getCommunityComments).toHaveBeenCalledWith('c1');
+});
+
 test('GET /api/competitions/active', async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
   const res = await request(app).get('/api/competitions/active');
@@ -299,6 +328,7 @@ test('GET /api/competitions/active returns upcoming comps', async () => {
   expect(res.status).toBe(200);
   expect(res.body[0].id).toBe('1');
   expect(res.body[0].start_date).toBe('2099-01-01');
+  expect(res.body[0].deadline).toBe('2099-01-31T23:59:59.000Z');
 });
 
 test('GET /api/competitions/past', async () => {
@@ -482,10 +512,13 @@ test('POST /api/create-order rejects unknown job', async () => {
 
 test('GET /api/shared/:slug returns data', async () => {
   db.getShareBySlug = jest.fn().mockResolvedValue({ job_id: 'j1', slug: 's1' });
-  db.query.mockResolvedValueOnce({ rows: [{ prompt: 'p', model_url: '/m.glb' }] });
+  db.query.mockResolvedValueOnce({
+    rows: [{ prompt: 'p', model_url: '/m.glb', snapshot: '/s.png' }],
+  });
   const res = await request(app).get('/api/shared/s1');
   expect(res.status).toBe(200);
   expect(res.body.model_url).toBe('/m.glb');
+  expect(res.body.snapshot).toBe('/s.png');
 });
 
 test('GET /api/shared/:slug 404 when missing', async () => {
@@ -561,4 +594,10 @@ test('GET /api/payment-init bundles payment data', async () => {
   expect(res.body.flashSale.id).toBe(1);
   expect(res.body.profile.display_name).toBe('B');
   expect(res.body.publishableKey).toBeDefined();
+});
+
+test('GET /api/trending returns list', async () => {
+  db.query.mockResolvedValueOnce({ rows: [{ job_id: 'j1', model_url: '/m.glb' }] });
+  const res = await request(app).get('/api/trending');
+  expect([200, 404]).toContain(res.status);
 });

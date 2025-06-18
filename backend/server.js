@@ -28,6 +28,10 @@ const {
   incrementDiscountUsage,
   createTimedCode,
 } = require('./discountCodes');
+
+const { verifyTag } = require('./social');
+const syncMailingList = require('./scripts/sync-mailing-list');
+
 const REWARD_OPTIONS = { 100: 500, 200: 1000 };
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'admin';
 
@@ -131,6 +135,10 @@ app.post('/api/register', async (req, res) => {
       rows[0].id,
       displayName,
     ]);
+    const mlToken = uuidv4();
+    await db.upsertMailingListEntry(email, mlToken);
+    const confirmUrl = `${req.headers.origin}/api/confirm-subscription?token=${mlToken}`;
+    await sendMail(email, 'Confirm Subscription', `Click to confirm: ${confirmUrl}`);
     const token = jwt.sign({ id: rows[0].id, username, isAdmin: false }, AUTH_SECRET);
     res.json({ token, isAdmin: false });
   } catch (err) {
@@ -655,6 +663,23 @@ app.post('/api/subscription/cancel', authRequired, async (req, res) => {
   }
 });
 
+app.post('/api/subscription/portal', authRequired, async (req, res) => {
+  try {
+    const sub = await db.getSubscription(req.user.id);
+    if (!sub || !sub.stripe_customer_id) {
+      return res.status(404).json({ error: 'Subscription not found' });
+    }
+    const session = await stripe.billingPortal.sessions.create({
+      customer: sub.stripe_customer_id,
+      return_url: `${req.headers.origin}/my_profile.html`,
+    });
+    res.json({ url: session.url });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to create portal session' });
+  }
+});
+
 app.get('/api/subscription/credits', authRequired, async (req, res) => {
   try {
     await db.ensureCurrentWeekCredits(req.user.id, 2);
@@ -666,6 +691,53 @@ app.get('/api/subscription/credits', authRequired, async (req, res) => {
   } catch (err) {
     logError(err);
     res.status(500).json({ error: 'Failed to fetch credits' });
+  }
+});
+
+app.get('/api/dashboard', authRequired, async (req, res) => {
+  try {
+    await db.ensureCurrentWeekCredits(req.user.id, 2);
+    const [user, profileRows, ordersRows, commissionsRows, credits] = await Promise.all([
+      db.query('SELECT id, username, email FROM users WHERE id=$1', [req.user.id]),
+      db.query(
+        'SELECT display_name, avatar_url, shipping_info, payment_info, competition_notify FROM user_profiles WHERE user_id=$1',
+        [req.user.id]
+      ),
+      db.query(
+        `SELECT o.session_id, o.job_id, o.price_cents, o.status, o.quantity, o.discount_cents, o.created_at,
+                j.model_url, j.snapshot, j.prompt
+         FROM orders o
+         JOIN jobs j ON o.job_id=j.job_id
+         WHERE o.user_id=$1
+         ORDER BY o.created_at DESC`,
+        [req.user.id]
+      ),
+      db.query('SELECT * FROM model_commissions WHERE seller_user_id=$1 ORDER BY created_at DESC', [
+        req.user.id,
+      ]),
+      db.getCurrentWeekCredits(req.user.id),
+    ]);
+    const totals = commissionsRows.rows.reduce(
+      (acc, row) => {
+        if (row.status === 'paid') acc.totalPaid += row.commission_cents;
+        else if (row.status === 'pending') acc.totalPending += row.commission_cents;
+        return acc;
+      },
+      { totalPending: 0, totalPaid: 0 }
+    );
+    res.json({
+      profile: profileRows.rows[0] || {},
+      user: user.rows[0],
+      orders: ordersRows.rows,
+      commissions: { commissions: commissionsRows.rows, ...totals },
+      credits: {
+        remaining: credits.total_credits - credits.used_credits,
+        total: credits.total_credits,
+      },
+    });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to fetch dashboard' });
   }
 });
 
@@ -708,6 +780,37 @@ app.post('/api/referral-signup', async (req, res) => {
   }
 });
 
+app.post('/api/social-shares', authRequired, async (req, res) => {
+  const { orderId, url } = req.body || {};
+  if (!orderId || !url) {
+    return res.status(400).json({ error: 'orderId and url required' });
+  }
+  try {
+    const row = await db.insertSocialShare(req.user.id, orderId, url);
+    res.status(201).json({ id: row.id, verified: row.verified });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to submit share' });
+  }
+});
+
+app.post('/api/admin/social-shares/:id/verify', adminCheck, async (req, res) => {
+  const { id } = req.params;
+  try {
+    const code = await createTimedCode(500, 168);
+    const row = await db.verifySocialShare(id, code);
+    if (!row) return res.status(404).json({ error: 'Share not found' });
+    await db.query('INSERT INTO incentives(user_id, type) VALUES($1,$2)', [
+      row.user_id,
+      `post_share_${code}`,
+    ]);
+    res.json({ code });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to verify share' });
+  }
+});
+
 app.get('/api/rewards', authRequired, async (req, res) => {
   try {
     const points = await db.getRewardPoints(req.user.id);
@@ -735,6 +838,7 @@ app.post('/api/rewards/redeem', authRequired, async (req, res) => {
     res.status(500).json({ error: 'Failed to redeem reward' });
   }
 });
+
 
 app.post('/api/track/ad-click', async (req, res) => {
   const { subreddit, sessionId } = req.body || {};
@@ -782,6 +886,7 @@ app.get('/api/metrics/conversion', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch metrics' });
   }
 });
+
 app.get('/api/users/:username/models', async (req, res) => {
   const limit = parseInt(req.query.limit, 10) || 10;
   const offset = parseInt(req.query.offset, 10) || 0;
@@ -899,15 +1004,17 @@ app.get('/api/shared/:slug', async (req, res) => {
   try {
     const share = await db.getShareBySlug(req.params.slug);
     if (!share) return res.status(404).json({ error: 'Share not found' });
-    const { rows } = await db.query('SELECT prompt, model_url FROM jobs WHERE job_id=$1', [
-      share.job_id,
-    ]);
+    const { rows } = await db.query(
+      'SELECT prompt, model_url, snapshot FROM jobs WHERE job_id=$1',
+      [share.job_id]
+    );
     if (!rows.length) return res.status(404).json({ error: 'Share not found' });
     res.json({
       jobId: share.job_id,
       slug: share.slug,
       model_url: rows[0].model_url,
       prompt: rows[0].prompt,
+      snapshot: rows[0].snapshot,
     });
   } catch (err) {
     logError(err);
@@ -919,11 +1026,14 @@ app.get('/shared/:slug', async (req, res) => {
   try {
     const share = await db.getShareBySlug(req.params.slug);
     if (!share) return res.status(404).send('Not found');
-    const { rows } = await db.query('SELECT prompt, model_url FROM jobs WHERE job_id=$1', [
-      share.job_id,
-    ]);
+    const { rows } = await db.query(
+      'SELECT prompt, model_url, snapshot FROM jobs WHERE job_id=$1',
+      [share.job_id]
+    );
     const prompt = rows[0]?.prompt || 'Shared model';
-    const ogImage = `${req.protocol}://${req.get('host')}/img/boxlogo.png`;
+    const ogImage = rows[0]?.snapshot
+      ? `${req.protocol}://${req.get('host')}${rows[0].snapshot}`
+      : `${req.protocol}://${req.get('host')}/img/boxlogo.png`;
     res.send(`<!doctype html>
 <html lang="en">
   <head>
@@ -1042,6 +1152,18 @@ app.get('/api/community/popular', async (req, res) => {
   }
 });
 
+app.get('/api/community/mine', authRequired, async (req, res) => {
+  const limit = parseInt(req.query.limit, 10) || 10;
+  const offset = parseInt(req.query.offset, 10) || 0;
+  try {
+    const rows = await db.getUserCreations(req.user.id, limit, offset);
+    res.json(rows);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to fetch creations' });
+  }
+});
+
 app.delete('/api/community/:id', authRequired, async (req, res) => {
   const id = req.params.id;
   try {
@@ -1075,12 +1197,39 @@ app.get('/api/community/model/:id', async (req, res) => {
   }
 });
 
+app.get('/api/community/:id/comments', async (req, res) => {
+  try {
+    const rows = await db.getCommunityComments(req.params.id);
+    res.json(rows);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to fetch comments' });
+  }
+});
+
+app.post('/api/community/:id/comment', authRequired, async (req, res) => {
+  const { text } = req.body;
+  if (!text) return res.status(400).json({ error: 'text required' });
+  try {
+    const row = await db.insertCommunityComment(req.params.id, req.user.id, text);
+    res.status(201).json(row);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to post comment' });
+  }
+});
+
 app.get('/api/competitions/active', async (req, res) => {
   try {
     const { rows } = await db.query(
       'SELECT * FROM competitions WHERE end_date >= CURRENT_DATE ORDER BY start_date'
     );
-    res.json(rows);
+    const comps = rows.map((c) => {
+      const deadline = new Date(c.end_date);
+      deadline.setUTCHours(23, 59, 59, 0);
+      return { ...c, deadline: deadline.toISOString() };
+    });
+    res.json(comps);
   } catch (err) {
     logError(err);
     res.status(500).json({ error: 'Failed to fetch competitions' });
@@ -1090,7 +1239,7 @@ app.get('/api/competitions/active', async (req, res) => {
 app.get('/api/competitions/past', async (req, res) => {
   try {
     const { rows } = await db.query(
-      `SELECT c.id, c.name, c.end_date, j.model_url
+      `SELECT c.id, c.name, c.end_date, j.model_url, j.snapshot, c.winner_model_id
        FROM competitions c
        LEFT JOIN jobs j ON c.winner_model_id=j.job_id
        WHERE c.end_date < CURRENT_DATE AND c.winner_model_id IS NOT NULL
@@ -1279,7 +1428,7 @@ app.post('/api/payouts', authRequired, async (req, res) => {
       'SELECT commission_cents FROM model_commissions WHERE seller_user_id=$1 AND status=$2',
       [req.user.id, 'pending']
     );
-    const total = pendingRes.rows.reduce((s, r) => s + r.commission_cents, 0);
+    const total = pendingRes.rows.reduce((sum, r) => sum + r.commission_cents, 0);
     if (total === 0) return res.json({ totalPaid: 0 });
     const transfer = await stripe.transfers.create({
       amount: total,
@@ -1404,7 +1553,8 @@ app.delete('/api/admin/flash-sale/:id', adminCheck, async (req, res) => {
  * Create a Stripe Checkout session
  */
 app.post('/api/create-order', authOptional, async (req, res) => {
-  const { jobId, price, shippingInfo, qty, discount, discountCode, referral, etchName } = req.body;
+  const { jobId, price, shippingInfo, qty, discount, discountCode, referral, etchName, useCredit } =
+    req.body;
   try {
     const job = await db.query('SELECT job_id, user_id FROM jobs WHERE job_id=$1', [jobId]);
     if (job.rows.length === 0) {
@@ -1454,6 +1604,40 @@ app.post('/api/create-order', authOptional, async (req, res) => {
       } catch (err) {
         logError(err);
       }
+    }
+
+    if (useCredit) {
+      if (!req.user) {
+        return res.status(401).json({ error: 'Unauthorized' });
+      }
+      const sub = await db.getSubscription(req.user.id);
+      if (!sub || sub.status !== 'active') {
+        return res.status(400).json({ error: 'No active subscription' });
+      }
+      await db.ensureCurrentWeekCredits(req.user.id, 2);
+      const credits = await db.getCurrentWeekCredits(req.user.id);
+      if (credits.total_credits - credits.used_credits <= 0) {
+        return res.status(400).json({ error: 'No credits remaining' });
+      }
+      await db.incrementCreditsUsed(req.user.id, 1);
+      const sessionId = uuidv4();
+      await db.query(
+        'INSERT INTO orders(session_id, job_id, user_id, price_cents, status, shipping_info, quantity, discount_cents, etch_name) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)',
+        [
+          sessionId,
+          jobId,
+          req.user.id,
+          0,
+          'paid',
+          shippingInfo || {},
+          qty || 1,
+          0,
+          etchName || null,
+        ]
+      );
+      enqueuePrint(jobId);
+      processQueue();
+      return res.json({ success: true });
     }
 
     if (req.user) {
@@ -1525,11 +1709,7 @@ app.post('/api/subscribe', async (req, res) => {
   if (!email) return res.status(400).json({ error: 'Email required' });
   const token = uuidv4();
   try {
-    await db.query(
-      `INSERT INTO mailing_list(email, token) VALUES($1,$2)
-       ON CONFLICT (email) DO UPDATE SET token=$2, confirmed=FALSE`,
-      [email, token]
-    );
+    await db.upsertMailingListEntry(email, token);
     const url = `${req.headers.origin}/api/confirm-subscription?token=${token}`;
     await sendMail(email, 'Confirm Subscription', `Click to confirm: ${url}`);
     res.sendStatus(204);
@@ -1544,11 +1724,7 @@ app.post('/api/competitions/subscribe', async (req, res) => {
   if (!email) return res.status(400).json({ error: 'Email required' });
   const token = uuidv4();
   try {
-    await db.query(
-      `INSERT INTO mailing_list(email, token) VALUES($1,$2)
-       ON CONFLICT (email) DO UPDATE SET token=$2, confirmed=FALSE, unsubscribed=FALSE`,
-      [email, token]
-    );
+    await db.upsertMailingListEntry(email, token);
     const url = `${req.headers.origin}/api/confirm-subscription?token=${token}`;
     await sendMail(email, 'Confirm Subscription', `Click to confirm: ${url}`);
     res.sendStatus(204);
@@ -1562,11 +1738,23 @@ app.get('/api/confirm-subscription', async (req, res) => {
   const { token } = req.query;
   if (!token) return res.status(400).send('Invalid token');
   try {
-    await db.query('UPDATE mailing_list SET confirmed=TRUE WHERE token=$1', [token]);
+    await db.confirmMailingListEntry(token);
     res.send('Subscription confirmed');
   } catch (err) {
     logError(err);
     res.status(500).send('Failed to confirm');
+  }
+});
+
+app.get('/api/unsubscribe', async (req, res) => {
+  const { token } = req.query;
+  if (!token) return res.status(400).send('Invalid token');
+  try {
+    await db.unsubscribeMailingListEntry(token);
+    res.send('You have been unsubscribed');
+  } catch (err) {
+    logError(err);
+    res.status(500).send('Failed to unsubscribe');
   }
 });
 
@@ -1693,6 +1881,13 @@ if (require.main === module) {
   initDailyPrintsSold();
   checkCompetitionStart();
   setInterval(checkCompetitionStart, 3600000);
+  syncMailingList().catch((err) => logError('Mail sync failed', err));
+  setInterval(
+    () => {
+      syncMailingList().catch((err) => logError('Mail sync failed', err));
+    },
+    24 * 3600 * 1000
+  );
 }
 
 module.exports = app;
