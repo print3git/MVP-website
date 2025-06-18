@@ -165,7 +165,6 @@ async function insertCheckoutEvent(sessionId, subreddit, step) {
   );
 }
 
-<<<<<<< jtyxgr-codex/execute-next-subtasks-for-subscription-service
 async function insertSubscriptionEvent(userId, event, variant, priceCents) {
   await query(
     'INSERT INTO subscription_events(user_id, event, variant, price_cents) VALUES($1,$2,$3,$4)',
@@ -182,13 +181,13 @@ async function getSubscriptionMetrics() {
     active: parseInt(active.rows[0].count, 10),
     churn_last_30_days: parseInt(churn.rows[0].count, 10),
   };
-=======
+}
+
 async function insertShareEvent(shareId, network) {
   await query('INSERT INTO share_events(share_id, network, timestamp) VALUES($1,$2,NOW())', [
     shareId,
     network,
   ]);
->>>>>>> main
 }
 
 async function getConversionMetrics() {
