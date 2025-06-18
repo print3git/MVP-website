@@ -145,6 +145,7 @@ async function insertReferralEvent(referrerId, type) {
   await query('INSERT INTO referral_events(referrer_id, type) VALUES($1,$2)', [referrerId, type]);
 }
 
+
 async function getUserCreations(userId, limit = 10, offset = 0) {
   const { rows } = await query(
     `SELECT c.id, c.title, c.category, j.job_id, j.model_url
@@ -197,7 +198,9 @@ module.exports = {
   adjustRewardPoints,
   getUserIdForReferral,
   insertReferralEvent,
-  getUserCreations,
-  insertCommunityComment,
-  getCommunityComments,
+
+  upsertMailingListEntry,
+  confirmMailingListEntry,
+  unsubscribeMailingListEntry,
+
 };
