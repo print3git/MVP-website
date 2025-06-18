@@ -21,11 +21,11 @@ async function loadSubscription() {
   const token = localStorage.getItem('token');
   if (!token) return;
   try {
-    const subRes = await fetch(`${API_BASE}/subscription`, {
+    const resp = await fetch(`${API_BASE}/subscription/summary`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    if (!subRes.ok) return;
-    const sub = await subRes.json();
+    if (!resp.ok) return;
+    const { subscription: sub, credits } = await resp.json();
     const container = document.getElementById('subscription-progress');
     const manage = document.getElementById('manage-subscription');
     if (!sub || sub.active === false || sub.status === 'canceled') {
@@ -35,11 +35,6 @@ async function loadSubscription() {
       }
       return;
     }
-    const creditsRes = await fetch(`${API_BASE}/subscription/credits`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!creditsRes.ok) return;
-    const credits = await creditsRes.json();
     if (container) container.classList.remove('hidden');
     const used = credits.total - credits.remaining;
     const pct = credits.total ? (used / credits.total) * 100 : 0;
