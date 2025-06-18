@@ -165,6 +165,13 @@ async function insertCheckoutEvent(sessionId, subreddit, step) {
   );
 }
 
+async function insertPageView(sessionId, subreddit, utmSource, utmMedium, utmCampaign) {
+  await query(
+    'INSERT INTO page_views(session_id, subreddit, utm_source, utm_medium, utm_campaign, timestamp) VALUES($1,$2,$3,$4,$5,NOW())',
+    [sessionId, subreddit, utmSource, utmMedium, utmCampaign]
+  );
+}
+
 async function insertSubscriptionEvent(userId, event, variant, priceCents) {
   await query(
     'INSERT INTO subscription_events(user_id, event, variant, price_cents) VALUES($1,$2,$3,$4)',
@@ -316,6 +323,7 @@ module.exports = {
   getUserIdForReferral,
   insertReferralEvent,
   insertShareEvent,
+  insertPageView,
   upsertMailingListEntry,
   confirmMailingListEntry,
   unsubscribeMailingListEntry,

@@ -11,6 +11,7 @@ jest.mock('../db', () => ({
   insertCartEvent: jest.fn(),
   insertCheckoutEvent: jest.fn(),
   insertShareEvent: jest.fn(),
+  insertPageView: jest.fn(),
   getConversionMetrics: jest.fn(),
 }));
 const db = require('../db');
@@ -52,6 +53,20 @@ test('POST /api/track/share records event', async () => {
     .send({ shareId: 'sh1', network: 'facebook' });
   expect(res.status).toBe(200);
   expect(db.insertShareEvent).toHaveBeenCalledWith('sh1', 'facebook');
+});
+
+test('POST /api/track/page records view', async () => {
+  const res = await request(app)
+    .post('/api/track/page')
+    .send({
+      sessionId: 's1',
+      subreddit: 'funny',
+      utmSource: 'g',
+      utmMedium: 'cpc',
+      utmCampaign: 'summer',
+    });
+  expect(res.status).toBe(200);
+  expect(db.insertPageView).toHaveBeenCalledWith('s1', 'funny', 'g', 'cpc', 'summer');
 });
 
 test('GET /api/metrics/conversion returns metrics', async () => {
