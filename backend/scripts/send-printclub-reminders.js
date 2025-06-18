@@ -9,7 +9,6 @@ function startOfWeek(d = new Date()) {
   return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), diff));
 }
 
-
 function daysUntilNextReset() {
   const today = new Date();
   const nextWeekStart = new Date(startOfWeek(today).getTime() + 7 * 24 * 60 * 60 * 1000);
@@ -19,14 +18,11 @@ function daysUntilNextReset() {
 async function sendReminders() {
   if (daysUntilNextReset() > 2) return;
 
-
   const client = new Client({ connectionString: process.env.DB_URL });
   await client.connect();
   const week = startOfWeek();
   const weekStr = week.toISOString().slice(0, 10);
   try {
-    const week = startOfWeek(now);
-    const weekStr = week.toISOString().slice(0, 10);
     const { rows } = await client.query(
       `SELECT u.email, u.username
 
