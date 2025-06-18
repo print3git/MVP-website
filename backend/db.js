@@ -373,6 +373,22 @@ async function getPrintersByHub(hubId) {
   return rows;
 }
 
+async function insertPrinterMetric(printerId, status, queueLength, error) {
+  await query(
+    'INSERT INTO printer_metrics(printer_id, status, queue_length, error) VALUES($1,$2,$3,$4)',
+    [printerId, status, queueLength, error]
+  );
+}
+
+async function getLatestPrinterMetrics() {
+  const { rows } = await query(
+    `SELECT DISTINCT ON (printer_id) printer_id, status, queue_length, error, created_at
+     FROM printer_metrics
+     ORDER BY printer_id, created_at DESC`
+  );
+  return rows;
+}
+
 async function insertHubShipment(hubId, carrier, trackingNumber, status) {
   const { rows } = await query(
     'INSERT INTO hub_shipments(hub_id, carrier, tracking_number, status) VALUES($1,$2,$3,$4) RETURNING *',
@@ -427,4 +443,6 @@ module.exports = {
   addPrinter,
   getPrintersByHub,
   insertHubShipment,
+  insertPrinterMetric,
+  getLatestPrinterMetrics,
 };
