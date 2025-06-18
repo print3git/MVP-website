@@ -562,3 +562,9 @@ test('GET /api/payment-init bundles payment data', async () => {
   expect(res.body.profile.display_name).toBe('B');
   expect(res.body.publishableKey).toBeDefined();
 });
+
+test('GET /api/trending returns models ordered by likes', async () => {
+  db.query.mockResolvedValueOnce({ rows: [] });
+  await request(app).get('/api/trending');
+  expect(db.query).toHaveBeenCalledWith(expect.stringContaining('ORDER BY likes DESC'));
+});

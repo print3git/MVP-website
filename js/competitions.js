@@ -126,6 +126,39 @@ async function load() {
   });
 }
 
+async function loadTrending() {
+  const res = await fetch(`${API_BASE}/trending`);
+  if (!res.ok) return;
+  const models = await res.json();
+  const container = document.getElementById('trending-prints');
+  if (!container) return;
+  models.forEach((m) => {
+    const div = document.createElement('div');
+    div.className = 'relative';
+    div.innerHTML = `<img src="${m.snapshot || ''}" alt="Model" class="w-full h-24 object-cover rounded-lg pointer-events-none" />`;
+    const addBtn = document.createElement('button');
+    addBtn.textContent = 'Add to Basket';
+    addBtn.className = 'absolute bottom-1 left-1 text-xs bg-[#30D5C8] text-[#1A1A1D] px-2 py-1 rounded';
+    addBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (window.addToBasket)
+        window.addToBasket({ jobId: m.job_id, modelUrl: m.model_url, snapshot: m.snapshot });
+    });
+    const viewBtn = document.createElement('button');
+    viewBtn.textContent = 'View';
+    viewBtn.className = 'absolute bottom-1 right-1 text-xs bg-black/60 px-2 py-1 rounded';
+    viewBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openModelModal(m.model_url, m.job_id, m.snapshot || '');
+    });
+    div.appendChild(addBtn);
+    div.appendChild(viewBtn);
+    div.addEventListener('pointerenter', () => prefetchModel(m.model_url));
+    container.appendChild(div);
+  });
+  captureSnapshots(container);
+}
+
 async function loadLeaderboard(id, table, grid) {
   const res = await fetch(`${API_BASE}/competitions/${id}/entries`);
   if (!res.ok) return;
@@ -185,10 +218,11 @@ function startCountdown(el) {
     const d = Math.floor(diff / 86400000);
     const h = Math.floor((diff % 86400000) / 3600000);
     const m = Math.floor((diff % 3600000) / 60000);
-    el.textContent = `${d}d ${zeroPad(h)}:${zeroPad(m)}`;
+    const s = Math.floor((diff % 60000) / 1000);
+    el.textContent = `${d}d ${zeroPad(h)}:${zeroPad(m)}:${zeroPad(s)}`;
   }
   update();
-  timer = setInterval(update, 60000);
+  timer = setInterval(update, 1000);
 }
 
 let currentId;
@@ -351,7 +385,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (buyBtn) {
       buyBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        purchase(card.dataset.model, card.dataset.job);
+        const img = card.querySelector('img');
+        openModelModal(card.dataset.model, card.dataset.job, img ? img.src : '');
       });
     }
     card.addEventListener('click', (e) => {
@@ -367,6 +402,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   });
   load();
+  loadTrending();
   const subForm = document.getElementById('comp-subscribe');
   const emailInput = document.getElementById('comp-email');
   const msgEl = document.getElementById('comp-subscribe-msg');

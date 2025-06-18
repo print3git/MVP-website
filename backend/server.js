@@ -996,6 +996,24 @@ app.get('/api/community/popular', async (req, res) => {
   }
 });
 
+app.get('/api/trending', async (req, res) => {
+  try {
+    const { rows } = await db.query(
+      `SELECT j.job_id, j.model_url, j.snapshot, COALESCE(l.count,0) as likes
+       FROM jobs j
+       LEFT JOIN (SELECT model_id, COUNT(*) as count FROM likes GROUP BY model_id) l
+       ON j.job_id = l.model_id
+       WHERE j.model_url IS NOT NULL
+       ORDER BY likes DESC, j.created_at DESC
+       LIMIT 5`
+    );
+    res.json(rows);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to fetch trending prints' });
+  }
+});
+
 app.delete('/api/community/:id', authRequired, async (req, res) => {
   const id = req.params.id;
   try {
