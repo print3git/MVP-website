@@ -40,7 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Queue for merge
-        uses: peter-evans/merge-queue@v2
+        uses: peter-evans/merge-queue@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           merge-method: squash
