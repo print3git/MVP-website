@@ -25,4 +25,5 @@ This repository uses a shared file locking mechanism and automated workflows so 
 
 ## Improving This Protocol
 - Agents may propose improvements to this document by opening a pull request that clearly explains the changes.
+- Self-modification of the automation scripts and this protocol is permitted as long as the proposed change is reviewed via pull request.
 
