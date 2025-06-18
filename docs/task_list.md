@@ -207,45 +207,12 @@
 
 ## User Profiles
 
-- Add avatar upload support.
-  - Insert a file input on `my_profile.html`.
-  - Create POST `/api/profile/avatar` to store the upload and return its URL.
-  - Update `js/my_profile.js` to send the avatar and refresh the preview.
-- Provide fields for shipping address and payment info on `my_profile.html`.
-  - POST the entered details to `/api/profile`.
-- Display past orders in a table by calling `/api/my/orders`.
-- Add a toggle for competition email notifications linked to `/api/profile`.
-- Include a "Delete my account" button that calls DELETE `/api/account`.
-- Fetch `display_name` and `avatar_url` for `/profile.html` and show them at the top.
-
-
-
 ## Earn Rewards Page
 
-- Allow point redemption for discount codes.
-  - Add POST `/api/rewards/redeem` that deducts points and returns a code.
-  - Insert a dropdown on the page listing available rewards.
-- Track referrals in the backend.
-  - Create `referral_events` table for clicks and signups.
-  - Add POST `/api/referral-click` to record each click.
-  - Add POST `/api/referral-signup` to award points after signup.
-- Add unit tests for all new rewards endpoints.
 ## Community Creations
 
-- Link creations to the uploader.
-  - Add `user_id` column to `community_creations`.
-  - Insert the logged in user's id in `/api/community`.
-- Allow deletion of a submission.
-  - Add DELETE `/api/community/:id` restricted to the owner.
-  - Show a delete button next to each item on "My Creations".
 - Support comments on models.
   - Create `community_comments` table (`id`, `model_id`, `user_id`, `text`, `created_at`).
   - POST `/api/community/:id/comment` to add a comment.
   - GET `/api/community/:id/comments` returning the newest 20.
-- Provide a personal gallery.
-  - GET `/api/community/mine` listing the logged in user's creations.
-  - Add `my_creations.html` reusing the community grid.
-- Enable sharing individual models.
-  - GET `/community/model/:id` to show one model with share metadata.
-  - Add a copy-link button in the modal.
 
