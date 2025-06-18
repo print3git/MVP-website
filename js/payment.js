@@ -24,6 +24,15 @@ const TZ = 'America/New_York';
 let flashTimerId = null;
 let flashSale = null;
 const NEXT_PROMPTS = ['cute robot figurine', 'ornate chess piece', 'geometric flower vase'];
+const SEASONAL_BUNDLES = [
+  {
+    name: 'Winter Wonderland Bundle',
+    detail: 'Free snowman stand with gift prints',
+  },
+  { name: 'Spring Bloom Bundle', detail: 'Includes floral gift wrap' },
+  { name: 'Summer Fun Bundle', detail: 'Beach-themed gift card included' },
+  { name: 'Autumn Harvest Bundle', detail: 'Leaf pattern gift wrap' },
+];
 
 function getUserIdFromToken() {
   const token = localStorage.getItem('token');
@@ -361,6 +370,7 @@ async function initPaymentPage() {
   const bulkSlotEl = document.getElementById('bulk-slot-count');
   const discountInput = document.getElementById('discount-code');
   const discountMsg = document.getElementById('discount-msg');
+  const seasonalBundleEl = document.getElementById('seasonal-bundle');
   const applyBtn = document.getElementById('apply-discount');
   const surpriseToggle = document.getElementById('surprise-toggle');
   const recipientFields = document.getElementById('recipient-fields');
@@ -368,6 +378,12 @@ async function initPaymentPage() {
   loadCheckoutCredits();
   if (referralId && discountMsg) {
     discountMsg.textContent = 'Referral discount applied';
+  }
+  if (seasonalBundleEl) {
+    const idx = new Date().getMonth() % SEASONAL_BUNDLES.length;
+    const bundle = SEASONAL_BUNDLES[idx];
+    seasonalBundleEl.textContent = `${bundle.name}: ${bundle.detail}`;
+    seasonalBundleEl.hidden = false;
   }
   const materialRadios = document.querySelectorAll('#material-options input[name="material"]');
   const subscriptionRadios = document.querySelectorAll(
