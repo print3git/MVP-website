@@ -669,6 +669,22 @@ app.get('/api/subscription/credits', authRequired, async (req, res) => {
   }
 });
 
+app.get('/api/subscription/summary', authRequired, async (req, res) => {
+  try {
+    const subscription = (await db.getSubscription(req.user.id)) || { active: false };
+    await db.ensureCurrentWeekCredits(req.user.id, 2);
+    const creditsRow = await db.getCurrentWeekCredits(req.user.id);
+    const credits = {
+      remaining: creditsRow.total_credits - creditsRow.used_credits,
+      total: creditsRow.total_credits,
+    };
+    res.json({ subscription, credits });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to fetch summary' });
+  }
+});
+
 app.get('/api/referral-link', authRequired, async (req, res) => {
   try {
     const code = await db.getOrCreateReferralLink(req.user.id);
