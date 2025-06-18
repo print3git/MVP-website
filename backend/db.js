@@ -347,6 +347,40 @@ async function getCommunityComments(modelId, limit = 20) {
   return rows;
 }
 
+async function createPrinterHub(name, location, operator) {
+  const { rows } = await query(
+    'INSERT INTO printer_hubs(name, location, operator) VALUES($1,$2,$3) RETURNING *',
+    [name, location, operator]
+  );
+  return rows[0];
+}
+
+async function listPrinterHubs() {
+  const { rows } = await query('SELECT * FROM printer_hubs ORDER BY id');
+  return rows;
+}
+
+async function addPrinter(serial, hubId) {
+  const { rows } = await query('INSERT INTO printers(serial, hub_id) VALUES($1,$2) RETURNING *', [
+    serial,
+    hubId,
+  ]);
+  return rows[0];
+}
+
+async function getPrintersByHub(hubId) {
+  const { rows } = await query('SELECT * FROM printers WHERE hub_id=$1', [hubId]);
+  return rows;
+}
+
+async function insertHubShipment(hubId, carrier, trackingNumber, status) {
+  const { rows } = await query(
+    'INSERT INTO hub_shipments(hub_id, carrier, tracking_number, status) VALUES($1,$2,$3,$4) RETURNING *',
+    [hubId, carrier, trackingNumber, status]
+  );
+  return rows[0];
+}
+
 module.exports = {
   query,
   insertShare,
@@ -386,6 +420,9 @@ module.exports = {
   getCommunityComments,
   getRewardOptions,
   getRewardOption,
-  insertScalingEvent,
-  getScalingEvents,
+  createPrinterHub,
+  listPrinterHubs,
+  addPrinter,
+  getPrintersByHub,
+  insertHubShipment,
 };
