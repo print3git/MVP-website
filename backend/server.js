@@ -2,6 +2,7 @@
 
 require('dotenv').config();
 const express = require('express');
+const http2 = require('http2');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const multer = require('multer');
@@ -2109,9 +2110,16 @@ async function checkCompetitionStart() {
 
 // Start the server if this file is run directly
 if (require.main === module) {
-  app.listen(PORT, () => {
-    console.log(`API server listening on http://localhost:${PORT}`);
-  });
+  if (process.env.HTTP2 === 'true') {
+    const server = http2.createServer({ allowHTTP1: true }, app);
+    server.listen(PORT, () => {
+      console.log(`API server listening on http://localhost:${PORT} (HTTP/2)`);
+    });
+  } else {
+    app.listen(PORT, () => {
+      console.log(`API server listening on http://localhost:${PORT}`);
+    });
+  }
   initDailyPrintsSold();
   checkCompetitionStart();
   setInterval(checkCompetitionStart, 3600000);
