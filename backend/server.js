@@ -712,6 +712,26 @@ app.get('/api/subscription/credits', authRequired, async (req, res) => {
   }
 });
 
+app.get('/api/subscription/summary', authRequired, async (req, res) => {
+  try {
+    await db.ensureCurrentWeekCredits(req.user.id, 2);
+    const [sub, credits] = await Promise.all([
+      db.getSubscription(req.user.id),
+      db.getCurrentWeekCredits(req.user.id),
+    ]);
+    res.json({
+      subscription: sub || { active: false },
+      credits: {
+        remaining: credits.total_credits - credits.used_credits,
+        total: credits.total_credits,
+      },
+    });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to fetch subscription summary' });
+  }
+});
+
 app.get('/api/dashboard', authRequired, async (req, res) => {
   try {
     await db.ensureCurrentWeekCredits(req.user.id, 2);
