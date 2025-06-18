@@ -375,6 +375,20 @@ async function loadTrending() {
   });
 }
 
+async function loadWinnerInterviews() {
+  const container = document.getElementById('winner-interviews');
+  if (!container) return;
+  const res = await fetch(`${API_BASE}/competitions/winners`);
+  if (!res.ok) return;
+  const winners = await res.json();
+  winners.forEach((w) => {
+    const div = document.createElement('div');
+    div.className = 'flex items-center space-x-4';
+    div.innerHTML = `<img src="${w.image}" alt="${w.name}" class="w-16 h-16 rounded-full object-cover" />\n      <blockquote class="text-sm italic">"${w.quote}"</blockquote>`;
+    container.appendChild(div);
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   modal = document.getElementById('enter-modal');
   form = document.getElementById('enter-form');
@@ -416,6 +430,7 @@ document.addEventListener('DOMContentLoaded', () => {
   load();
   loadPast();
   loadTrending();
+  loadWinnerInterviews();
   const subForm = document.getElementById('comp-subscribe');
   const emailInput = document.getElementById('comp-email');
   const msgEl = document.getElementById('comp-subscribe-msg');

@@ -56,6 +56,15 @@ try {
   logError('Failed to load subreddit_models.json', err);
 }
 
+let competitionWinners = [];
+try {
+  const winnersPath = path.join(__dirname, 'competition_winners.json');
+  const raw = fs.readFileSync(winnersPath, 'utf8');
+  competitionWinners = JSON.parse(raw);
+} catch (err) {
+  logError('Failed to load competition_winners.json', err);
+}
+
 const app = express();
 app.use(morgan('dev'));
 app.use(compression());
@@ -1299,6 +1308,14 @@ app.get('/api/competitions/past', async (req, res) => {
   } catch (err) {
     logError(err);
     res.status(500).json({ error: 'Failed to fetch past competitions' });
+  }
+});
+
+app.get('/api/competitions/winners', (req, res) => {
+  if (competitionWinners.length) {
+    res.json(competitionWinners);
+  } else {
+    res.status(404).json({ error: 'Not found' });
   }
 });
 
