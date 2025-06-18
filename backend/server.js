@@ -31,6 +31,7 @@ const {
 const { verifyTag } = require('./social');
 
 const syncMailingList = require('./scripts/sync-mailing-list');
+const runScalingEngine = require('./scalingEngine');
 
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'admin';
 
@@ -1652,6 +1653,16 @@ app.get('/api/admin/subscription-metrics', adminCheck, async (req, res) => {
   }
 });
 
+app.get('/api/admin/scaling-events', adminCheck, async (req, res) => {
+  try {
+    const events = await db.getScalingEvents(50);
+    res.json(events);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to fetch events' });
+  }
+});
+
 /**
  * POST /api/create-order
  * Create a Stripe Checkout session
@@ -2003,6 +2014,10 @@ if (require.main === module) {
   initDailyPrintsSold();
   checkCompetitionStart();
   setInterval(checkCompetitionStart, 3600000);
+  runScalingEngine().catch((err) => logError('Scaling engine failed', err));
+  setInterval(() => {
+    runScalingEngine().catch((err) => logError('Scaling engine failed', err));
+  }, 3600000);
   syncMailingList().catch((err) => logError('Mail sync failed', err));
   setInterval(
     () => {
