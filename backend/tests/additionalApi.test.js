@@ -275,6 +275,40 @@ test('GET /api/community/model/:id returns model', async () => {
   expect(res.body.id).toBe('c1');
 });
 
+test('GET /api/community/mine returns creations', async () => {
+  db.query.mockResolvedValueOnce({ rows: [] });
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  const res = await request(app).get('/api/community/mine').set('authorization', `Bearer ${token}`);
+  expect(res.status).toBe(200);
+  expect(db.query).toHaveBeenCalledWith(expect.stringContaining('WHERE c.user_id=$1'), [
+    'u1',
+    10,
+    0,
+  ]);
+});
+
+test('POST /api/community/:id/comment adds comment', async () => {
+  db.query.mockResolvedValueOnce({ rows: [{ id: 'x', text: 't' }] });
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  const res = await request(app)
+    .post('/api/community/c1/comment')
+    .set('authorization', `Bearer ${token}`)
+    .send({ text: 't' });
+  expect(res.status).toBe(201);
+  expect(db.query).toHaveBeenCalledWith(expect.stringContaining('INSERT INTO community_comments'), [
+    'c1',
+    'u1',
+    't',
+  ]);
+});
+
+test('GET /api/community/:id/comments returns list', async () => {
+  db.query.mockResolvedValueOnce({ rows: [] });
+  const res = await request(app).get('/api/community/c1/comments');
+  expect(res.status).toBe(200);
+  expect(db.query).toHaveBeenCalledWith(expect.any(String), ['c1']);
+});
+
 test('GET /api/competitions/active', async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
   const res = await request(app).get('/api/competitions/active');
