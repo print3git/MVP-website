@@ -127,14 +127,26 @@ test('create-order applies discount', async () => {
     expect.objectContaining({
       line_items: [
         expect.objectContaining({
-          price_data: expect.objectContaining({ unit_amount: 180 }),
+          price_data: expect.objectContaining({ unit_amount: 170 }),
         }),
       ],
     })
   );
   const insertCall = db.query.mock.calls.find((c) => c[0].includes('INSERT INTO orders'));
-  expect(insertCall[1][3]).toBe(180);
-  expect(insertCall[1][7]).toBe(20);
+  expect(insertCall[1][3]).toBe(170);
+  expect(insertCall[1][7]).toBe(30);
+});
+
+test('create-order quantity discount', async () => {
+  db.query.mockResolvedValueOnce({ rows: [{ job_id: '1', user_id: 'u1' }] });
+  db.query.mockResolvedValueOnce({});
+  const res = await request(app).post('/api/create-order').send({ jobId: '1', price: 100, qty: 2 });
+  expect(res.status).toBe(200);
+  const createCall = stripeMock.checkout.sessions.create.mock.calls.pop()[0];
+  expect(createCall.line_items[0].price_data.unit_amount).toBe(190);
+  const orderInsert = db.query.mock.calls.find((c) => c[0].includes('INSERT INTO orders'));
+  expect(orderInsert[1][3]).toBe(190);
+  expect(orderInsert[1][7]).toBe(10);
 });
 
 test('create-order applies first-order discount', async () => {
