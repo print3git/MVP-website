@@ -275,6 +275,40 @@ test('GET /api/community/model/:id returns model', async () => {
   expect(res.body.id).toBe('c1');
 });
 
+test('GET /api/community/mine returns creations', async () => {
+  db.query.mockResolvedValueOnce({ rows: [] });
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  const res = await request(app).get('/api/community/mine').set('authorization', `Bearer ${token}`);
+  expect(res.status).toBe(200);
+  expect(db.query).toHaveBeenCalledWith(expect.stringContaining('WHERE c.user_id=$1'), [
+    'u1',
+    10,
+    0,
+  ]);
+});
+
+test('POST /api/community/:id/comment adds comment', async () => {
+  db.query.mockResolvedValueOnce({ rows: [{ id: 'x', text: 't' }] });
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  const res = await request(app)
+    .post('/api/community/c1/comment')
+    .set('authorization', `Bearer ${token}`)
+    .send({ text: 't' });
+  expect(res.status).toBe(201);
+  expect(db.query).toHaveBeenCalledWith(expect.stringContaining('INSERT INTO community_comments'), [
+    'c1',
+    'u1',
+    't',
+  ]);
+});
+
+test('GET /api/community/:id/comments returns list', async () => {
+  db.query.mockResolvedValueOnce({ rows: [] });
+  const res = await request(app).get('/api/community/c1/comments');
+  expect(res.status).toBe(200);
+  expect(db.query).toHaveBeenCalledWith(expect.any(String), ['c1']);
+});
+
 test('GET /api/competitions/active', async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
   const res = await request(app).get('/api/competitions/active');
@@ -482,10 +516,13 @@ test('POST /api/create-order rejects unknown job', async () => {
 
 test('GET /api/shared/:slug returns data', async () => {
   db.getShareBySlug = jest.fn().mockResolvedValue({ job_id: 'j1', slug: 's1' });
-  db.query.mockResolvedValueOnce({ rows: [{ prompt: 'p', model_url: '/m.glb' }] });
+  db.query.mockResolvedValueOnce({
+    rows: [{ prompt: 'p', model_url: '/m.glb', snapshot: '/s.png' }],
+  });
   const res = await request(app).get('/api/shared/s1');
   expect(res.status).toBe(200);
   expect(res.body.model_url).toBe('/m.glb');
+  expect(res.body.snapshot).toBe('/s.png');
 });
 
 test('GET /api/shared/:slug 404 when missing', async () => {
@@ -561,4 +598,11 @@ test('GET /api/payment-init bundles payment data', async () => {
   expect(res.body.flashSale.id).toBe(1);
   expect(res.body.profile.display_name).toBe('B');
   expect(res.body.publishableKey).toBeDefined();
+});
+
+test('GET /api/trending returns list', async () => {
+  db.query.mockResolvedValueOnce({ rows: [{ job_id: 'j1', model_url: '/m.glb' }] });
+  const res = await request(app).get('/api/trending');
+  expect(res.status).toBe(200);
+  expect(res.body[0].job_id).toBe('j1');
 });
