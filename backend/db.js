@@ -214,6 +214,16 @@ async function insertShareEvent(shareId, network) {
   ]);
 }
 
+async function upsertAdStat(date, subreddit, impressions, spendCents) {
+  await query(
+    `INSERT INTO ad_stats(date, subreddit, impressions, spend_cents)
+     VALUES($1,$2,$3,$4)
+     ON CONFLICT (date, subreddit)
+     DO UPDATE SET impressions=$3, spend_cents=$4`,
+    [date, subreddit, impressions, spendCents]
+  );
+}
+
 async function getConversionMetrics() {
   const clicks = await query('SELECT subreddit, COUNT(*) AS c FROM ad_clicks GROUP BY subreddit');
   const carts = await query('SELECT subreddit, COUNT(*) AS c FROM cart_events GROUP BY subreddit');
@@ -353,4 +363,5 @@ module.exports = {
   getCommunityComments,
   getRewardOptions,
   getRewardOption,
+  upsertAdStat,
 };

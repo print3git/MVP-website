@@ -26,7 +26,13 @@ async function captureSnapshot(glbUrl) {
 }
 
 async function shareOn(network) {
-  const shareLink = 'https://print2.io';
+  const base = 'https://print2.io/index.html';
+  const utm = new URLSearchParams({
+    utm_source: 'social',
+    utm_medium: network,
+    utm_campaign: 'share',
+  }).toString();
+  const shareLink = `${base}?${utm}`;
   const url = encodeURIComponent(shareLink);
   const text = encodeURIComponent('Check out print3!');
   let shareUrl = '';

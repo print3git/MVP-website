@@ -18,6 +18,7 @@
     "cleanup-tokens": "node scripts/cleanup-password-resets.js",
     "measure-load": "node scripts/measure-load.js",
     "generate-referral-qr": "node scripts/generate-referral-qr.js",
+    "fetch-ad-stats": "node scripts/fetch-reddit-ad-stats.js",
     "lint": "eslint . --max-warnings=0"
   },
   "keywords": [],
