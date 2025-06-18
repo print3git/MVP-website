@@ -4,6 +4,7 @@ const closeBtn = document.getElementById('printclub-close');
 const bannerLink = document.getElementById('printclub-banner-link');
 const API_BASE = (window.API_ORIGIN || '') + '/api';
 
+
 async function updateBadge() {
   if (!badge) return;
   const token = localStorage.getItem('token');
@@ -22,6 +23,7 @@ async function updateBadge() {
   }
 }
 
+
 badge?.addEventListener('click', () => modal?.classList.remove('hidden'));
 bannerLink?.addEventListener('click', (e) => {
   e.preventDefault();
@@ -32,4 +34,6 @@ modal?.addEventListener('click', (e) => {
   if (e.target === modal) modal.classList.add('hidden');
 });
 
-updateBadge();
+
+updateBadgeText();
+

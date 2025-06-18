@@ -323,8 +323,51 @@ async function loadPast() {
     const div = document.createElement('div');
     div.className = 'bg-[#2A2A2E] p-4 rounded-xl space-y-2 text-center';
     div.innerHTML = `<h3 class="text-lg">${c.name}</h3>
-      <img src="${c.model_url}" alt="Winning model" class="w-32 h-32 object-contain mx-auto" />`;
+      <div class="model-card relative h-32 border border-white/10 rounded-xl flex items-center justify-center cursor-pointer" data-model="${c.model_url}" data-job="${c.winner_model_id}">
+        <img src="${c.snapshot || ''}" alt="Winning model" class="w-full h-full object-contain pointer-events-none" />
+        <button class="order absolute bottom-1 left-1 font-bold text-lg py-2 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]">Buy Print</button>
+      </div>`;
     container.appendChild(div);
+    const card = div.querySelector('.model-card');
+    const btn = div.querySelector('.order');
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      purchase(c.model_url, c.winner_model_id);
+    });
+    card.addEventListener('click', () => {
+      openModelModal(c.model_url, c.winner_model_id, c.snapshot || '');
+    });
+    card.addEventListener('pointerenter', () => prefetchModel(c.model_url));
+  });
+}
+
+async function loadTrending() {
+  const container = document.getElementById('trending-prints');
+  if (!container) return;
+  const res = await fetch(`${API_BASE}/trending`);
+  if (!res.ok) return;
+  const items = await res.json();
+  items.forEach((i) => {
+    const card = document.createElement('div');
+    card.className = 'relative h-32 bg-[#2A2A2E] border border-white/10 rounded-xl flex items-center justify-center cursor-pointer';
+    card.dataset.model = i.model_url;
+    card.dataset.job = i.job_id;
+    if (i.snapshot) {
+      card.innerHTML = `<img src="${i.snapshot}" alt="Model" class="w-full h-full object-contain pointer-events-none" />`;
+    }
+    const btn = document.createElement('button');
+    btn.className = 'add absolute bottom-1 left-1 font-bold text-lg py-2 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]';
+    btn.textContent = 'Add to Basket';
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (window.addToBasket) {
+        window.addToBasket({ jobId: i.job_id, modelUrl: i.model_url, snapshot: i.snapshot });
+      }
+    });
+    card.addEventListener('click', () => openModelModal(i.model_url, i.job_id, i.snapshot || ''));
+    card.addEventListener('pointerenter', () => prefetchModel(i.model_url));
+    card.appendChild(btn);
+    container.appendChild(card);
   });
 }
 
@@ -367,6 +410,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   });
   load();
+  loadPast();
+  loadTrending();
   const subForm = document.getElementById('comp-subscribe');
   const emailInput = document.getElementById('comp-email');
   const msgEl = document.getElementById('comp-subscribe-msg');
