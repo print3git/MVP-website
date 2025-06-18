@@ -19,11 +19,18 @@ beforeEach(() => {
   axios.post.mockReset();
 });
 
-test('worker posts etch name to printer API', async () => {
+test('worker posts G-code path to printer API', async () => {
   mClient.query
-    .mockResolvedValueOnce({ rows: [{ job_id: 'j1' }] })
     .mockResolvedValueOnce({
-      rows: [{ model_url: 'm', shipping_info: { a: 1 }, etch_name: 'Name' }],
+      rows: [
+        {
+          id: 1,
+          job_id: 'j1',
+          gcode_path: '/tmp/j1.gcode',
+          api_url: 'http://printer',
+          shipping_info: { a: 1 },
+        },
+      ],
     })
     .mockResolvedValueOnce({});
   axios.post.mockResolvedValue({});
@@ -33,8 +40,7 @@ test('worker posts etch name to printer API', async () => {
   await Promise.resolve();
 
   expect(axios.post).toHaveBeenCalledWith('http://printer', {
-    modelUrl: 'm',
+    gcodePath: '/tmp/j1.gcode',
     shipping: { a: 1 },
-    etchName: 'Name',
   });
 });
