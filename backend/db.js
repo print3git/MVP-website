@@ -298,6 +298,21 @@ async function getRewardOption(points) {
   return rows[0] || null;
 }
 
+async function insertScalingEvent(subreddit, oldBudget, newBudget, reason) {
+  await query(
+    'INSERT INTO scaling_events(subreddit, old_budget_cents, new_budget_cents, reason) VALUES($1,$2,$3,$4)',
+    [subreddit, oldBudget, newBudget, reason]
+  );
+}
+
+async function getScalingEvents(limit = 50) {
+  const { rows } = await query(
+    'SELECT subreddit, old_budget_cents, new_budget_cents, reason, created_at FROM scaling_events ORDER BY created_at DESC LIMIT $1',
+    [limit]
+  );
+  return rows;
+}
+
 async function getUserCreations(userId, limit = 10, offset = 0) {
   const { rows } = await query(
     `SELECT c.id, c.title, c.category, j.job_id, j.model_url
@@ -371,4 +386,6 @@ module.exports = {
   getCommunityComments,
   getRewardOptions,
   getRewardOption,
+  insertScalingEvent,
+  getScalingEvents,
 };
