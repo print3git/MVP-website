@@ -3,8 +3,7 @@
     "node": true,
     "es2021": true
   },
-  "plugins": ["@eslint/js"],
-  "extends": ["plugin:@eslint/js/recommended", "prettier"],
+  "extends": ["eslint:recommended", "prettier"],
   "parserOptions": {
     "ecmaVersion": 12
   },
