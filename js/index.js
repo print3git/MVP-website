@@ -299,6 +299,21 @@ async function fetchInitData() {
   }
 }
 
+async function fetchCampaign() {
+  try {
+    const res = await fetch(`${API_BASE}/campaign`);
+    if (!res.ok) return;
+    const data = await res.json();
+    const banner = document.getElementById('theme-banner');
+    if (banner && data.theme) {
+      banner.textContent = data.theme;
+      banner.classList.remove('hidden');
+    }
+  } catch {
+    /* ignore errors */
+  }
+}
+
 function updateWizardFromInputs() {
   if (!window.setWizardStage) return;
   window.setWizardStage('prompt');
@@ -679,6 +694,7 @@ async function init() {
   setStep('prompt');
   if (window.setWizardStage) window.setWizardStage('prompt');
   showLoader();
+  fetchCampaign();
   const initData = await fetchInitData();
   if (initData) {
     if (window.setWizardSlotCount) window.setWizardSlotCount(adjustedSlots(initData.slots));

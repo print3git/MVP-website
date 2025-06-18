@@ -598,6 +598,12 @@ test('GET /api/payment-init bundles payment data', async () => {
   expect(res.body.publishableKey).toBeDefined();
 });
 
+test('GET /api/campaign returns campaign info', async () => {
+  const res = await request(app).get('/api/campaign');
+  expect(res.status).toBe(200);
+  expect(res.body.theme).toBeDefined();
+});
+
 test('GET /api/trending returns list', async () => {
   db.query.mockResolvedValueOnce({ rows: [{ job_id: 'j1', model_url: '/m.glb' }] });
   const res = await request(app).get('/api/trending');
