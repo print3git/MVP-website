@@ -28,8 +28,8 @@ const {
   incrementDiscountUsage,
   createTimedCode,
 } = require('./discountCodes');
-
 const { verifyTag } = require('./social');
+
 const syncMailingList = require('./scripts/sync-mailing-list');
 
 const REWARD_OPTIONS = { 100: 500, 200: 1000 };
@@ -777,6 +777,20 @@ app.post('/api/referral-signup', async (req, res) => {
   } catch (err) {
     logError(err);
     res.status(500).json({ error: 'Failed to record signup' });
+  }
+});
+
+app.post('/api/referral-post', authRequired, async (req, res) => {
+  const { url } = req.body || {};
+  if (!url) return res.status(400).json({ error: 'Missing url' });
+  try {
+    const ok = await verifyTag(url);
+    if (!ok) return res.status(400).json({ error: 'Tag not found' });
+    const code = await createTimedCode(500, 168);
+    res.json({ code });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to verify post' });
   }
 });
 

@@ -182,10 +182,13 @@ function startCountdown(el) {
       clearInterval(timer);
       return;
     }
-    const d = Math.floor(diff / 86400000);
-    const h = Math.floor((diff % 86400000) / 3600000);
-    const m = Math.floor((diff % 3600000) / 60000);
-    const s = Math.floor((diff % 60000) / 1000);
+    let remaining = Math.round(diff / 1000);
+    const d = Math.floor(remaining / 86400);
+    remaining %= 86400;
+    const h = Math.floor(remaining / 3600);
+    remaining %= 3600;
+    const m = Math.floor(remaining / 60);
+    const s = remaining % 60;
     el.textContent = `${d}d ${zeroPad(h)}:${zeroPad(m)}:${zeroPad(s)}`;
   }
   update();
