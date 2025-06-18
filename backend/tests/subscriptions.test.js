@@ -53,3 +53,13 @@ test('GET /api/subscription/credits returns remaining', async () => {
   expect(res.status).toBe(200);
   expect(res.body.remaining).toBe(1);
 });
+
+test('GET /api/subscription/summary returns subscription and credits', async () => {
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  const res = await request(app)
+    .get('/api/subscription/summary')
+    .set('authorization', `Bearer ${token}`);
+  expect(res.status).toBe(200);
+  expect(res.body.subscription.status).toBe('active');
+  expect(res.body.credits.remaining).toBe(1);
+});
