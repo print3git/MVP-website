@@ -364,7 +364,16 @@
               </label>
             </fieldset>
 
-            <div id="payment-element" class="text-center text-gray-200">
+
+            <div id="credit-option" class="my-2 text-sm hidden">
+              <label class="flex items-center gap-1">
+                <input type="checkbox" id="use-credit" class="accent-[#30D5C8]" />
+                Use Print Club credit (<span id="credits-remaining">0</span> left this week)
+              </label>
+            </div>
+
+            <div id="payment-element" class="text-center text-gray-400">
+
               [Stripe payment form will go here]
             </div>
 

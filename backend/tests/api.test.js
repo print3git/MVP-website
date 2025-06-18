@@ -6,12 +6,19 @@ process.env.HUNYUAN_SERVER_URL = 'http://localhost:4000';
 
 jest.mock('../db', () => ({
   query: jest.fn().mockResolvedValue({ rows: [] }),
-  insertCommission: jest.fn().mockResolvedValue({}),
+  insertCommission: jest.fn().mockResolvedValue({}),  
+  upsertSubscription: jest.fn(),
+  cancelSubscription: jest.fn(),
+  getSubscription: jest.fn(),
   ensureCurrentWeekCredits: jest.fn(),
-  getCurrentWeekCredits: jest.fn().mockResolvedValue({ total_credits: 2, used_credits: 1 }),
+  getCurrentWeekCredits: jest.fn(),
+  incrementCreditsUsed: jest.fn(),
+
 }));
 const db = require('../db');
 
+jest.mock('../mail', () => ({ sendMail: jest.fn() }));
+const { sendMail } = require('../mail');
 jest.mock('axios');
 const axios = require('axios');
 const jwt = require('jsonwebtoken');
@@ -61,6 +68,10 @@ const stream = require('stream');
 beforeEach(() => {
   db.query.mockClear();
   db.insertCommission.mockClear();
+  db.upsertMailingListEntry.mockClear();
+  db.confirmMailingListEntry.mockClear();
+  db.unsubscribeMailingListEntry.mockClear();
+  sendMail.mockClear();
   axios.post.mockClear();
   enqueuePrint.mockClear();
   getShippingEstimate.mockClear();
@@ -337,6 +348,38 @@ test('GET /api/community/recent pagination and category', async () => {
   expect(db.query).toHaveBeenCalledWith(expect.any(String), [5, 2, 'art', 'bot']);
 });
 
+test('GET /api/community/mine returns creations', async () => {
+  db.getUserCreations.mockResolvedValueOnce([]);
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  await request(app).get('/api/community/mine').set('authorization', `Bearer ${token}`);
+  expect(db.getUserCreations).toHaveBeenCalledWith('u1', 10, 0);
+});
+
+test('POST /api/community/:id/comment requires auth', async () => {
+  const res = await request(app).post('/api/community/5/comment').send({ text: 'hi' });
+  expect(res.status).toBe(401);
+});
+
+test('POST /api/community/:id/comment', async () => {
+  db.insertCommunityComment.mockResolvedValueOnce({ id: 'c1', text: 'hi' });
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  const res = await request(app)
+    .post('/api/community/5/comment')
+    .set('authorization', `Bearer ${token}`)
+    .send({ text: 'hi' });
+  expect(res.status).toBe(201);
+  expect(res.body.text).toBe('hi');
+  expect(db.insertCommunityComment).toHaveBeenCalledWith('5', 'u1', 'hi');
+});
+
+test('GET /api/community/:id/comments', async () => {
+  db.getCommunityComments.mockResolvedValueOnce([{ id: 'c1', text: 'hello' }]);
+  const res = await request(app).get('/api/community/5/comments');
+  expect(res.status).toBe(200);
+  expect(res.body[0].text).toBe('hello');
+  expect(db.getCommunityComments).toHaveBeenCalledWith('5');
+});
+
 test('Admin create competition', async () => {
   db.query.mockResolvedValueOnce({ rows: [{}] });
   const res = await request(app)
@@ -531,6 +574,22 @@ test('create-order inserts commission for marketplace sale', async () => {
     .set('authorization', `Bearer ${token}`)
     .send({ jobId: '1', price: 100 });
   expect(db.insertCommission).toHaveBeenCalledWith('cs_test', '1', 'seller', 'buyer', 10);
+});
+
+test('create-order using credit deducts balance', async () => {
+  db.query
+    .mockResolvedValueOnce({ rows: [{ job_id: '1', user_id: 'u1' }] })
+    .mockResolvedValueOnce({});
+  db.getSubscription.mockResolvedValueOnce({ id: 's1', status: 'active' });
+  db.getCurrentWeekCredits.mockResolvedValueOnce({ total_credits: 2, used_credits: 1 });
+  const token = jwt.sign({ id: 'u1' }, 'secret');
+  const res = await request(app)
+    .post('/api/create-order')
+    .set('authorization', `Bearer ${token}`)
+    .send({ jobId: '1', useCredit: true });
+  expect(res.status).toBe(200);
+  expect(res.body.success).toBe(true);
+  expect(db.incrementCreditsUsed).toHaveBeenCalledWith('u1', 1);
 });
 
 test('GET /api/my/orders returns orders', async () => {
