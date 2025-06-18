@@ -165,6 +165,24 @@ async function insertCheckoutEvent(sessionId, subreddit, step) {
   );
 }
 
+async function insertSubscriptionEvent(userId, event, variant, priceCents) {
+  await query(
+    'INSERT INTO subscription_events(user_id, event, variant, price_cents) VALUES($1,$2,$3,$4)',
+    [userId, event, variant, priceCents]
+  );
+}
+
+async function getSubscriptionMetrics() {
+  const active = await query("SELECT COUNT(*) FROM subscriptions WHERE status='active'");
+  const churn = await query(
+    "SELECT COUNT(*) FROM subscription_events WHERE event='cancel' AND created_at >= NOW() - INTERVAL '30 days'"
+  );
+  return {
+    active: parseInt(active.rows[0].count, 10),
+    churn_last_30_days: parseInt(churn.rows[0].count, 10),
+  };
+}
+
 async function getConversionMetrics() {
   const clicks = await query('SELECT subreddit, COUNT(*) AS c FROM ad_clicks GROUP BY subreddit');
   const carts = await query('SELECT subreddit, COUNT(*) AS c FROM cart_events GROUP BY subreddit');
@@ -267,6 +285,8 @@ module.exports = {
   insertAdClick,
   insertCartEvent,
   insertCheckoutEvent,
+  insertSubscriptionEvent,
+  getSubscriptionMetrics,
   getConversionMetrics,
   cancelSubscription,
   getSubscription,
