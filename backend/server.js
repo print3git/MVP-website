@@ -1829,7 +1829,6 @@ app.post('/api/admin/hubs/:id/shipments', adminCheck, async (req, res) => {
   }
 });
 
-
 app.post('/api/admin/ads/generate', adminCheck, async (req, res) => {
   const { subreddit, context } = req.body || {};
   if (!subreddit) return res.status(400).json({ error: 'Missing subreddit' });
