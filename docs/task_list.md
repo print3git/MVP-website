@@ -163,16 +163,6 @@
 - Display aggregated profit by subreddit in an admin dashboard.
 - Add unit tests covering profit calculations and data import.
 
-## Automated Scaling Engine
-
-- Fetch campaign performance hourly via cron.
-- Compute marginal CAC per subreddit.
-- Compare CAC to profit per sale with thresholds.
-- Increase or decrease budgets via Reddit Ads API accordingly.
-- Pause campaigns when CAC exceeds profit threshold.
-- Log each budget change to a `scaling_events` table.
-- Expose an admin endpoint listing recent scaling actions.
-
 ## Autonomous 3D Printing
 
 - Create `print_jobs` table with order ID, printer ID, status, and G-code path.
