@@ -386,6 +386,59 @@ app.get('/api/stats', (req, res) => {
   }
 });
 
+app.post('/api/track/ad-click', async (req, res) => {
+  const subreddit = (req.body && req.body.subreddit) || req.query.sr;
+  const sessionId = (req.body && req.body.sessionId) || req.query.sessionId;
+  if (!subreddit || !sessionId) {
+    return res.status(400).json({ error: 'Missing fields' });
+  }
+  try {
+    await db.insertAdClick(subreddit, sessionId);
+    res.json({ ok: true });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to record click' });
+  }
+});
+
+app.post('/api/track/cart', async (req, res) => {
+  const { sessionId, modelId, subreddit } = req.body || {};
+  if (!sessionId || !modelId) {
+    return res.status(400).json({ error: 'Missing fields' });
+  }
+  try {
+    await db.insertCartEvent(sessionId, modelId, subreddit || null);
+    res.json({ ok: true });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to record cart event' });
+  }
+});
+
+app.post('/api/track/checkout', async (req, res) => {
+  const { sessionId, subreddit, step } = req.body || {};
+  if (!sessionId || !step) {
+    return res.status(400).json({ error: 'Missing fields' });
+  }
+  try {
+    await db.insertCheckoutEvent(sessionId, subreddit || null, step);
+    res.json({ ok: true });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to record checkout event' });
+  }
+});
+
+app.get('/api/metrics/conversion', async (req, res) => {
+  try {
+    const metrics = await db.getConversionMetrics();
+    res.json(metrics);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to fetch metrics' });
+  }
+});
+
 app.get('/api/init-data', authOptional, async (req, res) => {
   const result = { slots: computePrintSlots() };
   try {

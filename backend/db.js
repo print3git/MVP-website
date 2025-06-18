@@ -145,6 +145,60 @@ async function insertReferralEvent(referrerId, type) {
   await query('INSERT INTO referral_events(referrer_id, type) VALUES($1,$2)', [referrerId, type]);
 }
 
+async function insertAdClick(subreddit, sessionId) {
+  await query('INSERT INTO ad_clicks(subreddit, session_id) VALUES($1,$2)', [subreddit, sessionId]);
+}
+
+async function insertCartEvent(sessionId, modelId, subreddit) {
+  await query('INSERT INTO cart_events(session_id, model_id, subreddit) VALUES($1,$2,$3)', [
+    sessionId,
+    modelId,
+    subreddit,
+  ]);
+}
+
+async function insertCheckoutEvent(sessionId, subreddit, step) {
+  await query('INSERT INTO checkout_events(session_id, subreddit, step) VALUES($1,$2,$3)', [
+    sessionId,
+    subreddit,
+    step,
+  ]);
+}
+
+async function getConversionMetrics() {
+  const { rows } = await query(`
+    SELECT
+      sr AS subreddit,
+      COALESCE(ad_clicks,0) AS ad_clicks,
+      COALESCE(cart_events,0) AS cart_events,
+      COALESCE(checkout_start,0) AS checkout_start,
+      COALESCE(checkout_complete,0) AS checkout_complete
+    FROM (
+      SELECT DISTINCT subreddit AS sr FROM ad_clicks
+      UNION SELECT DISTINCT subreddit FROM cart_events
+      UNION SELECT DISTINCT subreddit FROM checkout_events
+    ) AS s
+    LEFT JOIN (
+      SELECT subreddit, COUNT(*) AS ad_clicks FROM ad_clicks GROUP BY subreddit
+    ) ac ON ac.subreddit = s.sr
+    LEFT JOIN (
+      SELECT subreddit, COUNT(*) AS cart_events FROM cart_events GROUP BY subreddit
+    ) ce ON ce.subreddit = s.sr
+    LEFT JOIN (
+      SELECT subreddit, COUNT(*) FILTER (WHERE step='start') AS checkout_start,
+             COUNT(*) FILTER (WHERE step='complete') AS checkout_complete
+      FROM checkout_events GROUP BY subreddit
+    ) ch ON ch.subreddit = s.sr
+  `);
+
+  return rows.map((r) => ({
+    subreddit: r.subreddit,
+    ctr: r.ad_clicks ? r.cart_events / r.ad_clicks : 0,
+    atc: r.cart_events ? r.checkout_start / r.cart_events : 0,
+    checkout: r.checkout_start ? r.checkout_complete / r.checkout_start : 0,
+  }));
+}
+
 module.exports = {
   query,
   insertShare,
@@ -163,4 +217,8 @@ module.exports = {
   adjustRewardPoints,
   getUserIdForReferral,
   insertReferralEvent,
+  insertAdClick,
+  insertCartEvent,
+  insertCheckoutEvent,
+  getConversionMetrics,
 };
