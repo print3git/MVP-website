@@ -20,8 +20,7 @@ async function sendReminders() {
 
   const client = new Client({ connectionString: process.env.DB_URL });
   await client.connect();
-  const week = startOfWeek();
-  const weekStr = week.toISOString().slice(0, 10);
+  const weekStr = startOfWeek().toISOString().slice(0, 10);
   try {
     const { rows } = await client.query(
       `SELECT u.email, u.username

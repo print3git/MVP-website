@@ -144,7 +144,9 @@
         <div
           class="relative w-full md:w-1/2 max-w-md bg-[#2A2A2E] border border-white/10 rounded-3xl p-6"
         >
-          <h2 class="text-2xl font-semibold mb-4 text-center">Checkout</h2>
+          <h2 class="text-2xl font-semibold mb-2 text-center">Checkout</h2>
+          <div id="bundle-banner" class="text-[#30D5C8] text-center text-sm mb-2 hidden"></div>
+          <form id="checkout-form" class="space-y-[0.33rem]">
           <form id="checkout-form" class="space-y-[0.33rem]">
             <!-- Material/Size Options -->
             <fieldset id="material-options" class="flex w-full justify-between my-4">
@@ -369,6 +371,7 @@
               </button>
             </div>
             <p id="discount-msg" class="text-xs text-center"></p>
+            <p id="seasonal-bundle" class="text-sm text-center text-[#30D5C8]" hidden></p>
 
             <fieldset
               id="subscription-choice"

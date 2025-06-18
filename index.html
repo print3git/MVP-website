@@ -124,6 +124,7 @@
   </head>
 
   <body class="bg-[#1A1A1D] text-white font-sans flex flex-col">
+    <div id="theme-banner" class="bg-[#30D5C8] text-black text-center py-1 hidden"></div>
     <!-- ▸▸▸ HEADER ------------------------------------------------------- -->
 
     <header class="relative flex items-center justify-between py-4 px-6">
@@ -213,6 +214,11 @@
         </div>
       </div>
     </header>
+    <div
+      id="theme-banner"
+      class="text-center py-2 font-semibold bg-gradient-to-r from-purple-600 to-pink-500"
+      hidden
+    ></div>
 
     <!-- ▸▸▸ MAIN --------------------------------------------------------- -->
     <main
@@ -317,7 +323,7 @@
         class="absolute left-1/2 -translate-x-1/2 top-12 bg-[#2A2A2E] border border-white/10 rounded-xl p-3 text-sm shadow-lg hidden"
       >
         <p class="mb-2">Craft short prompts describing style and shape.</p>
-        <button id="prompt-tip-close" class="underline">Got it</button>
+        <button id="prompt-tip-close" class="underline" aria-label="Dismiss prompt tip">Got it</button>
       </div>
 
       <!-- ▸▸▸ PROMPT / UPLOAD AREA ------------------------------------- -->
@@ -512,7 +518,7 @@
           Get two prints every week for just £140/month. Unused credits expire weekly.
         </p>
 
-        <button id="printclub-close" class="mt-2 px-4 py-2 bg-blue-600 rounded-3xl">Close</button>
+        <button id="printclub-close" class="mt-2 px-4 py-2 bg-blue-600 rounded-3xl" aria-label="Close Print Club modal">Close</button>
       </div>
     </div>
     <script>
