@@ -229,6 +229,16 @@ async function verifySocialShare(id, discountCode) {
   return rows[0];
 }
 
+async function getRewardOptions() {
+  const { rows } = await query('SELECT points, amount_cents FROM reward_options ORDER BY points');
+  return rows;
+}
+
+async function getRewardOption(points) {
+  const { rows } = await query('SELECT amount_cents FROM reward_options WHERE points=$1', [points]);
+  return rows[0] || null;
+}
+
 async function getUserCreations(userId, limit = 10, offset = 0) {
   const { rows } = await query(
     `SELECT c.id, c.title, c.category, j.job_id, j.model_url
@@ -294,4 +304,6 @@ module.exports = {
   getUserCreations,
   insertCommunityComment,
   getCommunityComments,
+  getRewardOptions,
+  getRewardOption,
 };
