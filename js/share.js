@@ -25,8 +25,25 @@ async function captureSnapshot(glbUrl) {
   }
 }
 
+function buildAdUrl() {
+  const base = `${window.location.origin}/index.html`;
+  try {
+    const params = new URLSearchParams();
+    const sr = localStorage.getItem('adSubreddit');
+    if (sr) params.set('sr', sr);
+    ['utm_source', 'utm_medium', 'utm_campaign'].forEach((p) => {
+      const v = localStorage.getItem(p);
+      if (v) params.set(p, v);
+    });
+    const q = params.toString();
+    return q ? `${base}?${q}` : base;
+  } catch {
+    return base;
+  }
+}
+
 async function shareOn(network) {
-  const shareLink = 'https://print2.io';
+  const shareLink = buildAdUrl();
   const url = encodeURIComponent(shareLink);
   const text = encodeURIComponent('Check out print3!');
   let shareUrl = '';
@@ -52,8 +69,7 @@ async function shareOn(network) {
   }
   if (typeof fetch === 'function') {
     try {
-      const shareId =
-        typeof localStorage !== 'undefined' ? localStorage.getItem('shareId') : null;
+      const shareId = typeof localStorage !== 'undefined' ? localStorage.getItem('shareId') : null;
       await fetch(`${API_BASE}/track/share`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

@@ -11,9 +11,7 @@ async function loadRewardOptions() {
         options.forEach((o) => {
           const opt = document.createElement('option');
           opt.value = o.points;
-          opt.textContent = `${o.points} pts - $${(o.amount_cents / 100).toFixed(
-            2
-          )} off`;
+          opt.textContent = `${o.points} pts - $${(o.amount_cents / 100).toFixed(2)} off`;
           sel.appendChild(opt);
         });
       }
@@ -32,7 +30,14 @@ async function loadRewards() {
     if (resLink.ok) {
       const { code } = await resLink.json();
       const input = document.getElementById('referral-link');
-      if (input) input.value = `${window.location.origin}?ref=${code}`;
+      if (input) {
+        const params = new URLSearchParams({ ref: code });
+        ['utm_source', 'utm_medium', 'utm_campaign'].forEach((p) => {
+          const v = localStorage.getItem(p);
+          if (v) params.set(p, v);
+        });
+        input.value = `${window.location.origin}?${params.toString()}`;
+      }
     }
   } catch (err) {
     console.error('Failed to load referral link', err);

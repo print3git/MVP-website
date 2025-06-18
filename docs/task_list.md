@@ -177,22 +177,6 @@
 
 ## Social Sharing
 
-- Add share icons to the library page.
-  - Reuse the five-button block from `index.html` in `library.html` and load `share.js`.
-- Expand `share.html` with the full set of networks.
-  - Include Reddit, TikTok and Instagram buttons.
-  - Add a "Copy Link" button using `navigator.clipboard`.
-- Serve model snapshots when sharing.
-  - Update `/shared/:slug` to return the `snapshot` from `jobs` and use it for `og:image`.
-  - Display the snapshot while the model loads in `share.html`.
-- Track share button usage.
-  - Create a `share_events` table with columns `share_id`, `network` and `timestamp`.
-  - POST `/api/track/share` from `share.js` whenever a button is clicked.
-  - Add a unit test verifying share events are recorded.
-- Add UTM parameters to all ad URLs.
-- Capture UTM parameters in the session on landing.
-- Store UTM and subreddit values with each order.
-- Log page view, add to cart, and purchase events with session IDs.
 - Pull daily spend and impressions from the Reddit Ads API.
 - Compute views, CTR, add-to-cart rate, and checkout rate per subreddit.
 - Record cost of goods sold for each pricing tier.
