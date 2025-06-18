@@ -253,6 +253,10 @@ async function createCheckout(
       referral,
       etchName,
       useCredit,
+      utmSource: localStorage.getItem('utm_source') || undefined,
+      utmMedium: localStorage.getItem('utm_medium') || undefined,
+      utmCampaign: localStorage.getItem('utm_campaign') || undefined,
+      adSubreddit: localStorage.getItem('adSubreddit') || undefined,
     }),
   });
   const data = await res.json();

@@ -581,6 +581,27 @@ test('POST /api/create-order saves etch name', async () => {
   expect(call[1][8]).toBe('Bob');
 });
 
+test('POST /api/create-order saves UTM params', async () => {
+  db.query
+    .mockResolvedValueOnce({ rows: [{ job_id: '1', user_id: null }] })
+    .mockResolvedValueOnce({});
+  await request(app)
+    .post('/api/create-order')
+    .send({
+      jobId: '1',
+      price: 100,
+      utmSource: 'g',
+      utmMedium: 'cpc',
+      utmCampaign: 'summer',
+      adSubreddit: 'funny',
+    });
+  const call = db.query.mock.calls.find((c) => c[0].includes('INSERT INTO orders'));
+  expect(call[1][9]).toBe('g');
+  expect(call[1][10]).toBe('cpc');
+  expect(call[1][11]).toBe('summer');
+  expect(call[1][12]).toBe('funny');
+});
+
 test('create-order inserts commission for marketplace sale', async () => {
   db.query
     .mockResolvedValueOnce({ rows: [{ job_id: '1', user_id: 'seller' }] })

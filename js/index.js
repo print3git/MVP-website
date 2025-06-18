@@ -19,6 +19,49 @@ import { shareOn } from './share.js';
   }
 })();
 
+// Ensure session ID exists for attribution
+(() => {
+  try {
+    let sessionId = localStorage.getItem('adSessionId');
+    if (!sessionId) {
+      sessionId =
+        typeof crypto?.randomUUID === 'function'
+          ? crypto.randomUUID()
+          : Math.random().toString(36).slice(2);
+      localStorage.setItem('adSessionId', sessionId);
+    }
+    const subreddit = localStorage.getItem('adSubreddit');
+    fetch(`${API_BASE}/track/page`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        sessionId,
+        subreddit,
+        utmSource: localStorage.getItem('utm_source') || undefined,
+        utmMedium: localStorage.getItem('utm_medium') || undefined,
+        utmCampaign: localStorage.getItem('utm_campaign') || undefined,
+      }),
+    }).catch(() => {});
+  } catch {
+    /* ignore */
+  }
+})();
+
+// Capture UTM parameters on first visit
+(() => {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    ['utm_source', 'utm_medium', 'utm_campaign'].forEach((p) => {
+      const val = params.get(p);
+      if (val && !localStorage.getItem(p)) {
+        localStorage.setItem(p, val);
+      }
+    });
+  } catch {
+    /* ignore */
+  }
+})();
+
 // Record ad click when arriving via ?sr= subreddit param
 (() => {
   try {
