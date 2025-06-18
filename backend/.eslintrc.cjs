@@ -22,5 +22,12 @@ module.exports = {
         message: 'Avoid test.skip',
       },
     ],
+
+    'promise/no-floating-promises': 'error',
+    'no-unused-vars': [
+      'error',
+      { argsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' },
+    ],
+
   },
 };
