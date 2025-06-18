@@ -865,6 +865,18 @@ app.post('/api/track/ad-click', async (req, res) => {
   }
 });
 
+app.post('/api/track/page', async (req, res) => {
+  const { sessionId, subreddit, utmSource, utmMedium, utmCampaign, path } = req.body || {};
+  if (!sessionId || !path) return res.status(400).json({ error: 'Missing params' });
+  try {
+    await db.insertPageView(sessionId, subreddit, utmSource, utmMedium, utmCampaign, path);
+    res.json({ success: true });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to record page view' });
+  }
+});
+
 app.post('/api/track/cart', async (req, res) => {
   const { sessionId, modelId, subreddit } = req.body || {};
   if (!sessionId || !modelId || !subreddit)
@@ -1566,8 +1578,21 @@ app.delete('/api/admin/flash-sale/:id', adminCheck, async (req, res) => {
  * Create a Stripe Checkout session
  */
 app.post('/api/create-order', authOptional, async (req, res) => {
-  const { jobId, price, shippingInfo, qty, discount, discountCode, referral, etchName, useCredit } =
-    req.body;
+  const {
+    jobId,
+    price,
+    shippingInfo,
+    qty,
+    discount,
+    discountCode,
+    referral,
+    etchName,
+    useCredit,
+    subreddit,
+    utmSource,
+    utmMedium,
+    utmCampaign,
+  } = req.body;
   try {
     const job = await db.query('SELECT job_id, user_id FROM jobs WHERE job_id=$1', [jobId]);
     if (job.rows.length === 0) {
@@ -1635,7 +1660,7 @@ app.post('/api/create-order', authOptional, async (req, res) => {
       await db.incrementCreditsUsed(req.user.id, 1);
       const sessionId = uuidv4();
       await db.query(
-        'INSERT INTO orders(session_id, job_id, user_id, price_cents, status, shipping_info, quantity, discount_cents, etch_name) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)',
+        'INSERT INTO orders(session_id, job_id, user_id, price_cents, status, shipping_info, quantity, discount_cents, etch_name, subreddit, utm_source, utm_medium, utm_campaign) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)',
         [
           sessionId,
           jobId,
@@ -1646,6 +1671,10 @@ app.post('/api/create-order', authOptional, async (req, res) => {
           qty || 1,
           0,
           etchName || null,
+          subreddit || null,
+          utmSource || null,
+          utmMedium || null,
+          utmCampaign || null,
         ]
       );
       enqueuePrint(jobId);
@@ -1687,7 +1716,7 @@ app.post('/api/create-order', authOptional, async (req, res) => {
     });
 
     await db.query(
-      'INSERT INTO orders(session_id, job_id, user_id, price_cents, status, shipping_info, quantity, discount_cents, etch_name) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)',
+      'INSERT INTO orders(session_id, job_id, user_id, price_cents, status, shipping_info, quantity, discount_cents, etch_name, subreddit, utm_source, utm_medium, utm_campaign) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)',
       [
         session.id,
         jobId,
@@ -1698,6 +1727,10 @@ app.post('/api/create-order', authOptional, async (req, res) => {
         qty || 1,
         totalDiscount,
         etchName || null,
+        subreddit || null,
+        utmSource || null,
+        utmMedium || null,
+        utmCampaign || null,
       ]
     );
 

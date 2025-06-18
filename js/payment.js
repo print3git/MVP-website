@@ -235,6 +235,10 @@ async function createCheckout(
   useCredit
 ) {
   const jobId = localStorage.getItem('print3JobId');
+  const subreddit = localStorage.getItem('adSubreddit');
+  const utmSource = localStorage.getItem('utm_source');
+  const utmMedium = localStorage.getItem('utm_medium');
+  const utmCampaign = localStorage.getItem('utm_campaign');
   const res = await fetch(`${API_BASE}/create-order`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -248,6 +252,10 @@ async function createCheckout(
       referral,
       etchName,
       useCredit,
+      subreddit,
+      utmSource,
+      utmMedium,
+      utmCampaign,
     }),
   });
   const data = await res.json();

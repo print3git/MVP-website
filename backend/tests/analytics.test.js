@@ -10,6 +10,7 @@ jest.mock('../db', () => ({
   insertAdClick: jest.fn(),
   insertCartEvent: jest.fn(),
   insertCheckoutEvent: jest.fn(),
+  insertPageView: jest.fn(),
   getConversionMetrics: jest.fn(),
 }));
 const db = require('../db');
@@ -27,6 +28,21 @@ test('POST /api/track/ad-click records click', async () => {
     .send({ subreddit: 'funny', sessionId: 's1' });
   expect(res.status).toBe(200);
   expect(db.insertAdClick).toHaveBeenCalledWith('funny', 's1');
+});
+
+test('POST /api/track/page records view', async () => {
+  const res = await request(app)
+    .post('/api/track/page')
+    .send({ sessionId: 's1', subreddit: 'funny', path: '/index.html' });
+  expect(res.status).toBe(200);
+  expect(db.insertPageView).toHaveBeenCalledWith(
+    's1',
+    'funny',
+    undefined,
+    undefined,
+    undefined,
+    '/index.html'
+  );
 });
 
 test('POST /api/track/cart records cart event', async () => {

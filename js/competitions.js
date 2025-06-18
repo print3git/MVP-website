@@ -182,7 +182,7 @@ function startCountdown(el) {
       clearInterval(timer);
       return;
     }
-    let remaining = Math.round(diff / 1000);
+    let remaining = Math.floor(diff / 1000);
     const d = Math.floor(remaining / 86400);
     remaining %= 86400;
     const h = Math.floor(remaining / 3600);

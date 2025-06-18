@@ -19,11 +19,17 @@ import { shareOn } from './share.js';
   }
 })();
 
-// Record ad click when arriving via ?sr= subreddit param
+// Record ad click and capture UTM params on landing
 (() => {
   try {
     const params = new URLSearchParams(window.location.search);
     const sr = params.get('sr');
+    const utmSource = params.get('utm_source');
+    const utmMedium = params.get('utm_medium');
+    const utmCampaign = params.get('utm_campaign');
+    if (utmSource) localStorage.setItem('utm_source', utmSource);
+    if (utmMedium) localStorage.setItem('utm_medium', utmMedium);
+    if (utmCampaign) localStorage.setItem('utm_campaign', utmCampaign);
     if (sr) {
       let sessionId = localStorage.getItem('adSessionId');
       if (!sessionId) {
@@ -40,6 +46,32 @@ import { shareOn } from './share.js';
         body: JSON.stringify({ subreddit: sr, sessionId }),
       }).catch(() => {});
     }
+  } catch {
+    /* ignore errors */
+  }
+})();
+
+// Log page view for active ad sessions
+(() => {
+  try {
+    const sessionId = localStorage.getItem('adSessionId');
+    if (!sessionId) return;
+    const subreddit = localStorage.getItem('adSubreddit');
+    const utmSource = localStorage.getItem('utm_source');
+    const utmMedium = localStorage.getItem('utm_medium');
+    const utmCampaign = localStorage.getItem('utm_campaign');
+    fetch(`${API_BASE}/track/page`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        sessionId,
+        subreddit,
+        utmSource,
+        utmMedium,
+        utmCampaign,
+        path: window.location.pathname,
+      }),
+    }).catch(() => {});
   } catch {
     /* ignore errors */
   }
@@ -371,6 +403,10 @@ async function buyNow() {
   if (!userProfile) return;
   if (window.setWizardStage) window.setWizardStage('purchase');
   const jobId = localStorage.getItem('print3JobId');
+  const subreddit = localStorage.getItem('adSubreddit');
+  const utmSource = localStorage.getItem('utm_source');
+  const utmMedium = localStorage.getItem('utm_medium');
+  const utmCampaign = localStorage.getItem('utm_campaign');
   const res = await fetch('/api/create-order', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -379,6 +415,10 @@ async function buyNow() {
       price: 2000,
       qty: 1,
       shippingInfo: userProfile.shipping_info,
+      subreddit,
+      utmSource,
+      utmMedium,
+      utmCampaign,
     }),
   });
   const data = await res.json();

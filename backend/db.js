@@ -165,6 +165,13 @@ async function insertCheckoutEvent(sessionId, subreddit, step) {
   );
 }
 
+async function insertPageView(sessionId, subreddit, utmSource, utmMedium, utmCampaign, path) {
+  await query(
+    'INSERT INTO page_views(session_id, subreddit, utm_source, utm_medium, utm_campaign, path, timestamp) VALUES($1,$2,$3,$4,$5,$6,NOW())',
+    [sessionId, subreddit, utmSource, utmMedium, utmCampaign, path]
+  );
+}
+
 async function getConversionMetrics() {
   const clicks = await query('SELECT subreddit, COUNT(*) AS c FROM ad_clicks GROUP BY subreddit');
   const carts = await query('SELECT subreddit, COUNT(*) AS c FROM cart_events GROUP BY subreddit');
@@ -267,6 +274,7 @@ module.exports = {
   insertAdClick,
   insertCartEvent,
   insertCheckoutEvent,
+  insertPageView,
   getConversionMetrics,
   cancelSubscription,
   getSubscription,
