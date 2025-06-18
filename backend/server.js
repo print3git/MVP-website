@@ -1837,6 +1837,10 @@ app.post('/api/create-order', authOptional, async (req, res) => {
 
     let totalDiscount = discount || 0;
     let discountCodeId = null;
+    let referrerId = null;
+    if (referral) {
+      referrerId = await db.getUserIdForReferral(referral);
+    }
 
     if (discountCode) {
       const row = await getValidDiscountCode(discountCode);
@@ -1847,30 +1851,30 @@ app.post('/api/create-order', authOptional, async (req, res) => {
       discountCodeId = row.id;
     }
 
-    if (referral && (!req.user || referral !== req.user.id)) {
+    if (referrerId && (!req.user || referrerId !== req.user.id)) {
       const refDisc = Math.round((price || 0) * (qty || 1) * 0.1);
       totalDiscount += refDisc;
       try {
         const code = await createTimedCode(refDisc, 720);
         await db.query('INSERT INTO incentives(user_id, type) VALUES($1,$2)', [
-          referral,
+          referrerId,
           `referral_${code}`,
         ]);
 
         const { rows: counts } = await db.query(
           "SELECT COUNT(*) FROM incentives WHERE user_id=$1 AND type LIKE 'referral_%'",
-          [referral]
+          [referrerId]
         );
         const referralCount = parseInt(counts[0].count, 10) || 0;
         if (referralCount >= 3) {
           const { rows: existing } = await db.query(
             "SELECT 1 FROM incentives WHERE user_id=$1 AND type LIKE 'free_%' LIMIT 1",
-            [referral]
+            [referrerId]
           );
           if (existing.length === 0) {
             const freeCode = await createTimedCode(Math.round((price || 0) * (qty || 1)), 720);
             await db.query('INSERT INTO incentives(user_id, type) VALUES($1,$2)', [
-              referral,
+              referrerId,
               `free_${freeCode}`,
             ]);
           }
@@ -1978,8 +1982,8 @@ app.post('/api/create-order', authOptional, async (req, res) => {
         req.body.adSubreddit || null,
       ]
     );
-    if (referral && (!req.user || referral !== req.user.id)) {
-      await db.insertReferredOrder(session.id, referral);
+    if (referrerId && (!req.user || referrerId !== req.user.id)) {
+      await db.insertReferredOrder(session.id, referrerId);
     }
 
     if (req.user && job.rows[0].user_id && job.rows[0].user_id !== req.user.id) {
