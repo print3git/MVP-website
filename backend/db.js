@@ -165,6 +165,13 @@ async function insertCheckoutEvent(sessionId, subreddit, step) {
   );
 }
 
+async function insertShareEvent(shareId, network) {
+  await query('INSERT INTO share_events(share_id, network, timestamp) VALUES($1,$2,NOW())', [
+    shareId,
+    network,
+  ]);
+}
+
 async function getConversionMetrics() {
   const clicks = await query('SELECT subreddit, COUNT(*) AS c FROM ad_clicks GROUP BY subreddit');
   const carts = await query('SELECT subreddit, COUNT(*) AS c FROM cart_events GROUP BY subreddit');
@@ -278,6 +285,7 @@ module.exports = {
   adjustRewardPoints,
   getUserIdForReferral,
   insertReferralEvent,
+  insertShareEvent,
   upsertMailingListEntry,
   confirmMailingListEntry,
   unsubscribeMailingListEntry,
