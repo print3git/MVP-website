@@ -17,6 +17,7 @@
       content="Describe your idea or upload images and print3 turns them into 3D models you can print."
     />
     <meta property="og:image" content="img/boxlogo.png" />
+    <script src="js/applyColorScheme.js"></script>
 
     <!-- Preload hero images -->
     <link rel="preload" href="img/textlogo.png" as="image" fetchpriority="high" />
@@ -278,13 +279,13 @@
             </a>
           </div>
           <button
-            id="add-basket-button"
+            id="add-basket-button" aria-label="Add to basket"
             class="absolute bottom-4 left-4 font-bold py-2 px-4 rounded-full shadow-md bg-[#30D5C8] text-[#1A1A1D] border-2 border-black"
           >
             Add to Basket
           </button>
           <button
-            id="buy-now-button"
+            id="buy-now-button" aria-label="Buy now"
             class="hidden absolute bottom-4 right-32 font-bold py-3 px-5 rounded-full shadow-md transition"
             style="background-color: #5ec2c5; color: #1f3b65"
           >
@@ -350,7 +351,7 @@
 
           <!-- ▼▼  UPDATED BLOCK: drop-zone + preview side-by-side ▼▼ -->
           <div class="mt-4 w-full flex items-stretch gap-4">
-            <input type="file" id="uploadInput" accept="image/*" class="hidden" />
+            <input type="file" id="uploadInput" aria-label="Upload image" accept="image/*" class="hidden" />
 
             <!-- Drag-and-drop zone -->
             <div
@@ -398,7 +399,7 @@
           </svg>
         </button>
         <h2 class="text-xl font-semibold mb-2 text-white">Wait!</h2>
-        <p class="mb-4 text-gray-300">
+        <p class="mb-4 text-gray-200">
           Use code <span class="text-white font-mono px-1">SAVE5</span> for 5% off.
         </p>
       </div>
