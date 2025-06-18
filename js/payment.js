@@ -154,6 +154,15 @@ function recordPurchase() {
   resetPurchaseCount();
   const n = getPurchaseCount();
   localStorage.setItem('slotPurchases', String(n + 1));
+  const sessionId = localStorage.getItem('adSessionId');
+  const subreddit = localStorage.getItem('adSubreddit');
+  if (sessionId && subreddit) {
+    fetch(`${API_BASE}/track/checkout`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionId, subreddit, step: 'complete' }),
+    }).catch(() => {});
+  }
 }
 
 function adjustedSlots(base) {
@@ -693,6 +702,15 @@ async function initPaymentPage() {
   });
 
   const payHandler = async () => {
+    const sessionId = localStorage.getItem('adSessionId');
+    const subreddit = localStorage.getItem('adSubreddit');
+    if (sessionId && subreddit) {
+      fetch(`${API_BASE}/track/checkout`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId, subreddit, step: 'start' }),
+      }).catch(() => {});
+    }
     const basket = window.getBasket ? window.getBasket() : [];
     const qty = Math.max(1, basket.length || 0);
     let discount = 0;
