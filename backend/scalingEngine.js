@@ -86,3 +86,4 @@ if (require.main === module) {
 }
 
 module.exports = runScalingEngine;
+module.exports.fetchCampaignPerformance = fetchCampaignPerformance;

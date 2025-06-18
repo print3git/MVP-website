@@ -274,7 +274,6 @@
 
 ## Business Intelligence
 
-- Aggregate CAC, ROAS and profit per subreddit.
 - Graph daily profit and capacity utilisation.
 - Email a weekly PDF summary to founders.
 - Highlight anomalies in sales or printer uptime.
@@ -401,8 +400,6 @@
 
 ## Global Operations Reporting
 
-- Produce a daily capacity report summarizing each hub.
-- Summarize orders pending vs fulfilled.
 - Email a weekly "state of company" PDF with key metrics.
 - Highlight hubs with repeated errors or downtime.
 - Archive all reports in cloud storage.
@@ -420,4 +417,3 @@
 - Include a tracking link in shipping confirmation.
 - Offer automatic reprint if a print fails quality checks.
 - Survey customers after delivery for feedback.
-- ✅ Husky pre-commit hooks pass
