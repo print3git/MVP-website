@@ -21,6 +21,7 @@ jest.mock('../db', () => ({
   getCommunityComments: jest.fn(),
   insertSocialShare: jest.fn(),
   verifySocialShare: jest.fn(),
+  getUserIdForReferral: jest.fn(),
   getOrCreateOrderReferralLink: jest.fn(),
   insertReferredOrder: jest.fn(),
 }));
@@ -87,6 +88,7 @@ beforeEach(() => {
   generateCaption.mockClear();
   db.ensureCurrentWeekCredits.mockClear();
   db.getCurrentWeekCredits.mockClear();
+  db.getUserIdForReferral.mockClear();
 });
 
 afterEach(() => {
@@ -182,16 +184,18 @@ test('create-order grants free print after three referrals', async () => {
     .mockResolvedValueOnce({ rows: [] })
     .mockResolvedValueOnce({ rows: [{ code: 'FREE1' }] })
     .mockResolvedValueOnce({});
+  db.getUserIdForReferral.mockResolvedValue('u2');
 
   const res = await request(app)
     .post('/api/create-order')
-    .send({ jobId: '1', price: 100, referral: 'u2', productType: 'single' });
+    .send({ jobId: '1', price: 100, referral: 'REFCODE', productType: 'single' });
 
   expect(res.status).toBe(200);
   const incentiveCalls = db.query.mock.calls.filter((c) => c[0].includes('INSERT INTO incentives'));
   expect(incentiveCalls).toHaveLength(2);
   expect(incentiveCalls[1][1][1]).toMatch(/^free_/);
   expect(db.insertReferredOrder).toHaveBeenCalled();
+  expect(db.getUserIdForReferral).toHaveBeenCalledWith('REFCODE');
 });
 
 test('create-order rejects unknown job', async () => {

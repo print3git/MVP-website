@@ -16,8 +16,8 @@ jobs:
           node-version: 20
           cache: 'npm'
       - run: npm ci
-      - run: npm ci
-
+      - name: Install backend dependencies
+        run: npm ci --prefix backend
 
       - name: Install Husky hooks
         run: npm run prepare
@@ -26,4 +26,3 @@ jobs:
         run: npm run ci
 
       # ← you can add additional steps here, like your tests
-
