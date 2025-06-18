@@ -759,6 +759,21 @@ app.get('/api/referral-link', authRequired, async (req, res) => {
   }
 });
 
+app.get('/api/orders/:id/referral-link', authRequired, async (req, res) => {
+  const { id } = req.params;
+  try {
+    const { rows } = await db.query('SELECT user_id FROM orders WHERE session_id=$1', [id]);
+    if (!rows.length || rows[0].user_id !== req.user.id) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+    const code = await db.getOrCreateOrderReferralLink(id);
+    res.json({ code });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to fetch referral link' });
+  }
+});
+
 app.post('/api/referral-click', async (req, res) => {
   const { code } = req.body || {};
   if (!code) return res.status(400).json({ error: 'Missing code' });
@@ -1754,6 +1769,9 @@ app.post('/api/create-order', authOptional, async (req, res) => {
         etchName || null,
       ]
     );
+    if (referral && (!req.user || referral !== req.user.id)) {
+      await db.insertReferredOrder(session.id, referral);
+    }
 
     if (req.user && job.rows[0].user_id && job.rows[0].user_id !== req.user.id) {
       const commission = Math.round(total * 0.1);

@@ -7,6 +7,8 @@ process.env.HUNYUAN_SERVER_URL = 'http://localhost:4000';
 jest.mock('../db', () => ({
   query: jest.fn().mockResolvedValue({ rows: [] }),
   insertCommission: jest.fn().mockResolvedValue({}),
+  getOrCreateOrderReferralLink: jest.fn(),
+  insertReferredOrder: jest.fn(),
 }));
 const db = require('../db');
 

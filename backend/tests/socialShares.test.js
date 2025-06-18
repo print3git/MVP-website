@@ -8,6 +8,8 @@ jest.mock('../db', () => ({
   query: jest.fn().mockResolvedValue({ rows: [] }),
   insertSocialShare: jest.fn(),
   verifySocialShare: jest.fn(),
+  getOrCreateOrderReferralLink: jest.fn(),
+  insertReferredOrder: jest.fn(),
 }));
 const db = require('../db');
 
