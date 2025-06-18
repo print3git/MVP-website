@@ -1,0 +1,17 @@
+[
+  {
+    "name": "Damaged Helmet",
+    "image": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/DamagedHelmet/screenshot/screenshot.png",
+    "quote": "I loved the challenge of perfecting the textures."
+  },
+  {
+    "name": "Fox",
+    "image": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Fox/screenshot/screenshot.jpg",
+    "quote": "The expressive pose really brings it to life."
+  },
+  {
+    "name": "BoomBox",
+    "image": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BoomBox/screenshot/screenshot.jpg",
+    "quote": "Seeing my model printed was so satisfying."
+  }
+]
