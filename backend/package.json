@@ -19,7 +19,8 @@
     "measure-load": "node scripts/measure-load.js",
     "generate-referral-qr": "node scripts/generate-referral-qr.js",
     "lint": "eslint . --max-warnings=0",
-    "scaling-engine": "node scalingEngine.js"
+    "scaling-engine": "node scalingEngine.js",
+    "import-ad-spend": "node scripts/import-ad-spend.js"
   },
   "keywords": [],
   "author": "",
@@ -51,6 +52,7 @@
     "eslint-plugin-promise": "^7.2.1",
     "globals": "^16.2.0",
     "jest": "^30.0.0",
+    "@types/jest": "^30.0.0",
     "jest-environment-jsdom": "^30.0.0-beta.3",
     "jest-localstorage-mock": "^2.4.26",
     "jsdom": "^26.1.0",

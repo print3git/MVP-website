@@ -706,21 +706,40 @@ async function initPaymentPage() {
     const refDiv = document.getElementById('referral');
     const copyBtn = document.getElementById('copy-referral');
     const reorderBtn = document.getElementById('reorder-color');
-    const userId = getUserIdFromToken();
-    if (refInput && refDiv && copyBtn && userId) {
-      const link = `${window.location.origin}/index.html?ref=${encodeURIComponent(userId)}`;
-      refInput.value = link;
-      refDiv.classList.remove('hidden');
-      copyBtn.addEventListener('click', () => {
-        refInput.select();
-        try {
-          document.execCommand('copy');
-        } catch {}
-      });
+    const token = localStorage.getItem('token');
+    if (refInput && refDiv && copyBtn && token) {
+      try {
+        const res = await fetch(`${API_BASE}/referral-link`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.ok) {
+          const { code } = await res.json();
+          refInput.value = `${window.location.origin}/index.html?ref=${encodeURIComponent(code)}`;
+          refDiv.classList.remove('hidden');
+          copyBtn.addEventListener('click', () => {
+            refInput.select();
+            try {
+              document.execCommand('copy');
+            } catch {}
+          });
+        }
+      } catch {}
     }
     reorderBtn?.addEventListener('click', () => {
       window.location.href = 'payment.html';
     });
+    const giftDiv = document.getElementById('gift-options');
+    const giftBtn = document.getElementById('gift-order');
+    if (giftDiv && giftBtn && surpriseToggle && recipientFields) {
+      giftDiv.classList.remove('hidden');
+      giftBtn.addEventListener('click', () => {
+        surpriseToggle.checked = false;
+        recipientFields.classList.remove('hidden');
+        document.getElementById('checkout-form')?.scrollIntoView({
+          behavior: 'smooth',
+        });
+      });
+    }
     const nextModal = document.getElementById('next-print-modal');
     const nextBtn = document.getElementById('next-print-btn');
     const nextText = document.getElementById('next-print-text');
