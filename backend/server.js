@@ -736,6 +736,52 @@ app.post('/api/rewards/redeem', authRequired, async (req, res) => {
   }
 });
 
+app.post('/api/track/ad-click', async (req, res) => {
+  const { subreddit, sessionId } = req.body || {};
+  if (!subreddit || !sessionId) return res.status(400).json({ error: 'Missing params' });
+  try {
+    await db.insertAdClick(subreddit, sessionId);
+    res.json({ success: true });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to record click' });
+  }
+});
+
+app.post('/api/track/cart', async (req, res) => {
+  const { sessionId, modelId, subreddit } = req.body || {};
+  if (!sessionId || !modelId || !subreddit)
+    return res.status(400).json({ error: 'Missing params' });
+  try {
+    await db.insertCartEvent(sessionId, modelId, subreddit);
+    res.json({ success: true });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to record cart' });
+  }
+});
+
+app.post('/api/track/checkout', async (req, res) => {
+  const { sessionId, subreddit, step } = req.body || {};
+  if (!sessionId || !subreddit || !step) return res.status(400).json({ error: 'Missing params' });
+  try {
+    await db.insertCheckoutEvent(sessionId, subreddit, step);
+    res.json({ success: true });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to record checkout' });
+  }
+});
+
+app.get('/api/metrics/conversion', async (req, res) => {
+  try {
+    const data = await db.getConversionMetrics();
+    res.json(data);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to fetch metrics' });
+  }
+});
 app.get('/api/users/:username/models', async (req, res) => {
   const limit = parseInt(req.query.limit, 10) || 10;
   const offset = parseInt(req.query.offset, 10) || 0;

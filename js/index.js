@@ -19,6 +19,32 @@ import { shareOn } from './share.js';
   }
 })();
 
+// Record ad click when arriving via ?sr= subreddit param
+(() => {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const sr = params.get('sr');
+    if (sr) {
+      let sessionId = localStorage.getItem('adSessionId');
+      if (!sessionId) {
+        sessionId =
+          typeof crypto?.randomUUID === 'function'
+            ? crypto.randomUUID()
+            : Math.random().toString(36).slice(2);
+        localStorage.setItem('adSessionId', sessionId);
+      }
+      localStorage.setItem('adSubreddit', sr);
+      fetch(`${API_BASE}/track/ad-click`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subreddit: sr, sessionId }),
+      }).catch(() => {});
+    }
+  } catch {
+    /* ignore errors */
+  }
+})();
+
 function resetMaterialSelection() {
   try {
     localStorage.setItem('print3Material', 'multi');
@@ -742,6 +768,15 @@ async function init() {
       window.manualizeItem((it) => it.modelUrl === item.modelUrl);
     } else {
       window.addToBasket(item);
+    }
+    const sessionId = localStorage.getItem('adSessionId');
+    const subreddit = localStorage.getItem('adSubreddit');
+    if (sessionId && subreddit && item.jobId) {
+      fetch(`${API_BASE}/track/cart`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId, modelId: item.jobId, subreddit }),
+      }).catch(() => {});
     }
   });
 
