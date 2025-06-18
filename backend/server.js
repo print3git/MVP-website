@@ -1031,6 +1031,16 @@ app.get('/api/metrics/profit', async (req, res) => {
   }
 });
 
+app.get('/api/metrics/business-intel', async (req, res) => {
+  try {
+    const data = await db.getBusinessIntelligenceMetrics();
+    res.json(data);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to fetch business metrics' });
+  }
+});
+
 app.get('/api/users/:username/models', async (req, res) => {
   const limit = parseInt(req.query.limit, 10) || 10;
   const offset = parseInt(req.query.offset, 10) || 0;

@@ -19,7 +19,8 @@
     "measure-load": "node scripts/measure-load.js",
     "generate-referral-qr": "node scripts/generate-referral-qr.js",
     "lint": "eslint . --max-warnings=0",
-    "scaling-engine": "node scalingEngine.js"
+    "scaling-engine": "node scalingEngine.js",
+    "import-ad-spend": "node scripts/import-ad-spend.js"
   },
   "keywords": [],
   "author": "",

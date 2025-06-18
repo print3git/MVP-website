@@ -280,7 +280,6 @@
 
 ## Business Intelligence
 
-- Aggregate CAC, ROAS and profit per subreddit.
 - Graph daily profit and capacity utilisation.
 - Email a weekly PDF summary to founders.
 - Highlight anomalies in sales or printer uptime.

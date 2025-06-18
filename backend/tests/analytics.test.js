@@ -14,6 +14,7 @@ jest.mock('../db', () => ({
   insertPageView: jest.fn(),
   getConversionMetrics: jest.fn(),
   getProfitMetrics: jest.fn(),
+  getBusinessIntelligenceMetrics: jest.fn(),
   getOrCreateOrderReferralLink: jest.fn(),
   insertReferredOrder: jest.fn(),
 }));
@@ -84,4 +85,14 @@ test('GET /api/metrics/profit returns data', async () => {
   expect(res.status).toBe(200);
   expect(res.body[0].profit).toBe(100);
   expect(db.getProfitMetrics).toHaveBeenCalled();
+});
+
+test('GET /api/metrics/business-intel returns data', async () => {
+  db.getBusinessIntelligenceMetrics.mockResolvedValue([
+    { subreddit: 'funny', cac: 1, roas: 2, profit: 3 },
+  ]);
+  const res = await request(app).get('/api/metrics/business-intel');
+  expect(res.status).toBe(200);
+  expect(res.body[0].cac).toBe(1);
+  expect(db.getBusinessIntelligenceMetrics).toHaveBeenCalled();
 });
