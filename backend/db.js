@@ -145,18 +145,40 @@ async function insertReferralEvent(referrerId, type) {
   await query('INSERT INTO referral_events(referrer_id, type) VALUES($1,$2)', [referrerId, type]);
 }
 
-async function insertSocialShare(userId, orderId, postUrl) {
-  return query(
-    'INSERT INTO social_shares(user_id, order_id, post_url) VALUES($1,$2,$3) RETURNING *',
-    [userId, orderId, postUrl]
-  ).then((res) => res.rows[0]);
+
+
+async function getUserCreations(userId, limit = 10, offset = 0) {
+  const { rows } = await query(
+    `SELECT c.id, c.title, c.category, j.job_id, j.model_url
+     FROM community_creations c
+     JOIN jobs j ON c.job_id=j.job_id
+     WHERE c.user_id=$1
+     ORDER BY c.created_at DESC
+     LIMIT $2 OFFSET $3`,
+    [userId, limit, offset]
+  );
+  return rows;
 }
 
-async function verifySocialShare(id, discountCode) {
-  return query(
-    'UPDATE social_shares SET verified=TRUE, discount_code=$2 WHERE id=$1 RETURNING user_id',
-    [id, discountCode]
-  ).then((res) => res.rows[0]);
+async function insertCommunityComment(modelId, userId, text) {
+  const { rows } = await query(
+    'INSERT INTO community_comments(model_id, user_id, text) VALUES($1,$2,$3) RETURNING id, text, created_at',
+    [modelId, userId, text]
+  );
+  return rows[0];
+}
+
+async function getCommunityComments(modelId, limit = 20) {
+  const { rows } = await query(
+    `SELECT cc.id, cc.text, cc.created_at, u.username
+     FROM community_comments cc
+     JOIN users u ON cc.user_id=u.id
+     WHERE cc.model_id=$1
+     ORDER BY cc.created_at ASC
+     LIMIT $2`,
+    [modelId, limit]
+  );
+  return rows;
 }
 
 module.exports = {
