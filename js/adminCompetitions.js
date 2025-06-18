@@ -36,6 +36,9 @@ async function load() {
       <label class="block text-sm">Prize Description
         <input class="prize w-full mt-1 p-2 rounded bg-[#1A1A1D] border border-white/10" value="${c.prize_description || ''}">
       </label>
+      <label class="block text-sm">Theme
+        <input class="theme w-full mt-1 p-2 rounded bg-[#1A1A1D] border border-white/10" value="${c.theme || ''}">
+      </label>
       <label class="block text-sm">Winner Model ID
         <input class="winner w-full mt-1 p-2 rounded bg-[#1A1A1D] border border-white/10" value="${c.winner_model_id || ''}">
       </label>
@@ -47,6 +50,7 @@ async function load() {
         start_date: c.start_date,
         end_date: c.end_date,
         prize_description: div.querySelector('.prize').value,
+        theme: div.querySelector('.theme').value,
         winner_model_id: div.querySelector('.winner').value || null,
       };
       const resp = await fetch(`${API_BASE}/admin/competitions/${c.id}`, {

@@ -15,7 +15,6 @@ function prefetchModel(url) {
   prefetchedModels.add(url);
 }
 
-
 function openViewer(modelUrl, jobId, snapshot = '') {
   const modal = document.getElementById('model-modal');
   const viewer = modal.querySelector('model-viewer');
@@ -89,10 +88,15 @@ async function load() {
       '<p class="text-center text-white/80">No active competitions. Check back soon!</p>';
     return;
   }
+  const themeEl = document.getElementById('current-theme');
+  if (themeEl && comps[0].theme) {
+    themeEl.textContent = `Current theme: ${comps[0].theme}`;
+  }
   comps.forEach((c) => {
     const div = document.createElement('div');
     div.className = 'bg-[#2A2A2E] p-4 rounded-xl space-y-2';
     div.innerHTML = `<h2 class="text-xl">${c.name}</h2>
+      <p class="text-[#30D5C8]">Theme: ${c.theme || ''}</p>
       <p>${c.prize_description || ''}</p>
       <p class="text-sm"><span class="countdown" data-deadline="${c.deadline}"></span> left</p>
       <div class="flex space-x-2">
@@ -267,13 +271,10 @@ async function submitEntry(e) {
     const msg = document.getElementById('entry-success');
     if (msg) {
       try {
-        const resp = await fetch(
-          `${API_BASE}/competitions/${currentId}/discount`,
-          {
-            method: 'POST',
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        const resp = await fetch(`${API_BASE}/competitions/${currentId}/discount`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` },
+        });
         if (resp.ok) {
           const data = await resp.json();
           msg.textContent = `Discount code: ${data.code}`;
@@ -355,14 +356,16 @@ async function loadTrending() {
   const items = await res.json();
   items.forEach((i) => {
     const card = document.createElement('div');
-    card.className = 'relative h-32 bg-[#2A2A2E] border border-white/10 rounded-xl flex items-center justify-center cursor-pointer';
+    card.className =
+      'relative h-32 bg-[#2A2A2E] border border-white/10 rounded-xl flex items-center justify-center cursor-pointer';
     card.dataset.model = i.model_url;
     card.dataset.job = i.job_id;
     if (i.snapshot) {
       card.innerHTML = `<img src="${i.snapshot}" alt="Model" class="w-full h-full object-contain pointer-events-none" />`;
     }
     const btn = document.createElement('button');
-    btn.className = 'add absolute bottom-1 left-1 font-bold text-lg py-2 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]';
+    btn.className =
+      'add absolute bottom-1 left-1 font-bold text-lg py-2 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]';
     btn.textContent = 'Add to Basket';
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -427,7 +430,6 @@ document.addEventListener('DOMContentLoaded', () => {
     card.addEventListener('click', () =>
       openViewer(card.dataset.model, card.dataset.job, card.querySelector('img')?.src || '')
     );
-
   });
   load();
   loadPast();
