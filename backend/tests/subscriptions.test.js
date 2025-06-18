@@ -59,7 +59,6 @@ test('GET /api/subscription/credits returns remaining', async () => {
   expect(res.body.remaining).toBe(1);
 });
 
-
 test('POST /api/subscription/portal returns url', async () => {
   db.getSubscription.mockResolvedValueOnce({ stripe_customer_id: 'cus_1' });
   stripeMock.billingPortal.sessions.create.mockResolvedValueOnce({ url: 'u' });
@@ -79,5 +78,4 @@ test('POST /api/subscription/portal 404 without customer', async () => {
     .post('/api/subscription/portal')
     .set('authorization', `Bearer ${token}`);
   expect(res.status).toBe(404);
-
 });
