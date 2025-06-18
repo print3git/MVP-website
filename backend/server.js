@@ -1000,7 +1000,17 @@ app.get('/api/community/mine', authRequired, async (req, res) => {
   const limit = parseInt(req.query.limit, 10) || 10;
   const offset = parseInt(req.query.offset, 10) || 0;
   try {
-    const rows = await db.getUserCreations(req.user.id, limit, offset);
+
+    const { rows } = await db.query(
+      `SELECT c.id, c.title, c.category, j.job_id, j.model_url
+       FROM community_creations c
+       JOIN jobs j ON c.job_id=j.job_id
+       WHERE c.user_id=$1
+       ORDER BY c.created_at DESC
+       LIMIT $2 OFFSET $3`,
+      [req.user.id, limit, offset]
+    );
+s = await db.getUserCreations(req.user.id, limit, offset);
     res.json(rows);
   } catch (err) {
     logError(err);
@@ -1043,8 +1053,18 @@ app.get('/api/community/model/:id', async (req, res) => {
 
 app.get('/api/community/:id/comments', async (req, res) => {
   try {
-    const comments = await db.getCommunityComments(req.params.id);
-    res.json(comments);
+
+    const { rows } = await db.query(
+      `SELECT cc.id, cc.text, cc.created_at, u.username
+       FROM community_comments cc
+       JOIN users u ON cc.user_id=u.id
+       WHERE cc.model_id=$1
+       ORDER BY cc.created_at DESC
+       LIMIT 20`,
+      [req.params.id]
+    );
+    res.json(rows);
+
   } catch (err) {
     logError(err);
     res.status(500).json({ error: 'Failed to fetch comments' });
@@ -1052,11 +1072,18 @@ app.get('/api/community/:id/comments', async (req, res) => {
 });
 
 app.post('/api/community/:id/comment', authRequired, async (req, res) => {
-  const { text } = req.body || {};
+
+  const { text } = req.body;
   if (!text) return res.status(400).json({ error: 'text required' });
   try {
-    const comment = await db.insertCommunityComment(req.params.id, req.user.id, text);
-    res.status(201).json(comment);
+    const { rows } = await db.query(
+      `INSERT INTO community_comments(model_id, user_id, text)
+       VALUES($1,$2,$3)
+       RETURNING id, text, created_at`,
+      [req.params.id, req.user.id, text]
+    );
+    res.status(201).json(rows[0]);
+
   } catch (err) {
     logError(err);
     res.status(500).json({ error: 'Failed to post comment' });
