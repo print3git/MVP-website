@@ -25,7 +25,8 @@
     "scaling-engine": "node scalingEngine.js",
     "import-ad-spend": "node scripts/import-ad-spend.js",
     "check-inventory": "node scripts/check-inventory.js",
-    "check-capacity": "node scripts/check-capacity.js"
+    "check-capacity": "node scripts/check-capacity.js",
+    "send-intel-report": "node scripts/send-intel-report.js"
   },
   "keywords": [],
   "author": "",
