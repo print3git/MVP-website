@@ -511,7 +511,12 @@ module.exports = {
   listPrinterHubs,
   addPrinter,
   getPrintersByHub,
+  insertPrinterMetric,
+  getLatestPrinterMetrics,
   insertHubShipment,
   upsertOrderLocationSummary,
   getOrderLocationSummary,
+  // newly exposed helpers
+  insertAdSpend,
+  getBusinessIntelligenceMetrics,
 };
