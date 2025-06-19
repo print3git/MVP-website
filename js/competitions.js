@@ -106,7 +106,12 @@ async function load() {
         <button onclick="shareOn('reddit')" aria-label="Share on Reddit" class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#1A1A1D] border border-white/10 rounded hover:bg-[#3A3A3E]"><i class="fab fa-reddit-alien"></i></button>
       </div>
       <table class="leaderboard w-full mt-4 text-sm"></table>
-
+      <div class="entries-grid grid grid-cols-2 sm:grid-cols-3 gap-2 mt-4"></div>
+      <div class="pagination flex justify-center items-center space-x-2 text-sm mt-1">
+        <button class="prev px-2 py-1 bg-[#1A1A1D] border border-white/10 rounded">Prev</button>
+        <span class="page-info"></span>
+        <button class="next px-2 py-1 bg-[#1A1A1D] border border-white/10 rounded">Next</button>
+      </div>
       <div class="comments space-y-1 mt-4"></div>
       <form data-id="${c.id}" class="comment-form flex space-x-2 mt-2">
         <input type="text" name="text" class="flex-1 bg-[#1A1A1D] border border-white/10 rounded px-2" placeholder="Add a comment" />
@@ -117,8 +122,9 @@ async function load() {
     const table = div.querySelector('.leaderboard');
 
     const grid = div.querySelector('.entries-grid');
-    loadLeaderboard(c.id, table, grid);
-    setInterval(() => loadLeaderboard(c.id, table, grid), 30000);
+    const pager = div.querySelector('.pagination');
+    loadLeaderboard(c.id, table, grid, pager);
+    setInterval(() => loadLeaderboard(c.id, table, grid, pager), 30000);
     div.querySelector('.enter').addEventListener('click', () => enter(c.id));
     const commentsDiv = div.querySelector('.comments');
     loadComments(c.id, commentsDiv);
@@ -132,7 +138,7 @@ async function load() {
   });
 }
 
-async function loadLeaderboard(id, table, grid) {
+async function loadLeaderboard(id, table, grid, pager) {
   const res = await fetch(`${API_BASE}/competitions/${id}/entries`);
   if (!res.ok) return;
   const rows = await res.json();
@@ -140,42 +146,62 @@ async function loadLeaderboard(id, table, grid) {
     .map((r, i) => `<tr><td>${i + 1}</td><td>${r.model_id}</td><td>${r.votes}</td></tr>`)
     .join('');
   if (grid) {
-    grid.innerHTML = '';
-    rows.forEach((r) => {
-      const card = document.createElement('div');
-      card.className =
-        'entry-card relative h-32 bg-[#2A2A2E] border border-white/10 rounded-xl flex items-center justify-center cursor-pointer';
-      card.dataset.model = r.model_url;
-      card.dataset.job = r.model_id;
-      card.innerHTML = `<img src="" alt="Model" class="w-full h-full object-contain pointer-events-none" />\n      <button class="like absolute bottom-1 right-1 text-xs bg-red-600 px-1 rounded">\u2665</button>\n      <span class="absolute bottom-8 right-1 text-xs bg-black/50 px-1 rounded" id="votes-${r.model_id}">${r.votes}</span>\n      <button class="purchase absolute bottom-1 left-1 font-bold text-lg py-2 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]">Buy</button>`;
-      card.querySelector('.like').addEventListener('click', (e) => {
-        e.stopPropagation();
-        vote(r.model_id);
-      });
-      const buyBtn = card.querySelector('.purchase');
-      buyBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        purchase(r.model_url, r.model_id);
-      });
-      card.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const img = card.querySelector('img');
-        openModelModal(r.model_url, r.model_id, img ? img.src : '');
-      });
-      card.addEventListener('pointerenter', () => prefetchModel(r.model_url));
-
-      card.addEventListener('click', () =>
-        openViewer(r.model_url, r.model_id, card.querySelector('img')?.src || '')
-      );
-
-      grid.appendChild(card);
-    });
-    captureSnapshots(grid);
+    grid.__entries = rows;
+    const page = Number(grid.dataset.page || '1');
+    renderEntriesPage(grid, pager, page);
   }
 }
 
 function zeroPad(num) {
   return String(num).padStart(2, '0');
+}
+
+function renderEntriesPage(grid, pager, page) {
+  const rows = grid.__entries || [];
+  const perPage = 9;
+  const totalPages = Math.max(1, Math.ceil(rows.length / perPage));
+  page = Math.min(Math.max(page, 1), totalPages);
+  grid.dataset.page = page;
+  grid.innerHTML = '';
+  const start = (page - 1) * perPage;
+  rows.slice(start, start + perPage).forEach((r) => {
+    const card = document.createElement('div');
+    card.className =
+      'entry-card relative h-32 bg-[#2A2A2E] border border-white/10 rounded-xl flex items-center justify-center cursor-pointer';
+    card.dataset.model = r.model_url;
+    card.dataset.job = r.model_id;
+    card.innerHTML = `<img src="" alt="Model" class="w-full h-full object-contain pointer-events-none" />\n      <button class="like absolute bottom-1 right-1 text-xs bg-red-600 px-1 rounded">\u2665</button>\n      <span class="absolute bottom-8 right-1 text-xs bg-black/50 px-1 rounded" id="votes-${r.model_id}">${r.votes}</span>\n      <button class="purchase absolute bottom-1 left-1 font-bold text-lg py-2 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]">Buy</button>`;
+    card.querySelector('.like').addEventListener('click', (e) => {
+      e.stopPropagation();
+      vote(r.model_id);
+    });
+    const buyBtn = card.querySelector('.purchase');
+    buyBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      purchase(r.model_url, r.model_id);
+    });
+    card.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const img = card.querySelector('img');
+      openModelModal(r.model_url, r.model_id, img ? img.src : '');
+    });
+    card.addEventListener('pointerenter', () => prefetchModel(r.model_url));
+    card.addEventListener('click', () =>
+      openViewer(r.model_url, r.model_id, card.querySelector('img')?.src || '')
+    );
+    grid.appendChild(card);
+  });
+  captureSnapshots(grid);
+  if (pager) {
+    const info = pager.querySelector('.page-info');
+    const prev = pager.querySelector('.prev');
+    const next = pager.querySelector('.next');
+    info.textContent = `Page ${page} of ${totalPages}`;
+    prev.disabled = page === 1;
+    next.disabled = page === totalPages;
+    prev.onclick = () => renderEntriesPage(grid, pager, page - 1);
+    next.onclick = () => renderEntriesPage(grid, pager, page + 1);
+  }
 }
 
 function startCountdown(el) {
