@@ -27,9 +27,12 @@ describe('index validatePrompt', () => {
     dom.window.eval(shareSrc);
     let script = fs
       .readFileSync(path.join(__dirname, '../../../js/index.js'), 'utf8')
-      .replace("import { shareOn } from './share.js';", '')
+      .replace(/import { shareOn } from ['"]\.\/share.js['"];?/, '')
 
-      .replace(/window\.addEventListener\('DOMContentLoaded'[\s\S]+$/, '')
+      .replace(
+        /window\.addEventListener\(['"]DOMContentLoaded['"][\s\S]+$/,
+        '',
+      )
       .replace(/let savedProfile = null;\n?/, '');
 
     script += '\nwindow.validatePrompt = validatePrompt;';
