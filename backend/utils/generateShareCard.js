@@ -1,5 +1,4 @@
 const Jimp = require("jimp");
-const path = require("path");
 
 async function generateShareCard(modelId, outPath) {
   const image = new Jimp(600, 400, "#ffffff");
