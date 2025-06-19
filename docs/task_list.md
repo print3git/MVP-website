@@ -232,7 +232,6 @@
 
 ## Customer Communication Automation
 
-- Send an email or SMS when a print finishes.
 - Include a tracking link in shipping confirmation.
 - Offer automatic reprint if a print fails quality checks.
 - Survey customers after delivery for feedback.

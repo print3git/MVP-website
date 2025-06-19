@@ -55,6 +55,8 @@ Stripe.mockImplementation(() => stripeMock);
 jest.mock("../queue/printQueue", () => ({
   enqueuePrint: jest.fn(),
   processQueue: jest.fn(),
+  progressEmitter: new (require("events").EventEmitter)(),
+  COMPLETE_EVENT: "complete",
 }));
 const { enqueuePrint } = require("../queue/printQueue");
 
@@ -134,15 +136,13 @@ test("Stripe create-order flow", async () => {
 test("create-order applies discount", async () => {
   db.query.mockResolvedValueOnce({ rows: [{ job_id: "1", user_id: "u1" }] });
   db.query.mockResolvedValueOnce({});
-  const res = await request(app)
-    .post("/api/create-order")
-    .send({
-      jobId: "1",
-      price: 100,
-      qty: 2,
-      discount: 20,
-      productType: "single",
-    });
+  const res = await request(app).post("/api/create-order").send({
+    jobId: "1",
+    price: 100,
+    qty: 2,
+    discount: 20,
+    productType: "single",
+  });
   expect(res.status).toBe(200);
   expect(stripeMock.checkout.sessions.create).toHaveBeenCalledWith(
     expect.objectContaining({
@@ -207,14 +207,12 @@ test("create-order grants free print after three referrals", async () => {
     .mockResolvedValueOnce({});
   db.getUserIdForReferral.mockResolvedValue("u2");
 
-  const res = await request(app)
-    .post("/api/create-order")
-    .send({
-      jobId: "1",
-      price: 100,
-      referral: "REFCODE",
-      productType: "single",
-    });
+  const res = await request(app).post("/api/create-order").send({
+    jobId: "1",
+    price: 100,
+    referral: "REFCODE",
+    productType: "single",
+  });
 
   expect(res.status).toBe(200);
   const incentiveCalls = db.query.mock.calls.filter((c) =>
@@ -236,14 +234,12 @@ test("create-order rejects unknown job", async () => {
 
 test("POST /api/register returns token", async () => {
   db.query.mockResolvedValueOnce({ rows: [{ id: "u1", username: "alice" }] });
-  const res = await request(app)
-    .post("/api/register")
-    .send({
-      username: "alice",
-      displayName: "Alice",
-      email: "a@a.com",
-      password: "p",
-    });
+  const res = await request(app).post("/api/register").send({
+    username: "alice",
+    displayName: "Alice",
+    email: "a@a.com",
+    password: "p",
+  });
   expect(res.status).toBe(200);
   expect(res.body.token).toBeDefined();
 });
@@ -515,28 +511,24 @@ test("registration missing displayName", async () => {
 });
 
 test("registration invalid email", async () => {
-  const res = await request(app)
-    .post("/api/register")
-    .send({
-      username: "a",
-      displayName: "Alice",
-      email: "invalid",
-      password: "p",
-    });
+  const res = await request(app).post("/api/register").send({
+    username: "a",
+    displayName: "Alice",
+    email: "invalid",
+    password: "p",
+  });
   expect(res.status).toBe(400);
 });
 
 test("registration duplicate username", async () => {
   jest.spyOn(console, "error").mockImplementation(() => {});
   db.query.mockRejectedValueOnce(new Error("duplicate key"));
-  const res = await request(app)
-    .post("/api/register")
-    .send({
-      username: "a",
-      displayName: "Alice",
-      email: "a@a.com",
-      password: "p",
-    });
+  const res = await request(app).post("/api/register").send({
+    username: "a",
+    displayName: "Alice",
+    email: "a@a.com",
+    password: "p",
+  });
   expect(res.status).toBe(500);
 });
 
