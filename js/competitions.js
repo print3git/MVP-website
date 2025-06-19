@@ -49,7 +49,7 @@ function openViewer(modelUrl, jobId, snapshot = '') {
 }
 
 function purchase(modelUrl, jobId) {
-  sessionStorage.setItem('fromCommunity', '1');
+  sessionStorage.setItem('fromCompetitions', '1');
   localStorage.setItem('print3Model', modelUrl);
   localStorage.setItem('print3JobId', jobId);
   window.location.href = 'payment.html';

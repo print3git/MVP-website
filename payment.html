@@ -563,15 +563,20 @@
               const link = document.getElementById('back-link');
               if (!link) return;
               let target = 'index.html';
-              const from = sessionStorage.getItem('fromCommunity');
+              const fromCommunity = sessionStorage.getItem('fromCommunity');
+              const fromCompetitions = sessionStorage.getItem('fromCompetitions');
               sessionStorage.removeItem('fromCommunity');
+              sessionStorage.removeItem('fromCompetitions');
               try {
                 const ref = new URL(document.referrer);
-                if (from === '1' || ref.pathname.endsWith('CommunityCreations.html')) {
+                if (fromCompetitions === '1' || ref.pathname.endsWith('competitions.html')) {
+                  target = 'competitions.html';
+                } else if (fromCommunity === '1' || ref.pathname.endsWith('CommunityCreations.html')) {
                   target = 'CommunityCreations.html';
                 }
               } catch {
-                if (from === '1') target = 'CommunityCreations.html';
+                if (fromCompetitions === '1') target = 'competitions.html';
+                else if (fromCommunity === '1') target = 'CommunityCreations.html';
               }
               link.setAttribute('href', target);
             });
