@@ -1812,6 +1812,26 @@ app.post('/api/admin/hubs/:id/printers', adminCheck, async (req, res) => {
   }
 });
 
+app.put('/api/admin/hubs/:id', adminCheck, async (req, res) => {
+  const { location, operator } = req.body || {};
+  try {
+    const hub = await db.updatePrinterHub(req.params.id, location || null, operator || null);
+    res.json(hub);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to update hub' });
+  }
+});
+
+app.get('/api/admin/hubs/:id/shipments', adminCheck, async (req, res) => {
+  try {
+    const shipments = await db.getHubShipments(req.params.id);
+    res.json(shipments);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to fetch shipments' });
+  }
+});
 app.post('/api/admin/hubs/:id/shipments', adminCheck, async (req, res) => {
   const { carrier, trackingNumber, status } = req.body || {};
   if (!carrier || !trackingNumber) return res.status(400).json({ error: 'Missing fields' });
@@ -1826,6 +1846,26 @@ app.post('/api/admin/hubs/:id/shipments', adminCheck, async (req, res) => {
   } catch (err) {
     logError(err);
     res.status(500).json({ error: 'Failed to record shipment' });
+  }
+});
+app.get('/api/admin/spaces', adminCheck, async (_req, res) => {
+  try {
+    const spaces = await db.listSpaces();
+    res.json(spaces);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to fetch spaces' });
+  }
+});
+
+app.post('/api/admin/spaces', adminCheck, async (req, res) => {
+  const { region, costCents, address } = req.body || {};
+  try {
+    const space = await db.createSpace(region, costCents, address);
+    res.json(space);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to create space' });
   }
 });
 
