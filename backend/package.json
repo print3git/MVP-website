@@ -23,7 +23,7 @@
     "lint": "eslint . --max-warnings=0",
     "scaling-engine": "node scalingEngine.js",
     "import-ad-spend": "node scripts/import-ad-spend.js",
-    "check-inventory": "node scripts/check-inventory.js"
+    "check-inventory": "node scripts/check-inventory.js",
     "check-capacity": "node scripts/check-capacity.js"
   },
   "keywords": [],
@@ -64,11 +64,9 @@
     "jsdom": "^26.1.0",
     "lighthouse": "^12.6.1",
     "prettier": "^3.1.0",
-
     "supertest": "^7.1.1",
     "htmlparser2": "^9.0.0",
     "coverage-badges-cli": "^2.1.0"
-
   },
   "engines": {
     "node": ">=18"
