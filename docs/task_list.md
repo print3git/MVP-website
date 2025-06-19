@@ -157,7 +157,6 @@
 
 - Install robotic arms to remove finished prints from beds.
 - Integrate vision inspection for surface defects.
-- Retry failed removals and log incidents.
 - Place accepted prints on the bagging conveyor.
 
 ## Operator Management
@@ -196,7 +195,6 @@
 - Allow assigning operators to hubs through the dashboard.
 - Track completion of daily tasks per operator.
 - Flag missing tasks for review.
-
 
 ## Printer Load Monitoring Enhancements
 
