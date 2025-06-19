@@ -239,18 +239,13 @@ async function loadCheckoutCredits() {
   } catch {}
 }
 
-async function fetchCampaignBundle() {
-  try {
-    const res = await fetch(`${API_BASE}/campaign`);
-    if (!res.ok) return;
-    const data = await res.json();
-    const banner = document.getElementById('bundle-banner');
-    if (banner && data.bundle && !banner.dataset.set) {
-      banner.textContent = `${data.bundle.name} - ${data.bundle.discount_percent}% off`;
-      banner.classList.remove('hidden');
-      banner.dataset.set = '1';
-    }
-  } catch {}
+function showBundleBanner(bundle) {
+  const banner = document.getElementById('bundle-banner');
+  if (banner && bundle && !banner.dataset.set) {
+    banner.textContent = `${bundle.name} - ${bundle.discount_percent}% off`;
+    banner.classList.remove('hidden');
+    banner.dataset.set = '1';
+  }
 }
 
 async function createCheckout(
@@ -374,7 +369,7 @@ async function initPaymentPage() {
   const applyBtn = document.getElementById('apply-discount');
   const surpriseToggle = document.getElementById('surprise-toggle');
   const recipientFields = document.getElementById('recipient-fields');
-  fetchCampaignBundle();
+  showBundleBanner(initData.campaign && initData.campaign.bundle);
   loadCheckoutCredits();
   if (referralId && discountMsg) {
     discountMsg.textContent = 'Referral discount applied';
@@ -583,7 +578,7 @@ async function initPaymentPage() {
   const sessionId = qs('session_id');
   if (sessionId) {
     recordPurchase();
-    await loadCheckoutCredits();
+    loadCheckoutCredits();
   }
   let baseSlots = null;
 

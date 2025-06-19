@@ -153,12 +153,16 @@ const PRINTS_MIN = 30;
 const PRINTS_MAX = 50;
 const UINT32_MAX = 0xffffffff;
 
-function showThemeBanner() {
+function showThemeBanner(themeText) {
   const banner = document.getElementById('theme-banner');
   if (!banner) return;
-  const idx = new Date().getMonth() % THEME_CAMPAIGNS.length;
-  const theme = THEME_CAMPAIGNS[idx];
-  banner.textContent = `${theme.name} – ${theme.tagline}`;
+  if (themeText) {
+    banner.textContent = themeText;
+  } else {
+    const idx = new Date().getMonth() % THEME_CAMPAIGNS.length;
+    const theme = THEME_CAMPAIGNS[idx];
+    banner.textContent = `${theme.name} – ${theme.tagline}`;
+  }
   banner.hidden = false;
 }
 
@@ -310,21 +314,6 @@ async function fetchInitData() {
     return await res.json();
   } catch {
     return null;
-  }
-}
-
-async function fetchCampaign() {
-  try {
-    const res = await fetch(`${API_BASE}/campaign`);
-    if (!res.ok) return;
-    const data = await res.json();
-    const banner = document.getElementById('theme-banner');
-    if (banner && data.theme) {
-      banner.textContent = data.theme;
-      banner.classList.remove('hidden');
-    }
-  } catch {
-    /* ignore errors */
   }
 }
 
@@ -708,7 +697,6 @@ async function init() {
   setStep('prompt');
   if (window.setWizardStage) window.setWizardStage('prompt');
   showLoader();
-  fetchCampaign();
   const initData = await fetchInitData();
   if (initData) {
     if (window.setWizardSlotCount) window.setWizardSlotCount(adjustedSlots(initData.slots));
@@ -720,7 +708,8 @@ async function init() {
       }
     }
     await updateStats(initData.stats);
-    showThemeBanner();
+    const theme = initData.campaign && initData.campaign.theme;
+    showThemeBanner(theme);
   } else {
     updateWizardSlotCount();
     fetchProfile().then(() => {
