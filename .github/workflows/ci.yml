@@ -28,4 +28,11 @@ jobs:
       - name: Run coverage
         run: npm run coverage
 
+      - name: Verify lockfiles
+        run: |
+          npm run deps:check
+          git diff --exit-code package-lock.json
+          git diff --exit-code backend/package-lock.json
+          git diff --exit-code backend/hunyuan_server/package-lock.json
+
       # ← you can add additional steps here, like your tests
