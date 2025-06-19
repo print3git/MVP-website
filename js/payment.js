@@ -6,16 +6,16 @@ let stripe = null;
 // and is not dependent on external CDNs.
 const FALLBACK_GLB = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
 const PRICES = {
-  single: 2799,
-  multi: 3499,
-  premium: 5999,
+  single: 2999,
+  multi: 3999,
+  premium: 7999,
 };
 let PRICING_VARIANT = localStorage.getItem('pricingVariant');
 if (!PRICING_VARIANT) {
   PRICING_VARIANT = Math.random() < 0.5 ? 'A' : 'B';
   localStorage.setItem('pricingVariant', PRICING_VARIANT);
 }
-const PRINT_CLUB_PRICE = PRICING_VARIANT === 'B' ? 16000 : 14000;
+const PRINT_CLUB_PRICE = 7999;
 let selectedPrice = PRICES.multi;
 const SINGLE_BORDER_COLOR = '#60a5fa';
 const API_BASE = (window.API_ORIGIN || '') + '/api';
@@ -427,7 +427,6 @@ async function initPaymentPage() {
       singleButton.style.backgroundColor = storedColor;
 
       singleButton.style.borderColor = SINGLE_BORDER_COLOR;
-
     }
     if (colorMenu) {
       if (storedColor) colorMenu.classList.add('hidden');
@@ -511,20 +510,15 @@ async function initPaymentPage() {
         'placeholder-[#30D5C8]'
       );
       if (warning) warning.classList.remove('hidden');
-
-
     }
   }
 
   function updatePayButton() {
     if (!payBtn) return;
-    const joinClub =
-      Array.from(subscriptionRadios).find((r) => r.checked)?.value === 'join';
+    const joinClub = Array.from(subscriptionRadios).find((r) => r.checked)?.value === 'join';
     if (joinClub) {
       const hasReferral = Boolean(localStorage.getItem('referrerId'));
-      const price = hasReferral
-        ? (PRINT_CLUB_PRICE * 0.9) / 100
-        : PRINT_CLUB_PRICE / 100;
+      const price = hasReferral ? (PRINT_CLUB_PRICE * 0.9) / 100 : PRINT_CLUB_PRICE / 100;
       const suffix = hasReferral ? ' first month' : '';
       payBtn.textContent = `Join Print Club – Pay £${price.toFixed(2)}${suffix}`;
     } else {
@@ -825,10 +819,7 @@ async function initPaymentPage() {
         body: JSON.stringify({ sessionId, subreddit, step: 'start' }),
       }).catch(() => {});
     }
-    const qty = Math.max(
-      1,
-      parseInt(document.getElementById('print-qty')?.value || '1', 10)
-    );
+    const qty = Math.max(1, parseInt(document.getElementById('print-qty')?.value || '1', 10));
     let discount = 0;
     const end = parseInt(localStorage.getItem('flashDiscountEnd'), 10) || 0;
     if (end && end > Date.now()) {

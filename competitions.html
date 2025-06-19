@@ -62,7 +62,8 @@
           href="printclub.html"
           id="print-club-badge"
           class="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-3xl px-3 py-2 text-sm transition-shape"
-          >Print Club £140/mo</a>
+          >Print Club £79.99/mo</a
+        >
         <div class="flex space-x-2">
           <button
             class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
@@ -103,10 +104,7 @@
       </div>
     </header>
     <main class="flex-1 p-4 space-y-6">
-      <div
-        id="printclub-banner"
-        class="bg-blue-600 text-white p-3 rounded-xl text-center hidden"
-      >
+      <div id="printclub-banner" class="bg-blue-600 text-white p-3 rounded-xl text-center hidden">
         Join <strong>Print Club</strong> for weekly prints.
         <a href="#" id="printclub-banner-link" class="underline">Learn more</a>
       </div>
@@ -151,8 +149,14 @@
           />
           <span class="absolute top-1 left-1 bg-black/60 text-xs px-1 rounded">Ended 05/25</span>
           <button class="like absolute bottom-1 right-1 text-xs bg-red-600 px-1 rounded">♥</button>
-          <span class="absolute bottom-8 right-1 text-xs bg-black/50 px-1 rounded" id="votes-helmet">0</span>
-          <button class="purchase absolute bottom-1 left-1 font-bold text-lg py-2 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]">Buy</button>
+          <span class="absolute bottom-8 right-1 text-xs bg-black/50 px-1 rounded" id="votes-helmet"
+            >0</span
+          >
+          <button
+            class="purchase absolute bottom-1 left-1 font-bold text-lg py-2 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]"
+          >
+            Buy
+          </button>
         </div>
         <div
           class="model-card relative h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape flex items-center justify-center cursor-pointer"
@@ -166,8 +170,14 @@
           />
           <span class="absolute top-1 left-1 bg-black/60 text-xs px-1 rounded">Ended 03/24</span>
           <button class="like absolute bottom-1 right-1 text-xs bg-red-600 px-1 rounded">♥</button>
-          <span class="absolute bottom-8 right-1 text-xs bg-black/50 px-1 rounded" id="votes-fox">0</span>
-          <button class="purchase absolute bottom-1 left-1 font-bold text-lg py-2 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]">Buy</button>
+          <span class="absolute bottom-8 right-1 text-xs bg-black/50 px-1 rounded" id="votes-fox"
+            >0</span
+          >
+          <button
+            class="purchase absolute bottom-1 left-1 font-bold text-lg py-2 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]"
+          >
+            Buy
+          </button>
         </div>
         <div
           class="model-card relative h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape flex items-center justify-center cursor-pointer"
@@ -181,14 +191,25 @@
           />
           <span class="absolute top-1 left-1 bg-black/60 text-xs px-1 rounded">Ended 01/23</span>
           <button class="like absolute bottom-1 right-1 text-xs bg-red-600 px-1 rounded">♥</button>
-          <span class="absolute bottom-8 right-1 text-xs bg-black/50 px-1 rounded" id="votes-boombox">0</span>
-          <button class="purchase absolute bottom-1 left-1 font-bold text-lg py-2 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]">Buy</button>
+          <span
+            class="absolute bottom-8 right-1 text-xs bg-black/50 px-1 rounded"
+            id="votes-boombox"
+            >0</span
+          >
+          <button
+            class="purchase absolute bottom-1 left-1 font-bold text-lg py-2 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]"
+          >
+            Buy
+          </button>
         </div>
       </div>
       <h2 class="text-2xl mt-8">Winner Interviews</h2>
       <div id="winner-interviews" class="space-y-4 mt-4"></div>
       <h2 class="text-2xl mt-8">Trending Prints</h2>
-      <div id="trending-prints" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4"></div>
+      <div
+        id="trending-prints"
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4"
+      ></div>
     </main>
     <div
       id="enter-modal"
@@ -286,11 +307,11 @@
             id="modal-checkout"
             href="payment.html"
             class="font-bold py-3 px-5 rounded-full shadow-md transition border-2 border-black"
-            style="background-color: #30D5C8; color: #1A1A1D"
+            style="background-color: #30d5c8; color: #1a1a1d"
             onmouseover="this.style.opacity='0.85'"
             onmouseout="this.style.opacity='1'"
           >
-            Print for £34.99 →
+            Print for £39.99 →
           </a>
         </div>
         <button
@@ -324,7 +345,7 @@
             btn.classList.toggle('opacity-50', !active);
           });
           if (checkoutBtn) {
-            const price = tier === 'bronze' ? 27.99 : tier === 'gold' ? 59.99 : 34.99;
+            const price = tier === 'bronze' ? 29.99 : tier === 'gold' ? 79.99 : 39.99;
             checkoutBtn.textContent = `Print for £${price.toFixed(2)} →`;
           }
           const material = tier === 'bronze' ? 'single' : tier === 'gold' ? 'premium' : 'multi';
@@ -340,8 +361,6 @@
           modal.classList.add('hidden');
           document.body.classList.remove('overflow-hidden');
         }
-
-
 
         checkoutBtn.addEventListener('click', () => {
           sessionStorage.setItem('fromCommunity', '1');
@@ -389,9 +408,15 @@
       <div class="bg-[#2A2A2E] p-6 rounded-xl max-w-sm text-center">
         <h2 class="text-2xl font-semibold mb-2">Print Club</h2>
         <p class="mb-4">
-          Get two prints every week for just £140/month. Unused credits expire weekly.
+          Get two prints every week for just £79.99/month. Unused credits expire weekly.
         </p>
-        <button id="printclub-close" class="mt-2 px-4 py-2 bg-blue-600 rounded-3xl" aria-label="Close Print Club modal">Close</button>
+        <button
+          id="printclub-close"
+          class="mt-2 px-4 py-2 bg-blue-600 rounded-3xl"
+          aria-label="Close Print Club modal"
+        >
+          Close
+        </button>
       </div>
     </div>
     <script type="module" src="js/printclub.js"></script>
