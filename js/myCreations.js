@@ -82,6 +82,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const modal = document.getElementById('model-modal');
   const closeBtn = document.getElementById('close-modal');
   const copyBtn = document.getElementById('modal-copy-link');
+  const copyMsg = document.getElementById('modal-copy-msg');
+  const help = document.getElementById('modal-copy-help');
+  const tooltip = document.getElementById('modal-copy-tooltip');
   function close() {
     modal.classList.add('hidden');
     document.body.classList.remove('overflow-hidden');
@@ -94,8 +97,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const id = copyBtn.dataset.id;
     if (!id) return;
     const url = `${window.location.origin}/community/model/${id}`;
-    navigator.clipboard.writeText(url).then(() => alert('Link copied'));
+    navigator.clipboard.writeText(url).then(() => {
+      if (copyMsg) {
+        copyMsg.classList.remove('hidden');
+        setTimeout(() => copyMsg.classList.add('hidden'), 2000);
+      }
+    });
   });
+  if (help && tooltip) {
+    ['mouseenter', 'focus'].forEach((ev) =>
+      help.addEventListener(ev, () => tooltip.classList.remove('hidden'))
+    );
+    ['mouseleave', 'blur'].forEach((ev) =>
+      help.addEventListener(ev, () => tooltip.classList.add('hidden'))
+    );
+  }
   createObserver();
   loadMore();
 });
