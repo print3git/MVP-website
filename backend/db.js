@@ -474,6 +474,19 @@ async function listPrinterHubs() {
   return rows;
 }
 
+async function createSpace(region, costCents, address) {
+  const { rows } = await query(
+    'INSERT INTO spaces(region, cost_cents, address) VALUES($1,$2,$3) RETURNING *',
+    [region, costCents, address]
+  );
+  return rows[0];
+}
+
+async function listSpaces() {
+  const { rows } = await query('SELECT * FROM spaces ORDER BY id');
+  return rows;
+}
+
 async function addPrinter(serial, hubId) {
   const { rows } = await query(
     "INSERT INTO printers(serial, hub_id) VALUES($1,$2) RETURNING *",
@@ -617,6 +630,8 @@ module.exports = {
   getRewardOption,
   insertScalingEvent,
   getScalingEvents,
+  createSpace,
+  listSpaces,
   createPrinterHub,
   listPrinterHubs,
   addPrinter,
