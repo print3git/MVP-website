@@ -98,11 +98,6 @@
 
 ## Operations Dashboard
 
-- Show printer load, backlog and daily capacity per hub.
-- Display printer errors and maintenance alerts.
-- Summarize upcoming scaling triggers.
-- Restrict access to founders only.
-
 ## Business Intelligence
 
 - Graph daily profit and capacity utilisation.
