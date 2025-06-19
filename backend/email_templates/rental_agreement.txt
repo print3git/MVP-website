@@ -1,0 +1,10 @@
+Rental Agreement
+
+Space: {{address}}
+Region: {{region}}
+Monthly Cost: ${{cost}}
+Start Date: {{start_date}}
+End Date: {{end_date}}
+Tenant: {{occupant}}
+
+Please sign and return.

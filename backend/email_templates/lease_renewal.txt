@@ -1,0 +1,2 @@
+Your lease is nearing its end on {{end_date}}.
+Please review renewal options.

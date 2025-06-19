@@ -201,11 +201,7 @@
 
 ## Physical Space Logistics
 
-- Keep a database of rentable spaces by region and cost.
-- Provide template rental agreements.
-- Trigger a search for new space when expansion is scheduled.
-- Generate rental paperwork automatically for approval.
-- Remind founders of lease renewal dates.
+_(completed tasks removed)_
 
 ## Printer Load Monitoring Enhancements
 
