@@ -209,8 +209,6 @@
 
 ## Printer Load Monitoring Enhancements
 
-- Record idle time and utilization statistics per printer.
-- Store historical queue length and average completion times.
 - Expose API endpoint for live printer metrics.
 - Visualise utilisation trends in the dashboard.
 - Trigger scaling alerts when sustained utilisation exceeds 80%.
