@@ -192,7 +192,7 @@ export function setupBasketUI() {
           <button type="button" data-tier="silver" class="basket-tier-option px-2 py-1 rounded-full border border-white/20 opacity-50 text-black" style="background-color: #c0c0c0">multicolour</button>
           <button type="button" data-tier="gold" class="basket-tier-option px-2 py-1 rounded-full border border-white/20 opacity-50 text-black" style="background-color: #ffd700">premium</button>
         </div>
-        <a id="basket-model-checkout" href="payment.html" class="font-bold py-2 px-5 rounded-full shadow-md transition border-2 border-black" style="background-color: #30D5C8; color: #1A1A1D" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">Print for £34.99 →</a>
+  <a id="basket-model-checkout" href="payment.html" class="font-bold py-2 px-5 rounded-full shadow-md transition border-2 border-black" style="background-color: #30D5C8; color: #1A1A1D" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">Print for £39.99 →</a>
       </div>
     </div>`;
   document.body.appendChild(viewerOverlay);
@@ -220,7 +220,7 @@ export function setupBasketUI() {
       btn.classList.toggle('opacity-50', !active);
     });
     if (viewerCheckoutBtn) {
-      const price = tier === 'bronze' ? 27.99 : tier === 'gold' ? 59.99 : 34.99;
+      const price = tier === 'bronze' ? 29.99 : tier === 'gold' ? 79.99 : 39.99;
       viewerCheckoutBtn.textContent = `Print for £${price.toFixed(2)} →`;
     }
     const material = tier === 'bronze' ? 'single' : tier === 'gold' ? 'premium' : 'multi';
