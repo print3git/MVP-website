@@ -94,8 +94,6 @@
 - Bundle setup guides and monitoring scripts in each kit.
 - Automate camera and network configuration on arrival.
 
-## Operations Dashboard
-
 ## Business Intelligence
 
 - Graph daily profit and capacity utilisation.
