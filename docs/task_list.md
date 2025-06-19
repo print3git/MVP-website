@@ -197,9 +197,6 @@
 - Track completion of daily tasks per operator.
 - Flag missing tasks for review.
 
-## Physical Space Logistics
-
-_(completed tasks removed)_
 
 ## Printer Load Monitoring Enhancements
 
