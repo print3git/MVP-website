@@ -14,6 +14,7 @@
     "lint:fix": "eslint . --fix",
     "check-conflicts": "! grep -R --include=*.js --include=*.jsx --include=*.ts --include=*.tsx '^(<{7}|={7}|>{7})' .",
     "test": "npm test --prefix backend",
+    "coverage": "npm run coverage --prefix backend",
     "typecheck": "tsc --noEmit",
     "ci": "npm run format && npm run lint && npm run typecheck && npm run test-ci --prefix backend"
   },
