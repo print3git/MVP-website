@@ -34,8 +34,7 @@ jobs:
       - run: npm run lint
         working-directory: backend
 
-      - run: npm run test-ci
-        working-directory: backend
+      - run: npm run test:stability
 
       - run: npm run format
         working-directory: backend
