@@ -429,7 +429,7 @@ async function getScalingEvents(limit = 50) {
 
 async function getUserCreations(userId, limit = 10, offset = 0) {
   const { rows } = await query(
-    `SELECT c.id, c.title, c.category, j.job_id, j.model_url
+    `SELECT c.id, c.title, c.category, j.job_id, j.model_url, j.snapshot
      FROM community_creations c
      JOIN jobs j ON c.job_id=j.job_id
      WHERE c.user_id=$1
@@ -471,6 +471,20 @@ async function createPrinterHub(name, location, operator) {
 
 async function listPrinterHubs() {
   const { rows } = await query("SELECT * FROM printer_hubs ORDER BY id");
+
+  return rows;
+}
+
+async function createSpace(region, costCents, address) {
+  const { rows } = await query(
+    'INSERT INTO spaces(region, cost_cents, address) VALUES($1,$2,$3) RETURNING *',
+    [region, costCents, address]
+  );
+  return rows[0];
+}
+
+async function listSpaces() {
+  const { rows } = await query('SELECT * FROM spaces ORDER BY id');
   return rows;
 }
 
@@ -556,6 +570,27 @@ async function getOrderLocationSummary(date) {
   return rows;
 }
 
+async function upsertHubSaturationSummary(date, hubId, saturation) {
+  const { rows } = await query(
+    `INSERT INTO hub_saturation_summary(summary_date, hub_id, avg_queue_saturation)
+     VALUES($1,$2,$3)
+     ON CONFLICT (summary_date, hub_id)
+     DO UPDATE SET avg_queue_saturation=$3, updated_at=NOW()
+     RETURNING *`,
+    [date, hubId, saturation],
+  );
+  return rows[0];
+}
+
+async function getHubSaturationSummary(date) {
+  const { rows } = await query(
+    "SELECT hub_id, avg_queue_saturation FROM hub_saturation_summary WHERE summary_date=$1 ORDER BY hub_id",
+    [date],
+
+  );
+  return rows;
+}
+
 module.exports = {
   query,
   insertShare,
@@ -597,6 +632,8 @@ module.exports = {
   getRewardOption,
   insertScalingEvent,
   getScalingEvents,
+  createSpace,
+  listSpaces,
   createPrinterHub,
   listPrinterHubs,
   addPrinter,
@@ -606,6 +643,8 @@ module.exports = {
   insertHubShipment,
   upsertOrderLocationSummary,
   getOrderLocationSummary,
+  upsertHubSaturationSummary,
+  getHubSaturationSummary,
   // newly exposed helpers
   insertAdSpend,
   getAverageJobCompletionSeconds,
