@@ -41,7 +41,6 @@
 
 ## Repeat Purchase Incentives
 
-- Award a badge when someone purchases three times in a month.
 - Offer an optional monthly "time capsule" print.
 - Showcase other users' creations for inspiration.
 - Add loyalty features to the account area.
