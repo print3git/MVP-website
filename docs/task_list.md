@@ -45,7 +45,6 @@
 - Showcase other users' creations for inspiration.
 - Add loyalty features to the account area.
   - Highlight a "Print of the week" for quick purchase.
-  - For subscribers, show a countdown to their next free print.
   - Provide subscriber-only design previews.
   - Track consecutive weekly orders and badge streaks.
 
