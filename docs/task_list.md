@@ -209,3 +209,70 @@
 - Include a tracking link in shipping confirmation.
 - Offer automatic reprint if a print fails quality checks.
 - Survey customers after delivery for feedback.
+
+## Gifting Flow Integration
+
+- Add "Send as Gift" button next to "Add to Basket" and in the model-viewer header.
+- Swap the quantity input for recipient email and note fields when gifting is selected.
+- Record `is_gift` metadata in Stripe checkout and send recipient claim email.
+- Build recipient portal with magic-link login, 3D preview, edit controls and shipping tracker.
+- Send lifecycle emails: gift notification, shipping updates and Day 30 upsell.
+- Credit the sender if the recipient purchases within 60 days and log events to Segment/GA4.
+- **Data & config**
+  - Add nullable gifts table with order and recipient details.
+  - Add `is_gift` boolean column to orders.
+  - Expose `FeatureFlags.GIFTING` and add gifting email/portal env vars.
+- **Backend endpoints**
+  - POST `/gifts` to create gift orders and return a Stripe session id.
+  - Handle Stripe webhook to insert gift rows when metadata flag is set.
+  - POST `/gifts/:id/claim` for recipients to confirm shipping and personalisation.
+  - GET `/users/:id/gifts/sent` and `/received` for dashboard history.
+  - Queue worker to start print job and send confirmations after claim.
+  - POST `/referral/redeem` to credit the sender for follow-on purchases.
+- **Email templates**
+  - "You got a 3D print" claim email with preview image.
+  - "Your gift is printing" status update.
+  - "Send a gift back" upsell at Day 30.
+  - Add translation keys for all new copy.
+- **Frontend components**
+  - Gift button on product cards and `GiftModal` with recipient info and optional gift-wrap toggle.
+  - Handle gift query param in checkout and render extra step.
+  - `ClaimGiftPage` for magic-link flow and 3D editor.
+  - Snackbar notification after adding a gift and redirect to Stripe.
+  - Badge "Gifts (β)" in header behind feature flag.
+  - Gift history tab under user profile.
+- **UX / UI polish**
+  - Update Figma with gifting CTA variants.
+  - Define colour tokens `giftHighlight` and `giftAccent`.
+  - Provide `gift.svg` and `arrow-send.svg` icons.
+  - Microcopy: "We’ll email your friend a link to pick colours & delivery date (no address needed yet)."
+- **Analytics & experiments**
+  - Track gift CTA clicks, purchases and claims with latency.
+  - Create GA4 funnel from gift CTA to recipient purchase.
+  - Optimizely flag for testing gift checkout copy.
+- **Marketing automations**
+  - Post-checkout popup asking if the user wants to make it a gift.
+  - Reminder email after 7 days if the gift isn’t claimed.
+  - Referral coupon generated when a gift is claimed.
+  - Social share card generator for gifted models.
+- **Legal & policy**
+  - Update Terms of Service with gifting section and data use.
+  - Update privacy policy with lawful basis and deletion timeline.
+- **Testing & QA**
+  - Cypress happy path for gifting flow.
+  - Unit test to reject claiming twice.
+  - Jest snapshot for GiftModal states.
+  - Email rendering tests across major clients.
+  - Lighthouse checks for performance and layout shift.
+- **Deployment & roll-out**
+  - Database migration script for gifting tables and columns.
+  - Seed staging environment with sample gift data.
+  - Enable feature flag for internal IPs first.
+  - Monitor analytics before full rollout.
+  - Prepare rollback post-mortem template.
+- **Additional ideas to keep UX clean while boosting gifting**
+  - Provide preset gift message templates for quick sending.
+  - Allow scheduling the gift email for a future date.
+  - Offer a minimal gift-wrap upsell toggle in the modal.
+  - Use subtle gift icons on product thumbnails instead of large banners.
+  - A/B test concise versus detailed gift copy to avoid clutter.
