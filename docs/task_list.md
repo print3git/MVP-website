@@ -169,10 +169,8 @@
 
 ## Printer Control & Recovery
 
-- Enable remote restart and shutdown commands.
 - Run periodic firmware updates over the network.
 - Schedule automatic calibration prints.
-- Switch jobs to a backup printer on failure.
 
 ## Inventory Monitoring & Restocking
 
