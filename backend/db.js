@@ -429,7 +429,7 @@ async function getScalingEvents(limit = 50) {
 
 async function getUserCreations(userId, limit = 10, offset = 0) {
   const { rows } = await query(
-    `SELECT c.id, c.title, c.category, j.job_id, j.model_url
+    `SELECT c.id, c.title, c.category, j.job_id, j.model_url, j.snapshot
      FROM community_creations c
      JOIN jobs j ON c.job_id=j.job_id
      WHERE c.user_id=$1
@@ -461,6 +461,19 @@ async function getCommunityComments(modelId, limit = 20) {
   return rows;
 }
 
+async function listSpaces() {
+  const { rows } = await query("SELECT * FROM spaces ORDER BY id");
+  return rows;
+}
+
+async function createSpace(region, costCents, address) {
+  const { rows } = await query(
+    "INSERT INTO spaces(region, cost_cents, address) VALUES($1,$2,$3) RETURNING *",
+    [region, costCents, address],
+  );
+  return rows[0];
+}
+
 async function createPrinterHub(name, location, operator) {
   const { rows } = await query(
     "INSERT INTO printer_hubs(name, location, operator) VALUES($1,$2,$3) RETURNING *",
@@ -471,6 +484,23 @@ async function createPrinterHub(name, location, operator) {
 
 async function listPrinterHubs() {
   const { rows } = await query("SELECT * FROM printer_hubs ORDER BY id");
+
+
+  return rows;
+}
+
+async function createSpace(region, costCents, address) {
+  const { rows } = await query(
+    'INSERT INTO spaces(region, cost_cents, address) VALUES($1,$2,$3) RETURNING *',
+    [region, costCents, address]
+  );
+  return rows[0];
+}
+
+async function listAllSpaces() {
+  const { rows } = await query('SELECT * FROM spaces ORDER BY id');
+
+
   return rows;
 }
 
@@ -479,6 +509,7 @@ async function addPrinter(serial, hubId) {
     "INSERT INTO printers(serial, hub_id) VALUES($1,$2) RETURNING *",
     [serial, hubId],
   );
+
   return rows[0];
 }
 
@@ -486,6 +517,22 @@ async function getPrintersByHub(hubId) {
   const { rows } = await query("SELECT * FROM printers WHERE hub_id=$1", [
     hubId,
   ]);
+  return rows;
+}
+
+async function updatePrinterHub(id, location, operator) {
+  const { rows } = await query(
+    "UPDATE printer_hubs SET location=$2, operator=$3, updated_at=NOW() WHERE id=$1 RETURNING *",
+    [id, location, operator],
+  );
+  return rows[0];
+}
+
+async function getHubShipments(hubId) {
+  const { rows } = await query(
+    "SELECT * FROM hub_shipments WHERE hub_id=$1 ORDER BY shipped_at DESC",
+    [hubId],
+  );
   return rows;
 }
 
@@ -536,6 +583,19 @@ async function insertHubShipment(hubId, carrier, trackingNumber, status) {
   return rows[0];
 }
 
+async function createSpace(region, costCents, address) {
+  const { rows } = await query(
+    'INSERT INTO spaces(region, cost_cents, address) VALUES($1,$2,$3) RETURNING *',
+    [region, costCents, address]
+  );
+  return rows[0];
+}
+
+async function listSpaces() {
+  const { rows } = await query('SELECT * FROM spaces ORDER BY id');
+  return rows;
+}
+
 async function upsertOrderLocationSummary(date, state, count, hours) {
   const { rows } = await query(
     `INSERT INTO order_location_summary(summary_date, state, order_count, estimated_hours)
@@ -573,8 +633,42 @@ async function getLowInventory() {
        FROM hub_inventory i
        JOIN printer_hubs h ON i.hub_id=h.id
       WHERE i.quantity < i.threshold`,
+
   );
   return rows;
+}
+
+async function upsertHubSaturationSummary(date, hubId, saturation) {
+  const { rows } = await query(
+    `INSERT INTO hub_saturation_summary(summary_date, hub_id, avg_queue_saturation)
+     VALUES($1,$2,$3)
+     ON CONFLICT (summary_date, hub_id)
+     DO UPDATE SET avg_queue_saturation=$3, updated_at=NOW()
+     RETURNING *`,
+    [date, hubId, saturation],
+  );
+  return rows[0];
+}
+
+async function getHubSaturationSummary(date) {
+  const { rows } = await query(
+    "SELECT hub_id, avg_queue_saturation FROM hub_saturation_summary WHERE summary_date=$1 ORDER BY hub_id",
+    [date],
+  );
+  return rows;
+}
+
+async function listSpaces() {
+  const { rows } = await query('SELECT * FROM spaces ORDER BY id');
+  return rows;
+}
+
+async function createSpace(region, costCents, address) {
+  const { rows } = await query(
+    'INSERT INTO spaces(region, cost_cents, address) VALUES($1,$2,$3) RETURNING *',
+    [region, costCents, address]
+  );
+  return rows[0];
 }
 
 module.exports = {
@@ -614,19 +708,33 @@ module.exports = {
   getUserCreations,
   insertCommunityComment,
   getCommunityComments,
+  listSpaces,
+  createSpace,
   getRewardOptions,
   getRewardOption,
   insertScalingEvent,
   getScalingEvents,
+  createSpace,
+  listSpaces,
+  listAllSpaces,
   createPrinterHub,
   listPrinterHubs,
   addPrinter,
   getPrintersByHub,
+  updatePrinterHub,
+  getHubShipments,
   insertPrinterMetric,
   getLatestPrinterMetrics,
   insertHubShipment,
   upsertOrderLocationSummary,
   getOrderLocationSummary,
+
+  listSpaces,
+  createSpace,
+
+  upsertHubSaturationSummary,
+  getHubSaturationSummary,
+
   // newly exposed helpers
   insertAdSpend,
   getAverageJobCompletionSeconds,

@@ -42,10 +42,8 @@
 ## Repeat Purchase Incentives
 
 - Offer an optional monthly "time capsule" print.
-- Showcase other users' creations for inspiration.
 - Add loyalty features to the account area.
-  - Highlight a "Print of the week" for quick purchase.
-  - For subscribers, show a countdown to their next free print.
+
   - Provide subscriber-only design previews.
   - Track consecutive weekly orders and badge streaks.
 
@@ -56,10 +54,6 @@
   - Reduce polygon count and lower texture resolution.
   - Compress geometry with Draco or Meshopt and convert textures to KTX2/Basis.
   - Export the optimized model and update the viewer `src` attribute.
-- Host the optimized model on a fast CDN or static server.
-  - Upload the file and configure CORS.
-- Send strong caching headers for the model and environment map.
-  - Use hashed filenames and long `max-age` values.
 - Use Level of Detail models, loading low poly first then swapping in higher quality.
 - Compress and preload the environment map.
 - Serve assets over HTTP/2 or HTTP/3.
@@ -78,8 +72,6 @@
 
 ## Fulfillment Capacity Forecasting
 
-- Compare demand to available printer capacity.
-- Alert via email when capacity is at risk.
 - Graph forecasted demand vs. capacity in the admin panel.
 
 ## Load Balancer & Routing
@@ -91,7 +83,6 @@
 
 ## Scaling Triggers & Procurement
 
-- Calculate average queue saturation per hub daily.
 - Generate purchase orders when saturation stays above threshold.
 - Email vendors with pre-filled printer order details.
 - Integrate vendor APIs to place orders automatically.
@@ -101,16 +92,9 @@
 
 - Preconfigure printers with SD images and calibration files.
 - Bundle setup guides and monitoring scripts in each kit.
-- Build dashboard to assign operators and track shipments.
 - Automate camera and network configuration on arrival.
-- Record printer serial numbers and hub location.
 
 ## Operations Dashboard
-
-- Show printer load, backlog and daily capacity per hub.
-- Display printer errors and maintenance alerts.
-- Summarize upcoming scaling triggers.
-- Restrict access to founders only.
 
 ## Business Intelligence
 
@@ -135,16 +119,12 @@
 ## Customer Service Automation
 
 - Create a FAQ response bot for common queries.
-- Send automatic order status and delay notifications.
 - Issue goodwill coupons if service-level targets are missed.
 - Escalate unresolved tickets to the founders.
 
 ## Legal & Accounting Automation
 
-- Track revenue by country for tax calculations.
 - Compute VAT or GST owed per region.
-- Flag prohibited shipping destinations automatically.
-- Export monthly accounting data for the accountant.
 
 ## Marketplace & Licensing (Future)
 
@@ -202,8 +182,6 @@
 
 ## Procurement Automation Enhancements
 
-- Generate purchase order PDFs with printer models and quantities.
-- Email vendors with shipping details for approval.
 - Track order acknowledgements and estimated arrival dates.
 - Update dashboard with shipping status for each order.
 - Flag overdue printer deliveries.
@@ -228,7 +206,6 @@
 
 ## Customer Communication Automation
 
-- Send an email or SMS when a print finishes.
 - Include a tracking link in shipping confirmation.
 - Offer automatic reprint if a print fails quality checks.
 - Survey customers after delivery for feedback.
