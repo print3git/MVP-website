@@ -42,7 +42,6 @@
   - Compress geometry with Draco or Meshopt and convert textures to KTX2/Basis.
   - Export the optimized model and update the viewer `src` attribute.
 - Use Level of Detail models, loading low poly first then swapping in higher quality.
-- Compress and preload the environment map.
 - Serve assets over HTTP/2 or HTTP/3.
 - Measure load times with Lighthouse or real browser tests and track improvements.
 
