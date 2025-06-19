@@ -52,24 +52,7 @@
 
 ## Competitions Engagement
 
-- Show a countdown timer next to each active competition.
-  - Include `deadline` in the competitions API response.
-  - Update `competitions.js` to refresh the timer every second.
-- Highlight winners with a short interview section.
-  - Pull winner info from `/api/competitions/winners`.
-  - Display image and quote below the winners list.
-- Email users when a new competition opens or voting begins.
-  - Add a subscribe checkbox on the competitions page.
-  - Send notifications via `/api/competitions/notify`.
-- Allow visitors to vote on entries.
-  - POST votes to `/api/competitions/:id/vote`.
-  - Show vote counts on each entry card.
-- Update the leaderboard in real time.
-  - Poll `/api/competitions/:id/leaderboard` every minute.
-  - Replace the leaderboard section with fresh data.
-- Add an entry gallery grid.
-  - Fetch entries from `/api/competitions/:id/entries`.
-  - Show paginated thumbnails linking to the model modal.
+(All tasks complete)
 
 ## 3D Model Loading Performance
 
