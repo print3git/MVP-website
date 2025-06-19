@@ -1829,6 +1829,27 @@ app.post('/api/admin/hubs/:id/shipments', adminCheck, async (req, res) => {
   }
 });
 
+app.get('/api/admin/spaces', adminCheck, async (req, res) => {
+  try {
+    const spaces = await db.listSpaces();
+    res.json(spaces);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to fetch spaces' });
+  }
+});
+
+app.post('/api/admin/spaces', adminCheck, async (req, res) => {
+  const { region, costCents, address } = req.body || {};
+  try {
+    const space = await db.createSpace(region || null, costCents || null, address || null);
+    res.json(space);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to create space' });
+  }
+});
+
 app.post('/api/admin/ads/generate', adminCheck, async (req, res) => {
   const { subreddit, context } = req.body || {};
   if (!subreddit) return res.status(400).json({ error: 'Missing subreddit' });
