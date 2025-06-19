@@ -1,0 +1,6 @@
+ALTER TABLE gifts
+  ADD COLUMN IF NOT EXISTS model_id UUID REFERENCES jobs(job_id),
+  ADD COLUMN IF NOT EXISTS claim_token TEXT UNIQUE,
+  ADD COLUMN IF NOT EXISTS reminder_sent BOOLEAN DEFAULT FALSE;
+
+CREATE INDEX IF NOT EXISTS gifts_claim_token_idx ON gifts(claim_token);
