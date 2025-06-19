@@ -73,8 +73,6 @@
 
 ## Fulfillment Capacity Forecasting
 
-- Compare demand to available printer capacity.
-- Alert via email when capacity is at risk.
 - Graph forecasted demand vs. capacity in the admin panel.
 
 ## Load Balancer & Routing
