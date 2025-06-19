@@ -469,6 +469,19 @@ async function insertHubShipment(hubId, carrier, trackingNumber, status) {
   return rows[0];
 }
 
+async function listSpaces() {
+  const { rows } = await query('SELECT * FROM spaces ORDER BY id');
+  return rows;
+}
+
+async function createSpace(region, costCents, address) {
+  const { rows } = await query(
+    'INSERT INTO spaces(region, cost_cents, address) VALUES($1,$2,$3) RETURNING *',
+    [region, costCents, address]
+  );
+  return rows[0];
+}
+
 async function upsertOrderLocationSummary(date, state, count, hours) {
   const { rows } = await query(
     `INSERT INTO order_location_summary(summary_date, state, order_count, estimated_hours)
@@ -537,6 +550,8 @@ module.exports = {
   insertPrinterMetric,
   getLatestPrinterMetrics,
   insertHubShipment,
+  listSpaces,
+  createSpace,
   upsertOrderLocationSummary,
   getOrderLocationSummary,
   // newly exposed helpers

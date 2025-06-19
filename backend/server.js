@@ -1829,6 +1829,40 @@ app.post('/api/admin/hubs/:id/shipments', adminCheck, async (req, res) => {
   }
 });
 
+app.get('/api/admin/printers/status', adminCheck, async (req, res) => {
+  try {
+    const metrics = await db.getLatestPrinterMetrics();
+    res.json(metrics);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to fetch metrics' });
+  }
+});
+
+app.get('/api/admin/spaces', adminCheck, async (req, res) => {
+  try {
+    const spaces = await db.listSpaces();
+    res.json(spaces);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to fetch spaces' });
+  }
+});
+
+app.post('/api/admin/spaces', adminCheck, async (req, res) => {
+  const { region, costCents, address } = req.body || {};
+  if (!region || !costCents || !address) {
+    return res.status(400).json({ error: 'Missing fields' });
+  }
+  try {
+    const space = await db.createSpace(region, costCents, address);
+    res.json(space);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to create space' });
+  }
+});
+
 app.post('/api/admin/ads/generate', adminCheck, async (req, res) => {
   const { subreddit, context } = req.body || {};
   if (!subreddit) return res.status(400).json({ error: 'Missing subreddit' });
@@ -2254,6 +2288,22 @@ app.post('/api/webhook/stripe', express.raw({ type: 'application/json' }), async
     }
   }
   res.sendStatus(200);
+});
+
+/**
+ * POST /api/webhook/printer-complete
+ * Update job status when print finishes
+ */
+app.post('/api/webhook/printer-complete', async (req, res) => {
+  const { jobId } = req.body || {};
+  if (!jobId) return res.status(400).json({ error: 'Missing jobId' });
+  try {
+    await db.query('UPDATE jobs SET status=$1 WHERE job_id=$2', ['printed', jobId]);
+    res.sendStatus(204);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to update job' });
+  }
 });
 
 app.get('/api/print-jobs/:id', async (req, res) => {

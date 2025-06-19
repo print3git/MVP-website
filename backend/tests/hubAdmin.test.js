@@ -11,6 +11,7 @@ jest.mock('../db', () => ({
   addPrinter: jest.fn(),
   getPrintersByHub: jest.fn(),
   insertHubShipment: jest.fn(),
+  getLatestPrinterMetrics: jest.fn(),
 }));
 const db = require('../db');
 
@@ -62,4 +63,15 @@ test('POST /api/admin/hubs/:id/shipments records shipment', async () => {
     .send({ carrier: 'UPS', trackingNumber: 't1' });
   expect(res.status).toBe(200);
   expect(db.insertHubShipment).toHaveBeenCalledWith('2', 'UPS', 't1', null);
+});
+
+test('GET /api/admin/printers/status returns metrics', async () => {
+  db.getLatestPrinterMetrics.mockResolvedValueOnce([
+    { printer_id: 1, status: 'idle', queue_length: 0 },
+  ]);
+  const res = await request(app)
+    .get('/api/admin/printers/status')
+    .set('x-admin-token', 'admin');
+  expect(res.status).toBe(200);
+  expect(res.body[0].status).toBe('idle');
 });

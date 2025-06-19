@@ -34,3 +34,15 @@ test('GET /api/print-jobs/:id returns status', async () => {
   expect(res.status).toBe(200);
   expect(res.body.status).toBe('queued');
 });
+
+test('POST /api/webhook/printer-complete updates job', async () => {
+  db.query.mockResolvedValueOnce({});
+  const res = await request(app)
+    .post('/api/webhook/printer-complete')
+    .send({ jobId: 'j1' });
+  expect(res.status).toBe(204);
+  expect(db.query).toHaveBeenCalledWith(
+    expect.stringContaining('UPDATE jobs SET status'),
+    ['printed', 'j1'],
+  );
+});

@@ -11,12 +11,16 @@ function authHeaders() {
 async function load() {
   const app = document.getElementById('app');
   app.textContent = 'Loading...';
-  const res = await fetch(`${API_BASE}/admin/hubs`, { headers: authHeaders() });
-  if (!res.ok) {
+  const [hubsRes, metricsRes] = await Promise.all([
+    fetch(`${API_BASE}/admin/hubs`, { headers: authHeaders() }),
+    fetch(`${API_BASE}/admin/printers/status`, { headers: authHeaders() }),
+  ]);
+  if (!hubsRes.ok) {
     app.textContent = 'Failed to load hubs';
     return;
   }
-  const hubs = await res.json();
+  const hubs = await hubsRes.json();
+  const metrics = metricsRes.ok ? await metricsRes.json() : [];
   app.innerHTML = '';
   hubs.forEach((hub) => {
     const div = document.createElement('div');
@@ -27,7 +31,12 @@ async function load() {
       <p class="text-sm">Operator: ${hub.operator || 'n/a'}</p>
       <div class="space-y-1">
         ${hub.printers
-          .map((p) => `<div class="text-sm">Printer ${p.serial}</div>`)
+          .map((p) => {
+            const m = metrics.find((mt) => mt.printer_id === p.id) || {};
+            const status = m.status || 'unknown';
+            const q = m.queue_length != null ? m.queue_length : 'n/a';
+            return `<div class="text-sm">Printer ${p.serial} - ${status} (queue ${q})</div>`;
+          })
           .join('')}
       </div>
       <input class="serial bg-[#1A1A1D] border border-white/10 rounded px-2 py-1" placeholder="Add printer serial" />

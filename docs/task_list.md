@@ -67,10 +67,8 @@
 
 ## Autonomous 3D Printing
 
-- Update job status when printing completes via webhook.
-- Slice STL/GLB files into G-code after order placement.
-- Show printer queues and status on a dashboard.
-- Notify operator when a printer requires manual clearing.
+ - Slice STL/GLB files into G-code after order placement.
+ - Notify operator when a printer requires manual clearing.
 
 ## AI Advert Generation
 
