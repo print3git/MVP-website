@@ -65,10 +65,7 @@
 
 ## Scaling Triggers & Procurement
 
-- Generate purchase orders when saturation stays above threshold.
-- Email vendors with pre-filled printer order details.
 - Integrate vendor APIs to place orders automatically.
-- Schedule new hub deployment when regional demand exceeds capacity.
 
 ## Hub Deployment Kit
 
