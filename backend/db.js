@@ -690,6 +690,43 @@ async function getHubSaturationSummary(date) {
   );
   return rows;
 }
+
+async function getDailyProfitSeries(start, end) {
+  const { rows } = await query(
+    `SELECT date_trunc('day', o.created_at) AS day,
+            SUM(o.price_cents - o.discount_cents) AS revenue_cents,
+            SUM(pc.cost_cents * o.quantity) AS cost_cents
+       FROM orders o
+       LEFT JOIN pricing_costs pc ON pc.product_type=o.product_type
+      WHERE o.status='paid' AND o.created_at >= $1 AND o.created_at < $2
+      GROUP BY day
+      ORDER BY day`,
+    [start, end],
+  );
+  return rows.map((r) => ({
+    day: r.day.toISOString().slice(0, 10),
+    revenue: parseInt(r.revenue_cents, 10) || 0,
+    cost: parseInt(r.cost_cents, 10) || 0,
+    profit:
+      (parseInt(r.revenue_cents, 10) || 0) - (parseInt(r.cost_cents, 10) || 0),
+  }));
+}
+
+async function getDailyCapacityUtilizationSeries(start, end) {
+  const { rows } = await query(
+    `SELECT date_trunc('day', created_at) AS day,
+            AVG(utilization) AS utilization
+       FROM printer_metrics
+      WHERE created_at >= $1 AND created_at < $2
+      GROUP BY day
+      ORDER BY day`,
+    [start, end],
+  );
+  return rows.map((r) => ({
+    day: r.day.toISOString().slice(0, 10),
+    utilization: parseFloat(r.utilization) || 0,
+  }));
+}
 //
 // async function listSpaces() {
 //   const { rows } = await query('SELECT * FROM spaces ORDER BY id');
@@ -768,6 +805,8 @@ module.exports = {
 
   upsertHubSaturationSummary,
   getHubSaturationSummary,
+  getDailyProfitSeries,
+  getDailyCapacityUtilizationSeries,
 
   // newly exposed helpers
   insertAdSpend,
