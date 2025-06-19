@@ -110,14 +110,14 @@
       model-viewer {
         touch-action: none;
       }
-      body.light {
+      html.light body {
         background-color: #f7f7f7;
         color: #1a1a1d;
       }
-      body.light .bg-[#2A2A2E] {
+      html.light body .bg-[#2A2A2E] {
         background-color: #e5e5e5;
       }
-      body.light .text-gray-200 {
+      html.light body .text-gray-200 {
         color: #1a1a1d;
       }
     </style>
@@ -205,6 +205,13 @@
           >
             <i class="fab fa-instagram"></i>
           </button>
+          <button
+            id="theme-toggle"
+            class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
+            aria-label="Toggle light mode"
+          >
+            <i class="fas fa-adjust"></i>
+          </button>
         </div>
       </div>
     </header>
@@ -288,7 +295,7 @@
             id="buy-now-button"
             aria-label="Buy now"
             class="hidden absolute bottom-4 right-32 font-bold py-3 px-5 rounded-full shadow-md transition"
-            style="background-color: #5ec2c5; color: #1f3b65"
+            style="background-color: #30d5c8; color: #1a1a1d"
           >
             Buy&nbsp;Now
           </button>
