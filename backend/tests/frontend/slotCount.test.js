@@ -8,7 +8,8 @@ html = html
   .replace(/<script[^>]+src="https?:\/\/[^>]+><\/script>/g, '')
   .replace(/<link[^>]+href="https?:\/\/[^>]+>/g, '')
   .replace(/<script[^>]+src="js\/payment.js"[^>]*><\/script>/, '')
-  .replace(/<script[^>]+src="js\/modelViewerTouchFix.js"[^>]*><\/script>/, '');
+  .replace(/<script[^>]+src="js\/modelViewerTouchFix.js"[^>]*><\/script>/, '')
+  .replace(/<script[^>]+src="js\/autoFullscreen.js"[^>]*><\/script>/, '');
 
 function cycleKey() {
   const tz = 'America/New_York';

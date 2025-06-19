@@ -224,8 +224,13 @@ test('POST /api/login returns token', async () => {
   expect(res.body.token).toBeDefined();
 });
 
-test('Stripe webhook updates order and enqueues print', async () => {
-  db.query.mockResolvedValueOnce({});
+test('Stripe webhook updates order and awards badge', async () => {
+  db.query
+    .mockResolvedValueOnce({})
+    .mockResolvedValueOnce({ rows: [{ job_id: 'job1', user_id: 'u1' }] })
+    .mockResolvedValueOnce({ rows: [{ count: '3' }] })
+    .mockResolvedValueOnce({ rows: [] })
+    .mockResolvedValueOnce({});
   const payload = JSON.stringify({});
   const res = await request(app)
     .post('/api/webhook/stripe')
@@ -234,6 +239,9 @@ test('Stripe webhook updates order and enqueues print', async () => {
     .send(payload);
   expect(res.status).toBe(200);
   expect(enqueuePrint).toHaveBeenCalledWith('job1');
+  const incentive = db.query.mock.calls.find((c) => c[0].includes('INSERT INTO incentives'));
+  expect(incentive).toBeTruthy();
+  expect(incentive[1][1]).toMatch(/^three_orders_/);
 });
 
 test('Stripe webhook invalid signature', async () => {
