@@ -422,20 +422,43 @@ async function getPrintersByHub(hubId) {
   return rows;
 }
 
-async function insertPrinterMetric(printerId, status, queueLength, error) {
+async function insertPrinterMetric(
+  printerId,
+  status,
+  queueLength,
+  error,
+  utilization = null,
+  idleSeconds = null,
+  avgCompletionSeconds = null
+) {
   await query(
-    'INSERT INTO printer_metrics(printer_id, status, queue_length, error) VALUES($1,$2,$3,$4)',
-    [printerId, status, queueLength, error]
+    'INSERT INTO printer_metrics(printer_id, status, queue_length, error, utilization, idle_seconds, avg_completion_seconds) VALUES($1,$2,$3,$4,$5,$6,$7)',
+    [
+      printerId,
+      status,
+      queueLength,
+      error,
+      utilization,
+      idleSeconds,
+      avgCompletionSeconds,
+    ]
   );
 }
 
 async function getLatestPrinterMetrics() {
   const { rows } = await query(
-    `SELECT DISTINCT ON (printer_id) printer_id, status, queue_length, error, created_at
+    `SELECT DISTINCT ON (printer_id) printer_id, status, queue_length, error, utilization, idle_seconds, avg_completion_seconds, created_at
      FROM printer_metrics
      ORDER BY printer_id, created_at DESC`
   );
   return rows;
+}
+
+async function getAverageJobCompletionSeconds() {
+  const { rows } = await query(
+    "SELECT AVG(EXTRACT(EPOCH FROM (updated_at - created_at))) AS avg FROM jobs WHERE status='sent'"
+  );
+  return rows[0] && rows[0].avg ? parseFloat(rows[0].avg) : null;
 }
 
 async function insertHubShipment(hubId, carrier, trackingNumber, status) {
@@ -518,5 +541,6 @@ module.exports = {
   getOrderLocationSummary,
   // newly exposed helpers
   insertAdSpend,
+  getAverageJobCompletionSeconds,
   getBusinessIntelligenceMetrics,
 };
