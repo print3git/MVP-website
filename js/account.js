@@ -29,6 +29,8 @@ async function loadSubscription() {
       'subscription-summary'
     );
     const container = document.getElementById('subscription-progress');
+    const previews = document.getElementById('design-previews');
+    const tcStatus = document.getElementById('time-capsule-status');
     const manage = document.getElementById('manage-subscription');
     if (!sub || sub.active === false || sub.status === 'canceled') {
       if (manage) {
@@ -37,9 +39,11 @@ async function loadSubscription() {
           window.location.href = 'payment.html';
         };
       }
+      previews?.classList.add('hidden');
       return;
     }
     if (container) container.classList.remove('hidden');
+    previews?.classList.remove('hidden');
     const used = credits.total - credits.remaining;
     const pct = credits.total ? (used / credits.total) * 100 : 0;
     const bar = document.getElementById('credit-bar');
@@ -49,6 +53,28 @@ async function loadSubscription() {
     if (manage) {
       manage.textContent = 'Manage subscription';
       manage.onclick = openPortal;
+    }
+
+    if (tcStatus) {
+      const text = tcStatus.querySelector('#time-capsule-text');
+      const btn = tcStatus.querySelector('#time-capsule-action');
+      const active = localStorage.getItem('timeCapsuleActive') === 'true';
+      tcStatus.classList.remove('hidden');
+      if (active) {
+        text.textContent = 'Monthly Time Capsule prints are active.';
+        btn.textContent = 'Disable';
+        btn.onclick = () => {
+          localStorage.removeItem('timeCapsuleActive');
+          loadSubscription();
+        };
+      } else {
+        text.textContent = 'Add a monthly Time Capsule print to your subscription.';
+        btn.textContent = 'Activate';
+        btn.onclick = () => {
+          localStorage.setItem('timeCapsuleActive', 'true');
+          loadSubscription();
+        };
+      }
     }
   } catch (err) {
     console.error('Failed to load subscription info', err);
