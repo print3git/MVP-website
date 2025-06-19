@@ -58,7 +58,14 @@
           <span class="sr-only">Close</span>
         </button>
         <model-viewer src="" alt="3D model preview" environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr" camera-controls auto-rotate class="w-full h-96 bg-[#2A2A2E] rounded-xl"></model-viewer>
-        <button id="modal-copy-link" class="absolute bottom-4 left-4 font-bold py-2 px-4 rounded-full shadow-md bg-[#2A2A2E] border border-white/20 text-white">Copy Link</button>
+        <div class="absolute bottom-4 left-4 flex items-center gap-2">
+          <button id="modal-copy-link" class="font-bold py-2 px-4 rounded-full shadow-md bg-[#2A2A2E] border border-white/20 text-white">Copy Link</button>
+          <span id="modal-copy-help" class="relative cursor-pointer text-lg">
+            <i class="fas fa-question-circle"></i>
+            <span id="modal-copy-tooltip" class="absolute hidden bottom-full mb-2 left-1/2 -translate-x-1/2 bg-[#2A2A2E] border border-white/10 rounded p-2 text-xs whitespace-nowrap">Click to copy the shareable link</span>
+          </span>
+          <span id="modal-copy-msg" class="ml-2 text-sm hidden">Copied!</span>
+        </div>
       </div>
     </div>
     <script type="module" src="js/myCreations.js"></script>

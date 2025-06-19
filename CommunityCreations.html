@@ -258,12 +258,14 @@
         >
           Add to Basket
         </button>
-        <button
-          id="modal-copy-link"
-          class="absolute bottom-4 left-40 font-bold py-2 px-4 rounded-full shadow-md bg-[#2A2A2E] border border-white/20"
-        >
-          Copy Link
-        </button>
+        <div id="modal-copy-container" class="absolute bottom-4 left-40 flex items-center gap-2">
+          <button id="modal-copy-link" class="font-bold py-2 px-4 rounded-full shadow-md bg-[#2A2A2E] border border-white/20">Copy Link</button>
+          <span id="modal-copy-help" class="relative cursor-pointer text-lg">
+            <i class="fas fa-question-circle"></i>
+            <span id="modal-copy-tooltip" class="absolute hidden bottom-full mb-2 left-1/2 -translate-x-1/2 bg-[#2A2A2E] border border-white/10 rounded p-2 text-xs whitespace-nowrap">Click to copy the shareable link</span>
+          </span>
+          <span id="modal-copy-msg" class="ml-2 text-sm hidden">Copied!</span>
+        </div>
         <div class="mt-4 bg-[#2A2A2E] p-4 rounded-xl">
           <ul id="comments-list" class="space-y-1 max-h-48 overflow-y-auto text-sm"></ul>
           <div id="comment-form" class="flex gap-2 mt-2">
@@ -336,12 +338,28 @@
         });
 
         const copyBtn = document.getElementById('modal-copy-link');
+        const copyMsg = document.getElementById('modal-copy-msg');
+        const help = document.getElementById('modal-copy-help');
+        const tooltip = document.getElementById('modal-copy-tooltip');
         copyBtn?.addEventListener('click', () => {
           const id = copyBtn.dataset.id;
           if (!id) return;
           const url = `${window.location.origin}/community/model/${id}`;
-          navigator.clipboard.writeText(url).then(() => alert('Link copied'));
+          navigator.clipboard.writeText(url).then(() => {
+            if (copyMsg) {
+              copyMsg.classList.remove('hidden');
+              setTimeout(() => copyMsg.classList.add('hidden'), 2000);
+            }
+          });
         });
+        if (help && tooltip) {
+          ['mouseenter', 'focus'].forEach((ev) =>
+            help.addEventListener(ev, () => tooltip.classList.remove('hidden'))
+          );
+          ['mouseleave', 'blur'].forEach((ev) =>
+            help.addEventListener(ev, () => tooltip.classList.add('hidden'))
+          );
+        }
 
         closeBtn.addEventListener('click', close);
         document.addEventListener('keydown', (e) => {
