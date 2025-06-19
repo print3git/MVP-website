@@ -17,6 +17,7 @@
     "send-delay-notifications": "node scripts/send-delay-notifications.js",
     "reset-credits": "node scripts/weekly-reset.js",
     "send-printclub-reminders": "node scripts/send-printclub-reminders.js",
+    "send-gift-reminders": "node scripts/send-gift-claim-reminders.js",
     "cleanup-tokens": "node scripts/cleanup-password-resets.js",
     "measure-load": "node scripts/measure-load.js",
     "generate-referral-qr": "node scripts/generate-referral-qr.js",
@@ -47,6 +48,7 @@
     "pdfkit": "0.13.0",
     "pg": "^8.16.0",
     "qrcode": "^1.5.3",
+    "jimp": "^1.6.0",
     "stripe": "^18.2.1",
     "uuid": "^11.1.0"
   },
