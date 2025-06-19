@@ -516,6 +516,7 @@ module.exports = {
   insertHubShipment,
   upsertOrderLocationSummary,
   getOrderLocationSummary,
+  // newly exposed helpers
   insertAdSpend,
   getBusinessIntelligenceMetrics,
 };
