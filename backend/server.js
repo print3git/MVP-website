@@ -2198,17 +2198,35 @@ app.post('/api/webhook/stripe', express.raw({ type: 'application/json' }), async
     try {
       await db.query('UPDATE orders SET status=$1 WHERE session_id=$2', ['paid', sessionId]);
 
-      let jobId = sessionJobId;
-      if (!jobId) {
-        const { rows } = await db.query('SELECT job_id FROM orders WHERE session_id=$1', [
-          sessionId,
-        ]);
-        jobId = rows[0] && rows[0].job_id;
-      }
+      const { rows } = await db.query('SELECT job_id, user_id FROM orders WHERE session_id=$1', [
+        sessionId,
+      ]);
+      const row = rows[0] || {};
+      const jobId = sessionJobId || row.job_id;
+      const userId = row.user_id;
 
       if (jobId) {
         enqueuePrint(jobId);
         processQueue();
+      }
+
+      if (userId) {
+        const { rows: countRows } = await db.query(
+          "SELECT COUNT(*) FROM orders WHERE user_id=$1 AND status='paid' AND created_at >= NOW() - INTERVAL '30 days'",
+          [userId]
+        );
+        const count = parseInt(countRows[0].count, 10) || 0;
+        if (count >= 3) {
+          const month = new Date().toISOString().slice(0, 7);
+          const type = `three_orders_${month}`;
+          const { rows: existing } = await db.query(
+            'SELECT 1 FROM incentives WHERE user_id=$1 AND type=$2',
+            [userId, type]
+          );
+          if (existing.length === 0) {
+            await db.query('INSERT INTO incentives(user_id, type) VALUES($1,$2)', [userId, type]);
+          }
+        }
       }
     } catch (err) {
       logError(err);
