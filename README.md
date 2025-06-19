@@ -95,7 +95,7 @@ requests:
 
 ```html
 <script>
-  window.API_ORIGIN = 'http://localhost:3000';
+  window.API_ORIGIN = "http://localhost:3000";
 </script>
 ```
 
@@ -261,3 +261,15 @@ The file maps each PR number to the list of paths it touches.
 Agents must consult this file and avoid modifying paths locked by other PRs.
 The `update_locks` workflow keeps it up to date every few minutes. Pull requests
 are automatically rebased and merged via the merge queue when CI passes.
+
+## Flaky test quarantine
+
+The `test:stability` script runs the backend test suite three times in a row to
+detect unstable tests:
+
+```bash
+npm run test:stability
+```
+
+Any failures will halt CI, prompting investigation. Individual flaky tests can
+be wrapped with `jest-retries` to retry a few times before failing.

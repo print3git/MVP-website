@@ -40,6 +40,7 @@
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "form-data": "^4.0.2",
+    "jimp": "^1.6.0",
     "jsonwebtoken": "^9.0.0",
     "morgan": "^1.10.0",
     "multer": "^2.0.1",
@@ -48,13 +49,13 @@
     "pdfkit": "0.13.0",
     "pg": "^8.16.0",
     "qrcode": "^1.5.3",
-    "jimp": "^1.6.0",
     "stripe": "^18.2.1",
     "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.28.0",
     "@types/jest": "^30.0.0",
+    "coverage-badges-cli": "^2.1.0",
     "eslint": "^9.28.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-promise": "^7.2.1",
@@ -63,12 +64,11 @@
     "jest": "^30.0.0",
     "jest-environment-jsdom": "^30.0.0-beta.3",
     "jest-localstorage-mock": "^2.4.26",
+    "jest-retries": "^1.0.1",
     "jsdom": "^26.1.0",
     "lighthouse": "^12.6.1",
     "prettier": "^3.1.0",
-    "supertest": "^7.1.1",
-    "htmlparser2": "^9.0.0",
-    "coverage-badges-cli": "^2.1.0"
+    "supertest": "^7.1.1"
   },
   "engines": {
     "node": ">=18"
