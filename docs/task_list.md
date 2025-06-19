@@ -43,12 +43,10 @@
 
 ## Autonomous 3D Printing
 
-- Show printer queues and status on a dashboard.
 - Notify operator when a printer requires manual clearing.
 
 ## AI Advert Generation
 
-- Discover related subreddits via Reddit API to suggest new targets.
 
 ## Fulfillment Capacity Forecasting
 
@@ -58,7 +56,6 @@
 
 ## Scaling Triggers & Procurement
 
-- Integrate vendor APIs to place orders automatically.
 
 ## Hub Deployment Kit
 
@@ -84,7 +81,6 @@
 - Feed finished prints into automated bagging machines.
 - Connect bagged items to a boxing conveyor.
 - Print and apply shipping labels automatically.
-- Track shipments through the carrier API.
 
 ## Customer Service Automation
 
@@ -124,7 +120,6 @@
 
 ## Inventory Monitoring & Restocking
 
-- Auto-generate purchase orders for filament and packaging.
 - Integrate vendor API to place restock orders.
 - Display inventory dashboard showing stock and delivery ETA.
 
@@ -182,8 +177,6 @@
 
 ## Gifting Flow Integration
 
-- Add "Send as Gift" button next to "Add to Basket" and in the model-viewer header.
-- Swap the quantity input for recipient email and note fields when gifting is selected.
 - Record `is_gift` metadata in Stripe checkout and send recipient claim email.
 - Build recipient portal with magic-link login, 3D preview, edit controls and shipping tracker.
 - Send lifecycle emails: gift notification, shipping updates and Day 30 upsell.
