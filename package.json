@@ -16,7 +16,8 @@
     "test": "npm test --prefix backend",
     "coverage": "npm run coverage --prefix backend",
     "typecheck": "tsc --noEmit",
-    "ci": "npm run format && npm run lint && npm run typecheck && npm run test-ci --prefix backend"
+    "ci": "npm run format && npm run lint && npm run typecheck && npm run test-ci --prefix backend",
+    "test:stability": "node scripts/test-stability.js"
   },
   "keywords": [],
   "author": "",
