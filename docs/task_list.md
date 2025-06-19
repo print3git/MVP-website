@@ -26,10 +26,6 @@
 - Add real photo of printed object or user-generated image to hero section to reinforce the physical product.
 - Display pricing info near the prompt field such as "From $X / print" to reduce hesitation.
 
-## Repeat Purchase Incentives
-
-- Track consecutive weekly orders and badge streaks.
-
 ## 3D Model Loading Performance
 
 - Optimize the `.glb` file used on `index.html` and `payment.html`.
