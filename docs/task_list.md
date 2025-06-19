@@ -59,12 +59,6 @@
 - Bundle setup guides and monitoring scripts in each kit.
 - Automate camera and network configuration on arrival.
 
-## Business Intelligence
-
-- Graph daily profit and capacity utilisation.
-- Email a weekly PDF summary to founders.
-- Highlight anomalies in sales or printer uptime.
-
 ## Printer Monitoring & Maintenance
 
 - Stream camera feeds for all printers.

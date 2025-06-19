@@ -1199,6 +1199,36 @@ app.get("/api/metrics/business-intel", async (req, res) => {
   }
 });
 
+app.get("/api/metrics/daily-profit", async (req, res) => {
+  try {
+    const end = new Date();
+    const start = new Date(end.getTime() - 7 * 86400000);
+    const data = await db.getDailyProfitSeries(
+      start.toISOString(),
+      end.toISOString(),
+    );
+    res.json(data);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: "Failed to fetch daily profit" });
+  }
+});
+
+app.get("/api/metrics/daily-capacity", async (req, res) => {
+  try {
+    const end = new Date();
+    const start = new Date(end.getTime() - 7 * 86400000);
+    const data = await db.getDailyCapacityUtilizationSeries(
+      start.toISOString(),
+      end.toISOString(),
+    );
+    res.json(data);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: "Failed to fetch capacity metrics" });
+  }
+});
+
 app.get("/api/users/:username/models", async (req, res) => {
   const limit = parseInt(req.query.limit, 10) || 10;
   const offset = parseInt(req.query.offset, 10) || 0;
