@@ -1,0 +1,3 @@
+Hi {{recipient}},
+You've received a 3D print from {{sender}}! Click the link below to claim your gift and provide shipping details:
+{{claimUrl}}
