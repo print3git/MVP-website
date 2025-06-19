@@ -86,8 +86,6 @@
 - Alert via email when capacity is at risk.
 - Graph forecasted demand vs. capacity in the admin panel.
 
-## Distributed Printing Infrastructure
-
 ## Load Balancer & Routing
 
 - Route new orders to the nearest hub based on customer location.
