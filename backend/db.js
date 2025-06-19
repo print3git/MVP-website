@@ -482,7 +482,7 @@ async function createSpace(region, costCents, address) {
   return rows[0];
 }
 
-async function listSpaces() {
+async function listAllSpaces() {
   const { rows } = await query('SELECT * FROM spaces ORDER BY id');
   return rows;
 }
@@ -631,7 +631,7 @@ module.exports = {
   insertScalingEvent,
   getScalingEvents,
   createSpace,
-  listSpaces,
+  listAllSpaces,
   createPrinterHub,
   listPrinterHubs,
   addPrinter,
