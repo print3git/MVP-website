@@ -225,10 +225,7 @@
 
 ## Hub Deployment Automation
 
-- Create a step-by-step checklist for new hub setup.
 - Preload Raspberry Pi images on SD cards for printers.
-- Auto-register new printers in the monitoring system.
-- Verify network connectivity and camera streams automatically.
 - Mark the hub live after all printers pass a test print.
 
 ## Global Operations Reporting
