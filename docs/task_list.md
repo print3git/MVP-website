@@ -136,10 +136,7 @@
 
 ## Legal & Accounting Automation
 
-- Track revenue by country for tax calculations.
 - Compute VAT or GST owed per region.
-- Flag prohibited shipping destinations automatically.
-- Export monthly accounting data for the accountant.
 
 ## Marketplace & Licensing (Future)
 
