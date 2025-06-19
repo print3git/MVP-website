@@ -461,6 +461,19 @@ async function getCommunityComments(modelId, limit = 20) {
   return rows;
 }
 
+async function listSpaces() {
+  const { rows } = await query("SELECT * FROM spaces ORDER BY id");
+  return rows;
+}
+
+async function createSpace(region, costCents, address) {
+  const { rows } = await query(
+    "INSERT INTO spaces(region, cost_cents, address) VALUES($1,$2,$3) RETURNING *",
+    [region, costCents, address],
+  );
+  return rows[0];
+}
+
 async function createPrinterHub(name, location, operator) {
   const { rows } = await query(
     "INSERT INTO printer_hubs(name, location, operator) VALUES($1,$2,$3) RETURNING *",
@@ -471,6 +484,7 @@ async function createPrinterHub(name, location, operator) {
 
 async function listPrinterHubs() {
   const { rows } = await query("SELECT * FROM printer_hubs ORDER BY id");
+
   return rows;
 }
 
@@ -484,6 +498,7 @@ async function createSpace(region, costCents, address) {
 
 async function listAllSpaces() {
   const { rows } = await query('SELECT * FROM spaces ORDER BY id');
+
   return rows;
 }
 
@@ -499,6 +514,22 @@ async function getPrintersByHub(hubId) {
   const { rows } = await query("SELECT * FROM printers WHERE hub_id=$1", [
     hubId,
   ]);
+  return rows;
+}
+
+async function updatePrinterHub(id, location, operator) {
+  const { rows } = await query(
+    "UPDATE printer_hubs SET location=$2, operator=$3, updated_at=NOW() WHERE id=$1 RETURNING *",
+    [id, location, operator],
+  );
+  return rows[0];
+}
+
+async function getHubShipments(hubId) {
+  const { rows } = await query(
+    "SELECT * FROM hub_shipments WHERE hub_id=$1 ORDER BY shipped_at DESC",
+    [hubId],
+  );
   return rows;
 }
 
@@ -626,6 +657,8 @@ module.exports = {
   getUserCreations,
   insertCommunityComment,
   getCommunityComments,
+  listSpaces,
+  createSpace,
   getRewardOptions,
   getRewardOption,
   insertScalingEvent,
@@ -636,6 +669,8 @@ module.exports = {
   listPrinterHubs,
   addPrinter,
   getPrintersByHub,
+  updatePrinterHub,
+  getHubShipments,
   insertPrinterMetric,
   getLatestPrinterMetrics,
   insertHubShipment,
