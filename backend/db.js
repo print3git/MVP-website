@@ -633,6 +633,19 @@ async function getHubSaturationSummary(date) {
   return rows;
 }
 
+async function listSpaces() {
+  const { rows } = await query('SELECT * FROM spaces ORDER BY id');
+  return rows;
+}
+
+async function createSpace(region, costCents, address) {
+  const { rows } = await query(
+    'INSERT INTO spaces(region, cost_cents, address) VALUES($1,$2,$3) RETURNING *',
+    [region, costCents, address]
+  );
+  return rows[0];
+}
+
 module.exports = {
   query,
   insertShare,
@@ -690,8 +703,13 @@ module.exports = {
   insertHubShipment,
   upsertOrderLocationSummary,
   getOrderLocationSummary,
+
+  listSpaces,
+  createSpace,
+
   upsertHubSaturationSummary,
   getHubSaturationSummary,
+
   // newly exposed helpers
   insertAdSpend,
   getAverageJobCompletionSeconds,
