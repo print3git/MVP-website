@@ -43,6 +43,7 @@
 
 - Offer an optional monthly "time capsule" print.
 - Add loyalty features to the account area.
+
   - Provide subscriber-only design previews.
   - Track consecutive weekly orders and badge streaks.
 
@@ -53,10 +54,6 @@
   - Reduce polygon count and lower texture resolution.
   - Compress geometry with Draco or Meshopt and convert textures to KTX2/Basis.
   - Export the optimized model and update the viewer `src` attribute.
-- Host the optimized model on a fast CDN or static server.
-  - Upload the file and configure CORS.
-- Send strong caching headers for the model and environment map.
-  - Use hashed filenames and long `max-age` values.
 - Use Level of Detail models, loading low poly first then swapping in higher quality.
 - Compress and preload the environment map.
 - Serve assets over HTTP/2 or HTTP/3.
@@ -75,8 +72,6 @@
 
 ## Fulfillment Capacity Forecasting
 
-- Compare demand to available printer capacity.
-- Alert via email when capacity is at risk.
 - Graph forecasted demand vs. capacity in the admin panel.
 
 ## Load Balancer & Routing
@@ -88,7 +83,6 @@
 
 ## Scaling Triggers & Procurement
 
-- Calculate average queue saturation per hub daily.
 - Generate purchase orders when saturation stays above threshold.
 - Email vendors with pre-filled printer order details.
 - Integrate vendor APIs to place orders automatically.
@@ -138,10 +132,7 @@
 
 ## Legal & Accounting Automation
 
-- Track revenue by country for tax calculations.
 - Compute VAT or GST owed per region.
-- Flag prohibited shipping destinations automatically.
-- Export monthly accounting data for the accountant.
 
 ## Marketplace & Licensing (Future)
 
@@ -194,9 +185,6 @@
 - Track completion of daily tasks per operator.
 - Flag missing tasks for review.
 
-## Physical Space Logistics
-
-_(completed tasks removed)_
 
 ## Printer Load Monitoring Enhancements
 

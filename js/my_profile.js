@@ -52,6 +52,29 @@ async function loadPrintOfWeek() {
   }
 }
 
+function startOfWeek(d = new Date()) {
+  const date = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+  const day = date.getUTCDay();
+  const diff = date.getUTCDate() - day;
+  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), diff));
+}
+
+function showCountdown() {
+  const el = document.getElementById('next-free-print');
+  if (!el) return;
+  const now = new Date();
+  const weekStart = startOfWeek(now);
+  const nextWeek = new Date(weekStart.getTime() + 7 * 24 * 60 * 60 * 1000);
+  const diff = nextWeek - now;
+  if (diff <= 0) {
+    el.textContent = '';
+    return;
+  }
+  const days = Math.floor(diff / (24 * 60 * 60 * 1000));
+  const hours = Math.floor((diff % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+  el.textContent = `Next free prints refresh in ${days}d ${hours}h`;
+}
+
 function createCard(model) {
   const div = document.createElement("div");
   div.className =
