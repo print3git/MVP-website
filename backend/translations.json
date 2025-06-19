@@ -1,0 +1,8 @@
+{
+  "gift_claim.subject": "You got a 3D print!",
+  "gift_claim.body": "Hi {{recipient}},\nYou've received a 3D print from {{sender}}! Click the link below to claim your gift and provide shipping details:\n{{claimUrl}}",
+  "gift_printing.subject": "Your gift is printing",
+  "gift_printing.body": "Good news! Your gift print is now being produced. We'll notify you once it's on the way.",
+  "gift_upsell.subject": "Send a gift back",
+  "gift_upsell.body": "We hope you loved your recent gift print! Did you know you can send a custom print back to the giver? Check out our models and surprise them."
+}
