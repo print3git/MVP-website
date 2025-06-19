@@ -7,3 +7,4 @@ payment.html
 dist
 build
 backend/generated_ads.json
+backend/server.js

@@ -24,6 +24,8 @@ jest.mock("../db", () => ({
   getUserIdForReferral: jest.fn(),
   getOrCreateOrderReferralLink: jest.fn(),
   insertReferredOrder: jest.fn(),
+  getSentGifts: jest.fn(),
+  getReceivedGifts: jest.fn(),
 }));
 const db = require("../db");
 
@@ -795,6 +797,36 @@ test("GET /api/my/orders returns orders", async () => {
 
 test("GET /api/my/orders requires auth", async () => {
   const res = await request(app).get("/api/my/orders");
+  expect(res.status).toBe(401);
+});
+
+test("GET /api/users/:id/gifts/sent returns list", async () => {
+  db.getSentGifts.mockResolvedValueOnce([{ id: "g1" }]);
+  const token = jwt.sign({ id: "u1" }, "secret");
+  const res = await request(app)
+    .get("/api/users/u1/gifts/sent")
+    .set("authorization", `Bearer ${token}`);
+  expect(res.status).toBe(200);
+  expect(res.body[0].id).toBe("g1");
+});
+
+test("GET /api/users/:id/gifts/sent requires auth", async () => {
+  const res = await request(app).get("/api/users/u1/gifts/sent");
+  expect(res.status).toBe(401);
+});
+
+test("GET /api/users/:id/gifts/received returns list", async () => {
+  db.getReceivedGifts.mockResolvedValueOnce([{ id: "g2" }]);
+  const token = jwt.sign({ id: "u1" }, "secret");
+  const res = await request(app)
+    .get("/api/users/u1/gifts/received")
+    .set("authorization", `Bearer ${token}`);
+  expect(res.status).toBe(200);
+  expect(res.body[0].id).toBe("g2");
+});
+
+test("GET /api/users/:id/gifts/received requires auth", async () => {
+  const res = await request(app).get("/api/users/u1/gifts/received");
   expect(res.status).toBe(401);
 });
 

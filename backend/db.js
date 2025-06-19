@@ -654,6 +654,29 @@ async function getHubSaturationSummary(date) {
   );
   return rows;
 }
+
+async function getSentGifts(userId) {
+  const { rows } = await query(
+    `SELECT id, order_id, recipient_email, message, shipping_info, etch_name, claimed_at, created_at
+       FROM gifts
+      WHERE sender_id=$1
+      ORDER BY created_at DESC`,
+    [userId],
+  );
+  return rows;
+}
+
+async function getReceivedGifts(userId) {
+  const { rows } = await query(
+    `SELECT g.id, g.order_id, g.sender_id, g.message, g.shipping_info, g.etch_name, g.claimed_at, g.created_at
+       FROM gifts g
+       JOIN users u ON g.recipient_email=u.email
+      WHERE u.id=$1
+      ORDER BY g.created_at DESC`,
+    [userId],
+  );
+  return rows;
+}
 //
 // async function listSpaces() {
 //   const { rows } = await query('SELECT * FROM spaces ORDER BY id');
@@ -725,6 +748,9 @@ module.exports = {
   insertHubShipment,
   upsertOrderLocationSummary,
   getOrderLocationSummary,
+
+  getSentGifts,
+  getReceivedGifts,
 
   // listSpaces,
   // createSpace,

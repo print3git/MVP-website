@@ -611,6 +611,30 @@ app.get("/api/my/orders", authRequired, async (req, res) => {
   }
 });
 
+app.get("/api/users/:id/gifts/sent", authRequired, async (req, res) => {
+  const userId = req.params.id;
+  if (req.user.id !== userId) return res.status(403).json({ error: "Forbidden" });
+  try {
+    const gifts = await db.getSentGifts(userId);
+    res.json(gifts);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: "Failed to fetch gifts" });
+  }
+});
+
+app.get("/api/users/:id/gifts/received", authRequired, async (req, res) => {
+  const userId = req.params.id;
+  if (req.user.id !== userId) return res.status(403).json({ error: "Forbidden" });
+  try {
+    const gifts = await db.getReceivedGifts(userId);
+    res.json(gifts);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: "Failed to fetch gifts" });
+  }
+});
+
 app.get("/api/commissions", authRequired, async (req, res) => {
   try {
     const { rows } = await db.query(

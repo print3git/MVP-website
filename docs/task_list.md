@@ -47,7 +47,6 @@
 
 ## AI Advert Generation
 
-
 ## Fulfillment Capacity Forecasting
 
 - Graph forecasted demand vs. capacity in the admin panel.
@@ -55,7 +54,6 @@
 ## Load Balancer & Routing
 
 ## Scaling Triggers & Procurement
-
 
 ## Hub Deployment Kit
 
@@ -189,7 +187,6 @@
   - POST `/gifts` to create gift orders and return a Stripe session id.
   - Handle Stripe webhook to insert gift rows when metadata flag is set.
   - POST `/gifts/:id/claim` for recipients to confirm shipping and personalisation.
-  - GET `/users/:id/gifts/sent` and `/received` for dashboard history.
   - Queue worker to start print job and send confirmations after claim.
   - POST `/referral/redeem` to credit the sender for follow-on purchases.
 - **Frontend components**
