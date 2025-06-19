@@ -1,0 +1,1 @@
+Your gift is waiting! Click {{ link }} to claim it and customize your print.
