@@ -17,11 +17,17 @@ const axios = require('axios');
 const FormData = require('form-data');
 const fs = require('fs');
 const config = require('./config');
+const prohibitedCountries = ['CU', 'IR', 'KP', 'RU', 'SY'];
 const generateTitle = require('./utils/generateTitle');
 const stripe = require('stripe')(config.stripeKey);
 const campaigns = require('./campaigns.json');
 const { initDailyPrintsSold, getDailyPrintsSold } = require('./utils/dailyPrints');
-const { enqueuePrint, processQueue, progressEmitter } = require('./queue/printQueue');
+const {
+  enqueuePrint,
+  processQueue,
+  progressEmitter,
+  COMPLETE_EVENT,
+} = require('./queue/printQueue');
 const { sendMail, sendTemplate } = require('./mail');
 const { getShippingEstimate } = require('./shipping');
 const {
@@ -60,6 +66,30 @@ try {
 } catch (err) {
   logError('Failed to load subreddit_models.json', err);
 }
+
+// Notify users when their print job completes
+progressEmitter.on(COMPLETE_EVENT, async ({ jobId }) => {
+  try {
+    const { rows } = await db.query(
+      `SELECT u.email
+         FROM orders o
+         JOIN users u ON o.user_id=u.id
+        WHERE o.job_id=$1
+        ORDER BY o.created_at ASC
+        LIMIT 1`,
+      [jobId]
+    );
+    if (rows.length) {
+      await sendMail(
+        rows[0].email,
+        'Print Finished',
+        `Your print for job ${jobId} has finished. We'll ship it soon!`,
+      );
+    }
+  } catch (err) {
+    logError('Failed to send completion email', err);
+  }
+});
 
 let competitionWinners = [];
 try {
@@ -1271,7 +1301,7 @@ app.post('/api/community', authRequired, async (req, res) => {
 });
 
 function buildGalleryQuery(orderBy) {
-  return `SELECT c.id, c.title, c.category, j.job_id, j.model_url, COALESCE(l.count,0) as likes
+  return `SELECT c.id, c.title, c.category, j.job_id, j.model_url, j.snapshot, COALESCE(l.count,0) as likes
           FROM community_creations c
           JOIN jobs j ON c.job_id=j.job_id
           LEFT JOIN (SELECT model_id, COUNT(*) as count FROM likes GROUP BY model_id) l
@@ -1351,7 +1381,7 @@ app.delete('/api/community/:id', authRequired, async (req, res) => {
 app.get('/api/community/model/:id', async (req, res) => {
   try {
     const { rows } = await db.query(
-      `SELECT c.id, c.title, c.category, j.job_id, j.model_url, j.prompt
+      `SELECT c.id, c.title, c.category, j.job_id, j.model_url, j.snapshot, j.prompt
        FROM community_creations c
        JOIN jobs j ON c.job_id=j.job_id
        WHERE c.id=$1`,
@@ -1773,6 +1803,29 @@ app.delete('/api/admin/flash-sale/:id', adminCheck, async (req, res) => {
   }
 });
 
+app.get('/api/admin/spaces', adminCheck, async (req, res) => {
+  try {
+    const spaces = await db.listAllSpaces();
+    res.json(spaces);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to fetch spaces' });
+  }
+});
+
+app.post('/api/admin/spaces', adminCheck, async (req, res) => {
+  const { region, costCents, address } = req.body || {};
+
+  if (!region || !address) return res.status(400).json({ error: 'Missing fields' });
+  try {
+    const space = await db.createSpace(region, costCents || null, address);
+    res.json(space);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to create space' });
+  }
+});
+
 app.get('/api/admin/hubs', adminCheck, async (req, res) => {
   try {
     const hubs = await db.listPrinterHubs();
@@ -1812,6 +1865,26 @@ app.post('/api/admin/hubs/:id/printers', adminCheck, async (req, res) => {
   }
 });
 
+app.put('/api/admin/hubs/:id', adminCheck, async (req, res) => {
+  const { location, operator } = req.body || {};
+  try {
+    const hub = await db.updatePrinterHub(req.params.id, location || null, operator || null);
+    res.json(hub);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to update hub' });
+  }
+});
+
+app.get('/api/admin/hubs/:id/shipments', adminCheck, async (req, res) => {
+  try {
+    const shipments = await db.getHubShipments(req.params.id);
+    res.json(shipments);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to fetch shipments' });
+  }
+});
 app.post('/api/admin/hubs/:id/shipments', adminCheck, async (req, res) => {
   const { carrier, trackingNumber, status } = req.body || {};
   if (!carrier || !trackingNumber) return res.status(400).json({ error: 'Missing fields' });
@@ -1826,6 +1899,47 @@ app.post('/api/admin/hubs/:id/shipments', adminCheck, async (req, res) => {
   } catch (err) {
     logError(err);
     res.status(500).json({ error: 'Failed to record shipment' });
+  }
+});
+app.get('/api/admin/spaces', adminCheck, async (_req, res) => {
+  try {
+    const spaces = await db.listSpaces();
+    res.json(spaces);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to fetch spaces' });
+  }
+});
+
+app.post('/api/admin/spaces', adminCheck, async (req, res) => {
+  const { region, costCents, address } = req.body || {};
+  try {
+    const space = await db.createSpace(region, costCents, address);
+    res.json(space);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to create space' });
+  }
+});
+
+app.get('/api/admin/spaces', adminCheck, async (req, res) => {
+  try {
+    const spaces = await db.listAllSpaces();
+    res.json(spaces);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to fetch spaces' });
+  }
+});
+
+app.post('/api/admin/spaces', adminCheck, async (req, res) => {
+  const { region, costCents, address } = req.body || {};
+  try {
+    const space = await db.createSpace(region || null, costCents || null, address || null);
+    res.json(space);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to create space' });
   }
 });
 
@@ -1929,6 +2043,36 @@ app.get('/api/admin/scaling-events', adminCheck, async (req, res) => {
   }
 });
 
+app.get('/api/admin/operations', adminCheck, async (req, res) => {
+  try {
+    const [hubs, metrics, avg] = await Promise.all([
+      db.listPrinterHubs(),
+      db.getLatestPrinterMetrics(),
+      db.getAverageJobCompletionSeconds(),
+    ]);
+    const metricsMap = {};
+    metrics.forEach((m) => {
+      metricsMap[m.printer_id] = m;
+    });
+    const result = [];
+    for (const hub of hubs) {
+      const printers = await db.getPrintersByHub(hub.id);
+      const printerMetrics = printers.map((p) => ({
+        serial: p.serial,
+        ...(metricsMap[p.id] || {}),
+      }));
+      const backlog = printerMetrics.reduce((sum, m) => sum + (m.queue_length || 0), 0);
+      const dailyCapacity = avg ? Math.round((86400 / avg) * printers.length) : null;
+      const errors = printerMetrics.filter((m) => m.error);
+      result.push({ id: hub.id, name: hub.name, backlog, dailyCapacity, errors });
+    }
+    res.json({ hubs: result });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to fetch operations' });
+  }
+});
+
 /**
  * POST /api/create-order
  * Create a Stripe Checkout session
@@ -1956,6 +2100,14 @@ app.post('/api/create-order', authOptional, async (req, res) => {
       }
       totalDiscount += row.amount_cents;
       discountCodeId = row.id;
+    }
+
+    if (
+      shippingInfo &&
+      shippingInfo.country &&
+      prohibitedCountries.includes(String(shippingInfo.country).toUpperCase())
+    ) {
+      return res.status(400).json({ error: 'Shipping destination not allowed' });
     }
 
     if (referrerId && (!req.user || referrerId !== req.user.id)) {

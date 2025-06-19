@@ -5,6 +5,7 @@
   "scripts": {
     "test": "jest",
     "test-ci": "jest --ci --maxWorkers=2 --detectOpenHandles --forceExit",
+    "coverage": "jest --ci --coverage --maxWorkers=2 --detectOpenHandles --forceExit && npx coverage-badges-cli --source coverage/coverage-summary.json --output coverage/badge.svg",
     "start": "node server.js",
     "init-db": "node scripts/init-db.js",
     "migrate": "node scripts/run-migrations.js",
@@ -20,7 +21,8 @@
     "generate-referral-qr": "node scripts/generate-referral-qr.js",
     "lint": "eslint . --max-warnings=0",
     "scaling-engine": "node scalingEngine.js",
-    "import-ad-spend": "node scripts/import-ad-spend.js"
+    "import-ad-spend": "node scripts/import-ad-spend.js",
+    "check-capacity": "node scripts/check-capacity.js"
   },
   "keywords": [],
   "author": "",
@@ -60,7 +62,11 @@
     "jsdom": "^26.1.0",
     "lighthouse": "^12.6.1",
     "prettier": "^3.1.0",
-    "supertest": "^7.1.1"
+
+    "supertest": "^7.1.1",
+    "htmlparser2": "^9.0.0",
+    "coverage-badges-cli": "^2.1.0"
+
   },
   "engines": {
     "node": ">=18"
