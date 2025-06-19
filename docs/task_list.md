@@ -86,8 +86,6 @@
 
 ## Legal & Accounting Automation
 
-- Compute VAT or GST owed per region.
-
 ## Marketplace & Licensing (Future)
 
 - Build designer submission portal for new models.
