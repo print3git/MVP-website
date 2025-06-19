@@ -59,6 +59,12 @@ jest.mock("../queue/printQueue", () => ({
   COMPLETE_EVENT: "complete",
 }));
 const { enqueuePrint } = require("../queue/printQueue");
+jest.mock("../queue/dbPrintQueue", () => ({ enqueuePrint: jest.fn() }));
+const { enqueuePrint: enqueueDbPrint } = require("../queue/dbPrintQueue");
+jest.mock("../printers/slicer", () =>
+  jest.fn().mockResolvedValue("/tmp/out.gcode"),
+);
+const sliceModel = require("../printers/slicer");
 
 jest.mock("../shipping", () => ({
   getShippingEstimate: jest.fn().mockResolvedValue({ cost: 10, etaDays: 5 }),
@@ -88,6 +94,8 @@ beforeEach(() => {
   sendMail.mockClear();
   axios.post.mockClear();
   enqueuePrint.mockClear();
+  enqueueDbPrint.mockClear();
+  sliceModel.mockClear();
   getShippingEstimate.mockClear();
   generateCaption.mockClear();
   db.ensureCurrentWeekCredits.mockClear();
@@ -275,7 +283,10 @@ test("POST /api/login returns token", async () => {
 test("Stripe webhook updates order and awards badge", async () => {
   db.query
     .mockResolvedValueOnce({})
-    .mockResolvedValueOnce({ rows: [{ job_id: "job1", user_id: "u1" }] })
+    .mockResolvedValueOnce({
+      rows: [{ job_id: "job1", user_id: "u1", shipping_info: { name: "A" } }],
+    })
+    .mockResolvedValueOnce({ rows: [{ model_url: "/tmp/model.stl" }] })
     .mockResolvedValueOnce({ rows: [{ count: "3" }] })
     .mockResolvedValueOnce({ rows: [] })
     .mockResolvedValueOnce({});
@@ -287,6 +298,13 @@ test("Stripe webhook updates order and awards badge", async () => {
     .send(payload);
   expect(res.status).toBe(200);
   expect(enqueuePrint).toHaveBeenCalledWith("job1");
+  expect(enqueueDbPrint).toHaveBeenCalledWith(
+    "job1",
+    "cs_test",
+    { name: "A" },
+    null,
+    "/tmp/out.gcode",
+  );
   const incentive = db.query.mock.calls.find((c) =>
     c[0].includes("INSERT INTO incentives"),
   );
