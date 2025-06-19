@@ -15,7 +15,7 @@ if (!PRICING_VARIANT) {
   PRICING_VARIANT = Math.random() < 0.5 ? 'A' : 'B';
   localStorage.setItem('pricingVariant', PRICING_VARIANT);
 }
-const PRINT_CLUB_PRICE = 7999;
+const PRINT_CLUB_PRICE = 14999;
 let selectedPrice = PRICES.multi;
 const SINGLE_BORDER_COLOR = '#60a5fa';
 const API_BASE = (window.API_ORIGIN || '') + '/api';
