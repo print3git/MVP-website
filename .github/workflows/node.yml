@@ -37,5 +37,8 @@ jobs:
       - run: npm run test-ci
         working-directory: backend
 
+      - run: npm run format
+        working-directory: backend
+
       - run: npx prettier --check "**/*.{js,jsx,json,md,html}"
         working-directory: backend

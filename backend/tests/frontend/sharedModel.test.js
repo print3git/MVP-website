@@ -16,7 +16,7 @@ function setup(url) {
   dom.window.eval(shareSrc);
   let script = fs
     .readFileSync(path.join(__dirname, '../../../js/sharedModel.js'), 'utf8')
-    .replace("import { shareOn } from './share.js';", '');
+    .replace(/import { shareOn } from ['"]\.\/share.js['"];?/, '');
   dom.window.eval(script);
   return dom;
 }
