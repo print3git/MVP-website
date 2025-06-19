@@ -1,0 +1,1 @@
+Hi {{username}},\n\nYour order {{order_id}} is taking longer than expected. We're sorry for the delay and will ship it as soon as possible.

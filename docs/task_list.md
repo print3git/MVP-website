@@ -135,7 +135,6 @@
 ## Customer Service Automation
 
 - Create a FAQ response bot for common queries.
-- Send automatic order status and delay notifications.
 - Issue goodwill coupons if service-level targets are missed.
 - Escalate unresolved tickets to the founders.
 
