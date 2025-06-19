@@ -1812,6 +1812,18 @@ app.post('/api/admin/hubs/:id/printers', adminCheck, async (req, res) => {
   }
 });
 
+app.get('/api/admin/printers/:id/stream', adminCheck, async (req, res) => {
+  try {
+    const printer = await db.getPrinter(req.params.id);
+    if (!printer) return res.status(404).json({ error: 'Not found' });
+    const streamUrl = `http://${printer.serial}.local:8080/stream`;
+    res.json({ streamUrl });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to fetch stream URL' });
+  }
+});
+
 app.post('/api/admin/hubs/:id/shipments', adminCheck, async (req, res) => {
   const { carrier, trackingNumber, status } = req.body || {};
   if (!carrier || !trackingNumber) return res.status(400).json({ error: 'Missing fields' });
@@ -1826,6 +1838,29 @@ app.post('/api/admin/hubs/:id/shipments', adminCheck, async (req, res) => {
   } catch (err) {
     logError(err);
     res.status(500).json({ error: 'Failed to record shipment' });
+  }
+});
+
+app.get('/api/admin/spaces', adminCheck, async (req, res) => {
+  try {
+    const spaces = await db.listSpaces();
+    res.json(spaces);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to fetch spaces' });
+  }
+});
+
+app.post('/api/admin/spaces', adminCheck, async (req, res) => {
+  const { region, costCents, address } = req.body || {};
+  if (!region || costCents == null || !address)
+    return res.status(400).json({ error: 'Missing fields' });
+  try {
+    const space = await db.createSpace(region, costCents, address);
+    res.json(space);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to create space' });
   }
 });
 

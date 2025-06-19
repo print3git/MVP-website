@@ -120,10 +120,8 @@
 
 ## Printer Monitoring & Maintenance
 
-- Stream camera feeds for all printers.
 - Detect failed prints via computer vision and trigger reprints.
 - Log maintenance events and schedule nozzle swaps.
-- Alert when a printer's failure rate rises above threshold.
 
 ## Packaging Automation
 
@@ -196,7 +194,6 @@
 - Allow assigning operators to hubs through the dashboard.
 - Track completion of daily tasks per operator.
 - Flag missing tasks for review.
-
 
 ## Printer Load Monitoring Enhancements
 
