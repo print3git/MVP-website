@@ -33,6 +33,11 @@ const { Client } = require('pg');
         '00000000-0000-0000-0000-000000000000',
       ]
     );
+    await client.query(
+      `INSERT INTO gifts(order_id, sender_id, recipient_email, message, model_id, claim_token)
+       VALUES('seed', '00000000-0000-0000-0000-000000000000', 'test@example.com', 'Enjoy!', '00000000-0000-0000-0000-000000000000', 'seed-token')
+       ON CONFLICT DO NOTHING`
+    );
     // Seed data inserted
   } finally {
     await client.end();

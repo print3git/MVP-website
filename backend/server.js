@@ -21,6 +21,13 @@ const prohibitedCountries = ["CU", "IR", "KP", "RU", "SY"];
 const generateTitle = require("./utils/generateTitle");
 const stripe = require("stripe")(config.stripeKey);
 const campaigns = require("./campaigns.json");
+const internalIPs = (process.env.INTERNAL_IPS || "127.0.0.1").split(",").filter(Boolean);
+
+function giftsAllowed(req) {
+  if (process.env.GIFTS_ENABLED === "true") return true;
+  const ip = req.ip.replace("::ffff:", "");
+  return internalIPs.includes(ip);
+}
 const {
   initDailyPrintsSold,
   getDailyPrintsSold,
@@ -1069,6 +1076,8 @@ app.post("/api/rewards/redeem", authRequired, async (req, res) => {
 });
 
 app.post("/api/gifts/:id/claim", async (req, res) => {
+  if (!giftsAllowed(req))
+    return res.status(403).json({ error: "Gifting not enabled" });
   const { id } = req.params;
   try {
     const giftRes = await db.query(
