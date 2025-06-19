@@ -5,17 +5,6 @@
 - Use retargeting pixels to bring back visitors who left.
 - Include a clear value proposition and call-to-action in each ad.
 
-## Analytics & Attribution
-
-- Create `ad_clicks` table with columns `id`, `subreddit`, `session_id`, and `timestamp`.
-- Add POST `/api/track/ad-click` to insert a row when a visitor arrives with an `sr` parameter.
-- Create `cart_events` table storing `id`, `session_id`, `model_id`, `subreddit`, and `timestamp`.
-- Record Add to Cart actions via POST `/api/track/cart`.
-- Create `checkout_events` table with `id`, `session_id`, `subreddit`, `step`, and `timestamp`.
-- Log events for checkout start and completion through POST `/api/track/checkout`.
-- Implement GET `/api/metrics/conversion` to compute CTR, ATC, and checkout rates per subreddit.
-- Add unit tests for the new endpoints and database logic.
-
 ## Purchase & Checkout
 
 - Offer multiple payment methods including Apple Pay and Google Pay.
@@ -50,56 +39,16 @@
 - Add real photo of printed object or user-generated image to hero section to reinforce the physical product.
 - Display pricing info near the prompt field such as "From $X / print" to reduce hesitation.
 
-
-
-## Post-Purchase Referral Engine
-
-- Reward £5 off the next order when users post their print online and tag us.
-  - Verify the tag before issuing the discount.
-- Place a QR code in each package linking to the referral page.
-
-## Subscription Service
-
-- Require prints to be redeemed in pairs and reset credits weekly without rollover.
-  - Block checkout unless the quantity is even when paying with credits.
-  - Add `weekly-reset.js` script to allocate new credits each Monday.
-  - Schedule `npm run reset-credits` via cron.
-- Send monthly reminder emails to subscribers encouraging them to use remaining prints.
-  - Create `email_templates/reminder.txt` with a short message.
-  - Implement `scripts/send-printclub-reminders.js` to dispatch the emails.
-- Track sign‑ups and churn; A/B test pricing (£140 vs £160) and monitor ARPU.
-  - Record join and cancel events in a new `subscription_events` table.
-  - Add admin endpoint to report active members and churn.
-  - Randomly assign visitors to pricing variants and store which one they saw.
-- Offer a first‑month discount or referral credit to incentivize new subscribers.
-  - Apply a one-time 10% discount when a referral code is present.
-  - Display the discounted price on the sign-up form.
-
-
 ## Repeat Purchase Incentives
-  - Award a badge when someone purchases three times in a month.
-  - Offer an optional monthly "time capsule" print.
-  - Showcase other users' creations for inspiration.
+
+- Award a badge when someone purchases three times in a month.
+- Offer an optional monthly "time capsule" print.
+- Showcase other users' creations for inspiration.
 - Add loyalty features to the account area.
   - Highlight a "Print of the week" for quick purchase.
   - For subscribers, show a countdown to their next free print.
   - Provide subscriber-only design previews.
   - Track consecutive weekly orders and badge streaks.
-## Mailing List Automation
-- Add unit tests for confirm, webhook handling and sync logic.
-## Competitions Profit Drivers
-
-  - Add a "Buy Print" button below each winning model in `competitions.html`.
-  - Pre-fill `print3Model` and `print3JobId` in local storage when the button is clicked.
-- Offer a discount for printing your competition entry.
-  - Generate a one-time code after an entry is submitted.
-  - Display the code in the success message.
-- Add "Order Print" button under each past winner card on the competitions page.
-  - When clicked, open the model modal with the winner's model and job ID.
-  - Save the model ID to localStorage when proceeding to checkout.
-- After a user enters a competition, display a one-time discount code for printing their entry.
-  - Provide `/api/competitions/:id/discount` endpoint to generate and return the code.
-- Create a "Trending Prints" section at the bottom that fetches models from `/api/trending` and shows Add to Basket buttons.
 
 ## Competitions Engagement
 
@@ -137,31 +86,6 @@
 - Compress and preload the environment map.
 - Serve assets over HTTP/2 or HTTP/3.
 - Measure load times with Lighthouse or real browser tests and track improvements.
-
-## Social Sharing
-
-- Add share icons to the library page.
-  - Reuse the five-button block from `index.html` in `library.html` and load `share.js`.
-- Expand `share.html` with the full set of networks.
-  - Include Reddit, TikTok and Instagram buttons.
-  - Add a "Copy Link" button using `navigator.clipboard`.
-- Serve model snapshots when sharing.
-  - Update `/shared/:slug` to return the `snapshot` from `jobs` and use it for `og:image`.
-  - Display the snapshot while the model loads in `share.html`.
-- Track share button usage.
-  - Create a `share_events` table with columns `share_id`, `network` and `timestamp`.
-  - POST `/api/track/share` from `share.js` whenever a button is clicked.
-  - Add a unit test verifying share events are recorded.
-- Add UTM parameters to all ad URLs.
-- Capture UTM parameters in the session on landing.
-- Store UTM and subreddit values with each order.
-- Log page view, add to cart, and purchase events with session IDs.
-- Pull daily spend and impressions from the Reddit Ads API.
-- Compute views, CTR, add-to-cart rate, and checkout rate per subreddit.
-- Record cost of goods sold for each pricing tier.
-- Calculate profit per order and CAC metrics.
-- Display aggregated profit by subreddit in an admin dashboard.
-- Add unit tests covering profit calculations and data import.
 
 ## Autonomous 3D Printing
 
@@ -238,13 +162,6 @@
 - Send automatic order status and delay notifications.
 - Issue goodwill coupons if service-level targets are missed.
 - Escalate unresolved tickets to the founders.
-
-## Viral Referral System
-
-- Generate referral links for each purchase.
-- Record referred orders and credit rewards.
-- Prompt customers to share photos with pre-filled captions.
-- Auto-moderate shared content for policy violations.
 
 ## Legal & Accounting Automation
 
