@@ -9,19 +9,6 @@
 
 - Offer multiple payment methods including Apple Pay and Google Pay.
 
-## User Experience & Accessibility
-
-- Ensure accessibility with ARIA labels and contrast.
-  - Audit pages for missing labels.
-  - Fix color contrast issues.
-- Optimize API requests to reduce loading time on slow networks.
-
-  - Bundle multiple requests where possible.
-
-- Save user preferences such as units or color scheme.
-  - Persist preferences to local storage.
-  - Apply them on page load.
-
 ## Creating urgency
 
 - Show dynamic "Only X left" or "Selling fast" notices.

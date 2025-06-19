@@ -1,3 +1,5 @@
+import { fetchWithCache } from './apiCache.js';
+
 const API_BASE = (window.API_ORIGIN || '') + '/api';
 
 async function loadProfile() {
@@ -6,11 +8,11 @@ async function loadProfile() {
     window.location.href = 'login.html';
     return;
   }
-  const res = await fetch(`${API_BASE}/me`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  if (!res.ok) return;
-  const data = await res.json();
+  const data = await fetchWithCache(
+    `${API_BASE}/me`,
+    { headers: { Authorization: `Bearer ${token}` } },
+    'me'
+  );
   document.getElementById('mp-username').textContent = data.username;
   document.getElementById('mp-email').textContent = data.email;
   const displayEl = document.getElementById('mp-display');
@@ -21,11 +23,11 @@ async function loadSubscription() {
   const token = localStorage.getItem('token');
   if (!token) return;
   try {
-    const resp = await fetch(`${API_BASE}/subscription/summary`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!resp.ok) return;
-    const { subscription: sub, credits } = await resp.json();
+    const { subscription: sub, credits } = await fetchWithCache(
+      `${API_BASE}/subscription/summary`,
+      { headers: { Authorization: `Bearer ${token}` } },
+      'subscription-summary'
+    );
     const container = document.getElementById('subscription-progress');
     const manage = document.getElementById('manage-subscription');
     if (!sub || sub.active === false || sub.status === 'canceled') {
