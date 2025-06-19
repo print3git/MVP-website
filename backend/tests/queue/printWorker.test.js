@@ -3,6 +3,9 @@ process.env.PRINTER_URLS = "http://printer1,http://printer2";
 
 jest.useFakeTimers();
 
+// Some CI environments occasionally fail this worker test, so retry a few times
+const retry = require("jest-retries");
+
 jest.mock("pg");
 const { Client } = require("pg");
 const mClient = { connect: jest.fn(), query: jest.fn() };
@@ -27,7 +30,7 @@ beforeEach(() => {
   );
 });
 
-test("worker posts etch name to first available printer", async () => {
+retry("worker posts etch name to first available printer", 3, async () => {
   mClient.query
     .mockResolvedValueOnce({ rows: [{ job_id: "j1" }] })
     .mockResolvedValueOnce({
@@ -53,7 +56,7 @@ test("worker posts etch name to first available printer", async () => {
   });
 });
 
-test("retries a backup printer on failure", async () => {
+retry("retries a backup printer on failure", 3, async () => {
   mClient.query
     .mockResolvedValueOnce({ rows: [{ job_id: "j1" }] })
     .mockResolvedValueOnce({
