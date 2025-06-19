@@ -63,11 +63,6 @@
 
 ## Load Balancer & Routing
 
-- Route new orders to the nearest hub based on customer location.
-- Consider printer queue length and health when routing jobs.
-- Overflow excess prints to secondary hubs automatically.
-- Add unit tests verifying routing decisions.
-
 ## Scaling Triggers & Procurement
 
 - Generate purchase orders when saturation stays above threshold.

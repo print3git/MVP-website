@@ -2,6 +2,7 @@ require("dotenv").config();
 const { Client } = require("pg");
 const axios = require("axios");
 const { getPrinterStatus } = require("../printers/octoprint");
+const { selectHub } = require("../utils/routing");
 
 const DEFAULT_PRINTER_URL =
   process.env.PRINTER_API_URL || "http://localhost:5000/print";
@@ -38,6 +39,23 @@ async function findIdlePrinter(exclude = new Set()) {
   return null;
 }
 
+async function findIdlePrinterForHub(client, hubId, exclude = new Set()) {
+  const { rows } = await client.query(
+    "SELECT serial FROM printers WHERE hub_id=$1",
+    [hubId],
+  );
+  for (const { serial } of rows) {
+    if (exclude.has(serial)) continue;
+    try {
+      const status = await getPrinterStatus(serial, OCTOPRINT_API_KEY);
+      if (status === "idle") return serial;
+    } catch (_err) {
+      // ignore
+    }
+  }
+  return null;
+}
+
 async function processNextJob(client) {
   const jobId = await getNextPendingJob(client);
   if (!jobId) return;
@@ -53,7 +71,14 @@ async function processNextJob(client) {
 
   const { model_url: modelUrl, shipping_info: shipping, etch_name } = rows[0];
   const tried = new Set();
-  let printerUrl = await findIdlePrinter(tried);
+  let printerUrl = null;
+  const hub = await selectHub(client, shipping);
+  if (hub) {
+    printerUrl = await findIdlePrinterForHub(client, hub.id, tried);
+  }
+  if (!printerUrl) {
+    printerUrl = await findIdlePrinter(tried);
+  }
   while (printerUrl) {
     try {
       await axios.post(printerUrl, { modelUrl, shipping, etchName: etch_name });
@@ -83,7 +108,12 @@ async function processNextJob(client) {
       return;
     } catch (_err) {
       tried.add(printerUrl);
-      printerUrl = await findIdlePrinter(tried);
+      if (hub) {
+        printerUrl = await findIdlePrinterForHub(client, hub.id, tried);
+      }
+      if (!printerUrl) {
+        printerUrl = await findIdlePrinter(tried);
+      }
     }
   }
   await client.query("UPDATE jobs SET error=$1 WHERE job_id=$2", [

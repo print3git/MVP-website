@@ -485,21 +485,19 @@ async function createPrinterHub(name, location, operator) {
 async function listPrinterHubs() {
   const { rows } = await query("SELECT * FROM printer_hubs ORDER BY id");
 
-
   return rows;
 }
 
-async function createSpace(region, costCents, address) {
-  const { rows } = await query(
-    'INSERT INTO spaces(region, cost_cents, address) VALUES($1,$2,$3) RETURNING *',
-    [region, costCents, address]
-  );
-  return rows[0];
-}
+// async function createSpace(region, costCents, address) {
+//   const { rows } = await query(
+//     'INSERT INTO spaces(region, cost_cents, address) VALUES($1,$2,$3) RETURNING *',
+//     [region, costCents, address]
+//   );
+//   return rows[0];
+// }
 
 async function listAllSpaces() {
-  const { rows } = await query('SELECT * FROM spaces ORDER BY id');
-
+  const { rows } = await query("SELECT * FROM spaces ORDER BY id");
 
   return rows;
 }
@@ -583,18 +581,18 @@ async function insertHubShipment(hubId, carrier, trackingNumber, status) {
   return rows[0];
 }
 
-async function createSpace(region, costCents, address) {
-  const { rows } = await query(
-    'INSERT INTO spaces(region, cost_cents, address) VALUES($1,$2,$3) RETURNING *',
-    [region, costCents, address]
-  );
-  return rows[0];
-}
-
-async function listSpaces() {
-  const { rows } = await query('SELECT * FROM spaces ORDER BY id');
-  return rows;
-}
+// async function createSpace(region, costCents, address) {
+//   const { rows } = await query(
+//     'INSERT INTO spaces(region, cost_cents, address) VALUES($1,$2,$3) RETURNING *',
+//     [region, costCents, address]
+//   );
+//   return rows[0];
+// }
+//
+// async function listSpaces() {
+//   const { rows } = await query('SELECT * FROM spaces ORDER BY id');
+//   return rows;
+// }
 
 async function upsertOrderLocationSummary(date, state, count, hours) {
   const { rows } = await query(
@@ -633,7 +631,6 @@ async function getLowInventory() {
        FROM hub_inventory i
        JOIN printer_hubs h ON i.hub_id=h.id
       WHERE i.quantity < i.threshold`,
-
   );
   return rows;
 }
@@ -657,19 +654,19 @@ async function getHubSaturationSummary(date) {
   );
   return rows;
 }
-
-async function listSpaces() {
-  const { rows } = await query('SELECT * FROM spaces ORDER BY id');
-  return rows;
-}
-
-async function createSpace(region, costCents, address) {
-  const { rows } = await query(
-    'INSERT INTO spaces(region, cost_cents, address) VALUES($1,$2,$3) RETURNING *',
-    [region, costCents, address]
-  );
-  return rows[0];
-}
+//
+// async function listSpaces() {
+//   const { rows } = await query('SELECT * FROM spaces ORDER BY id');
+//   return rows;
+// }
+//
+// async function createSpace(region, costCents, address) {
+//   const { rows } = await query(
+//     'INSERT INTO spaces(region, cost_cents, address) VALUES($1,$2,$3) RETURNING *',
+//     [region, costCents, address]
+//   );
+//   return rows[0];
+// }
 
 module.exports = {
   query,
@@ -714,8 +711,8 @@ module.exports = {
   getRewardOption,
   insertScalingEvent,
   getScalingEvents,
-  createSpace,
-  listSpaces,
+  // createSpace,
+  // listSpaces,
   listAllSpaces,
   createPrinterHub,
   listPrinterHubs,
@@ -729,8 +726,8 @@ module.exports = {
   upsertOrderLocationSummary,
   getOrderLocationSummary,
 
-  listSpaces,
-  createSpace,
+  // listSpaces,
+  // createSpace,
 
   upsertHubSaturationSummary,
   getHubSaturationSummary,
