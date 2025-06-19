@@ -1951,6 +1951,36 @@ app.get('/api/admin/scaling-events', adminCheck, async (req, res) => {
   }
 });
 
+app.get('/api/admin/operations', adminCheck, async (req, res) => {
+  try {
+    const [hubs, metrics, avg] = await Promise.all([
+      db.listPrinterHubs(),
+      db.getLatestPrinterMetrics(),
+      db.getAverageJobCompletionSeconds(),
+    ]);
+    const metricsMap = {};
+    metrics.forEach((m) => {
+      metricsMap[m.printer_id] = m;
+    });
+    const result = [];
+    for (const hub of hubs) {
+      const printers = await db.getPrintersByHub(hub.id);
+      const printerMetrics = printers.map((p) => ({
+        serial: p.serial,
+        ...(metricsMap[p.id] || {}),
+      }));
+      const backlog = printerMetrics.reduce((sum, m) => sum + (m.queue_length || 0), 0);
+      const dailyCapacity = avg ? Math.round((86400 / avg) * printers.length) : null;
+      const errors = printerMetrics.filter((m) => m.error);
+      result.push({ id: hub.id, name: hub.name, backlog, dailyCapacity, errors });
+    }
+    res.json({ hubs: result });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to fetch operations' });
+  }
+});
+
 /**
  * POST /api/create-order
  * Create a Stripe Checkout session
