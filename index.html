@@ -133,7 +133,7 @@
         <div class="mt-1 flex flex-col text-sm text-gray-200 opacity-90">
           <p><span class="text-white">5400+</span> prints</p>
           <p>delivered already</p>
-          <p id="stats-ticker" class="text-[#30D5C8] text-left" style="min-height:2.5rem"></p>
+          <p id="stats-ticker" class="text-[#30D5C8] text-left" style="min-height: 2.5rem"></p>
         </div>
       </div>
 
@@ -165,7 +165,8 @@
           href="printclub.html"
           id="print-club-badge"
           class="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-3xl px-3 py-2 text-sm transition-shape"
-          >Print Club £140/mo</a>
+          >Print Club £79.99/mo</a
+        >
 
         <!-- social buttons -->
         <div class="flex space-x-2">
@@ -223,15 +224,17 @@
     <!-- simple hero with call-to-action -->
     <div id="hero" class="text-center py-12">
       <h1 class="text-4xl font-semibold mb-4">Turn ideas into real 3D prints</h1>
-      <a href="#prompt-section" class="inline-block bg-cyan-400 text-[#1A1A1D] font-semibold px-6 py-3 rounded-full shadow-md">Start Generating</a>
+      <a
+        href="#prompt-section"
+        class="inline-block bg-cyan-400 text-[#1A1A1D] font-semibold px-6 py-3 rounded-full shadow-md"
+        >Start Generating</a
+      >
     </div>
 
     <!-- ▸▸▸ MAIN --------------------------------------------------------- -->
     <main
       class="flex-1 flex flex-col items-center justify-start gap-8 px-4 lg:px-16"
-
       style="margin-top: -4rem"
-
     >
       <!-- 3-D preview ---------------------------------------------------- -->
       <div class="relative flex justify-center w-full max-w-lg">
@@ -283,21 +286,23 @@
               id="checkout-button"
               href="payment.html"
               class="font-bold py-2 px-5 rounded-full shadow-md transition border-2 border-black"
-              style="background-color: #30D5C8; color: #1A1A1D"
+              style="background-color: #30d5c8; color: #1a1a1d"
               onmouseover="this.style.opacity='0.85'"
               onmouseout="this.style.opacity='1'"
             >
-              Print from £27.99 →
+              Print from £29.99 →
             </a>
           </div>
           <button
-            id="add-basket-button" aria-label="Add to basket"
+            id="add-basket-button"
+            aria-label="Add to basket"
             class="absolute bottom-4 left-4 font-bold py-2 px-4 rounded-full shadow-md bg-[#30D5C8] text-[#1A1A1D] border-2 border-black"
           >
             Add to Basket
           </button>
           <button
-            id="buy-now-button" aria-label="Buy now"
+            id="buy-now-button"
+            aria-label="Buy now"
             class="hidden absolute bottom-4 right-32 font-bold py-3 px-5 rounded-full shadow-md transition"
             style="background-color: #5ec2c5; color: #1f3b65"
           >
@@ -329,7 +334,9 @@
         class="absolute left-1/2 -translate-x-1/2 top-12 bg-[#2A2A2E] border border-white/10 rounded-xl p-3 text-sm shadow-lg hidden"
       >
         <p class="mb-2">Craft short prompts describing style and shape.</p>
-        <button id="prompt-tip-close" class="underline" aria-label="Dismiss prompt tip">Got it</button>
+        <button id="prompt-tip-close" class="underline" aria-label="Dismiss prompt tip">
+          Got it
+        </button>
       </div>
 
       <!-- ▸▸▸ PROMPT / UPLOAD AREA ------------------------------------- -->
@@ -363,7 +370,13 @@
 
           <!-- ▼▼  UPDATED BLOCK: drop-zone + preview side-by-side ▼▼ -->
           <div class="mt-4 w-full flex items-stretch gap-4">
-            <input type="file" id="uploadInput" aria-label="Upload image" accept="image/*" class="hidden" />
+            <input
+              type="file"
+              id="uploadInput"
+              aria-label="Upload image"
+              accept="image/*"
+              class="hidden"
+            />
 
             <!-- Drag-and-drop zone -->
             <div
@@ -426,9 +439,7 @@
 
       <div
         id="wizard-step-purchase"
-
         class="flex-1 text-center py-2 flex justify-center items-center pr-16"
-
       >
         <span id="wizard-slots" class="hidden text-[#30D5C8] mr-2 whitespace-nowrap"
           >Only 4 print slots remaining:</span
@@ -521,10 +532,16 @@
       <div class="bg-[#2A2A2E] p-6 rounded-xl max-w-sm text-center">
         <h2 class="text-2xl font-semibold mb-2">Print Club</h2>
         <p class="mb-4">
-          Get two prints every week for just £140/month. Unused credits expire weekly.
+          Get two prints every week for just £79.99/month. Unused credits expire weekly.
         </p>
 
-        <button id="printclub-close" class="mt-2 px-4 py-2 bg-blue-600 rounded-3xl" aria-label="Close Print Club modal">Close</button>
+        <button
+          id="printclub-close"
+          class="mt-2 px-4 py-2 bg-blue-600 rounded-3xl"
+          aria-label="Close Print Club modal"
+        >
+          Close
+        </button>
       </div>
     </div>
     <script>
