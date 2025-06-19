@@ -86,7 +86,6 @@
 
 ## Scaling Triggers & Procurement
 
-- Calculate average queue saturation per hub daily.
 - Generate purchase orders when saturation stays above threshold.
 - Email vendors with pre-filled printer order details.
 - Integrate vendor APIs to place orders automatically.
