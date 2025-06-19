@@ -11,6 +11,7 @@ const PRINTER_URLS = (process.env.PRINTER_URLS || DEFAULT_PRINTER_URL)
   .filter(Boolean);
 const OCTOPRINT_API_KEY = process.env.OCTOPRINT_API_KEY || "";
 const POLL_INTERVAL_MS = 5000;
+const FILAMENT_GRAMS = parseFloat(process.env.FILAMENT_GRAMS_PER_PRINT || "25");
 
 async function getNextPendingJob(client) {
   const { rows } = await client.query(
@@ -60,6 +61,25 @@ async function processNextJob(client) {
         "UPDATE jobs SET status=$1, error=NULL WHERE job_id=$2",
         ["sent", jobId],
       );
+      const { rows: printerRows } = await client.query(
+        "SELECT id, hub_id FROM printers WHERE serial=$1",
+        [printerUrl],
+      );
+      if (printerRows.length) {
+        const { id: printerId, hub_id: hubId } = printerRows[0];
+        await client.query(
+          "UPDATE print_jobs SET filament_used_g=$1, printer_id=$2 WHERE job_id=$3",
+          [FILAMENT_GRAMS, printerId, jobId],
+        );
+        await client.query(
+          "INSERT INTO hub_inventory(hub_id, material, quantity) VALUES($1,$2,0) ON CONFLICT (hub_id, material) DO NOTHING",
+          [hubId, "filament"],
+        );
+        await client.query(
+          "UPDATE hub_inventory SET quantity=quantity-$1 WHERE hub_id=$2 AND material=$3",
+          [FILAMENT_GRAMS, hubId, "filament"],
+        );
+      }
       return;
     } catch (_err) {
       tried.add(printerUrl);
