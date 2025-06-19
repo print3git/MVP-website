@@ -1776,7 +1776,7 @@ app.delete('/api/admin/flash-sale/:id', adminCheck, async (req, res) => {
 
 app.get('/api/admin/spaces', adminCheck, async (req, res) => {
   try {
-    const spaces = await db.listSpaces();
+    const spaces = await db.listAllSpaces();
     res.json(spaces);
   } catch (err) {
     logError(err);
@@ -1856,7 +1856,7 @@ app.post('/api/admin/hubs/:id/shipments', adminCheck, async (req, res) => {
 
 app.get('/api/admin/spaces', adminCheck, async (req, res) => {
   try {
-    const spaces = await db.listSpaces();
+    const spaces = await db.listAllSpaces();
     res.json(spaces);
   } catch (err) {
     logError(err);
