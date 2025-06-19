@@ -7,7 +7,7 @@ process.env.HUNYUAN_SERVER_URL = "http://localhost:4000";
 jest.mock("../db", () => ({
   query: jest.fn(),
   createSpace: jest.fn(),
-  listSpaces: jest.fn(),
+  listAllSpaces: jest.fn(),
 }));
 const db = require("../db");
 const request = require("supertest");
@@ -23,7 +23,7 @@ test("GET /api/admin/spaces requires admin", async () => {
 });
 
 test("GET /api/admin/spaces returns spaces", async () => {
-  db.listSpaces.mockResolvedValueOnce([{ id: 1, region: "east" }]);
+  db.listAllSpaces.mockResolvedValueOnce([{ id: 1, region: "east" }]);
   const res = await request(app)
     .get("/api/admin/spaces")
     .set("x-admin-token", "admin");
