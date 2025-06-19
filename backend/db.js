@@ -364,7 +364,7 @@ async function getScalingEvents(limit = 50) {
 
 async function getUserCreations(userId, limit = 10, offset = 0) {
   const { rows } = await query(
-    `SELECT c.id, c.title, c.category, j.job_id, j.model_url
+    `SELECT c.id, c.title, c.category, j.job_id, j.model_url, j.snapshot
      FROM community_creations c
      JOIN jobs j ON c.job_id=j.job_id
      WHERE c.user_id=$1
