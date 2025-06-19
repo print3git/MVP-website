@@ -28,11 +28,7 @@
 
 ## Repeat Purchase Incentives
 
-- Offer an optional monthly "time capsule" print.
-- Add loyalty features to the account area.
-
-  - Provide subscriber-only design previews.
-  - Track consecutive weekly orders and badge streaks.
+- Track consecutive weekly orders and badge streaks.
 
 ## 3D Model Loading Performance
 
