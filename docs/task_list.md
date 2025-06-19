@@ -249,7 +249,6 @@
   - Create GA4 funnel from gift CTA to recipient purchase.
   - Optimizely flag for testing gift checkout copy.
 - **Marketing automations**
-  - Post-checkout popup asking if the user wants to make it a gift.
   - Reminder email after 7 days if the gift isn’t claimed.
   - Referral coupon generated when a gift is claimed.
   - Social share card generator for gifted models.
