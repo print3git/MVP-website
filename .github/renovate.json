@@ -1,0 +1,13 @@
+{
+  "extends": ["config:base"],
+  "lockFileMaintenance": {
+    "enabled": true
+  },
+  "packageRules": [
+    {
+      "matchManagers": ["npm"],
+      "schedule": ["after 10pm every weekday", "before 5am every weekday"],
+      "stabilityDays": 1
+    }
+  ]
+}

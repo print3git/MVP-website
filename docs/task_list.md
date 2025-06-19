@@ -26,10 +26,6 @@
 - Add real photo of printed object or user-generated image to hero section to reinforce the physical product.
 - Display pricing info near the prompt field such as "From $X / print" to reduce hesitation.
 
-## Repeat Purchase Incentives
-
-- Track consecutive weekly orders and badge streaks.
-
 ## 3D Model Loading Performance
 
 - Optimize the `.glb` file used on `index.html` and `payment.html`.
@@ -87,8 +83,6 @@
 - Escalate unresolved tickets to the founders.
 
 ## Legal & Accounting Automation
-
-- Compute VAT or GST owed per region.
 
 ## Marketplace & Licensing (Future)
 
@@ -201,10 +195,6 @@
   - Define colour tokens `giftHighlight` and `giftAccent`.
   - Provide `gift.svg` and `arrow-send.svg` icons.
   - Microcopy: "We’ll email your friend a link to pick colours & delivery date (no address needed yet)."
-- **Analytics & experiments**
-  - Track gift CTA clicks, purchases and claims with latency.
-  - Create GA4 funnel from gift CTA to recipient purchase.
-  - Optimizely flag for testing gift checkout copy.
 - **Marketing automations**
 - **Legal & policy**
   - Update Terms of Service with gifting section and data use.

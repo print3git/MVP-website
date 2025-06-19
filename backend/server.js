@@ -2684,6 +2684,21 @@ app.post(
               );
             }
           }
+
+          const streak = await db.updateWeeklyOrderStreak(userId);
+          if (streak % 4 === 0) {
+            const type = `weekly_streak_${streak}`;
+            const { rows: existing } = await db.query(
+              "SELECT 1 FROM incentives WHERE user_id=$1 AND type=$2",
+              [userId, type],
+            );
+            if (existing.length === 0) {
+              await db.query(
+                "INSERT INTO incentives(user_id, type) VALUES($1,$2)",
+                [userId, type],
+              );
+            }
+          }
         }
       } catch (err) {
         logError(err);

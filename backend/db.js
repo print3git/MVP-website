@@ -188,6 +188,42 @@ async function insertReferredOrder(orderId, referrerId) {
     [orderId, referrerId],
   );
 }
+
+async function updateWeeklyOrderStreak(userId, date = new Date()) {
+  const week = startOfWeek(date);
+  const weekStr = week.toISOString().slice(0, 10);
+  const { rows } = await query(
+    "SELECT last_week_start, streak FROM order_streaks WHERE user_id=$1",
+    [userId],
+  );
+  if (rows.length === 0) {
+    await query(
+      "INSERT INTO order_streaks(user_id, last_week_start, streak) VALUES($1,$2,1)",
+      [userId, weekStr],
+    );
+    return 1;
+  }
+  const lastWeek = rows[0].last_week_start
+    ? new Date(rows[0].last_week_start)
+    : null;
+  let streak = rows[0].streak || 1;
+  if (rows[0].last_week_start === weekStr) {
+    return streak;
+  }
+  if (
+    lastWeek &&
+    week.getTime() - lastWeek.getTime() === 7 * 24 * 60 * 60 * 1000
+  ) {
+    streak += 1;
+  } else {
+    streak = 1;
+  }
+  await query(
+    "UPDATE order_streaks SET last_week_start=$2, streak=$3 WHERE user_id=$1",
+    [userId, weekStr, streak],
+  );
+  return streak;
+}
 async function insertAdClick(subreddit, sessionId) {
   await query(
     "INSERT INTO ad_clicks(subreddit, session_id, timestamp) VALUES($1,$2,NOW())",
@@ -710,6 +746,7 @@ module.exports = {
   ensureCurrentWeekCredits,
   getCurrentWeekCredits,
   incrementCreditsUsed,
+  updateWeeklyOrderStreak,
   getOrCreateReferralLink,
   getRewardPoints,
   adjustRewardPoints,

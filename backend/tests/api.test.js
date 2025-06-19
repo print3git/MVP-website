@@ -314,6 +314,30 @@ test("Stripe webhook updates order and awards badge", async () => {
   expect(incentive[1][1]).toMatch(/^three_orders_/);
 });
 
+test("Stripe webhook awards weekly streak badge", async () => {
+  db.query
+    .mockResolvedValueOnce({})
+    .mockResolvedValueOnce({
+      rows: [{ job_id: "job1", user_id: "u1", shipping_info: { name: "A" } }],
+    })
+    .mockResolvedValueOnce({ rows: [{ model_url: "/tmp/model.stl" }] })
+    .mockResolvedValueOnce({ rows: [{ count: "1" }] });
+  db.updateWeeklyOrderStreak.mockResolvedValueOnce(4);
+  db.query.mockResolvedValueOnce({ rows: [] }).mockResolvedValueOnce({});
+  const payload = JSON.stringify({});
+  const res = await request(app)
+    .post("/api/webhook/stripe")
+    .set("stripe-signature", "sig")
+    .set("Content-Type", "application/json")
+    .send(payload);
+  expect(res.status).toBe(200);
+  const incentiveCalls = db.query.mock.calls.filter((c) =>
+    c[0].includes("INSERT INTO incentives"),
+  );
+  const last = incentiveCalls[incentiveCalls.length - 1];
+  expect(last[1][1]).toBe("weekly_streak_4");
+});
+
 test("Stripe webhook invalid signature", async () => {
   jest.spyOn(console, "error").mockImplementation(() => {});
   stripeMock.webhooks.constructEvent.mockImplementation(() => {
