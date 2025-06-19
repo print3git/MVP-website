@@ -13,6 +13,18 @@ if (config.sendgridKey) {
   });
 }
 
+async function sendMailWithAttachment(to, subject, text, attachmentPath) {
+  if (!transporter) return;
+  const content = await fs.readFile(attachmentPath);
+  await transporter.sendMail({
+    from: config.emailFrom,
+    to,
+    subject,
+    text,
+    attachments: [{ filename: path.basename(attachmentPath), content }],
+  });
+}
+
 async function sendMail(to, subject, text) {
   if (!transporter) return;
   await transporter.sendMail({
@@ -44,4 +56,4 @@ async function sendTemplate(to, subject, templateName, data = {}) {
   });
 }
 
-module.exports = { sendMail, sendTemplate };
+module.exports = { sendMail, sendTemplate, sendMailWithAttachment };
