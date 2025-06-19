@@ -186,8 +186,6 @@
 
 ## Procurement Automation Enhancements
 
-- Generate purchase order PDFs with printer models and quantities.
-- Email vendors with shipping details for approval.
 - Track order acknowledgements and estimated arrival dates.
 - Update dashboard with shipping status for each order.
 - Flag overdue printer deliveries.
