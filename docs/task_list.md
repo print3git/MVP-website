@@ -101,9 +101,7 @@
 
 - Preconfigure printers with SD images and calibration files.
 - Bundle setup guides and monitoring scripts in each kit.
-- Build dashboard to assign operators and track shipments.
 - Automate camera and network configuration on arrival.
-- Record printer serial numbers and hub location.
 
 ## Operations Dashboard
 
@@ -196,7 +194,6 @@
 - Allow assigning operators to hubs through the dashboard.
 - Track completion of daily tasks per operator.
 - Flag missing tasks for review.
-
 
 ## Printer Load Monitoring Enhancements
 
