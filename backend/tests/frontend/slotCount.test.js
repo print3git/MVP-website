@@ -41,7 +41,7 @@ describe('slot count', () => {
     dom.window.fetch = jest.fn(() => Promise.resolve({ ok: true, json: () => ({ slots: 5 }) }));
     const scriptSrc = fs.readFileSync(path.join(__dirname, '../../../js/payment.js'), 'utf8');
     dom.window.eval(scriptSrc);
-    await new Promise((r) => setTimeout(r, 0));
+    await new Promise((r) => setTimeout(r, 50));
     expect(dom.window.document.getElementById('slot-count').textContent).toBe('4');
     expect(dom.window.document.getElementById('bulk-slot-count').textContent).toBe('4');
     expect(dom.window.localStorage.getItem('slotPurchases')).toBe('1');
@@ -60,7 +60,7 @@ describe('slot count', () => {
     dom.window.eval(scriptSrc);
     dom.window.localStorage.setItem('slotCycle', cycleKey());
     dom.window.localStorage.setItem('slotPurchases', '2');
-    await new Promise((r) => setTimeout(r, 0));
+    await new Promise((r) => setTimeout(r, 50));
     expect(dom.window.document.getElementById('slot-count').textContent).toBe('4');
     expect(dom.window.document.getElementById('bulk-slot-count').textContent).toBe('4');
   });
