@@ -154,9 +154,6 @@
 
 ## Inventory Monitoring & Restocking
 
-- Track filament usage per print and update hub inventory.
-- Monitor packaging supply levels (bags, boxes, labels).
-- Alert when any material drops below a threshold.
 - Auto-generate purchase orders for filament and packaging.
 - Integrate vendor API to place restock orders.
 - Display inventory dashboard showing stock and delivery ETA.

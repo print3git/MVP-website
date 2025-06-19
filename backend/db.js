@@ -485,6 +485,7 @@ async function createPrinterHub(name, location, operator) {
 async function listPrinterHubs() {
   const { rows } = await query("SELECT * FROM printer_hubs ORDER BY id");
 
+
   return rows;
 }
 
@@ -499,6 +500,7 @@ async function createSpace(region, costCents, address) {
 async function listAllSpaces() {
   const { rows } = await query('SELECT * FROM spaces ORDER BY id');
 
+
   return rows;
 }
 
@@ -507,6 +509,7 @@ async function addPrinter(serial, hubId) {
     "INSERT INTO printers(serial, hub_id) VALUES($1,$2) RETURNING *",
     [serial, hubId],
   );
+
   return rows[0];
 }
 
@@ -613,6 +616,28 @@ async function getOrderLocationSummary(date) {
   return rows;
 }
 
+async function adjustInventory(hubId, material, delta) {
+  await query(
+    "INSERT INTO hub_inventory(hub_id, material, quantity) VALUES($1,$2,0) ON CONFLICT (hub_id, material) DO NOTHING",
+    [hubId, material],
+  );
+  await query(
+    "UPDATE hub_inventory SET quantity = quantity + $1 WHERE hub_id=$2 AND material=$3",
+    [delta, hubId, material],
+  );
+}
+
+async function getLowInventory() {
+  const { rows } = await query(
+    `SELECT h.name, i.material, i.quantity, i.threshold
+       FROM hub_inventory i
+       JOIN printer_hubs h ON i.hub_id=h.id
+      WHERE i.quantity < i.threshold`,
+
+  );
+  return rows;
+}
+
 async function upsertHubSaturationSummary(date, hubId, saturation) {
   const { rows } = await query(
     `INSERT INTO hub_saturation_summary(summary_date, hub_id, avg_queue_saturation)
@@ -714,4 +739,6 @@ module.exports = {
   insertAdSpend,
   getAverageJobCompletionSeconds,
   getBusinessIntelligenceMetrics,
+  adjustInventory,
+  getLowInventory,
 };
