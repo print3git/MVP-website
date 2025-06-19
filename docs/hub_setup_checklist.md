@@ -18,6 +18,7 @@ This checklist outlines the recommended steps when deploying a new print hub.
 
    - Create the hub via the admin dashboard or `backend/scripts/register-hub.js`.
    - Note the generated hub ID for later use.
+   - Set the hub location and operator from the dashboard.
 
 4. **Auto-register printers**
 

@@ -232,6 +232,19 @@ test("create-order rejects unknown job", async () => {
   expect(res.status).toBe(404);
 });
 
+test("create-order rejects prohibited destination", async () => {
+  db.query.mockResolvedValueOnce({ rows: [{ job_id: "1", user_id: "u1" }] });
+  const res = await request(app)
+    .post("/api/create-order")
+    .send({
+      jobId: "1",
+      price: 100,
+      productType: "single",
+      shippingInfo: { country: "IR" },
+    });
+  expect(res.status).toBe(400);
+});
+
 test("POST /api/register returns token", async () => {
   db.query.mockResolvedValueOnce({ rows: [{ id: "u1", username: "alice" }] });
   const res = await request(app).post("/api/register").send({
