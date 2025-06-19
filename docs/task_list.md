@@ -9,19 +9,6 @@
 
 - Offer multiple payment methods including Apple Pay and Google Pay.
 
-## User Experience & Accessibility
-
-- Ensure accessibility with ARIA labels and contrast.
-  - Audit pages for missing labels.
-  - Fix color contrast issues.
-- Optimize API requests to reduce loading time on slow networks.
-
-  - Bundle multiple requests where possible.
-
-- Save user preferences such as units or color scheme.
-  - Persist preferences to local storage.
-  - Apply them on page load.
-
 ## Creating urgency
 
 - Show dynamic "Only X left" or "Selling fast" notices.
@@ -41,11 +28,7 @@
 
 ## Repeat Purchase Incentives
 
-- Offer an optional monthly "time capsule" print.
-- Add loyalty features to the account area.
-
-  - Provide subscriber-only design previews.
-  - Track consecutive weekly orders and badge streaks.
+- Track consecutive weekly orders and badge streaks.
 
 ## 3D Model Loading Performance
 
@@ -55,7 +38,6 @@
   - Compress geometry with Draco or Meshopt and convert textures to KTX2/Basis.
   - Export the optimized model and update the viewer `src` attribute.
 - Use Level of Detail models, loading low poly first then swapping in higher quality.
-- Compress and preload the environment map.
 - Serve assets over HTTP/2 or HTTP/3.
 - Measure load times with Lighthouse or real browser tests and track improvements.
 
@@ -74,25 +56,15 @@
 
 ## Load Balancer & Routing
 
-- Route new orders to the nearest hub based on customer location.
-- Consider printer queue length and health when routing jobs.
-- Overflow excess prints to secondary hubs automatically.
-- Add unit tests verifying routing decisions.
-
 ## Scaling Triggers & Procurement
 
-- Generate purchase orders when saturation stays above threshold.
-- Email vendors with pre-filled printer order details.
 - Integrate vendor APIs to place orders automatically.
-- Schedule new hub deployment when regional demand exceeds capacity.
 
 ## Hub Deployment Kit
 
 - Preconfigure printers with SD images and calibration files.
 - Bundle setup guides and monitoring scripts in each kit.
 - Automate camera and network configuration on arrival.
-
-## Operations Dashboard
 
 ## Business Intelligence
 
@@ -249,10 +221,6 @@
   - Create GA4 funnel from gift CTA to recipient purchase.
   - Optimizely flag for testing gift checkout copy.
 - **Marketing automations**
-  - Post-checkout popup asking if the user wants to make it a gift.
-  - Reminder email after 7 days if the gift isn’t claimed.
-  - Referral coupon generated when a gift is claimed.
-  - Social share card generator for gifted models.
 - **Legal & policy**
   - Update Terms of Service with gifting section and data use.
   - Update privacy policy with lawful basis and deletion timeline.

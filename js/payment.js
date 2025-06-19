@@ -389,7 +389,11 @@ async function initPaymentPage() {
   const subscriptionRadios = document.querySelectorAll(
     '#subscription-choice input[name="printclub"]'
   );
+  const timeCapsuleBox = document.getElementById('time-capsule');
   const priceSpan = document.getElementById('printclub-price');
+  if (timeCapsuleBox) {
+    timeCapsuleBox.checked = localStorage.getItem('timeCapsuleActive') === 'true';
+  }
   const hasReferral = Boolean(localStorage.getItem('referrerId'));
   if (priceSpan) {
     const first = (PRINT_CLUB_PRICE * 0.9) / 100;
@@ -855,6 +859,7 @@ async function initPaymentPage() {
         .trim();
     }
     const useCredit = document.getElementById('use-credit')?.checked;
+    const addTimeCapsule = document.getElementById('time-capsule')?.checked;
     const data = await createCheckout(
       qty,
       discount,
@@ -897,6 +902,10 @@ async function initPaymentPage() {
           price_cents: PRINT_CLUB_PRICE,
         }),
       });
+    }
+
+    if (addTimeCapsule) {
+      localStorage.setItem('timeCapsuleActive', 'true');
     }
   };
   window.payHandler = payHandler;
