@@ -49,10 +49,6 @@
   - Provide subscriber-only design previews.
   - Track consecutive weekly orders and badge streaks.
 
-## Competitions Engagement
-
-(All tasks complete)
-
 ## 3D Model Loading Performance
 
 - Optimize the `.glb` file used on `index.html` and `payment.html`.
