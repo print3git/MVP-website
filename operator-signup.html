@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Remote Operator Signup</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-[#1A1A1D] text-white font-sans flex flex-col min-h-screen">
+    <header class="relative flex items-center justify-between py-4 px-6">
+      <a
+        href="index.html"
+        class="bg-[#2A2A2E] border border-white/10 rounded-3xl px-4 py-2 hover:bg-[#3A3A3E] transition-shape"
+        >Back</a
+      >
+      <h1 class="text-2xl font-semibold">Remote Operator Signup</h1>
+      <span class="w-16"></span>
+    </header>
+    <main class="flex-1 p-4 space-y-4">
+      <form id="op-form" class="space-y-4">
+        <label class="block text-sm"
+          >Name
+          <input
+            id="op-name"
+            class="w-full mt-1 p-2 rounded bg-[#1A1A1D] border border-white/10"
+          />
+        </label>
+        <label class="block text-sm"
+          >Email
+          <input
+            id="op-email"
+            type="email"
+            class="w-full mt-1 p-2 rounded bg-[#1A1A1D] border border-white/10"
+          />
+        </label>
+        <div class="training space-y-2">
+          <p class="font-semibold">Training Checklist</p>
+          <label class="block"
+            ><input type="checkbox" /> Read safety manual</label
+          >
+          <label class="block"
+            ><input type="checkbox" /> Reviewed operating procedures</label
+          >
+          <label class="block"
+            ><input type="checkbox" /> Completed orientation call</label
+          >
+        </div>
+        <p id="op-error" class="text-red-500 text-sm"></p>
+        <button class="bg-[#30D5C8] text-[#1A1A1D] px-3 py-2 rounded">
+          Submit
+        </button>
+      </form>
+    </main>
+    <script type="module" src="js/operatorSignup.js"></script>
+  </body>
+</html>
