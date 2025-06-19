@@ -21,7 +21,12 @@ const generateTitle = require('./utils/generateTitle');
 const stripe = require('stripe')(config.stripeKey);
 const campaigns = require('./campaigns.json');
 const { initDailyPrintsSold, getDailyPrintsSold } = require('./utils/dailyPrints');
-const { enqueuePrint, processQueue, progressEmitter } = require('./queue/printQueue');
+const {
+  enqueuePrint,
+  processQueue,
+  progressEmitter,
+  COMPLETE_EVENT,
+} = require('./queue/printQueue');
 const { sendMail, sendTemplate } = require('./mail');
 const { getShippingEstimate } = require('./shipping');
 const {
@@ -60,6 +65,30 @@ try {
 } catch (err) {
   logError('Failed to load subreddit_models.json', err);
 }
+
+// Notify users when their print job completes
+progressEmitter.on(COMPLETE_EVENT, async ({ jobId }) => {
+  try {
+    const { rows } = await db.query(
+      `SELECT u.email
+         FROM orders o
+         JOIN users u ON o.user_id=u.id
+        WHERE o.job_id=$1
+        ORDER BY o.created_at ASC
+        LIMIT 1`,
+      [jobId]
+    );
+    if (rows.length) {
+      await sendMail(
+        rows[0].email,
+        'Print Finished',
+        `Your print for job ${jobId} has finished. We'll ship it soon!`,
+      );
+    }
+  } catch (err) {
+    logError('Failed to send completion email', err);
+  }
+});
 
 let competitionWinners = [];
 try {
@@ -1770,6 +1799,28 @@ app.delete('/api/admin/flash-sale/:id', adminCheck, async (req, res) => {
   } catch (err) {
     logError(err);
     res.status(500).json({ error: 'Failed to end sale' });
+  }
+});
+
+app.get('/api/admin/spaces', adminCheck, async (req, res) => {
+  try {
+    const spaces = await db.listSpaces();
+    res.json(spaces);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to fetch spaces' });
+  }
+});
+
+app.post('/api/admin/spaces', adminCheck, async (req, res) => {
+  const { region, costCents, address } = req.body || {};
+  if (!region || !address) return res.status(400).json({ error: 'Missing fields' });
+  try {
+    const space = await db.createSpace(region, costCents || null, address);
+    res.json(space);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: 'Failed to create space' });
   }
 });
 
