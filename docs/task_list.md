@@ -191,9 +191,6 @@
 
 ## Remote Operator Onboarding
 
-- Maintain a roster of approved remote operators.
-- Provide a standard training checklist on signup.
-- Allow assigning operators to hubs through the dashboard.
 - Track completion of daily tasks per operator.
 - Flag missing tasks for review.
 
