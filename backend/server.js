@@ -37,12 +37,11 @@ const {
   processQueue,
   progressEmitter,
   COMPLETE_EVENT,
-
-} = require('./queue/printQueue');
-const { enqueuePrint: enqueueDbPrint } = require('./queue/dbPrintQueue');
-const sliceModel = require('./printers/slicer');
-const { sendMail, sendTemplate } = require('./mail');
-const { getShippingEstimate } = require('./shipping');
+} = require("./queue/printQueue");
+const { enqueuePrint: enqueueDbPrint } = require("./queue/dbPrintQueue");
+const sliceModel = require("./printers/slicer");
+const { sendMail, sendTemplate } = require("./mail");
+const { getShippingEstimate } = require("./shipping");
 const {
   validateDiscountCode,
   getValidDiscountCode,
@@ -84,7 +83,9 @@ try {
 // Notify users when their print job completes
 progressEmitter.on(COMPLETE_EVENT, async ({ jobId }) => {
   try {
-    await db.query("UPDATE print_jobs SET status='complete' WHERE job_id=$1", [jobId]);
+    await db.query("UPDATE print_jobs SET status='complete' WHERE job_id=$1", [
+      jobId,
+    ]);
     const { rows } = await db.query(
       `SELECT u.email
          FROM orders o
@@ -2637,44 +2638,55 @@ app.post(
     const sig = req.headers["stripe-signature"];
     let event;
     try {
-      await db.query('UPDATE orders SET status=$1 WHERE session_id=$2', ['paid', sessionId]);
-
-      const { rows } = await db.query(
-        'SELECT job_id, user_id, shipping_info FROM orders WHERE session_id=$1',
-        [sessionId],
+      event = stripe.webhooks.constructEvent(
+        req.body,
+        sig,
+        config.stripeWebhook,
       );
-      const row = rows[0] || {};
-      const jobId = sessionJobId || row.job_id;
-      const userId = row.user_id;
-      const shippingInfo = row.shipping_info;
+    } catch (err) {
+      logError("Webhook Error", err);
+      return res.status(400).send(`Webhook Error: ${err.message}`);
+    }
 
-      if (jobId) {
-        let gcodePath = null;
-        try {
-          const { rows: modelRows } = await db.query(
-            'SELECT model_url FROM jobs WHERE job_id=$1',
-            [jobId],
-          );
-          if (modelRows.length && modelRows[0].model_url) {
-            gcodePath = await sliceModel(modelRows[0].model_url);
-          }
-        } catch (err) {
-          logError('Failed to slice model', err);
-        }
-        await enqueueDbPrint(jobId, sessionId, shippingInfo || {}, null, gcodePath);
-        enqueuePrint(jobId);
-        processQueue();
-      }
+    const sessionId = event.data.object.id;
+    const sessionJobId = event.data.object.metadata?.jobId;
+
+    if (event.type === "checkout.session.completed") {
+      try {
+        await db.query("UPDATE orders SET status=$1 WHERE session_id=$2", [
+          "paid",
+          sessionId,
+        ]);
 
         const { rows } = await db.query(
-          "SELECT job_id, user_id FROM orders WHERE session_id=$1",
+          "SELECT job_id, user_id, shipping_info FROM orders WHERE session_id=$1",
           [sessionId],
         );
         const row = rows[0] || {};
         const jobId = sessionJobId || row.job_id;
         const userId = row.user_id;
+        const shippingInfo = row.shipping_info;
 
         if (jobId) {
+          let gcodePath = null;
+          try {
+            const { rows: modelRows } = await db.query(
+              "SELECT model_url FROM jobs WHERE job_id=$1",
+              [jobId],
+            );
+            if (modelRows.length && modelRows[0].model_url) {
+              gcodePath = await sliceModel(modelRows[0].model_url);
+            }
+          } catch (err) {
+            logError("Failed to slice model", err);
+          }
+          await enqueueDbPrint(
+            jobId,
+            sessionId,
+            shippingInfo || {},
+            null,
+            gcodePath,
+          );
           enqueuePrint(jobId);
           processQueue();
         }
@@ -2746,21 +2758,25 @@ app.post(
   },
 );
 
-app.post('/api/webhook/printer-complete', async (req, res) => {
+app.post("/api/webhook/printer-complete", async (req, res) => {
   const { jobId } = req.body || {};
-  if (!jobId) return res.status(400).json({ error: 'Missing jobId' });
+  if (!jobId) return res.status(400).json({ error: "Missing jobId" });
   try {
-    await db.query("UPDATE print_jobs SET status='complete' WHERE job_id=$1", [jobId]);
+    await db.query("UPDATE print_jobs SET status='complete' WHERE job_id=$1", [
+      jobId,
+    ]);
     res.sendStatus(204);
   } catch (err) {
     logError(err);
-    res.status(500).json({ error: 'Failed to update status' });
+    res.status(500).json({ error: "Failed to update status" });
   }
 });
 
-app.get('/api/print-jobs/:id', async (req, res) => {
-  const { rows } = await db.query('SELECT status FROM print_jobs WHERE id=$1', [req.params.id]);
-  if (!rows.length) return res.status(404).json({ error: 'Not found' });
+app.get("/api/print-jobs/:id", async (req, res) => {
+  const { rows } = await db.query("SELECT status FROM print_jobs WHERE id=$1", [
+    req.params.id,
+  ]);
+  if (!rows.length) return res.status(404).json({ error: "Not found" });
   res.json(rows[0]);
 });
 
