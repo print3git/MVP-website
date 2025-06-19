@@ -398,10 +398,10 @@ const hideAll = () => {
     refs.viewer.pause();
   }
 };
-const showLoader = () => {
+const showLoader = (withProgress = true) => {
   hideAll();
   refs.loader.style.display = 'flex';
-  startProgress();
+  if (withProgress) startProgress();
 };
 const showModel = () => {
   hideAll();
@@ -707,7 +707,7 @@ async function init() {
   window.addEventListener('resize', syncUploadHeights);
   setStep('prompt');
   if (window.setWizardStage) window.setWizardStage('prompt');
-  showLoader();
+  showLoader(false);
   fetchCampaign();
   const initData = await fetchInitData();
   if (initData) {
