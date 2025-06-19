@@ -42,9 +42,8 @@
 ## Repeat Purchase Incentives
 
 - Offer an optional monthly "time capsule" print.
-- Showcase other users' creations for inspiration.
 - Add loyalty features to the account area.
-  - Highlight a "Print of the week" for quick purchase.
+
   - Provide subscriber-only design previews.
   - Track consecutive weekly orders and badge streaks.
 
@@ -73,8 +72,6 @@
 
 ## Fulfillment Capacity Forecasting
 
-- Compare demand to available printer capacity.
-- Alert via email when capacity is at risk.
 - Graph forecasted demand vs. capacity in the admin panel.
 
 ## Load Balancer & Routing
@@ -86,7 +83,6 @@
 
 ## Scaling Triggers & Procurement
 
-- Calculate average queue saturation per hub daily.
 - Generate purchase orders when saturation stays above threshold.
 - Email vendors with pre-filled printer order details.
 - Integrate vendor APIs to place orders automatically.
@@ -136,10 +132,7 @@
 
 ## Legal & Accounting Automation
 
-- Track revenue by country for tax calculations.
 - Compute VAT or GST owed per region.
-- Flag prohibited shipping destinations automatically.
-- Export monthly accounting data for the accountant.
 
 ## Marketplace & Licensing (Future)
 
