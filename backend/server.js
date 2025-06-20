@@ -194,8 +194,8 @@ function authRequired(req, res, next) {
 }
 
 app.post("/api/register", async (req, res) => {
-  const { username, displayName, email, password } = req.body;
-  if (!username || !displayName || !email || !password) {
+  const { username, email, password } = req.body;
+  if (!username || !email || !password) {
     return res.status(400).json({ error: "Missing fields" });
   }
   if (!isValidEmail(email)) {
@@ -209,7 +209,7 @@ app.post("/api/register", async (req, res) => {
     );
     await db.query(
       "INSERT INTO user_profiles(user_id, display_name) VALUES($1,$2)",
-      [rows[0].id, displayName],
+      [rows[0].id, username],
     );
     const mlToken = uuidv4();
     await db.upsertMailingListEntry(email, mlToken);
