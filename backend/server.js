@@ -151,7 +151,7 @@ const upload = multer({ dest: uploadsDir });
 
 const PORT = config.port;
 const FALLBACK_GLB =
-  "https://modelviewer.dev/shared-assets/models/RobotExpressive.glb";
+  "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
 
 function computePrintSlots(date = new Date()) {
   const dtf = new Intl.DateTimeFormat("en-US", {
