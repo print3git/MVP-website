@@ -258,7 +258,6 @@ test("POST /api/register returns token", async () => {
   db.query.mockResolvedValueOnce({ rows: [{ id: "u1", username: "alice" }] });
   const res = await request(app).post("/api/register").send({
     username: "alice",
-    displayName: "Alice",
     email: "a@a.com",
     password: "p",
   });
@@ -541,35 +540,27 @@ test("Admin create competition unauthorized", async () => {
 test("registration missing username", async () => {
   const res = await request(app)
     .post("/api/register")
-    .send({ displayName: "Alice", email: "a@a.com", password: "p" });
+    .send({ email: "a@a.com", password: "p" });
   expect(res.status).toBe(400);
 });
 
 test("registration missing email", async () => {
   const res = await request(app)
     .post("/api/register")
-    .send({ username: "a", displayName: "Alice", password: "p" });
+    .send({ username: "a", password: "p" });
   expect(res.status).toBe(400);
 });
 
 test("registration missing password", async () => {
   const res = await request(app)
     .post("/api/register")
-    .send({ username: "a", displayName: "Alice", email: "a@a.com" });
-  expect(res.status).toBe(400);
-});
-
-test("registration missing displayName", async () => {
-  const res = await request(app)
-    .post("/api/register")
-    .send({ username: "a", email: "a@a.com", password: "p" });
+    .send({ username: "a", email: "a@a.com" });
   expect(res.status).toBe(400);
 });
 
 test("registration invalid email", async () => {
   const res = await request(app).post("/api/register").send({
     username: "a",
-    displayName: "Alice",
     email: "invalid",
     password: "p",
   });
@@ -581,7 +572,6 @@ test("registration duplicate username", async () => {
   db.query.mockRejectedValueOnce(new Error("duplicate key"));
   const res = await request(app).post("/api/register").send({
     username: "a",
-    displayName: "Alice",
     email: "a@a.com",
     password: "p",
   });
