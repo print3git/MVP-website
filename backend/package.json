@@ -15,6 +15,7 @@
     "send-reminders": "node scripts/send-purchase-reminders.js",
     "send-followups": "node scripts/send-post-purchase-followups.js",
     "send-delay-notifications": "node scripts/send-delay-notifications.js",
+    "send-shipping-confirmations": "node scripts/send-shipping-confirmations.js",
     "reset-credits": "node scripts/weekly-reset.js",
     "send-printclub-reminders": "node scripts/send-printclub-reminders.js",
     "send-gift-reminders": "node scripts/send-gift-claim-reminders.js",
