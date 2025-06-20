@@ -45,11 +45,6 @@
 
 - Graph forecasted demand vs. capacity in the admin panel.
 
-## Load Balancer & Routing
-
-## Scaling Triggers & Procurement
-
-
 ## Hub Deployment Kit
 
 - Preconfigure printers with SD images and calibration files.
