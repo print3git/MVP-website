@@ -31,7 +31,11 @@
             stroke-width="2"
             viewBox="0 0 24 24"
           >
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M15 19l-7-7 7-7"
+            />
           </svg>
           Back
         </a>
@@ -90,22 +94,31 @@
       </div>
     </header>
     <main class="flex-1 flex items-center justify-center px-4">
-      <div class="max-w-lg text-center space-y-4">
-        <p class="text-lg">
-          Join Print Club for £149.99 per month to receive 2 prints (single or multicolour tiers) every week.
-        </p>
-        <p class="text-lg">
-          Members also get early access to new designs and exclusive promotions.
-        </p>
-        <a
-          href="payment.html?plan=printclub"
-          class="inline-block bg-[#30D5C8] text-[#1A1A1D] px-6 py-3 rounded-xl font-semibold hover:bg-[#28b7a8] transition"
-          >Subscribe Now</a
+      <div class="flex flex-col md:flex-row items-center md:items-start gap-8">
+        <div class="max-w-lg text-center md:text-left space-y-4">
+          <p class="text-lg">
+            Join Print Club for £149.99 per month to receive 2 prints (single or
+            multicolour tiers) every week.
+          </p>
+          <p class="text-lg">
+            Members also get early access to new designs and exclusive
+            promotions.
+          </p>
+          <a
+            href="payment.html?plan=printclub"
+            class="inline-block bg-[#30D5C8] text-[#1A1A1D] px-6 py-3 rounded-xl font-semibold hover:bg-[#28b7a8] transition"
+            >Subscribe Now</a
+          >
+        </div>
+        <div
+          class="w-64 h-64 border-2 border-dashed border-white/20 flex items-center justify-center text-sm"
         >
+          Real life image here
+        </div>
       </div>
     </main>
     <script type="module">
-      import { shareOn } from './js/share.js';
+      import { shareOn } from "./js/share.js";
       window.shareOn = shareOn;
     </script>
     <div
@@ -115,7 +128,8 @@
       <div class="bg-[#2A2A2E] p-6 rounded-xl max-w-sm text-center">
         <h2 class="text-2xl font-semibold mb-2">Print Club</h2>
         <p class="mb-4">
-          Get two prints (single or multicolour tiers) every week for £149.99/month.
+          Get two prints (single or multicolour tiers) every week for
+          £149.99/month.
         </p>
         <button
           id="printclub-close"
