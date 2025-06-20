@@ -1,0 +1,21 @@
+name: Weekly Operations Report
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+          cache-dependency-path: 'backend/package-lock.json'
+      - run: npm ci
+        working-directory: backend
+      - run: npm run send-ops-report
+        working-directory: backend
