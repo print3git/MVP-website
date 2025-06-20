@@ -6,4 +6,7 @@ payment.html
 # Build artifacts
 dist
 build
+coverage
+backend/coverage
+**/coverage/**
 backend/generated_ads.json
