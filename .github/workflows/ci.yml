@@ -16,6 +16,8 @@ jobs:
           node-version: 20
           cache: 'npm'
       - run: npm ci
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
       - name: Install backend dependencies
         run: npm ci --prefix backend
 
@@ -71,5 +73,8 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run: npx snyk test --severity-threshold=high --file=backend/hunyuan_server/package.json
+
+      - name: Run smoke tests
+        run: npm run e2e
 
       # ← you can add additional steps here, like your tests
