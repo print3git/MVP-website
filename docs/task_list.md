@@ -33,16 +33,13 @@
   - Reduce polygon count and lower texture resolution.
   - Compress geometry with Draco or Meshopt and convert textures to KTX2/Basis.
   - Export the optimized model and update the viewer `src` attribute.
-- Use Level of Detail models, loading low poly first then swapping in higher quality.
 - Serve assets over HTTP/2 or HTTP/3.
-- Measure load times with Lighthouse or real browser tests and track improvements.
 
 ## Autonomous 3D Printing
 
 - Notify operator when a printer requires manual clearing.
 
 ## AI Advert Generation
-
 
 ## Fulfillment Capacity Forecasting
 
@@ -51,7 +48,6 @@
 ## Load Balancer & Routing
 
 ## Scaling Triggers & Procurement
-
 
 ## Hub Deployment Kit
 

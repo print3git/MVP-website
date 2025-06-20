@@ -5,6 +5,7 @@ let stripe = null;
 // Use a bundled copy of the astronaut model so the payment page works offline
 // and is not dependent on external CDNs.
 const FALLBACK_GLB = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
+const LOW_POLY_GLB = 'https://modelviewer.dev/shared-assets/models/RobotExpressive.glb';
 const PRICES = {
   single: 2999,
   multi: 3999,
@@ -686,8 +687,21 @@ async function initPaymentPage() {
   }
 
   loader.hidden = false;
-  // Assign the model source only after the load/error listeners are in place
-  viewer.src = localStorage.getItem('print3Model') || FALLBACK_GLB;
+
+  let hiStart = null;
+  const handleLoad = () => {
+    if (viewer.src === LOW_POLY_GLB) {
+      hiStart = performance.now();
+      viewer.src = localStorage.getItem('print3Model') || FALLBACK_GLB;
+    } else if (viewer.src === FALLBACK_GLB && hiStart !== null) {
+      const t = Math.round(performance.now() - hiStart);
+      console.log('Model load time', t, 'ms');
+      localStorage.setItem('print3Model', FALLBACK_GLB);
+      viewer.removeEventListener('load', handleLoad);
+    }
+  };
+  viewer.addEventListener('load', handleLoad);
+  viewer.src = LOW_POLY_GLB;
 
   // Hide the overlay if nothing happens after a short delay
   setTimeout(hideLoader, 7000);
