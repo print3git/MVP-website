@@ -123,16 +123,10 @@
       <h2 class="text-2xl">Active Competitions</h2>
       <h3 id="current-theme" class="text-lg text-[#30D5C8] mt-1"></h3>
       <div id="list" class="space-y-4"></div>
-      <form id="comp-subscribe" class="flex space-x-2 mt-4 max-w-sm">
-        <input
-          type="email"
-          id="comp-email"
-          class="flex-1 bg-[#1A1A1D] border border-white/10 rounded px-2"
-          placeholder="Email for updates"
-          aria-label="Email address"
-        />
-        <button class="bg-[#30D5C8] text-[#1A1A1D] px-3 rounded">Subscribe</button>
-      </form>
+      <p class="mt-4">
+        <a href="signup.html" class="font-bold text-[#30D5C8]">Sign Up</a>
+        to hear when competitions/prizes are available.
+      </p>
       <div id="comp-subscribe-msg" class="text-sm"></div>
       <div id="entry-success" class="hidden text-green-400 mt-2"></div>
       <h2 class="text-2xl mt-8">Past Winners</h2>
@@ -408,18 +402,18 @@
       <div class="bg-[#2A2A2E] p-6 rounded-xl max-w-sm text-center">
         <h2 class="text-2xl font-semibold mb-2">Print Club</h2>
         <p class="mb-4">
-          Get two prints (single or multicolour tiers) every week for £149.99/month. Unused credits expire weekly.
+          Get two prints (single or multicolour tiers) every week for £149.99/month.
         </p>
-        <div class="mt-4 flex justify-center space-x-2">
+        <div class="mt-4 grid grid-cols-4 gap-2 w-full">
           <a
             href="printclub.html"
             id="printclub-learn"
-            class="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-3xl px-3 py-2 text-sm transition-shape"
+            class="col-span-3 flex items-center justify-center bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-3xl px-3 py-2 text-sm transition-shape"
             >Learn More</a
           >
           <button
             id="printclub-close"
-            class="inline-flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-3xl px-5 py-2 text-lg font-medium hover:bg-[#3A3A3E] transition-shape"
+            class="col-span-1 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-3xl px-4 py-2 text-lg font-medium hover:bg-[#3A3A3E] transition-shape"
             aria-label="Close Print Club modal"
           >
             Close

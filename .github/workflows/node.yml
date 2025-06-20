@@ -39,6 +39,9 @@ jobs:
       - run: npm run format
         working-directory: backend
 
+      - name: Check bundle size
+        run: npm run bundle:size
+
       - run: npx prettier --check "**/*.{js,jsx,json,md,html}"
         working-directory: backend
 
