@@ -35,8 +35,6 @@ Measure load times with Lighthouse or real browser tests and track improvements.
 
 ## Fulfillment Capacity Forecasting
 
-- Graph forecasted demand vs. capacity in the admin panel.
-
 
 ## Hub Deployment Kit
 
