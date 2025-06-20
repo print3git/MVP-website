@@ -7,3 +7,4 @@ backend/hunyuan_server/uploads/
 .DS_Store
 reports/
 backend/coverage/
+coverage/
