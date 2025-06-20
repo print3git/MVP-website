@@ -72,10 +72,39 @@
 
 ## Operator Management
 
-- Provide secure login for remote operators.
-- Display daily task checklists per hub.
-- Record start and end times for each shift.
-- Alert founders if tasks remain incomplete.
+- **Secure login for remote operators**
+
+  - Add `/operator/login` page with username and password fields.
+  - Hash passwords with bcrypt and store them securely.
+  - Issue JWT tokens in HTTP-only cookies.
+  - Throttle login attempts.
+  - Provide password reset workflow.
+
+- **Daily task checklists per hub**
+
+  - Create `operator_tasks` table with hub and date columns.
+  - API `GET /hubs/:id/tasks/today` returns tasks for that hub.
+  - Show tasks with checkboxes in the operator dashboard.
+  - Mark tasks complete via `POST /tasks/:id/complete`.
+  - Summarise hub progress in the admin dashboard.
+
+- **Shift tracking**
+
+  - Add `shifts` table storing operator, hub, start and end times.
+  - Start shift timer on login or manual "Start shift".
+  - End shift on logout or manual "End shift".
+  - Display shift history and total hours per operator.
+
+- **Alerts for incomplete tasks**
+
+  - Nightly job checks for tasks not completed by shift end.
+  - Send Slack or email alerts to founders.
+  - Show unresolved tasks in the admin panel.
+
+- **Additional safeguards**
+  - Implement optional two-factor authentication for operators.
+  - Log login attempts and task completions for auditing.
+  - Provide interface to schedule future operator shifts.
 
 ## Printer Control & Recovery
 
