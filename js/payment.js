@@ -31,7 +31,6 @@ const SEASONAL_BUNDLES = [
     name: 'Winter Wonderland Bundle',
     detail: 'Free snowman stand with gift prints',
   },
-  { name: 'Spring Bloom Bundle', detail: 'Includes floral gift wrap' },
   { name: 'Summer Fun Bundle', detail: 'Beach-themed gift card included' },
   { name: 'Autumn Harvest Bundle', detail: 'Leaf pattern gift wrap' },
 ];
