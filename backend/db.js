@@ -258,6 +258,13 @@ async function insertPageView(
   );
 }
 
+async function insertPixelEvent(sessionId, ip, referrer, campaign) {
+  await query(
+    "INSERT INTO pixel_events(session_id, ip, referrer, campaign) VALUES($1,$2,$3,$4)",
+    [sessionId, ip, referrer, campaign],
+  );
+}
+
 async function insertSubscriptionEvent(userId, event, variant, priceCents) {
   await query(
     "INSERT INTO subscription_events(user_id, event, variant, price_cents) VALUES($1,$2,$3,$4)",
@@ -770,13 +777,17 @@ async function getDemandForecast(days = 7) {
     avgHours += (parseInt(row.qty, 10) || 0) * perUnit;
   }
   avgHours /= 7;
-  const capRes = await query('SELECT COUNT(*) FROM printers');
+  const capRes = await query("SELECT COUNT(*) FROM printers");
   const capacity = (parseInt(capRes.rows[0].count, 10) || 0) * 24;
   const start = new Date();
   const arr = [];
   for (let i = 0; i < days; i++) {
     const day = new Date(start.getTime() + i * 86400000);
-    arr.push({ day: day.toISOString().slice(0, 10), demand: avgHours, capacity });
+    arr.push({
+      day: day.toISOString().slice(0, 10),
+      demand: avgHours,
+      capacity,
+    });
   }
   return arr;
 }
@@ -823,6 +834,7 @@ module.exports = {
   insertReferredOrder,
   insertShareEvent,
   insertPageView,
+  insertPixelEvent,
   getProfitMetrics,
   upsertMailingListEntry,
   confirmMailingListEntry,
