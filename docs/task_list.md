@@ -41,9 +41,6 @@
 
 - Notify operator when a printer requires manual clearing.
 
-## AI Advert Generation
-
-
 ## Fulfillment Capacity Forecasting
 
 - Graph forecasted demand vs. capacity in the admin panel.
