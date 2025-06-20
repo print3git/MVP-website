@@ -28,7 +28,8 @@
     "check-capacity": "node scripts/check-capacity.js",
     "send-intel-report": "node scripts/send-intel-report.js",
     "notify-clearing": "node scripts/notify-manual-clearing.js",
-    "send-ops-report": "node scripts/send-ops-report.js"
+    "send-ops-report": "node scripts/send-ops-report.js",
+    "flag-overdue-printers": "node scripts/flag-overdue-procurement-orders.js"
   },
   "keywords": [],
   "author": "",

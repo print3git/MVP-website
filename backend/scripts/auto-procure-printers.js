@@ -41,6 +41,11 @@ async function run() {
           `Ship to ${hub.name} in ${hub.location}`,
           outPath,
         );
+        await client.query(
+          `INSERT INTO procurement_orders(hub_id, vendor, model, quantity)
+           VALUES($1,$2,$3,$4)`,
+          [row.hub_id, PRINTER_VENDOR, PRINTER_MODEL, QUANTITY],
+        );
         const targetDate = new Date(Date.now() + 30 * 86400000)
           .toISOString()
           .slice(0, 10);
