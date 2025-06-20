@@ -525,7 +525,7 @@ async function initPaymentPage() {
       const qty = Math.max(1, parseInt(qtySelect?.value || '2', 10));
       let total = selectedPrice * qty;
       if (qty >= 2) total -= Math.round(selectedPrice * 0.1);
-      payBtn.textContent = `Pay £${(total / 100).toFixed(2)}`;
+      payBtn.textContent = `Pay £${(total / 100).toFixed(2)} (${qty} prints)`;
     }
   }
 
