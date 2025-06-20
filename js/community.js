@@ -2,6 +2,8 @@ import { captureSnapshots } from './snapshot.js';
 
 const API_BASE = (window.API_ORIGIN || '') + '/api';
 
+const OPEN_KEY = 'print3CommunityOpen';
+
 function like(id) {
   const token = localStorage.getItem('token');
   if (!token) {
@@ -174,6 +176,72 @@ function prefetchModel(url) {
   prefetchedModels.add(url);
 }
 
+function openModel(model) {
+  const modal = document.getElementById('model-modal');
+  const viewer = modal.querySelector('model-viewer');
+  const checkoutBtn = document.getElementById('modal-checkout');
+  const addBasketBtn = document.getElementById('modal-add-basket');
+  const submitBtn = document.getElementById('comment-submit');
+  const input = document.getElementById('comment-input');
+  viewer.setAttribute('poster', model.snapshot || '');
+  viewer.setAttribute('fetchpriority', 'high');
+  viewer.setAttribute('loading', 'eager');
+  viewer.src = model.model_url;
+  if (checkoutBtn) {
+    checkoutBtn.dataset.model = model.model_url;
+    checkoutBtn.dataset.job = model.job_id;
+  }
+  if (addBasketBtn) {
+    addBasketBtn.dataset.model = model.model_url;
+    addBasketBtn.dataset.job = model.job_id;
+    addBasketBtn.dataset.snapshot = model.snapshot || '';
+  }
+  const copyBtn = document.getElementById('modal-copy-link');
+  if (copyBtn) {
+    copyBtn.dataset.id = model.id;
+  }
+  if (submitBtn) {
+    submitBtn.dataset.id = model.id;
+    input.value = '';
+    renderComments(model.id);
+  }
+  modal.classList.remove('hidden');
+  const closeBtn = document.getElementById('close-modal');
+  const svg = closeBtn?.querySelector('svg');
+  if (closeBtn) {
+    closeBtn.classList.remove('w-[9rem]', 'h-[9rem]');
+    closeBtn.classList.add('w-[4.5rem]', 'h-[4.5rem]');
+  }
+  if (svg) {
+    svg.classList.remove('w-20', 'h-20');
+    svg.classList.add('w-10', 'h-10');
+  }
+  document.body.classList.add('overflow-hidden');
+  try {
+    localStorage.setItem(OPEN_KEY, JSON.stringify(model));
+  } catch (err) {
+    console.error('Failed to save open model', err);
+  }
+}
+
+function closeModel() {
+  const modal = document.getElementById('model-modal');
+  modal.classList.add('hidden');
+  document.body.classList.remove('overflow-hidden');
+  localStorage.removeItem(OPEN_KEY);
+}
+
+function restoreOpenModel() {
+  try {
+    const data = localStorage.getItem(OPEN_KEY);
+    if (!data) return;
+    const model = JSON.parse(data);
+    if (model) openModel(model);
+  } catch (err) {
+    console.error('Failed to restore open model', err);
+  }
+}
+
 function createCard(model) {
   const div = document.createElement('div');
   div.className =
@@ -198,47 +266,7 @@ function createCard(model) {
   div.addEventListener('pointerenter', () => prefetchModel(model.model_url));
   div.addEventListener('click', (e) => {
     e.stopPropagation();
-    const modal = document.getElementById('model-modal');
-    const viewer = modal.querySelector('model-viewer');
-    const checkoutBtn = document.getElementById('modal-checkout');
-    const addBasketBtn = document.getElementById('modal-add-basket');
-    const submitBtn = document.getElementById('comment-submit');
-    const input = document.getElementById('comment-input');
-    viewer.setAttribute('poster', model.snapshot || '');
-    // Ensure the viewer fetches the model immediately
-    viewer.setAttribute('fetchpriority', 'high');
-    viewer.setAttribute('loading', 'eager');
-    viewer.src = model.model_url;
-    if (checkoutBtn) {
-      checkoutBtn.dataset.model = model.model_url;
-      checkoutBtn.dataset.job = model.job_id;
-    }
-    if (addBasketBtn) {
-      addBasketBtn.dataset.model = model.model_url;
-      addBasketBtn.dataset.job = model.job_id;
-      addBasketBtn.dataset.snapshot = model.snapshot || '';
-    }
-    const copyBtn = document.getElementById('modal-copy-link');
-    if (copyBtn) {
-      copyBtn.dataset.id = model.id;
-    }
-    if (submitBtn) {
-      submitBtn.dataset.id = model.id;
-      input.value = '';
-      renderComments(model.id);
-    }
-    modal.classList.remove('hidden');
-    const closeBtn = document.getElementById('close-modal');
-    const svg = closeBtn?.querySelector('svg');
-    if (closeBtn) {
-      closeBtn.classList.remove('w-[9rem]', 'h-[9rem]');
-      closeBtn.classList.add('w-[4.5rem]', 'h-[4.5rem]');
-    }
-    if (svg) {
-      svg.classList.remove('w-20', 'h-20');
-      svg.classList.add('w-10', 'h-10');
-    }
-    document.body.classList.add('overflow-hidden');
+    openModel(model);
   });
   return div;
 }
@@ -323,6 +351,7 @@ function init() {
   }
   if (navType !== 'reload') {
     localStorage.removeItem(STATE_KEY);
+    localStorage.removeItem(OPEN_KEY);
   }
 
   const saved = loadState();
@@ -386,4 +415,4 @@ function init() {
   renderGrid('recent');
 }
 
-export { like, init };
+export { like, init, closeModel, restoreOpenModel };
