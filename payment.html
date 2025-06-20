@@ -327,24 +327,6 @@
               />
             </div>
 
-            <div class="flex items-center gap-2 my-2 text-sm">
-              <label for="print-qty">Quantity</label>
-              <select
-                id="print-qty"
-                class="p-1 rounded-md bg-[#1A1A1D] border border-white/10"
-                aria-label="Quantity"
-              >
-                <option value="1">1</option>
-                <option value="2" selected>2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-              </select>
-              <span id="bulk-discount-msg" class="text-[#30D5C8] hidden"
-                >10% off 2nd print!</span
-              >
-            </div>
-
             <div class="flex gap-2">
               <input
                 id="discount-code"
@@ -412,9 +394,26 @@
               Pay &pound;39.99
             </button>
           </form>
-          <p class="mt-2 text-xs text-red-300 text-center">
-            Only <span id="slot-count" style="visibility: hidden"></span> print slots remaining
-          </p>
+          <div class="mt-2 flex flex-wrap items-center justify-between text-xs gap-2">
+            <p class="text-red-300">
+              Only <span id="slot-count" style="visibility: hidden"></span> prints left
+            </p>
+            <div class="flex items-center gap-2">
+              <label for="print-qty">Quantity</label>
+              <select
+                id="print-qty"
+                class="p-1 rounded-md bg-[#1A1A1D] border border-white/10"
+                aria-label="Quantity"
+              >
+                <option value="1">1</option>
+                <option value="2" selected>2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+              </select>
+              <span id="bulk-discount-msg" class="text-[#30D5C8] hidden">10% off 2nd print!</span>
+            </div>
+          </div>
 
           <div class="flex justify-center gap-4 mt-4 text-2xl text-white">
             <i class="fas fa-lock" aria-label="Secure checkout"></i>
