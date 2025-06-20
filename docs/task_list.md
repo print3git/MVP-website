@@ -147,6 +147,7 @@
 - Log reprint events for reporting and analytics.
 - Send a delivery confirmation email containing a satisfaction survey link.
 - Store survey responses in the database and surface metrics on the dashboard.
+- Reintroduce next-day delivery countdown on the site when logistics allow.
 
 ## Gifting Flow Integration
 
