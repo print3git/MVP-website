@@ -140,8 +140,9 @@ if (
 const API_BASE = (window.API_ORIGIN || '') + '/api';
 const TZ = 'America/New_York';
 // Local fallback model used when generation fails or the viewer hasn't loaded a model yet.
-// Bundled locally so it works offline and avoids external network issues.
-const FALLBACK_GLB = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
+const FALLBACK_GLB_LOW = 'https://modelviewer.dev/shared-assets/models/RobotExpressive.glb';
+const FALLBACK_GLB_HIGH = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
+const FALLBACK_GLB = FALLBACK_GLB_LOW;
 const EXAMPLES = ['cute robot figurine', 'ornate chess piece', 'geometric flower vase'];
 const TRENDING = ['dragon statue', 'space rover', 'anime character'];
 const THEME_CAMPAIGNS = [
@@ -737,6 +738,23 @@ async function init() {
     refs.viewer.src = FALLBACK_GLB;
     localStorage.setItem('print3Model', FALLBACK_GLB);
     localStorage.removeItem('print3JobId');
+    refs.viewer.addEventListener(
+      'load',
+      () => {
+        const loader = document.createElement('model-viewer');
+        loader.style.display = 'none';
+        loader.crossOrigin = 'anonymous';
+        loader.src = FALLBACK_GLB_HIGH;
+        loader.addEventListener('load', () => {
+          if (refs.viewer.src === FALLBACK_GLB_LOW) {
+            refs.viewer.src = FALLBACK_GLB_HIGH;
+          }
+          loader.remove();
+        });
+        document.body.appendChild(loader);
+      },
+      { once: true },
+    );
   }
   if (refs.viewer) {
     refs.viewer.addEventListener('progress', (e) => {

@@ -616,7 +616,7 @@ test("/api/generate falls back on server failure", async () => {
   const res = await request(app).post("/api/generate").send({ prompt: "t" });
   expect(res.status).toBe(200);
   expect(res.body.glb_url).toBe(
-    "https://modelviewer.dev/shared-assets/models/Astronaut.glb",
+    "https://modelviewer.dev/shared-assets/models/RobotExpressive.glb",
   );
 });
 
