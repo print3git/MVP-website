@@ -20,7 +20,6 @@
       content="Describe your idea or upload images and print3 turns them into 3D models you can print."
     />
     <meta property="og:image" content="img/boxlogo.png" />
-    <script src="js/applyColorScheme.js"></script>
 
     <!-- Preload hero images -->
     <link
@@ -123,16 +122,6 @@
       model-viewer {
         touch-action: none;
       }
-      html.light body {
-        background-color: #f7f7f7;
-        color: #1a1a1d;
-      }
-      html.light body .bg-[#2A2A2E] {
-        background-color: #e5e5e5;
-      }
-      html.light body .text-gray-200 {
-        color: #1a1a1d;
-      }
     </style>
   </head>
 
@@ -141,6 +130,7 @@
       id="theme-banner"
       class="bg-[#30D5C8] text-black text-center py-1 hidden"
     ></div>
+
     <!-- ▸▸▸ HEADER ------------------------------------------------------- -->
 
     <header class="relative flex items-center justify-between py-4 px-6">
@@ -227,24 +217,12 @@
           >
             <i class="fab fa-instagram"></i>
           </button>
-          <button
-            id="theme-toggle"
-            class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
-            aria-label="Toggle light mode"
-          >
-            <i class="fas fa-adjust"></i>
-          </button>
         </div>
         <div id="price-info" class="text-sm text-gray-400 mt-1">
           From £29.99 per print
         </div>
       </div>
     </header>
-    <div
-      id="theme-banner"
-      class="text-center py-2 font-semibold bg-gradient-to-r from-purple-600 to-pink-500"
-      hidden
-    ></div>
 
     <!-- ▸▸▸ MAIN --------------------------------------------------------- -->
     <main
@@ -612,7 +590,6 @@
         navigator.serviceWorker.register("service-worker.js");
       }
     </script>
-    <script type="module" src="js/preferences.js"></script>
     <script type="module" src="js/printclub.js"></script>
     <script type="module" src="js/basket.js" defer></script>
     <div

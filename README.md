@@ -273,3 +273,8 @@ npm run test:stability
 
 Any failures will halt CI, prompting investigation. Individual flaky tests can
 be wrapped with `jest-retries` to retry a few times before failing.
+
+## Security Scans
+
+To enable Snyk checks in CI, add `SNYK_TOKEN` in your GitHub repository secrets.
+If no token is provided, CI falls back to `npm audit --audit-level=high`.
