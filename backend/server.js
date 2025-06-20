@@ -55,6 +55,7 @@ const QRCode = require("qrcode");
 const generateAdCopy = require("./utils/generateAdCopy");
 const generateShareCard = require("./utils/generateShareCard");
 
+const validateStl = require("./utils/validateStl");
 const syncMailingList = require("./scripts/sync-mailing-list");
 const runScalingEngine = require("./scalingEngine");
 
@@ -1737,6 +1738,59 @@ app.post("/api/competitions/:id/vote", authRequired, async (req, res) => {
   }
 });
 
+app.post(
+  "/api/designer-submissions",
+  authRequired,
+  upload.single("model"),
+  async (req, res) => {
+    if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+    try {
+      if (!validateStl(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+        return res.status(400).json({ error: "Invalid STL file" });
+      }
+      const fileUrl = `/uploads/${req.file.filename}`;
+      const { title, royalty_percent } = req.body;
+      const row = await db.insertDesignerSubmission(
+        req.user.id,
+        fileUrl,
+        title || null,
+        parseInt(royalty_percent, 10) || 10,
+      );
+      res.status(201).json(row);
+    } catch (err) {
+      logError(err);
+      res.status(500).json({ error: "Failed to submit model" });
+    }
+  },
+);
+
+app.get("/api/designer-submissions/approved", async (req, res) => {
+  const limit = parseInt(req.query.limit, 10) || 10;
+  const offset = parseInt(req.query.offset, 10) || 0;
+  try {
+    const rows = await db.listApprovedSubmissions(limit, offset);
+    res.json(rows);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: "Failed to fetch submissions" });
+  }
+});
+
+app.post(
+  "/api/admin/designer-submissions/:id/approve",
+  adminCheck,
+  async (req, res) => {
+    try {
+      const row = await db.approveDesignerSubmission(req.params.id);
+      if (!row) return res.status(404).json({ error: "Not found" });
+      res.json(row);
+    } catch (err) {
+      logError(err);
+      res.status(500).json({ error: "Failed to update submission" });
+    }
+  },
+);
 function adminCheck(req, res, next) {
   authOptional(req, res, () => {
     const headerMatch = req.headers["x-admin-token"] === ADMIN_TOKEN;
