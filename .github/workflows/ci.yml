@@ -35,4 +35,22 @@ jobs:
           git diff --exit-code backend/package-lock.json
           git diff --exit-code backend/hunyuan_server/package-lock.json
 
+      - name: Audit dependencies
+        run: |
+          npm audit --audit-level=high
+          npm audit --prefix backend --audit-level=high
+          if [ -f backend/hunyuan_server/package.json ]; then
+            npm audit --prefix backend/hunyuan_server --audit-level=high
+          fi
+
+      - name: Run Snyk security scan
+        run: |
+          npx snyk test --severity-threshold=high
+          npx snyk test --severity-threshold=high --file=backend/package.json
+          if [ -f backend/hunyuan_server/package.json ]; then
+            npx snyk test --severity-threshold=high --file=backend/hunyuan_server/package.json
+          fi
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
       # ← you can add additional steps here, like your tests
