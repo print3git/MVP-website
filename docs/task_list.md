@@ -26,10 +26,6 @@
 - Add real photo of printed object or user-generated image to hero section to reinforce the physical product.
 - Display pricing info near the prompt field such as "From $X / print" to reduce hesitation.
 
-## 3D Model Loading Performance
-
-Serve assets over HTTP/2 or HTTP/3.
-Measure load times with Lighthouse or real browser tests and track improvements.
 
 ## Fulfillment Capacity Forecasting
 
