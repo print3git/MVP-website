@@ -1,6 +1,6 @@
 const CACHE_NAME = 'model-cache-v1';
 const ASSETS = [
-  'https://modelviewer.dev/shared-assets/models/Astronaut.glb',
+  'https://modelviewer.dev/shared-assets/models/RobotExpressive.glb',
   'https://modelviewer.dev/shared-assets/environments/neutral.hdr'
 ];
 
