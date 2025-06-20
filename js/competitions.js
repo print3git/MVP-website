@@ -375,51 +375,6 @@ async function loadPast() {
   });
 }
 
-async function loadTrending() {
-  const container = document.getElementById('trending-prints');
-  if (!container) return;
-  const res = await fetch(`${API_BASE}/trending`);
-  if (!res.ok) return;
-  const items = await res.json();
-  items.forEach((i) => {
-    const card = document.createElement('div');
-    card.className =
-      'relative h-32 bg-[#2A2A2E] border border-white/10 rounded-xl flex items-center justify-center cursor-pointer';
-    card.dataset.model = i.model_url;
-    card.dataset.job = i.job_id;
-    if (i.snapshot) {
-      card.innerHTML = `<img src="${i.snapshot}" alt="Model" class="w-full h-full object-contain pointer-events-none" />`;
-    }
-    const btn = document.createElement('button');
-    btn.className =
-      'add absolute bottom-1 left-1 font-bold text-lg py-2 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]';
-    btn.textContent = 'Add to Basket';
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (window.addToBasket) {
-        window.addToBasket({ jobId: i.job_id, modelUrl: i.model_url, snapshot: i.snapshot });
-      }
-    });
-    card.addEventListener('click', () => openModelModal(i.model_url, i.job_id, i.snapshot || ''));
-    card.addEventListener('pointerenter', () => prefetchModel(i.model_url));
-    card.appendChild(btn);
-    container.appendChild(card);
-  });
-}
-
-async function loadWinnerInterviews() {
-  const container = document.getElementById('winner-interviews');
-  if (!container) return;
-  const res = await fetch(`${API_BASE}/competitions/winners`);
-  if (!res.ok) return;
-  const winners = await res.json();
-  winners.forEach((w) => {
-    const div = document.createElement('div');
-    div.className = 'flex items-center space-x-4';
-    div.innerHTML = `<img src="${w.image}" alt="${w.name}" class="w-16 h-16 rounded-full object-cover" />\n      <blockquote class="text-sm italic">"${w.quote}"</blockquote>`;
-    container.appendChild(div);
-  });
-}
 
 document.addEventListener('DOMContentLoaded', () => {
   modal = document.getElementById('enter-modal');
@@ -461,7 +416,6 @@ document.addEventListener('DOMContentLoaded', () => {
   load();
   loadPast();
   loadTrending();
-  loadWinnerInterviews();
   const subForm = document.getElementById('comp-subscribe');
   const emailInput = document.getElementById('comp-email');
   const msgEl = document.getElementById('comp-subscribe-msg');
