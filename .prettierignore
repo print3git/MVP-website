@@ -10,3 +10,9 @@ coverage
 backend/coverage
 **/coverage/**
 backend/generated_ads.json
+
+# --- ignore generated output ------------------------------
+coverage
+coverage/**
+# (optional) you can list more generated folders here, e.g. build, dist
+# ----------------------------------------------------------
