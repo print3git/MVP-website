@@ -39,8 +39,6 @@
 
 ## Autonomous 3D Printing
 
-- Notify operator when a printer requires manual clearing.
-
 ## Fulfillment Capacity Forecasting
 
 - Graph forecasted demand vs. capacity in the admin panel.
