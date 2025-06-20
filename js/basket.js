@@ -1,4 +1,4 @@
-const KEY = 'print3Basket';
+const KEY = "print3Basket";
 export function getBasket() {
   try {
     return JSON.parse(localStorage.getItem(KEY)) || [];
@@ -9,12 +9,16 @@ export function getBasket() {
 function saveBasket(items) {
   localStorage.setItem(KEY, JSON.stringify(items));
 }
+const RESERVE_MINS = 10;
+let reserveInterval;
 export function addToBasket(item, opts = {}) {
   const items = getBasket();
-  items.push({ ...item, auto: !!opts.auto });
+  const expire = Date.now() + RESERVE_MINS * 60 * 1000;
+  items.push({ ...item, auto: !!opts.auto, reserveUntil: expire });
   saveBasket(items);
   updateBadge();
   renderList();
+  startReservationTimer();
 }
 
 export function addAutoItem(item) {
@@ -52,12 +56,39 @@ export function clearBasket() {
   renderList();
 }
 function updateBadge() {
-  const badge = document.getElementById('basket-count');
+  const badge = document.getElementById("basket-count");
   if (badge) {
     const n = getBasket().length;
     badge.textContent = String(n);
     badge.hidden = n === 0;
   }
+}
+
+function startReservationTimer() {
+  clearInterval(reserveInterval);
+  const label = document.getElementById("basket-reserve");
+  if (!label) return;
+  function tick() {
+    const items = getBasket();
+    if (!items.length) {
+      label.classList.add("hidden");
+      clearInterval(reserveInterval);
+      return;
+    }
+    const expire = Math.min(...items.map((i) => i.reserveUntil || 0));
+    const diff = expire - Date.now();
+    if (diff <= 0) {
+      label.textContent = "Reservation expired";
+      clearInterval(reserveInterval);
+      return;
+    }
+    const mins = Math.floor(diff / 60000);
+    const secs = Math.floor((diff % 60000) / 1000);
+    label.textContent = `Reserved for ${mins}:${String(secs).padStart(2, "0")}`;
+    label.classList.remove("hidden");
+  }
+  tick();
+  reserveInterval = setInterval(tick, 1000);
 }
 let viewerModal;
 let viewerEl;
@@ -66,49 +97,51 @@ let viewerTierToggle;
 
 function showModel(modelUrl, poster, jobId) {
   if (!viewerModal || !viewerEl) return;
-  if (poster) viewerEl.setAttribute('poster', poster);
+  if (poster) viewerEl.setAttribute("poster", poster);
   viewerEl.src = modelUrl;
   if (viewerCheckoutBtn) {
-    viewerCheckoutBtn.dataset.model = modelUrl || '';
-    viewerCheckoutBtn.dataset.job = jobId || '';
+    viewerCheckoutBtn.dataset.model = modelUrl || "";
+    viewerCheckoutBtn.dataset.job = jobId || "";
   }
-  viewerModal.classList.remove('hidden');
-  document.body.classList.add('overflow-hidden');
+  viewerModal.classList.remove("hidden");
+  document.body.classList.add("overflow-hidden");
 }
 
 function hideModel() {
   if (!viewerModal) return;
-  viewerModal.classList.add('hidden');
-  document.body.classList.remove('overflow-hidden');
+  viewerModal.classList.add("hidden");
+  document.body.classList.remove("overflow-hidden");
 }
 
 function renderList() {
-  const list = document.getElementById('basket-list');
+  const list = document.getElementById("basket-list");
   if (!list) return;
-  list.innerHTML = '';
+  list.innerHTML = "";
   const items = getBasket();
   if (items.length === 0) {
     list.innerHTML = '<p class="text-white">Basket empty</p>';
     return;
   }
   items.forEach((it, idx) => {
-    const div = document.createElement('div');
-    div.className = 'relative group';
+    const div = document.createElement("div");
+    div.className = "relative group";
 
-    const img = document.createElement('img');
-    img.src = it.snapshot || it.modelUrl || '';
-    img.alt = 'Model';
+    const img = document.createElement("img");
+    img.src = it.snapshot || it.modelUrl || "";
+    img.alt = "Model";
     img.className =
-      'w-24 h-24 object-cover rounded-lg bg-[#2A2A2E] border border-white/20 cursor-pointer';
-    img.addEventListener('click', () => showModel(it.modelUrl, it.snapshot, it.jobId));
+      "w-24 h-24 object-cover rounded-lg bg-[#2A2A2E] border border-white/20 cursor-pointer";
+    img.addEventListener("click", () =>
+      showModel(it.modelUrl, it.snapshot, it.jobId),
+    );
 
-    const btn = document.createElement('button');
-    btn.textContent = 'Remove';
-    btn.type = 'button';
+    const btn = document.createElement("button");
+    btn.textContent = "Remove";
+    btn.type = "button";
 
     btn.className =
-      'remove absolute bottom-1 right-1 text-xs px-2 py-1 bg-red-600 rounded opacity-80 group-hover:opacity-100';
-    btn.addEventListener('click', (e) => {
+      "remove absolute bottom-1 right-1 text-xs px-2 py-1 bg-red-600 rounded opacity-80 group-hover:opacity-100";
+    btn.addEventListener("click", (e) => {
       e.stopPropagation();
       removeFromBasket(idx);
     });
@@ -120,25 +153,32 @@ function renderList() {
 }
 function openBasket() {
   renderList();
-  document.getElementById('basket-overlay')?.classList.remove('hidden');
+  const queueLabel = document.getElementById("basket-queue");
+  if (queueLabel) {
+    const pos = getBasket().length;
+    queueLabel.textContent = pos ? `Queue position: ${pos}` : "";
+  }
+  document.getElementById("basket-overlay")?.classList.remove("hidden");
+  startReservationTimer();
 }
 function closeBasket() {
-  document.getElementById('basket-overlay')?.classList.add('hidden');
+  document.getElementById("basket-overlay")?.classList.add("hidden");
 }
 export function setupBasketUI() {
-  const btn = document.createElement('button');
-  btn.type = 'button';
-  btn.id = 'basket-button';
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.id = "basket-button";
   btn.className =
-    'fixed bottom-4 right-4 bg-[#30D5C8] text-black p-3 rounded-full shadow-lg z-50 border-2 border-black';
+    "fixed bottom-4 right-4 bg-[#30D5C8] text-black p-3 rounded-full shadow-lg z-50 border-2 border-black";
   btn.innerHTML =
     '<i class="fas fa-shopping-basket"></i> <span id="basket-count" class="ml-1"></span>';
-  btn.addEventListener('click', openBasket);
+  btn.addEventListener("click", openBasket);
   document.body.appendChild(btn);
 
-  const overlay = document.createElement('div');
-  overlay.id = 'basket-overlay';
-  overlay.className = 'fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50';
+  const overlay = document.createElement("div");
+  overlay.id = "basket-overlay";
+  overlay.className =
+    "fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50";
   overlay.innerHTML = `\
 
     <div class="relative bg-[#2A2A2E] border border-white/10 rounded-3xl p-6 text-center w-72">
@@ -146,39 +186,41 @@ export function setupBasketUI() {
         <i class="fas fa-times-circle"></i>
       </button>
       <h2 class="text-xl font-semibold mb-2 text-white">Basket</h2>
-      <div id="basket-list" class="grid grid-cols-2 gap-3 mb-4"></div>
+      <div id="basket-list" class="grid grid-cols-2 gap-3 mb-2"></div>
+      <div id="basket-reserve" class="hidden text-sm text-gray-200 mb-2"></div>
+      <div id="basket-queue" class="text-sm text-gray-200 mb-2"></div>
       <button id="basket-checkout" type="button" class="mb-2 px-4 py-2 rounded-md bg-[#30D5C8] text-[#1A1A1D]">Checkout</button>
     </div>`;
   document.body.appendChild(overlay);
-  overlay.querySelector('#basket-close').addEventListener('click', closeBasket);
-  overlay.querySelector('#basket-checkout').addEventListener('click', () => {
+  overlay.querySelector("#basket-close").addEventListener("click", closeBasket);
+  overlay.querySelector("#basket-checkout").addEventListener("click", () => {
     const items = getBasket();
     if (items.length === 1) {
       const item = items[0];
       if (item.modelUrl) {
-        localStorage.setItem('print3Model', item.modelUrl);
+        localStorage.setItem("print3Model", item.modelUrl);
       }
       if (item.jobId) {
-        localStorage.setItem('print3JobId', item.jobId);
+        localStorage.setItem("print3JobId", item.jobId);
       } else {
-        localStorage.removeItem('print3JobId');
+        localStorage.removeItem("print3JobId");
       }
     }
     closeBasket();
-    window.location.href = 'payment.html';
+    window.location.href = "payment.html";
   });
 
-  overlay.addEventListener('click', (e) => {
-    const container = overlay.querySelector('div');
+  overlay.addEventListener("click", (e) => {
+    const container = overlay.querySelector("div");
     if (!container.contains(e.target) && !btn.contains(e.target)) {
       closeBasket();
     }
   });
 
-  const viewerOverlay = document.createElement('div');
-  viewerOverlay.id = 'basket-model-modal';
+  const viewerOverlay = document.createElement("div");
+  viewerOverlay.id = "basket-model-modal";
   viewerOverlay.className =
-    'fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50';
+    "fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50";
   viewerOverlay.innerHTML = `
     <div class="relative w-11/12 max-w-3xl">
       <button id="basket-model-close" class="absolute -top-4 -right-4 w-[4.5rem] h-[4.5rem] rounded-full bg-white text-black flex items-center justify-center z-50" type="button">
@@ -197,44 +239,47 @@ export function setupBasketUI() {
     </div>`;
   document.body.appendChild(viewerOverlay);
   viewerModal = viewerOverlay;
-  viewerEl = viewerOverlay.querySelector('model-viewer');
-  viewerCheckoutBtn = viewerOverlay.querySelector('#basket-model-checkout');
-  viewerTierToggle = viewerOverlay.querySelector('#basket-tier-toggle');
-  viewerOverlay.querySelector('#basket-model-close').addEventListener('click', hideModel);
-  viewerCheckoutBtn.addEventListener('click', () => {
+  viewerEl = viewerOverlay.querySelector("model-viewer");
+  viewerCheckoutBtn = viewerOverlay.querySelector("#basket-model-checkout");
+  viewerTierToggle = viewerOverlay.querySelector("#basket-tier-toggle");
+  viewerOverlay
+    .querySelector("#basket-model-close")
+    .addEventListener("click", hideModel);
+  viewerCheckoutBtn.addEventListener("click", () => {
     const model = viewerCheckoutBtn.dataset.model;
     const job = viewerCheckoutBtn.dataset.job;
-    if (model) localStorage.setItem('print3Model', model);
+    if (model) localStorage.setItem("print3Model", model);
     if (job) {
-      localStorage.setItem('print3JobId', job);
+      localStorage.setItem("print3JobId", job);
     } else {
-      localStorage.removeItem('print3JobId');
+      localStorage.removeItem("print3JobId");
     }
   });
   function setTier(tier) {
-    viewerTierToggle?.querySelectorAll('button[data-tier]').forEach((btn) => {
+    viewerTierToggle?.querySelectorAll("button[data-tier]").forEach((btn) => {
       const active = btn.dataset.tier === tier;
-      btn.classList.toggle('ring-2', active);
-      btn.classList.toggle('ring-white', active);
-      btn.classList.toggle('opacity-100', active);
-      btn.classList.toggle('opacity-50', !active);
+      btn.classList.toggle("ring-2", active);
+      btn.classList.toggle("ring-white", active);
+      btn.classList.toggle("opacity-100", active);
+      btn.classList.toggle("opacity-50", !active);
     });
     if (viewerCheckoutBtn) {
-      const price = tier === 'bronze' ? 29.99 : tier === 'gold' ? 79.99 : 39.99;
+      const price = tier === "bronze" ? 29.99 : tier === "gold" ? 79.99 : 39.99;
       viewerCheckoutBtn.textContent = `Print for £${price.toFixed(2)} →`;
     }
-    const material = tier === 'bronze' ? 'single' : tier === 'gold' ? 'premium' : 'multi';
-    localStorage.setItem('print3Material', material);
+    const material =
+      tier === "bronze" ? "single" : tier === "gold" ? "premium" : "multi";
+    localStorage.setItem("print3Material", material);
   }
-  viewerTierToggle?.addEventListener('click', (ev) => {
-    const btn = ev.target.closest('button[data-tier]');
+  viewerTierToggle?.addEventListener("click", (ev) => {
+    const btn = ev.target.closest("button[data-tier]");
     if (btn) setTier(btn.dataset.tier);
   });
-  setTier('silver');
+  setTier("silver");
 
   updateBadge();
 }
-window.addEventListener('DOMContentLoaded', setupBasketUI);
+window.addEventListener("DOMContentLoaded", setupBasketUI);
 window.addToBasket = addToBasket;
 window.addAutoItem = addAutoItem;
 window.manualizeItem = manualizeItem;

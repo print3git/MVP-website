@@ -11,23 +11,9 @@
 
 ## Creating urgency
 
-- Show dynamic "Only X left" or "Selling fast" notices.
-- Display shipping cut-off timers like "Order in 3h for same-day processing".
-- Add small pop-ups such as "Anna from NY just purchased" or "23 people are viewing this item".
-- Advertise limited-run products with remaining quantity counters.
-- Start a short reservation timer when items are added to the cart.
-- Tie promotions to events/holidays (e.g., "Order before Friday for Father's Day delivery").
-- Trigger exit-intent pop-ups warning "Sale ends tonight!" or offering a final code.
-- Show queue positions or a waitlist to encourage immediate checkout.
-- Let users opt in for notifications when a promotion is about to end.
-
 ## Decreasing CAC
 
 - Add real photo of printed object or user-generated image to hero section to reinforce the physical product.
-- Display pricing info near the prompt field such as "From $X / print" to reduce hesitation.
-
-
-
 
 ## Hub Deployment Kit
 
