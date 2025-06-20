@@ -3,6 +3,8 @@
 - A/B test ad designs and copy to identify highest-performing creatives.
 - Target ads to demographics most likely to convert.
 - Use retargeting pixels to bring back visitors who left.
+- Integrate pixel data with ad platform to build custom audiences.
+- Embed tracking pixel across all site pages.
 - Include a clear value proposition and call-to-action in each ad.
 
 ## Purchase & Checkout
@@ -197,6 +199,7 @@
 ## Increasing Print Club subscriptions
 
 - **Pricing incentives**
+
   - Introductory discounts – offer a discounted first month or a "first print free" promotion.
   - Annual plans – provide a lower effective price when subscribers pay for a full year upfront.
   - Family or group tiers – discounted rates for multiple members under one plan.
@@ -206,6 +209,7 @@
   - "Founders rate" – limited-time, lifetime pricing for early adopters.
 
 - **Exclusive content & features**
+
   - Early access to new designs – give subscribers a preview window or ability to order upcoming prints first.
   - "Print of the Week" specials – curated weekly designs only available to members.
   - Limited-edition runs – exclusive prints that are never offered to non-members.
@@ -216,6 +220,7 @@
   - Livestreaming your print being created.
 
 - **Community building**
+
   - Members-only forum or Discord for discussion and sharing.
   - Featured member spotlights showcasing subscriber creations.
   - Monthly design challenges with member voting.
@@ -224,11 +229,13 @@
   - Badge system on profiles.
 
 - **Referral and affiliate programs**
+
   - Referral points that credit members for bringing in new subscribers.
   - Social sharing incentives for posting referral links.
   - Affiliate partnerships offering commissions to influencers or partners.
 
 - **Marketing & promotion**
+
   - Retargeted ads reminding past visitors about the club.
   - Email drip campaigns highlighting perks and success stories.
   - Testimonials and user-generated content.
@@ -237,12 +244,14 @@
   - Bundled deals with other offerings.
 
 - **Service and support enhancements**
+
   - Dedicated support channel for club members.
   - Printed instructions and tips in shipments.
   - Shipping perks such as free or faster delivery.
   - Quality guarantee with free reprints if needed.
 
 - **Operational / technical improvements**
+
   - Auto-renew reminders before billing.
   - Usage progress bar to track available prints.
   - Personalized recommendations based on past orders.
@@ -252,6 +261,7 @@
   - API access for makers to integrate uploads.
 
 - **Long-term engagement ideas**
+
   - Subscription anniversary gifts.
   - Member surveys to gather feedback.
   - Customizable print options such as colors or sizes.
@@ -259,18 +269,21 @@
   - Collaborations with design artists for exclusive models.
 
 - **Partnerships & cross-industry tie-ins**
+
   - Educational partners like schools or maker spaces.
   - Hardware bundles offering a printer plus membership.
   - Filament manufacturer collaborations with special colors.
   - Charity collaborations donating a portion of fees.
 
 - **Content & media strategies**
+
   - Behind-the-scenes videos of the printing process.
   - Livestream design sessions.
   - Printable accessory packs as digital files.
   - Guest artist series with new designers each month.
 
 - **Stability & trust**
+
   - Transparent credit tracking and rollover.
   - Money-back guarantee for new members.
   - Clear terms of service.

@@ -71,7 +71,7 @@
     <!-- Preload default model assets -->
     <link
       rel="preload"
-      href="https://modelviewer.dev/shared-assets/models/RobotExpressive.glb"
+      href="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
       as="fetch"
       type="model/gltf-binary"
       crossorigin
@@ -137,7 +137,6 @@
       <div class="flex flex-col items-start">
         <img src="img/textlogo.png" alt="print3" class="h-10 w-auto" />
         <div class="mt-1 flex flex-col text-sm opacity-90">
-
           <p class="text-gray-400"><span class="text-white">5400+</span> prints</p>
           <p class="text-gray-400">delivered already</p>
           <p id="stats-ticker" class="text-[#30D5C8] text-left" style="min-height: 2.5rem"></p>
@@ -239,7 +238,7 @@
           <!-- 3-D Astronaut (always visible) -->
           <model-viewer
             id="viewer"
-            src="https://modelviewer.dev/shared-assets/models/RobotExpressive.glb"
+            src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
             alt="3D astronaut"
             environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
             camera-controls
@@ -520,8 +519,8 @@
         const checkoutRect = checkout.getBoundingClientRect();
 
         /* Horizontal: match the left edge of the Checkout button
-           and shift slightly to the right (~12px) */
-        const left = checkoutRect.left - wrapperRect.left + 12;
+           and shift further right by about 0.5cm (~19px) */
+        const left = checkoutRect.left - wrapperRect.left + 31;
 
         /* Vertical: place quote just below the viewer (16 px gap) */
         const top = wrapperRect.height + 16;
@@ -586,7 +585,8 @@
     <script type="module" src="js/basket.js" defer></script>
     <div
       id="purchase-popups"
-      class="fixed bottom-28 left-4 bg-black/80 text-white px-3 py-1 rounded hidden text-sm"
+      class="fixed bottom-28 left-4 bg-black/80 text-white px-3 py-1 rounded hidden text-sm flex items-center space-x-2"
     ></div>
+    <img src="/pixel" alt="" width="1" height="1" style="display: none" />
   </body>
 </html>
