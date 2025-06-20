@@ -10,6 +10,7 @@
 ## Purchase & Checkout
 
 - Offer multiple payment methods including Apple Pay and Google Pay.
+- Reconfigure seasonal order bundles once promotions resume.
 
 ## Decreasing CAC
 
@@ -18,6 +19,7 @@
 ## Competitions & Print Club
 
 - Add images to the competitions page and Print Club with participant quotes to show social proof.
+- Replace the placeholder "Real life image here" box on the Print Club page with an actual photo.
 
 ## Hub Deployment Kit
 
@@ -75,13 +77,6 @@
   - Show tasks with checkboxes in the operator dashboard.
   - Mark tasks complete via `POST /tasks/:id/complete`.
   - Summarise hub progress in the admin dashboard.
-
-- **Shift tracking**
-
-  - Add `shifts` table storing operator, hub, start and end times.
-  - Start shift timer on login or manual "Start shift".
-  - End shift on logout or manual "End shift".
-  - Display shift history and total hours per operator.
 
 - **Alerts for incomplete tasks**
 
@@ -154,6 +149,7 @@
 - Log reprint events for reporting and analytics.
 - Send a delivery confirmation email containing a satisfaction survey link.
 - Store survey responses in the database and surface metrics on the dashboard.
+- Reintroduce next-day delivery countdown on the site when logistics allow.
 
 ## Gifting Flow Integration
 
@@ -293,3 +289,13 @@
   - Custom print requests for higher tiers.
   - Private sales or auctions for rare prints.
   - Merchandising discounts on apparel or accessories.
+
+## Seller Credits
+
+- Add migration introducing a table or column for `sale_credits` tied to `user_id`.
+- Implement `getSaleCredit` and `adjustSaleCredit` helpers in the backend.
+- Award sellers £5 credit in the checkout webhook when a job is paid.
+- Provide `GET /api/credits` and `POST /api/credits/redeem` endpoints.
+- Display credit balance on profile pages and allow applying credit at checkout.
+- Add Jest tests for credit accrual and redemption.
+- Document the feature in the README.

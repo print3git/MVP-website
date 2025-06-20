@@ -143,7 +143,7 @@
               class="h-10 w-10 border-4 border-white border-t-transparent rounded-full animate-spin"
             ></div>
           </div>
-          <div class="mt-4 text-center text-sm text-gray-200/90 relative h-full">
+          <div class="mt-4 text-center text-sm text-gray-400 relative h-full">
             <p class="mb-1">Trusted by <span class="text-white">thousands of makers:</span></p>
             <p>
               &#9989;&#65038; If you don&rsquo;t love it, we&rsquo;ll reprint or refund you &ndash;
@@ -300,20 +300,6 @@
                 aria-label="Email"
               />
             </div>
-            <label class="flex items-center gap-2 text-sm my-2">
-              <input type="checkbox" id="surprise-toggle" class="accent-[#30D5C8]" />
-              This is a surprise
-            </label>
-            <div id="recipient-fields" class="mb-2">
-              <input
-                id="recipient-email"
-                type="email"
-                class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
-                placeholder="Recipient Email (optional)"
-                autocomplete="email"
-                aria-label="Recipient Email"
-              />
-            </div>
             <div>
               <input
                 id="ship-address"
@@ -349,10 +335,13 @@
                 aria-label="Quantity"
               >
                 <option value="1">1</option>
-                <option value="2">2</option>
+                <option value="2" selected>2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
               </select>
               <span id="bulk-discount-msg" class="text-[#30D5C8] hidden"
-                >10% off second print!</span
+                >10% off 2nd print!</span
               >
             </div>
 
@@ -588,7 +577,7 @@
         <div
           id="delivery-warning"
           style="position: absolute; right: calc(100% + 0.55cm); bottom: 1rem;"
-          class="w-fit text-sm text-gray-200/90 text-left"
+          class="text-sm text-gray-200/90 text-left max-w-xs whitespace-normal"
         >
           <p>
             Due to incredibly high demand, delivery may take 3+ weeks. Please

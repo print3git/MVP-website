@@ -137,9 +137,15 @@
       <div class="flex flex-col items-start">
         <img src="img/textlogo.png" alt="print3" class="h-10 w-auto" />
         <div class="mt-1 flex flex-col text-sm opacity-90">
-          <p class="text-gray-400"><span class="text-white">5400+</span> prints</p>
+          <p class="text-gray-400">
+            <span class="text-white">5400+</span> prints
+          </p>
           <p class="text-gray-400">delivered already</p>
-          <p id="stats-ticker" class="text-[#30D5C8] text-left" style="min-height: 2.5rem"></p>
+          <p
+            id="stats-ticker"
+            class="text-[#30D5C8] text-left"
+            style="min-height: 2.5rem"
+          ></p>
         </div>
       </div>
 
@@ -164,7 +170,7 @@
           href="earn-rewards.html"
           id="earn-rewards-badge"
           class="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-3xl px-3 py-2 text-sm transition-shape"
-          >[🎉 NEW] Earn Rewards</a
+          >[🎉 NEW] Earn Rewards ⭐</a
         >
 
         <a
@@ -217,14 +223,14 @@
 
     <!-- ▸▸▸ MAIN --------------------------------------------------------- -->
     <main
-      class="flex-1 flex flex-col items-center justify-start gap-8 px-4 lg:px-16"
+      class="flex-1 flex flex-col items-center justify-start gap-4 px-4 lg:px-16"
       style="margin-top: -4rem"
     >
       <!-- 3-D preview ---------------------------------------------------- -->
       <div class="relative flex justify-center w-full max-w-lg">
         <section
           id="preview-wrapper"
-          class="relative w-full max-w-lg h-80 bg-[#2A2A2E] border border-white/10 rounded-3xl overflow-hidden"
+          class="relative w-full max-w-lg h-72 bg-[#2A2A2E] border border-white/10 rounded-3xl overflow-hidden"
         >
           <!-- fallback still-image (hidden) -->
           <img
@@ -278,9 +284,9 @@
           <!-- checkout + buy-now -->
           <div
             id="checkout-container"
-            class="absolute bottom-4 right-4 flex flex-col items-center"
+            class="absolute bottom-4 right-4 flex flex-col items-end"
           >
-            <div id="shipping-cutoff" class="text-xs text-gray-200 mb-1"></div>
+            <!-- <div id="shipping-cutoff" class="text-xs text-gray-200 mb-1"></div> -->
             <a
               id="checkout-button"
               href="payment.html"
@@ -320,7 +326,7 @@
           id="subreddit-quote"
           class="absolute text-left text-sm text-gray-400 leading-snug invisible"
         >
-          <p class="whitespace-nowrap">
+          <p class="whitespace-nowrap" style="margin-left: 0.5cm">
             "I'm astonished at how high-quality the <br />print is" – email from
             an <span class="text-white">r/subreddit</span> user
           </p>
@@ -348,9 +354,9 @@
           <img
             src="img/boxlogo.png"
             alt="print3 cube"
-            class="w-32 h-auto mb-8"
+            class="w-32 h-auto mb-4"
           />
-          <h1 class="text-3xl font-semibold mb-8">
+          <h1 class="text-3xl font-semibold mb-4">
             Design &amp; Print in 30&nbsp;Seconds.
           </h1>
 
@@ -381,7 +387,7 @@
           </div>
 
           <!-- ▼▼  UPDATED BLOCK: drop-zone + preview side-by-side ▼▼ -->
-          <div class="mt-4 w-full flex items-stretch gap-4">
+          <div class="mt-2 w-full flex items-stretch gap-4">
             <input
               type="file"
               id="uploadInput"
@@ -394,7 +400,7 @@
             <div
               id="drop-zone"
               aria-label="Upload Image"
-              class="flex-1 flex items-center justify-center bg-[#2A2A2E] border border-dashed border-white/10 rounded-3xl px-5 py-6 text-gray-200 cursor-pointer hover:bg-[#3A3A3E] transition-shape"
+              class="flex-1 flex items-center justify-center bg-[#2A2A2E] border border-dashed border-white/10 rounded-3xl px-5 py-4 text-gray-200 cursor-pointer hover:bg-[#3A3A3E] transition-shape"
             >
               Drag&nbsp;&amp;&nbsp;drop image or
               <label for="uploadInput" class="underline ml-1 cursor-pointer"
@@ -470,7 +476,7 @@
         <span
           id="wizard-slots"
           class="hidden text-[#30D5C8] mr-2 whitespace-nowrap"
-          >Only 4 print slots remaining:</span
+        ></span
         >
         <span>Purchase model</span>
       </div>
@@ -583,6 +589,7 @@
       }
     </script>
     <script type="module" src="js/printclub.js"></script>
+    <script type="module" src="js/rewardBadge.js"></script>
     <script type="module" src="js/basket.js" defer></script>
     <div
       id="purchase-popups"
