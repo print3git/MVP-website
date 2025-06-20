@@ -140,9 +140,11 @@ if (
 const API_BASE = (window.API_ORIGIN || '') + '/api';
 const TZ = 'America/New_York';
 // Local fallback model used when generation fails or the viewer hasn't loaded a model yet.
+
 const FALLBACK_GLB_LOW = 'https://modelviewer.dev/shared-assets/models/RobotExpressive.glb';
 const FALLBACK_GLB_HIGH = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
 const FALLBACK_GLB = FALLBACK_GLB_LOW;
+
 const EXAMPLES = ['cute robot figurine', 'ornate chess piece', 'geometric flower vase'];
 const TRENDING = ['dragon statue', 'space rover', 'anime character'];
 const THEME_CAMPAIGNS = [
@@ -735,8 +737,20 @@ async function init() {
   }
   const sr = new URLSearchParams(window.location.search).get('sr');
   if (!sr) {
-    refs.viewer.src = FALLBACK_GLB;
-    localStorage.setItem('print3Model', FALLBACK_GLB);
+    let hiStart = null;
+    const handleLoad = () => {
+      if (refs.viewer.src === LOW_POLY_GLB) {
+        hiStart = performance.now();
+        refs.viewer.src = FALLBACK_GLB;
+      } else if (refs.viewer.src === FALLBACK_GLB && hiStart !== null) {
+        const t = Math.round(performance.now() - hiStart);
+        console.log('Model load time', t, 'ms');
+        localStorage.setItem('print3Model', FALLBACK_GLB);
+        refs.viewer.removeEventListener('load', handleLoad);
+      }
+    };
+    refs.viewer.addEventListener('load', handleLoad);
+    refs.viewer.src = LOW_POLY_GLB;
     localStorage.removeItem('print3JobId');
     refs.viewer.addEventListener(
       'load',

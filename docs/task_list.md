@@ -28,14 +28,15 @@
 
 ## 3D Model Loading Performance
 
+
 Serve assets over HTTP/2 or HTTP/3.
 Measure load times with Lighthouse or real browser tests and track improvements.
 
-## Autonomous 3D Printing
 
 ## Fulfillment Capacity Forecasting
 
 - Graph forecasted demand vs. capacity in the admin panel.
+
 
 ## Hub Deployment Kit
 

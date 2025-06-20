@@ -2,6 +2,7 @@
 // page if the network request for Stripe fails. This variable will be assigned
 // once the DOM content is ready.
 let stripe = null;
+
 // Use a lightweight fallback model and upgrade to the high detail version after load.
 const FALLBACK_GLB_LOW = 'https://modelviewer.dev/shared-assets/models/RobotExpressive.glb';
 const FALLBACK_GLB_HIGH = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
