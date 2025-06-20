@@ -54,17 +54,24 @@
             stroke-width="2"
             viewBox="0 0 24 24"
           >
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M15 19l-7-7 7-7"
+            />
           </svg>
           Back
         </a>
-        <h1 class="flex-1 text-center text-3xl font-semibold">Community Creations</h1>
+        <h1 class="flex-1 text-center text-3xl font-semibold">
+          Community Creations
+        </h1>
         <a
           href="earn-rewards.html"
           id="earn-rewards-badge"
           class="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-3xl px-3 py-2 text-sm transition-shape"
           >[🎉 NEW] Earn Rewards</a
         >
+        <span id="header-points" class="ml-1"></span>
       </div>
       <div class="flex items-center space-x-4 ml-4">
         <a
@@ -147,7 +154,10 @@
       <!-- Popular Creations -->
       <section class="mb-12">
         <h2 class="text-xl font-semibold mb-4">Popular Now</h2>
-        <div id="popular-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
+        <div
+          id="popular-grid"
+          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
+        ></div>
         <div id="popular-sentinel" class="h-8"></div>
         <button
           id="popular-load"
@@ -160,7 +170,10 @@
       <!-- Recent Creations -->
       <section>
         <h2 class="text-xl font-semibold mb-4">Recent</h2>
-        <div id="recent-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
+        <div
+          id="recent-grid"
+          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
+        ></div>
         <div id="recent-sentinel" class="h-8"></div>
         <button
           id="recent-load"
@@ -258,16 +271,31 @@
         >
           Add to Basket
         </button>
-        <div id="modal-copy-container" class="absolute bottom-4 left-40 flex items-center gap-2">
-          <button id="modal-copy-link" class="font-bold py-2 px-4 rounded-full shadow-md bg-[#2A2A2E] border border-white/20">Copy Link</button>
+        <div
+          id="modal-copy-container"
+          class="absolute bottom-4 left-40 flex items-center gap-2"
+        >
+          <button
+            id="modal-copy-link"
+            class="font-bold py-2 px-4 rounded-full shadow-md bg-[#2A2A2E] border border-white/20"
+          >
+            Copy Link
+          </button>
           <span id="modal-copy-help" class="relative cursor-pointer text-lg">
             <i class="fas fa-question-circle"></i>
-            <span id="modal-copy-tooltip" class="absolute hidden bottom-full mb-2 left-1/2 -translate-x-1/2 bg-[#2A2A2E] border border-white/10 rounded p-2 text-xs whitespace-nowrap">Click to copy the shareable link</span>
+            <span
+              id="modal-copy-tooltip"
+              class="absolute hidden bottom-full mb-2 left-1/2 -translate-x-1/2 bg-[#2A2A2E] border border-white/10 rounded p-2 text-xs whitespace-nowrap"
+              >Click to copy the shareable link</span
+            >
           </span>
           <span id="modal-copy-msg" class="ml-2 text-sm hidden">Copied!</span>
         </div>
         <div class="mt-4 bg-[#2A2A2E] p-4 rounded-xl">
-          <ul id="comments-list" class="space-y-1 max-h-48 overflow-y-auto text-sm"></ul>
+          <ul
+            id="comments-list"
+            class="space-y-1 max-h-48 overflow-y-auto text-sm"
+          ></ul>
           <div id="comment-form" class="flex gap-2 mt-2">
             <input
               type="text"
@@ -275,56 +303,66 @@
               placeholder="Add a comment..."
               class="flex-1 bg-[#1A1A1D] border border-white/20 rounded px-2 py-1"
             />
-            <button id="comment-submit" class="px-3 py-1 bg-blue-600 rounded">Post</button>
+            <button id="comment-submit" class="px-3 py-1 bg-blue-600 rounded">
+              Post
+            </button>
           </div>
         </div>
       </div>
     </div>
     <script type="module">
-      import { shareOn } from './js/share.js';
-      import { init, closeModel, restoreOpenModel } from './js/community.js';
+      import { shareOn } from "./js/share.js";
+      import { loadRewardSummary } from "./js/rewards.js";
+      import { init, closeModel, restoreOpenModel } from "./js/community.js";
       window.shareOn = shareOn;
+      loadRewardSummary();
 
-      document.addEventListener('DOMContentLoaded', () => {
-        const modal = document.getElementById('model-modal');
-        const checkoutBtn = document.getElementById('modal-checkout');
-        const addBasketBtn = document.getElementById('modal-add-basket');
-        const closeBtn = document.getElementById('close-modal');
-        const tierToggle = document.getElementById('tier-toggle');
+      document.addEventListener("DOMContentLoaded", () => {
+        const modal = document.getElementById("model-modal");
+        const checkoutBtn = document.getElementById("modal-checkout");
+        const addBasketBtn = document.getElementById("modal-add-basket");
+        const closeBtn = document.getElementById("close-modal");
+        const tierToggle = document.getElementById("tier-toggle");
 
         function setTier(tier) {
-          tierToggle?.querySelectorAll('button[data-tier]').forEach((btn) => {
+          tierToggle?.querySelectorAll("button[data-tier]").forEach((btn) => {
             const active = btn.dataset.tier === tier;
 
-            btn.classList.toggle('ring-2', active);
-            btn.classList.toggle('ring-white', active);
-            btn.classList.toggle('opacity-100', active);
-            btn.classList.toggle('opacity-50', !active);
+            btn.classList.toggle("ring-2", active);
+            btn.classList.toggle("ring-white", active);
+            btn.classList.toggle("opacity-100", active);
+            btn.classList.toggle("opacity-50", !active);
           });
           if (checkoutBtn) {
-            const price = tier === 'bronze' ? 29.99 : tier === 'gold' ? 79.99 : 39.99;
+            const price =
+              tier === "bronze" ? 29.99 : tier === "gold" ? 79.99 : 39.99;
             checkoutBtn.textContent = `Print for £${price.toFixed(2)} →`;
           }
-          const material = tier === 'bronze' ? 'single' : tier === 'gold' ? 'premium' : 'multi';
-          localStorage.setItem('print3Material', material);
+          const material =
+            tier === "bronze"
+              ? "single"
+              : tier === "gold"
+                ? "premium"
+                : "multi";
+          localStorage.setItem("print3Material", material);
         }
 
-        tierToggle?.addEventListener('click', (ev) => {
-          const btn = ev.target.closest('button[data-tier]');
+        tierToggle?.addEventListener("click", (ev) => {
+          const btn = ev.target.closest("button[data-tier]");
           if (btn) setTier(btn.dataset.tier);
         });
 
         const close = closeModel;
 
-        checkoutBtn.addEventListener('click', () => {
-          sessionStorage.setItem('fromCommunity', '1');
+        checkoutBtn.addEventListener("click", () => {
+          sessionStorage.setItem("fromCommunity", "1");
           const model = checkoutBtn.dataset.model;
           const job = checkoutBtn.dataset.job;
-          if (model) localStorage.setItem('print3Model', model);
-          if (job) localStorage.setItem('print3JobId', job);
+          if (model) localStorage.setItem("print3Model", model);
+          if (job) localStorage.setItem("print3JobId", job);
         });
 
-        addBasketBtn?.addEventListener('click', () => {
+        addBasketBtn?.addEventListener("click", () => {
           if (!window.addToBasket) return;
           const model = addBasketBtn.dataset.model;
           const job = addBasketBtn.dataset.job;
@@ -334,45 +372,48 @@
           }
         });
 
-        const copyBtn = document.getElementById('modal-copy-link');
-        const copyMsg = document.getElementById('modal-copy-msg');
-        const help = document.getElementById('modal-copy-help');
-        const tooltip = document.getElementById('modal-copy-tooltip');
-        copyBtn?.addEventListener('click', () => {
+        const copyBtn = document.getElementById("modal-copy-link");
+        const copyMsg = document.getElementById("modal-copy-msg");
+        const help = document.getElementById("modal-copy-help");
+        const tooltip = document.getElementById("modal-copy-tooltip");
+        copyBtn?.addEventListener("click", () => {
           const id = copyBtn.dataset.id;
           if (!id) return;
           const url = `${window.location.origin}/community/model/${id}`;
           navigator.clipboard.writeText(url).then(() => {
             if (copyMsg) {
-              copyMsg.classList.remove('hidden');
-              setTimeout(() => copyMsg.classList.add('hidden'), 2000);
+              copyMsg.classList.remove("hidden");
+              setTimeout(() => copyMsg.classList.add("hidden"), 2000);
             }
           });
         });
         if (help && tooltip) {
-          ['mouseenter', 'focus'].forEach((ev) =>
-            help.addEventListener(ev, () => tooltip.classList.remove('hidden'))
+          ["mouseenter", "focus"].forEach((ev) =>
+            help.addEventListener(ev, () => tooltip.classList.remove("hidden")),
           );
-          ['mouseleave', 'blur'].forEach((ev) =>
-            help.addEventListener(ev, () => tooltip.classList.add('hidden'))
+          ["mouseleave", "blur"].forEach((ev) =>
+            help.addEventListener(ev, () => tooltip.classList.add("hidden")),
           );
         }
 
-        closeBtn.addEventListener('click', close);
-        document.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape') close();
+        closeBtn.addEventListener("click", close);
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape") close();
         });
 
-        document.addEventListener('click', (e) => {
-          if (modal.classList.contains('hidden')) return;
-          const container = modal.querySelector('div');
-          const basketBtn = document.getElementById('basket-button');
-          if (!container.contains(e.target) && !(basketBtn && basketBtn.contains(e.target))) {
+        document.addEventListener("click", (e) => {
+          if (modal.classList.contains("hidden")) return;
+          const container = modal.querySelector("div");
+          const basketBtn = document.getElementById("basket-button");
+          if (
+            !container.contains(e.target) &&
+            !(basketBtn && basketBtn.contains(e.target))
+          ) {
             close();
           }
         });
 
-        setTier('silver');
+        setTier("silver");
         init();
         restoreOpenModel();
       });
@@ -384,7 +425,8 @@
       <div class="bg-[#2A2A2E] p-6 rounded-xl max-w-sm text-center">
         <h2 class="text-2xl font-semibold mb-2">Print Club</h2>
         <p class="mb-4">
-          Get two prints (single or multicolour tiers) every week for £149.99/month. Unused credits expire weekly.
+          Get two prints (single or multicolour tiers) every week for
+          £149.99/month. Unused credits expire weekly.
         </p>
         <button
           id="printclub-close"
