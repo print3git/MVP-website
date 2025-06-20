@@ -26,6 +26,7 @@
 - Add real photo of printed object or user-generated image to hero section to reinforce the physical product.
 - Display pricing info near the prompt field such as "From $X / print" to reduce hesitation.
 
+
 ## Fulfillment Capacity Forecasting
 
 - Graph forecasted demand vs. capacity in the admin panel.
@@ -140,18 +141,12 @@
 
 ## Gifting Flow Integration
 
-- Record `is_gift` metadata in Stripe checkout and send recipient claim email.
 - Build recipient portal with magic-link login, 3D preview, edit controls and shipping tracker.
 - Send lifecycle emails: gift notification, shipping updates and Day 30 upsell.
 - Credit the sender if the recipient purchases within 60 days and log events to Segment/GA4.
 - **Data & config**
-  - Add nullable gifts table with order and recipient details.
-  - Add `is_gift` boolean column to orders.
   - Expose `FeatureFlags.GIFTING` and add gifting email/portal env vars.
 - **Backend endpoints**
-  - POST `/gifts` to create gift orders and return a Stripe session id.
-  - Handle Stripe webhook to insert gift rows when metadata flag is set.
-  - POST `/gifts/:id/claim` for recipients to confirm shipping and personalisation.
   - GET `/users/:id/gifts/sent` and `/received` for dashboard history.
   - Queue worker to start print job and send confirmations after claim.
   - POST `/referral/redeem` to credit the sender for follow-on purchases.
