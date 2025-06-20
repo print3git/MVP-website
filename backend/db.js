@@ -496,6 +496,34 @@ async function getCommunityComments(modelId, limit = 20) {
   );
   return rows;
 }
+async function insertDesignerSubmission(
+  userId,
+  filePath,
+  title = null,
+  royaltyPercent = 10,
+) {
+  const { rows } = await query(
+    "INSERT INTO designer_submissions(user_id, file_path, title, royalty_percent) VALUES($1,$2,$3,$4) RETURNING *",
+    [userId, filePath, title, royaltyPercent],
+  );
+  return rows[0];
+}
+
+async function approveDesignerSubmission(id) {
+  const { rows } = await query(
+    "UPDATE designer_submissions SET status='approved', updated_at=NOW() WHERE id=$1 RETURNING *",
+    [id],
+  );
+  return rows[0];
+}
+
+async function listApprovedSubmissions(limit = 10, offset = 0) {
+  const { rows } = await query(
+    "SELECT * FROM designer_submissions WHERE status='approved' ORDER BY created_at DESC LIMIT $1 OFFSET $2",
+    [limit, offset],
+  );
+  return rows;
+}
 
 async function listSpaces() {
   const { rows } = await query("SELECT * FROM spaces ORDER BY id");
@@ -779,6 +807,9 @@ module.exports = {
   getUserCreations,
   insertCommunityComment,
   getCommunityComments,
+  insertDesignerSubmission,
+  approveDesignerSubmission,
+  listApprovedSubmissions,
   listSpaces,
   createSpace,
   getRewardOptions,
