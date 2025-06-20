@@ -1239,6 +1239,16 @@ app.get("/api/metrics/daily-capacity", async (req, res) => {
   }
 });
 
+app.get("/api/metrics/demand-forecast", async (req, res) => {
+  try {
+    const data = await db.getDemandForecast();
+    res.json(data);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: "Failed to fetch demand forecast" });
+  }
+});
+
 app.get("/api/users/:username/models", async (req, res) => {
   const limit = parseInt(req.query.limit, 10) || 10;
   const offset = parseInt(req.query.offset, 10) || 0;
