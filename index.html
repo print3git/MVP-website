@@ -137,10 +137,15 @@
       <div class="flex flex-col items-start">
         <img src="img/textlogo.png" alt="print3" class="h-10 w-auto" />
         <div class="mt-1 flex flex-col text-sm opacity-90">
-
-          <p class="text-gray-300"><span class="text-white">5400+</span> prints</p>
+          <p class="text-gray-300">
+            <span class="text-white">5400+</span> prints
+          </p>
           <p class="text-gray-300">delivered already</p>
-          <p id="stats-ticker" class="text-[#30D5C8] text-left" style="min-height: 2.5rem"></p>
+          <p
+            id="stats-ticker"
+            class="text-[#30D5C8] text-left"
+            style="min-height: 2.5rem"
+          ></p>
         </div>
       </div>
 
@@ -167,6 +172,7 @@
           class="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-3xl px-3 py-2 text-sm transition-shape"
           >[🎉 NEW] Earn Rewards</a
         >
+        <span id="header-points" class="ml-1"></span>
 
         <a
           href="printclub.html"
@@ -496,6 +502,7 @@
     <script type="module" src="js/exitDiscount.js" defer></script>
     <script type="module" src="js/printclub.js" defer></script>
     <script type="module">
+      import { loadRewardSummary } from "./js/rewards.js";
       document
         .getElementById("profile-link")
         ?.addEventListener("click", function (e) {
@@ -504,6 +511,7 @@
             window.location.href = "login.html";
           }
         });
+      loadRewardSummary();
     </script>
 
     <!-- Position the subreddit quote next to the checkout button and keep

@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Competitions</title>
     <meta property="og:title" content="Competitions – print3" />
-    <meta property="og:description" content="Join print3 contests and showcase your 3D designs." />
+    <meta
+      property="og:description"
+      content="Join print3 contests and showcase your 3D designs."
+    />
     <meta property="og:image" content="img/boxlogo.png" />
     <script src="js/applyColorScheme.js"></script>
     <link rel="preconnect" href="https://modelviewer.dev" crossorigin />
@@ -45,7 +48,11 @@
             stroke-width="2"
             viewBox="0 0 24 24"
           >
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M15 19l-7-7 7-7"
+            />
           </svg>
           Back
         </a>
@@ -56,6 +63,7 @@
           class="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-3xl px-3 py-2 text-sm transition-shape"
           >[🎉 NEW] Earn Rewards</a
         >
+        <span id="header-points" class="ml-1"></span>
       </div>
       <div class="flex items-center space-x-4 ml-4">
         <a
@@ -104,14 +112,17 @@
       </div>
     </header>
     <main class="flex-1 p-4 space-y-6">
-      <div id="printclub-banner" class="bg-blue-600 text-white p-3 rounded-xl text-center hidden">
+      <div
+        id="printclub-banner"
+        class="bg-blue-600 text-white p-3 rounded-xl text-center hidden"
+      >
         Join <strong>Print Club</strong> for weekly prints.
         <a href="#" id="printclub-banner-link" class="underline">Learn more</a>
       </div>
       <section class="bg-[#2A2A2E] p-4 rounded-xl">
         <p class="mb-2">
-          Put your modelling skills to the test! Enter our themed contests, climb the leaderboard
-          and win free prints.
+          Put your modelling skills to the test! Enter our themed contests,
+          climb the leaderboard and win free prints.
         </p>
         <p>
           <a href="signup.html" class="font-bold text-[#30D5C8]">Sign Up</a>
@@ -131,12 +142,17 @@
           placeholder="Email for updates"
           aria-label="Email address"
         />
-        <button class="bg-[#30D5C8] text-[#1A1A1D] px-3 rounded">Subscribe</button>
+        <button class="bg-[#30D5C8] text-[#1A1A1D] px-3 rounded">
+          Subscribe
+        </button>
       </form>
       <div id="comp-subscribe-msg" class="text-sm"></div>
       <div id="entry-success" class="hidden text-green-400 mt-2"></div>
       <h2 class="text-2xl mt-8">Past Winners</h2>
-      <div id="winners-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+      <div
+        id="winners-grid"
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4"
+      >
         <div
           class="model-card relative h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape flex items-center justify-center cursor-pointer"
           data-model="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/DamagedHelmet/glTF-Binary/DamagedHelmet.glb"
@@ -147,9 +163,17 @@
             alt="Damaged Helmet"
             class="w-full h-full object-contain pointer-events-none"
           />
-          <span class="absolute top-1 left-1 bg-black/60 text-xs px-1 rounded">Ended 05/25</span>
-          <button class="like absolute bottom-1 right-1 text-xs bg-red-600 px-1 rounded">♥</button>
-          <span class="absolute bottom-8 right-1 text-xs bg-black/50 px-1 rounded" id="votes-helmet"
+          <span class="absolute top-1 left-1 bg-black/60 text-xs px-1 rounded"
+            >Ended 05/25</span
+          >
+          <button
+            class="like absolute bottom-1 right-1 text-xs bg-red-600 px-1 rounded"
+          >
+            ♥
+          </button>
+          <span
+            class="absolute bottom-8 right-1 text-xs bg-black/50 px-1 rounded"
+            id="votes-helmet"
             >0</span
           >
           <button
@@ -168,9 +192,17 @@
             alt="Fox"
             class="w-full h-full object-contain pointer-events-none"
           />
-          <span class="absolute top-1 left-1 bg-black/60 text-xs px-1 rounded">Ended 03/24</span>
-          <button class="like absolute bottom-1 right-1 text-xs bg-red-600 px-1 rounded">♥</button>
-          <span class="absolute bottom-8 right-1 text-xs bg-black/50 px-1 rounded" id="votes-fox"
+          <span class="absolute top-1 left-1 bg-black/60 text-xs px-1 rounded"
+            >Ended 03/24</span
+          >
+          <button
+            class="like absolute bottom-1 right-1 text-xs bg-red-600 px-1 rounded"
+          >
+            ♥
+          </button>
+          <span
+            class="absolute bottom-8 right-1 text-xs bg-black/50 px-1 rounded"
+            id="votes-fox"
             >0</span
           >
           <button
@@ -189,8 +221,14 @@
             alt="BoomBox"
             class="w-full h-full object-contain pointer-events-none"
           />
-          <span class="absolute top-1 left-1 bg-black/60 text-xs px-1 rounded">Ended 01/23</span>
-          <button class="like absolute bottom-1 right-1 text-xs bg-red-600 px-1 rounded">♥</button>
+          <span class="absolute top-1 left-1 bg-black/60 text-xs px-1 rounded"
+            >Ended 01/23</span
+          >
+          <button
+            class="like absolute bottom-1 right-1 text-xs bg-red-600 px-1 rounded"
+          >
+            ♥
+          </button>
           <span
             class="absolute bottom-8 right-1 text-xs bg-black/50 px-1 rounded"
             id="votes-boombox"
@@ -224,10 +262,17 @@
         />
         <div id="enter-error" class="text-red-400 text-sm"></div>
         <div class="flex justify-end space-x-2">
-          <button id="enter-cancel" type="button" class="px-4 py-2 bg-gray-500 rounded">
+          <button
+            id="enter-cancel"
+            type="button"
+            class="px-4 py-2 bg-gray-500 rounded"
+          >
             Cancel
           </button>
-          <button type="submit" class="px-4 py-2 bg-[#30D5C8] text-[#1A1A1D] rounded">
+          <button
+            type="submit"
+            class="px-4 py-2 bg-[#30D5C8] text-[#1A1A1D] rounded"
+          >
             Submit
           </button>
         </div>
@@ -324,53 +369,61 @@
     </div>
     <script type="module" src="js/competitions.js"></script>
     <script type="module">
-      import { shareOn } from './js/share.js';
+      import { shareOn } from "./js/share.js";
+      import { loadRewardSummary } from "./js/rewards.js";
       window.shareOn = shareOn;
+      loadRewardSummary();
 
-      document.addEventListener('DOMContentLoaded', () => {
-        const modal = document.getElementById('model-modal');
-        const viewer = modal.querySelector('model-viewer');
-        const checkoutBtn = document.getElementById('modal-checkout');
-        const addBasketBtn = document.getElementById('modal-add-basket');
-        const closeBtn = document.getElementById('close-modal');
-        const tierToggle = document.getElementById('tier-toggle');
+      document.addEventListener("DOMContentLoaded", () => {
+        const modal = document.getElementById("model-modal");
+        const viewer = modal.querySelector("model-viewer");
+        const checkoutBtn = document.getElementById("modal-checkout");
+        const addBasketBtn = document.getElementById("modal-add-basket");
+        const closeBtn = document.getElementById("close-modal");
+        const tierToggle = document.getElementById("tier-toggle");
 
         function setTier(tier) {
-          tierToggle?.querySelectorAll('button[data-tier]').forEach((btn) => {
+          tierToggle?.querySelectorAll("button[data-tier]").forEach((btn) => {
             const active = btn.dataset.tier === tier;
 
-            btn.classList.toggle('ring-2', active);
-            btn.classList.toggle('ring-white', active);
-            btn.classList.toggle('opacity-100', active);
-            btn.classList.toggle('opacity-50', !active);
+            btn.classList.toggle("ring-2", active);
+            btn.classList.toggle("ring-white", active);
+            btn.classList.toggle("opacity-100", active);
+            btn.classList.toggle("opacity-50", !active);
           });
           if (checkoutBtn) {
-            const price = tier === 'bronze' ? 29.99 : tier === 'gold' ? 79.99 : 39.99;
+            const price =
+              tier === "bronze" ? 29.99 : tier === "gold" ? 79.99 : 39.99;
             checkoutBtn.textContent = `Print for £${price.toFixed(2)} →`;
           }
-          const material = tier === 'bronze' ? 'single' : tier === 'gold' ? 'premium' : 'multi';
-          localStorage.setItem('print3Material', material);
+          const material =
+            tier === "bronze"
+              ? "single"
+              : tier === "gold"
+                ? "premium"
+                : "multi";
+          localStorage.setItem("print3Material", material);
         }
 
-        tierToggle?.addEventListener('click', (ev) => {
-          const btn = ev.target.closest('button[data-tier]');
+        tierToggle?.addEventListener("click", (ev) => {
+          const btn = ev.target.closest("button[data-tier]");
           if (btn) setTier(btn.dataset.tier);
         });
 
         function close() {
-          modal.classList.add('hidden');
-          document.body.classList.remove('overflow-hidden');
+          modal.classList.add("hidden");
+          document.body.classList.remove("overflow-hidden");
         }
 
-        checkoutBtn.addEventListener('click', () => {
-          sessionStorage.setItem('fromCompetitions', '1');
+        checkoutBtn.addEventListener("click", () => {
+          sessionStorage.setItem("fromCompetitions", "1");
           const model = checkoutBtn.dataset.model;
           const job = checkoutBtn.dataset.job;
-          if (model) localStorage.setItem('print3Model', model);
-          if (job) localStorage.setItem('print3JobId', job);
+          if (model) localStorage.setItem("print3Model", model);
+          if (job) localStorage.setItem("print3JobId", job);
         });
 
-        addBasketBtn?.addEventListener('click', () => {
+        addBasketBtn?.addEventListener("click", () => {
           if (!window.addToBasket) return;
           const model = addBasketBtn.dataset.model;
           const job = addBasketBtn.dataset.job;
@@ -380,25 +433,28 @@
           }
         });
 
-        closeBtn.addEventListener('click', close);
+        closeBtn.addEventListener("click", close);
 
-        document.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape') close();
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape") close();
         });
 
-        document.addEventListener('click', (e) => {
-          if (modal.classList.contains('hidden')) return;
-          const container = modal.querySelector('div');
-          const basketBtn = document.getElementById('basket-button');
-          if (!container.contains(e.target) && !(basketBtn && basketBtn.contains(e.target))) {
+        document.addEventListener("click", (e) => {
+          if (modal.classList.contains("hidden")) return;
+          const container = modal.querySelector("div");
+          const basketBtn = document.getElementById("basket-button");
+          if (
+            !container.contains(e.target) &&
+            !(basketBtn && basketBtn.contains(e.target))
+          ) {
             close();
           }
         });
 
-        document.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape') close();
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape") close();
         });
-        setTier('silver');
+        setTier("silver");
       });
     </script>
     <div
@@ -408,7 +464,8 @@
       <div class="bg-[#2A2A2E] p-6 rounded-xl max-w-sm text-center">
         <h2 class="text-2xl font-semibold mb-2">Print Club</h2>
         <p class="mb-4">
-          Get two prints (single or multicolour tiers) every week for £149.99/month. Unused credits expire weekly.
+          Get two prints (single or multicolour tiers) every week for
+          £149.99/month. Unused credits expire weekly.
         </p>
         <div class="mt-4 flex justify-center space-x-2">
           <a

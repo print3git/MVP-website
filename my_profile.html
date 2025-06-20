@@ -58,6 +58,7 @@
           class="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-3xl px-3 py-2 text-sm transition-shape"
           >[🎉 NEW] Earn Rewards</a
         >
+        <span id="header-points" class="ml-1"></span>
 
         <a
           href="printclub.html"
@@ -235,7 +236,10 @@
       >
         <h2 class="text-lg font-semibold mb-2">Time Capsule</h2>
         <p id="time-capsule-text" class="mb-2"></p>
-        <button id="time-capsule-action" class="px-3 py-1 bg-blue-600 rounded-3xl"></button>
+        <button
+          id="time-capsule-action"
+          class="px-3 py-1 bg-blue-600 rounded-3xl"
+        ></button>
       </div>
 
       <div
@@ -244,8 +248,12 @@
       >
         <h2 class="text-lg font-semibold mb-2">Subscriber Previews</h2>
         <div class="grid grid-cols-2 gap-4">
-          <div class="h-24 bg-[#1A1A1D] flex items-center justify-center">Preview 1</div>
-          <div class="h-24 bg-[#1A1A1D] flex items-center justify-center">Preview 2</div>
+          <div class="h-24 bg-[#1A1A1D] flex items-center justify-center">
+            Preview 1
+          </div>
+          <div class="h-24 bg-[#1A1A1D] flex items-center justify-center">
+            Preview 2
+          </div>
         </div>
       </div>
 
@@ -321,7 +329,9 @@
     <script type="module" src="js/my_profile.js"></script>
     <script type="module">
       import { shareOn } from "./js/share.js";
+      import { loadRewardSummary } from "./js/rewards.js";
       window.shareOn = shareOn;
+      loadRewardSummary();
     </script>
     <div
       id="printclub-modal"
@@ -330,7 +340,8 @@
       <div class="bg-[#2A2A2E] p-6 rounded-xl max-w-sm text-center">
         <h2 class="text-2xl font-semibold mb-2">Print Club</h2>
         <p class="mb-4">
-          Get two prints (single or multicolour tiers) every week for £149.99/month. Unused credits expire weekly.
+          Get two prints (single or multicolour tiers) every week for
+          £149.99/month. Unused credits expire weekly.
         </p>
         <button
           id="printclub-close"
