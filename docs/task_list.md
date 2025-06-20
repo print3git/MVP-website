@@ -133,9 +133,7 @@
 
 ## Global Operations Reporting
 
-- Email a weekly "state of company" PDF with key metrics.
-- Highlight hubs with repeated errors or downtime.
-- Archive all reports in cloud storage.
+(completed)
 
 ## Carrier Pickup Integration
 
