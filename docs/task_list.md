@@ -10,6 +10,7 @@
 ## Purchase & Checkout
 
 - Offer multiple payment methods including Apple Pay and Google Pay.
+- Reconfigure seasonal order bundles once promotions resume.
 
 ## Decreasing CAC
 
@@ -18,6 +19,7 @@
 ## Competitions & Print Club
 
 - Add images to the competitions page and Print Club with participant quotes to show social proof.
+- Replace the placeholder "Real life image here" box on the Print Club page with an actual photo.
 
 ## Hub Deployment Kit
 
@@ -147,6 +149,7 @@
 - Log reprint events for reporting and analytics.
 - Send a delivery confirmation email containing a satisfaction survey link.
 - Store survey responses in the database and surface metrics on the dashboard.
+- Reintroduce next-day delivery countdown on the site when logistics allow.
 
 ## Gifting Flow Integration
 

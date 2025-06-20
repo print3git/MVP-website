@@ -31,7 +31,6 @@ const SEASONAL_BUNDLES = [
     name: 'Winter Wonderland Bundle',
     detail: 'Free snowman stand with gift prints',
   },
-  { name: 'Spring Bloom Bundle', detail: 'Includes floral gift wrap' },
   { name: 'Summer Fun Bundle', detail: 'Beach-themed gift card included' },
   { name: 'Autumn Harvest Bundle', detail: 'Leaf pattern gift wrap' },
 ];
@@ -378,6 +377,7 @@ async function initPaymentPage() {
   const recipientFields = document.getElementById('recipient-fields');
   const qtySelect = document.getElementById('print-qty');
   const bulkMsg = document.getElementById('bulk-discount-msg');
+
   fetchCampaignBundle();
   loadCheckoutCredits();
   if (referralId && discountMsg) {
@@ -410,14 +410,6 @@ async function initPaymentPage() {
     subscriptionRadios.forEach((r) => {
       if (r.value === 'join') r.checked = true;
     });
-  }
-  if (surpriseToggle && recipientFields) {
-    const toggle = () => {
-      if (surpriseToggle.checked) recipientFields.classList.add('hidden');
-      else recipientFields.classList.remove('hidden');
-    };
-    surpriseToggle.addEventListener('change', toggle);
-    toggle();
   }
   const payBtn = document.getElementById('submit-payment');
   const singleLabel = document.getElementById('single-label');
@@ -762,11 +754,9 @@ async function initPaymentPage() {
     });
     const giftDiv = document.getElementById('gift-options');
     const giftBtn = document.getElementById('gift-order');
-    if (giftDiv && giftBtn && surpriseToggle && recipientFields) {
+    if (giftDiv && giftBtn) {
       giftDiv.classList.remove('hidden');
       giftBtn.addEventListener('click', () => {
-        surpriseToggle.checked = false;
-        recipientFields.classList.remove('hidden');
         document.getElementById('checkout-form')?.scrollIntoView({
           behavior: 'smooth',
         });
@@ -879,8 +869,6 @@ async function initPaymentPage() {
       city: document.getElementById('ship-city').value,
       zip: document.getElementById('ship-zip').value,
       email: emailEl.value,
-      surprise: document.getElementById('surprise-toggle')?.checked || false,
-      recipientEmail: document.getElementById('recipient-email')?.value || '',
     };
     let etchName = '';
     if (etchInput && !etchInput.disabled) {
