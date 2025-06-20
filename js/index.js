@@ -142,7 +142,7 @@ const TZ = "America/New_York";
 // Local fallback model used when generation fails or the viewer hasn't loaded a model yet.
 
 const FALLBACK_GLB_LOW =
-  "https://modelviewer.dev/shared-assets/models/RobotExpressive.glb";
+  "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
 const FALLBACK_GLB_HIGH =
   "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
 const FALLBACK_GLB = FALLBACK_GLB_LOW;
@@ -718,7 +718,7 @@ async function init() {
   await ensureModelViewerLoaded();
   if (window.customElements?.whenDefined) {
     try {
-      await customElements.whenDefined('model-viewer');
+      await customElements.whenDefined("model-viewer");
     } catch {}
   }
   syncUploadHeights();
