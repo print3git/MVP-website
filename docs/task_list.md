@@ -27,9 +27,7 @@
 - Display pricing info near the prompt field such as "From $X / print" to reduce hesitation.
 
 
-## Fulfillment Capacity Forecasting
 
-- Graph forecasted demand vs. capacity in the admin panel.
 
 ## Hub Deployment Kit
 

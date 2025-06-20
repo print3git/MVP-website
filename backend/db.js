@@ -727,6 +727,31 @@ async function getDailyCapacityUtilizationSeries(start, end) {
     utilization: parseFloat(r.utilization) || 0,
   }));
 }
+
+async function getDemandForecast(days = 7) {
+  const PRODUCT_HOURS = { single: 1, multi: 2, premium: 3 };
+  const ordersRes = await query(
+    `SELECT product_type, SUM(quantity) AS qty
+       FROM orders
+      WHERE status='paid' AND created_at >= NOW() - INTERVAL '7 days'
+      GROUP BY product_type`,
+  );
+  let avgHours = 0;
+  for (const row of ordersRes.rows) {
+    const perUnit = PRODUCT_HOURS[row.product_type] || 1;
+    avgHours += (parseInt(row.qty, 10) || 0) * perUnit;
+  }
+  avgHours /= 7;
+  const capRes = await query('SELECT COUNT(*) FROM printers');
+  const capacity = (parseInt(capRes.rows[0].count, 10) || 0) * 24;
+  const start = new Date();
+  const arr = [];
+  for (let i = 0; i < days; i++) {
+    const day = new Date(start.getTime() + i * 86400000);
+    arr.push({ day: day.toISOString().slice(0, 10), demand: avgHours, capacity });
+  }
+  return arr;
+}
 //
 // async function listSpaces() {
 //   const { rows } = await query('SELECT * FROM spaces ORDER BY id');
@@ -807,6 +832,7 @@ module.exports = {
   getHubSaturationSummary,
   getDailyProfitSeries,
   getDailyCapacityUtilizationSeries,
+  getDemandForecast,
 
   // newly exposed helpers
   insertAdSpend,
