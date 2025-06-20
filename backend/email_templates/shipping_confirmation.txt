@@ -1,0 +1,6 @@
+Hi {{username}},
+
+Your order {{order_id}} has shipped! You can track its progress here:
+{{tracking_url}}
+
+Thanks for supporting our community!
