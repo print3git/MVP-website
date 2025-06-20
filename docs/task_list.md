@@ -19,6 +19,7 @@
 ## Competitions & Print Club
 
 - Add images to the competitions page and Print Club with participant quotes to show social proof.
+- Replace the placeholder "Real life image here" box on the Print Club page with an actual photo.
 
 ## Hub Deployment Kit
 
