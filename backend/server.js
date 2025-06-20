@@ -21,7 +21,9 @@ const prohibitedCountries = ["CU", "IR", "KP", "RU", "SY"];
 const generateTitle = require("./utils/generateTitle");
 const stripe = require("stripe")(config.stripeKey);
 const campaigns = require("./campaigns.json");
-const internalIPs = (process.env.INTERNAL_IPS || "127.0.0.1").split(",").filter(Boolean);
+const internalIPs = (process.env.INTERNAL_IPS || "127.0.0.1")
+  .split(",")
+  .filter(Boolean);
 
 function giftsAllowed(req) {
   if (process.env.GIFTS_ENABLED === "true") return true;
@@ -2422,7 +2424,7 @@ app.post("/api/create-order", authOptional, async (req, res) => {
       await db.incrementCreditsUsed(req.user.id, 1);
       const sessionId = uuidv4();
       await db.query(
-        "INSERT INTO orders(session_id, job_id, user_id, price_cents, status, shipping_info, quantity, discount_cents, etch_name, product_type, utm_source, utm_medium, utm_campaign, subreddit) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)",
+        "INSERT INTO orders(session_id, job_id, user_id, price_cents, status, shipping_info, quantity, discount_cents, etch_name, product_type, utm_source, utm_medium, utm_campaign, subreddit, is_gift) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)",
         [
           sessionId,
           jobId,
@@ -2438,6 +2440,7 @@ app.post("/api/create-order", authOptional, async (req, res) => {
           req.body.utmMedium || null,
           req.body.utmCampaign || null,
           req.body.adSubreddit || null,
+          false,
         ],
       );
       enqueuePrint(jobId);
@@ -2479,11 +2482,11 @@ app.post("/api/create-order", authOptional, async (req, res) => {
       ],
       success_url: `${req.headers.origin}/payment.html?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${req.headers.origin}/payment.html?cancel=1`,
-      metadata: { jobId },
+      metadata: { jobId, isGift: "false" },
     });
 
     await db.query(
-      "INSERT INTO orders(session_id, job_id, user_id, price_cents, status, shipping_info, quantity, discount_cents, etch_name, product_type, utm_source, utm_medium, utm_campaign, subreddit) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)",
+      "INSERT INTO orders(session_id, job_id, user_id, price_cents, status, shipping_info, quantity, discount_cents, etch_name, product_type, utm_source, utm_medium, utm_campaign, subreddit, is_gift) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)",
       [
         session.id,
         jobId,
@@ -2499,6 +2502,7 @@ app.post("/api/create-order", authOptional, async (req, res) => {
         req.body.utmMedium || null,
         req.body.utmCampaign || null,
         req.body.adSubreddit || null,
+        false,
       ],
     );
     if (referrerId && (!req.user || referrerId !== req.user.id)) {
@@ -2528,6 +2532,68 @@ app.post("/api/create-order", authOptional, async (req, res) => {
   } catch (err) {
     logError(err);
     res.status(500).json({ error: "Failed to create order" });
+  }
+});
+
+/**
+ * POST /api/gifts
+ * Create a gift order and return a Stripe Checkout URL
+ */
+app.post("/api/gifts", authRequired, async (req, res) => {
+  if (!giftsAllowed(req))
+    return res.status(403).json({ error: "Gifting not enabled" });
+  const { jobId, price, recipientEmail, message } = req.body;
+  if (!jobId || !price || !recipientEmail) {
+    return res.status(400).json({ error: "Missing fields" });
+  }
+  try {
+    const session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      line_items: [
+        {
+          price_data: {
+            currency: "usd",
+            product_data: { name: "3D Print Gift" },
+            unit_amount: price,
+          },
+          quantity: 1,
+        },
+      ],
+      success_url: `${req.headers.origin}/payment.html?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${req.headers.origin}/payment.html?cancel=1`,
+      metadata: {
+        jobId,
+        recipientEmail,
+        message: message || "",
+        isGift: "true",
+      },
+    });
+
+    await db.query(
+      "INSERT INTO orders(session_id, job_id, user_id, price_cents, status, shipping_info, quantity, discount_cents, etch_name, product_type, utm_source, utm_medium, utm_campaign, subreddit, is_gift) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)",
+      [
+        session.id,
+        jobId,
+        req.user.id,
+        price,
+        "pending",
+        {},
+        1,
+        0,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        true,
+      ],
+    );
+
+    res.json({ checkoutUrl: session.url });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: "Failed to create gift" });
   }
 });
 
@@ -2659,13 +2725,45 @@ app.post(
         ]);
 
         const { rows } = await db.query(
-          "SELECT job_id, user_id, shipping_info FROM orders WHERE session_id=$1",
+          "SELECT job_id, user_id, shipping_info, is_gift FROM orders WHERE session_id=$1",
           [sessionId],
         );
         const row = rows[0] || {};
         const jobId = sessionJobId || row.job_id;
         const userId = row.user_id;
         const shippingInfo = row.shipping_info;
+        const orderIsGift = row.is_gift;
+
+        if (orderIsGift && event.data.object.metadata?.recipientEmail) {
+          const token = uuidv4();
+          const { rows: profileRows } = await db.query(
+            "SELECT display_name FROM user_profiles WHERE user_id=$1",
+            [userId],
+          );
+          const senderName = profileRows[0]?.display_name || "A friend";
+          await db.query(
+            "INSERT INTO gifts(order_id, sender_id, recipient_email, message, model_id, claim_token) VALUES($1,$2,$3,$4,$5,$6)",
+            [
+              sessionId,
+              userId,
+              event.data.object.metadata.recipientEmail,
+              event.data.object.metadata.message || null,
+              jobId,
+              token,
+            ],
+          );
+          const claimUrl = `${process.env.SITE_URL || "http://localhost:3000"}/claim-gift/${token}`;
+          await sendTemplate(
+            event.data.object.metadata.recipientEmail,
+            "You've received a gift!",
+            "gift_claim.txt",
+            {
+              recipient: event.data.object.metadata.recipientEmail,
+              sender: senderName,
+              claimUrl,
+            },
+          );
+        }
 
         if (jobId) {
           let gcodePath = null;
