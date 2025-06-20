@@ -142,7 +142,7 @@ const TZ = "America/New_York";
 // Local fallback model used when generation fails or the viewer hasn't loaded a model yet.
 
 const FALLBACK_GLB_LOW =
-  "https://modelviewer.dev/shared-assets/models/RobotExpressive.glb";
+  "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
 const FALLBACK_GLB_HIGH =
   "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
 const FALLBACK_GLB = FALLBACK_GLB_LOW;
@@ -234,6 +234,7 @@ let editsPending = false;
 let progressInterval = null;
 let progressStart = null;
 let usingViewerProgress = false;
+let lastSnapshot = null;
 
 function getCycleKey() {
   const now = new Date();
@@ -700,7 +701,10 @@ refs.submitBtn.addEventListener("click", async () => {
       if (!snapshot || snapshot.includes("placehold.co")) {
         snapshot = await captureModelSnapshot(url);
       }
+      lastSnapshot = snapshot;
       window.addAutoItem({ jobId: lastJobId, modelUrl: url, snapshot });
+    } else {
+      lastSnapshot = await captureModelSnapshot(url);
     }
     setStep("model");
     if (window.setWizardStage) window.setWizardStage("purchase");
@@ -718,7 +722,7 @@ async function init() {
   await ensureModelViewerLoaded();
   if (window.customElements?.whenDefined) {
     try {
-      await customElements.whenDefined('model-viewer');
+      await customElements.whenDefined("model-viewer");
     } catch {}
   }
   syncUploadHeights();
@@ -810,6 +814,9 @@ async function init() {
       { once: true },
     );
     await refs.viewer.updateComplete;
+    try {
+      lastSnapshot = await captureModelSnapshot(refs.viewer.src);
+    } catch {}
   }
   showModel();
   fetchProfile().then(() => {
@@ -885,6 +892,7 @@ async function init() {
     if (!snapshot || snapshot.includes("placehold.co")) {
       snapshot = await captureModelSnapshot(refs.viewer.src);
     }
+    lastSnapshot = snapshot;
     const item = { jobId: lastJobId, modelUrl: refs.viewer.src, snapshot };
     if (
       window.manualizeItem &&
@@ -963,7 +971,17 @@ async function init() {
   let popupIdx = 0;
   function showPopup() {
     if (!popupEl) return;
-    popupEl.textContent = popupMsgs[popupIdx % popupMsgs.length];
+    const msg = popupMsgs[popupIdx % popupMsgs.length];
+    popupEl.innerHTML = "";
+    const span = document.createElement("span");
+    span.textContent = msg;
+    popupEl.appendChild(span);
+    if (popupIdx % popupMsgs.length === 0 && lastSnapshot) {
+      const img = document.createElement("img");
+      img.src = lastSnapshot;
+      img.className = "w-10 h-10 ml-2 rounded";
+      popupEl.appendChild(img);
+    }
     popupEl.classList.remove("hidden");
     setTimeout(() => popupEl.classList.add("hidden"), 5000);
     popupIdx++;
