@@ -70,8 +70,6 @@
 - Issue goodwill coupons if service-level targets are missed.
 - Escalate unresolved tickets to the founders.
 
-## Legal & Accounting Automation
-
 ## Marketplace & Licensing (Future)
 
 - Build designer submission portal for new models.
