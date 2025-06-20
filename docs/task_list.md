@@ -182,7 +182,6 @@
   - Define colour tokens `giftHighlight` and `giftAccent`.
   - Provide `gift.svg` and `arrow-send.svg` icons.
   - Microcopy: "We’ll email your friend a link to pick colours & delivery date (no address needed yet)."
-- **Marketing automations**
 - **Legal & policy**
   - Update Terms of Service with gifting section and data use.
   - Update privacy policy with lawful basis and deletion timeline.
