@@ -49,18 +49,16 @@ jobs:
             npm audit --audit-level=high --prefix backend/hunyuan_server
           fi
 
-      - name: Validate SNYK_TOKEN
+      - name: Validate Snyk token
         if: ${{ secrets.SNYK_TOKEN }}
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run: |
-          if ! npx snyk auth --token="$SNYK_TOKEN" >/dev/null 2>&1; then
-            echo "❌ Invalid SNYK_TOKEN; please update your GitHub secret"
-            exit 1
-          fi
+          echo "Validating SNYK_TOKEN..."
+          npx snyk auth --token=$SNYK_TOKEN
 
-      - name: Snyk security scan
-        if: ${{ secrets.SNYK_TOKEN }}
+      - name: Snyk scan backend
+        if: success() && secrets.SNYK_TOKEN
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run: npx snyk test --severity-threshold=high --file=backend/package.json
@@ -68,17 +66,11 @@ jobs:
       - name: Fallback to npm audit
         if: ${{ !secrets.SNYK_TOKEN }}
         run: |
-          echo "⚠️ SNYK_TOKEN not set; running npm audit instead"
+          echo "⚠️ SNYK_TOKEN missing or invalid; running npm audit instead"
           npm audit --audit-level=high --prefix backend
 
-      - name: Snyk hunyuan scan
-        if: ${{ secrets.SNYK_TOKEN && hashFiles('backend/hunyuan_server/package.json') != '' }}
+      - name: Snyk scan hunyuan_server
+        if: success() && secrets.SNYK_TOKEN && fileExists('backend/hunyuan_server/package.json')
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run: npx snyk test --severity-threshold=high --file=backend/hunyuan_server/package.json
-
-      - name: Fallback hunyuan npm audit
-        if: ${{ !secrets.SNYK_TOKEN && hashFiles('backend/hunyuan_server/package.json') != '' }}
-        run: |
-          echo "⚠️ SNYK_TOKEN not set; running npm audit instead"
-          npm audit --audit-level=high --prefix backend/hunyuan_server
