@@ -146,6 +146,7 @@ const FALLBACK_GLB_LOW =
 const FALLBACK_GLB_HIGH =
   "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
 const FALLBACK_GLB = FALLBACK_GLB_LOW;
+const LOW_POLY_GLB = FALLBACK_GLB_LOW;
 
 const EXAMPLES = [
   "cute robot figurine",
