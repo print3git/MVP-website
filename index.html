@@ -5,7 +5,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
     <title>print3 Assistant</title>
     <meta
       name="description"
@@ -19,8 +22,18 @@
     <meta property="og:image" content="img/boxlogo.png" />
 
     <!-- Preload hero images -->
-    <link rel="preload" href="img/textlogo.png" as="image" fetchpriority="high" />
-    <link rel="preload" href="img/boxlogo.png" as="image" fetchpriority="high" />
+    <link
+      rel="preload"
+      href="img/textlogo.png"
+      as="image"
+      fetchpriority="high"
+    />
+    <link
+      rel="preload"
+      href="img/boxlogo.png"
+      as="image"
+      fetchpriority="high"
+    />
 
     <!-- Preconnect to major CDNs -->
     <link rel="preconnect" href="https://cdn.tailwindcss.com" />
@@ -31,13 +44,13 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-      if (location.protocol === 'file:') {
+      if (location.protocol === "file:") {
         document.body.innerHTML =
           '<div style="font-family:sans-serif;padding:1em">' +
-          'This page uses ES module scripts and must be served over HTTP. ' +
-          'Run <code>npx http-server</code> or <code>python -m http.server</code> in the repository root, ' +
-          'then open <code>http://localhost:8080/index.html</code>.' +
-          '</div>';
+          "This page uses ES module scripts and must be served over HTTP. " +
+          "Run <code>npx http-server</code> or <code>python -m http.server</code> in the repository root, " +
+          "then open <code>http://localhost:8080/index.html</code>." +
+          "</div>";
       }
     </script>
 
@@ -113,12 +126,18 @@
   </head>
 
   <body class="bg-[#1A1A1D] text-white font-sans flex flex-col">
+    <div
+      id="theme-banner"
+      class="bg-[#30D5C8] text-black text-center py-1 hidden"
+    ></div>
+
     <!-- ▸▸▸ HEADER ------------------------------------------------------- -->
 
     <header class="relative flex items-center justify-between py-4 px-6">
       <div class="flex flex-col items-start">
         <img src="img/textlogo.png" alt="print3" class="h-10 w-auto" />
         <div class="mt-1 flex flex-col text-sm opacity-90">
+
           <p class="text-gray-300"><span class="text-white">5400+</span> prints</p>
           <p class="text-gray-300">delivered already</p>
           <p id="stats-ticker" class="text-[#30D5C8] text-left" style="min-height: 2.5rem"></p>
@@ -194,9 +213,11 @@
             <i class="fab fa-instagram"></i>
           </button>
         </div>
+        <div id="price-info" class="text-sm text-gray-400 mt-1">
+          From £29.99 per print
+        </div>
       </div>
     </header>
-
 
     <!-- ▸▸▸ MAIN --------------------------------------------------------- -->
     <main
@@ -212,7 +233,7 @@
           <!-- fallback still-image (hidden) -->
           <img
             id="preview-img"
-            src="https://placehold.co/600x400/2A2A2E/2A2A2E?text="
+            src="https://images.unsplash.com/photo-1588702547923-7093a6c3ba33?auto=format&fit=crop&w=600&q=60"
             class="object-contain h-full w-full"
             style="display: none"
             alt="Preview image"
@@ -239,16 +260,30 @@
             <div
               class="h-10 w-10 border-4 border-white border-t-transparent rounded-full animate-spin mb-6"
             ></div>
-            <div id="progress-wrapper" class="w-3/4 max-w-xs" style="display: none">
+            <div
+              id="progress-wrapper"
+              class="w-3/4 max-w-xs"
+              style="display: none"
+            >
               <div class="w-full h-2 bg-gray-700 rounded">
-                <div id="progress-bar" class="h-full bg-cyan-400 rounded" style="width: 0%"></div>
+                <div
+                  id="progress-bar"
+                  class="h-full bg-cyan-400 rounded"
+                  style="width: 0%"
+                ></div>
               </div>
-              <div id="progress-text" class="text-center text-sm text-white mt-2"></div>
+              <div
+                id="progress-text"
+                class="text-center text-sm text-white mt-2"
+              ></div>
             </div>
           </div>
 
           <!-- checkout + buy-now -->
-          <div id="checkout-container" class="absolute bottom-4 right-4 flex flex-col items-center">
+          <div
+            id="checkout-container"
+            class="absolute bottom-4 right-4 flex flex-col items-center"
+          >
             <a
               id="checkout-button"
               href="payment.html"
@@ -259,6 +294,7 @@
             >
               Print from £29.99 →
             </a>
+            <div id="shipping-cutoff" class="text-xs text-gray-200 mt-1"></div>
           </div>
           <button
             id="add-basket-button"
@@ -289,8 +325,8 @@
           class="absolute text-left text-sm text-gray-500 leading-snug invisible"
         >
           <p class="whitespace-nowrap">
-            "I'm astonished at how high-quality the <br />print is" – email from an
-            <span class="text-white">r/subreddit</span> user
+            "I'm astonished at how high-quality the <br />print is" – email from
+            an <span class="text-white">r/subreddit</span> user
           </p>
         </div>
       </div>
@@ -301,7 +337,11 @@
         class="absolute left-1/2 -translate-x-1/2 top-12 bg-[#2A2A2E] border border-white/10 rounded-xl p-3 text-sm shadow-lg hidden"
       >
         <p class="mb-2">Craft short prompts describing style and shape.</p>
-        <button id="prompt-tip-close" class="underline" aria-label="Dismiss prompt tip">
+        <button
+          id="prompt-tip-close"
+          class="underline"
+          aria-label="Dismiss prompt tip"
+        >
           Got it
         </button>
       </div>
@@ -309,8 +349,14 @@
       <!-- ▸▸▸ PROMPT / UPLOAD AREA ------------------------------------- -->
       <section id="prompt-section" class="w-full max-w-xl">
         <div class="flex flex-col items-center text-center">
-          <img src="img/boxlogo.png" alt="print3 cube" class="w-32 h-auto mb-8" />
-          <h1 class="text-3xl font-semibold mb-8">Design &amp; Print in 30&nbsp;Seconds.</h1>
+          <img
+            src="img/boxlogo.png"
+            alt="print3 cube"
+            class="w-32 h-auto mb-8"
+          />
+          <h1 class="text-3xl font-semibold mb-8">
+            Design &amp; Print in 30&nbsp;Seconds.
+          </h1>
 
           <!-- prompt input row -->
           <div class="flex items-center w-full gap-4">
@@ -331,7 +377,10 @@
               aria-label="Generate"
               class="w-12 h-12 flex items-center justify-center bg-white rounded-full transition-shape"
             >
-              <i id="submit-icon" class="fas fa-arrow-up text-xl text-[#1A1A1D]"></i>
+              <i
+                id="submit-icon"
+                class="fas fa-arrow-up text-xl text-[#1A1A1D]"
+              ></i>
             </button>
           </div>
 
@@ -352,7 +401,9 @@
               class="flex-1 flex items-center justify-center bg-[#2A2A2E] border border-dashed border-white/10 rounded-3xl px-5 py-6 text-gray-200 cursor-pointer hover:bg-[#3A3A3E] transition-shape"
             >
               Drag&nbsp;&amp;&nbsp;drop image or
-              <label for="uploadInput" class="underline ml-1 cursor-pointer">browse</label>
+              <label for="uploadInput" class="underline ml-1 cursor-pointer"
+                >browse</label
+              >
             </div>
 
             <!-- First preview thumbnail -->
@@ -371,7 +422,9 @@
       id="exit-discount-overlay"
       class="fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50"
     >
-      <div class="relative bg-[#2A2A2E] border border-white/10 rounded-3xl p-6 text-center">
+      <div
+        class="relative bg-[#2A2A2E] border border-white/10 rounded-3xl p-6 text-center"
+      >
         <button
           id="exit-discount-close"
           class="absolute -top-3 -right-3 w-[3rem] h-[3rem] rounded-full bg-white text-black flex items-center justify-center z-50"
@@ -392,8 +445,13 @@
         </button>
         <h2 class="text-xl font-semibold mb-2 text-white">Wait!</h2>
         <p class="mb-4 text-gray-200">
-          Use code <span class="text-white font-mono px-1">SAVE5</span> for 5% off.
+          Sale ends tonight! Use code
+          <span class="text-white font-mono px-1">SAVE5</span> for 5% off.
         </p>
+        <label class="text-gray-200 text-sm">
+          <input type="checkbox" id="promo-optin" class="mr-1" /> Notify me when
+          promotions end
+        </label>
       </div>
     </div>
 
@@ -401,14 +459,20 @@
       id="wizard-banner"
       class="fixed bottom-0 left-0 right-0 flex divide-x divide-[#1A1A1D] text-white font-semibold bg-[#1A1A1D] z-40"
     >
-      <div id="wizard-step-prompt" class="flex-1 text-center py-2 bg-[#2A2A2E]">Create prompt</div>
-      <div id="wizard-step-building" class="flex-1 text-center py-2">Building model</div>
+      <div id="wizard-step-prompt" class="flex-1 text-center py-2 bg-[#2A2A2E]">
+        Create prompt
+      </div>
+      <div id="wizard-step-building" class="flex-1 text-center py-2">
+        Building model
+      </div>
 
       <div
         id="wizard-step-purchase"
         class="flex-1 text-center py-2 flex justify-center items-center pr-16"
       >
-        <span id="wizard-slots" class="hidden text-[#30D5C8] mr-2 whitespace-nowrap"
+        <span
+          id="wizard-slots"
+          class="hidden text-[#30D5C8] mr-2 whitespace-nowrap"
           >Only 4 print slots remaining:</span
         >
         <span>Purchase model</span>
@@ -432,26 +496,30 @@
     <script type="module" src="js/exitDiscount.js" defer></script>
     <script type="module" src="js/printclub.js" defer></script>
     <script type="module">
-      document.getElementById('profile-link')?.addEventListener('click', function (e) {
-        if (!localStorage.getItem('token')) {
-          e.preventDefault();
-          window.location.href = 'login.html';
-        }
-      });
+      document
+        .getElementById("profile-link")
+        ?.addEventListener("click", function (e) {
+          if (!localStorage.getItem("token")) {
+            e.preventDefault();
+            window.location.href = "login.html";
+          }
+        });
     </script>
 
     <!-- Position the subreddit quote next to the checkout button and keep
          the error text mirrored against the box logo below the viewer -->
     <script type="module">
       function positionQuote() {
-        const quote = document.getElementById('subreddit-quote');
-        const checkout = document.getElementById('checkout-button');
-        const error = document.getElementById('gen-error');
+        const quote = document.getElementById("subreddit-quote");
+        const checkout = document.getElementById("checkout-button");
+        const error = document.getElementById("gen-error");
         const logo = document.querySelector('img[alt="print3 cube"]');
         if (!quote || !checkout) return;
 
         // bounding rectangles relative to the viewport
-        const wrapperRect = document.getElementById('preview-wrapper').getBoundingClientRect();
+        const wrapperRect = document
+          .getElementById("preview-wrapper")
+          .getBoundingClientRect();
         const checkoutRect = checkout.getBoundingClientRect();
 
         /* Horizontal: match the left edge of the Checkout button
@@ -479,18 +547,18 @@
 
           error.style.left = `${leftOffset}px`;
           error.style.top = `${center - 2}px`;
-          error.style.transform = 'translateY(-50%)';
+          error.style.transform = "translateY(-50%)";
         }
 
-        quote.classList.remove('invisible');
+        quote.classList.remove("invisible");
       }
 
       // Expose so subredditLanding.js can invoke it once the quote text loads
       window.positionQuote = positionQuote;
 
-      window.addEventListener('DOMContentLoaded', positionQuote);
-      window.addEventListener('load', positionQuote);
-      window.addEventListener('resize', positionQuote);
+      window.addEventListener("DOMContentLoaded", positionQuote);
+      window.addEventListener("load", positionQuote);
+      window.addEventListener("resize", positionQuote);
     </script>
     <div
       id="printclub-modal"
@@ -499,7 +567,8 @@
       <div class="bg-[#2A2A2E] p-6 rounded-xl max-w-sm text-center">
         <h2 class="text-2xl font-semibold mb-2">Print Club</h2>
         <p class="mb-4">
-          Get two prints (single or multicolour tiers) every week for £149.99/month. Unused credits expire weekly.
+          Get two prints (single or multicolour tiers) every week for
+          £149.99/month. Unused credits expire weekly.
         </p>
 
         <button
@@ -512,11 +581,15 @@
       </div>
     </div>
     <script>
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('service-worker.js');
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("service-worker.js");
       }
     </script>
     <script type="module" src="js/printclub.js"></script>
     <script type="module" src="js/basket.js" defer></script>
+    <div
+      id="purchase-popups"
+      class="fixed bottom-28 left-4 bg-black/80 text-white px-3 py-1 rounded hidden text-sm"
+    ></div>
   </body>
 </html>
