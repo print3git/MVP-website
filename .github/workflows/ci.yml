@@ -72,4 +72,14 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run: npx snyk test --severity-threshold=high --file=backend/hunyuan_server/package.json
 
+      - name: Percy snapshots
+        if: ${{ secrets.PERCY_TOKEN }}
+        env:
+          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+        run: npm run visual
+
+      - name: Percy missing token notice
+        if: ${{ !secrets.PERCY_TOKEN }}
+        run: echo "⚠️ PERCY_TOKEN not set; skipping visual regression"
+
       # ← you can add additional steps here, like your tests
