@@ -9,8 +9,6 @@
 
 - Offer multiple payment methods including Apple Pay and Google Pay.
 
-## Creating urgency
-
 ## Decreasing CAC
 
 - Add real photo of printed object or user-generated image to hero section to reinforce the physical product.
