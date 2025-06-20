@@ -289,3 +289,13 @@
   - Custom print requests for higher tiers.
   - Private sales or auctions for rare prints.
   - Merchandising discounts on apparel or accessories.
+
+## Seller Credits
+
+- Add migration introducing a table or column for `sale_credits` tied to `user_id`.
+- Implement `getSaleCredit` and `adjustSaleCredit` helpers in the backend.
+- Award sellers £5 credit in the checkout webhook when a job is paid.
+- Provide `GET /api/credits` and `POST /api/credits/redeem` endpoints.
+- Display credit balance on profile pages and allow applying credit at checkout.
+- Add Jest tests for credit accrual and redemption.
+- Document the feature in the README.
