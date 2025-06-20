@@ -18,7 +18,8 @@
     "typecheck": "tsc --noEmit",
     "ci": "npm run format && npm run lint && npm run typecheck && npm run test-ci --prefix backend",
     "test:stability": "node scripts/test-stability.js",
-    "deps:check": "npx -y lockfile-diff HEAD package-lock.json && npx -y lockfile-diff HEAD backend/package-lock.json && npx -y lockfile-diff HEAD backend/hunyuan_server/package-lock.json"
+    "deps:check": "npx -y lockfile-diff HEAD package-lock.json && npx -y lockfile-diff HEAD backend/package-lock.json && npx -y lockfile-diff HEAD backend/hunyuan_server/package-lock.json",
+    "bundle:size": "size-limit"
   },
   "keywords": [],
   "author": "",
@@ -29,6 +30,7 @@
     "@commitlint/config-conventional": "^19.2.1",
     "@eslint-community/eslint-utils": "^4.7.0",
     "@eslint/js": "^9.29.0",
+    "@size-limit/file": "^11.2.0",
     "@types/jest": "^30.0.0",
     "@typescript-eslint/eslint-plugin": "^8.34.1",
     "@typescript-eslint/parser": "^8.34.1",
@@ -39,6 +41,7 @@
     "lint-staged": "^16.1.2",
     "lockfile-diff": "^0.1.0",
     "prettier": "^3.5.3",
+    "size-limit": "^11.2.0",
     "tsconfig-strictest": "^1.0.0-beta.1",
     "typescript": "^5.8.3"
   },
