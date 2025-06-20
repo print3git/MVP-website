@@ -17,6 +17,7 @@ jest.mock("../db", () => ({
   getBusinessIntelligenceMetrics: jest.fn(),
   getDailyProfitSeries: jest.fn(),
   getDailyCapacityUtilizationSeries: jest.fn(),
+  getDemandForecast: jest.fn(),
   getOrCreateOrderReferralLink: jest.fn(),
   insertReferredOrder: jest.fn(),
 }));
@@ -123,4 +124,14 @@ test("GET /api/metrics/daily-capacity returns data", async () => {
   expect(res.status).toBe(200);
   expect(res.body[0].utilization).toBe(0.8);
   expect(db.getDailyCapacityUtilizationSeries).toHaveBeenCalled();
+});
+
+test("GET /api/metrics/demand-forecast returns data", async () => {
+  db.getDemandForecast.mockResolvedValue([
+    { day: "2024-01-02", demand: 10, capacity: 20 },
+  ]);
+  const res = await request(app).get("/api/metrics/demand-forecast");
+  expect(res.status).toBe(200);
+  expect(res.body[0].demand).toBe(10);
+  expect(db.getDemandForecast).toHaveBeenCalled();
 });

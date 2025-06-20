@@ -19,6 +19,10 @@ async function load() {
     return;
   }
   const data = await res.json();
+  const forecastRes = await fetch(`${API_BASE}/metrics/demand-forecast`, {
+    headers: authHeaders(),
+  });
+  const forecast = forecastRes.ok ? await forecastRes.json() : [];
   const eventsRes = await fetch(`${API_BASE}/admin/scaling-events`, {
     headers: authHeaders(),
   });
@@ -39,6 +43,38 @@ async function load() {
     `;
     app.appendChild(div);
   });
+
+  if (forecast.length) {
+    const div = document.createElement("div");
+    div.className = "bg-[#2A2A2E] p-4 rounded space-y-2";
+    div.innerHTML =
+      '<h2 class="text-lg font-semibold">Fulfillment Forecast</h2>' +
+      '<canvas id="forecastChart" class="w-full"></canvas>';
+    app.appendChild(div);
+    const ctx = div.querySelector("#forecastChart").getContext("2d");
+    // eslint-disable-next-line no-undef
+    new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: forecast.map((d) => d.day),
+        datasets: [
+          {
+            label: "Demand (h)",
+            data: forecast.map((d) => d.demand),
+            borderColor: "#30D5C8",
+            fill: false,
+          },
+          {
+            label: "Capacity (h)",
+            data: forecast.map((d) => d.capacity),
+            borderColor: "#f87171",
+            fill: false,
+          },
+        ],
+      },
+      options: { scales: { y: { beginAtZero: true } } },
+    });
+  }
 
   if (events.length) {
     const div = document.createElement("div");
