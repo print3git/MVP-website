@@ -1182,6 +1182,39 @@ app.post("/api/track/share", async (req, res) => {
   }
 });
 
+const transparentPixel = Buffer.from(
+  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMB/rs8zncAAAAASUVORK5CYII=",
+  "base64",
+);
+
+app.get("/pixel", async (req, res) => {
+  let sessionId = null;
+  const cookieHeader = req.headers.cookie || "";
+  cookieHeader.split(";").forEach((c) => {
+    const [k, v] = c.trim().split("=");
+    if (k === "sid") sessionId = v;
+  });
+  if (!sessionId) {
+    sessionId = uuidv4();
+    res.cookie("sid", sessionId, {
+      httpOnly: true,
+      sameSite: "Lax",
+      maxAge: 63072000000,
+    });
+  }
+  const ip = req.ip.replace("::ffff:", "");
+  const referrer = req.get("referer") || null;
+  const campaign = req.query.campaign || null;
+  try {
+    await db.insertPixelEvent(sessionId, ip, referrer, campaign);
+  } catch (err) {
+    logError("Failed to log pixel", err);
+  }
+  res.set("Content-Type", "image/png");
+  res.set("Cache-Control", "no-store");
+  res.end(transparentPixel);
+});
+
 app.get("/api/metrics/conversion", async (req, res) => {
   try {
     const data = await db.getConversionMetrics();
