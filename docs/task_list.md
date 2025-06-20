@@ -13,6 +13,10 @@
 
 - Add real photo of printed object or user-generated image to hero section to reinforce the physical product.
 
+## Competitions & Print Club
+
+- Add images to the competitions page and Print Club with participant quotes to show social proof.
+
 ## Hub Deployment Kit
 
 - Preconfigure printers with SD images and calibration files.
