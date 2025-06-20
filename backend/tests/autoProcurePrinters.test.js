@@ -24,10 +24,11 @@ test("creates purchase order when saturation high", async () => {
   mClient.query
     .mockResolvedValueOnce({ rows: [{ hub_id: 1, avg_sat: "0.9" }] })
     .mockResolvedValueOnce({ rows: [{ name: "Hub", location: "US" }] })
+    .mockResolvedValueOnce({})
     .mockResolvedValueOnce({});
   await run();
   expect(emailVendorApproval).toHaveBeenCalled();
-  expect(mClient.query).toHaveBeenCalledTimes(3);
+  expect(mClient.query).toHaveBeenCalledTimes(4);
 });
 
 test("no order when saturation below threshold", async () => {
