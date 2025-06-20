@@ -76,13 +76,6 @@
   - Mark tasks complete via `POST /tasks/:id/complete`.
   - Summarise hub progress in the admin dashboard.
 
-- **Shift tracking**
-
-  - Add `shifts` table storing operator, hub, start and end times.
-  - Start shift timer on login or manual "Start shift".
-  - End shift on logout or manual "End shift".
-  - Display shift history and total hours per operator.
-
 - **Alerts for incomplete tasks**
 
   - Nightly job checks for tasks not completed by shift end.
