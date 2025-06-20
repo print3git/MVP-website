@@ -10,6 +10,7 @@
 ## Purchase & Checkout
 
 - Offer multiple payment methods including Apple Pay and Google Pay.
+- Reconfigure seasonal order bundles once promotions resume.
 
 ## Decreasing CAC
 
