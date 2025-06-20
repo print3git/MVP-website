@@ -135,10 +135,6 @@
 - Preload Raspberry Pi images on SD cards for printers.
 - Mark the hub live after all printers pass a test print.
 
-## Global Operations Reporting
-
-(completed)
-
 ## Carrier Pickup Integration
 
 - Schedule carrier pickups via API based on daily volume.
