@@ -99,8 +99,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const url = `${window.location.origin}/community/model/${id}`;
     navigator.clipboard.writeText(url).then(() => {
       if (copyMsg) {
-        copyMsg.classList.remove('hidden');
-        setTimeout(() => copyMsg.classList.add('hidden'), 2000);
+        copyMsg.classList.remove('opacity-0');
+        copyMsg.classList.add('opacity-100');
+        setTimeout(() => {
+          copyMsg.classList.add('opacity-0');
+          copyMsg.classList.remove('opacity-100');
+        }, 2000);
       }
     });
   });
