@@ -373,6 +373,11 @@ async function initPaymentPage() {
   const discountMsg = document.getElementById('discount-msg');
   const seasonalBundleEl = document.getElementById('seasonal-bundle');
   const applyBtn = document.getElementById('apply-discount');
+  const surpriseToggle = document.getElementById('surprise-toggle');
+  const recipientFields = document.getElementById('recipient-fields');
+  const qtySelect = document.getElementById('print-qty');
+  const bulkMsg = document.getElementById('bulk-discount-msg');
+
   fetchCampaignBundle();
   loadCheckoutCredits();
   if (referralId && discountMsg) {
@@ -517,7 +522,10 @@ async function initPaymentPage() {
       const suffix = hasReferral ? ' first month' : '';
       payBtn.textContent = `Join Print Club – Pay £${price.toFixed(2)}${suffix}`;
     } else {
-      payBtn.textContent = `Pay £${(selectedPrice / 100).toFixed(2)}`;
+      const qty = Math.max(1, parseInt(qtySelect?.value || '2', 10));
+      let total = selectedPrice * qty;
+      if (qty >= 2) total -= Math.round(selectedPrice * 0.1);
+      payBtn.textContent = `Pay £${(total / 100).toFixed(2)}`;
     }
   }
 
@@ -549,6 +557,13 @@ async function initPaymentPage() {
 
   subscriptionRadios.forEach((r) => {
     r.addEventListener('change', updatePayButton);
+  });
+
+  qtySelect?.addEventListener('change', () => {
+    updatePayButton();
+    if (!bulkMsg) return;
+    if (qtySelect.value === '1') bulkMsg.classList.remove('hidden');
+    else bulkMsg.classList.add('hidden');
   });
 
   if (singleInput && colorMenu && singleButton) {
@@ -832,7 +847,7 @@ async function initPaymentPage() {
         body: JSON.stringify({ sessionId, subreddit, step: 'start' }),
       }).catch(() => {});
     }
-    const qty = Math.max(1, parseInt(document.getElementById('print-qty')?.value || '1', 10));
+    const qty = Math.max(1, parseInt(document.getElementById('print-qty')?.value || '2', 10));
     let discount = 0;
     const end = parseInt(localStorage.getItem('flashDiscountEnd'), 10) || 0;
     if (end && end > Date.now()) {
@@ -847,9 +862,6 @@ async function initPaymentPage() {
     }
     if (qty >= 2) {
       discount += Math.round(selectedPrice * 0.1);
-      document.getElementById('bulk-discount-msg')?.classList.remove('hidden');
-    } else {
-      document.getElementById('bulk-discount-msg')?.classList.add('hidden');
     }
     const shippingInfo = {
       name: document.getElementById('ship-name').value,
