@@ -282,7 +282,7 @@
     </div>
     <script type="module">
       import { shareOn } from './js/share.js';
-      import { init } from './js/community.js';
+      import { init, closeModel, restoreOpenModel } from './js/community.js';
       window.shareOn = shareOn;
 
       document.addEventListener('DOMContentLoaded', () => {
@@ -314,10 +314,7 @@
           if (btn) setTier(btn.dataset.tier);
         });
 
-        function close() {
-          modal.classList.add('hidden');
-          document.body.classList.remove('overflow-hidden');
-        }
+        const close = closeModel;
 
         checkoutBtn.addEventListener('click', () => {
           sessionStorage.setItem('fromCommunity', '1');
@@ -377,6 +374,7 @@
 
         setTier('silver');
         init();
+        restoreOpenModel();
       });
     </script>
     <div
