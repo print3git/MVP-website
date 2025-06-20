@@ -2,10 +2,11 @@
 // page if the network request for Stripe fails. This variable will be assigned
 // once the DOM content is ready.
 let stripe = null;
-// Use a bundled copy of the astronaut model so the payment page works offline
-// and is not dependent on external CDNs.
-const FALLBACK_GLB = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
-const LOW_POLY_GLB = 'https://modelviewer.dev/shared-assets/models/RobotExpressive.glb';
+
+// Use a lightweight fallback model and upgrade to the high detail version after load.
+const FALLBACK_GLB_LOW = 'https://modelviewer.dev/shared-assets/models/RobotExpressive.glb';
+const FALLBACK_GLB_HIGH = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
+const FALLBACK_GLB = FALLBACK_GLB_LOW;
 const PRICES = {
   single: 2999,
   multi: 3999,
@@ -687,21 +688,28 @@ async function initPaymentPage() {
   }
 
   loader.hidden = false;
-
-  let hiStart = null;
-  const handleLoad = () => {
-    if (viewer.src === LOW_POLY_GLB) {
-      hiStart = performance.now();
-      viewer.src = localStorage.getItem('print3Model') || FALLBACK_GLB;
-    } else if (viewer.src === FALLBACK_GLB && hiStart !== null) {
-      const t = Math.round(performance.now() - hiStart);
-      console.log('Model load time', t, 'ms');
-      localStorage.setItem('print3Model', FALLBACK_GLB);
-      viewer.removeEventListener('load', handleLoad);
-    }
-  };
-  viewer.addEventListener('load', handleLoad);
-  viewer.src = LOW_POLY_GLB;
+  // Assign the model source only after the load/error listeners are in place
+  const storedModel = localStorage.getItem('print3Model');
+  viewer.src = storedModel || FALLBACK_GLB;
+  if (!storedModel) {
+    viewer.addEventListener(
+      'load',
+      () => {
+        const temp = document.createElement('model-viewer');
+        temp.style.display = 'none';
+        temp.crossOrigin = 'anonymous';
+        temp.src = FALLBACK_GLB_HIGH;
+        temp.addEventListener('load', () => {
+          if (viewer.src === FALLBACK_GLB_LOW) {
+            viewer.src = FALLBACK_GLB_HIGH;
+          }
+          temp.remove();
+        });
+        document.body.appendChild(temp);
+      },
+      { once: true },
+    );
+  }
 
   // Hide the overlay if nothing happens after a short delay
   setTimeout(hideLoader, 7000);

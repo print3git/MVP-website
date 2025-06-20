@@ -140,9 +140,11 @@ if (
 const API_BASE = (window.API_ORIGIN || '') + '/api';
 const TZ = 'America/New_York';
 // Local fallback model used when generation fails or the viewer hasn't loaded a model yet.
-// Bundled locally so it works offline and avoids external network issues.
-const FALLBACK_GLB = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
-const LOW_POLY_GLB = 'https://modelviewer.dev/shared-assets/models/RobotExpressive.glb';
+
+const FALLBACK_GLB_LOW = 'https://modelviewer.dev/shared-assets/models/RobotExpressive.glb';
+const FALLBACK_GLB_HIGH = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb';
+const FALLBACK_GLB = FALLBACK_GLB_LOW;
+
 const EXAMPLES = ['cute robot figurine', 'ornate chess piece', 'geometric flower vase'];
 const TRENDING = ['dragon statue', 'space rover', 'anime character'];
 const THEME_CAMPAIGNS = [
@@ -750,6 +752,23 @@ async function init() {
     refs.viewer.addEventListener('load', handleLoad);
     refs.viewer.src = LOW_POLY_GLB;
     localStorage.removeItem('print3JobId');
+    refs.viewer.addEventListener(
+      'load',
+      () => {
+        const loader = document.createElement('model-viewer');
+        loader.style.display = 'none';
+        loader.crossOrigin = 'anonymous';
+        loader.src = FALLBACK_GLB_HIGH;
+        loader.addEventListener('load', () => {
+          if (refs.viewer.src === FALLBACK_GLB_LOW) {
+            refs.viewer.src = FALLBACK_GLB_HIGH;
+          }
+          loader.remove();
+        });
+        document.body.appendChild(loader);
+      },
+      { once: true },
+    );
   }
   if (refs.viewer) {
     refs.viewer.addEventListener('progress', (e) => {
@@ -894,14 +913,8 @@ async function init() {
 
   setInterval(updateStats, 3600000);
 
-  const clubBadge = document.getElementById('print-club-badge');
-  const clubModal = document.getElementById('printclub-modal');
-  const clubClose = document.getElementById('printclub-close');
-  clubBadge?.addEventListener('click', () => clubModal?.classList.remove('hidden'));
-  clubClose?.addEventListener('click', () => clubModal?.classList.add('hidden'));
-  clubModal?.addEventListener('click', (e) => {
-    if (e.target === clubModal) clubModal.classList.add('hidden');
-  });
+  // The Print Club badge now links directly to its own page. Remove the old
+  // modal-related click handlers so no popup flashes before navigation.
 }
 
 window.initIndexPage = init;

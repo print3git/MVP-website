@@ -28,26 +28,15 @@
 
 ## 3D Model Loading Performance
 
-- Optimize the `.glb` file used on `index.html` and `payment.html`.
-  - Remove unused meshes, nodes, and animations in a 3D tool.
-  - Reduce polygon count and lower texture resolution.
-  - Compress geometry with Draco or Meshopt and convert textures to KTX2/Basis.
-  - Export the optimized model and update the viewer `src` attribute.
-- Serve assets over HTTP/2 or HTTP/3.
 
-## Autonomous 3D Printing
+Serve assets over HTTP/2 or HTTP/3.
+Measure load times with Lighthouse or real browser tests and track improvements.
 
-- Notify operator when a printer requires manual clearing.
-
-## AI Advert Generation
 
 ## Fulfillment Capacity Forecasting
 
 - Graph forecasted demand vs. capacity in the admin panel.
 
-## Load Balancer & Routing
-
-## Scaling Triggers & Procurement
 
 ## Hub Deployment Kit
 
@@ -73,8 +62,6 @@
 - Create a FAQ response bot for common queries.
 - Issue goodwill coupons if service-level targets are missed.
 - Escalate unresolved tickets to the founders.
-
-## Legal & Accounting Automation
 
 ## Marketplace & Licensing (Future)
 
@@ -188,7 +175,6 @@
   - Define colour tokens `giftHighlight` and `giftAccent`.
   - Provide `gift.svg` and `arrow-send.svg` icons.
   - Microcopy: "We’ll email your friend a link to pick colours & delivery date (no address needed yet)."
-- **Marketing automations**
 - **Legal & policy**
   - Update Terms of Service with gifting section and data use.
   - Update privacy policy with lawful basis and deletion timeline.
