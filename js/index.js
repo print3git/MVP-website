@@ -715,6 +715,11 @@ refs.submitBtn.addEventListener("click", async () => {
 
 async function init() {
   await ensureModelViewerLoaded();
+  if (window.customElements?.whenDefined) {
+    try {
+      await customElements.whenDefined('model-viewer');
+    } catch {}
+  }
   syncUploadHeights();
   window.addEventListener("resize", syncUploadHeights);
   setStep("prompt");
