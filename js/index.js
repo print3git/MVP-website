@@ -1029,10 +1029,27 @@ async function init() {
   setInterval(updateCutoff, 60000);
 
   const popupEl = document.getElementById("purchase-popups");
-  const popupMsgs = [
-    "Anna from NY just purchased",
-    "Tom from London bought a print",
+  let popupMsgs = [
+    "Someone recently bought a print",
+    "Someone recently created a model",
   ];
+  async function loadPopupNames() {
+    try {
+      const res = await fetch(`${API_BASE}/usernames`);
+      if (res.ok) {
+        const names = await res.json();
+        if (Array.isArray(names) && names.length >= 2) {
+          popupMsgs = [
+            `${names[0]} recently bought a print`,
+            `${names[1]} recently created a model`,
+          ];
+        }
+      }
+    } catch {
+      /* ignore errors */
+    }
+  }
+  loadPopupNames();
   let popupIdx = 0;
   function showPopup() {
     if (!popupEl) return;
