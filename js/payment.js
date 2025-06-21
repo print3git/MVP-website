@@ -367,6 +367,8 @@ async function initPaymentPage() {
   const surpriseToggle = document.getElementById('surprise-toggle');
   const recipientFields = document.getElementById('recipient-fields');
   const qtySelect = document.getElementById('print-qty');
+  const qtyDec = document.getElementById('qty-decrement');
+  const qtyInc = document.getElementById('qty-increment');
   const bulkMsg = document.getElementById('bulk-discount-msg');
 
   fetchCampaignBundle();
@@ -541,15 +543,44 @@ async function initPaymentPage() {
   });
 
   subscriptionRadios.forEach((r) => {
-    r.addEventListener('change', updatePayButton);
+    r.addEventListener('change', () => {
+      updatePayButton();
+      updatePopularMessage();
+    });
   });
+
+  function updatePopularMessage() {
+    if (!bulkMsg) return;
+    if (qtySelect.value === '2') {
+      const saving = ((selectedPrice * 0.1) / 100).toFixed(2);
+      bulkMsg.textContent = `Popular choice: keep one and gift one – save 10% (save £${saving})`;
+      bulkMsg.classList.remove('hidden');
+    } else {
+      bulkMsg.classList.add('hidden');
+    }
+  }
 
   qtySelect?.addEventListener('change', () => {
     updatePayButton();
-    if (!bulkMsg) return;
-    if (parseInt(qtySelect.value, 10) >= 2)
-      bulkMsg.classList.remove('hidden');
-    else bulkMsg.classList.add('hidden');
+
+    updatePopularMessage();
+  });
+
+  qtyDec?.addEventListener('click', () => {
+    if (!qtySelect) return;
+    let val = parseInt(qtySelect.value, 10) || 1;
+    val = Math.max(1, val - 1);
+    qtySelect.value = String(val);
+    qtySelect.dispatchEvent(new Event('change'));
+  });
+
+  qtyInc?.addEventListener('click', () => {
+    if (!qtySelect) return;
+    let val = parseInt(qtySelect.value, 10) || 1;
+    val = Math.min(5, val + 1);
+    qtySelect.value = String(val);
+    qtySelect.dispatchEvent(new Event('change'));
+
   });
 
   if (singleInput && colorMenu && singleButton) {
@@ -576,6 +607,7 @@ async function initPaymentPage() {
     });
   }
   updatePayButton();
+  updatePopularMessage();
   const sessionId = qs('session_id');
   if (sessionId) {
     recordPurchase();
