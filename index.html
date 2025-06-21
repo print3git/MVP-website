@@ -567,16 +567,18 @@
         quote.style.top = `${top}px`;
 
         if (info && logo) {
+          info.classList.remove("invisible");
           const quoteRect = quote.getBoundingClientRect();
           const logoRect = logo.getBoundingClientRect();
+          const infoRect = info.getBoundingClientRect();
           const gap = quoteRect.left - logoRect.right;
-          const infoWidth = info.getBoundingClientRect().width;
           const targetRight = logoRect.left - gap;
-          const leftPos = targetRight - infoWidth;
+          const leftPos = targetRight - infoRect.width;
           const leftOffset = leftPos - wrapperRect.left;
+          const center = quoteRect.height / 2;
           info.style.left = `${leftOffset}px`;
-          info.style.top = `${top}px`;
-          info.classList.remove("invisible");
+          info.style.top = `${top + center}px`;
+          info.style.transform = "translateY(-50%)";
         }
 
 
