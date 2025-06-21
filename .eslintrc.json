@@ -4,10 +4,13 @@
     "es2021": true
   },
   "extends": ["eslint:recommended", "prettier"],
+  "plugins": ["jsdoc"],
   "parserOptions": {
     "ecmaVersion": 12
   },
   "rules": {
-    "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }]
+    "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+    "jsdoc/require-jsdoc": ["error", { "publicOnly": true }],
+    "jsdoc/require-param": "error"
   }
 }
