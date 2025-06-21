@@ -2,6 +2,13 @@ const SHIPPING_API_URL = process.env.SHIPPING_API_URL;
 const SHIPPING_API_KEY = process.env.SHIPPING_API_KEY;
 const TRACKING_BASE_URL = process.env.TRACKING_BASE_URL || "";
 
+/**
+ * Calculate shipping cost and ETA for a model.
+ *
+ * @param {{address: string}} destination - Destination shipping details.
+ * @param {{weight?: number}} model - Model data including weight.
+ * @returns {Promise<{cost: number, etaDays: number}>} Estimate info.
+ */
 async function getShippingEstimate(destination, model) {
   const weight = model.weight || 1;
 
@@ -37,6 +44,13 @@ async function getShippingEstimate(destination, model) {
   }
 }
 
+/**
+ * Generate a public tracking URL for a shipment.
+ *
+ * @param {string} carrier - Shipping carrier name.
+ * @param {string} trackingNumber - Tracking identifier.
+ * @returns {string} URL for tracking page.
+ */
 function getTrackingUrl(carrier, trackingNumber) {
   if (TRACKING_BASE_URL) {
     return `${TRACKING_BASE_URL}/${encodeURIComponent(trackingNumber)}`;
@@ -44,6 +58,13 @@ function getTrackingUrl(carrier, trackingNumber) {
   return `https://track.aftership.com/${encodeURIComponent(carrier)}/${encodeURIComponent(trackingNumber)}`;
 }
 
+/**
+ * Retrieve the current tracking status of a shipment.
+ *
+ * @param {string} carrier - Shipping carrier name.
+ * @param {string} trackingNumber - Tracking identifier.
+ * @returns {Promise<string|null>} Latest status or null on failure.
+ */
 async function getTrackingStatus(carrier, trackingNumber) {
   if (!SHIPPING_API_URL || !SHIPPING_API_KEY) {
     return null;
@@ -57,7 +78,7 @@ async function getTrackingStatus(carrier, trackingNumber) {
     const data = await res.json();
     return data.status || null;
   } catch (err) {
-    console.error('Tracking status failed', err.message);
+    console.error("Tracking status failed", err.message);
     return null;
   }
 }

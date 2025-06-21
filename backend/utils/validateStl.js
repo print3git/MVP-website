@@ -1,5 +1,11 @@
 const fs = require("fs");
 
+/**
+ * Perform a basic STL file validity check.
+ *
+ * @param {string} filePath - Path to the STL file to validate.
+ * @returns {boolean} True if the file appears to be a valid STL, otherwise false.
+ */
 function validateStl(filePath) {
   try {
     const buffer = fs.readFileSync(filePath);

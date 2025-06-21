@@ -3,6 +3,13 @@ const QUEUE_THRESHOLD = parseInt(
   10,
 );
 
+/**
+ * Select the best printer hub given current queues and shipping location.
+ *
+ * @param {import('pg').PoolClient} client - Database client.
+ * @param {{state?: string}|null} shipping - Shipping details for the order.
+ * @returns {Promise<object|null>} The selected hub record or null if none found.
+ */
 async function selectHub(client, shipping) {
   const { rows: hubs } = await client.query(
     "SELECT id, location FROM printer_hubs ORDER BY id",

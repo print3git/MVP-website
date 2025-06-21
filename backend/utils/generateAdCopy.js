@@ -1,11 +1,23 @@
-const axios = require('axios');
-const templates = require('../ad_templates.json');
+const axios = require("axios");
+const templates = require("../ad_templates.json");
 
+/**
+ * Randomly pick an advertisement template.
+ *
+ * @returns {string} Template string with placeholder tokens.
+ */
 function pickTemplate() {
   return templates[Math.floor(Math.random() * templates.length)].template;
 }
 
-async function generateAdCopy(subreddit, context = '') {
+/**
+ * Generate ad copy for a subreddit.
+ *
+ * @param {string} subreddit - Subreddit to advertise.
+ * @param {string} [context=''] - Optional context for the ad.
+ * @returns {Promise<string>} Generated advertisement text.
+ */
+async function generateAdCopy(subreddit, context = "") {
   const apiUrl = process.env.LLM_API_URL;
   if (apiUrl) {
     try {
@@ -14,11 +26,11 @@ async function generateAdCopy(subreddit, context = '') {
       });
       if (data && data.text) return data.text.trim();
     } catch (err) {
-      console.error('LLM API failed', err.message);
+      console.error("LLM API failed", err.message);
     }
   }
   const tpl = pickTemplate();
-  return tpl.replace('{subreddit}', subreddit);
+  return tpl.replace("{subreddit}", subreddit);
 }
 
 module.exports = generateAdCopy;
