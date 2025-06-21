@@ -7,6 +7,7 @@
     "doc": "docs"
   },
   "scripts": {
+    "lhci": "lhci autorun",
     "prepare": "husky install",
     "format": "prettier --write \"**/*.{js,jsx,json,md,html}\"",
     "format:check": "prettier --check \"**/*.{js,jsx,json,md,html}\"",
@@ -36,6 +37,7 @@
     "@commitlint/config-conventional": "^19.2.1",
     "@eslint-community/eslint-utils": "^4.7.0",
     "@eslint/js": "^9.29.0",
+    "@lhci/cli": "^0.15.0",
     "@percy/cli": "^1.31.0",
     "@percy/playwright": "^1.0.8",
     "@playwright/test": "^1.53.1",

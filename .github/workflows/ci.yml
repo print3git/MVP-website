@@ -42,6 +42,10 @@ jobs:
       - name: Check bundle size
         run: npm run bundle:size
 
+      - name: Run Lighthouse CI
+        if: github.event_name == 'pull_request'
+        run: npm run lhci
+
       - name: Verify lockfiles
         run: |
           npm run deps:check
