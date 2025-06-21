@@ -1,0 +1,7 @@
+Hi {{username}},
+
+Your package from order {{order_id}} has been delivered! We'd love to hear your feedback.
+Please take a moment to fill out our short survey:
+{{survey_url}}
+
+Thanks for choosing us!
