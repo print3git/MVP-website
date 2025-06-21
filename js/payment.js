@@ -562,6 +562,7 @@ async function initPaymentPage() {
 
   qtySelect?.addEventListener('change', () => {
     updatePayButton();
+
     updatePopularMessage();
   });
 
@@ -579,6 +580,7 @@ async function initPaymentPage() {
     val = Math.min(5, val + 1);
     qtySelect.value = String(val);
     qtySelect.dispatchEvent(new Event('change'));
+
   });
 
   if (singleInput && colorMenu && singleButton) {
