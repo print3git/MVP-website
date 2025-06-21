@@ -367,6 +367,8 @@ async function initPaymentPage() {
   const surpriseToggle = document.getElementById('surprise-toggle');
   const recipientFields = document.getElementById('recipient-fields');
   const qtySelect = document.getElementById('print-qty');
+  const qtyDec = document.getElementById('qty-decrement');
+  const qtyInc = document.getElementById('qty-increment');
   const bulkMsg = document.getElementById('bulk-discount-msg');
 
   fetchCampaignBundle();
@@ -549,6 +551,22 @@ async function initPaymentPage() {
     if (!bulkMsg) return;
     if (qtySelect.value === '1') bulkMsg.classList.remove('hidden');
     else bulkMsg.classList.add('hidden');
+  });
+
+  qtyDec?.addEventListener('click', () => {
+    if (!qtySelect) return;
+    let val = parseInt(qtySelect.value, 10) || 1;
+    val = Math.max(1, val - 1);
+    qtySelect.value = String(val);
+    qtySelect.dispatchEvent(new Event('change'));
+  });
+
+  qtyInc?.addEventListener('click', () => {
+    if (!qtySelect) return;
+    let val = parseInt(qtySelect.value, 10) || 1;
+    val = Math.min(5, val + 1);
+    qtySelect.value = String(val);
+    qtySelect.dispatchEvent(new Event('change'));
   });
 
   if (singleInput && colorMenu && singleButton) {
