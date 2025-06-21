@@ -340,7 +340,7 @@
             Next print run closes in
             <span id="print-run-hours">6</span>
             hours &mdash;
-            <span id="print-run-slots"></span>
+            &lt;<span id="print-run-slots"></span> slots remain
           </p>
         </div>
       </div>
@@ -551,7 +551,7 @@
         if (info && basket) {
           const infoWidth = info.getBoundingClientRect().width;
           const basketRect = basket.getBoundingClientRect();
-          const infoLeft = basketRect.right - wrapperRect.left - infoWidth - 31;
+          const infoLeft = basketRect.right - wrapperRect.left - infoWidth - 19;
           info.style.left = `${infoLeft}px`;
           info.style.top = `${top}px`;
           info.classList.remove("invisible");
