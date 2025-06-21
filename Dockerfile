@@ -1,42 +1,43 @@
-FROM node:20
+# syntax=docker/dockerfile:1
 
-# Accept optional proxy args
+### Builder stage
+FROM node:20 AS builder
+WORKDIR /app
+
 ARG HTTP_PROXY
 ARG HTTPS_PROXY
-ENV HTTP_PROXY=${HTTP_PROXY}
-ENV HTTPS_PROXY=${HTTPS_PROXY}
 
-WORKDIR /app
+ENV HUSKY=0 NPM_CONFIG_IGNORE_SCRIPTS=true
 
-# Install root production dependencies while skipping lifecycle scripts
 COPY package.json package-lock.json ./
-RUN if [ -n "$HTTP_PROXY" ]; then npm config set proxy $HTTP_PROXY; fi \
-    && if [ -n "$HTTPS_PROXY" ]; then npm config set https-proxy $HTTPS_PROXY; fi \
-    && HUSKY=0 npm_config_ignore_scripts=true npm ci --omit=dev
+RUN unset NPM_CONFIG_HTTP_PROXY NPM_CONFIG_HTTPS_PROXY || true && \
+    if [ -n "$HTTP_PROXY" ]; then npm config set proxy "$HTTP_PROXY"; fi && \
+    if [ -n "$HTTPS_PROXY" ]; then npm config set https-proxy "$HTTPS_PROXY"; fi && \
+    npm ci --omit=dev
 
-# Install backend production dependencies
-WORKDIR /app/backend
-COPY backend/package.json backend/package-lock.json ./
-RUN if [ -n "$HTTP_PROXY" ]; then npm config set proxy $HTTP_PROXY; fi \
-    && if [ -n "$HTTPS_PROXY" ]; then npm config set https-proxy $HTTPS_PROXY; fi \
-    && HUSKY=0 npm_config_ignore_scripts=true npm ci --omit=dev
+COPY backend/package.json backend/package-lock.json ./backend/
+RUN unset NPM_CONFIG_HTTP_PROXY NPM_CONFIG_HTTPS_PROXY || true && \
+    if [ -n "$HTTP_PROXY" ]; then npm config set proxy "$HTTP_PROXY"; fi && \
+    if [ -n "$HTTPS_PROXY" ]; then npm config set https-proxy "$HTTPS_PROXY"; fi && \
+    npm ci --omit=dev --prefix backend
 
-# Copy the rest of the source
-WORKDIR /app
+COPY backend/hunyuan_server/package.json backend/hunyuan_server/package-lock.json ./backend/hunyuan_server/
+RUN unset NPM_CONFIG_HTTP_PROXY NPM_CONFIG_HTTPS_PROXY || true && \
+    if [ -n "$HTTP_PROXY" ]; then npm config set proxy "$HTTP_PROXY"; fi && \
+    if [ -n "$HTTPS_PROXY" ]; then npm config set https-proxy "$HTTPS_PROXY"; fi && \
+    npm ci --omit=dev --prefix backend/hunyuan_server
+
 COPY . .
-
-# Install dev dependencies to run tests
-RUN HUSKY=0 npm_config_ignore_scripts=true npm ci \
-    && npm ci --prefix backend \
-    && if [ -f backend/hunyuan_server/package.json ]; then npm ci --prefix backend/hunyuan_server; fi
-
-# Run CI script
 RUN npm run ci
 
-# Remove dev dependencies to keep the image slim
-RUN npm prune --omit=dev \
-    && npm prune --omit=dev --prefix backend \
-    && if [ -f backend/hunyuan_server/package.json ]; then npm prune --omit=dev --prefix backend/hunyuan_server; fi
+### Runner stage
+FROM node:20 AS runner
+WORKDIR /app
 
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/backend/node_modules ./backend/node_modules
+COPY --from=builder /app/backend/hunyuan_server/node_modules ./backend/hunyuan_server/node_modules
 
-CMD ["npm", "start", "--prefix", "backend"]
+COPY . .
+
+CMD ["npm","start","--prefix","backend"]
