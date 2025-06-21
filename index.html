@@ -331,6 +331,18 @@
             an <span class="text-white">r/subreddit</span> user
           </p>
         </div>
+        <div
+          id="print-run-info"
+          class="absolute text-right text-sm text-red-400 leading-snug invisible"
+        >
+          <p class="whitespace-nowrap" style="margin-right: 0.5cm">
+            Next print run closes in
+            <span id="print-run-hours">6</span>
+            hours &mdash;
+            <span id="print-run-slots"></span>
+            slots remaining
+          </p>
+        </div>
       </div>
 
       <!-- helper tooltip (unchanged) -->
@@ -476,8 +488,7 @@
         <span
           id="wizard-slots"
           class="hidden text-[#30D5C8] mr-2 whitespace-nowrap"
-        ></span
-        >
+        ></span>
         <span>Purchase model</span>
       </div>
     </div>
@@ -514,7 +525,9 @@
     <script type="module">
       function positionQuote() {
         const quote = document.getElementById("subreddit-quote");
+        const info = document.getElementById("print-run-info");
         const checkout = document.getElementById("checkout-button");
+        const basket = document.getElementById("add-basket-button");
         const error = document.getElementById("gen-error");
         const logo = document.querySelector('img[alt="print3 cube"]');
         if (!quote || !checkout) return;
@@ -534,6 +547,15 @@
 
         quote.style.left = `${left}px`;
         quote.style.top = `${top}px`;
+
+        if (info && basket) {
+          const infoWidth = info.getBoundingClientRect().width;
+          const basketRect = basket.getBoundingClientRect();
+          const infoLeft = basketRect.right - wrapperRect.left - infoWidth - 31;
+          info.style.left = `${infoLeft}px`;
+          info.style.top = `${top}px`;
+          info.classList.remove("invisible");
+        }
 
         if (error && logo) {
           const quoteRect = quote.getBoundingClientRect();
