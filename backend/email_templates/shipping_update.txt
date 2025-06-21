@@ -1,0 +1,5 @@
+Hi {{username}},
+
+Your order {{order_id}} status update: {{status}}
+
+We'll keep you posted until it's delivered.
