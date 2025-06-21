@@ -282,5 +282,7 @@ If no token is provided, CI falls back to `npm audit --audit-level=high`.
 ## Accessibility Audits
 
 Automated accessibility tests run with `@axe-core/playwright` against key pages.
-Any **serious** or **critical** issues will fail the build. Run `npm run test:a11y`
-locally to check before pushing.
+Existing violations are stored in `e2e/a11y-baseline.json`.
+CI compares results against this baseline and fails if new **serious** or
+**critical** issues appear. Run `npm run test:a11y` locally to update and verify
+the baseline before pushing.
