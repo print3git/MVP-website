@@ -70,6 +70,16 @@
           transform: translateX(100%);
         }
       }
+
+      /* Remove default number input arrows */
+      #print-qty::-webkit-inner-spin-button,
+      #print-qty::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      #print-qty {
+        -moz-appearance: textfield;
+      }
     </style>
   </head>
 
@@ -313,10 +323,10 @@
                   type="number"
                   min="1"
                   value="2"
-                  class="w-12 text-center bg-[#1A1A1D] border border-white/20 rounded"
+                  class="w-12 text-center bg-[#1A1A1D] border border-white/20 rounded appearance-none"
                 />
               </div>
-              <p id="bulk-discount-msg" class="text-xs hidden whitespace-nowrap ml-2"></p>
+              <p id="bulk-discount-msg" class="text-xs whitespace-nowrap ml-2"></p>
             </div>
 
             <div>
