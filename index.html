@@ -122,6 +122,23 @@
       model-viewer {
         touch-action: none;
       }
+      @keyframes purchaseFade {
+        0% {
+          opacity: 0;
+        }
+        20% {
+          opacity: 1;
+        }
+        80% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0;
+        }
+      }
+      .purchase-fade {
+        animation: purchaseFade 10s forwards;
+      }
     </style>
   </head>
 
@@ -620,7 +637,7 @@
     <script type="module" src="js/rewardBadge.js"></script>
     <div
       id="purchase-popups"
-      class="fixed bottom-28 left-4 bg-black/80 text-white px-3 py-1 rounded hidden text-sm flex items-center space-x-2"
+      class="fixed bottom-28 left-4 bg-black/80 text-white px-3 py-1 rounded hidden opacity-0 text-sm flex items-center space-x-2"
     ></div>
     <img src="/pixel" alt="" width="1" height="1" style="display: none" />
   </body>

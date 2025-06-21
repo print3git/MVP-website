@@ -1022,7 +1022,13 @@ async function init() {
       popupEl.appendChild(img);
     }
     popupEl.classList.remove("hidden");
-    setTimeout(() => popupEl.classList.add("hidden"), 5000);
+    popupEl.classList.remove("purchase-fade");
+    void popupEl.offsetWidth;
+    popupEl.classList.add("purchase-fade");
+    setTimeout(() => {
+      popupEl.classList.add("hidden");
+      popupEl.classList.remove("purchase-fade");
+    }, 10000);
     popupIdx++;
   }
   setInterval(showPopup, 15000);
