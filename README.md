@@ -278,3 +278,8 @@ be wrapped with `jest-retries` to retry a few times before failing.
 
 To enable Snyk checks in CI, add `SNYK_TOKEN` in your GitHub repository secrets.
 If no token is provided, CI falls back to `npm audit --audit-level=high`.
+
+## i18n Linting
+
+Run `npm run i18n:lint` to verify email translation keys. CI fails if any keys
+are missing or unused.
