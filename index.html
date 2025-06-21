@@ -137,10 +137,6 @@
         animation: purchaseFade 8s forwards;
       }
 
-      /* Taller preview when browser UI is hidden */
-      #preview-wrapper.fullscreen-height {
-        height: 24rem; /* h-96 */
-      }
     </style>
   </head>
 
@@ -631,20 +627,6 @@
       class="fixed bottom-28 left-4 bg-black/80 text-white px-3 py-1 rounded hidden opacity-0 text-sm flex items-center space-x-2"
     ></div>
     <img src="/pixel" alt="" width="1" height="1" style="display: none" />
-    <script type="module">
-      function adjustViewerHeight() {
-        const wrapper = document.getElementById("preview-wrapper");
-        if (!wrapper) return;
-        const fullscreen = Math.abs(window.innerHeight - screen.height) < 5;
-        if (fullscreen) {
-          wrapper.classList.add("fullscreen-height");
-        } else {
-          wrapper.classList.remove("fullscreen-height");
-        }
-      }
 
-      window.addEventListener("DOMContentLoaded", adjustViewerHeight);
-      window.addEventListener("resize", adjustViewerHeight);
-    </script>
   </body>
 </html>
