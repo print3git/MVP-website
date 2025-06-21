@@ -521,13 +521,13 @@
     </script>
 
     <!-- Position the subreddit quote next to the checkout button and keep
-         the error text mirrored against the box logo below the viewer -->
+         the print-run text and error mirrored against the box logo below
+         the viewer -->
     <script type="module">
       function positionQuote() {
         const quote = document.getElementById("subreddit-quote");
         const info = document.getElementById("print-run-info");
         const checkout = document.getElementById("checkout-button");
-        const basket = document.getElementById("add-basket-button");
         const error = document.getElementById("gen-error");
         const logo = document.querySelector('img[alt="print3 cube"]');
         if (!quote || !checkout) return;
@@ -548,11 +548,15 @@
         quote.style.left = `${left}px`;
         quote.style.top = `${top}px`;
 
-        if (info && basket) {
+        if (info && logo) {
+          const quoteRect = quote.getBoundingClientRect();
+          const logoRect = logo.getBoundingClientRect();
+          const gap = quoteRect.left - logoRect.right;
           const infoWidth = info.getBoundingClientRect().width;
-          const basketRect = basket.getBoundingClientRect();
-          const infoLeft = basketRect.right - wrapperRect.left - infoWidth - 19;
-          info.style.left = `${infoLeft}px`;
+          const targetRight = logoRect.left - gap;
+          const leftPos = targetRight - infoWidth;
+          const leftOffset = leftPos - wrapperRect.left;
+          info.style.left = `${leftOffset}px`;
           info.style.top = `${top}px`;
           info.classList.remove("invisible");
         }
