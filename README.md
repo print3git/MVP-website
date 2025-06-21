@@ -279,10 +279,8 @@ be wrapped with `jest-retries` to retry a few times before failing.
 To enable Snyk checks in CI, add `SNYK_TOKEN` in your GitHub repository secrets.
 If no token is provided, CI falls back to `npm audit --audit-level=high`.
 
-## Accessibility Audits
+## i18n Linting
 
-Automated accessibility tests run with `@axe-core/playwright` against key pages.
-Existing violations are stored in `e2e/a11y-baseline.json`.
-CI compares results against this baseline and fails if new **serious** or
-**critical** issues appear. Run `npm run test:a11y` locally to update and verify
-the baseline before pushing.
+Run `npm run i18n:lint` to verify email translation keys. CI fails if any keys
+are missing or unused.
+
