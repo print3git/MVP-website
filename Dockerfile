@@ -9,7 +9,8 @@ ARG HTTPS_PROXY
 COPY package.json package-lock.json ./
 RUN if [ -n "$HTTP_PROXY" ]; then npm config set proxy "$HTTP_PROXY"; fi \
     && if [ -n "$HTTPS_PROXY" ]; then npm config set https-proxy "$HTTPS_PROXY"; fi \
-    && npm install --ignore-scripts \
+    && npm config set ignore-scripts true \
+    && npm install \
     && npm ci --omit=dev
 
 # Install backend dependencies
@@ -17,7 +18,8 @@ COPY backend/package.json backend/package-lock.json ./backend/
 RUN if [ -n "$HTTP_PROXY" ]; then npm config set proxy "$HTTP_PROXY"; fi \
     && if [ -n "$HTTPS_PROXY" ]; then npm config set https-proxy "$HTTPS_PROXY"; fi \
     && cd backend \
-    && npm install --ignore-scripts \
+    && npm config set ignore-scripts true \
+    && npm install \
     && npm ci --omit=dev
 
 # Copy remaining source and run CI
