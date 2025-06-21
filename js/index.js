@@ -1055,7 +1055,7 @@ async function init() {
     setTimeout(() => {
       popupEl.classList.add("hidden");
       popupEl.classList.remove("purchase-fade");
-    }, 10000);
+    }, 8000);
     popupIdx++;
   }
   setInterval(showPopup, 15000);

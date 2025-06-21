@@ -22,7 +22,8 @@
     "deps:check": "npx -y lockfile-diff HEAD package-lock.json && npx -y lockfile-diff HEAD backend/package-lock.json && npx -y lockfile-diff HEAD backend/hunyuan_server/package-lock.json",
     "bundle:size": "size-limit",
     "e2e": "playwright test",
-    "visual-test": "percy exec -- npm run e2e"
+    "visual-test": "percy exec -- npm run e2e",
+    "test:a11y": "playwright install chromium --with-deps && playwright test e2e/a11y.test.js"
   },
   "keywords": [],
   "author": "",
@@ -31,6 +32,8 @@
   "devDependencies": {
     "@commitlint/cli": "^19.2.1",
     "@commitlint/config-conventional": "^19.2.1",
+    "@axe-core/cli": "^4.10.2",
+    "@axe-core/playwright": "^4.10.2",
     "@eslint-community/eslint-utils": "^4.7.0",
     "@eslint/js": "^9.29.0",
     "@playwright/test": "^1.53.1",
@@ -50,6 +53,7 @@
     "size-limit": "^11.2.0",
     "tsconfig-strictest": "^1.0.0-beta.1",
     "typescript": "^5.8.3",
+    "wait-on": "^8.0.3",
     "@percy/cli": "^1.31.0",
     "@percy/playwright": "^1.0.8"
   },

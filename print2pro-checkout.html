@@ -54,12 +54,12 @@
         class="relative flex flex-col items-start justify-center w-full max-w-md"
       >
         <h2 class="text-2xl font-semibold mb-2 text-center w-full">Checkout</h2>
-        <p class="text-center text-white">
+        <p class="text-center text-white mb-6">
           You must first
           <a href="signup.html" class="font-bold text-[#30D5C8]">Sign Up</a>
           before joining Print Club.
         </p>
-        <form id="checkout-form" class="space-y-2 w-full">
+        <form id="checkout-form" class="space-y-2 w-full mt-4">
           <div>
             <input
               id="ship-name"
@@ -106,7 +106,7 @@
           </div>
           <fieldset
             id="subscription-choice"
-            class="flex items-center justify-center gap-4 my-2 text-sm"
+            class="flex items-center justify-center gap-4 my-4 text-sm"
           >
             <label class="flex items-center gap-1 whitespace-nowrap">
               <input
@@ -120,7 +120,6 @@
             </label>
           </fieldset>
           <div id="payment-element" class="text-center text-gray-400">
-            [Stripe payment form will go here]
           </div>
           <button
             id="submit-payment"

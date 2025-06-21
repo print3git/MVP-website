@@ -36,7 +36,7 @@ async function loadSubscription() {
       if (manage) {
         manage.textContent = 'Join print2 pro';
         manage.onclick = () => {
-          window.location.href = 'printclub-checkout.html';
+          window.location.href = 'print2pro-checkout.html';
         };
       }
       previews?.classList.add('hidden');
