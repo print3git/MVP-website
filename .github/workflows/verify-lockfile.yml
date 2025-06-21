@@ -1,0 +1,44 @@
+name: Verify Lockfile
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the repository's code
+      - uses: actions/checkout@v4
+
+      # Cache npm dependencies for faster installs
+      - name: Cache npm
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+
+      # Setup Node.js 20.x (>=16 required)
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # Install dependencies without auditing and without funding messages
+      - run: npm ci --no-audit --no-fund
+
+      # Regenerate the lockfile without modifying node_modules
+      - run: npm install --package-lock-only
+
+      # Fail if the regenerated lockfile differs from the committed one
+      - name: Ensure lockfile is up to date
+        run: |
+          if ! git diff --quiet package-lock.json; then
+            echo "::error::package-lock.json is out of sync. Please run 'npm install' and commit the updated lock file." >&2
+            git diff package-lock.json >&2
+            exit 1
+          fi
+
