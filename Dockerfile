@@ -1,25 +1,43 @@
-FROM node:20
+# syntax=docker/dockerfile:1
+
+### Builder stage
+FROM node:20 AS builder
 WORKDIR /app
 
-# Configure npm proxy settings if HTTP_PROXY/HTTPS_PROXY are provided
 ARG HTTP_PROXY
 ARG HTTPS_PROXY
-RUN unset NPM_CONFIG_http-proxy npm_config_http-proxy NPM_CONFIG_https-proxy npm_config_https-proxy || true && \
-    if [ -n "$HTTP_PROXY" ]; then npm config set proxy "$HTTP_PROXY"; fi && \
-    if [ -n "$HTTPS_PROXY" ]; then npm config set https-proxy "$HTTPS_PROXY"; fi
 
-COPY package*.json ./
-COPY backend/package*.json backend/
-COPY backend/hunyuan_server/package*.json backend/hunyuan_server/
+ENV HUSKY=0 NPM_CONFIG_IGNORE_SCRIPTS=true
+
+COPY package.json package-lock.json ./
+RUN unset NPM_CONFIG_HTTP_PROXY NPM_CONFIG_HTTPS_PROXY || true && \
+    if [ -n "$HTTP_PROXY" ]; then npm config set proxy "$HTTP_PROXY"; fi && \
+    if [ -n "$HTTPS_PROXY" ]; then npm config set https-proxy "$HTTPS_PROXY"; fi && \
+    npm ci --omit=dev
+
+COPY backend/package.json backend/package-lock.json ./backend/
+RUN unset NPM_CONFIG_HTTP_PROXY NPM_CONFIG_HTTPS_PROXY || true && \
+    if [ -n "$HTTP_PROXY" ]; then npm config set proxy "$HTTP_PROXY"; fi && \
+    if [ -n "$HTTPS_PROXY" ]; then npm config set https-proxy "$HTTPS_PROXY"; fi && \
+    npm ci --omit=dev --prefix backend
+
+COPY backend/hunyuan_server/package.json backend/hunyuan_server/package-lock.json ./backend/hunyuan_server/
+RUN unset NPM_CONFIG_HTTP_PROXY NPM_CONFIG_HTTPS_PROXY || true && \
+    if [ -n "$HTTP_PROXY" ]; then npm config set proxy "$HTTP_PROXY"; fi && \
+    if [ -n "$HTTPS_PROXY" ]; then npm config set https-proxy "$HTTPS_PROXY"; fi && \
+    npm ci --omit=dev --prefix backend/hunyuan_server
+
 COPY . .
-RUN set -e; \
-    for dir in . backend backend/hunyuan_server; do \
-      if [ -f "$dir/package.json" ] && [ -f "$dir/package-lock.json" ]; then \
-        npm ci --prefix "$dir" || (cd "$dir" && npm install && cd - && npm ci --prefix "$dir"); \
-        if grep -q '@playwright/test' "$dir/package.json" || grep -q '"playwright"' "$dir/package.json"; then \
-          npx --yes --prefix "$dir" playwright install --with-deps; \
-        fi; \
-      fi; \
-    done
 RUN npm run ci
-CMD ["npm", "start", "--prefix", "backend"]
+
+### Runner stage
+FROM node:20 AS runner
+WORKDIR /app
+
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/backend/node_modules ./backend/node_modules
+COPY --from=builder /app/backend/hunyuan_server/node_modules ./backend/hunyuan_server/node_modules
+
+COPY . .
+
+CMD ["npm","start","--prefix","backend"]
