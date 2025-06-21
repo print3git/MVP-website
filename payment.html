@@ -422,9 +422,17 @@
                 class="px-2 py-1 rounded-md bg-[#1A1A1D] border border-white/10"
                 aria-label="Increase quantity"
               >
-                +
-              </button>
-              <span id="bulk-discount-msg" class="text-[#30D5C8] hidden">Popular: 2 prints &ndash; save 10 %</span>
+
+                <option value="1">1</option>
+                <option value="2" selected>2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+              </select>
+              <span id="bulk-discount-msg" class="text-[#30D5C8] hidden">
+                Popular choice: keep one, gift one – save 10% (<span id="popular-savings"></span>)
+              </span>
+
             </div>
           </div>
 

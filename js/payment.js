@@ -543,14 +543,26 @@ async function initPaymentPage() {
   });
 
   subscriptionRadios.forEach((r) => {
-    r.addEventListener('change', updatePayButton);
+    r.addEventListener('change', () => {
+      updatePayButton();
+      updatePopularMessage();
+    });
   });
+
+  function updatePopularMessage() {
+    if (!bulkMsg) return;
+    if (qtySelect.value === '2') {
+      const saving = ((selectedPrice * 0.1) / 100).toFixed(2);
+      bulkMsg.textContent = `Popular choice: keep one and gift one – save 10% (save £${saving})`;
+      bulkMsg.classList.remove('hidden');
+    } else {
+      bulkMsg.classList.add('hidden');
+    }
+  }
 
   qtySelect?.addEventListener('change', () => {
     updatePayButton();
-    if (!bulkMsg) return;
-    if (qtySelect.value === '1') bulkMsg.classList.remove('hidden');
-    else bulkMsg.classList.add('hidden');
+    updatePopularMessage();
   });
 
   qtyDec?.addEventListener('click', () => {
@@ -593,6 +605,7 @@ async function initPaymentPage() {
     });
   }
   updatePayButton();
+  updatePopularMessage();
   const sessionId = qs('session_id');
   if (sessionId) {
     recordPurchase();
