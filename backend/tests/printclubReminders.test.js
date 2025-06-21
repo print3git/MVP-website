@@ -22,7 +22,7 @@ test('sends reminders when credits unused and near reset', async () => {
   mClient.query.mockResolvedValueOnce({ rows: [{ email: 'a@a.com', username: 'alice' }] });
   await run();
 
-  expect(sendTemplate).toHaveBeenCalledWith('a@a.com', 'Print Club Reminder', 'reminder.txt', {
+  expect(sendTemplate).toHaveBeenCalledWith('a@a.com', 'print2 pro Reminder', 'reminder.txt', {
     username: 'alice',
   });
   expect(mClient.end).toHaveBeenCalled();
