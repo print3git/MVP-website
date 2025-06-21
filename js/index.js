@@ -235,6 +235,8 @@ let progressInterval = null;
 let progressStart = null;
 let usingViewerProgress = false;
 let lastSnapshot = null;
+let errorFadeTimeout = null;
+let errorClearTimeout = null;
 
 function getCycleKey() {
   const now = new Date();
@@ -509,13 +511,29 @@ async function buyNow() {
 function showError(msg) {
   const el = document.getElementById("gen-error");
   if (!el) return;
+  if (errorFadeTimeout) clearTimeout(errorFadeTimeout);
+  if (errorClearTimeout) clearTimeout(errorClearTimeout);
   el.textContent = msg;
+  if (!msg) {
+    el.style.opacity = 0;
+    return;
+  }
+  el.style.opacity = 1;
+  el.style.transition = "";
   if (
     typeof window !== "undefined" &&
     typeof window.positionQuote === "function"
   ) {
     requestAnimationFrame(() => window.positionQuote());
   }
+  errorFadeTimeout = setTimeout(() => {
+    el.style.transition = "opacity 2s";
+    el.style.opacity = 0;
+    errorClearTimeout = setTimeout(() => {
+      el.textContent = "";
+      el.style.transition = "";
+    }, 2000);
+  }, 10000);
 }
 
 function validatePrompt(p) {
@@ -559,7 +577,13 @@ refs.promptInput.addEventListener("input", () => {
   const lh = parseFloat(getComputedStyle(el).lineHeight);
   el.style.height = Math.min(el.scrollHeight, lh * 9) + "px";
   el.style.overflowY = el.scrollHeight > lh * 9 ? "auto" : "hidden";
-  document.getElementById("gen-error").textContent = "";
+  const errEl = document.getElementById("gen-error");
+  if (errEl) {
+    errEl.textContent = "";
+    errEl.style.opacity = 0;
+  }
+  if (errorFadeTimeout) clearTimeout(errorFadeTimeout);
+  if (errorClearTimeout) clearTimeout(errorClearTimeout);
   refs.promptWrapper.classList.remove("border-red-500");
   editsPending = true;
   refs.buyNowBtn?.classList.add("hidden");
