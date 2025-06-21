@@ -7,3 +7,5 @@ js
 service-worker.js
 admin
 docs
+backend
+e2e
