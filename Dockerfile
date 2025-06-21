@@ -1,14 +1,31 @@
 FROM node:20
+
+# Accept optional proxy args
+ARG HTTP_PROXY
+ARG HTTPS_PROXY
+ENV HTTP_PROXY=${HTTP_PROXY}
+ENV HTTPS_PROXY=${HTTPS_PROXY}
+
 WORKDIR /app
-COPY package*.json ./
-COPY backend/package*.json backend/
-COPY backend/hunyuan_server/package*.json backend/hunyuan_server/
+
+# Install root production dependencies while skipping lifecycle scripts
+COPY package.json package-lock.json ./
+RUN if [ -n "$HTTP_PROXY" ]; then npm config set proxy $HTTP_PROXY; fi \
+    && if [ -n "$HTTPS_PROXY" ]; then npm config set https-proxy $HTTPS_PROXY; fi \
+    && HUSKY=0 npm_config_ignore_scripts=true npm ci --omit=dev
+
+# Install backend production dependencies
+WORKDIR /app/backend
+COPY backend/package.json backend/package-lock.json ./
+RUN if [ -n "$HTTP_PROXY" ]; then npm config set proxy $HTTP_PROXY; fi \
+    && if [ -n "$HTTPS_PROXY" ]; then npm config set https-proxy $HTTPS_PROXY; fi \
+    && HUSKY=0 npm_config_ignore_scripts=true npm ci --omit=dev
+
+# Copy the rest of the source
+WORKDIR /app
 COPY . .
-RUN set -e; \
-    for dir in . backend backend/hunyuan_server; do \
-      if [ -f "$dir/package.json" ] && [ -f "$dir/package-lock.json" ]; then \
-        npm ci --prefix "$dir" || (cd "$dir" && npm install && cd - && npm ci --prefix "$dir"); \
-      fi; \
-    done
+
+# Run CI script
 RUN npm run ci
+
 CMD ["npm", "start", "--prefix", "backend"]
