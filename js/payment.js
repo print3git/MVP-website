@@ -547,13 +547,9 @@ async function initPaymentPage() {
 
   function updatePopularMessage() {
     if (!bulkMsg) return;
-    if (qtySelect.value === '2') {
-      const saving = ((selectedPrice * 0.1) / 100).toFixed(2);
-      bulkMsg.textContent = `Popular choice: keep one and gift one – save 10% (save £${saving})`;
-      bulkMsg.classList.remove('hidden');
-    } else {
-      bulkMsg.classList.add('hidden');
-    }
+    const saving = ((selectedPrice * 0.1) / 100).toFixed(2);
+    bulkMsg.textContent = `Popular choice: keep one and gift one – save 10% (save £${saving})`;
+    bulkMsg.classList.remove('hidden');
   }
 
   qtySelect?.addEventListener('change', () => {
