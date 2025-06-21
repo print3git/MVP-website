@@ -15,6 +15,15 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
+      - name: Configure npm proxies
+        run: |
+          unset NPM_CONFIG_http-proxy npm_config_http-proxy NPM_CONFIG_https-proxy npm_config_https-proxy || true
+          if [ -n "$HTTP_PROXY" ]; then
+            npm config set proxy "$HTTP_PROXY"
+          fi
+          if [ -n "$HTTPS_PROXY" ]; then
+            npm config set https-proxy "$HTTPS_PROXY"
+          fi
       - run: npm ci
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
