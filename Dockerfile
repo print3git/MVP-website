@@ -25,7 +25,17 @@ RUN if [ -n "$HTTP_PROXY" ]; then npm config set proxy $HTTP_PROXY; fi \
 WORKDIR /app
 COPY . .
 
+# Install dev dependencies to run tests
+RUN HUSKY=0 npm_config_ignore_scripts=true npm ci \
+    && npm ci --prefix backend \
+    && if [ -f backend/hunyuan_server/package.json ]; then npm ci --prefix backend/hunyuan_server; fi
+
 # Run CI script
 RUN npm run ci
+
+# Remove dev dependencies to keep the image slim
+RUN npm prune --omit=dev \
+    && npm prune --omit=dev --prefix backend \
+    && if [ -f backend/hunyuan_server/package.json ]; then npm prune --omit=dev --prefix backend/hunyuan_server; fi
 
 CMD ["npm", "start", "--prefix", "backend"]
