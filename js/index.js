@@ -325,6 +325,7 @@ async function updatePrintRunInfo() {
   }
   hoursEl.textContent = computePrintRunHours();
   if (slotsEl) slotsEl.textContent = `${adjustedSlots(baseSlots) + 1}`;
+
   if (info) info.classList.remove("invisible");
   if (typeof window.positionQuote === "function") {
     requestAnimationFrame(() => window.positionQuote());
