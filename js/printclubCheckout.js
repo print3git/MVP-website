@@ -21,8 +21,8 @@ document.addEventListener("DOMContentLoaded", () => {
       ? (PRINT_CLUB_PRICE * 0.9) / 100
       : PRINT_CLUB_PRICE / 100;
     priceSpan.textContent = hasReferral
-      ? `Join Print Club £${price.toFixed(2)} first month`
-      : `Join Print Club £${price.toFixed(2)}/mo`;
+      ? `Join print2 pro £${price.toFixed(2)} first month`
+      : `Join print2 pro £${price.toFixed(2)}/mo`;
   }
 
   const sessionId = qs("session_id");
