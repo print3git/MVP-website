@@ -1,25 +1,35 @@
-FROM node:20
+FROM node:20 AS builder
 WORKDIR /app
 
-# Configure npm proxy settings if HTTP_PROXY/HTTPS_PROXY are provided
+# Proxy support
 ARG HTTP_PROXY
 ARG HTTPS_PROXY
-RUN unset NPM_CONFIG_http-proxy npm_config_http-proxy NPM_CONFIG_https-proxy npm_config_https-proxy || true && \
-    if [ -n "$HTTP_PROXY" ]; then npm config set proxy "$HTTP_PROXY"; fi && \
-    if [ -n "$HTTPS_PROXY" ]; then npm config set https-proxy "$HTTPS_PROXY"; fi
 
-COPY package*.json ./
-COPY backend/package*.json backend/
-COPY backend/hunyuan_server/package*.json backend/hunyuan_server/
+# Install root dependencies
+COPY package.json package-lock.json ./
+RUN if [ -n "$HTTP_PROXY" ]; then npm config set proxy "$HTTP_PROXY"; fi \
+    && if [ -n "$HTTPS_PROXY" ]; then npm config set https-proxy "$HTTPS_PROXY"; fi \
+    && npm install --ignore-scripts \
+    && npm ci --omit=dev
+
+# Install backend dependencies
+COPY backend/package.json backend/package-lock.json ./backend/
+RUN if [ -n "$HTTP_PROXY" ]; then npm config set proxy "$HTTP_PROXY"; fi \
+    && if [ -n "$HTTPS_PROXY" ]; then npm config set https-proxy "$HTTPS_PROXY"; fi \
+    && cd backend \
+    && npm install --ignore-scripts \
+    && npm ci --omit=dev
+
+# Copy remaining source and run CI
 COPY . .
-RUN set -e; \
-    for dir in . backend backend/hunyuan_server; do \
-      if [ -f "$dir/package.json" ] && [ -f "$dir/package-lock.json" ]; then \
-        npm ci --prefix "$dir" || (cd "$dir" && npm install && cd - && npm ci --prefix "$dir"); \
-        if grep -q '@playwright/test' "$dir/package.json" || grep -q '"playwright"' "$dir/package.json"; then \
-          npx --yes --prefix "$dir" playwright install --with-deps; \
-        fi; \
-      fi; \
-    done
 RUN npm run ci
+
+FROM node:20 AS runner
+WORKDIR /app
+
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/backend/node_modules ./backend/node_modules
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app ./
+
 CMD ["npm", "start", "--prefix", "backend"]
