@@ -983,10 +983,8 @@ async function init() {
 
   setInterval(updateStats, 3600000);
 
-  if (window.setWizardSlotCount) {
-    const slots = Math.floor(Math.random() * 6) + 3;
-    window.setWizardSlotCount(slots);
-  }
+  // Keep the wizard UI in sync with the payment page
+  updateWizardSlotCount();
 
   const cutoffEl = document.getElementById("shipping-cutoff");
   function updateCutoff() {
