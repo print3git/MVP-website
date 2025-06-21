@@ -1,0 +1,1 @@
+- 2025-06-21 — disabled jsdoc/require-jsdoc for legacy backend code via flat-config override; rule still enforced for new files.
