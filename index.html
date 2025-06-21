@@ -334,8 +334,9 @@
 
         <div
           id="gen-error"
-          class="absolute left-0 top-full mt-1.5 w-fit text-left text-sm text-red-400 pointer-events-none"
+          class="absolute top-2 left-2 w-fit text-left text-sm text-red-400 pointer-events-none"
           aria-live="assertive"
+          style="opacity: 0"
         ></div>
 
         <!-- subreddit quote -->
@@ -578,23 +579,7 @@
           info.classList.remove("invisible");
         }
 
-        if (error && logo) {
-          const quoteRect = quote.getBoundingClientRect();
-          const logoRect = logo.getBoundingClientRect();
-          const wrapperRectTop = wrapperRect.top;
-          const center = quoteRect.top + quoteRect.height / 2 - wrapperRectTop;
 
-          // Mirror the spacing between the quote and the logo
-          const gap = quoteRect.left - logoRect.right;
-          const errorWidth = error.getBoundingClientRect().width;
-          const targetRight = logoRect.left - gap;
-          const leftPos = targetRight - errorWidth;
-          const leftOffset = leftPos - wrapperRect.left;
-
-          error.style.left = `${leftOffset}px`;
-          error.style.top = `${center - 2}px`;
-          error.style.transform = "translateY(-50%)";
-        }
 
         quote.classList.remove("invisible");
       }
