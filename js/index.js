@@ -310,6 +310,7 @@ function computePrintRunHours() {
 
 async function updatePrintRunInfo() {
   const hoursEl = document.getElementById("print-run-hours");
+  const hoursLabelEl = document.getElementById("print-run-hours-label");
   const slotsEl = document.getElementById("print-run-slots");
   const info = document.getElementById("print-run-info");
   if (!hoursEl && !slotsEl) return;
@@ -325,7 +326,9 @@ async function updatePrintRunInfo() {
   } catch {
     /* ignore */
   }
-  hoursEl.textContent = computePrintRunHours();
+  const hours = computePrintRunHours();
+  hoursEl.textContent = hours;
+  if (hoursLabelEl) hoursLabelEl.textContent = hours === 1 ? "hour" : "hours";
   if (slotsEl) slotsEl.textContent = `${adjustedSlots(baseSlots) + 1}`;
 
   if (info) info.classList.remove("invisible");
