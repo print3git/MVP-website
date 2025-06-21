@@ -4,6 +4,11 @@ COPY package*.json ./
 COPY backend/package*.json backend/
 COPY backend/hunyuan_server/package*.json backend/hunyuan_server/
 COPY . .
-RUN npm ci && npm ci --prefix backend && if [ -f backend/hunyuan_server/package.json ]; then npm ci --prefix backend/hunyuan_server; fi
+RUN set -e; \
+    for dir in . backend backend/hunyuan_server; do \
+      if [ -f "$dir/package.json" ] && [ -f "$dir/package-lock.json" ]; then \
+        npm ci --prefix "$dir" || (cd "$dir" && npm install && cd - && npm ci --prefix "$dir"); \
+      fi; \
+    done
 RUN npm run ci
 CMD ["npm", "start", "--prefix", "backend"]
