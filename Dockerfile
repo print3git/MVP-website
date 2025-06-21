@@ -1,5 +1,6 @@
 FROM node:20
 WORKDIR /app
+
 # Configure npm proxy settings if HTTP_PROXY/HTTPS_PROXY are provided
 ARG HTTP_PROXY
 ARG HTTPS_PROXY
