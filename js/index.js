@@ -295,6 +295,42 @@ function computeSlotsByTime() {
   return 1;
 }
 
+function computePrintRunHours() {
+  const dtf = new Intl.DateTimeFormat("en-US", {
+    timeZone: TZ,
+    hour12: false,
+    hour: "numeric",
+  });
+  const hour = parseInt(dtf.format(new Date()), 10);
+  const remain = 6 - (hour % 6);
+  return remain === 0 ? 6 : remain;
+}
+
+async function updatePrintRunInfo() {
+  const hoursEl = document.getElementById("print-run-hours");
+  const slotsEl = document.getElementById("print-run-slots");
+  const info = document.getElementById("print-run-info");
+  if (!hoursEl && !slotsEl) return;
+  let baseSlots = computeSlotsByTime();
+  try {
+    const resp = await fetch(`${API_BASE}/print-slots`);
+    if (resp.ok) {
+      const data = await resp.json();
+      if (typeof data.slots === "number") {
+        baseSlots = data.slots;
+      }
+    }
+  } catch {
+    /* ignore */
+  }
+  hoursEl.textContent = computePrintRunHours();
+  if (slotsEl) slotsEl.textContent = adjustedSlots(baseSlots);
+  if (info) info.classList.remove("invisible");
+  if (typeof window.positionQuote === "function") {
+    requestAnimationFrame(() => window.positionQuote());
+  }
+}
+
 async function updateWizardSlotCount() {
   if (!window.setWizardSlotCount) return;
   let baseSlots = computeSlotsByTime();
@@ -744,6 +780,8 @@ async function init() {
     }
     await updateStats(initData.stats);
     showThemeBanner();
+    updatePrintRunInfo();
+    setInterval(updatePrintRunInfo, 60000);
   } else {
     updateWizardSlotCount();
     fetchProfile().then(() => {
@@ -754,6 +792,8 @@ async function init() {
     });
     await updateStats();
     showThemeBanner();
+    updatePrintRunInfo();
+    setInterval(updatePrintRunInfo, 60000);
   }
   const sr = new URLSearchParams(window.location.search).get("sr");
   if (!sr) {
