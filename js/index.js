@@ -1074,7 +1074,7 @@ async function init() {
     }
   });
 
-  // The Print Club badge now links directly to its own page. Remove the old
+  // The print2 pro badge now links directly to its own page. Remove the old
   // modal-related click handlers so no popup flashes before navigation.
 }
 

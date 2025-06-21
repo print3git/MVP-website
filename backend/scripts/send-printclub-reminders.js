@@ -36,7 +36,7 @@ async function sendReminders() {
     );
     for (const row of rows) {
       try {
-        await sendTemplate(row.email, 'Print Club Reminder', 'reminder.txt', {
+        await sendTemplate(row.email, 'print2 pro Reminder', 'reminder.txt', {
           username: row.username,
         });
       } catch (err) {
