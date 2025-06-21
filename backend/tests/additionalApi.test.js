@@ -649,3 +649,12 @@ test('GET /api/competitions/winners returns list', async () => {
   const res = await request(app).get('/api/competitions/winners');
   expect([200, 404]).toContain(res.status);
 });
+
+test('GET /api/usernames returns list', async () => {
+  db.query.mockResolvedValueOnce({ rows: [{ username: 'alice' }, { username: 'bob' }] });
+  const res = await request(app).get('/api/usernames');
+  expect(res.status).toBe(200);
+  expect(Array.isArray(res.body)).toBe(true);
+  const call = db.query.mock.calls.find((c) => c[0].includes('SELECT username'));
+  expect(call).toBeDefined();
+});
