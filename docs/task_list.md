@@ -5,12 +5,14 @@
 - Use retargeting pixels to bring back visitors who left.
 - Integrate pixel data with ad platform to build custom audiences.
 - Embed tracking pixel across all site pages.
+- Add exit-intent discount overlay offering a promo code when visitors try to leave.
 - Include a clear value proposition and call-to-action in each ad.
 
 ## Purchase & Checkout
 
 - Offer multiple payment methods including Apple Pay and Google Pay.
 - Reconfigure seasonal order bundles once promotions resume.
+- Finalise multi-item cart with add-to-basket buttons and reservation countdown.
 
 ## Decreasing CAC
 
@@ -296,3 +298,11 @@
 - Display credit balance on profile pages and allow applying credit at checkout.
 - Add Jest tests for credit accrual and redemption.
 - Document the feature in the README.
+
+## Community Gamification & Loyalty
+
+- Show a dynamic reward badge on navigation that loads points from `/api/rewards`.
+- Allow redeeming points for discount codes via `/api/rewards/redeem`.
+- Track referral clicks and signups through the referral link endpoints.
+- Send competition and reward updates via the mailing list workflow.
+- Expand leaderboards, badges and monthly challenges on community pages.
