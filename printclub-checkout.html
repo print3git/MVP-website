@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Print Club Checkout</title>
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
+    <link rel="preconnect" href="https://js.stripe.com" crossorigin />
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://js.stripe.com/v3/" defer></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+  <body class="bg-[#1A1A1D] text-white font-sans min-h-screen flex flex-col">
+    <header class="relative z-10 px-6 py-4">
+      <a
+        id="back-link"
+        href="index.html"
+        class="inline-flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-3xl px-5 py-2 text-lg font-medium hover:bg-[#3A3A3E] transition-shape"
+      >
+        <svg
+          class="w-4 h-4 mr-2 flex-shrink-0"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewbox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M15 19l-7-7 7-7"
+          ></path>
+        </svg>
+        Back
+      </a>
+    </header>
+    <main
+      class="flex-1 flex flex-col items-center justify-center px-4 space-y-8 -mt-40"
+      style="visibility: hidden"
+      id="page-main"
+    >
+      <div id="success" class="hidden text-green-400 text-center space-y-2">
+        <p>Payment successful!</p>
+        <a href="profile.html" class="underline block">View profile</a>
+      </div>
+      <div id="cancel" class="hidden text-red-400 text-center">
+        Payment cancelled.
+      </div>
+      <div
+        class="relative flex flex-col items-start justify-center w-full max-w-md"
+      >
+        <h2 class="text-2xl font-semibold mb-2 text-center w-full">Checkout</h2>
+        <form id="checkout-form" class="space-y-2 w-full">
+          <div>
+            <input
+              id="ship-name"
+              class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+              placeholder="Full Name"
+              autocomplete="name"
+              aria-label="Full Name"
+            />
+          </div>
+          <div>
+            <input
+              id="checkout-email"
+              type="email"
+              class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+              placeholder="Email"
+              autocomplete="email"
+              aria-label="Email"
+            />
+          </div>
+          <div>
+            <input
+              id="ship-address"
+              class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+              placeholder="Address"
+              autocomplete="address-line1"
+              aria-label="Address"
+            />
+          </div>
+          <div class="flex gap-2">
+            <input
+              id="ship-city"
+              class="flex-1 p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+              placeholder="City + Country"
+              autocomplete="address-level2"
+              aria-label="City + Country"
+            />
+            <input
+              id="ship-zip"
+              class="w-28 p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+              placeholder="ZIP"
+              autocomplete="postal-code"
+              aria-label="ZIP code"
+            />
+          </div>
+          <fieldset
+            id="subscription-choice"
+            class="flex items-center justify-center gap-4 my-2 text-sm"
+          >
+            <label class="flex items-center gap-1 whitespace-nowrap">
+              <input
+                type="radio"
+                name="printclub"
+                value="join"
+                class="accent-[#30D5C8]"
+                checked
+              />
+              <span id="printclub-price">Join Print Club &pound;149.99/mo</span>
+            </label>
+          </fieldset>
+          <div id="payment-element" class="text-center text-gray-400">
+            [Stripe payment form will go here]
+          </div>
+          <button
+            id="submit-payment"
+            type="button"
+            class="w-full bg-[#30D5C8] text-[#1A1A1D] py-3 rounded-xl font-semibold hover:bg-[#28b7a8] transition"
+          >
+            Join Print Club
+          </button>
+        </form>
+        <div class="flex justify-center gap-4 mt-4 text-2xl text-white">
+          <i class="fas fa-lock" aria-label="Secure checkout"></i>
+          <i class="fas fa-shield-alt" aria-label="Money-back guarantee"></i>
+        </div>
+      </div>
+      <script type="module" src="js/printclubCheckout.js" defer></script>
+      <script>
+        if ("serviceWorker" in navigator) {
+          navigator.serviceWorker.register("service-worker.js");
+        }
+      </script>
+      <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          const main = document.getElementById("page-main");
+          if (main) main.style.visibility = "visible";
+        });
+      </script>
+    </main>
+  </body>
+</html>

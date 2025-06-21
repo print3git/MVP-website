@@ -36,7 +36,7 @@ async function loadSubscription() {
       if (manage) {
         manage.textContent = 'Join Print Club';
         manage.onclick = () => {
-          window.location.href = 'payment.html';
+          window.location.href = 'printclub-checkout.html';
         };
       }
       previews?.classList.add('hidden');
