@@ -44,4 +44,22 @@ function getTrackingUrl(carrier, trackingNumber) {
   return `https://track.aftership.com/${encodeURIComponent(carrier)}/${encodeURIComponent(trackingNumber)}`;
 }
 
-module.exports = { getShippingEstimate, getTrackingUrl };
+async function getTrackingStatus(carrier, trackingNumber) {
+  if (!SHIPPING_API_URL || !SHIPPING_API_KEY) {
+    return null;
+  }
+  try {
+    const res = await fetch(
+      `${SHIPPING_API_URL}/track?carrier=${encodeURIComponent(carrier)}&tracking=${encodeURIComponent(trackingNumber)}`,
+      { headers: { Authorization: `Bearer ${SHIPPING_API_KEY}` } },
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.status || null;
+  } catch (err) {
+    console.error('Tracking status failed', err.message);
+    return null;
+  }
+}
+
+module.exports = { getShippingEstimate, getTrackingUrl, getTrackingStatus };

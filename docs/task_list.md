@@ -142,12 +142,9 @@
 ## Customer Communication Automation
 
 - Generate tracking URLs via the shipping API when orders dispatch.
-- Insert the unique tracking link in the shipping confirmation email template.
-- Send status update emails until the package is delivered.
 - Automatically create a reprint order when quality checks fail.
 - Notify customers about the reprint with an updated arrival estimate.
 - Log reprint events for reporting and analytics.
-- Send a delivery confirmation email containing a satisfaction survey link.
 - Store survey responses in the database and surface metrics on the dashboard.
 - Reintroduce next-day delivery countdown on the site when logistics allow.
 
