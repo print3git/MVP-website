@@ -245,7 +245,8 @@
       <div class="relative flex justify-center w-full max-w-lg">
         <section
           id="preview-wrapper"
-          class="relative w-full max-w-lg h-72 bg-[#2A2A2E] border border-white/10 rounded-3xl overflow-hidden"
+          class="relative w-full max-w-lg bg-[#2A2A2E] border border-white/10 rounded-3xl overflow-hidden"
+          style="height: calc(18rem + 1cm)"
         >
           <!-- fallback still-image (hidden) -->
           <img
@@ -352,10 +353,9 @@
           class="absolute text-right text-sm text-red-400 leading-snug invisible"
         >
           <p class="whitespace-nowrap" style="margin-right: 0.5cm">
-            Next print run closes in
+            &lt;<span id="print-run-slots"></span> print slots left for next
             <span id="print-run-hours">6</span>
             <span id="print-run-hours-label">hours</span>
-            &mdash; &lt;<span id="print-run-slots"></span> slots remain
           </p>
         </div>
       </div>
@@ -515,13 +515,6 @@
       <p>🛡 Money-Back Guarantee</p>
       <p>🚚 Free UK Shipping</p>
     </div>
-
-<div class="absolute left-0 bottom-4 w-full md:w-1/2 max-w-lg text-center text-sm text-gray-400">
-  <p>
-    If you don’t love it, we’ll reprint or refund you – no questions asked: <span class="text-white">enquiries@domain.com</span>.<br />
-    Due to incredibly high demand, delivery may take 3+ weeks. Please allow for this. – <span class="text-white">The print2 team: Jia and Matthew</span>
-  </p>
-</div>
     <!-- ▸▸▸ SCRIPTS ------------------------------------------------------ -->
     <script src="js/modelViewerTouchFix.js" defer></script>
     <script type="module" src="js/wizard.js" defer></script>

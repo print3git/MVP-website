@@ -38,4 +38,5 @@ RUN npm prune --omit=dev \
     && npm prune --omit=dev --prefix backend \
     && if [ -f backend/hunyuan_server/package.json ]; then npm prune --omit=dev --prefix backend/hunyuan_server; fi
 
+
 CMD ["npm", "start", "--prefix", "backend"]
