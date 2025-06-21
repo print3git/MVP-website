@@ -499,6 +499,18 @@ app.get("/api/stats", (req, res) => {
   }
 });
 
+app.get("/api/usernames", async (req, res) => {
+  try {
+    const { rows } = await db.query(
+      "SELECT username FROM users ORDER BY RANDOM() LIMIT 10",
+    );
+    res.json(rows.map((r) => r.username));
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: "Failed to fetch usernames" });
+  }
+});
+
 app.get("/api/campaign", (req, res) => {
   res.json(campaigns);
 });
