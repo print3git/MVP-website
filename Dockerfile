@@ -1,37 +1,42 @@
-FROM node:20 AS builder
-WORKDIR /app
+FROM node:20
 
-# Proxy support
+# Accept optional proxy args
 ARG HTTP_PROXY
 ARG HTTPS_PROXY
+ENV HTTP_PROXY=${HTTP_PROXY}
+ENV HTTPS_PROXY=${HTTPS_PROXY}
 
-# Install root dependencies
-COPY package.json package-lock.json ./
-RUN if [ -n "$HTTP_PROXY" ]; then npm config set proxy "$HTTP_PROXY"; fi \
-    && if [ -n "$HTTPS_PROXY" ]; then npm config set https-proxy "$HTTPS_PROXY"; fi \
-    && npm config set ignore-scripts true \
-    && npm install \
-    && npm ci --omit=dev
-
-# Install backend dependencies
-COPY backend/package.json backend/package-lock.json ./backend/
-RUN if [ -n "$HTTP_PROXY" ]; then npm config set proxy "$HTTP_PROXY"; fi \
-    && if [ -n "$HTTPS_PROXY" ]; then npm config set https-proxy "$HTTPS_PROXY"; fi \
-    && cd backend \
-    && npm config set ignore-scripts true \
-    && npm install \
-    && npm ci --omit=dev
-
-# Copy remaining source and run CI
-COPY . .
-RUN npm run ci
-
-FROM node:20 AS runner
 WORKDIR /app
 
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/backend/node_modules ./backend/node_modules
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app ./
+# Install root production dependencies while skipping lifecycle scripts
+COPY package.json package-lock.json ./
+RUN if [ -n "$HTTP_PROXY" ]; then npm config set proxy $HTTP_PROXY; fi \
+    && if [ -n "$HTTPS_PROXY" ]; then npm config set https-proxy $HTTPS_PROXY; fi \
+    && HUSKY=0 npm_config_ignore_scripts=true npm ci --omit=dev
+
+# Install backend production dependencies
+WORKDIR /app/backend
+COPY backend/package.json backend/package-lock.json ./
+RUN if [ -n "$HTTP_PROXY" ]; then npm config set proxy $HTTP_PROXY; fi \
+    && if [ -n "$HTTPS_PROXY" ]; then npm config set https-proxy $HTTPS_PROXY; fi \
+    && HUSKY=0 npm_config_ignore_scripts=true npm ci --omit=dev
+
+# Copy the rest of the source
+WORKDIR /app
+COPY . .
+
+# Install dev dependencies to run tests
+RUN HUSKY=0 npm_config_ignore_scripts=true npm ci \
+    && npm ci --prefix backend \
+    && if [ -f backend/hunyuan_server/package.json ]; then npm ci --prefix backend/hunyuan_server; fi
+
+# Run CI script
+RUN npm run ci
+
+# Remove dev dependencies to keep the image slim
+RUN npm prune --omit=dev \
+    && npm prune --omit=dev --prefix backend \
+    && if [ -f backend/hunyuan_server/package.json ]; then npm prune --omit=dev --prefix backend/hunyuan_server; fi
+
 
 CMD ["npm", "start", "--prefix", "backend"]
