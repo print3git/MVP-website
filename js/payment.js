@@ -547,7 +547,8 @@ async function initPaymentPage() {
   qtySelect?.addEventListener('change', () => {
     updatePayButton();
     if (!bulkMsg) return;
-    if (qtySelect.value === '1') bulkMsg.classList.remove('hidden');
+    if (parseInt(qtySelect.value, 10) >= 2)
+      bulkMsg.classList.remove('hidden');
     else bulkMsg.classList.add('hidden');
   });
 
