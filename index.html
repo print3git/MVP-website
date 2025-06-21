@@ -124,12 +124,9 @@
       }
       @keyframes purchaseFade {
         0% {
-          opacity: 0;
-        }
-        20% {
           opacity: 1;
         }
-        80% {
+        75% {
           opacity: 1;
         }
         100% {
@@ -137,13 +134,9 @@
         }
       }
       .purchase-fade {
-        animation: purchaseFade 10s forwards;
+        animation: purchaseFade 8s forwards;
       }
 
-      /* Taller preview when browser UI is hidden */
-      #preview-wrapper.fullscreen-height {
-        height: 24rem; /* h-96 */
-      }
     </style>
   </head>
 
@@ -252,7 +245,8 @@
       <div class="relative flex justify-center w-full max-w-lg">
         <section
           id="preview-wrapper"
-          class="relative w-full max-w-lg h-72 bg-[#2A2A2E] border border-white/10 rounded-3xl overflow-hidden"
+          class="relative w-full max-w-lg bg-[#2A2A2E] border border-white/10 rounded-3xl overflow-hidden"
+          style="height: calc(18rem + 1cm)"
         >
           <!-- fallback still-image (hidden) -->
           <img
@@ -361,8 +355,8 @@
           <p class="whitespace-nowrap" style="margin-right: 0.5cm">
             Next print run closes in
             <span id="print-run-hours">6</span>
-            <span id="print-run-hours-label">hours</span>
-            &mdash; &lt;<span id="print-run-slots"></span> slots remain
+            <span id="print-run-hours-label">hours</span>,
+            &lt;<span id="print-run-slots"></span> slots remain
           </p>
         </div>
       </div>
@@ -485,9 +479,8 @@
           <span class="text-white font-mono px-1">SAVE5</span> for 5% off.
         </p>
         <p class="text-gray-200 text-sm">
-          <a href="signup.html" class="font-bold text-[#30D5C8]"
-            >Sign up to hear when discounts are available</a
-          >
+          <a href="signup.html" class="font-bold text-[#30D5C8]">Sign up</a>
+          to hear when discounts are available
         </p>
       </div>
     </div>
@@ -523,7 +516,6 @@
       <p>🛡 Money-Back Guarantee</p>
       <p>🚚 Free UK Shipping</p>
     </div>
-
     <!-- ▸▸▸ SCRIPTS ------------------------------------------------------ -->
     <script src="js/modelViewerTouchFix.js" defer></script>
     <script type="module" src="js/wizard.js" defer></script>
@@ -629,20 +621,6 @@
       class="fixed bottom-28 left-4 bg-black/80 text-white px-3 py-1 rounded hidden opacity-0 text-sm flex items-center space-x-2"
     ></div>
     <img src="/pixel" alt="" width="1" height="1" style="display: none" />
-    <script type="module">
-      function adjustViewerHeight() {
-        const wrapper = document.getElementById("preview-wrapper");
-        if (!wrapper) return;
-        const fullscreen = Math.abs(window.innerHeight - screen.height) < 5;
-        if (fullscreen) {
-          wrapper.classList.add("fullscreen-height");
-        } else {
-          wrapper.classList.remove("fullscreen-height");
-        }
-      }
 
-      window.addEventListener("DOMContentLoaded", adjustViewerHeight);
-      window.addEventListener("resize", adjustViewerHeight);
-    </script>
   </body>
 </html>
