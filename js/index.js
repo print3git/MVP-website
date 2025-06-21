@@ -1031,7 +1031,6 @@ async function init() {
   const popupEl = document.getElementById("purchase-popups");
   const popupMsgs = [
     "Anna from NY just purchased",
-    "23 people are viewing this item",
     "Tom from London bought a print",
   ];
   let popupIdx = 0;
