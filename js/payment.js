@@ -547,8 +547,9 @@ async function initPaymentPage() {
 
   function updatePopularMessage() {
     if (!bulkMsg) return;
-    const saving = ((selectedPrice * 0.1) / 100).toFixed(2);
-    bulkMsg.textContent = `Popular choice: keep one and gift one – save 10% (save £${saving})`;
+    bulkMsg.innerHTML =
+      '<span class="text-gray-400">Popular: keep one, gift one – </span>' +
+      '<span class="text-white">save £7.00</span>';
     bulkMsg.classList.remove('hidden');
   }
 
