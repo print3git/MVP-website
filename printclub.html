@@ -21,6 +21,7 @@
     <header class="relative flex items-center py-4 px-6">
       <div class="flex items-center flex-1">
         <a
+          id="back-link"
           href="index.html"
           class="inline-flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-3xl px-5 py-2 text-lg font-medium hover:bg-[#3A3A3E] transition-shape"
         >
@@ -128,5 +129,23 @@
     </div>
     <script type="module" src="js/printclub.js"></script>
     <script type="module" src="js/rewardBadge.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const link = document.getElementById('back-link');
+        if (!link) return;
+        try {
+          const ref = new URL(document.referrer);
+          if (ref.origin === window.location.origin && !ref.pathname.endsWith('printclub.html')) {
+            link.setAttribute('href', ref.pathname.replace(/^\//, '') + ref.search + ref.hash);
+            link.addEventListener('click', (e) => {
+              e.preventDefault();
+              history.back();
+            });
+          }
+        } catch {
+          /* ignore */
+        }
+      });
+    </script>
   </body>
 </html>
