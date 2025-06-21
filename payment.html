@@ -399,11 +399,30 @@
             </p>
             <div class="flex items-center gap-2">
               <label for="print-qty">Quantity</label>
-              <select
-                id="print-qty"
-                class="p-1 rounded-md bg-[#1A1A1D] border border-white/10"
-                aria-label="Quantity"
+              <button
+                id="qty-decrement"
+                type="button"
+                class="px-2 py-1 rounded-md bg-[#1A1A1D] border border-white/10"
+                aria-label="Decrease quantity"
               >
+                &ndash;
+              </button>
+              <input
+                id="print-qty"
+                type="number"
+                min="1"
+                max="5"
+                value="2"
+                class="w-12 text-center p-1 rounded-md bg-[#1A1A1D] border border-white/10"
+                aria-label="Quantity"
+              />
+              <button
+                id="qty-increment"
+                type="button"
+                class="px-2 py-1 rounded-md bg-[#1A1A1D] border border-white/10"
+                aria-label="Increase quantity"
+              >
+
                 <option value="1">1</option>
                 <option value="2" selected>2</option>
                 <option value="3">3</option>
@@ -411,8 +430,9 @@
                 <option value="5">5</option>
               </select>
               <span id="bulk-discount-msg" class="text-[#30D5C8] hidden">
-                Popular choice: keep one and gift one – save 10% (<span id="popular-savings"></span>)
+                Popular choice: keep one, gift one – save 10% (<span id="popular-savings"></span>)
               </span>
+
             </div>
           </div>
 
