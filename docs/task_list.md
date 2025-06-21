@@ -16,10 +16,10 @@
 
 - Add real photo of printed object or user-generated image to hero section to reinforce the physical product.
 
-## Competitions & Print Club
+## Competitions & print2 pro
 
-- Add images to the competitions page and Print Club with participant quotes to show social proof.
-- Replace the placeholder "Real life image here" box on the Print Club page with an actual photo.
+- Add images to the competitions page and print2 pro with participant quotes to show social proof.
+- Replace the placeholder "Real life image here" box on the print2 pro page with an actual photo.
 
 ## Hub Deployment Kit
 
@@ -189,7 +189,7 @@
   - Use subtle gift icons on product thumbnails instead of large banners.
   - A/B test concise versus detailed gift copy to avoid clutter.
 
-## Increasing Print Club subscriptions
+## Increasing print2 pro subscriptions
 
 - **Pricing incentives**
 

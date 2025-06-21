@@ -5,7 +5,7 @@ const bannerLink = document.getElementById("printclub-banner-link");
 const banner = document.getElementById("printclub-banner");
 const API_BASE = (window.API_ORIGIN || "") + "/api";
 
-// Show the Print Club banner when present
+// Show the print2 pro banner when present
 banner?.classList.remove("hidden");
 
 bannerLink?.addEventListener("click", (e) => {
@@ -28,7 +28,7 @@ async function updateBadgeText() {
     if (!res.ok) return;
     const sub = await res.json();
     if (sub && sub.active !== false && sub.status !== "canceled") {
-      badge.textContent = "Print Club";
+      badge.textContent = "print2 pro";
     }
   } catch (err) {
     console.error("Failed to fetch subscription", err);
