@@ -63,6 +63,7 @@
     "coverage-badges-cli": "^2.1.0",
     "eslint": "^9.28.0",
     "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-jsdoc": "^51.1.1",
     "eslint-plugin-promise": "^7.2.1",
     "globals": "^16.2.0",
     "htmlparser2": "^9.0.0",
