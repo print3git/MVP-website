@@ -315,30 +315,33 @@
             </fieldset>
             <div class="flex items-center gap-2 mt-2 text-white text-sm">
               <span>Quantity:</span>
-              <div class="flex items-center gap-2">
-                <button
-                  type="button"
-                  id="qty-increment"
-                  aria-label="Increase quantity"
-                  class="p-1 bg-[#2A2A2E] rounded"
-                >
-                  <i class="fas fa-arrow-up"></i>
-                </button>
+              <div
+                id="qty-pill"
+                class="flex items-center bg-[#2A2A2E] border border-white/20 rounded-full overflow-hidden"
+              >
                 <button
                   type="button"
                   id="qty-decrement"
                   aria-label="Decrease quantity"
-                  class="p-1 bg-[#2A2A2E] rounded"
+                  class="w-10 h-10 flex items-center justify-center"
                 >
-                  <i class="fas fa-arrow-down"></i>
+                  &minus;
                 </button>
                 <input
                   id="print-qty"
                   type="number"
                   min="1"
                   value="2"
-                  class="w-10 text-center bg-[#1A1A1D] border border-white/20 rounded appearance-none"
+                  class="w-8 text-center bg-transparent appearance-none"
                 />
+                <button
+                  type="button"
+                  id="qty-increment"
+                  aria-label="Increase quantity"
+                  class="w-10 h-10 flex items-center justify-center"
+                >
+                  +
+                </button>
               </div>
               <p id="bulk-discount-msg" class="text-xs whitespace-nowrap ml-2 text-gray-400"></p>
             </div>
