@@ -82,7 +82,12 @@ This repository contains the early MVP code for print2's website and backend.
 
 You can build a dev container from the included `Dockerfile`. The image now
 installs the Docker CLI so commands like `docker --version` work inside the
-container.
+container. If you want to skip running full CI inside the container, build with
+`SKIP_TESTS=1`:
+
+```bash
+DOCKER_BUILDKIT=1 docker build --build-arg SKIP_TESTS=1 .
+```
 
 ## Serving the Frontend Locally
 
@@ -304,3 +309,27 @@ are missing or unused.
 CI runs `npm run deps:dedupe-check` which executes `pnpm dedupe --check` to
 ensure no duplicate packages remain in the lockfiles. Run `npm run deps:dedupe`
 locally to automatically deduplicate.
+
+## Preview Deploys
+
+Pull requests automatically deploy a preview site to Netlify. To enable this workflow, add the following secrets in your GitHub repository settings:
+
+| Secret name | What for |
+| ----------- | -------- |
+| `NETLIFY_AUTH_TOKEN` | Netlify preview deploys |
+| `NETLIFY_SITE_ID` | Netlify preview deploys |
+
+Generate an auth token with:
+
+```bash
+netlify login --json | jq -r .token
+```
+
+Find your site ID with:
+
+```bash
+netlify sites:list --json | jq -r '.[0].id'
+```
+
+Once these secrets are configured, the `preview-deploy.yml` workflow will deploy PRs without prompting for authorization.
+
