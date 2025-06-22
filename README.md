@@ -82,7 +82,12 @@ This repository contains the early MVP code for print2's website and backend.
 
 You can build a dev container from the included `Dockerfile`. The image now
 installs the Docker CLI so commands like `docker --version` work inside the
-container.
+container. If you want to skip running full CI inside the container, build with
+`SKIP_TESTS=1`:
+
+```bash
+DOCKER_BUILDKIT=1 docker build --build-arg SKIP_TESTS=1 .
+```
 
 ## Serving the Frontend Locally
 
