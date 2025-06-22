@@ -11,6 +11,11 @@ WORKDIR /app
 # Disable Husky and npm lifecycle scripts
 ENV HUSKY=0 NPM_CONFIG_IGNORE_SCRIPTS=true
 
+# Install Docker CLI for development tasks
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends docker.io \
+    && rm -rf /var/lib/apt/lists/*
+
 # -------- install root dependencies
 COPY package.json package-lock.json ./
 RUN unset NPM_CONFIG_HTTP_PROXY NPM_CONFIG_HTTPS_PROXY || true \

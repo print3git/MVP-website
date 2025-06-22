@@ -72,12 +72,17 @@ This repository contains the early MVP code for print2's website and backend.
    ```bash
    npm run send-abandoned-offers  # inside backend/
    ```
-
 9. (Optional) Clean up expired password reset tokens periodically:
 
    ```bash
    npm run cleanup-tokens  # inside backend/
    ```
+
+## Development Container
+
+You can build a dev container from the included `Dockerfile`. The image now
+installs the Docker CLI so commands like `docker --version` work inside the
+container.
 
 ## Serving the Frontend Locally
 
