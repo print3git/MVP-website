@@ -624,6 +624,8 @@ async function initPaymentPage() {
     colorMenu.addEventListener("click", (ev) => {
       const btn = ev.target.closest("button[data-color]");
       if (btn) {
+        // Prevent click from bubbling and reopening the menu
+        ev.stopPropagation();
         const color = btn.dataset.color;
         singleButton.style.backgroundColor = color;
 
