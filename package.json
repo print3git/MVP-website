@@ -28,7 +28,8 @@
     "bundle:size": "size-limit",
     "e2e": "playwright test",
     "visual-test": "percy exec -- npm run e2e",
-    "test:a11y": "playwright install chromium --with-deps && playwright test e2e/a11y.test.js"
+    "test:a11y": "playwright install chromium --with-deps && playwright test e2e/a11y.test.js",
+    "netlify:deploy": "scripts/netlify-preflight.sh && netlify deploy"
   },
   "keywords": [],
   "author": "",
