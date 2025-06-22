@@ -81,6 +81,18 @@
         -moz-appearance: textfield;
       }
 
+      /* === Progressive–disclosure container === */
+      .collapsible {
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+      }
+      .collapsible.collapsed {
+        max-height: 0;
+      }
+      .collapsible.expanded {
+        max-height: 500px; /* big enough for any content */
+      }
+
       /* Highlight the selected pricing tier */
       #material-options label span {
         transition: transform 0.2s ease, box-shadow 0.2s ease;
