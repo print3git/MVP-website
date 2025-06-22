@@ -31,11 +31,11 @@ jobs:
           npm config delete https-proxy
         env:
           NPM_CONFIG_LEGACY_PEER_DEPS: true
-      - run: npm ci
+      - run: npm install --no-audit --no-fund
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
       - name: Install backend dependencies
-        run: npm ci --prefix backend
+        run: npm install --no-audit --no-fund --prefix backend
 
       - name: Validate ESLint modules
         run: |

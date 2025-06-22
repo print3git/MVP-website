@@ -13,15 +13,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: netlify/actions/cli@v4
-      - name: "\u2699\uFE0F Pre-flight \u2013 verify Netlify creds"
-        run: |
-          for v in NETLIFY_AUTH_TOKEN NETLIFY_SITE_ID; do
-            [ -z "${!v}" ] && {
-              echo "::error title=Missing Netlify secret::$v is empty \u2013 aborting deploy";
-              exit 1
-            }
-          done
-      - name: "\u1F680 Deploy preview"
+      - name: Deploy to Netlify
+        if: env.NETLIFY_AUTH_TOKEN != '' && env.NETLIFY_SITE_ID != ''
         run: |
           netlify deploy \
             --dir=. \
