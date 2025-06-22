@@ -1082,7 +1082,7 @@ async function init() {
     const friday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     friday.setDate(friday.getDate() + ((5 - friday.getDay() + 7) % 7));
     if (friday - now < 7 * 86400000 && friday - now > 0) {
-      banner.textContent = "Order before Friday for Father's Day delivery!";
+      banner.textContent = "Order before Friday for weekend delivery";
       banner.classList.remove("hidden");
     }
   }
