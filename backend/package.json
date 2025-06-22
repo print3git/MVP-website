@@ -13,6 +13,7 @@
     "create-admin": "node scripts/create-admin.js",
     "format": "prettier --write \"**/*.{js,jsx,json,md}\"",
     "send-reminders": "node scripts/send-purchase-reminders.js",
+    "send-abandoned-offers": "node scripts/send-abandoned-offers.js",
     "send-followups": "node scripts/send-post-purchase-followups.js",
     "send-delay-notifications": "node scripts/send-delay-notifications.js",
     "send-shipping-confirmations": "node scripts/send-shipping-confirmations.js",
