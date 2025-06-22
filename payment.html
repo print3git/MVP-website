@@ -94,6 +94,15 @@
         box-shadow: 0 0 10px rgba(48, 213, 200, 0.6),
           0 6px 10px rgba(0, 0, 0, 0.6);
       }
+
+      /* Hover effect for quantity selector */
+      #qty-pill {
+        transition: transform 0.2s ease;
+      }
+      #qty-pill:hover,
+      #qty-pill:focus-within {
+        transform: scale(1.04);
+      }
     </style>
   </head>
 
@@ -332,6 +341,7 @@
                   type="number"
                   min="1"
                   value="2"
+
                   class="w-12 text-center bg-transparent appearance-none text-xl"
                 />
                 <button
@@ -339,6 +349,7 @@
                   id="qty-increment"
                   aria-label="Increase quantity"
                   class="w-12 h-12 flex items-center justify-center text-2xl"
+
                 >
                   +
                 </button>
@@ -355,25 +366,6 @@
                 aria-label="Full Name"
               />
             </div>
-            <div id="etch-name-container" class="relative">
-              <input
-                id="etch-name"
-                class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
-                placeholder="Name for etching (optional)"
-                maxlength="20"
-                aria-label="Etched Name"
-                disabled
-              />
-              <div
-                id="etch-warning"
-                class="pointer-events-none absolute inset-y-0 left-0 flex items-center gap-2 pl-2 hidden"
-              >
-
-                <div class="border-t-2 border-[#30D5C8] w-[20ch]"></div>
-                <span class="text-sm text-[#30D5C8] whitespace-nowrap">Requires multicolour</span>
-
-              </div>
-            </div>
             <div>
               <input
                 id="checkout-email"
@@ -384,55 +376,83 @@
                 aria-label="Email"
               />
             </div>
-            <div>
-              <input
-                id="ship-address"
-                class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
-                placeholder="Address"
-                autocomplete="address-line1"
-                aria-label="Address"
-              />
-            </div>
+            <button
+              id="advanced-toggle"
+              type="button"
+              class="text-sm underline text-gray-300"
+            >
+              More options
+            </button>
+            <div id="advanced-section" class="space-y-[0.33rem] hidden">
+              <div id="etch-name-container" class="relative">
+                <input
+                  id="etch-name"
+                  class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+                  placeholder="Name for etching (optional)"
+                  maxlength="20"
+                  aria-label="Etched Name"
+                  disabled
+                />
+                <div
+                  id="etch-warning"
+                  class="pointer-events-none absolute inset-y-0 left-0 flex items-center gap-2 pl-2 hidden"
+                >
 
-            <div class="flex gap-2">
-              <input
-                id="ship-city"
-                class="flex-1 p-2 rounded-md bg-[#1A1A1D] border border-white/10"
-                placeholder="City + Country"
-                autocomplete="address-level2"
-                aria-label="City + Country"
-              />
-              <input
-                id="ship-zip"
-                class="w-28 p-2 rounded-md bg-[#1A1A1D] border border-white/10"
-                placeholder="ZIP"
-                autocomplete="postal-code"
-                aria-label="ZIP code"
-              />
-            </div>
+                  <div class="border-t-2 border-[#30D5C8] w-[20ch]"></div>
+                  <span class="text-sm text-[#30D5C8] whitespace-nowrap">Requires multicolour</span>
 
-            <div class="flex gap-2">
-              <input
-                id="discount-code"
-                class="flex-1 p-2 rounded-md bg-[#1A1A1D] border border-white/10"
-                placeholder="Discount Code (optional)"
-                aria-label="Discount code"
-              />
-              <button
-                id="apply-discount"
-                type="button"
-                class="px-3 bg-[#30D5C8] text-[#1A1A1D] rounded-md hover:bg-[#28b7a8] transition"
-              >
-                Apply
-              </button>
-            </div>
-            <p id="discount-msg" class="text-xs text-center"></p>
+                </div>
+              </div>
+              <div>
+                <input
+                  id="ship-address"
+                  class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+                  placeholder="Address"
+                  autocomplete="address-line1"
+                  aria-label="Address"
+                />
+              </div>
 
-            <div id="credit-option" class="my-2 text-sm hidden">
-              <label class="flex items-center gap-1">
-                <input type="checkbox" id="use-credit" class="accent-[#30D5C8]" />
-                Use print2 pro credit (<span id="credits-remaining">0</span> left this week)
-              </label>
+              <div class="flex gap-2">
+                <input
+                  id="ship-city"
+                  class="flex-1 p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+                  placeholder="City + Country"
+                  autocomplete="address-level2"
+                  aria-label="City + Country"
+                />
+                <input
+                  id="ship-zip"
+                  class="w-28 p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+                  placeholder="ZIP"
+                  autocomplete="postal-code"
+                  aria-label="ZIP code"
+                />
+              </div>
+
+              <div class="flex gap-2">
+                <input
+                  id="discount-code"
+                  class="flex-1 p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+                  placeholder="Discount Code (optional)"
+                  aria-label="Discount code"
+                />
+                <button
+                  id="apply-discount"
+                  type="button"
+                  class="px-3 bg-[#30D5C8] text-[#1A1A1D] rounded-md hover:bg-[#28b7a8] transition"
+                >
+                  Apply
+                </button>
+              </div>
+              <p id="discount-msg" class="text-xs text-center"></p>
+
+              <div id="credit-option" class="my-2 text-sm hidden">
+                <label class="flex items-center gap-1">
+                  <input type="checkbox" id="use-credit" class="accent-[#30D5C8]" />
+                  Use print2 pro credit (<span id="credits-remaining">0</span> left this week)
+                </label>
+              </div>
             </div>
 
             <div id="payment-element" class="text-center text-gray-400">
@@ -603,6 +623,20 @@
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('service-worker.js');
       }
+    </script>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const toggle = document.getElementById('advanced-toggle');
+        const section = document.getElementById('advanced-section');
+        if (toggle && section) {
+          toggle.addEventListener('click', () => {
+            section.classList.toggle('hidden');
+            toggle.textContent = section.classList.contains('hidden')
+              ? 'More options'
+              : 'Hide options';
+          });
+        }
+      });
     </script>
     <script type="module" src="js/basket.js" defer></script>
   </body>
