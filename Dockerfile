@@ -6,6 +6,7 @@ RUN corepack enable && \
     corepack prepare pnpm@8.15.4 --activate && \
     npm exec --yes playwright@1.53.1 install --with-deps
 
+
 ARG HTTP_PROXY
 ARG HTTPS_PROXY
 ARG SKIP_TESTS=0
@@ -55,9 +56,16 @@ RUN if [ -f backend/hunyuan_server/package-lock.json ]; then \
 
 # -------- copy source and run CI
 COPY . .
-RUN [ "$SKIP_TESTS" = "1" ] || \
-    (command -v pnpm >/dev/null && pnpm run ci || npm run ci || \
-     echo "ℹ️  pnpm run ci skipped – pnpm or script not found")
+RUN if [ "$SKIP_TESTS" = "1" ]; then \
+      echo "\u2139\uFE0F  CI tests skipped (SKIP_TESTS=1)"; \
+    else \
+      if command -v pnpm >/dev/null; then \
+        pnpm run ci || npm run ci || echo "\u26A0\uFE0F  pnpm run ci failed but build will proceed"; \
+      else \
+        echo "\u26A0\uFE0F  pnpm missing, falling back to npm run ci"; \
+        npm run ci || echo "\u26A0\uFE0F  npm run ci failed but build will proceed"; \
+      fi; \
+    fi
 
 # -------- prune dev dependencies
 RUN pnpm prune --prod \
@@ -65,6 +73,7 @@ RUN pnpm prune --prod \
 
 # -------- runtime stage
 FROM node:20
+RUN corepack enable && corepack prepare pnpm@8.15.4 --activate
 
 ARG HTTP_PROXY
 ARG HTTPS_PROXY

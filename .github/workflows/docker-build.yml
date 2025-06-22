@@ -9,7 +9,12 @@ on:
 jobs:
   docker:
     runs-on: ubuntu-latest
+    env:
+      SKIP_TESTS: 0
     steps:
       - uses: actions/checkout@v4
+      - run: |
+          corepack enable
+          corepack prepare pnpm@8.15.4 --activate
       - name: Build Docker image
         run: docker build .
