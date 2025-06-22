@@ -79,30 +79,42 @@
               aria-label="Email"
             />
           </div>
-          <div>
+          <div class="flex flex-col" id="addressStub">
+            <label for="ship-address" class="font-medium">Address</label>
             <input
-              id="ship-address"
-              class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
-              placeholder="Address"
-              autocomplete="address-line1"
-              aria-label="Address"
+              id="addressStubInput"
+              type="text"
+              placeholder="Tap to add address…"
+              class="bg-gray-800 rounded-lg h-12 px-3 text-gray-400 cursor-pointer"
+              readonly
             />
           </div>
-          <div class="flex gap-2">
-            <input
-              id="ship-city"
-              class="flex-1 p-2 rounded-md bg-[#1A1A1D] border border-white/10"
-              placeholder="City + Country"
-              autocomplete="address-level2"
-              aria-label="City + Country"
-            />
-            <input
-              id="ship-zip"
-              class="w-28 p-2 rounded-md bg-[#1A1A1D] border border-white/10"
-              placeholder="ZIP"
-              autocomplete="postal-code"
-              aria-label="ZIP code"
-            />
+          <div id="addressGroup" class="collapsible collapsed">
+            <div>
+              <input
+                id="ship-address"
+                class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+                placeholder="Address"
+                autocomplete="address-line1"
+                aria-label="Address"
+              />
+            </div>
+            <div class="flex gap-2">
+              <input
+                id="ship-city"
+                class="flex-1 p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+                placeholder="City + Country"
+                autocomplete="address-level2"
+                aria-label="City + Country"
+              />
+              <input
+                id="ship-zip"
+                class="w-28 p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+                placeholder="ZIP"
+                autocomplete="postal-code"
+                aria-label="ZIP code"
+              />
+            </div>
           </div>
           <fieldset
             id="subscription-choice"
