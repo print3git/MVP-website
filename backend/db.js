@@ -153,6 +153,34 @@ async function adjustRewardPoints(userId, delta) {
   return parseInt(rows[0].points, 10);
 }
 
+async function getLeaderboard(limit = 10) {
+  const { rows } = await query(
+    `SELECT u.username, rp.points
+     FROM reward_points rp
+     JOIN users u ON rp.user_id=u.id
+     ORDER BY rp.points DESC
+     LIMIT $1`,
+    [limit],
+  );
+  return rows;
+}
+
+async function getAchievements(userId) {
+  const { rows } = await query(
+    "SELECT name, created_at FROM achievements WHERE user_id=$1 ORDER BY created_at DESC",
+    [userId],
+  );
+  return rows;
+}
+
+async function addAchievement(userId, name) {
+  const { rows } = await query(
+    "INSERT INTO achievements(user_id, name) VALUES($1,$2) RETURNING id",
+    [userId, name],
+  );
+  return rows[0];
+}
+
 async function getUserIdForReferral(code) {
   const { rows } = await query(
     "SELECT user_id FROM referral_links WHERE code=$1",
@@ -828,6 +856,9 @@ module.exports = {
   getOrCreateReferralLink,
   getRewardPoints,
   adjustRewardPoints,
+  getLeaderboard,
+  getAchievements,
+  addAchievement,
   getUserIdForReferral,
   insertReferralEvent,
   getOrCreateOrderReferralLink,

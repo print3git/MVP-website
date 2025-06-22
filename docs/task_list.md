@@ -218,7 +218,6 @@
   - Featured member spotlights showcasing subscriber creations.
   - Monthly design challenges with member voting.
   - In-person or virtual meetups.
-  - Leaderboard and achievements for engagement.
   - Badge system on profiles.
 
 - **Referral and affiliate programs**
