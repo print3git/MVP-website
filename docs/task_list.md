@@ -195,8 +195,6 @@
 
 - **Pricing incentives**
 
-  - Introductory discounts – offer a discounted first month or a "first print free" promotion.
-  - Annual plans – provide a lower effective price when subscribers pay for a full year upfront.
   - Family or group tiers – discounted rates for multiple members under one plan.
   - Loyalty discounts – reduce the price or grant bonus prints for members who reach milestones (3-month, 6-month, 1-year).
   - Upgrade credits – allow unused credits to roll over or convert into higher-tier prints after a period.
