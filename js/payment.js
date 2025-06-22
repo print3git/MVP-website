@@ -12,6 +12,7 @@ const PRICES = {
   multi: 3999,
   premium: 7999,
 };
+const TWO_PRINT_DISCOUNT = 700;
 let PRICING_VARIANT = localStorage.getItem('pricingVariant');
 if (!PRICING_VARIANT) {
   PRICING_VARIANT = Math.random() < 0.5 ? 'A' : 'B';
@@ -507,7 +508,9 @@ async function initPaymentPage() {
     } else {
       const qty = Math.max(1, parseInt(qtySelect?.value || '2', 10));
       let total = selectedPrice * qty;
-      if (qty >= 2) total -= Math.round(selectedPrice * 0.1);
+      if (qty === 2) {
+        total -= TWO_PRINT_DISCOUNT;
+      }
       payBtn.textContent = `Pay £${(total / 100).toFixed(2)} (${qty} prints)`;
     }
   }
@@ -871,8 +874,8 @@ async function initPaymentPage() {
     ) {
       discount += Math.round(selectedPrice * (flashSale.discount_percent / 100));
     }
-    if (qty >= 2) {
-      discount += Math.round(selectedPrice * 0.1);
+    if (qty === 2) {
+      discount += TWO_PRINT_DISCOUNT;
     }
     const shippingInfo = {
       name: document.getElementById('ship-name').value,
@@ -891,6 +894,7 @@ async function initPaymentPage() {
     const useCredit = document.getElementById('use-credit')?.checked;
     const data = await createCheckout(
       qty,
+      discount,
       discountCode,
       shippingInfo,
       referralId,
