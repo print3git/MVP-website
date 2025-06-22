@@ -1078,13 +1078,24 @@ async function init() {
 
   const banner = document.getElementById("theme-banner");
   if (banner) {
-    const now = new Date();
-    const friday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    friday.setDate(friday.getDate() + ((5 - friday.getDay() + 7) % 7));
-    if (friday - now < 7 * 86400000 && friday - now > 0) {
-      banner.textContent = "Order before Friday for weekend delivery";
-      banner.classList.remove("hidden");
+    function updateCountdown() {
+      const now = new Date();
+      const friday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      friday.setDate(friday.getDate() + ((5 - friday.getDay() + 7) % 7));
+      const diff = friday - now;
+      if (diff > 0 && diff < 7 * 86400000) {
+        const hours = Math.floor(diff / 3600000);
+        const minutes = Math.floor((diff % 3600000) / 60000);
+        banner.textContent = `${hours.toString().padStart(2, "0")}h ${minutes
+          .toString()
+          .padStart(2, "0")}m left for weekend delivery`;
+        banner.classList.remove("hidden");
+      } else {
+        banner.classList.add("hidden");
+      }
     }
+    updateCountdown();
+    setInterval(updateCountdown, 60000);
   }
 
   document.getElementById("promo-optin")?.addEventListener("change", (e) => {
