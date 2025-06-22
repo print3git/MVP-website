@@ -1,4 +1,9 @@
 const PRINT_CLUB_PRICE = 14999;
+const FIRST_MONTH_DISCOUNT = 0.5;
+const ANNUAL_DISCOUNT = 0.9;
+const PRINT_CLUB_ANNUAL_PRICE = Math.round(
+  PRINT_CLUB_PRICE * 12 * ANNUAL_DISCOUNT,
+);
 let PRICING_VARIANT = localStorage.getItem("pricingVariant");
 if (!PRICING_VARIANT) {
   PRICING_VARIANT = Math.random() < 0.5 ? "A" : "B";
@@ -13,17 +18,36 @@ function qs(name) {
 
 document.addEventListener("DOMContentLoaded", () => {
   const priceSpan = document.getElementById("printclub-price");
+  const annualSpan = document.getElementById("printclub-annual");
+  const payBtn = document.getElementById("submit-payment");
   const successMsg = document.getElementById("success");
   const cancelMsg = document.getElementById("cancel");
-  if (priceSpan) {
+  const updatePrices = () => {
     const hasReferral = Boolean(localStorage.getItem("referrerId"));
-    const price = hasReferral
-      ? (PRINT_CLUB_PRICE * 0.9) / 100
-      : PRINT_CLUB_PRICE / 100;
-    priceSpan.textContent = hasReferral
-      ? `Join print2 pro £${price.toFixed(2)} first month`
-      : `Join print2 pro £${price.toFixed(2)}/mo`;
-  }
+    const firstMonth =
+      ((PRINT_CLUB_PRICE * FIRST_MONTH_DISCOUNT) / 100) *
+      (hasReferral ? 0.9 : 1);
+    if (priceSpan) {
+      priceSpan.textContent = `Join print2 pro £${firstMonth.toFixed(2)} first month`;
+      if (payBtn)
+        payBtn.textContent = `Join print2 pro – Pay £${firstMonth.toFixed(2)}`;
+    }
+    if (annualSpan)
+      annualSpan.textContent = `Annual £${(PRINT_CLUB_ANNUAL_PRICE / 100).toFixed(2)}`;
+  };
+  updatePrices();
+  document
+    .querySelectorAll('#subscription-choice input[name="printclub"]')
+    .forEach((r) => {
+      r.addEventListener("change", () => {
+        const val = r.value;
+        if (val === "annual" && payBtn) {
+          payBtn.textContent = `Join print2 pro – Pay £${(PRINT_CLUB_ANNUAL_PRICE / 100).toFixed(2)}`;
+        } else {
+          updatePrices();
+        }
+      });
+    });
 
   const sessionId = qs("session_id");
   if (sessionId) {
@@ -38,7 +62,12 @@ document.addEventListener("DOMContentLoaded", () => {
         },
         body: JSON.stringify({
           variant: PRICING_VARIANT,
-          price_cents: PRINT_CLUB_PRICE,
+          price_cents:
+            document.querySelector(
+              '#subscription-choice input[name="printclub"]:checked',
+            )?.value === "annual"
+              ? PRINT_CLUB_ANNUAL_PRICE
+              : Math.round(PRINT_CLUB_PRICE * FIRST_MONTH_DISCOUNT),
         }),
       }).catch(() => {});
     }
