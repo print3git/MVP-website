@@ -645,25 +645,25 @@ async function initPaymentPage() {
         colorMenu.classList.remove("hidden");
       }
     });
-    colorMenu.addEventListener("click", (ev) => {
+    const handleColorSelect = (ev) => {
       const btn = ev.target.closest("button[data-color]");
-      if (btn) {
-        // Prevent click from bubbling and reopening the menu
-        ev.stopPropagation();
-        // Prevent the label from re-triggering the input's click handler
-        ev.preventDefault();
-        const color = btn.dataset.color;
-        singleButton.style.backgroundColor = color;
+      if (!btn) return;
+      // Prevent default label behaviour which could reopen the menu
+      ev.preventDefault();
+      ev.stopPropagation();
+      const color = btn.dataset.color;
+      singleButton.style.backgroundColor = color;
 
-        singleButton.style.borderColor = SINGLE_BORDER_COLOR;
+      singleButton.style.borderColor = SINGLE_BORDER_COLOR;
 
-        const factor = hexToFactor(color);
-        if (factor) applyModelColor(factor);
-        localStorage.setItem("print3Color", color);
-        localStorage.setItem("print3Material", "single");
-        colorMenu.classList.add("hidden");
-      }
-    });
+      const factor = hexToFactor(color);
+      if (factor) applyModelColor(factor);
+      localStorage.setItem("print3Color", color);
+      localStorage.setItem("print3Material", "single");
+      colorMenu.classList.add("hidden");
+    };
+    colorMenu.addEventListener("pointerdown", handleColorSelect);
+    colorMenu.addEventListener("click", handleColorSelect);
   }
   updatePayButton();
   updatePopularMessage();
