@@ -392,6 +392,25 @@
                 aria-label="Email"
               />
             </div>
+            <div id="etch-name-container" class="relative">
+              <input
+                id="etch-name"
+                class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+                placeholder="Name for etching (optional)"
+                maxlength="20"
+                aria-label="Etched Name"
+                disabled
+              />
+              <div
+                id="etch-warning"
+                class="pointer-events-none absolute inset-y-0 left-0 flex items-center gap-2 pl-2 hidden"
+              >
+
+                <div class="border-t-2 border-[#30D5C8] w-[20ch]"></div>
+                <span class="text-sm text-[#30D5C8] whitespace-nowrap">Colour required</span>
+
+              </div>
+            </div>
             <button
               id="advanced-toggle"
               type="button"
@@ -400,25 +419,6 @@
               More options
             </button>
             <div id="advanced-section" class="space-y-[0.33rem] hidden">
-              <div id="etch-name-container" class="relative">
-                <input
-                  id="etch-name"
-                  class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
-                  placeholder="Name for etching (optional)"
-                  maxlength="20"
-                  aria-label="Etched Name"
-                  disabled
-                />
-                <div
-                  id="etch-warning"
-                  class="pointer-events-none absolute inset-y-0 left-0 flex items-center gap-2 pl-2 hidden"
-                >
-
-                  <div class="border-t-2 border-[#30D5C8] w-[20ch]"></div>
-                  <span class="text-sm text-[#30D5C8] whitespace-nowrap">Requires multicolour</span>
-
-                </div>
-              </div>
               <div class="flex flex-col" id="addressStub">
                 <label for="ship-address" class="font-medium">Address</label>
                 <input
