@@ -81,6 +81,9 @@ This repository contains the early MVP code for print2's website and backend.
 
 ## Development Container
 
+After changing dependencies run:
+  npm install --package-lock-only
+
 You can build a dev container from the included `Dockerfile`. The image now
 installs the Docker CLI so commands like `docker --version` work inside the
 container. If you want to skip running full CI inside the container, build with
