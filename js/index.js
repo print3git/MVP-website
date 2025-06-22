@@ -1102,11 +1102,15 @@ async function init() {
       friday.setDate(friday.getDate() + ((5 - friday.getDay() + 7) % 7));
       const diff = friday - now;
       if (diff > 0 && diff < 7 * 86400000) {
-        const hours = Math.floor(diff / 3600000);
+        const hoursTotal = Math.floor(diff / 3600000);
+        const days = Math.floor(hoursTotal / 24);
+        const hours = hoursTotal % 24;
         const minutes = Math.floor((diff % 3600000) / 60000);
-        banner.textContent = `${hours.toString().padStart(2, "0")}h ${minutes
-          .toString()
-          .padStart(2, "0")}m left for weekend delivery`;
+        const parts = [];
+        if (days > 0) parts.push(`${days}d`);
+        parts.push(`${hours.toString().padStart(2, "0")}h`);
+        parts.push(`${minutes.toString().padStart(2, "0")}m`);
+        banner.textContent = `${parts.join(" ")} left for weekend delivery`;
         banner.classList.remove("hidden");
       } else {
         banner.classList.add("hidden");
