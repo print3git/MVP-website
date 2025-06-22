@@ -111,6 +111,12 @@
         line-height: 1.75rem;
         max-height: calc(1.75rem * 4);
       }
+      .placeholder-transition {
+        transition: opacity 1s;
+      }
+      .placeholder-fade {
+        opacity: 0;
+      }
       /*
         Remove the pseudo-element and animation that created the
         multicolored shimmer on the submit button. Keeping the
@@ -401,7 +407,7 @@
                 rows="1"
                 placeholder="Text, image, or both — we’ll 3D print it…"
                 aria-label="Prompt"
-                class="prompt-textarea w-full bg-transparent resize-none text-lg placeholder-gray-500 focus:outline-none"
+                class="prompt-textarea placeholder-transition w-full bg-transparent resize-none text-lg placeholder-gray-500 focus:outline-none"
               ></textarea>
             </div>
             <button

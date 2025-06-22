@@ -153,6 +153,10 @@ const EXAMPLES = [
   "ornate chess piece",
   "geometric flower vase",
 ];
+const PLACEHOLDERS = [
+  "Text, image, or both \u2014 we\u2019ll 3D print it\u2026",
+  "a custom battle robot mini for D&D",
+];
 const TRENDING = ["dragon statue", "space rover", "anime character"];
 const THEME_CAMPAIGNS = [
   { name: "Sci-fi Month", tagline: "Explore out-of-this-world designs!" },
@@ -237,6 +241,25 @@ let usingViewerProgress = false;
 let lastSnapshot = null;
 let errorFadeTimeout = null;
 let errorClearTimeout = null;
+
+function cyclePlaceholders(input) {
+  let idx = 0;
+  const FADE_CLASS = "placeholder-fade";
+  function step() {
+    if (input.value) {
+      setTimeout(step, 5000);
+      return;
+    }
+    input.classList.add(FADE_CLASS);
+    setTimeout(() => {
+      idx = (idx + 1) % PLACEHOLDERS.length;
+      input.placeholder = PLACEHOLDERS[idx];
+      input.classList.remove(FADE_CLASS);
+      setTimeout(step, 5000);
+    }, 1000);
+  }
+  setTimeout(step, 5000);
+}
 
 function getCycleKey() {
   const now = new Date();
@@ -933,9 +956,8 @@ async function init() {
     }
   }
   if (usePlaceholder) {
-    // Keep placeholder text consistent with index.html
-    refs.promptInput.placeholder =
-      "Text, image, or both — we\u2019ll 3D print it\u2026";
+    refs.promptInput.placeholder = PLACEHOLDERS[0];
+    cyclePlaceholders(refs.promptInput);
   }
   if (refs.examples) {
     refs.examples.textContent = `Try: ${EXAMPLES.join(" · ")}`;
