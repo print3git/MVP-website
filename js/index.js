@@ -780,7 +780,11 @@ refs.submitBtn.addEventListener("click", async () => {
     showModel();
     if (window.addAutoItem) {
       let snapshot = refs.previewImg?.src;
-      if (!snapshot || snapshot.includes("placehold.co")) {
+      if (
+        !snapshot ||
+        snapshot.includes("placehold.co") ||
+        snapshot.includes("images.unsplash.com")
+      ) {
         snapshot = await captureModelSnapshot(url);
       }
       lastSnapshot = snapshot;
@@ -975,7 +979,11 @@ async function init() {
   refs.addBasketBtn?.addEventListener("click", async () => {
     if (!window.addToBasket || !refs.viewer?.src) return;
     let snapshot = refs.previewImg?.src;
-    if (!snapshot || snapshot.includes("placehold.co")) {
+    if (
+      !snapshot ||
+      snapshot.includes("placehold.co") ||
+      snapshot.includes("images.unsplash.com")
+    ) {
       snapshot = await captureModelSnapshot(refs.viewer.src);
     }
     lastSnapshot = snapshot;
