@@ -1,0 +1,5 @@
+We noticed you started checkout but didn't finish. Here's a $5 discount code good for the next 48 hours:
+
+{{code}}
+
+Use it at checkout before it expires!

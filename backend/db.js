@@ -119,6 +119,16 @@ async function incrementCreditsUsed(userId, amount = 1) {
   );
 }
 
+async function getSubscriptionDurationMonths(userId) {
+  const { rows } = await query(
+    `SELECT EXTRACT(year FROM age(NOW(), created_at)) * 12 + EXTRACT(month FROM age(NOW(), created_at)) AS months
+       FROM subscriptions WHERE user_id=$1`,
+    [userId],
+  );
+  if (!rows.length || rows[0].months === null) return 0;
+  return Math.floor(Number(rows[0].months));
+}
+
 async function getOrCreateReferralLink(userId) {
   const { rows } = await query(
     "SELECT code FROM referral_links WHERE user_id=$1",
@@ -151,6 +161,34 @@ async function adjustRewardPoints(userId, delta) {
     [userId, delta],
   );
   return parseInt(rows[0].points, 10);
+}
+
+async function getLeaderboard(limit = 10) {
+  const { rows } = await query(
+    `SELECT u.username, rp.points
+     FROM reward_points rp
+     JOIN users u ON rp.user_id=u.id
+     ORDER BY rp.points DESC
+     LIMIT $1`,
+    [limit],
+  );
+  return rows;
+}
+
+async function getAchievements(userId) {
+  const { rows } = await query(
+    "SELECT name, created_at FROM achievements WHERE user_id=$1 ORDER BY created_at DESC",
+    [userId],
+  );
+  return rows;
+}
+
+async function addAchievement(userId, name) {
+  const { rows } = await query(
+    "INSERT INTO achievements(user_id, name) VALUES($1,$2) RETURNING id",
+    [userId, name],
+  );
+  return rows[0];
 }
 
 async function getUserIdForReferral(code) {
@@ -824,10 +862,14 @@ module.exports = {
   ensureCurrentWeekCredits,
   getCurrentWeekCredits,
   incrementCreditsUsed,
+  getSubscriptionDurationMonths,
   updateWeeklyOrderStreak,
   getOrCreateReferralLink,
   getRewardPoints,
   adjustRewardPoints,
+  getLeaderboard,
+  getAchievements,
+  addAchievement,
   getUserIdForReferral,
   insertReferralEvent,
   getOrCreateOrderReferralLink,

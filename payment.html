@@ -80,6 +80,20 @@
       #print-qty {
         -moz-appearance: textfield;
       }
+
+      /* Highlight the selected pricing tier */
+      #material-options label span {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      #material-options label:hover span,
+      #material-options input:active + span {
+        transform: scale(1.04);
+      }
+      #material-options input:checked + span {
+        transform: scale(1.04);
+        box-shadow: 0 0 10px rgba(48, 213, 200, 0.6),
+          0 6px 10px rgba(0, 0, 0, 0.6);
+      }
     </style>
   </head>
 
@@ -301,30 +315,33 @@
             </fieldset>
             <div class="flex items-center gap-2 mt-2 text-white text-sm">
               <span>Quantity:</span>
-              <div class="flex items-center gap-2">
-                <button
-                  type="button"
-                  id="qty-increment"
-                  aria-label="Increase quantity"
-                  class="p-1 bg-[#2A2A2E] rounded"
-                >
-                  <i class="fas fa-arrow-up"></i>
-                </button>
+              <div
+                id="qty-pill"
+                class="flex items-center bg-[#2A2A2E] border border-white/20 rounded-full overflow-hidden"
+              >
                 <button
                   type="button"
                   id="qty-decrement"
                   aria-label="Decrease quantity"
-                  class="p-1 bg-[#2A2A2E] rounded"
+                  class="w-10 h-10 flex items-center justify-center"
                 >
-                  <i class="fas fa-arrow-down"></i>
+                  &minus;
                 </button>
                 <input
                   id="print-qty"
                   type="number"
                   min="1"
                   value="2"
-                  class="w-10 text-center bg-[#1A1A1D] border border-white/20 rounded appearance-none"
+                  class="w-8 text-center bg-transparent appearance-none"
                 />
+                <button
+                  type="button"
+                  id="qty-increment"
+                  aria-label="Increase quantity"
+                  class="w-10 h-10 flex items-center justify-center"
+                >
+                  +
+                </button>
               </div>
               <p id="bulk-discount-msg" class="text-xs whitespace-nowrap ml-2 text-gray-400"></p>
             </div>
@@ -414,7 +431,7 @@
             <div id="credit-option" class="my-2 text-sm hidden">
               <label class="flex items-center gap-1">
                 <input type="checkbox" id="use-credit" class="accent-[#30D5C8]" />
-                Use Print Club credit (<span id="credits-remaining">0</span> left this week)
+                Use print2 pro credit (<span id="credits-remaining">0</span> left this week)
               </label>
             </div>
 
