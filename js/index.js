@@ -452,8 +452,16 @@ const hideAll = () => {
   }
 };
 const showLoader = (withProgress = true) => {
-  hideAll();
+  // Keep the viewer visible while showing the loader so the fallback model
+  // remains on screen during generation and on failures.
+  refs.previewImg.style.display = "none";
   refs.loader.style.display = "flex";
+  refs.viewer.style.display = "block";
+  refs.viewer.style.opacity = "1";
+  refs.viewer.style.pointerEvents = "auto";
+  if (typeof refs.viewer.play === "function") {
+    refs.viewer.play();
+  }
   if (withProgress) startProgress();
 };
 const showModel = () => {
