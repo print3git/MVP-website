@@ -15,7 +15,14 @@ jobs:
           node-version: 18
           cache: 'npm'
           cache-dependency-path: 'backend/package-lock.json'
-      - run: npm install --no-audit --no-fund
+      - name: Enable pnpm via Corepack
+        run: |
+          corepack enable
+          corepack prepare pnpm@8.15.4 --activate
+      - name: Install NPM deps (fallback to npm)
+        run: |
+          pnpm install --frozen-lockfile=false --color=false || \
+          npm install --no-audit --no-fund
         working-directory: backend
       - run: npm run send-printclub-reminders
         working-directory: backend

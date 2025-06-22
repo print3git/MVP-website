@@ -20,7 +20,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm install --no-audit --no-fund
+      - name: Enable pnpm via Corepack
+        run: |
+          corepack enable
+          corepack prepare pnpm@8.15.4 --activate
+      - name: Install NPM deps (fallback to npm)
+        run: |
+          pnpm install --frozen-lockfile=false --color=false || \
+          npm install --no-audit --no-fund
       - run: node scripts/ci_watchdog.js
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

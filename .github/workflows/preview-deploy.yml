@@ -13,12 +13,17 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
-      - run: npm install --no-audit --no-fund --prefix backend
-      - run: |
-          if [ -f backend/hunyuan_server/package.json ]; then
-            npm install --no-audit --no-fund --prefix backend/hunyuan_server
-          fi
+      - name: Enable pnpm via Corepack
+        run: |
+          corepack enable
+          corepack prepare pnpm@8.15.4 --activate
+      - name: Install NPM deps (fallback to npm)
+        run: |
+          pnpm install --frozen-lockfile=false --color=false || \
+          npm install --no-audit --no-fund
       - run: npm install -g netlify-cli
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
       - name: Deploy to Netlify
         if: env.NETLIFY_AUTH_TOKEN != '' && env.NETLIFY_SITE_ID != ''
         env:
@@ -27,6 +32,9 @@ jobs:
         run: |
           netlify deploy --dir=. --site $NETLIFY_SITE_ID --auth $NETLIFY_AUTH_TOKEN --json > deploy.json
           echo "PREVIEW_URL=$(jq -r '.deploy_url' deploy.json)" >> $GITHUB_ENV
+      - name: Skip Netlify (no secrets)
+        if: env.NETLIFY_AUTH_TOKEN == '' || env.NETLIFY_SITE_ID == ''
+        run: echo "ℹ️ Netlify deploy skipped – secrets not available."
       - name: Run smoke tests
         env:
           PLAYWRIGHT_BASE_URL: ${{ env.PREVIEW_URL }}

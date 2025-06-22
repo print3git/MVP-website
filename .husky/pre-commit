@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
+grep -R --line-number 'npm ci' --exclude-lockfiles Dockerfile .github/workflows && { echo '❌ Use npm install or pnpm install, not npm ci'; exit 1; } || true
+
 npm audit --audit-level=high
 npx lint-staged

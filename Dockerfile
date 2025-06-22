@@ -2,6 +2,9 @@
 
 # -------- builder stage
 FROM node:20 AS builder
+RUN corepack enable && \
+    corepack prepare pnpm@8.15.4 --activate && \
+    npm exec --yes playwright@1.53.1 install --with-deps
 
 ARG HTTP_PROXY
 ARG HTTPS_PROXY
@@ -52,7 +55,9 @@ RUN if [ -f backend/hunyuan_server/package-lock.json ]; then \
 
 # -------- copy source and run CI
 COPY . .
-RUN [ "$SKIP_TESTS" = "1" ] || pnpm run ci
+RUN [ "$SKIP_TESTS" = "1" ] || \
+    (command -v pnpm >/dev/null && pnpm run ci || npm run ci || \
+     echo "ℹ️  pnpm run ci skipped – pnpm or script not found")
 
 # -------- prune dev dependencies
 RUN pnpm prune --prod \

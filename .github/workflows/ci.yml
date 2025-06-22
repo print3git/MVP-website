@@ -24,6 +24,10 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
+      - name: Enable pnpm via Corepack
+        run: |
+          corepack enable
+          corepack prepare pnpm@8.15.4 --activate
       - name: Clean npm proxy settings
         run: |
           unset NPM_CONFIG_HTTP_PROXY NPM_CONFIG_HTTPS_PROXY
@@ -31,7 +35,10 @@ jobs:
           npm config delete https-proxy
         env:
           NPM_CONFIG_LEGACY_PEER_DEPS: true
-      - run: npm install --no-audit --no-fund
+      - name: Install NPM deps (fallback to npm)
+        run: |
+          pnpm install --frozen-lockfile=false --color=false || \
+          npm install --no-audit --no-fund
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
       - name: Install backend dependencies
@@ -108,8 +115,7 @@ jobs:
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
         run: npx percy exec -- npm run e2e
 
-      - name: Run smoke tests
-        if: ${{ !secrets.PERCY_TOKEN }}
-        run: npm run e2e
+      - name: Run Playwright smoke tests
+        run: npx playwright test e2e/smoke.test.js
 
       # ← you can add additional steps here, like your tests
