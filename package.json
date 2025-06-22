@@ -25,6 +25,8 @@
     "deps:check": "npx -y lockfile-diff HEAD package-lock.json && npx -y lockfile-diff HEAD backend/package-lock.json && npx -y lockfile-diff HEAD backend/hunyuan_server/package-lock.json",
     "deps:dedupe": "pnpm dedupe",
     "deps:dedupe-check": "pnpm dedupe --check",
+    "check-lockfile": "node scripts/ensure-lockfile.js",
+    "fix-lockfile":   "node scripts/ensure-lockfile.js --write && git commit -m 'chore: sync lockfile'",
     "bundle:size": "size-limit",
     "e2e": "playwright test",
     "visual-test": "percy exec -- npm run e2e",

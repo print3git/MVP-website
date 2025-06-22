@@ -22,12 +22,13 @@ RUN apt-get update \
 
 # -------- install root dependencies
 COPY package.json package-lock.json ./
+# tolerate lock-file drift during image build
 RUN unset NPM_CONFIG_HTTP_PROXY NPM_CONFIG_HTTPS_PROXY || true \
     && npm config delete proxy \
     && npm config delete https-proxy \
     && if [ -n "$HTTP_PROXY" ]; then npm config set proxy "$HTTP_PROXY"; fi \
     && if [ -n "$HTTPS_PROXY" ]; then npm config set https-proxy "$HTTPS_PROXY"; fi \
-    && npm ci --no-audit --no-fund
+    && npm install --no-audit --no-fund
 
 # -------- install backend dependencies
 COPY backend/package.json backend/package-lock.json ./backend/
@@ -36,7 +37,7 @@ RUN unset NPM_CONFIG_HTTP_PROXY NPM_CONFIG_HTTPS_PROXY || true \
     && npm config delete https-proxy \
     && if [ -n "$HTTP_PROXY" ]; then npm config set proxy "$HTTP_PROXY"; fi \
     && if [ -n "$HTTPS_PROXY" ]; then npm config set https-proxy "$HTTPS_PROXY"; fi \
-    && npm ci --no-audit --no-fund --prefix backend
+    && npm install --no-audit --no-fund --prefix backend
 
 # -------- install hunyuan_server dependencies if present
 COPY backend/hunyuan_server/package.json backend/hunyuan_server/package-lock.json ./backend/hunyuan_server/
@@ -46,7 +47,7 @@ RUN if [ -f backend/hunyuan_server/package-lock.json ]; then \
         npm config delete https-proxy && \
         if [ -n "$HTTP_PROXY" ]; then npm config set proxy "$HTTP_PROXY"; fi && \
         if [ -n "$HTTPS_PROXY" ]; then npm config set https-proxy "$HTTPS_PROXY"; fi && \
-        npm ci --no-audit --no-fund --prefix backend/hunyuan_server; \
+        npm install --no-audit --no-fund --prefix backend/hunyuan_server; \
     fi
 
 

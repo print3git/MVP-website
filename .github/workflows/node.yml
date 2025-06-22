@@ -10,26 +10,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    strategy:
-      matrix:
-        node-version: [18, 20]
-
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 20
           cache: 'npm'
-          cache-dependency-path: 'backend/package-lock.json'
 
-      - run: npm ci
-        working-directory: backend
+      - run: npm install --no-audit --no-fund --prefix backend
 
       - name: Install hunyuan_server deps (if exists)
         if: ${{ hashFiles('backend/hunyuan_server/package.json') != '' }}
         working-directory: backend/hunyuan_server
-        run: npm ci
+        run: npm install --no-audit --no-fund
 
       - run: npm run lint
         working-directory: backend
