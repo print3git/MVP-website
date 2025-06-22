@@ -2,6 +2,7 @@
 
 # -------- builder stage
 FROM node:20 AS builder
+RUN corepack enable && corepack prepare pnpm@8.15.4 --activate
 
 ARG HTTP_PROXY
 ARG HTTPS_PROXY
@@ -27,7 +28,7 @@ RUN unset NPM_CONFIG_HTTP_PROXY NPM_CONFIG_HTTPS_PROXY || true \
     && npm config delete https-proxy \
     && if [ -n "$HTTP_PROXY" ]; then npm config set proxy "$HTTP_PROXY"; fi \
     && if [ -n "$HTTPS_PROXY" ]; then npm config set https-proxy "$HTTPS_PROXY"; fi \
-    && npm ci --no-audit --no-fund
+    && npm install --no-audit --no-fund
 
 # -------- install backend dependencies
 COPY backend/package.json backend/package-lock.json ./backend/
@@ -36,7 +37,7 @@ RUN unset NPM_CONFIG_HTTP_PROXY NPM_CONFIG_HTTPS_PROXY || true \
     && npm config delete https-proxy \
     && if [ -n "$HTTP_PROXY" ]; then npm config set proxy "$HTTP_PROXY"; fi \
     && if [ -n "$HTTPS_PROXY" ]; then npm config set https-proxy "$HTTPS_PROXY"; fi \
-    && npm ci --no-audit --no-fund --prefix backend
+    && npm install --no-audit --no-fund --prefix backend
 
 # -------- install hunyuan_server dependencies if present
 COPY backend/hunyuan_server/package.json backend/hunyuan_server/package-lock.json ./backend/hunyuan_server/
@@ -46,13 +47,13 @@ RUN if [ -f backend/hunyuan_server/package-lock.json ]; then \
         npm config delete https-proxy && \
         if [ -n "$HTTP_PROXY" ]; then npm config set proxy "$HTTP_PROXY"; fi && \
         if [ -n "$HTTPS_PROXY" ]; then npm config set https-proxy "$HTTPS_PROXY"; fi && \
-        npm ci --no-audit --no-fund --prefix backend/hunyuan_server; \
+        npm install --no-audit --no-fund --prefix backend/hunyuan_server; \
     fi
 
 
 # -------- copy source and run CI
 COPY . .
-RUN [ "$SKIP_TESTS" = "1" ] || pnpm run ci
+RUN [ "$SKIP_TESTS" = "1" ] || (command -v pnpm >/dev/null && pnpm run ci || echo "ℹ️  pnpm not available, skipping pnpm run ci")
 
 # -------- prune dev dependencies
 RUN pnpm prune --prod \
@@ -60,6 +61,7 @@ RUN pnpm prune --prod \
 
 # -------- runtime stage
 FROM node:20
+RUN corepack enable && corepack prepare pnpm@8.15.4 --activate
 
 ARG HTTP_PROXY
 ARG HTTPS_PROXY

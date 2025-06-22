@@ -29,7 +29,9 @@
     "e2e": "playwright test",
     "visual-test": "percy exec -- npm run e2e",
     "test:a11y": "playwright install chromium --with-deps && playwright test e2e/a11y.test.js",
-    "netlify:deploy": "scripts/netlify-preflight.sh && netlify deploy"
+    "netlify:deploy": "scripts/netlify-preflight.sh && netlify deploy",
+    "check-lockfile": "node scripts/ensure-lockfile.js",
+    "fix-lockfile": "node scripts/ensure-lockfile.js || true && git add package-lock.json pnpm-lock.yaml && git commit -m 'chore: sync lockfile'"
   },
   "keywords": [],
   "author": "",

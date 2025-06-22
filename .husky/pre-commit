@@ -3,3 +3,4 @@
 
 npm audit --audit-level=high
 npx lint-staged
+grep -R --line-number 'npm ci' Dockerfile .github/workflows && { echo '❌  Use npm install, not npm ci'; exit 1; } || true

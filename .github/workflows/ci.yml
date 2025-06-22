@@ -24,6 +24,17 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
+
+      # install pnpm (corepack) + project deps
+      - run: |
+          corepack enable
+          corepack prepare pnpm@8.15.4 --activate
+          pnpm install --frozen-lockfile=false --color=false || \
+            (echo 'ℹ️  Falling back to npm install' && npm install --no-audit --no-fund)
+
+      - name: Check lock-file sync
+        run: node scripts/ensure-lockfile.js
+
       - name: Clean npm proxy settings
         run: |
           unset NPM_CONFIG_HTTP_PROXY NPM_CONFIG_HTTPS_PROXY
@@ -31,11 +42,8 @@ jobs:
           npm config delete https-proxy
         env:
           NPM_CONFIG_LEGACY_PEER_DEPS: true
-      - run: npm ci
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
-      - name: Install backend dependencies
-        run: npm ci --prefix backend
 
       - name: Validate ESLint modules
         run: |
