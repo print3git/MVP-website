@@ -5,7 +5,7 @@ These guidelines apply to all automated agents (e.g. the Codex agent) working on
 ## Mandatory steps
 
 1. **Unset proxy variables** – before running any `npm` commands, execute `unset npm_config_http_proxy npm_config_https_proxy` to silence `http-proxy` warnings.
-2. **Install dependencies** – run `npm ci` inside `backend/`. If `backend/hunyuan_server/` contains a `package.json`, run `npm ci` there as well.
+2. **Install dependencies** – run `npm ci` at the repo root and inside `backend/`. If `backend/hunyuan_server/` contains a `package.json`, run `npm ci` there as well.
 3. **Format code** – run `npm run format` in `backend/` to apply Prettier formatting.
 4. **Run tests** – execute `npm test` in `backend/`. If tests cannot run because of environment limitations, mention this in the PR.
 5. **Run full CI locally** – execute `npm run ci` at the repo root before opening a PR.
