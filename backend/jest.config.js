@@ -13,6 +13,7 @@ module.exports = {
 module.exports = {
   ...module.exports,
   collectCoverage: true,
+  collectCoverageFrom: ["backend/**/*.{js,jsx,ts,tsx}"],
   coveragePathIgnorePatterns: [
     "<rootDir>/backend/db.js",
     "<rootDir>/backend/shipping.js",
