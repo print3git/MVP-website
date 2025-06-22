@@ -17,6 +17,7 @@ module.exports = [
       "docs",
       "e2e",
       "backend",
+      "scripts/ci_watchdog.ts",
     ],
   },
   {

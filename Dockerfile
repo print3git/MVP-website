@@ -18,6 +18,7 @@ ENV HUSKY=0 NPM_CONFIG_IGNORE_SCRIPTS=true \
 RUN apt-get update \
     && apt-get install -y --no-install-recommends docker.io \
     && rm -rf /var/lib/apt/lists/*
+RUN npm install -g pnpm
 
 
 # -------- install root dependencies
