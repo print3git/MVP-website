@@ -2,7 +2,8 @@
 
 # -------- builder stage
 FROM node:20 AS builder
-RUN corepack enable && corepack prepare pnpm@8.15.4 --activate
+ARG PNPM_VERSION=8.15.4
+RUN corepack enable && corepack prepare pnpm@${PNPM_VERSION} --activate
 
 ARG HTTP_PROXY
 ARG HTTPS_PROXY
@@ -65,12 +66,14 @@ RUN if [ "$SKIP_TESTS" = "1" ]; then \
     fi
 
 # -------- prune dev dependencies
-RUN pnpm prune --prod \
+RUN npm config delete recursive || true \
+    && pnpm prune --prod \
     && pnpm prune --prod --filter ./backend
 
 # -------- runtime stage
 FROM node:20
-RUN corepack enable && corepack prepare pnpm@8.15.4 --activate
+ARG PNPM_VERSION=8.15.4
+RUN corepack enable && corepack prepare pnpm@${PNPM_VERSION} --activate
 
 ARG HTTP_PROXY
 ARG HTTPS_PROXY
