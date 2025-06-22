@@ -72,6 +72,7 @@ This repository contains the early MVP code for print2's website and backend.
    ```bash
    npm run send-abandoned-offers  # inside backend/
    ```
+
 9. (Optional) Clean up expired password reset tokens periodically:
 
    ```bash
@@ -304,3 +305,18 @@ are missing or unused.
 CI runs `npm run deps:dedupe-check` which executes `pnpm dedupe --check` to
 ensure no duplicate packages remain in the lockfiles. Run `npm run deps:dedupe`
 locally to automatically deduplicate.
+
+## Deployment
+
+Before deploying with the Netlify CLI, run the helper script to verify that your
+environment is configured correctly:
+
+```bash
+scripts/netlify-preflight.sh
+```
+
+The script checks that `NETLIFY_AUTH_TOKEN` and `NETLIFY_SITE_ID` are defined.
+If either variable is missing, deployment stops with a clear error.
+
+Install the Netlify CLI globally (`npm install -g netlify-cli`) and then invoke
+`netlify deploy` as usual once the preflight passes.
