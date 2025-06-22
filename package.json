@@ -53,6 +53,7 @@
     "eslint": "^9.29.0",
     "eslint-config-prettier": "^8.10.0",
     "eslint-plugin-jsdoc": "^51.1.1",
+    "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^7.2.1",
     "http-server": "^14.1.1",
     "husky": "^9.1.7",

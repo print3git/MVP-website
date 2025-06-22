@@ -24,20 +24,23 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
-      - name: Configure npm proxies
+      - name: Clean npm proxy settings
         run: |
-          unset NPM_CONFIG_http-proxy npm_config_http-proxy NPM_CONFIG_https-proxy npm_config_https-proxy || true
-          if [ -n "$HTTP_PROXY" ]; then
-            npm config set proxy "$HTTP_PROXY"
-          fi
-          if [ -n "$HTTPS_PROXY" ]; then
-            npm config set https-proxy "$HTTPS_PROXY"
-          fi
+          unset NPM_CONFIG_HTTP_PROXY NPM_CONFIG_HTTPS_PROXY
+          npm config delete proxy
+          npm config delete https-proxy
+        env:
+          NPM_CONFIG_LEGACY_PEER_DEPS: true
       - run: npm ci
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
       - name: Install backend dependencies
         run: npm ci --prefix backend
+
+      - name: Validate ESLint modules
+        run: |
+          node -e "require.resolve('@eslint/js')" || \
+            (echo '❌ @eslint/js not found' && exit 1)
 
       - name: Install Husky hooks
         run: npm run prepare

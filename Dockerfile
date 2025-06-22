@@ -10,26 +10,44 @@ ARG SKIP_TESTS=0
 WORKDIR /app
 
 # Disable Husky and npm lifecycle scripts
-ENV HUSKY=0 NPM_CONFIG_IGNORE_SCRIPTS=true
+ENV HUSKY=0 NPM_CONFIG_IGNORE_SCRIPTS=true \
+    NPM_CONFIG_LEGACY_PEER_DEPS=true
 
 # Install Docker CLI for development tasks
 RUN apt-get update \
     && apt-get install -y --no-install-recommends docker.io \
     && rm -rf /var/lib/apt/lists/*
 
-# --- Install PNPM once and use it everywhere ---
-RUN corepack enable && corepack prepare pnpm@8.15.6 --activate
-ENV PNPM_HOME="/root/.local/share/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-# ------------------------------------------------
 
-# Install deps with PNPM (strict, reproducible)
-COPY pnpm-lock.yaml package.json ./
-RUN pnpm install --frozen-lockfile --ignore-scripts
+# -------- install root dependencies
+COPY package.json package-lock.json ./
+RUN unset NPM_CONFIG_HTTP_PROXY NPM_CONFIG_HTTPS_PROXY || true \
+    && npm config delete proxy \
+    && npm config delete https-proxy \
+    && if [ -n "$HTTP_PROXY" ]; then npm config set proxy "$HTTP_PROXY"; fi \
+    && if [ -n "$HTTPS_PROXY" ]; then npm config set https-proxy "$HTTPS_PROXY"; fi \
+    && npm ci --no-audit --no-fund
 
 # -------- install backend dependencies
-COPY backend/pnpm-lock.yaml backend/package.json ./backend/
-RUN pnpm --filter backend... install --frozen-lockfile --ignore-scripts
+COPY backend/package.json backend/package-lock.json ./backend/
+RUN unset NPM_CONFIG_HTTP_PROXY NPM_CONFIG_HTTPS_PROXY || true \
+    && npm config delete proxy \
+    && npm config delete https-proxy \
+    && if [ -n "$HTTP_PROXY" ]; then npm config set proxy "$HTTP_PROXY"; fi \
+    && if [ -n "$HTTPS_PROXY" ]; then npm config set https-proxy "$HTTPS_PROXY"; fi \
+    && npm ci --no-audit --no-fund --prefix backend
+
+# -------- install hunyuan_server dependencies if present
+COPY backend/hunyuan_server/package.json backend/hunyuan_server/package-lock.json ./backend/hunyuan_server/
+RUN if [ -f backend/hunyuan_server/package-lock.json ]; then \
+        unset NPM_CONFIG_HTTP_PROXY NPM_CONFIG_HTTPS_PROXY || true && \
+        npm config delete proxy && \
+        npm config delete https-proxy && \
+        if [ -n "$HTTP_PROXY" ]; then npm config set proxy "$HTTP_PROXY"; fi && \
+        if [ -n "$HTTPS_PROXY" ]; then npm config set https-proxy "$HTTPS_PROXY"; fi && \
+        npm ci --no-audit --no-fund --prefix backend/hunyuan_server; \
+    fi
+
 
 # -------- copy source and run CI
 COPY . .
@@ -47,9 +65,12 @@ ARG HTTPS_PROXY
 
 WORKDIR /app
 
-ENV HUSKY=0 NPM_CONFIG_IGNORE_SCRIPTS=true
+ENV HUSKY=0 NPM_CONFIG_IGNORE_SCRIPTS=true \
+    NPM_CONFIG_LEGACY_PEER_DEPS=true
 
-RUN unset NPM_CONFIG_HTTP_PROXY NPM_CONFIG_HTTPS_PROXY || true
+RUN unset NPM_CONFIG_HTTP_PROXY NPM_CONFIG_HTTPS_PROXY || true \
+    && npm config delete proxy \
+    && npm config delete https-proxy
 
 # Copy production dependencies and built app
 COPY --from=builder /app/package.json /app/pnpm-lock.yaml ./
