@@ -643,7 +643,11 @@ function renderThumbnails(arr) {
     btn.onclick = () => {
       arr.splice(i, 1);
       uploadedFiles.splice(i, 1);
-      localStorage.setItem("print3Images", JSON.stringify(arr));
+      try {
+        localStorage.setItem("print3Images", JSON.stringify(arr));
+      } catch {
+        /* ignore storage errors */
+      }
       renderThumbnails(arr);
       updateWizardFromInputs();
     };
@@ -682,7 +686,11 @@ async function processFiles(files) {
   uploadedFiles = [...files];
   const thumbs = await Promise.all(uploadedFiles.map((f) => getThumbnail(f)));
 
-  localStorage.setItem("print3Images", JSON.stringify(thumbs));
+  try {
+    localStorage.setItem("print3Images", JSON.stringify(thumbs));
+  } catch {
+    /* ignore storage errors */
+  }
   renderThumbnails(thumbs);
   editsPending = true;
   refs.buyNowBtn?.classList.add("hidden");
