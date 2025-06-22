@@ -242,7 +242,7 @@ pull request:
 The print worker posts completed jobs to an external printer API. See
 [docs/printer_api.md](docs/printer_api.md) for the expected request format.
 
-## ToDo List
+## TODO List
 
 All open tasks are tracked in [docs/task_list.md](docs/task_list.md).
 
@@ -283,4 +283,3 @@ If no token is provided, CI falls back to `npm audit --audit-level=high`.
 
 Run `npm run i18n:lint` to verify email translation keys. CI fails if any keys
 are missing or unused.
-
