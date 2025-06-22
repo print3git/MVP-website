@@ -1,5 +1,10 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-npm audit --audit-level=high
+if git ls-files | grep -E 'package-lock.json|yarn.lock'; then
+  echo "Forbidden lockfiles detected." >&2
+  exit 1
+fi
+
+pnpm audit --audit-level=high
 npx lint-staged

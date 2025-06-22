@@ -1,0 +1,33 @@
+name: pnpm guard
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - name: Fail if forbidden lockfiles exist
+        run: |
+          if git ls-files | grep -E 'package-lock.json|yarn.lock'; then
+            echo "::error::Found forbidden lockfiles" && exit 1
+          fi
+      - name: Check lockfile and package.json consistency
+        run: |
+          git fetch origin ${{ github.event.pull_request.base.ref || 'main' }} --depth=1
+          base=$(git rev-parse FETCH_HEAD)
+          changed_lock=$(git diff --name-only $base HEAD | grep pnpm-lock.yaml || true)
+          changed_pkg=$(git diff --name-only $base HEAD | grep package.json || true)
+          if [ -n "$changed_lock" ] && [ -z "$changed_pkg" ]; then
+            echo "::error::pnpm-lock.yaml modified without package.json" && exit 1
+          fi
+      - name: Install dependencies
+        run: pnpm install --ignore-scripts
+      - name: Verify frozen lockfile
+        run: pnpm install --frozen-lockfile --ignore-scripts

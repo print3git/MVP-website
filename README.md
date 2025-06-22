@@ -7,6 +7,24 @@ This repository contains the early MVP code for print2's website and backend.
 - The lightweight Hunyuan3D API server lives in `backend/hunyuan_server/`.
 - The `img/` folder is now reserved strictly for image assets.
 
+## Package Management
+
+This repository uses **pnpm** for all Node.js dependencies. Never use `npm` or `yarn`.
+Install dependencies with:
+
+```bash
+pnpm install
+```
+
+Run the same command inside `backend/` and `backend/hunyuan_server/` if those folders
+contain a `package.json`. After changing dependencies, verify the lockfile with:
+
+```bash
+pnpm install --frozen-lockfile
+```
+
+Always commit updates to `package.json` and `pnpm-lock.yaml` together.
+
 ## Local Setup
 
 1. Copy `.env.example` to `.env` in the repository root and update the values:
@@ -26,16 +44,16 @@ This repository contains the early MVP code for print2's website and backend.
 2. Install dependencies for the servers:
 
    ```bash
-   cd backend && npm install
-   cd hunyuan_server && npm install
-   cd ../dalle_server && npm install
+   cd backend && pnpm install
+   cd hunyuan_server && pnpm install
+   cd ../dalle_server && pnpm install
    ```
 
 3. Initialize the database:
 
    ```bash
    cd ..
-   npm run init-db
+   pnpm run init-db
    ```
 
 4. Create an admin user (optional):
@@ -44,7 +62,7 @@ This repository contains the early MVP code for print2's website and backend.
    variables, then run:
 
    ```bash
-   npm run create-admin  # inside backend/
+   pnpm run create-admin  # inside backend/
    ```
 
 5. Configure the admin token used by protected endpoints:
@@ -56,27 +74,27 @@ This repository contains the early MVP code for print2's website and backend.
 6. Start the servers in separate terminals:
 
    ```bash
-   npm start            # inside backend/
-   cd hunyuan_server && npm start  # inside backend/hunyuan_server/
-   cd ../dalle_server && npm start  # inside backend/dalle_server/
+   pnpm start            # inside backend/
+   cd hunyuan_server && pnpm start  # inside backend/hunyuan_server/
+   cd ../dalle_server && pnpm start  # inside backend/dalle_server/
    ```
 
 7. (Optional) Run the purchase reminder job periodically:
 
    ```bash
-   npm run send-reminders  # inside backend/
+   pnpm run send-reminders  # inside backend/
    ```
 
 8. (Optional) Send discount offers to abandoned checkouts:
 
    ```bash
-   npm run send-abandoned-offers  # inside backend/
+   pnpm run send-abandoned-offers  # inside backend/
    ```
 
 9. (Optional) Clean up expired password reset tokens periodically:
 
    ```bash
-   npm run cleanup-tokens  # inside backend/
+   pnpm run cleanup-tokens  # inside backend/
    ```
 
 ## Development Container
@@ -153,7 +171,7 @@ run the migration to create this table:
 
 ```bash
 cd backend
-npm run migrate
+pnpm run migrate
 ```
 
 ### Discount Codes
@@ -164,7 +182,7 @@ exists:
 
 ```bash
 cd backend
-npm run migrate
+pnpm run migrate
 ```
 
 ### Password Reset
@@ -176,7 +194,7 @@ the latest code, run the migrations so this table exists:
 
 ```bash
 cd backend
-npm run migrate
+pnpm run migrate
 ```
 
 Trigger a password reset email by sending a `POST` request to
@@ -220,7 +238,7 @@ The backend can generate a short title for each model using a separate caption
 service. Start this service alongside the main server:
 
 ```bash
-npm run caption-service  # inside backend/
+pnpm run caption-service  # inside backend/
 ```
 
 Once running, the caption service listens on `localhost:5001`. When a job
@@ -233,10 +251,10 @@ column of the `jobs` table.
 ## Contributing
 
 We welcome pull requests! Please fork the repo and create a topic branch. Run
-`npm ci` inside `backend/` to install dependencies, then ensure `npm test` runs
+`pnpm install` inside `backend/` to install dependencies, then ensure `pnpm test` runs
 clean before submitting.
-Run `npm run test-ci` for the same tests using a single process, which matches the CI configuration.
-Run `npm run format` in `backend/` to apply Prettier formatting before committing.
+Run `pnpm run test-ci` for the same tests using a single process, which matches the CI configuration.
+Run `pnpm run format` in `backend/` to apply Prettier formatting before committing.
 For significant changes, please open an issue first to discuss what you would like to change. Be sure to follow the code style enforced by Prettier.
 
 ## Using Codex
@@ -245,10 +263,10 @@ We sometimes rely on automated agents (such as the Codex agent) to make small
 changes. Agents must follow the steps in [AGENTS.md](AGENTS.md) before opening a
 pull request:
 
-1. Install dependencies with `npm ci` inside `backend/` (and
+1. Install dependencies with `pnpm install` inside `backend/` (and
    `backend/hunyuan_server/` if present).
-2. Run `npm run format` in `backend/`.
-3. Run `npm test` in `backend/` and include the results in the PR description.
+2. Run `pnpm run format` in `backend/`.
+3. Run `pnpm test` in `backend/` and include the results in the PR description.
 
 4. Check your diff with `git status --short` to verify no unrelated files were
    modified.
@@ -298,7 +316,7 @@ be wrapped with `jest-retries` to retry a few times before failing.
 ## Security Scans
 
 To enable Snyk checks in CI, add `SNYK_TOKEN` in your GitHub repository secrets.
-If no token is provided, CI falls back to `npm audit --audit-level=high`.
+If no token is provided, CI falls back to `pnpm audit --audit-level=high`.
 
 ## i18n Linting
 
@@ -307,8 +325,8 @@ are missing or unused.
 
 ## Package Deduplication
 
-CI runs `npm run deps:dedupe-check` which executes `pnpm dedupe --check` to
-ensure no duplicate packages remain in the lockfiles. Run `npm run deps:dedupe`
+CI runs `pnpm run deps:dedupe-check` which executes `pnpm dedupe --check` to
+ensure no duplicate packages remain in the lockfiles. Run `pnpm run deps:dedupe`
 locally to automatically deduplicate.
 
 
@@ -324,6 +342,6 @@ scripts/netlify-preflight.sh
 The script checks that `NETLIFY_AUTH_TOKEN` and `NETLIFY_SITE_ID` are defined.
 If either variable is missing, deployment stops with a clear error.
 
-Install the Netlify CLI globally (`npm install -g netlify-cli`) and then invoke
+Install the Netlify CLI globally (`pnpm add -g netlify-cli`) and then invoke
 `netlify deploy` as usual once the preflight passes.
 

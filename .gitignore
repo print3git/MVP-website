@@ -8,3 +8,6 @@ backend/hunyuan_server/uploads/
 reports/
 backend/coverage/
 coverage/
+
+package-lock.json
+yarn.lock
