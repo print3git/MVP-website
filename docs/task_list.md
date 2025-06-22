@@ -153,7 +153,6 @@
 ## Gifting Flow Integration
 
 - Build recipient portal with magic-link login, 3D preview, edit controls and shipping tracker.
-- Send lifecycle emails: gift notification, shipping updates and Day 30 upsell.
 - Credit the sender if the recipient purchases within 60 days and log events to Segment/GA4.
 - **Data & config**
   - Expose `FeatureFlags.GIFTING` and add gifting email/portal env vars.
