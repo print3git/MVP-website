@@ -80,6 +80,20 @@
       #print-qty {
         -moz-appearance: textfield;
       }
+
+      /* Highlight the selected pricing tier */
+      #material-options label span {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      #material-options label:hover span,
+      #material-options input:active + span {
+        transform: scale(1.04);
+      }
+      #material-options input:checked + span {
+        transform: scale(1.04);
+        box-shadow: 0 0 10px rgba(48, 213, 200, 0.6),
+          0 6px 10px rgba(0, 0, 0, 0.6);
+      }
     </style>
   </head>
 
