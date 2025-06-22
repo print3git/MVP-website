@@ -72,6 +72,7 @@ This repository contains the early MVP code for print2's website and backend.
    ```bash
    npm run send-abandoned-offers  # inside backend/
    ```
+
 9. (Optional) Clean up expired password reset tokens periodically:
 
    ```bash
@@ -310,26 +311,19 @@ CI runs `npm run deps:dedupe-check` which executes `pnpm dedupe --check` to
 ensure no duplicate packages remain in the lockfiles. Run `npm run deps:dedupe`
 locally to automatically deduplicate.
 
-## Preview Deploys
 
-Pull requests automatically deploy a preview site to Netlify. To enable this workflow, add the following secrets in your GitHub repository settings:
+## Deployment
 
-| Secret name | What for |
-| ----------- | -------- |
-| `NETLIFY_AUTH_TOKEN` | Netlify preview deploys |
-| `NETLIFY_SITE_ID` | Netlify preview deploys |
-
-Generate an auth token with:
+Before deploying with the Netlify CLI, run the helper script to verify that your
+environment is configured correctly:
 
 ```bash
-netlify login --json | jq -r .token
+scripts/netlify-preflight.sh
 ```
 
-Find your site ID with:
+The script checks that `NETLIFY_AUTH_TOKEN` and `NETLIFY_SITE_ID` are defined.
+If either variable is missing, deployment stops with a clear error.
 
-```bash
-netlify sites:list --json | jq -r '.[0].id'
-```
-
-Once these secrets are configured, the `preview-deploy.yml` workflow will deploy PRs without prompting for authorization.
+Install the Netlify CLI globally (`npm install -g netlify-cli`) and then invoke
+`netlify deploy` as usual once the preflight passes.
 

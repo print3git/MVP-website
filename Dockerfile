@@ -11,7 +11,8 @@ WORKDIR /app
 
 # Disable Husky and npm lifecycle scripts
 ENV HUSKY=0 NPM_CONFIG_IGNORE_SCRIPTS=true \
-    NPM_CONFIG_LEGACY_PEER_DEPS=true
+    NODE_OPTIONS=--max-old-space-size=8192
+
 
 # Install Docker CLI for development tasks
 RUN apt-get update \
@@ -66,7 +67,7 @@ ARG HTTPS_PROXY
 WORKDIR /app
 
 ENV HUSKY=0 NPM_CONFIG_IGNORE_SCRIPTS=true \
-    NPM_CONFIG_LEGACY_PEER_DEPS=true
+    NODE_OPTIONS=--max-old-space-size=8192
 
 RUN unset NPM_CONFIG_HTTP_PROXY NPM_CONFIG_HTTPS_PROXY || true \
     && npm config delete proxy \
