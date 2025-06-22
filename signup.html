@@ -181,6 +181,14 @@
         }
       }
 
+      document
+        .getElementById("emailStub")
+        .addEventListener("click", () => expand("emailStub", "emailGroup"));
+
+      document
+        .getElementById("addressStub")
+        .addEventListener("click", () => expand("addressStub", "addressGroup"));
+
       import { shareOn } from "./js/share.js";
       window.shareOn = shareOn;
     </script>

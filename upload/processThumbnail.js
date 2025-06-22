@@ -14,8 +14,7 @@ const sharp = require("sharp");
 /**
  * Process an uploaded thumbnail image according to repository standards.
  * @param {Buffer} fileBuffer Raw image data
- * @returns {Promise<{ok: boolean, buffer?: Buffer, error?: string}>} Result
- * object containing the processed buffer or an error message.
+ * @returns {Promise<{ok: boolean, buffer?: Buffer, error?: string}>} Processed image result
  */
 async function processThumbnail(fileBuffer) {
   try {
