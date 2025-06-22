@@ -83,7 +83,12 @@ This repository contains the early MVP code for print2's website and backend.
 
 You can build a dev container from the included `Dockerfile`. The image now
 installs the Docker CLI so commands like `docker --version` work inside the
-container.
+container. If you want to skip running full CI inside the container, build with
+`SKIP_TESTS=1`:
+
+```bash
+DOCKER_BUILDKIT=1 docker build --build-arg SKIP_TESTS=1 .
+```
 
 ## Serving the Frontend Locally
 
@@ -306,6 +311,7 @@ CI runs `npm run deps:dedupe-check` which executes `pnpm dedupe --check` to
 ensure no duplicate packages remain in the lockfiles. Run `npm run deps:dedupe`
 locally to automatically deduplicate.
 
+
 ## Deployment
 
 Before deploying with the Netlify CLI, run the helper script to verify that your
@@ -320,3 +326,4 @@ If either variable is missing, deployment stops with a clear error.
 
 Install the Netlify CLI globally (`npm install -g netlify-cli`) and then invoke
 `netlify deploy` as usual once the preflight passes.
+

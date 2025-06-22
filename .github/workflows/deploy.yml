@@ -1,0 +1,31 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+
+env:                      # ONE place to set required secrets
+  NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+  NETLIFY_SITE_ID:   ${{ secrets.NETLIFY_SITE_ID }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: netlify/actions/cli@v4
+      - name: "\u2699\uFE0F Pre-flight \u2013 verify Netlify creds"
+        run: |
+          for v in NETLIFY_AUTH_TOKEN NETLIFY_SITE_ID; do
+            [ -z "${!v}" ] && {
+              echo "::error title=Missing Netlify secret::$v is empty \u2013 aborting deploy";
+              exit 1
+            }
+          done
+      - name: "\u1F680 Deploy preview"
+        run: |
+          netlify deploy \
+            --dir=. \
+            --site "$NETLIFY_SITE_ID" \
+            --auth "$NETLIFY_AUTH_TOKEN" \
+            --json > deploy.json
+          echo "PREVIEW_URL=$(jq -r '.deploy_url' deploy.json)" >> "$GITHUB_ENV"
