@@ -254,6 +254,12 @@ pull request:
    modified.
 5. Add the format and test logs to the PR so reviewers can confirm.
 
+### CI tips
+
+After editing dependencies run
+`npm install --package-lock-only`
+to keep package-lock.json in sync so that npm ci passes in Docker/CI.
+
 ## Printer Service
 
 The print worker posts completed jobs to an external printer API. See
@@ -311,7 +317,6 @@ CI runs `npm run deps:dedupe-check` which executes `pnpm dedupe --check` to
 ensure no duplicate packages remain in the lockfiles. Run `npm run deps:dedupe`
 locally to automatically deduplicate.
 
-
 ## Deployment
 
 Before deploying with the Netlify CLI, run the helper script to verify that your
@@ -326,4 +331,3 @@ If either variable is missing, deployment stops with a clear error.
 
 Install the Netlify CLI globally (`npm install -g netlify-cli`) and then invoke
 `netlify deploy` as usual once the preflight passes.
-

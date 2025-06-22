@@ -113,3 +113,19 @@ jobs:
         run: npm run e2e
 
       # ← you can add additional steps here, like your tests
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+      NETLIFY_SITE_ID:    ${{ secrets.NETLIFY_SITE_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: netlify/actions/cli@v4
+      - name: Verify Netlify secrets
+        run: |
+          : "${NETLIFY_AUTH_TOKEN:?Missing secret NETLIFY_AUTH_TOKEN}"
+          : "${NETLIFY_SITE_ID:?Missing secret NETLIFY_SITE_ID}"
+      - name: Deploy
+        run: netlify deploy --dir=. --site $NETLIFY_SITE_ID --auth $NETLIFY_AUTH_TOKEN
