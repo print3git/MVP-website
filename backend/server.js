@@ -1122,7 +1122,7 @@ app.post("/api/gifts/:id/claim", async (req, res) => {
   const { id } = req.params;
   try {
     const giftRes = await db.query(
-      `SELECT g.sender_id, g.model_id, u.email
+      `SELECT g.sender_id, g.model_id, g.recipient_email, g.printing_email_sent, u.email
          FROM gifts g
          JOIN users u ON g.sender_id=u.id
         WHERE g.id=$1 AND g.claimed_at IS NULL`,
@@ -1139,6 +1139,16 @@ app.post("/api/gifts/:id/claim", async (req, res) => {
       "Your gift was claimed!",
       `Thanks! Here is a referral coupon code: ${code}`,
     );
+    if (gift.recipient_email && !gift.printing_email_sent) {
+      await sendTemplate(
+        gift.recipient_email,
+        "Your gift is printing",
+        "gift_printing.txt",
+      );
+      await db.query("UPDATE gifts SET printing_email_sent=TRUE WHERE id=$1", [
+        id,
+      ]);
+    }
     const out = path.join(__dirname, "..", "uploads", `gift-${id}-share.png`);
     await generateShareCard(gift.model_id, out);
     res.json({ code });

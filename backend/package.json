@@ -20,6 +20,7 @@
     "reset-credits": "node scripts/weekly-reset.js",
     "send-printclub-reminders": "node scripts/send-printclub-reminders.js",
     "send-gift-reminders": "node scripts/send-gift-claim-reminders.js",
+    "send-gift-upsells": "node scripts/send-gift-upsells.js",
     "cleanup-tokens": "node scripts/cleanup-password-resets.js",
     "measure-load": "node scripts/measure-load.js",
     "generate-referral-qr": "node scripts/generate-referral-qr.js",
