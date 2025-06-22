@@ -578,8 +578,10 @@ refs.promptInput.addEventListener("input", () => {
   const el = refs.promptInput;
   el.style.height = "auto";
   const lh = parseFloat(getComputedStyle(el).lineHeight);
-  el.style.height = Math.min(el.scrollHeight, lh * 9) + "px";
-  el.style.overflowY = el.scrollHeight > lh * 9 ? "auto" : "hidden";
+  // Limit visible lines to 4 then enable scrolling
+  const maxLines = 4;
+  el.style.height = Math.min(el.scrollHeight, lh * maxLines) + "px";
+  el.style.overflowY = el.scrollHeight > lh * maxLines ? "auto" : "hidden";
   const errEl = document.getElementById("gen-error");
   if (errEl) {
     errEl.textContent = "";
