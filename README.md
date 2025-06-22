@@ -268,6 +268,10 @@ Agents must consult this file and avoid modifying paths locked by other PRs.
 The `update_locks` workflow keeps it up to date every few minutes. Pull requests
 are automatically rebased and merged via the merge queue when CI passes.
 
+## Code Owners
+
+This repository uses a `CODEOWNERS` file to automatically request reviews. Paths are mapped to the appropriate teams to keep review responsibilities clear.
+
 ## Flaky test quarantine
 
 The `test:stability` script runs the backend test suite three times in a row to
@@ -289,3 +293,9 @@ If no token is provided, CI falls back to `npm audit --audit-level=high`.
 
 Run `npm run i18n:lint` to verify email translation keys. CI fails if any keys
 are missing or unused.
+
+## Package Deduplication
+
+CI runs `npm run deps:dedupe-check` which executes `pnpm dedupe --check` to
+ensure no duplicate packages remain in the lockfiles. Run `npm run deps:dedupe`
+locally to automatically deduplicate.
