@@ -94,6 +94,18 @@
         box-shadow: 0 0 10px rgba(48, 213, 200, 0.6),
           0 6px 10px rgba(0, 0, 0, 0.6);
       }
+
+      /* === Progressive–disclosure container === */
+      .collapsible {
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+      }
+      .collapsed {
+        max-height: 0;
+      }
+      .expanded {
+        max-height: 500px; /* big enough for any content */
+      }
     </style>
   </head>
 
