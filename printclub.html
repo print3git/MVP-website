@@ -32,7 +32,11 @@
             stroke-width="2"
             viewBox="0 0 24 24"
           >
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M15 19l-7-7 7-7"
+            />
           </svg>
           Back
         </a>
@@ -85,28 +89,44 @@
       </div>
     </header>
     <main class="flex-1 flex items-center justify-center px-4">
-      <div class="max-w-4xl w-full flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0 md:space-x-8">
+      <div
+        class="max-w-4xl w-full flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0 md:space-x-8"
+      >
         <div class="text-center space-y-4 md:max-w-lg">
           <p class="text-lg">
-
-            Join print2 pro for £149.99 per month to receive 2 prints (single or multicolour tiers) every week, and unlimited £20 off premium tier (£79.99 -> £59.99).
+            Join print2 pro for £149.99 per month to receive 2 prints (single or
+            multicolour tiers) every week, and unlimited £20 off premium tier
+            (£79.99 -> £59.99).
           </p>
           <p class="text-lg">
-            Members also get early access to new designs and exclusive promotions.
+            Members also get early access to new designs and exclusive
+            promotions.
           </p>
+          <div class="text-left text-sm mt-4" id="loyalty-benefits">
+            <h3 class="text-lg font-semibold mb-1 text-center">
+              Loyalty Rewards
+            </h3>
+            <ul class="list-disc list-inside space-y-1">
+              <li>3 months – 1 bonus print each week</li>
+              <li>6 months – 2 bonus prints each week</li>
+              <li>12 months – 4 bonus prints and 25% off</li>
+            </ul>
+          </div>
           <a
             href="print2pro-checkout.html"
             class="inline-block bg-[#30D5C8] text-[#1A1A1D] px-6 py-3 rounded-xl font-semibold hover:bg-[#28b7a8] transition"
             >Subscribe Now</a
           >
         </div>
-        <div class="w-full md:w-80 h-60 flex items-center justify-center border border-white/20 rounded-xl bg-[#2A2A2E] text-sm">
+        <div
+          class="w-full md:w-80 h-60 flex items-center justify-center border border-white/20 rounded-xl bg-[#2A2A2E] text-sm"
+        >
           Real life image here
         </div>
       </div>
     </main>
     <script type="module">
-      import { shareOn } from './js/share.js';
+      import { shareOn } from "./js/share.js";
       window.shareOn = shareOn;
     </script>
     <div
@@ -116,7 +136,9 @@
       <div class="bg-[#2A2A2E] p-6 rounded-xl max-w-sm text-center">
         <h2 class="text-2xl font-semibold mb-2">print2 pro</h2>
         <p class="mb-4">
-          Get two prints (single or multicolour tiers) every week for £149.99/month, plus save £20 off the premium price (£79.99 ==> £59.99).
+          Get two prints (single or multicolour tiers) every week for
+          £149.99/month, plus save £20 off the premium price (£79.99 ==>
+          £59.99).
         </p>
         <button
           id="printclub-close"
@@ -130,14 +152,20 @@
     <script type="module" src="js/printclub.js"></script>
     <script type="module" src="js/rewardBadge.js"></script>
     <script>
-      document.addEventListener('DOMContentLoaded', () => {
-        const link = document.getElementById('back-link');
+      document.addEventListener("DOMContentLoaded", () => {
+        const link = document.getElementById("back-link");
         if (!link) return;
         try {
           const ref = new URL(document.referrer);
-          if (ref.origin === window.location.origin && !ref.pathname.endsWith('printclub.html')) {
-            link.setAttribute('href', ref.pathname.replace(/^\//, '') + ref.search + ref.hash);
-            link.addEventListener('click', (e) => {
+          if (
+            ref.origin === window.location.origin &&
+            !ref.pathname.endsWith("printclub.html")
+          ) {
+            link.setAttribute(
+              "href",
+              ref.pathname.replace(/^\//, "") + ref.search + ref.hash,
+            );
+            link.addEventListener("click", (e) => {
               e.preventDefault();
               history.back();
             });

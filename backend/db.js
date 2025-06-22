@@ -119,6 +119,16 @@ async function incrementCreditsUsed(userId, amount = 1) {
   );
 }
 
+async function getSubscriptionDurationMonths(userId) {
+  const { rows } = await query(
+    `SELECT EXTRACT(year FROM age(NOW(), created_at)) * 12 + EXTRACT(month FROM age(NOW(), created_at)) AS months
+       FROM subscriptions WHERE user_id=$1`,
+    [userId],
+  );
+  if (!rows.length || rows[0].months === null) return 0;
+  return Math.floor(Number(rows[0].months));
+}
+
 async function getOrCreateReferralLink(userId) {
   const { rows } = await query(
     "SELECT code FROM referral_links WHERE user_id=$1",
@@ -824,6 +834,7 @@ module.exports = {
   ensureCurrentWeekCredits,
   getCurrentWeekCredits,
   incrementCreditsUsed,
+  getSubscriptionDurationMonths,
   updateWeeklyOrderStreak,
   getOrCreateReferralLink,
   getRewardPoints,
