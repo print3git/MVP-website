@@ -1,0 +1,2 @@
+ALTER TABLE orders
+  ADD COLUMN IF NOT EXISTS abandoned_offer_sent BOOLEAN DEFAULT FALSE;

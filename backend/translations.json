@@ -21,6 +21,8 @@
   "post_purchase_followup.body": "Hi {{username}},\n\nWe hope you're enjoying your recent print. If you'd like another copy or want to share the experience with a friend, you can easily reorder below:\n\n{{reorder_url}}\n\nThanks for supporting our community!",
   "purchase_reminder.subject": "Complete your purchase",
   "purchase_reminder.body": "Hi {{username}},\n\nWe noticed you haven't finished your purchase yet. If you'd like to complete it, just return to your jobs page and finalize the order.\n\nLet us know if you need any help!",
+  "discount_offer.subject": "Complete your purchase",
+  "discount_offer.body": "We noticed you started checkout but didn't finish. Here's a $5 discount code good for the next 48 hours:\n\n{{code}}\n\nUse it at checkout before it expires!",
   "reminder.subject": "print2 pro Reminder",
   "reminder.body": "Hi {{username}},\n\nYou still have unused print2 pro credits this month. Be sure to redeem your prints before they reset!\n\nThanks for being a member.",
   "rental_agreement.subject": "Rental Agreement",
@@ -30,4 +32,3 @@
   "shipping_update.subject": "Package update: {{status}}",
   "shipping_update.body": "Hi {{username}},\n\nYour order {{order_id}} status update: {{status}}\n\nWe'll keep you posted until it's delivered."
 }
-
