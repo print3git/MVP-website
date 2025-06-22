@@ -370,6 +370,24 @@ async function initPaymentPage() {
   const qtyDec = document.getElementById('qty-decrement');
   const qtyInc = document.getElementById('qty-increment');
   const bulkMsg = document.getElementById('bulk-discount-msg');
+  const inputIds = [
+    'ship-name',
+    'etch-name',
+    'checkout-email',
+    'ship-address',
+    'ship-city',
+    'ship-zip',
+    'discount-code',
+  ];
+  const highlightValid = (el) => {
+    if (!el) return;
+    const valid = !el.disabled && el.value.trim() !== '' && el.checkValidity();
+    if (valid) {
+      el.classList.add('ring-2', 'ring-green-500');
+    } else {
+      el.classList.remove('ring-2', 'ring-green-500');
+    }
+  };
 
   fetchCampaignBundle();
   loadCheckoutCredits();
@@ -818,6 +836,14 @@ async function initPaymentPage() {
     if (ship.zip) document.getElementById('ship-zip').value = ship.zip;
     await updateEstimate();
   }
+
+  inputIds.forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) {
+      highlightValid(el);
+      el.addEventListener('input', () => highlightValid(el));
+    }
+  });
 
   ['ship-address', 'ship-city', 'ship-zip'].forEach((id) => {
     document.getElementById(id)?.addEventListener('change', updateEstimate);
