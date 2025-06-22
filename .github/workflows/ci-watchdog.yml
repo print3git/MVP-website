@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   scan:
-    if: ${{ github.repository_owner == 'YOUR-ORG-OR-USERNAME' }}
+    if: ${{ github.repository_owner == 'print3git' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
