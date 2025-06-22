@@ -1095,6 +1095,27 @@ app.post("/api/rewards/redeem", authRequired, async (req, res) => {
   }
 });
 
+app.get("/api/leaderboard", async (req, res) => {
+  const limit = parseInt(req.query.limit, 10) || 10;
+  try {
+    const board = await db.getLeaderboard(limit);
+    res.json(board);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: "Failed to fetch leaderboard" });
+  }
+});
+
+app.get("/api/achievements", authRequired, async (req, res) => {
+  try {
+    const achievements = await db.getAchievements(req.user.id);
+    res.json({ achievements });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: "Failed to fetch achievements" });
+  }
+});
+
 app.post("/api/gifts/:id/claim", async (req, res) => {
   if (!giftsAllowed(req))
     return res.status(403).json({ error: "Gifting not enabled" });
