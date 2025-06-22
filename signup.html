@@ -163,6 +163,24 @@
     </main>
     <script type="module" src="js/signup.js"></script>
     <script type="module">
+      function expand(idStub, idGroup) {
+        document.getElementById(idStub).style.display = "none";
+        const grp = document.getElementById(idGroup);
+        grp.classList.remove("collapsed");
+        grp.classList.add("expanded");
+      }
+
+      function collapseIfEmpty(idStub, idGroup, selector) {
+        const grp = document.getElementById(idGroup);
+        const inputs = grp.querySelectorAll(selector);
+        const filled = Array.from(inputs).some((i) => i.value.trim() !== "");
+        if (!filled) {
+          grp.classList.remove("expanded");
+          grp.classList.add("collapsed");
+          document.getElementById(idStub).style.display = "flex";
+        }
+      }
+
       import { shareOn } from "./js/share.js";
       window.shareOn = shareOn;
     </script>

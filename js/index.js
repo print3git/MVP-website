@@ -452,8 +452,16 @@ const hideAll = () => {
   }
 };
 const showLoader = (withProgress = true) => {
-  hideAll();
+  // Keep the viewer visible while showing the loader so the fallback model
+  // remains on screen during generation and on failures.
+  refs.previewImg.style.display = "none";
   refs.loader.style.display = "flex";
+  refs.viewer.style.display = "block";
+  refs.viewer.style.opacity = "1";
+  refs.viewer.style.pointerEvents = "auto";
+  if (typeof refs.viewer.play === "function") {
+    refs.viewer.play();
+  }
   if (withProgress) startProgress();
 };
 const showModel = () => {
@@ -578,8 +586,10 @@ refs.promptInput.addEventListener("input", () => {
   const el = refs.promptInput;
   el.style.height = "auto";
   const lh = parseFloat(getComputedStyle(el).lineHeight);
-  el.style.height = Math.min(el.scrollHeight, lh * 9) + "px";
-  el.style.overflowY = el.scrollHeight > lh * 9 ? "auto" : "hidden";
+  // Limit visible lines to 4 then enable scrolling
+  const maxLines = 4;
+  el.style.height = Math.min(el.scrollHeight, lh * maxLines) + "px";
+  el.style.overflowY = el.scrollHeight > lh * maxLines ? "auto" : "hidden";
   const errEl = document.getElementById("gen-error");
   if (errEl) {
     errEl.textContent = "";
@@ -643,7 +653,11 @@ function renderThumbnails(arr) {
     btn.onclick = () => {
       arr.splice(i, 1);
       uploadedFiles.splice(i, 1);
-      localStorage.setItem("print3Images", JSON.stringify(arr));
+      try {
+        localStorage.setItem("print3Images", JSON.stringify(arr));
+      } catch {
+        /* ignore storage errors */
+      }
       renderThumbnails(arr);
       updateWizardFromInputs();
     };
@@ -682,7 +696,11 @@ async function processFiles(files) {
   uploadedFiles = [...files];
   const thumbs = await Promise.all(uploadedFiles.map((f) => getThumbnail(f)));
 
-  localStorage.setItem("print3Images", JSON.stringify(thumbs));
+  try {
+    localStorage.setItem("print3Images", JSON.stringify(thumbs));
+  } catch {
+    /* ignore storage errors */
+  }
   renderThumbnails(thumbs);
   editsPending = true;
   refs.buyNowBtn?.classList.add("hidden");
@@ -1084,11 +1102,15 @@ async function init() {
       friday.setDate(friday.getDate() + ((5 - friday.getDay() + 7) % 7));
       const diff = friday - now;
       if (diff > 0 && diff < 7 * 86400000) {
-        const hours = Math.floor(diff / 3600000);
+        const hoursTotal = Math.floor(diff / 3600000);
+        const days = Math.floor(hoursTotal / 24);
+        const hours = hoursTotal % 24;
         const minutes = Math.floor((diff % 3600000) / 60000);
-        banner.textContent = `${hours.toString().padStart(2, "0")}h ${minutes
-          .toString()
-          .padStart(2, "0")}m left for weekend delivery`;
+        const parts = [];
+        if (days > 0) parts.push(`${days}d`);
+        parts.push(`${hours.toString().padStart(2, "0")}h`);
+        parts.push(`${minutes.toString().padStart(2, "0")}m`);
+        banner.textContent = `${parts.join(" ")} left for weekend delivery`;
         banner.classList.remove("hidden");
       } else {
         banner.classList.add("hidden");
