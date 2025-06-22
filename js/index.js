@@ -388,27 +388,35 @@ function updateWizardFromInputs() {
 
 async function captureModelSnapshot(url) {
   if (!url) return null;
-  const viewer = document.createElement("model-viewer");
-  viewer.crossOrigin = "anonymous";
-  viewer.src = url;
-  viewer.setAttribute(
-    "environment-image",
-    "https://modelviewer.dev/shared-assets/environments/neutral.hdr",
-  );
-  viewer.style.position = "fixed";
-  viewer.style.left = "-10000px";
-  viewer.style.width = "300px";
-  viewer.style.height = "300px";
-  document.body.appendChild(viewer);
-  try {
-    await viewer.updateComplete;
-    return await viewer.toDataURL("image/png");
-  } catch (err) {
-    console.error("Failed to capture snapshot", err);
-    return null;
-  } finally {
-    viewer.remove();
+  async function attempt(glb) {
+    const viewer = document.createElement("model-viewer");
+    viewer.crossOrigin = "anonymous";
+    viewer.src = glb;
+    viewer.setAttribute(
+      "environment-image",
+      "https://modelviewer.dev/shared-assets/environments/neutral.hdr",
+    );
+    viewer.style.position = "fixed";
+    viewer.style.left = "-10000px";
+    viewer.style.width = "300px";
+    viewer.style.height = "300px";
+    document.body.appendChild(viewer);
+    try {
+      await viewer.updateComplete;
+      return await viewer.toDataURL("image/png");
+    } catch (err) {
+      console.error("Failed to capture snapshot", err);
+      return null;
+    } finally {
+      viewer.remove();
+    }
   }
+
+  let result = await attempt(url);
+  if (!result && url !== FALLBACK_GLB) {
+    result = await attempt(FALLBACK_GLB);
+  }
+  return result;
 }
 
 function startProgress(estimateMs = 20000) {
