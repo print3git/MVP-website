@@ -568,9 +568,9 @@ async function initPaymentPage() {
     } else {
       const qty = Math.max(1, parseInt(qtySelect?.value || "2", 10));
       let total = selectedPrice * qty;
-      if (qty === 2) {
-        total -= TWO_PRINT_DISCOUNT;
-      }
+        if (qty > 1) {
+          total -= TWO_PRINT_DISCOUNT;
+        }
       payBtn.textContent = `Pay £${(total / 100).toFixed(2)} (${qty} prints)`;
     }
   }
@@ -633,7 +633,7 @@ async function initPaymentPage() {
   qtyInc?.addEventListener("click", () => {
     if (!qtySelect) return;
     let val = parseInt(qtySelect.value, 10) || 1;
-    val = Math.min(5, val + 1);
+    val = Math.max(1, val + 1);
     qtySelect.value = String(val);
     qtySelect.dispatchEvent(new Event("change"));
   });
@@ -956,7 +956,7 @@ async function initPaymentPage() {
         selectedPrice * (flashSale.discount_percent / 100),
       );
     }
-    if (qty === 2) {
+    if (qty > 1) {
       discount += TWO_PRINT_DISCOUNT;
     }
     const shippingInfo = {
