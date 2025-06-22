@@ -80,13 +80,13 @@ async function load() {
   if (!res.ok) {
     // When the competitions API fails, show a friendly message
     list.innerHTML =
-      '<p class="text-center text-white/80">No ongoing competitions right now. <a href="signup.html" class="font-bold text-[#30D5C8]">Sign Up</a> to hear when competitions/prizes are available.</p>';
+      '<p class="text-center text-white/80">No ongoing competitions right now. <a href="signup.html" class="font-bold text-[#30D5C8]">Sign Up</a> to hear when prizes are available.</p>';
     return;
   }
   const comps = await res.json();
   if (comps.length === 0) {
     list.innerHTML =
-      '<p class="text-center text-white/80">No ongoing competitions right now. <a href="signup.html" class="font-bold text-[#30D5C8]">Sign Up</a> to hear when competitions/prizes are available.</p>';
+      '<p class="text-center text-white/80">No ongoing competitions right now. <a href="signup.html" class="font-bold text-[#30D5C8]">Sign Up</a> to hear when prizes are available.</p>';
     return;
   }
   const themeEl = document.getElementById('current-theme');
