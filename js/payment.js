@@ -650,6 +650,8 @@ async function initPaymentPage() {
       if (btn) {
         // Prevent click from bubbling and reopening the menu
         ev.stopPropagation();
+        // Prevent the label from re-triggering the input's click handler
+        ev.preventDefault();
         const color = btn.dataset.color;
         singleButton.style.backgroundColor = color;
 
