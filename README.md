@@ -67,7 +67,13 @@ This repository contains the early MVP code for print2's website and backend.
    npm run send-reminders  # inside backend/
    ```
 
-8. (Optional) Clean up expired password reset tokens periodically:
+8. (Optional) Send discount offers to abandoned checkouts:
+
+   ```bash
+   npm run send-abandoned-offers  # inside backend/
+   ```
+
+9. (Optional) Clean up expired password reset tokens periodically:
 
    ```bash
    npm run cleanup-tokens  # inside backend/
