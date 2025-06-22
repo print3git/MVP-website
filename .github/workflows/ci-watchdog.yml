@@ -1,0 +1,26 @@
+name: CI Watchdog
+on:
+  workflow_run:
+    workflows: ["CI", "build", "test"]
+    types: [completed]
+  schedule:
+    - cron:  '0 */3 * * *'
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  scan:
+    if: ${{ github.repository_owner == 'print3git' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install --no-audit --no-fund
+      - run: node scripts/ci_watchdog.js
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
