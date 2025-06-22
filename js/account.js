@@ -1,94 +1,111 @@
-import { fetchWithCache } from './apiCache.js';
+import { fetchWithCache } from "./apiCache.js";
 
-const API_BASE = (window.API_ORIGIN || '') + '/api';
+const API_BASE = (window.API_ORIGIN || "") + "/api";
 
 async function loadProfile() {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   if (!token) {
-    window.location.href = 'login.html';
+    window.location.href = "login.html";
     return;
   }
   const data = await fetchWithCache(
     `${API_BASE}/me`,
     { headers: { Authorization: `Bearer ${token}` } },
-    'me'
+    "me",
   );
-  document.getElementById('mp-username').textContent = data.username;
-  document.getElementById('mp-email').textContent = data.email;
-  const displayEl = document.getElementById('mp-display');
-  if (displayEl) displayEl.textContent = data.displayName || '';
+  document.getElementById("mp-username").textContent = data.username;
+  document.getElementById("mp-email").textContent = data.email;
+  const displayEl = document.getElementById("mp-display");
+  if (displayEl) displayEl.textContent = data.displayName || "";
 }
 
 async function loadSubscription() {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   if (!token) return;
   try {
-    const { subscription: sub, credits } = await fetchWithCache(
+    const {
+      subscription: sub,
+      credits,
+      months_subscribed: months,
+      milestone,
+    } = await fetchWithCache(
       `${API_BASE}/subscription/summary`,
       { headers: { Authorization: `Bearer ${token}` } },
-      'subscription-summary'
+      "subscription-summary",
     );
-    const container = document.getElementById('subscription-progress');
-    const previews = document.getElementById('design-previews');
-    const tcStatus = document.getElementById('time-capsule-status');
-    const manage = document.getElementById('manage-subscription');
-    if (!sub || sub.active === false || sub.status === 'canceled') {
+    const container = document.getElementById("subscription-progress");
+    const previews = document.getElementById("design-previews");
+    const tcStatus = document.getElementById("time-capsule-status");
+    const manage = document.getElementById("manage-subscription");
+    if (!sub || sub.active === false || sub.status === "canceled") {
       if (manage) {
-        manage.textContent = 'Join print2 pro';
+        manage.textContent = "Join print2 pro";
         manage.onclick = () => {
-          window.location.href = 'print2pro-checkout.html';
+          window.location.href = "print2pro-checkout.html";
         };
       }
-      previews?.classList.add('hidden');
+      previews?.classList.add("hidden");
       return;
     }
-    if (container) container.classList.remove('hidden');
-    previews?.classList.remove('hidden');
+    if (container) container.classList.remove("hidden");
+    previews?.classList.remove("hidden");
     const used = credits.total - credits.remaining;
     const pct = credits.total ? (used / credits.total) * 100 : 0;
-    const bar = document.getElementById('credit-bar');
+    const bar = document.getElementById("credit-bar");
     if (bar) bar.style.width = `${pct}%`;
-    document.getElementById('credits-used').textContent = used;
-    document.getElementById('credits-total').textContent = credits.total;
+    document.getElementById("credits-used").textContent = used;
+    document.getElementById("credits-total").textContent = credits.total;
+    const loyalty = document.getElementById("loyalty-info");
+    if (loyalty) {
+      if (milestone >= 12)
+        loyalty.textContent = "1-year member! +4 bonus prints each week";
+      else if (milestone >= 6)
+        loyalty.textContent = "6-month member! +2 bonus prints each week";
+      else if (milestone >= 3)
+        loyalty.textContent = "3-month member! +1 bonus print each week";
+      else
+        loyalty.textContent = `Member for ${months} month${months === 1 ? "" : "s"}`;
+    }
     if (manage) {
-      manage.textContent = 'Manage subscription';
+      manage.textContent = "Manage subscription";
       manage.onclick = openPortal;
     }
 
     if (tcStatus) {
-      const text = tcStatus.querySelector('#time-capsule-text');
-      const btn = tcStatus.querySelector('#time-capsule-action');
-      const active = localStorage.getItem('timeCapsuleActive') === 'true';
-      tcStatus.classList.remove('hidden');
+      const text = tcStatus.querySelector("#time-capsule-text");
+      const btn = tcStatus.querySelector("#time-capsule-action");
+      const active = localStorage.getItem("timeCapsuleActive") === "true";
+      tcStatus.classList.remove("hidden");
       if (active) {
-        text.textContent = 'Monthly Time Capsule prints are active.';
-        btn.textContent = 'Disable';
+        text.textContent = "Monthly Time Capsule prints are active.";
+        btn.textContent = "Disable";
         btn.onclick = () => {
-          localStorage.removeItem('timeCapsuleActive');
+          localStorage.removeItem("timeCapsuleActive");
           loadSubscription();
         };
       } else {
-        text.textContent = 'Add a monthly Time Capsule print to your subscription.';
-        btn.textContent = 'Activate';
+        text.textContent =
+          "Add a monthly Time Capsule print to your subscription.";
+        btn.textContent = "Activate";
         btn.onclick = () => {
-          localStorage.setItem('timeCapsuleActive', 'true');
+          localStorage.setItem("timeCapsuleActive", "true");
           loadSubscription();
         };
       }
     }
   } catch (err) {
-    console.error('Failed to load subscription info', err);
+    console.error("Failed to load subscription info", err);
   }
 }
 
 async function openPortal() {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   if (!token) {
-    window.location.href = 'login.html';
+    window.location.href = "login.html";
     return;
   }
   const res = await fetch(`${API_BASE}/subscription/portal`, {
-    method: 'POST',
+    method: "POST",
     headers: { Authorization: `Bearer ${token}` },
   });
   if (res.ok) {
@@ -97,7 +114,7 @@ async function openPortal() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
   loadProfile();
   loadSubscription();
 });

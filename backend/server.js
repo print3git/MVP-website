@@ -848,16 +848,20 @@ app.get("/api/subscription/credits", authRequired, async (req, res) => {
 app.get("/api/subscription/summary", authRequired, async (req, res) => {
   try {
     await db.ensureCurrentWeekCredits(req.user.id, 2);
-    const [sub, credits] = await Promise.all([
+    const [sub, credits, months] = await Promise.all([
       db.getSubscription(req.user.id),
       db.getCurrentWeekCredits(req.user.id),
+      db.getSubscriptionDurationMonths(req.user.id),
     ]);
+    const milestone = months >= 12 ? 12 : months >= 6 ? 6 : months >= 3 ? 3 : 0;
     res.json({
       subscription: sub || { active: false },
       credits: {
         remaining: credits.total_credits - credits.used_credits,
         total: credits.total_credits,
       },
+      months_subscribed: months,
+      milestone,
     });
   } catch (err) {
     logError(err);
