@@ -95,6 +95,7 @@
           0 6px 10px rgba(0, 0, 0, 0.6);
       }
 
+
       /* === Progressive–disclosure container === */
       .collapsible {
         overflow: hidden;
@@ -105,6 +106,30 @@
       }
       .expanded {
         max-height: 500px; /* big enough for any content */
+
+
+      /* Add glow and single-pass shimmer to the Pay button */
+      #submit-payment {
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 0 10px rgba(48, 213, 200, 0.6),
+          0 6px 10px rgba(0, 0, 0, 0.6);
+      }
+      #submit-payment::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          120deg,
+          rgba(255, 255, 255, 0) 0%,
+          rgba(255, 0, 255, 0.3) 15%,
+          rgba(0, 255, 255, 0.3) 85%,
+          rgba(255, 255, 255, 0) 100%
+        );
+        transform: translateX(-100%);
+        animation: shimmer 3s ease-in-out forwards;
+        pointer-events: none;
+
       }
     </style>
   </head>
@@ -329,13 +354,14 @@
               <span>Quantity:</span>
               <div
                 id="qty-pill"
-                class="flex items-center bg-[#2A2A2E] border border-white/20 rounded-full overflow-hidden"
+                class="flex items-center bg-[#2A2A2E] border border-white/20 rounded-full overflow-hidden p-1"
               >
                 <button
                   type="button"
                   id="qty-decrement"
                   aria-label="Decrease quantity"
-                  class="w-10 h-10 flex items-center justify-center"
+
+                  class="w-[2.1rem] h-[2.1rem] flex items-center justify-center text-[1.05rem]"
                 >
                   &minus;
                 </button>
@@ -344,13 +370,15 @@
                   type="number"
                   min="1"
                   value="2"
-                  class="w-8 text-center bg-transparent appearance-none"
+
+                  class="w-[2.1rem] text-center bg-transparent appearance-none text-[0.875rem]"
                 />
                 <button
                   type="button"
                   id="qty-increment"
                   aria-label="Increase quantity"
-                  class="w-10 h-10 flex items-center justify-center"
+                  class="w-[2.1rem] h-[2.1rem] flex items-center justify-center text-[1.05rem]"
+
                 >
                   +
                 </button>
@@ -365,6 +393,16 @@
                 placeholder="Full Name"
                 autocomplete="name"
                 aria-label="Full Name"
+              />
+            </div>
+            <div>
+              <input
+                id="checkout-email"
+                type="email"
+                class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+                placeholder="Email"
+                autocomplete="email"
+                aria-label="Email"
               />
             </div>
             <div id="etch-name-container" class="relative">
@@ -382,69 +420,80 @@
               >
 
                 <div class="border-t-2 border-[#30D5C8] w-[20ch]"></div>
-                <span class="text-sm text-[#30D5C8] whitespace-nowrap">Requires multicolour</span>
+                <span class="text-sm text-[#30D5C8] whitespace-nowrap">Colour required</span>
 
               </div>
             </div>
-            <div>
-              <input
-                id="checkout-email"
-                type="email"
-                class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
-                placeholder="Email"
-                autocomplete="email"
-                aria-label="Email"
-              />
-            </div>
-            <div>
-              <input
-                id="ship-address"
-                class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
-                placeholder="Address"
-                autocomplete="address-line1"
-                aria-label="Address"
-              />
-            </div>
+            <button
+              id="advanced-toggle"
+              type="button"
+              class="text-sm underline text-gray-300"
+            >
+              More options
+            </button>
+            <div id="advanced-section" class="space-y-[0.33rem] hidden">
+              <div class="flex flex-col" id="addressStub">
+                <label for="ship-address" class="font-medium">Address</label>
+                <input
+                  id="addressStubInput"
+                  type="text"
+                  placeholder="Tap to add address…"
+                  class="bg-gray-800 rounded-lg h-12 px-3 text-gray-400 cursor-pointer"
+                  readonly
+                />
+              </div>
+              <div id="addressGroup" class="collapsible collapsed">
+                <div>
+                  <input
+                    id="ship-address"
+                    class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+                    placeholder="Address"
+                    autocomplete="address-line1"
+                    aria-label="Address"
+                  />
+                </div>
 
-            <div class="flex gap-2">
-              <input
-                id="ship-city"
-                class="flex-1 p-2 rounded-md bg-[#1A1A1D] border border-white/10"
-                placeholder="City + Country"
-                autocomplete="address-level2"
-                aria-label="City + Country"
-              />
-              <input
-                id="ship-zip"
-                class="w-28 p-2 rounded-md bg-[#1A1A1D] border border-white/10"
-                placeholder="ZIP"
-                autocomplete="postal-code"
-                aria-label="ZIP code"
-              />
-            </div>
+                <div class="flex gap-2">
+                  <input
+                    id="ship-city"
+                    class="flex-1 p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+                    placeholder="City + Country"
+                    autocomplete="address-level2"
+                    aria-label="City + Country"
+                  />
+                  <input
+                    id="ship-zip"
+                    class="w-28 p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+                    placeholder="ZIP"
+                    autocomplete="postal-code"
+                    aria-label="ZIP code"
+                  />
+                </div>
+              </div>
 
-            <div class="flex gap-2">
-              <input
-                id="discount-code"
-                class="flex-1 p-2 rounded-md bg-[#1A1A1D] border border-white/10"
-                placeholder="Discount Code (optional)"
-                aria-label="Discount code"
-              />
-              <button
-                id="apply-discount"
-                type="button"
-                class="px-3 bg-[#30D5C8] text-[#1A1A1D] rounded-md hover:bg-[#28b7a8] transition"
-              >
-                Apply
-              </button>
-            </div>
-            <p id="discount-msg" class="text-xs text-center"></p>
+              <div class="flex gap-2">
+                <input
+                  id="discount-code"
+                  class="flex-1 p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+                  placeholder="Discount Code (optional)"
+                  aria-label="Discount code"
+                />
+                <button
+                  id="apply-discount"
+                  type="button"
+                  class="px-3 bg-[#30D5C8] text-[#1A1A1D] rounded-md hover:bg-[#28b7a8] transition"
+                >
+                  Apply
+                </button>
+              </div>
+              <p id="discount-msg" class="text-xs text-center"></p>
 
-            <div id="credit-option" class="my-2 text-sm hidden">
-              <label class="flex items-center gap-1">
-                <input type="checkbox" id="use-credit" class="accent-[#30D5C8]" />
-                Use print2 pro credit (<span id="credits-remaining">0</span> left this week)
-              </label>
+              <div id="credit-option" class="my-2 text-sm hidden">
+                <label class="flex items-center gap-1">
+                  <input type="checkbox" id="use-credit" class="accent-[#30D5C8]" />
+                  Use print2 pro credit (<span id="credits-remaining">0</span> left this week)
+                </label>
+              </div>
             </div>
 
             <div id="payment-element" class="text-center text-gray-400">
@@ -538,8 +587,7 @@
       <div class="bg-[#2A2A2E] border border-white/10 rounded-3xl p-6 text-center">
         <h2 class="text-xl font-semibold mb-2 text-white">Save on Prints</h2>
         <ul class="mb-4 text-gray-200 list-disc list-inside text-left">
-          <li>£7 off the 2nd print when you buy two</li>
-          <li>£15 off the 3rd print when you buy three</li>
+          <li>£7 off when you buy more than one print</li>
         </ul>
         <p class="text-gray-200 text-sm mb-4">
           Share this and get £5 credit on your next print.
@@ -615,6 +663,20 @@
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('service-worker.js');
       }
+    </script>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const toggle = document.getElementById('advanced-toggle');
+        const section = document.getElementById('advanced-section');
+        if (toggle && section) {
+          toggle.addEventListener('click', () => {
+            section.classList.toggle('hidden');
+            toggle.textContent = section.classList.contains('hidden')
+              ? 'More options'
+              : 'Hide options';
+          });
+        }
+      });
     </script>
     <script type="module" src="js/basket.js" defer></script>
   </body>

@@ -4,7 +4,7 @@
   "main": "server.js",
   "scripts": {
     "test": "jest",
-    "test-ci": "jest --ci --maxWorkers=2 --detectOpenHandles --forceExit",
+    "test-ci": "jest --ci --coverage --collectCoverageFrom='backend/**/*.{js,jsx,ts,tsx}' --maxWorkers=2 --detectOpenHandles --forceExit",
     "coverage": "jest --ci --coverage --maxWorkers=2 --detectOpenHandles --forceExit && npx coverage-badges-cli --source coverage/coverage-summary.json --output coverage/badge.svg",
     "start": "node server.js",
     "init-db": "node scripts/init-db.js",
@@ -20,6 +20,7 @@
     "reset-credits": "node scripts/weekly-reset.js",
     "send-printclub-reminders": "node scripts/send-printclub-reminders.js",
     "send-gift-reminders": "node scripts/send-gift-claim-reminders.js",
+    "send-gift-upsells": "node scripts/send-gift-upsells.js",
     "cleanup-tokens": "node scripts/cleanup-password-resets.js",
     "measure-load": "node scripts/measure-load.js",
     "generate-referral-qr": "node scripts/generate-referral-qr.js",
@@ -55,6 +56,7 @@
     "pdfkit": "0.13.0",
     "pg": "^8.16.0",
     "qrcode": "^1.5.3",
+    "sharp": "^0.33.3",
     "stripe": "^18.2.1",
     "uuid": "^11.1.0"
   },
@@ -65,6 +67,7 @@
     "eslint": "^9.28.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-jsdoc": "^51.1.1",
+    "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^7.2.1",
     "globals": "^16.2.0",
     "htmlparser2": "^9.0.0",

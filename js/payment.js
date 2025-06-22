@@ -568,9 +568,9 @@ async function initPaymentPage() {
     } else {
       const qty = Math.max(1, parseInt(qtySelect?.value || "2", 10));
       let total = selectedPrice * qty;
-      if (qty === 2) {
-        total -= TWO_PRINT_DISCOUNT;
-      }
+        if (qty > 1) {
+          total -= TWO_PRINT_DISCOUNT;
+        }
       payBtn.textContent = `Pay £${(total / 100).toFixed(2)} (${qty} prints)`;
     }
   }
@@ -633,7 +633,7 @@ async function initPaymentPage() {
   qtyInc?.addEventListener("click", () => {
     if (!qtySelect) return;
     let val = parseInt(qtySelect.value, 10) || 1;
-    val = Math.min(5, val + 1);
+    val = Math.max(1, val + 1);
     qtySelect.value = String(val);
     qtySelect.dispatchEvent(new Event("change"));
   });
@@ -645,23 +645,25 @@ async function initPaymentPage() {
         colorMenu.classList.remove("hidden");
       }
     });
-    colorMenu.addEventListener("click", (ev) => {
+    const handleColorSelect = (ev) => {
       const btn = ev.target.closest("button[data-color]");
-      if (btn) {
-        // Prevent click from bubbling and reopening the menu
-        ev.stopPropagation();
-        const color = btn.dataset.color;
-        singleButton.style.backgroundColor = color;
+      if (!btn) return;
+      // Prevent default label behaviour which could reopen the menu
+      ev.preventDefault();
+      ev.stopPropagation();
+      const color = btn.dataset.color;
+      singleButton.style.backgroundColor = color;
 
-        singleButton.style.borderColor = SINGLE_BORDER_COLOR;
+      singleButton.style.borderColor = SINGLE_BORDER_COLOR;
 
-        const factor = hexToFactor(color);
-        if (factor) applyModelColor(factor);
-        localStorage.setItem("print3Color", color);
-        localStorage.setItem("print3Material", "single");
-        colorMenu.classList.add("hidden");
-      }
-    });
+      const factor = hexToFactor(color);
+      if (factor) applyModelColor(factor);
+      localStorage.setItem("print3Color", color);
+      localStorage.setItem("print3Material", "single");
+      colorMenu.classList.add("hidden");
+    };
+    colorMenu.addEventListener("pointerdown", handleColorSelect);
+    colorMenu.addEventListener("click", handleColorSelect);
   }
   updatePayButton();
   updatePopularMessage();
@@ -954,7 +956,7 @@ async function initPaymentPage() {
         selectedPrice * (flashSale.discount_percent / 100),
       );
     }
-    if (qty === 2) {
+    if (qty > 1) {
       discount += TWO_PRINT_DISCOUNT;
     }
     const shippingInfo = {

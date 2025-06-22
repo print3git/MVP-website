@@ -109,6 +109,7 @@
         overflow-y: hidden;
         padding: 0;
         line-height: 1.75rem;
+        max-height: calc(1.75rem * 4);
       }
       /*
         Remove the pseudo-element and animation that created the
@@ -139,7 +140,6 @@
       .purchase-fade {
         animation: purchaseFade 8s forwards;
       }
-
     </style>
   </head>
 
@@ -406,9 +406,10 @@
             </div>
             <button
               id="submit-button"
-              aria-label="Generate"
-              class="w-12 h-12 flex items-center justify-center bg-white rounded-full transition-shape"
+              aria-label="Generate model"
+              class="flex items-center justify-center gap-2 bg-white rounded-full px-4 py-2 transition-shape"
             >
+              <span class="text-[#1A1A1D] font-semibold">Generate model</span>
               <i
                 id="submit-icon"
                 class="fas fa-arrow-up text-xl text-[#1A1A1D]"
@@ -477,9 +478,10 @@
         </button>
         <h2 class="text-xl font-semibold mb-2 text-white">Wait!</h2>
         <p class="mb-4 text-gray-200">
-          Use code <span class="text-white font-mono px-1">SAVE5</span> for 5% off.
+          Use code <span class="text-white font-mono px-1">SAVE5</span> for 5%
+          off.
         </p>
-    </div>
+      </div>
     </div>
 
     <div
@@ -618,6 +620,5 @@
       class="fixed bottom-28 left-4 bg-black/80 text-white px-3 py-1 rounded hidden opacity-0 text-sm flex items-center space-x-2"
     ></div>
     <img src="/pixel" alt="" width="1" height="1" style="display: none" />
-
   </body>
 </html>
