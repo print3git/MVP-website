@@ -13,14 +13,14 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
-      - run: npm ci --prefix backend
+      - run: npm install --no-audit --no-fund --prefix backend
       - run: |
           if [ -f backend/hunyuan_server/package.json ]; then
-            npm ci --prefix backend/hunyuan_server
+            npm install --no-audit --no-fund --prefix backend/hunyuan_server
           fi
       - run: npm install -g netlify-cli
-      - name: Deploy preview
-        id: netlify
+      - name: Deploy to Netlify
+        if: env.NETLIFY_AUTH_TOKEN != '' && env.NETLIFY_SITE_ID != ''
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}

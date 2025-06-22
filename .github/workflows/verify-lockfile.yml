@@ -28,7 +28,7 @@ jobs:
           node-version: 20
 
       # Install dependencies without auditing and without funding messages
-      - run: npm ci --no-audit --no-fund
+      - run: npm install --no-audit --no-fund
 
       # Regenerate the lockfile without modifying node_modules
       - run: npm install --package-lock-only

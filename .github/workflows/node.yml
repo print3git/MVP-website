@@ -23,13 +23,13 @@ jobs:
           cache: 'npm'
           cache-dependency-path: 'backend/package-lock.json'
 
-      - run: npm ci
+      - run: npm install --no-audit --no-fund
         working-directory: backend
 
       - name: Install hunyuan_server deps (if exists)
         if: ${{ hashFiles('backend/hunyuan_server/package.json') != '' }}
         working-directory: backend/hunyuan_server
-        run: npm ci
+        run: npm install --no-audit --no-fund
 
       - run: npm run lint
         working-directory: backend
