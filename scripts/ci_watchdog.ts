@@ -1,12 +1,11 @@
 /* eslint-disable */
 import { Octokit } from "@octokit/action";
 import { execSync } from "node:child_process";
-import fs from "node:fs";
+import fs from "node:fs/promises";
 import path from "node:path";
 
 const octo = new Octokit();
-const repoSlug = process.env.GITHUB_REPOSITORY || "";
-const [owner, repo] = repoSlug.split("/");
+const [owner, repo] = process.env.GITHUB_REPOSITORY!.split("/");
 
 const WINDOW_HOURS = 4;
 const MIN_HITS = 5;
@@ -57,12 +56,15 @@ async function handleCluster(slug: string, cluster: Cluster) {
   let changed = false;
   if (cluster.msg.includes("npm ci can only install packages")) {
     console.log("Patching npm ci → npm install");
-    changed ||= patchFiles(/npm ci --no-audit --no-fund/g,
-                           "npm install --no-audit --no-fund");
+    changed ||= await patchFiles(
+      /npm ci --no-audit --no-fund/g,
+      "npm install --no-audit --no-fund",
+    );
   }
   if (cluster.msg.includes("Unauthorized: could not retrieve project")) {
     console.log("Adding secret guard to Netlify step");
-    changed ||= patchFiles(/netlify deploy [^\n]+/g,
+    changed ||= await patchFiles(
+      /netlify deploy [^\n]+/g,
 `if [[ -n "$NETLIFY_AUTH_TOKEN" && -n "$NETLIFY_SITE_ID" ]]; then
   netlify deploy --dir=. --site $NETLIFY_SITE_ID --auth $NETLIFY_AUTH_TOKEN --json > deploy.json
   echo "PREVIEW_URL=$(jq -r '.deploy_url' deploy.json)" >> $GITHUB_ENV
@@ -92,24 +94,27 @@ fi`);
   });
 }
 
-function patchFiles(pattern: RegExp, replacement: string) {
-  const files = ["Dockerfile", ...globWalk(".github/workflows", ".yml")];
+async function patchFiles(pattern: RegExp, replacement: string) {
+  const files = ["Dockerfile", ...(await globWalk(".github/workflows", ".yml"))];
   let altered = false;
   for (const f of files) {
-    const txt = fs.readFileSync(f, "utf8");
+    const txt = await fs.readFile(f, "utf8");
     if (pattern.test(txt)) {
-      fs.writeFileSync(f, txt.replace(pattern, replacement));
+      await fs.writeFile(f, txt.replace(pattern, replacement));
       altered = true;
     }
   }
   return altered;
 }
 
-function globWalk(dir: string, ext: string, out: string[] = []) {
-  for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+async function globWalk(dir: string, ext: string, out: string[] = []) {
+  for (const e of await fs.readdir(dir, { withFileTypes: true })) {
     const p = path.join(dir, e.name);
-    e.isDirectory() ? globWalk(p, ext, out)
-                    : e.name.endsWith(ext) && out.push(p);
+    if (e.isDirectory()) {
+      await globWalk(p, ext, out);
+    } else if (e.name.endsWith(ext)) {
+      out.push(p);
+    }
   }
   return out;
 }
