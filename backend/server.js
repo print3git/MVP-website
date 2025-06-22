@@ -848,16 +848,20 @@ app.get("/api/subscription/credits", authRequired, async (req, res) => {
 app.get("/api/subscription/summary", authRequired, async (req, res) => {
   try {
     await db.ensureCurrentWeekCredits(req.user.id, 2);
-    const [sub, credits] = await Promise.all([
+    const [sub, credits, months] = await Promise.all([
       db.getSubscription(req.user.id),
       db.getCurrentWeekCredits(req.user.id),
+      db.getSubscriptionDurationMonths(req.user.id),
     ]);
+    const milestone = months >= 12 ? 12 : months >= 6 ? 6 : months >= 3 ? 3 : 0;
     res.json({
       subscription: sub || { active: false },
       credits: {
         remaining: credits.total_credits - credits.used_credits,
         total: credits.total_credits,
       },
+      months_subscribed: months,
+      milestone,
     });
   } catch (err) {
     logError(err);
@@ -1088,6 +1092,27 @@ app.post("/api/rewards/redeem", authRequired, async (req, res) => {
   } catch (err) {
     logError(err);
     res.status(500).json({ error: "Failed to redeem reward" });
+  }
+});
+
+app.get("/api/leaderboard", async (req, res) => {
+  const limit = parseInt(req.query.limit, 10) || 10;
+  try {
+    const board = await db.getLeaderboard(limit);
+    res.json(board);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: "Failed to fetch leaderboard" });
+  }
+});
+
+app.get("/api/achievements", authRequired, async (req, res) => {
+  try {
+    const achievements = await db.getAchievements(req.user.id);
+    res.json({ achievements });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: "Failed to fetch achievements" });
   }
 });
 
