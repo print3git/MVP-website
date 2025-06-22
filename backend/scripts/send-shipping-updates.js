@@ -8,7 +8,7 @@ async function run() {
   await client.connect();
   try {
     const { rows } = await client.query(
-      `SELECT session_id, carrier, tracking_number, email, username
+      `SELECT session_id, carrier, tracking_number, o.is_gift, email, username
          FROM orders o
          JOIN users u ON o.user_id=u.id
         WHERE o.status='shipped'
@@ -31,6 +31,25 @@ async function run() {
             status,
           },
         );
+        if (row.is_gift) {
+          const giftRes = await client.query(
+            `SELECT recipient_email FROM gifts WHERE order_id=$1 AND claimed_at IS NOT NULL`,
+            [row.session_id],
+          );
+          const gift = giftRes.rows[0];
+          if (gift && gift.recipient_email) {
+            await sendTemplate(
+              gift.recipient_email,
+              `Package update: ${status}`,
+              "shipping_update.txt",
+              {
+                username: "friend",
+                order_id: row.session_id,
+                status,
+              },
+            );
+          }
+        }
         if (status.toLowerCase() === "delivered") {
           await client.query(
             "UPDATE orders SET status='delivered' WHERE session_id=$1",

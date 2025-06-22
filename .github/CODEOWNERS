@@ -1,1 +1,14 @@
-@print3git
+# Default owner for everything
+* @print3git
+
+# Frontend HTML pages
+/*.html @print3git
+
+# General backend code
+/backend/ @print3git
+
+# Hunyuan3D API server
+/backend/hunyuan_server/ @print3git
+
+# GitHub workflows
+.github/workflows/ @print3git
