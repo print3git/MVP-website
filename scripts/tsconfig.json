@@ -2,7 +2,8 @@
   "compilerOptions": {
     "target": "ES2022",
     "module": "CommonJS",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "types": ["node"]
   },
   "files": ["ci_watchdog.ts"]
 }
