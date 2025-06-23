@@ -54,11 +54,17 @@
             stroke-width="2"
             viewBox="0 0 24 24"
           >
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M15 19l-7-7 7-7"
+            />
           </svg>
           Back
         </a>
-        <h1 class="flex-1 text-center text-3xl font-semibold">Community Creations</h1>
+        <h1 class="flex-1 text-center text-3xl font-semibold">
+          Community Creations
+        </h1>
         <a
           href="earn-rewards.html"
           id="earn-rewards-badge"
@@ -154,7 +160,10 @@
       <!-- Popular Creations -->
       <section class="mb-12">
         <h2 class="text-xl font-semibold mb-4">Bestselling</h2>
-        <div id="popular-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
+        <div
+          id="popular-grid"
+          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
+        ></div>
         <div id="popular-sentinel" class="h-8"></div>
         <button
           id="popular-load"
@@ -167,7 +176,10 @@
       <!-- Recent Creations -->
       <section>
         <h2 class="text-xl font-semibold mb-4">Recent</h2>
-        <div id="recent-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
+        <div
+          id="recent-grid"
+          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
+        ></div>
         <div id="recent-sentinel" class="h-8"></div>
         <button
           id="recent-load"
@@ -265,12 +277,28 @@
         >
           Add to Basket
         </button>
-        <div id="modal-copy-container" class="absolute bottom-4 left-40 flex items-center gap-2">
-          <button id="modal-copy-link" class="font-bold py-2 px-4 rounded-full shadow-md bg-[#2A2A2E] border border-white/20">Share</button>
-          <span id="modal-copy-msg" class="ml-2 text-sm opacity-0 transition-opacity">Link copied</span>
+        <div
+          id="modal-copy-container"
+          class="absolute bottom-4 left-40 flex items-center gap-2"
+        >
+          <button
+            id="modal-copy-link"
+            aria-label="Copy referral link"
+            class="w-9 h-9 flex items-center justify-center bg-[#2A2A2E] border border-white/20 rounded-full hover:bg-[#3A3A3E] transition-shape"
+          >
+            <i class="fas fa-share"></i>
+          </button>
+          <span
+            id="modal-copy-msg"
+            class="ml-2 text-sm opacity-0 transition-opacity"
+            >Link copied</span
+          >
         </div>
         <div class="bg-[#2A2A2E] p-4 rounded-b-xl">
-          <ul id="comments-list" class="space-y-1 max-h-48 overflow-y-auto text-sm"></ul>
+          <ul
+            id="comments-list"
+            class="space-y-1 max-h-48 overflow-y-auto text-sm"
+          ></ul>
           <div id="comment-form" class="flex gap-2 mt-2">
             <input
               type="text"
@@ -278,7 +306,9 @@
               placeholder="Add a comment..."
               class="flex-1 bg-[#1A1A1D] border border-white/20 rounded px-2 py-1"
             />
-            <button id="comment-submit" class="px-3 py-1 bg-blue-600 rounded">Post</button>
+            <button id="comment-submit" class="px-3 py-1 bg-blue-600 rounded">
+              Post
+            </button>
           </div>
         </div>
       </div>
@@ -293,46 +323,52 @@
       } from './js/community.js';
       window.shareOn = shareOn;
 
-      document.addEventListener('DOMContentLoaded', () => {
-        const modal = document.getElementById('model-modal');
-        const checkoutBtn = document.getElementById('modal-checkout');
-        const addBasketBtn = document.getElementById('modal-add-basket');
-        const closeBtn = document.getElementById('close-modal');
-        const tierToggle = document.getElementById('tier-toggle');
+      document.addEventListener("DOMContentLoaded", () => {
+        const modal = document.getElementById("model-modal");
+        const checkoutBtn = document.getElementById("modal-checkout");
+        const addBasketBtn = document.getElementById("modal-add-basket");
+        const closeBtn = document.getElementById("close-modal");
+        const tierToggle = document.getElementById("tier-toggle");
 
         function setTier(tier) {
-          tierToggle?.querySelectorAll('button[data-tier]').forEach((btn) => {
+          tierToggle?.querySelectorAll("button[data-tier]").forEach((btn) => {
             const active = btn.dataset.tier === tier;
 
-            btn.classList.toggle('ring-2', active);
-            btn.classList.toggle('ring-white', active);
-            btn.classList.toggle('opacity-100', active);
-            btn.classList.toggle('opacity-50', !active);
+            btn.classList.toggle("ring-2", active);
+            btn.classList.toggle("ring-white", active);
+            btn.classList.toggle("opacity-100", active);
+            btn.classList.toggle("opacity-50", !active);
           });
           if (checkoutBtn) {
-            const price = tier === 'bronze' ? 29.99 : tier === 'gold' ? 79.99 : 39.99;
+            const price =
+              tier === "bronze" ? 29.99 : tier === "gold" ? 79.99 : 39.99;
             checkoutBtn.textContent = `Print for £${price.toFixed(2)} →`;
           }
-          const material = tier === 'bronze' ? 'single' : tier === 'gold' ? 'premium' : 'multi';
-          localStorage.setItem('print3Material', material);
+          const material =
+            tier === "bronze"
+              ? "single"
+              : tier === "gold"
+                ? "premium"
+                : "multi";
+          localStorage.setItem("print3Material", material);
         }
 
-        tierToggle?.addEventListener('click', (ev) => {
-          const btn = ev.target.closest('button[data-tier]');
+        tierToggle?.addEventListener("click", (ev) => {
+          const btn = ev.target.closest("button[data-tier]");
           if (btn) setTier(btn.dataset.tier);
         });
 
         const close = closeModel;
 
-        checkoutBtn.addEventListener('click', () => {
-          sessionStorage.setItem('fromCommunity', '1');
+        checkoutBtn.addEventListener("click", () => {
+          sessionStorage.setItem("fromCommunity", "1");
           const model = checkoutBtn.dataset.model;
           const job = checkoutBtn.dataset.job;
-          if (model) localStorage.setItem('print3Model', model);
-          if (job) localStorage.setItem('print3JobId', job);
+          if (model) localStorage.setItem("print3Model", model);
+          if (job) localStorage.setItem("print3JobId", job);
         });
 
-        addBasketBtn?.addEventListener('click', () => {
+        addBasketBtn?.addEventListener("click", () => {
           if (!window.addToBasket) return;
           const model = addBasketBtn.dataset.model;
           const job = addBasketBtn.dataset.job;
@@ -341,6 +377,7 @@
             window.addToBasket({ jobId: job, modelUrl: model, snapshot });
           }
         });
+
 
         const copyBtn = document.getElementById('modal-copy-link');
         const copyMsg = document.getElementById('modal-copy-msg');
@@ -362,31 +399,27 @@
               }, 2000);
             }
           });
-        });
-        if (help && tooltip) {
-          ['mouseenter', 'focus'].forEach((ev) =>
-            help.addEventListener(ev, () => tooltip.classList.remove('hidden'))
-          );
-          ['mouseleave', 'blur'].forEach((ev) =>
-            help.addEventListener(ev, () => tooltip.classList.add('hidden'))
-          );
-        }
 
-        closeBtn.addEventListener('click', close);
-        document.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape') close();
         });
 
-        document.addEventListener('click', (e) => {
-          if (modal.classList.contains('hidden')) return;
-          const container = modal.querySelector('div');
-          const basketBtn = document.getElementById('basket-button');
-          if (!container.contains(e.target) && !(basketBtn && basketBtn.contains(e.target))) {
+        closeBtn.addEventListener("click", close);
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape") close();
+        });
+
+        document.addEventListener("click", (e) => {
+          if (modal.classList.contains("hidden")) return;
+          const container = modal.querySelector("div");
+          const basketBtn = document.getElementById("basket-button");
+          if (
+            !container.contains(e.target) &&
+            !(basketBtn && basketBtn.contains(e.target))
+          ) {
             close();
           }
         });
 
-        setTier('silver');
+        setTier("silver");
         init();
         restoreOpenModel();
       });
@@ -398,7 +431,8 @@
       <div class="bg-[#2A2A2E] p-6 rounded-xl max-w-sm text-center">
         <h2 class="text-2xl font-semibold mb-2">print2 pro</h2>
         <p class="mb-4">
-          Get two prints (single or multicolour tiers) every week for £149.99/month.
+          Get two prints (single or multicolour tiers) every week for
+          £149.99/month.
         </p>
         <button
           id="printclub-close"

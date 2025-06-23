@@ -1538,6 +1538,37 @@ app.get("/community/model/:id", async (req, res) => {
   }
 });
 
+app.get("/item/:id", async (req, res) => {
+  try {
+    const { rows } = await db.query(
+      `SELECT c.title, j.prompt
+       FROM community_creations c
+       JOIN jobs j ON c.job_id=j.job_id
+       WHERE c.id=$1`,
+      [req.params.id],
+    );
+    if (!rows.length) return res.status(404).send("Not found");
+    const prompt = rows[0].title || rows[0].prompt || "Community model";
+    const ogImage = `${req.protocol}://${req.get("host")}/img/boxlogo.png`;
+    res.send(`<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta property="og:title" content="print3 model" />
+    <meta property="og:description" content="${prompt.replace(/"/g, "&quot;")}" />
+    <meta property="og:image" content="${ogImage}" />
+    <meta property="og:url" content="${req.protocol}://${req.get("host")}/item/${req.params.id}" />
+  </head>
+  <body>
+    <script>window.location='/share.html?community=${req.params.id}'</script>
+  </body>
+</html>`);
+  } catch (err) {
+    logError(err);
+    res.status(500).send("Server error");
+  }
+});
+
 // Submit a generated model to the community gallery
 app.post("/api/community", authRequired, async (req, res) => {
   const { jobId, title, category } = req.body;
