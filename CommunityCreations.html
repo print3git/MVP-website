@@ -285,7 +285,12 @@
     </div>
     <script type="module">
       import { shareOn } from './js/share.js';
-      import { init, closeModel, restoreOpenModel } from './js/community.js';
+      import {
+        init,
+        closeModel,
+        restoreOpenModel,
+        getReferralCode,
+      } from './js/community.js';
       window.shareOn = shareOn;
 
       document.addEventListener('DOMContentLoaded', () => {
@@ -341,10 +346,12 @@
         const copyMsg = document.getElementById('modal-copy-msg');
         const help = document.getElementById('modal-copy-help');
         const tooltip = document.getElementById('modal-copy-tooltip');
-        copyBtn?.addEventListener('click', () => {
+        copyBtn?.addEventListener('click', async () => {
           const id = copyBtn.dataset.id;
           if (!id) return;
-          const url = `${window.location.origin}/community/model/${id}`;
+          const code = await getReferralCode();
+          const url = `${window.location.origin}/community/model/${id}$
+            {code ? `?ref=${encodeURIComponent(code)}` : ''}`;
           navigator.clipboard.writeText(url).then(() => {
             if (copyMsg) {
               copyMsg.classList.remove('opacity-0');

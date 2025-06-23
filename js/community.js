@@ -4,6 +4,30 @@ const API_BASE = (window.API_ORIGIN || '') + '/api';
 
 const OPEN_KEY = 'print3CommunityOpen';
 
+let referralCode = null;
+async function getReferralCode() {
+  if (referralCode !== null) return referralCode;
+  const token = localStorage.getItem('token');
+  if (!token) {
+    referralCode = '';
+    return referralCode;
+  }
+  try {
+    const res = await fetch(`${API_BASE}/referral-link`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (res.ok) {
+      const data = await res.json();
+      referralCode = data.code || '';
+    } else {
+      referralCode = '';
+    }
+  } catch {
+    referralCode = '';
+  }
+  return referralCode;
+}
+
 function like(id) {
   const token = localStorage.getItem('token');
   if (!token) {
@@ -415,4 +439,4 @@ function init() {
   renderGrid('recent');
 }
 
-export { like, init, closeModel, restoreOpenModel };
+export { like, init, closeModel, restoreOpenModel, getReferralCode };

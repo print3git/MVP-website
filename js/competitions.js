@@ -239,6 +239,7 @@ function openModelModal(url, jobId, snapshot) {
   const viewer = modalEl.querySelector('model-viewer');
   const checkoutBtn = document.getElementById('modal-checkout');
   const addBasketBtn = document.getElementById('modal-add-basket');
+  const copyBtn = document.getElementById('modal-copy-link');
   viewer.setAttribute('poster', snapshot || '');
   viewer.setAttribute('fetchpriority', 'high');
   viewer.setAttribute('loading', 'eager');
@@ -251,6 +252,9 @@ function openModelModal(url, jobId, snapshot) {
     addBasketBtn.dataset.model = url;
     addBasketBtn.dataset.job = jobId;
     if (snapshot) addBasketBtn.dataset.snapshot = snapshot;
+  }
+  if (copyBtn) {
+    copyBtn.dataset.job = jobId;
   }
   modalEl.classList.remove('hidden');
   document.body.classList.add('overflow-hidden');
