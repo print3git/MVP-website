@@ -2,7 +2,7 @@
 
 # -------- builder stage
 FROM node:20 AS builder
-RUN corepack enable && corepack prepare pnpm@8.15.4 --activate
+RUN corepack enable && corepack prepare pnpm@10.5.2 --activate
 
 ARG HTTP_PROXY
 ARG HTTPS_PROXY
@@ -70,7 +70,7 @@ RUN pnpm prune --prod \
 
 # -------- runtime stage
 FROM node:20
-RUN corepack enable && corepack prepare pnpm@8.15.4 --activate
+RUN corepack enable && corepack prepare pnpm@10.5.2 --activate
 
 ARG HTTP_PROXY
 ARG HTTPS_PROXY
