@@ -36,6 +36,8 @@ async function processThumbnail(fileBuffer) {
         right: 400 - width,
         background: { r: 0, g: 0, b: 0, alpha: 0 },
       })
+      // Keep thumbnails crisp
+      .sharpen()
       .flatten({ background: "#1e1e1e" })
       .jpeg({ quality: 80 });
 
