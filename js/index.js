@@ -677,24 +677,22 @@ function renderThumbnails(arr) {
 
 function getThumbnail(file) {
   return new Promise((res) => {
-    const R = new FileReader();
-    R.onload = () => {
-      const im = new Image();
-      im.onload = () => {
-        let [w, h] = [im.width, im.height],
-          max = 200,
-          r = Math.min(max / w, max / h, 1);
-        w *= r;
-        h *= r;
-        const c = document.createElement("canvas");
-        c.width = w;
-        c.height = h;
-        c.getContext("2d").drawImage(im, 0, 0, w, h);
-        res(c.toDataURL("image/png", 0.7));
-      };
-      im.src = R.result;
+    const url = URL.createObjectURL(file);
+    const im = new Image();
+    im.onload = () => {
+      let [w, h] = [im.width, im.height],
+        max = 200,
+        r = Math.min(max / w, max / h, 1);
+      w *= r;
+      h *= r;
+      const c = document.createElement("canvas");
+      c.width = w;
+      c.height = h;
+      c.getContext("2d").drawImage(im, 0, 0, w, h);
+      URL.revokeObjectURL(url);
+      res(c.toDataURL("image/png", 0.7));
     };
-    R.readAsDataURL(file);
+    im.src = url;
   });
 }
 
@@ -702,6 +700,9 @@ async function processFiles(files) {
   if (!files.length) return;
 
   uploadedFiles = [...files];
+  const previewUrls = uploadedFiles.map((f) => URL.createObjectURL(f));
+  renderThumbnails(previewUrls);
+
   const thumbs = await Promise.all(uploadedFiles.map((f) => getThumbnail(f)));
 
   try {
@@ -709,7 +710,6 @@ async function processFiles(files) {
   } catch {
     /* ignore storage errors */
   }
-  renderThumbnails(thumbs);
   editsPending = true;
   refs.buyNowBtn?.classList.add("hidden");
   setStep("prompt");
