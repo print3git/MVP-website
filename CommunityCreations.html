@@ -315,7 +315,12 @@
     </div>
     <script type="module">
       import { shareOn } from "./js/share.js";
-      import { init, closeModel, restoreOpenModel } from "./js/community.js";
+      import {
+        init,
+        closeModel,
+        restoreOpenModel,
+        copyReferral,
+      } from "./js/community.js";
       window.shareOn = shareOn;
 
       document.addEventListener("DOMContentLoaded", () => {
@@ -375,27 +380,6 @@
 
         const copyBtn = document.getElementById("modal-copy-link");
         const copyMsg = document.getElementById("modal-copy-msg");
-        const API_BASE = (window.API_ORIGIN || "") + "/api";
-
-        async function copyReferral(id) {
-          let ref = "";
-          const token = localStorage.getItem("token");
-          if (token) {
-            try {
-              const res = await fetch(`${API_BASE}/referral-link`, {
-                headers: { Authorization: `Bearer ${token}` },
-              });
-              if (res.ok) {
-                const d = await res.json();
-                ref = `?ref=${encodeURIComponent(d.code)}`;
-              }
-            } catch (err) {
-              console.error("Failed to fetch referral", err);
-            }
-          }
-          const url = `${window.location.origin}/item/${id}${ref}`;
-          await navigator.clipboard.writeText(url);
-        }
 
         copyBtn?.addEventListener("click", async () => {
           const id = copyBtn.dataset.id;
