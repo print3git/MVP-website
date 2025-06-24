@@ -223,6 +223,7 @@ function setStep(name) {
 
 window.shareOn = shareOn;
 let uploadedFiles = [];
+let previewUrls = [];
 let lastJobId = null;
 
 let savedProfile = null;
@@ -632,6 +633,8 @@ function renderThumbnails(arr) {
   refs.imagePreviewArea.innerHTML = "";
   if (!arr.length) {
     refs.imagePreviewArea.classList.add("hidden");
+    previewUrls.forEach((u) => URL.revokeObjectURL(u));
+    previewUrls = [];
     syncUploadHeights();
     return;
   }
@@ -657,8 +660,12 @@ function renderThumbnails(arr) {
     btn.className =
       "absolute top-2 right-2 w-6 h-6 rounded-full bg-white text-black border border-black flex items-center justify-center z-20";
     btn.onclick = () => {
-      arr.splice(i, 1);
+      const [removed] = arr.splice(i, 1);
       uploadedFiles.splice(i, 1);
+      if (arr === previewUrls) {
+        URL.revokeObjectURL(removed);
+        previewUrls = [...arr];
+      }
       try {
         localStorage.setItem("print3Images", JSON.stringify(arr));
       } catch {
@@ -702,7 +709,6 @@ function getThumbnail(file) {
         res(c.toDataURL("image/jpeg", 0.7));
       };
       im.src = R.result;
-
     };
     im.src = url;
   });
@@ -712,7 +718,8 @@ async function processFiles(files) {
   if (!files.length) return;
 
   uploadedFiles = [...files];
-  const previewUrls = uploadedFiles.map((f) => URL.createObjectURL(f));
+  previewUrls.forEach((u) => URL.revokeObjectURL(u));
+  previewUrls = uploadedFiles.map((f) => URL.createObjectURL(f));
   renderThumbnails(previewUrls);
 
   const thumbs = await Promise.all(uploadedFiles.map((f) => getThumbnail(f)));
