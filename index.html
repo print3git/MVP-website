@@ -140,6 +140,15 @@
       .purchase-fade {
         animation: purchaseFade 8s forwards;
       }
+      .thumbnail-wrapper img {
+        transition:
+          transform 0.2s ease,
+          filter 0.2s ease;
+      }
+      .thumbnail-wrapper:hover img {
+        transform: scale(1.1);
+        filter: url(#thumb-sharp);
+      }
     </style>
   </head>
 
@@ -619,6 +628,15 @@
       id="purchase-popups"
       class="fixed bottom-28 left-4 bg-black/80 text-white px-3 py-1 rounded hidden opacity-0 text-sm flex items-center space-x-2"
     ></div>
+    <svg xmlns="http://www.w3.org/2000/svg" class="hidden">
+      <filter id="thumb-sharp">
+        <feConvolveMatrix
+          order="3"
+          kernelMatrix="0 -1 0 -1 5 -1 0 -1 0"
+          divisor="1"
+        />
+      </filter>
+    </svg>
     <img src="/pixel" alt="" width="1" height="1" style="display: none" />
   </body>
 </html>
