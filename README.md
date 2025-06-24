@@ -203,6 +203,9 @@ Models can be shared publicly via unique slugs.
 - `GET /api/shared/:slug` – retrieve metadata for a shared model.
 - Visiting `/shared/:slug` returns an HTML page with Open Graph meta tags that
   redirect to `share.html` for viewing.
+- Item cards in **Community Creations** now include a share icon that copies a
+  referral link like `https://prints3.com/item/<ID>?ref=<CODE>` to the clipboard.
+  Signups via this link grant both parties a £3 discount code.
 
 ## Model Lists
 
@@ -311,7 +314,6 @@ CI runs `npm run deps:dedupe-check` which executes `pnpm dedupe --check` to
 ensure no duplicate packages remain in the lockfiles. Run `npm run deps:dedupe`
 locally to automatically deduplicate.
 
-
 ## Deployment
 
 Before deploying with the Netlify CLI, run the helper script to verify that your
@@ -326,4 +328,3 @@ If either variable is missing, deployment stops with a clear error.
 
 Install the Netlify CLI globally (`npm install -g netlify-cli`) and then invoke
 `netlify deploy` as usual once the preflight passes.
-

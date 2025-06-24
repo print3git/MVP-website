@@ -992,9 +992,13 @@ app.post("/api/referral-signup", async (req, res) => {
     const referrer = await db.getUserIdForReferral(code);
     if (!referrer) return res.status(404).json({ error: "Invalid code" });
     await db.insertReferralEvent(referrer, "signup");
-    await db.adjustRewardPoints(referrer, 10);
-    const discountCode = await createTimedCode(500, 168);
-    res.json({ code: discountCode });
+    const refCode = await createTimedCode(300, 168);
+    await db.query("INSERT INTO incentives(user_id, type) VALUES($1,$2)", [
+      referrer,
+      `referral_${refCode}`,
+    ]);
+    const newUserCode = await createTimedCode(300, 168);
+    res.json({ code: newUserCode });
   } catch (err) {
     logError(err);
     res.status(500).json({ error: "Failed to record signup" });

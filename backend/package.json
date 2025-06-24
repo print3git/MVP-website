@@ -4,7 +4,7 @@
   "main": "server.js",
   "scripts": {
     "test": "jest",
-    "test-ci": "jest --ci --coverage --collectCoverageFrom='backend/**/*.{js,jsx,ts,tsx}' --maxWorkers=2 --detectOpenHandles --forceExit",
+    "test-ci": "jest --ci --coverage --collectCoverageFrom=\"**/*.{js,jsx,ts,tsx}\" --maxWorkers=2 --forceExit",
     "coverage": "jest --ci --coverage --maxWorkers=2 --detectOpenHandles --forceExit && npx coverage-badges-cli --source coverage/coverage-summary.json --output coverage/badge.svg",
     "start": "node server.js",
     "init-db": "node scripts/init-db.js",
@@ -78,7 +78,8 @@
     "jsdom": "^26.1.0",
     "lighthouse": "^12.6.1",
     "prettier": "^3.1.0",
-    "supertest": "^7.1.1"
+    "supertest": "^7.1.1",
+    "tslib": "^2.8.1"
   },
   "engines": {
     "node": ">=18"
