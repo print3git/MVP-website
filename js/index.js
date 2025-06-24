@@ -1031,6 +1031,7 @@ async function init() {
         body: JSON.stringify({ sessionId, modelId: item.jobId, subreddit }),
       }).catch(() => {});
     }
+    // Briefly animate the floating basket icon
     const basketBtn = document.getElementById("basket-button");
     if (basketBtn) {
       basketBtn.classList.add("basket-bob");
