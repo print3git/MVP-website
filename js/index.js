@@ -641,12 +641,10 @@ function renderThumbnails(arr) {
     // Make the wrapper fill the preview container so images and
     // buttons are sized relative to it rather than their natural
     // dimensions. This avoids oversized previews in Safari on iPad.
-    wrap.className = "relative w-full h-full";
+    wrap.className = "thumbnail-wrapper relative w-full h-full overflow-hidden";
     const img = document.createElement("img");
     img.src = url;
-    // Use object-contain so tall images fit within the square thumbnail
-    // without overflowing in Safari on iPad.
-    img.className = "object-contain w-full h-full rounded-md shadow-md";
+    img.className = "w-full h-full rounded-md shadow-md";
     wrap.appendChild(img);
 
     const btn = document.createElement("button");
@@ -677,20 +675,34 @@ function renderThumbnails(arr) {
 
 function getThumbnail(file) {
   return new Promise((res) => {
-    const url = URL.createObjectURL(file);
-    const im = new Image();
-    im.onload = () => {
-      let [w, h] = [im.width, im.height],
-        max = 200,
-        r = Math.min(max / w, max / h, 1);
-      w *= r;
-      h *= r;
-      const c = document.createElement("canvas");
-      c.width = w;
-      c.height = h;
-      c.getContext("2d").drawImage(im, 0, 0, w, h);
-      URL.revokeObjectURL(url);
-      res(c.toDataURL("image/png", 0.7));
+    const R = new FileReader();
+    R.onload = () => {
+      const im = new Image();
+      im.onload = () => {
+        const size = 200;
+        const c = document.createElement("canvas");
+        c.width = size;
+        c.height = size;
+        const ctx = c.getContext("2d");
+        ctx.fillStyle = "#1e1e1e";
+        ctx.fillRect(0, 0, size, size);
+        let sx = 0,
+          sy = 0,
+          sw = im.width,
+          sh = im.height;
+        if (im.width > im.height) {
+          sx = (im.width - im.height) / 2;
+          sw = im.height;
+        } else if (im.height > im.width) {
+          sy = (im.height - im.width) / 2;
+          sh = im.width;
+        }
+        ctx.imageSmoothingQuality = "high";
+        ctx.drawImage(im, sx, sy, sw, sh, 0, 0, size, size);
+        res(c.toDataURL("image/jpeg", 0.7));
+      };
+      im.src = R.result;
+
     };
     im.src = url;
   });

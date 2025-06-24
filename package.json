@@ -26,6 +26,7 @@
     "deps:dedupe": "pnpm dedupe",
     "deps:dedupe-check": "pnpm dedupe --check",
     "bundle:size": "size-limit",
+    "setup": "scripts/setup.sh",
     "e2e": "playwright test",
     "visual-test": "percy exec -- npm run e2e",
     "test:a11y": "playwright install chromium --with-deps && playwright test e2e/a11y.test.js",
