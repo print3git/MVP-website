@@ -1,6 +1,5 @@
 import { captureSnapshots } from './snapshot.js';
-
-const API_BASE = (window.API_ORIGIN || '') + '/api';
+import { API_BASE, authHeaders } from './api.js';
 
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -93,9 +92,7 @@ async function load() {
   const user = urlParams.get('user');
   let endpoint = `${API_BASE}/my/models`;
   if (user) endpoint = `${API_BASE}/users/${encodeURIComponent(user)}/models`;
-  const res = await fetch(endpoint, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const res = await fetch(endpoint, { headers: authHeaders() });
   const models = await res.json();
   const container = document.getElementById('models');
   container.innerHTML = '';
@@ -117,7 +114,7 @@ async function loadProfileHeader() {
   } else {
     endpoint = `${API_BASE}/profile`;
   }
-  const res = await fetch(endpoint, user ? {} : { headers: { Authorization: `Bearer ${token}` } });
+  const res = await fetch(endpoint, user ? {} : { headers: authHeaders() });
   if (!res.ok) return;
   const data = await res.json();
   document.getElementById('profile-name').textContent = data.display_name || 'Profile';

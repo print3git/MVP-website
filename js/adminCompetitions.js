@@ -6,15 +6,7 @@ function setToken(token) {
   localStorage.setItem('adminToken', token);
 }
 
-function authHeaders() {
-  const admin = localStorage.getItem('adminToken');
-  if (admin) return { 'x-admin-token': admin };
-  const user = localStorage.getItem('token');
-  if (user) return { Authorization: `Bearer ${user}` };
-  return {};
-}
-
-const API_BASE = (window.API_ORIGIN || '') + '/api';
+import { API_BASE, authHeaders } from './api.js';
 
 async function load() {
   const list = document.getElementById('list');
