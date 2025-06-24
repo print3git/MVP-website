@@ -312,7 +312,7 @@ are missing or unused.
 
 ## Package Deduplication
 
-CI runs `npm run deps:dedupe-check` which executes `pnpm dedupe --check` to
+CI runs `npm run deps:dedupe-check` which executes `npm dedupe --dry-run` to
 ensure no duplicate packages remain in the lockfiles. Run `npm run deps:dedupe`
 locally to automatically deduplicate.
 
