@@ -4,21 +4,15 @@ const API_BASE = (window.API_ORIGIN || "") + "/api";
 
 const OPEN_KEY = "print3CommunityOpen";
 
-function like(id) {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    alert("Login required");
-    return;
-  }
-  fetch(`${API_BASE}/models/${id}/like`, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${token}` },
-  })
-    .then((r) => r.json())
-    .then((d) => {
-      const span = document.querySelector(`#likes-${id}`);
-      if (span) span.textContent = d.likes;
+function saveModel(model) {
+  if (window.addSavedModel) {
+    window.addSavedModel({
+      id: model.id,
+      modelUrl: model.model_url,
+      snapshot: model.snapshot,
+      title: model.title,
     });
+  }
 }
 
 const SEARCH_DELAY = 300;
@@ -156,7 +150,6 @@ if (!getFallbackModels)
 
     return samples.slice(start, start + count).map((s, i) => ({
       model_url: `${base}/${s.name}/glTF-Binary/${s.name}.glb`,
-      likes: 0,
       id: `fallback-${start + i}`,
       job_id: `fallback-${start + i}`,
       snapshot: `${base}/${s.name}/screenshot/screenshot.${s.ext}`,
@@ -270,7 +263,7 @@ function createCard(model) {
   div.dataset.model = model.model_url;
   div.dataset.job = model.job_id;
 
-  div.innerHTML = `\n      <img src="${model.snapshot || ""}" alt="Model" loading="lazy" fetchpriority="low" class="w-full h-full object-contain pointer-events-none" />\n      <span class="sr-only">${model.title || "Model"}</span>\n      <button class="like absolute bottom-1 right-1 text-xs bg-red-600 px-1 rounded">\u2665</button>\n      <span class="absolute bottom-8 right-1 text-xs bg-black/50 px-1 rounded" id="likes-${model.id}">${model.likes}</span>\n      <button class="share absolute top-1 right-1 w-7 h-7 flex items-center justify-center bg-[#2A2A2E] border border-white/20 rounded-full hover:bg-[#3A3A3E] transition-shape"><i class="fas fa-share text-xs"></i></button>\n      <button class="purchase absolute bottom-1 left-1 font-bold text-lg py-1.5 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]" style="transform: scale(0.6); transform-origin: left bottom;">Buy from £29.99</button>`;
+  div.innerHTML = `\n      <img src="${model.snapshot || ""}" alt="Model" loading="lazy" fetchpriority="low" class="w-full h-full object-contain pointer-events-none" />\n      <span class="sr-only">${model.title || "Model"}</span>\n      <button class="save absolute bottom-1 right-1 text-xs bg-blue-600 px-1 rounded">Save</button>\n      <button class="share absolute top-1 right-1 w-7 h-7 flex items-center justify-center bg-[#2A2A2E] border border-white/20 rounded-full hover:bg-[#3A3A3E] transition-shape"><i class="fas fa-share text-xs"></i></button>\n      <button class="purchase absolute bottom-1 left-1 font-bold text-lg py-1.5 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]" style="transform: scale(0.6); transform-origin: left bottom;">Buy from £29.99</button>`;
 
   div.querySelector(".purchase").addEventListener("click", (e) => {
     e.stopPropagation();
@@ -279,10 +272,10 @@ function createCard(model) {
     localStorage.setItem("print3JobId", model.job_id);
     window.location.href = "payment.html";
   });
-  const likeBtn = div.querySelector(".like");
-  likeBtn?.addEventListener("click", (e) => {
+  const saveBtn = div.querySelector(".save");
+  saveBtn?.addEventListener("click", (e) => {
     e.stopPropagation();
-    like(model.id);
+    saveModel(model);
   });
   const shareBtn = div.querySelector(".share");
   shareBtn?.addEventListener("click", (e) => {
@@ -451,4 +444,4 @@ function init() {
   renderGrid("recent");
 }
 
-export { like, init, closeModel, restoreOpenModel, copyReferral };
+export { saveModel, init, closeModel, restoreOpenModel, copyReferral };

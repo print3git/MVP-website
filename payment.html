@@ -516,9 +516,12 @@
               Pay £39.99
             </button>
           </form>
-          <p class="mt-2 text-xs text-red-300 text-center">
-            Only <span id="slot-count" style="visibility: hidden"></span> print slots remaining
-          </p>
+        <p class="mt-2 text-xs text-red-300 text-center">
+          Only <span id="slot-count" style="visibility: hidden"></span> print slots remaining
+        </p>
+        <p id="saved-reminder" class="mt-2 text-sm text-yellow-200 text-center hidden">
+          👋 Don’t forget your saved creations
+        </p>
 
           <div class="flex justify-center gap-4 mt-4 text-2xl text-white">
             <i class="fas fa-lock" aria-label="Secure checkout"></i>
@@ -685,6 +688,15 @@
         }
       });
     </script>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const reminder = document.getElementById('saved-reminder');
+        if (reminder && window.getSavedModels && window.getSavedModels().length) {
+          reminder.classList.remove('hidden');
+        }
+      });
+    </script>
     <script type="module" src="js/basket.js" defer></script>
+    <script type="module" src="js/saveList.js" defer></script>
   </body>
 </html>
