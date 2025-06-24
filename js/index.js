@@ -719,9 +719,7 @@ async function processFiles(files) {
     ? window.requestIdleCallback
     : (cb) => setTimeout(cb, 0);
   schedule(async () => {
-    const thumbs = await Promise.all(
-      uploadedFiles.map((f) => getThumbnail(f))
-    );
+    const thumbs = await Promise.all(uploadedFiles.map((f) => getThumbnail(f)));
     try {
       localStorage.setItem("print3Images", JSON.stringify(thumbs));
     } catch {
@@ -1032,6 +1030,11 @@ async function init() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sessionId, modelId: item.jobId, subreddit }),
       }).catch(() => {});
+    }
+    const basketBtn = document.getElementById("basket-button");
+    if (basketBtn) {
+      basketBtn.classList.add("basket-bob");
+      setTimeout(() => basketBtn.classList.remove("basket-bob"), 600);
     }
   });
 
