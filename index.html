@@ -149,6 +149,18 @@
         transform: scale(1.1);
         filter: url(#thumb-sharp);
       }
+      @keyframes basketBob {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-0.25rem);
+        }
+      }
+      .basket-bob {
+        animation: basketBob 0.6s ease;
+      }
     </style>
   </head>
 
