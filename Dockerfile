@@ -2,7 +2,7 @@
 
 # -------- builder stage
 FROM node:20 AS builder
-RUN corepack enable && corepack prepare pnpm@8.15.4 --activate
+RUN corepack enable && corepack prepare pnpm@10.5.2 --activate
 
 ARG HTTP_PROXY
 ARG HTTPS_PROXY
@@ -22,37 +22,38 @@ RUN apt-get update \
 
 
 # -------- install root dependencies
-COPY package.json package-lock.json ./
+COPY package.json pnpm-lock.yaml ./
 RUN unset NPM_CONFIG_HTTP_PROXY NPM_CONFIG_HTTPS_PROXY || true \
     && npm config delete proxy \
     && npm config delete https-proxy \
     && if [ -n "$HTTP_PROXY" ]; then npm config set proxy "$HTTP_PROXY"; fi \
     && if [ -n "$HTTPS_PROXY" ]; then npm config set https-proxy "$HTTPS_PROXY"; fi \
-    && npm install --no-audit --no-fund
+    && pnpm install --frozen-lockfile
 
 # -------- install backend dependencies
-COPY backend/package.json backend/package-lock.json ./backend/
+COPY backend/package.json backend/pnpm-lock.yaml ./backend/
 RUN unset NPM_CONFIG_HTTP_PROXY NPM_CONFIG_HTTPS_PROXY || true \
     && npm config delete proxy \
     && npm config delete https-proxy \
     && if [ -n "$HTTP_PROXY" ]; then npm config set proxy "$HTTP_PROXY"; fi \
     && if [ -n "$HTTPS_PROXY" ]; then npm config set https-proxy "$HTTPS_PROXY"; fi \
-    && npm install --no-audit --no-fund --prefix backend
+    && pnpm install --frozen-lockfile --prefix backend
 
 # -------- install hunyuan_server dependencies if present
-COPY backend/hunyuan_server/package.json backend/hunyuan_server/package-lock.json ./backend/hunyuan_server/
-RUN if [ -f backend/hunyuan_server/package-lock.json ]; then \
+COPY backend/hunyuan_server/package.json backend/hunyuan_server/pnpm-lock.yaml ./backend/hunyuan_server/
+RUN if [ -f backend/hunyuan_server/pnpm-lock.yaml ]; then \
         unset NPM_CONFIG_HTTP_PROXY NPM_CONFIG_HTTPS_PROXY || true && \
         npm config delete proxy && \
         npm config delete https-proxy && \
         if [ -n "$HTTP_PROXY" ]; then npm config set proxy "$HTTP_PROXY"; fi && \
         if [ -n "$HTTPS_PROXY" ]; then npm config set https-proxy "$HTTPS_PROXY"; fi && \
-        npm install --no-audit --no-fund --prefix backend/hunyuan_server; \
+        pnpm install --frozen-lockfile --prefix backend/hunyuan_server; \
     fi
 
 
 # -------- copy source and run CI
 COPY . .
+RUN npx playwright install --with-deps
 RUN if [ "$SKIP_TESTS" = "1" ]; then \
       echo "\u2139\uFE0F  CI tests skipped (SKIP_TESTS=1)"; \
     else \
@@ -66,11 +67,14 @@ RUN if [ "$SKIP_TESTS" = "1" ]; then \
 
 # -------- prune dev dependencies
 RUN pnpm prune --prod \
-    && pnpm prune --prod --filter ./backend
+    && pnpm prune --prod --dir backend \
+    && if [ -d backend/hunyuan_server ]; then \
+         pnpm prune --prod --dir backend/hunyuan_server; \
+       fi
 
 # -------- runtime stage
 FROM node:20
-RUN corepack enable && corepack prepare pnpm@8.15.4 --activate
+RUN corepack enable && corepack prepare pnpm@10.5.2 --activate
 
 ARG HTTP_PROXY
 ARG HTTPS_PROXY
@@ -89,7 +93,7 @@ COPY --from=builder /app/package.json /app/pnpm-lock.yaml ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/backend/package.json /app/backend/pnpm-lock.yaml ./backend/
 COPY --from=builder /app/backend/node_modules ./backend/node_modules
-COPY --from=builder /app/backend/hunyuan_server/package.json /app/backend/hunyuan_server/package-lock.json ./backend/hunyuan_server/
+COPY --from=builder /app/backend/hunyuan_server/package.json /app/backend/hunyuan_server/pnpm-lock.yaml ./backend/hunyuan_server/
 COPY --from=builder /app/backend/hunyuan_server/node_modules ./backend/hunyuan_server/node_modules
 
 COPY --from=builder /app .
