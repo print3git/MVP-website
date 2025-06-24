@@ -66,7 +66,11 @@ RUN if [ "$SKIP_TESTS" = "1" ]; then \
     fi
 
 # -------- prune dev dependencies
-RUN pnpm -F . prune --prod && pnpm -F ./backend prune --prod
+RUN pnpm prune --prod \
+    && pnpm prune --prod --dir backend \
+    && if [ -d backend/hunyuan_server ]; then \
+         pnpm prune --prod --dir backend/hunyuan_server; \
+       fi
 
 # -------- runtime stage
 FROM node:20
