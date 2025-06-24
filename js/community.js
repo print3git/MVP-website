@@ -259,7 +259,7 @@ async function copyReferral(id) {
       console.error("Failed to fetch referral", err);
     }
   }
-  const url = `${window.location.origin}/item/${id}${ref}`;
+  const url = `https://prints3.com/item/${id}${ref}`;
   await navigator.clipboard.writeText(url);
 }
 

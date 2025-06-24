@@ -99,6 +99,8 @@ test("POST /api/referral-signup grants codes", async () => {
   expect(incentive[1][1]).toMatch(/^referral_/);
   expect(res.body.code).toBe("DISC123");
   expect(createTimedCode).toHaveBeenCalledTimes(2);
+  expect(createTimedCode).toHaveBeenNthCalledWith(1, 300, 168);
+  expect(createTimedCode).toHaveBeenNthCalledWith(2, 300, 168);
 });
 
 test("GET /api/orders/:id/referral-link returns code", async () => {
