@@ -662,7 +662,6 @@ async function initPaymentPage() {
       localStorage.setItem("print3Material", "single");
       colorMenu.classList.add("hidden");
     };
-    colorMenu.addEventListener("pointerdown", handleColorSelect);
     colorMenu.addEventListener("click", handleColorSelect);
   }
   updatePayButton();
