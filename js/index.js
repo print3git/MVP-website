@@ -722,13 +722,19 @@ async function processFiles(files) {
   previewUrls = uploadedFiles.map((f) => URL.createObjectURL(f));
   renderThumbnails(previewUrls);
 
-  const thumbs = await Promise.all(uploadedFiles.map((f) => getThumbnail(f)));
-
-  try {
-    localStorage.setItem("print3Images", JSON.stringify(thumbs));
-  } catch {
-    /* ignore storage errors */
-  }
+  const schedule = window.requestIdleCallback
+    ? window.requestIdleCallback
+    : (cb) => setTimeout(cb, 0);
+  schedule(async () => {
+    const thumbs = await Promise.all(
+      uploadedFiles.map((f) => getThumbnail(f))
+    );
+    try {
+      localStorage.setItem("print3Images", JSON.stringify(thumbs));
+    } catch {
+      /* ignore storage errors */
+    }
+  });
   editsPending = true;
   refs.buyNowBtn?.classList.add("hidden");
   setStep("prompt");
