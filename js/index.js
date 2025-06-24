@@ -112,20 +112,13 @@ function ensureModelViewerLoaded() {
   if (window.customElements?.get("model-viewer")) {
     return Promise.resolve();
   }
-  const localUrl = "js/model-viewer.min.js";
   const cdnUrl =
     "https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js";
   return new Promise((resolve) => {
-    const s = document.createElement("script");
-    s.type = "module";
-    s.src = localUrl;
-    s.onerror = () => {
-      const fallback = document.createElement("script");
-      fallback.type = "module";
-      fallback.src = cdnUrl;
-      document.head.appendChild(fallback);
-    };
-    document.head.appendChild(s);
+    const script = document.createElement("script");
+    script.type = "module";
+    script.src = cdnUrl;
+    document.head.appendChild(script);
     resolve();
   });
 }
