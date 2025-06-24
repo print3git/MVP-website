@@ -15,6 +15,33 @@ function prefetchModel(url) {
   prefetchedModels.add(url);
 }
 
+function saveModel(item) {
+  if (window.addSavedModel) {
+    window.addSavedModel(item);
+  }
+}
+
+async function copyReferral(id) {
+  const API_BASE = (window.API_ORIGIN || "") + "/api";
+  let ref = "";
+  const token = localStorage.getItem("token");
+  if (token) {
+    try {
+      const res = await fetch(`${API_BASE}/referral-link`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const d = await res.json();
+        ref = `?ref=${encodeURIComponent(d.code)}`;
+      }
+    } catch (err) {
+      console.error("Failed to fetch referral", err);
+    }
+  }
+  const url = `${window.location.origin}/item/${id}${ref}`;
+  await navigator.clipboard.writeText(url);
+}
+
 function openViewer(modelUrl, jobId, snapshot = "") {
   const modal = document.getElementById("model-modal");
   const viewer = modal.querySelector("model-viewer");
@@ -177,7 +204,8 @@ function renderEntriesPage(grid, pager, page) {
       "entry-card relative h-32 bg-[#2A2A2E] border border-white/10 rounded-xl flex items-center justify-center cursor-pointer";
     card.dataset.model = r.model_url;
     card.dataset.job = r.model_id;
-    card.innerHTML = `<img src="" alt="Model" class="w-full h-full object-contain pointer-events-none" />\n      <button class="like absolute bottom-1 right-1 text-xs bg-red-600 px-1 rounded">\u2665</button>\n      <span class="absolute bottom-8 right-1 text-xs bg-black/50 px-1 rounded" id="votes-${r.model_id}">${r.votes}</span>\n      <button class="purchase absolute bottom-1 left-1 font-bold text-lg py-2 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]" style="transform: scale(1.3); transform-origin: left bottom;">Buy</button>`;
+    card.dataset.id = r.model_id;
+    card.innerHTML = `<img src="" alt="Model" class="w-full h-full object-contain pointer-events-none" />\n      <button class="save absolute bottom-1 left-1 text-xs bg-blue-600 px-1 rounded">Save</button>\n      <button class="share absolute top-1 right-1 w-7 h-7 flex items-center justify-center bg-[#2A2A2E] border border-white/20 rounded-full hover:bg-[#3A3A3E] transition-shape"><i class=\"fas fa-share text-xs\"></i></button>\n      <button class="like absolute bottom-1 right-1 text-xs bg-red-600 px-1 rounded">\u2665</button>\n      <span class="absolute bottom-8 right-1 text-xs bg-black/50 px-1 rounded" id="votes-${r.model_id}">${r.votes}</span>\n      <button class="purchase absolute bottom-1 right-10 font-bold text-lg py-1.5 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]" style="transform: scale(0.78); transform-origin: right bottom;">Buy from £29.99</button>`;
     card.querySelector(".like").addEventListener("click", (e) => {
       e.stopPropagation();
       vote(r.model_id);
@@ -186,6 +214,22 @@ function renderEntriesPage(grid, pager, page) {
     buyBtn.addEventListener("click", (e) => {
       e.stopPropagation();
       purchase(r.model_url, r.model_id);
+    });
+    const saveBtn = card.querySelector(".save");
+    saveBtn?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const img = card.querySelector("img");
+      saveModel({
+        id: r.model_id,
+        modelUrl: r.model_url,
+        snapshot: img ? img.src : "",
+        title: "Model",
+      });
+    });
+    const shareBtn = card.querySelector(".share");
+    shareBtn?.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      await copyReferral(r.model_id);
     });
     card.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -403,6 +447,8 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll("#winners-grid .model-card").forEach((card) => {
     const likeBtn = card.querySelector(".like");
     const buyBtn = card.querySelector(".purchase");
+    const saveBtn = card.querySelector(".save");
+    const shareBtn = card.querySelector(".share");
     if (likeBtn) {
       likeBtn.addEventListener("click", (e) => {
         e.stopPropagation();
@@ -413,6 +459,24 @@ document.addEventListener("DOMContentLoaded", () => {
       buyBtn.addEventListener("click", (e) => {
         e.stopPropagation();
         purchase(card.dataset.model, card.dataset.job);
+      });
+    }
+    if (saveBtn) {
+      saveBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const img = card.querySelector("img");
+        saveModel({
+          id: card.dataset.job,
+          modelUrl: card.dataset.model,
+          snapshot: img ? img.src : "",
+          title: "Model",
+        });
+      });
+    }
+    if (shareBtn) {
+      shareBtn.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        await copyReferral(card.dataset.job);
       });
     }
     card.addEventListener("click", (e) => {
