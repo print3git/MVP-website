@@ -702,8 +702,9 @@ function getThumbnail(file) {
         res(c.toDataURL("image/jpeg", 0.7));
       };
       im.src = R.result;
+
     };
-    R.readAsDataURL(file);
+    im.src = url;
   });
 }
 
@@ -711,6 +712,9 @@ async function processFiles(files) {
   if (!files.length) return;
 
   uploadedFiles = [...files];
+  const previewUrls = uploadedFiles.map((f) => URL.createObjectURL(f));
+  renderThumbnails(previewUrls);
+
   const thumbs = await Promise.all(uploadedFiles.map((f) => getThumbnail(f)));
 
   try {
@@ -718,7 +722,6 @@ async function processFiles(files) {
   } catch {
     /* ignore storage errors */
   }
-  renderThumbnails(thumbs);
   editsPending = true;
   refs.buyNowBtn?.classList.add("hidden");
   setStep("prompt");
@@ -1131,10 +1134,12 @@ async function init() {
         const days = Math.floor(hoursTotal / 24);
         const hours = hoursTotal % 24;
         const minutes = Math.floor((diff % 3600000) / 60000);
+        const seconds = Math.floor((diff % 60000) / 1000);
         const parts = [];
         if (days > 0) parts.push(`${days}d`);
         parts.push(`${hours.toString().padStart(2, "0")}h`);
         parts.push(`${minutes.toString().padStart(2, "0")}m`);
+        parts.push(`${seconds.toString().padStart(2, "0")}s`);
         banner.textContent = `${parts.join(" ")} left for weekend delivery`;
         banner.classList.remove("hidden");
       } else {
@@ -1142,7 +1147,7 @@ async function init() {
       }
     }
     updateCountdown();
-    setInterval(updateCountdown, 60000);
+    setInterval(updateCountdown, 1000);
   }
 
   document.getElementById("promo-optin")?.addEventListener("change", (e) => {

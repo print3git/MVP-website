@@ -104,17 +104,7 @@
           class="space-y-4 bg-[#2A2A2E] border border-white/10 p-6 rounded-3xl"
           aria-label="Sign up form"
         >
-          <div class="flex flex-col" id="emailStub">
-            <label for="email" class="font-medium">Contact</label>
-            <input
-              id="emailStubInput"
-              type="text"
-              placeholder="Tap to add…"
-              class="bg-gray-800 rounded-lg h-12 px-3 text-gray-400 cursor-pointer"
-              readonly
-            />
-          </div>
-          <div id="emailGroup" class="collapsible collapsed">
+          <div id="emailGroup">
             <input
               id="su-email"
               type="email"
@@ -163,32 +153,6 @@
     </main>
     <script type="module" src="js/signup.js"></script>
     <script type="module">
-      function expand(idStub, idGroup) {
-        document.getElementById(idStub).style.display = "none";
-        const grp = document.getElementById(idGroup);
-        grp.classList.remove("collapsed");
-        grp.classList.add("expanded");
-      }
-
-      function collapseIfEmpty(idStub, idGroup, selector) {
-        const grp = document.getElementById(idGroup);
-        const inputs = grp.querySelectorAll(selector);
-        const filled = Array.from(inputs).some((i) => i.value.trim() !== "");
-        if (!filled) {
-          grp.classList.remove("expanded");
-          grp.classList.add("collapsed");
-          document.getElementById(idStub).style.display = "flex";
-        }
-      }
-
-      document
-        .getElementById("emailStub")
-        .addEventListener("click", () => expand("emailStub", "emailGroup"));
-
-      document
-        .getElementById("addressStub")
-        .addEventListener("click", () => expand("addressStub", "addressGroup"));
-
       import { shareOn } from "./js/share.js";
       window.shareOn = shareOn;
     </script>

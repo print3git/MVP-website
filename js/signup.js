@@ -39,18 +39,23 @@ async function signup(e) {
     localStorage.setItem("token", data.token);
     const ref = localStorage.getItem("referrerId");
     if (ref) {
-      fetch(`${API_BASE}/referral-signup`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code: ref }),
-      })
-        .then((r) => r.json())
-        .then((d) => {
+      try {
+        const r = await fetch(`${API_BASE}/referral-signup`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code: ref }),
+        });
+        if (r.ok) {
+          const d = await r.json();
           if (d.code) {
-            alert(`Your referral discount code: ${d.code}`);
+            alert(`Your £3 discount code: ${d.code}`);
           }
-        })
-        .catch(() => {});
+        } else {
+          alert("Failed to apply referral");
+        }
+      } catch (err) {
+        alert("Failed to apply referral");
+      }
     }
     if (optIn) {
       fetch(`${API_BASE}/subscribe`, {

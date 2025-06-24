@@ -173,6 +173,74 @@
         </button>
       </section>
 
+      <!-- What others are printing carousel -->
+      <section class="mb-12">
+        <h2 class="text-xl font-semibold mb-4">What others are printing</h2>
+        <div
+          id="prints-carousel"
+          class="flex overflow-x-auto space-x-4 pb-2 snap-x"
+        >
+          <div
+            class="flex-shrink-0 bg-[#2A2A2E] rounded-xl p-2 flex gap-2 w-80 snap-start"
+          >
+            <model-viewer
+              src="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Fox/glTF-Binary/Fox.glb"
+              alt="Fox model"
+              environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
+              camera-controls
+              auto-rotate
+              class="w-1/2 h-40"
+            ></model-viewer>
+            <img
+              src="https://images.unsplash.com/photo-1585124701440-7718ee1af7aa?auto=format&fit=crop&w=240&q=60"
+              alt="Printed fox"
+              loading="lazy"
+              class="w-1/2 h-40 object-cover rounded"
+            />
+          </div>
+          <div
+            class="flex-shrink-0 bg-[#2A2A2E] rounded-xl p-2 w-48 snap-start"
+          >
+            <model-viewer
+              src="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/WaterBottle/glTF-Binary/WaterBottle.glb"
+              alt="Water bottle model"
+              environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
+              camera-controls
+              auto-rotate
+              class="w-full h-40"
+            ></model-viewer>
+          </div>
+          <div
+            class="flex-shrink-0 bg-[#2A2A2E] rounded-xl p-2 flex gap-2 w-80 snap-start"
+          >
+            <model-viewer
+              src="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/AntiqueCamera/glTF-Binary/AntiqueCamera.glb"
+              alt="Camera model"
+              environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
+              camera-controls
+              auto-rotate
+              class="w-1/2 h-40"
+            ></model-viewer>
+            <img
+              src="https://images.unsplash.com/photo-1519183071298-a2962be566f2?auto=format&fit=crop&w=240&q=60"
+              alt="Printed camera"
+              loading="lazy"
+              class="w-1/2 h-40 object-cover rounded"
+            />
+          </div>
+          <div
+            class="flex-shrink-0 bg-[#2A2A2E] rounded-xl p-2 w-48 snap-start"
+          >
+            <img
+              src="https://images.unsplash.com/photo-1555617117-08ce2a69e83d?auto=format&fit=crop&w=240&q=60"
+              alt="Printed vase"
+              loading="lazy"
+              class="w-full h-40 object-cover rounded"
+            />
+          </div>
+        </div>
+      </section>
+
       <!-- Recent Creations -->
       <section>
         <h2 class="text-xl font-semibold mb-4">Recent</h2>
@@ -315,7 +383,12 @@
     </div>
     <script type="module">
       import { shareOn } from "./js/share.js";
-      import { init, closeModel, restoreOpenModel } from "./js/community.js";
+      import {
+        init,
+        closeModel,
+        restoreOpenModel,
+        copyReferral,
+      } from "./js/community.js";
       window.shareOn = shareOn;
 
       document.addEventListener("DOMContentLoaded", () => {
@@ -375,27 +448,6 @@
 
         const copyBtn = document.getElementById("modal-copy-link");
         const copyMsg = document.getElementById("modal-copy-msg");
-        const API_BASE = (window.API_ORIGIN || "") + "/api";
-
-        async function copyReferral(id) {
-          let ref = "";
-          const token = localStorage.getItem("token");
-          if (token) {
-            try {
-              const res = await fetch(`${API_BASE}/referral-link`, {
-                headers: { Authorization: `Bearer ${token}` },
-              });
-              if (res.ok) {
-                const d = await res.json();
-                ref = `?ref=${encodeURIComponent(d.code)}`;
-              }
-            } catch (err) {
-              console.error("Failed to fetch referral", err);
-            }
-          }
-          const url = `${window.location.origin}/item/${id}${ref}`;
-          await navigator.clipboard.writeText(url);
-        }
 
         copyBtn?.addEventListener("click", async () => {
           const id = copyBtn.dataset.id;
