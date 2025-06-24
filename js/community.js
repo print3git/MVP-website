@@ -1,17 +1,17 @@
-import { captureSnapshots } from './snapshot.js';
+import { captureSnapshots } from "./snapshot.js";
 
-const API_BASE = (window.API_ORIGIN || '') + '/api';
+const API_BASE = (window.API_ORIGIN || "") + "/api";
 
-const OPEN_KEY = 'print3CommunityOpen';
+const OPEN_KEY = "print3CommunityOpen";
 
 function like(id) {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   if (!token) {
-    alert('Login required');
+    alert("Login required");
     return;
   }
   fetch(`${API_BASE}/models/${id}/like`, {
-    method: 'POST',
+    method: "POST",
     headers: { Authorization: `Bearer ${token}` },
   })
     .then((r) => r.json())
@@ -23,7 +23,7 @@ function like(id) {
 
 const SEARCH_DELAY = 300;
 
-const STATE_KEY = 'print3CommunityState';
+const STATE_KEY = "print3CommunityState";
 
 async function fetchComments(id) {
   try {
@@ -31,22 +31,22 @@ async function fetchComments(id) {
     if (!res.ok) return [];
     return await res.json();
   } catch (err) {
-    console.error('Failed to fetch comments', err);
+    console.error("Failed to fetch comments", err);
     return [];
   }
 }
 
 async function postComment(id, text) {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   if (!token) {
-    alert('Login required');
+    alert("Login required");
     return null;
   }
   try {
     const res = await fetch(`${API_BASE}/community/${id}/comment`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({ text }),
@@ -54,7 +54,7 @@ async function postComment(id, text) {
     if (!res.ok) return null;
     return await res.json();
   } catch (err) {
-    console.error('Failed to post comment', err);
+    console.error("Failed to post comment", err);
     return null;
   }
 }
@@ -64,7 +64,7 @@ function loadState() {
     const data = localStorage.getItem(STATE_KEY);
     return data ? JSON.parse(data) : null;
   } catch (err) {
-    console.error('Failed to parse saved community state', err);
+    console.error("Failed to parse saved community state", err);
     return null;
   }
 }
@@ -73,17 +73,17 @@ function saveState() {
   try {
     localStorage.setItem(STATE_KEY, JSON.stringify(window.communityState));
   } catch (err) {
-    console.error('Failed to save community state', err);
+    console.error("Failed to save community state", err);
   }
 }
 
 async function renderComments(id) {
-  const list = document.getElementById('comments-list');
+  const list = document.getElementById("comments-list");
   if (!list) return;
-  list.innerHTML = '';
+  list.innerHTML = "";
   const comments = await fetchComments(id);
   comments.forEach((c) => {
-    const li = document.createElement('li');
+    const li = document.createElement("li");
     li.textContent = `${c.username}: ${c.text}`;
     list.appendChild(li);
   });
@@ -108,20 +108,20 @@ if (!fetchCreations)
     type,
     offset = 0,
     limit = 9,
-    category = '',
-    search = '',
-    order = 'desc'
+    category = "",
+    search = "",
+    order = "desc",
   ) {
     const query = new URLSearchParams({ limit, offset });
-    if (category) query.set('category', category);
-    if (search) query.set('search', search);
-    if (order && type === 'recent') query.set('order', order);
+    if (category) query.set("category", category);
+    if (search) query.set("search", search);
+    if (order && type === "recent") query.set("order", order);
     try {
       const res = await fetch(`${API_BASE}/community/${type}?${query}`);
-      if (!res.ok) throw new Error('bad response');
+      if (!res.ok) throw new Error("bad response");
       return await res.json();
     } catch (err) {
-      console.error('Failed to fetch creations', err);
+      console.error("Failed to fetch creations", err);
       return [];
     }
   };
@@ -129,28 +129,29 @@ if (!fetchCreations)
 var getFallbackModels = window.getFallbackModels;
 if (!getFallbackModels)
   getFallbackModels = function (count = 9, start = 0) {
-    const base = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0';
+    const base =
+      "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0";
 
     const samples = [
-      { name: 'DamagedHelmet', ext: 'png' },
-      { name: 'BoomBox', ext: 'jpg' },
-      { name: 'BarramundiFish', ext: 'jpg' },
+      { name: "DamagedHelmet", ext: "png" },
+      { name: "BoomBox", ext: "jpg" },
+      { name: "BarramundiFish", ext: "jpg" },
       // FlightHelmet lacks a GLB; use a different sample that definitely has one
-      { name: 'Fox', ext: 'jpg' },
-      { name: 'Avocado', ext: 'jpg' },
-      { name: 'AntiqueCamera', ext: 'png' },
-      { name: 'Lantern', ext: 'jpg' },
-      { name: 'WaterBottle', ext: 'jpg' },
-      { name: 'Corset', ext: 'jpg' },
-      { name: 'ToyCar', ext: 'jpg' },
-      { name: 'Duck', ext: 'png' },
-      { name: 'CesiumMan', ext: 'gif' },
-      { name: '2CylinderEngine', ext: 'png' },
-      { name: 'SheenChair', ext: 'jpg' },
-      { name: 'IridescenceLamp', ext: 'jpg' },
-      { name: 'ReciprocatingSaw', ext: 'png' },
-      { name: 'VertexColorTest', ext: 'png' },
-      { name: 'CesiumMilkTruck', ext: 'gif' },
+      { name: "Fox", ext: "jpg" },
+      { name: "Avocado", ext: "jpg" },
+      { name: "AntiqueCamera", ext: "png" },
+      { name: "Lantern", ext: "jpg" },
+      { name: "WaterBottle", ext: "jpg" },
+      { name: "Corset", ext: "jpg" },
+      { name: "ToyCar", ext: "jpg" },
+      { name: "Duck", ext: "png" },
+      { name: "CesiumMan", ext: "gif" },
+      { name: "2CylinderEngine", ext: "png" },
+      { name: "SheenChair", ext: "jpg" },
+      { name: "IridescenceLamp", ext: "jpg" },
+      { name: "ReciprocatingSaw", ext: "png" },
+      { name: "VertexColorTest", ext: "png" },
+      { name: "CesiumMilkTruck", ext: "gif" },
     ];
 
     return samples.slice(start, start + count).map((s, i) => ({
@@ -165,27 +166,27 @@ if (!getFallbackModels)
 const prefetchedModels = new Set();
 function prefetchModel(url) {
   if (prefetchedModels.has(url)) return;
-  const link = document.createElement('link');
+  const link = document.createElement("link");
   // Preload with high priority so the model is ready when clicked
-  link.rel = 'preload';
+  link.rel = "preload";
   link.href = url;
-  link.as = 'fetch';
-  link.crossOrigin = 'anonymous';
-  link.fetchPriority = 'high';
+  link.as = "fetch";
+  link.crossOrigin = "anonymous";
+  link.fetchPriority = "high";
   document.head.appendChild(link);
   prefetchedModels.add(url);
 }
 
 function openModel(model) {
-  const modal = document.getElementById('model-modal');
-  const viewer = modal.querySelector('model-viewer');
-  const checkoutBtn = document.getElementById('modal-checkout');
-  const addBasketBtn = document.getElementById('modal-add-basket');
-  const submitBtn = document.getElementById('comment-submit');
-  const input = document.getElementById('comment-input');
-  viewer.setAttribute('poster', model.snapshot || '');
-  viewer.setAttribute('fetchpriority', 'high');
-  viewer.setAttribute('loading', 'eager');
+  const modal = document.getElementById("model-modal");
+  const viewer = modal.querySelector("model-viewer");
+  const checkoutBtn = document.getElementById("modal-checkout");
+  const addBasketBtn = document.getElementById("modal-add-basket");
+  const submitBtn = document.getElementById("comment-submit");
+  const input = document.getElementById("comment-input");
+  viewer.setAttribute("poster", model.snapshot || "");
+  viewer.setAttribute("fetchpriority", "high");
+  viewer.setAttribute("loading", "eager");
   viewer.src = model.model_url;
   if (checkoutBtn) {
     checkoutBtn.dataset.model = model.model_url;
@@ -194,40 +195,40 @@ function openModel(model) {
   if (addBasketBtn) {
     addBasketBtn.dataset.model = model.model_url;
     addBasketBtn.dataset.job = model.job_id;
-    addBasketBtn.dataset.snapshot = model.snapshot || '';
+    addBasketBtn.dataset.snapshot = model.snapshot || "";
   }
-  const copyBtn = document.getElementById('modal-copy-link');
+  const copyBtn = document.getElementById("modal-copy-link");
   if (copyBtn) {
     copyBtn.dataset.id = model.id;
   }
   if (submitBtn) {
     submitBtn.dataset.id = model.id;
-    input.value = '';
+    input.value = "";
     renderComments(model.id);
   }
-  modal.classList.remove('hidden');
-  const closeBtn = document.getElementById('close-modal');
-  const svg = closeBtn?.querySelector('svg');
+  modal.classList.remove("hidden");
+  const closeBtn = document.getElementById("close-modal");
+  const svg = closeBtn?.querySelector("svg");
   if (closeBtn) {
-    closeBtn.classList.remove('w-[9rem]', 'h-[9rem]');
-    closeBtn.classList.add('w-[4.5rem]', 'h-[4.5rem]');
+    closeBtn.classList.remove("w-[9rem]", "h-[9rem]");
+    closeBtn.classList.add("w-[4.5rem]", "h-[4.5rem]");
   }
   if (svg) {
-    svg.classList.remove('w-20', 'h-20');
-    svg.classList.add('w-10', 'h-10');
+    svg.classList.remove("w-20", "h-20");
+    svg.classList.add("w-10", "h-10");
   }
-  document.body.classList.add('overflow-hidden');
+  document.body.classList.add("overflow-hidden");
   try {
     localStorage.setItem(OPEN_KEY, JSON.stringify(model));
   } catch (err) {
-    console.error('Failed to save open model', err);
+    console.error("Failed to save open model", err);
   }
 }
 
 function closeModel() {
-  const modal = document.getElementById('model-modal');
-  modal.classList.add('hidden');
-  document.body.classList.remove('overflow-hidden');
+  const modal = document.getElementById("model-modal");
+  modal.classList.add("hidden");
+  document.body.classList.remove("overflow-hidden");
   localStorage.removeItem(OPEN_KEY);
 }
 
@@ -238,33 +239,58 @@ function restoreOpenModel() {
     const model = JSON.parse(data);
     if (model) openModel(model);
   } catch (err) {
-    console.error('Failed to restore open model', err);
+    console.error("Failed to restore open model", err);
   }
 }
 
+async function copyReferral(id) {
+  let ref = "";
+  const token = localStorage.getItem("token");
+  if (token) {
+    try {
+      const res = await fetch(`${API_BASE}/referral-link`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const d = await res.json();
+        ref = `?ref=${encodeURIComponent(d.code)}`;
+      }
+    } catch (err) {
+      console.error("Failed to fetch referral", err);
+    }
+  }
+  const url = `${window.location.origin}/item/${id}${ref}`;
+  await navigator.clipboard.writeText(url);
+}
+
 function createCard(model) {
-  const div = document.createElement('div');
+  const div = document.createElement("div");
   div.className =
-    'model-card relative h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape flex items-center justify-center cursor-pointer';
+    "model-card relative h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape flex items-center justify-center cursor-pointer";
   div.dataset.model = model.model_url;
   div.dataset.job = model.job_id;
 
-  div.innerHTML = `\n      <img src="${model.snapshot || ''}" alt="Model" loading="lazy" fetchpriority="low" class="w-full h-full object-contain pointer-events-none" />\n      <span class="sr-only">${model.title || 'Model'}</span>\n      <button class="like absolute bottom-1 right-1 text-xs bg-red-600 px-1 rounded">\u2665</button>\n      <span class="absolute bottom-8 right-1 text-xs bg-black/50 px-1 rounded" id="likes-${model.id}">${model.likes}</span>\n      <button class="purchase absolute bottom-1 left-1 font-bold text-lg py-1.5 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]" style="transform: scale(0.6); transform-origin: left bottom;">Buy from £29.99</button>`;
+  div.innerHTML = `\n      <img src="${model.snapshot || ""}" alt="Model" loading="lazy" fetchpriority="low" class="w-full h-full object-contain pointer-events-none" />\n      <span class="sr-only">${model.title || "Model"}</span>\n      <button class="like absolute bottom-1 right-1 text-xs bg-red-600 px-1 rounded">\u2665</button>\n      <span class="absolute bottom-8 right-1 text-xs bg-black/50 px-1 rounded" id="likes-${model.id}">${model.likes}</span>\n      <button class="share absolute top-1 right-1 w-7 h-7 flex items-center justify-center bg-[#2A2A2E] border border-white/20 rounded-full hover:bg-[#3A3A3E] transition-shape"><i class="fas fa-share text-xs"></i></button>\n      <button class="purchase absolute bottom-1 left-1 font-bold text-lg py-1.5 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]" style="transform: scale(0.6); transform-origin: left bottom;">Buy from £29.99</button>`;
 
-  div.querySelector('.purchase').addEventListener('click', (e) => {
+  div.querySelector(".purchase").addEventListener("click", (e) => {
     e.stopPropagation();
-    sessionStorage.setItem('fromCommunity', '1');
-    localStorage.setItem('print3Model', model.model_url);
-    localStorage.setItem('print3JobId', model.job_id);
-    window.location.href = 'payment.html';
+    sessionStorage.setItem("fromCommunity", "1");
+    localStorage.setItem("print3Model", model.model_url);
+    localStorage.setItem("print3JobId", model.job_id);
+    window.location.href = "payment.html";
   });
-  const likeBtn = div.querySelector('.like');
-  likeBtn?.addEventListener('click', (e) => {
+  const likeBtn = div.querySelector(".like");
+  likeBtn?.addEventListener("click", (e) => {
     e.stopPropagation();
     like(model.id);
   });
-  div.addEventListener('pointerenter', () => prefetchModel(model.model_url));
-  div.addEventListener('click', (e) => {
+  const shareBtn = div.querySelector(".share");
+  shareBtn?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    copyReferral(model.id);
+  });
+  div.addEventListener("pointerenter", () => prefetchModel(model.model_url));
+  div.addEventListener("click", (e) => {
     e.stopPropagation();
     openModel(model);
   });
@@ -272,9 +298,9 @@ function createCard(model) {
 }
 
 function getFilters() {
-  const category = document.getElementById('category').value;
-  const search = document.getElementById('search')?.value || '';
-  const order = document.getElementById('sort')?.value || 'desc';
+  const category = document.getElementById("category").value;
+  const search = document.getElementById("search")?.value || "";
+  const order = document.getElementById("sort")?.value || "desc";
   return { category, search, order, key: `${category}|${search}|${order}` };
 }
 
@@ -283,7 +309,14 @@ async function loadMore(type, filters = getFilters()) {
   const cache = window.communityState[type];
   if (!cache[key]) cache[key] = { offset: 0, models: [] };
   const state = cache[key];
-  let models = await fetchCreations(type, state.offset, 9, category, search, order);
+  let models = await fetchCreations(
+    type,
+    state.offset,
+    9,
+    category,
+    search,
+    order,
+  );
   if (models.length === 0) {
     models = getFallbackModels(9, state.offset);
   }
@@ -295,9 +328,9 @@ async function loadMore(type, filters = getFilters()) {
   const btn = document.getElementById(`${type}-load`);
   if (btn) {
     if (models.length < 9) {
-      btn.classList.add('hidden');
+      btn.classList.add("hidden");
     } else {
-      btn.classList.remove('hidden');
+      btn.classList.remove("hidden");
     }
   }
   saveState();
@@ -306,15 +339,15 @@ async function loadMore(type, filters = getFilters()) {
 function renderGrid(type, filters = getFilters()) {
   const { key } = filters;
   const grid = document.getElementById(`${type}-grid`);
-  grid.innerHTML = '';
+  grid.innerHTML = "";
   let state = window.communityState[type][key];
   if (state && state.models.length) {
     state.models.forEach((m) => grid.appendChild(createCard(m)));
     captureSnapshots(grid);
     const btn = document.getElementById(`${type}-load`);
     if (btn) {
-      if (state.models.length < 9) btn.classList.add('hidden');
-      else btn.classList.remove('hidden');
+      if (state.models.length < 9) btn.classList.add("hidden");
+      else btn.classList.remove("hidden");
     }
   } else {
     loadMore(type, filters);
@@ -339,17 +372,17 @@ function createObserver(type) {
 }
 
 function init() {
-  let navType = 'navigate';
-  if (typeof performance !== 'undefined') {
-    const entries = performance.getEntriesByType?.('navigation') || [];
+  let navType = "navigate";
+  if (typeof performance !== "undefined") {
+    const entries = performance.getEntriesByType?.("navigation") || [];
     if (entries.length && entries[0].type) {
       navType = entries[0].type;
     } else if (performance.navigation) {
-      if (performance.navigation.type === 1) navType = 'reload';
-      else if (performance.navigation.type === 2) navType = 'back_forward';
+      if (performance.navigation.type === 1) navType = "reload";
+      else if (performance.navigation.type === 2) navType = "back_forward";
     }
   }
-  if (navType !== 'reload') {
+  if (navType !== "reload") {
     localStorage.removeItem(STATE_KEY);
     localStorage.removeItem(OPEN_KEY);
   }
@@ -357,62 +390,65 @@ function init() {
   const saved = loadState();
   window.communityState = saved || { recent: {}, popular: {} };
 
-  const popBtn = document.getElementById('popular-load');
-  if (popBtn) popBtn.addEventListener('click', () => loadMore('popular'));
-  const recentBtn = document.getElementById('recent-load');
-  if (recentBtn) recentBtn.addEventListener('click', () => loadMore('recent'));
-  const form = document.getElementById('comment-form');
-  if (form && !localStorage.getItem('token')) {
-    form.classList.add('hidden');
+  const popBtn = document.getElementById("popular-load");
+  if (popBtn) popBtn.addEventListener("click", () => loadMore("popular"));
+  const recentBtn = document.getElementById("recent-load");
+  if (recentBtn) recentBtn.addEventListener("click", () => loadMore("recent"));
+  const form = document.getElementById("comment-form");
+  if (form && !localStorage.getItem("token")) {
+    form.classList.add("hidden");
   }
-  const submitBtn = document.getElementById('comment-submit');
+  const submitBtn = document.getElementById("comment-submit");
   if (submitBtn) {
-    submitBtn.addEventListener('click', async () => {
+    submitBtn.addEventListener("click", async () => {
       const id = submitBtn.dataset.id;
-      const input = document.getElementById('comment-input');
+      const input = document.getElementById("comment-input");
       const text = input.value.trim();
       if (!id || !text) return;
       const res = await postComment(id, text);
       if (res) {
-        input.value = '';
+        input.value = "";
         renderComments(id);
       }
     });
   }
-  document.getElementById('category').addEventListener('change', () => {
-    document.getElementById('recent-grid').innerHTML = '';
-    document.getElementById('popular-grid').innerHTML = '';
+  document.getElementById("category").addEventListener("change", () => {
+    document.getElementById("recent-grid").innerHTML = "";
+    document.getElementById("popular-grid").innerHTML = "";
     window.communityState = { recent: {}, popular: {} };
     saveState();
-    loadMore('popular');
-    loadMore('recent');
+    loadMore("popular");
+    loadMore("recent");
   });
-  const sortSelect = document.getElementById('sort');
+  const sortSelect = document.getElementById("sort");
   if (sortSelect) {
-    sortSelect.addEventListener('change', () => {
-      document.getElementById('recent-grid').innerHTML = '';
-      document.getElementById('popular-grid').innerHTML = '';
+    sortSelect.addEventListener("change", () => {
+      document.getElementById("recent-grid").innerHTML = "";
+      document.getElementById("popular-grid").innerHTML = "";
       window.communityState = { recent: {}, popular: {} };
       saveState();
-      loadMore('popular');
-      loadMore('recent');
+      loadMore("popular");
+      loadMore("recent");
     });
   }
-  const searchInput = document.getElementById('search');
+  const searchInput = document.getElementById("search");
   if (searchInput) {
     function onSearchInput() {
-      document.getElementById('recent-grid').innerHTML = '';
-      document.getElementById('popular-grid').innerHTML = '';
+      document.getElementById("recent-grid").innerHTML = "";
+      document.getElementById("popular-grid").innerHTML = "";
       window.communityState = { recent: {}, popular: {} };
       saveState();
-      loadMore('popular');
-      loadMore('recent');
+      loadMore("popular");
+      loadMore("recent");
     }
 
-    searchInput.addEventListener('input', debounce(onSearchInput, SEARCH_DELAY));
+    searchInput.addEventListener(
+      "input",
+      debounce(onSearchInput, SEARCH_DELAY),
+    );
   }
-  renderGrid('popular');
-  renderGrid('recent');
+  renderGrid("popular");
+  renderGrid("recent");
 }
 
-export { like, init, closeModel, restoreOpenModel };
+export { like, init, closeModel, restoreOpenModel, copyReferral };
