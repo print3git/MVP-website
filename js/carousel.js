@@ -41,14 +41,18 @@ export function initCarousel() {
   }
 
   function prev() {
-    track.style.transition = "none";
-    track.insertBefore(track.lastElementChild, track.firstElementChild);
-    track.style.transform = `translateX(-${slideWidth}%)`;
-    requestAnimationFrame(() => {
-      track.style.transition = transitionStyle;
-      track.style.transform = "translateX(0)";
-    });
-    slides = Array.from(track.children);
+    track.style.transition = transitionStyle;
+    track.style.transform = `translateX(${slideWidth}%)`;
+    track.addEventListener(
+      "transitionend",
+      () => {
+        track.prepend(track.lastElementChild);
+        track.style.transition = "none";
+        track.style.transform = "translateX(0)";
+        slides = Array.from(track.children);
+      },
+      { once: true },
+    );
   }
 
   carousel.querySelector(".carousel-next")?.addEventListener("click", next);
