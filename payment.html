@@ -106,6 +106,16 @@
         box-shadow: 0 0 10px rgba(48, 213, 200, 0.6),
           0 6px 10px rgba(0, 0, 0, 0.6);
       }
+      /* Prevent price strike-through text from scaling */
+      #material-options label span.no-scale {
+        transform: translateX(-4rem);
+      }
+      #material-options label:hover span.no-scale,
+      #material-options input:active + span.no-scale,
+      #material-options input:checked + span.no-scale {
+        transform: translateX(-4rem);
+        box-shadow: none;
+      }
 
 
       /* Add glow and single-pass shimmer to the Pay button */
@@ -275,7 +285,7 @@
                     >+ (optional) name<br />etching</span
                   >
                   </span>
-                  <span class="absolute -top-2 left-1/2 -translate-x-16 text-sm line-through whitespace-nowrap pointer-events-none z-10">£54.99</span>
+                  <span class="no-scale text-base absolute -top-2 left-1/2 -translate-x-16 font-semibold leading-none line-through whitespace-nowrap pointer-events-none z-10">£54.99</span>
                   <span class="block text-xs mt-1 text-red-300 w-28">
                     Only <span id="color-slot-count" style="visibility: hidden"></span> coloured
                     prints left
