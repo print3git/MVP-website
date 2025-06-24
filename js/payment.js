@@ -62,8 +62,13 @@ async function fetchPaymentInit() {
 }
 
 // Restore previously selected material option and colour
-const storedMaterial = localStorage.getItem("print3Material");
+let storedMaterial = localStorage.getItem("print3Material");
 const storedColor = localStorage.getItem("print3Color");
+const personalise = qs("personalise");
+if (personalise !== null) {
+  storedMaterial = "multi";
+  localStorage.setItem("print3Material", storedMaterial);
+}
 if (storedMaterial && PRICES[storedMaterial]) {
   selectedPrice = PRICES[storedMaterial];
 }
@@ -452,6 +457,12 @@ async function initPaymentPage() {
   );
   if (storedRadio) storedRadio.checked = true;
   updateEtchVisibility(storedMaterial);
+  if (personalise !== null && etchInput) {
+    requestAnimationFrame(() => {
+      etchInput.focus();
+      etchInput.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+  }
   if (storedMaterial === "single") {
     if (singleButton && storedColor) {
       singleButton.style.backgroundColor = storedColor;
