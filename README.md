@@ -286,7 +286,7 @@ are automatically rebased and merged via the merge queue when CI passes.
 
 ## Code Owners
 
-This repository uses a `CODEOWNERS` file to automatically request reviews. Paths are mapped to the appropriate teams to keep review responsibilities clear.
+This repository uses a `CODEOWNERS` file to automatically request reviews. The file lives at `.github/CODEOWNERS`, mapping paths to the appropriate teams so review responsibilities stay clear.
 
 ## Flaky test quarantine
 
