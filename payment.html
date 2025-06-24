@@ -110,7 +110,8 @@
       #material-options label:hover span.no-transform,
       #material-options input:active + span.no-transform,
       #material-options input:checked + span.no-transform {
-        transform: none;
+        /* Retain the element's translation while preventing scaling */
+        transform: translateX(-4rem);
         box-shadow: none;
       }
 
