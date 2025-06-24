@@ -382,6 +382,13 @@
         const addBasketBtn = document.getElementById("modal-add-basket");
         const closeBtn = document.getElementById("close-modal");
         const tierToggle = document.getElementById("tier-toggle");
+        document
+          .querySelectorAll('a[href="login.html"], a[href="signup.html"]')
+          .forEach((el) => {
+            el.addEventListener("click", () => {
+              sessionStorage.setItem("fromCommunity", "1");
+            });
+          });
 
         function setTier(tier) {
           tierToggle?.querySelectorAll("button[data-tier]").forEach((btn) => {
