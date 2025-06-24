@@ -54,17 +54,11 @@
             stroke-width="2"
             viewBox="0 0 24 24"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M15 19l-7-7 7-7"
-            />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
           </svg>
           Back
         </a>
-        <h1 class="flex-1 text-center text-3xl font-semibold">
-          Community Creations
-        </h1>
+        <h1 class="flex-1 text-center text-3xl font-semibold">Community Creations</h1>
         <a
           href="earn-rewards.html"
           id="earn-rewards-badge"
@@ -150,297 +144,23 @@
           class="bg-[#2A2A2E] border border-white/20 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4A4A4E] flex-1 min-w-[10rem] h-11"
         />
       </div>
-      <div class="relative">
+      <!-- Popular Creations -->
+      <section class="mb-12">
+        <h2 class="text-xl font-semibold mb-4">Bestselling</h2>
+        <div id="popular-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
+        <div id="popular-sentinel" class="h-8"></div>
         <button
-          type="button"
-          id="carousel-left"
-          aria-label="Scroll left"
-          class="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-[#2A2A2E] border border-white/20 rounded-full p-2"
+          id="popular-load"
+          class="mt-4 px-4 py-2 bg-[#2A2A2E] border border-white/20 rounded-lg mx-auto block"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            class="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path d="M15 18l-6-6 6-6" />
-          </svg>
+          More
         </button>
-        <div
-          id="others-carousel"
-          class="flex gap-4 overflow-x-auto pb-2 scroll-smooth snap-x snap-mandatory"
-        >
-          <div class="flex gap-2 items-start min-w-[24rem]">
-            <model-viewer
-              src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
-              alt="Astronaut model"
-              environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
-              camera-controls
-              class="w-40 h-40 bg-[#2A2A2E] rounded-xl flex-shrink-0"
-              crossOrigin="anonymous"
-            ></model-viewer>
-            <img
-              src="https://images.unsplash.com/photo-1506880018603-6bdfb12f5fe5?auto=format&fit=crop&w=300&q=60"
-              alt="Astronaut print"
-              class="w-40 h-40 object-cover rounded-xl"
-            />
-          </div>
-          <div class="min-w-[12rem]">
-            <model-viewer
-              src="https://modelviewer.dev/shared-assets/models/RobotExpressive.glb"
-              alt="Expressive robot model"
-              environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
-              camera-controls
-              class="w-40 h-40 bg-[#2A2A2E] rounded-xl"
-              crossOrigin="anonymous"
-            ></model-viewer>
-          </div>
-          <div class="flex gap-2 items-start min-w-[24rem]">
-            <model-viewer
-              src="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/AntiqueCamera/glTF-Binary/AntiqueCamera.glb"
-              alt="Camera model"
-              environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
-              camera-controls
-              class="w-40 h-40 bg-[#2A2A2E] rounded-xl flex-shrink-0"
-              crossOrigin="anonymous"
-            ></model-viewer>
-            <img
-              src="https://images.unsplash.com/photo-1630681847349-d8c7f9eca5f4?auto=format&fit=crop&w=300&q=60"
-              alt="Camera print"
-              class="w-40 h-40 object-cover rounded-xl"
-            />
-          </div>
-          <div class="min-w-[12rem]">
-            <img
-              src="https://images.unsplash.com/photo-1602524202186-1e76ec7e17eb?auto=format&fit=crop&w=300&q=60"
-              alt="3D printed robot"
-              class="w-40 h-40 object-cover rounded-xl"
-            />
-          </div>
-        </div>
-        <button
-          type="button"
-          id="carousel-right"
-          aria-label="Scroll right"
-          class="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-[#2A2A2E] border border-white/20 rounded-full p-2"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            class="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path d="M9 6l6 6-6 6" />
-          </svg>
-        </button>
-      </div>
-
-      <!-- What others are printing carousel -->
-      <section class="mb-12">
-        <h2 class="text-xl font-semibold mb-4">What others are printing</h2>
-        <div
-          id="prints-carousel"
-          class="flex overflow-x-auto space-x-4 pb-2 snap-x"
-        >
-          <div
-            class="flex-shrink-0 bg-[#2A2A2E] rounded-xl p-2 flex gap-2 w-80 snap-start"
-          >
-            <model-viewer
-              src="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Fox/glTF-Binary/Fox.glb"
-              alt="Fox model"
-              environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
-              camera-controls
-              auto-rotate
-              class="w-1/2 h-40"
-            ></model-viewer>
-            <img
-              src="https://images.unsplash.com/photo-1585124701440-7718ee1af7aa?auto=format&fit=crop&w=240&q=60"
-              alt="Printed fox"
-              loading="lazy"
-              class="w-1/2 h-40 object-cover rounded"
-            />
-          </div>
-          <div
-            class="flex-shrink-0 bg-[#2A2A2E] rounded-xl p-2 w-48 snap-start"
-          >
-            <model-viewer
-              src="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/WaterBottle/glTF-Binary/WaterBottle.glb"
-              alt="Water bottle model"
-              environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
-              camera-controls
-              auto-rotate
-              class="w-full h-40"
-            ></model-viewer>
-          </div>
-          <div
-            class="flex-shrink-0 bg-[#2A2A2E] rounded-xl p-2 flex gap-2 w-80 snap-start"
-          >
-            <model-viewer
-              src="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/AntiqueCamera/glTF-Binary/AntiqueCamera.glb"
-              alt="Camera model"
-              environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
-              camera-controls
-              auto-rotate
-              class="w-1/2 h-40"
-            ></model-viewer>
-            <img
-              src="https://images.unsplash.com/photo-1519183071298-a2962be566f2?auto=format&fit=crop&w=240&q=60"
-              alt="Printed camera"
-              loading="lazy"
-              class="w-1/2 h-40 object-cover rounded"
-            />
-          </div>
-          <div
-            class="flex-shrink-0 bg-[#2A2A2E] rounded-xl p-2 w-48 snap-start"
-          >
-            <img
-              src="https://images.unsplash.com/photo-1555617117-08ce2a69e83d?auto=format&fit=crop&w=240&q=60"
-              alt="Printed vase"
-              loading="lazy"
-              class="w-full h-40 object-cover rounded"
-            />
-          </div>
-        </div>
-      </section>
-
-      <!-- What others are printing carousel -->
-      <section class="mb-12">
-        <h2 class="text-xl font-semibold mb-4 text-center">
-          What others are printing
-        </h2>
-        <div
-          id="prints-carousel"
-          class="flex overflow-x-auto gap-4 pb-2 snap-x justify-center"
-        >
-          <div class="flex-shrink-0 flex gap-2 w-80 snap-start">
-            <model-viewer
-              src="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Fox/glTF-Binary/Fox.glb"
-              alt="Fox model"
-              environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
-              camera-controls
-              auto-rotate
-              class="w-1/2 h-40"
-            ></model-viewer>
-            <img
-              src="https://images.unsplash.com/photo-1585124701440-7718ee1af7aa?auto=format&fit=crop&w=240&q=60"
-              alt="Printed fox"
-              loading="lazy"
-              class="w-1/2 h-40 object-cover rounded"
-            />
-          </div>
-          <div class="flex-shrink-0 w-48 snap-start">
-            <model-viewer
-              src="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/WaterBottle/glTF-Binary/WaterBottle.glb"
-              alt="Water bottle model"
-              environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
-              camera-controls
-              auto-rotate
-              class="w-full h-40"
-            ></model-viewer>
-          </div>
-          <div class="flex-shrink-0 flex gap-2 w-80 snap-start">
-            <model-viewer
-              src="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/AntiqueCamera/glTF-Binary/AntiqueCamera.glb"
-              alt="Camera model"
-              environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
-              camera-controls
-              auto-rotate
-              class="w-1/2 h-40"
-            ></model-viewer>
-            <img
-              src="https://images.unsplash.com/photo-1519183071298-a2962be566f2?auto=format&fit=crop&w=240&q=60"
-              alt="Printed camera"
-              loading="lazy"
-              class="w-1/2 h-40 object-cover rounded"
-            />
-          </div>
-          <div class="flex-shrink-0 w-48 snap-start">
-            <img
-              src="https://images.unsplash.com/photo-1555617117-08ce2a69e83d?auto=format&fit=crop&w=240&q=60"
-              alt="Printed vase"
-              loading="lazy"
-              class="w-full h-40 object-cover rounded"
-            />
-          </div>
-        </div>
-      </section>
-      <!-- What others are printing -->
-      <section class="mb-12">
-        <h2 class="text-xl font-semibold mb-4 text-center">
-          What others are printing
-        </h2>
-        <div
-          id="prints-carousel"
-          class="flex overflow-x-auto gap-4 pb-2 snap-x justify-center"
-        >
-          <div class="flex-shrink-0 flex gap-2 w-80 snap-start">
-            <model-viewer
-              src="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Fox/glTF-Binary/Fox.glb"
-              alt="Fox model"
-              environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
-              camera-controls
-              auto-rotate
-              class="w-1/2 h-40"
-            ></model-viewer>
-            <img
-              src="https://images.unsplash.com/photo-1585124701440-7718ee1af7aa?auto=format&fit=crop&w=240&q=60"
-              alt="Printed fox"
-              loading="lazy"
-              class="w-1/2 h-40 object-cover rounded"
-            />
-          </div>
-          <div class="flex-shrink-0 w-48 snap-start">
-            <model-viewer
-              src="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/WaterBottle/glTF-Binary/WaterBottle.glb"
-              alt="Water bottle model"
-              environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
-              camera-controls
-              auto-rotate
-              class="w-full h-40"
-            ></model-viewer>
-          </div>
-          <div class="flex-shrink-0 flex gap-2 w-80 snap-start">
-            <model-viewer
-              src="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/AntiqueCamera/glTF-Binary/AntiqueCamera.glb"
-              alt="Camera model"
-              environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
-              camera-controls
-              auto-rotate
-              class="w-1/2 h-40"
-            ></model-viewer>
-            <img
-              src="https://images.unsplash.com/photo-1519183071298-a2962be566f2?auto=format&fit=crop&w=240&q=60"
-              alt="Printed camera"
-              loading="lazy"
-              class="w-1/2 h-40 object-cover rounded"
-            />
-          </div>
-          <div class="flex-shrink-0 w-48 snap-start">
-            <img
-              src="https://images.unsplash.com/photo-1555617117-08ce2a69e83d?auto=format&fit=crop&w=240&q=60"
-              alt="Printed vase"
-              loading="lazy"
-              class="w-full h-40 object-cover rounded"
-            />
-          </div>
-        </div>
       </section>
 
       <!-- Recent Creations -->
       <section>
         <h2 class="text-xl font-semibold mb-4">Recent</h2>
-        <div
-          id="recent-grid"
-          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
-        ></div>
+        <div id="recent-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
         <div id="recent-sentinel" class="h-8"></div>
         <button
           id="recent-load"
@@ -538,28 +258,12 @@
         >
           Add to Basket
         </button>
-        <div
-          id="modal-copy-container"
-          class="absolute bottom-4 left-40 flex items-center gap-2"
-        >
-          <button
-            id="modal-copy-link"
-            aria-label="Copy referral link"
-            class="w-9 h-9 flex items-center justify-center bg-[#2A2A2E] border border-white/20 rounded-full hover:bg-[#3A3A3E] transition-shape"
-          >
-            <i class="fas fa-share"></i>
-          </button>
-          <span
-            id="modal-copy-msg"
-            class="ml-2 text-sm opacity-0 transition-opacity"
-            >Link copied</span
-          >
+        <div id="modal-copy-container" class="absolute bottom-4 left-40 flex items-center gap-2">
+          <button id="modal-copy-link" class="font-bold py-2 px-4 rounded-full shadow-md bg-[#2A2A2E] border border-white/20">Share</button>
+          <span id="modal-copy-msg" class="ml-2 text-sm opacity-0 transition-opacity">Link copied</span>
         </div>
         <div class="bg-[#2A2A2E] p-4 rounded-b-xl">
-          <ul
-            id="comments-list"
-            class="space-y-1 max-h-48 overflow-y-auto text-sm"
-          ></ul>
+          <ul id="comments-list" class="space-y-1 max-h-48 overflow-y-auto text-sm"></ul>
           <div id="comment-form" class="flex gap-2 mt-2">
             <input
               type="text"
@@ -567,69 +271,56 @@
               placeholder="Add a comment..."
               class="flex-1 bg-[#1A1A1D] border border-white/20 rounded px-2 py-1"
             />
-            <button id="comment-submit" class="px-3 py-1 bg-blue-600 rounded">
-              Post
-            </button>
+            <button id="comment-submit" class="px-3 py-1 bg-blue-600 rounded">Post</button>
           </div>
         </div>
       </div>
     </div>
     <script type="module">
-      import { shareOn } from "./js/share.js";
-      import {
-        init,
-        closeModel,
-        restoreOpenModel,
-        copyReferral,
-      } from "./js/community.js";
+      import { shareOn } from './js/share.js';
+      import { init, closeModel, restoreOpenModel } from './js/community.js';
       window.shareOn = shareOn;
 
-      document.addEventListener("DOMContentLoaded", () => {
-        const modal = document.getElementById("model-modal");
-        const checkoutBtn = document.getElementById("modal-checkout");
-        const addBasketBtn = document.getElementById("modal-add-basket");
-        const closeBtn = document.getElementById("close-modal");
-        const tierToggle = document.getElementById("tier-toggle");
+      document.addEventListener('DOMContentLoaded', () => {
+        const modal = document.getElementById('model-modal');
+        const checkoutBtn = document.getElementById('modal-checkout');
+        const addBasketBtn = document.getElementById('modal-add-basket');
+        const closeBtn = document.getElementById('close-modal');
+        const tierToggle = document.getElementById('tier-toggle');
 
         function setTier(tier) {
-          tierToggle?.querySelectorAll("button[data-tier]").forEach((btn) => {
+          tierToggle?.querySelectorAll('button[data-tier]').forEach((btn) => {
             const active = btn.dataset.tier === tier;
 
-            btn.classList.toggle("ring-2", active);
-            btn.classList.toggle("ring-white", active);
-            btn.classList.toggle("opacity-100", active);
-            btn.classList.toggle("opacity-50", !active);
+            btn.classList.toggle('ring-2', active);
+            btn.classList.toggle('ring-white', active);
+            btn.classList.toggle('opacity-100', active);
+            btn.classList.toggle('opacity-50', !active);
           });
           if (checkoutBtn) {
-            const price =
-              tier === "bronze" ? 29.99 : tier === "gold" ? 79.99 : 39.99;
+            const price = tier === 'bronze' ? 29.99 : tier === 'gold' ? 79.99 : 39.99;
             checkoutBtn.textContent = `Print for £${price.toFixed(2)} →`;
           }
-          const material =
-            tier === "bronze"
-              ? "single"
-              : tier === "gold"
-                ? "premium"
-                : "multi";
-          localStorage.setItem("print3Material", material);
+          const material = tier === 'bronze' ? 'single' : tier === 'gold' ? 'premium' : 'multi';
+          localStorage.setItem('print3Material', material);
         }
 
-        tierToggle?.addEventListener("click", (ev) => {
-          const btn = ev.target.closest("button[data-tier]");
+        tierToggle?.addEventListener('click', (ev) => {
+          const btn = ev.target.closest('button[data-tier]');
           if (btn) setTier(btn.dataset.tier);
         });
 
         const close = closeModel;
 
-        checkoutBtn.addEventListener("click", () => {
-          sessionStorage.setItem("fromCommunity", "1");
+        checkoutBtn.addEventListener('click', () => {
+          sessionStorage.setItem('fromCommunity', '1');
           const model = checkoutBtn.dataset.model;
           const job = checkoutBtn.dataset.job;
-          if (model) localStorage.setItem("print3Model", model);
-          if (job) localStorage.setItem("print3JobId", job);
+          if (model) localStorage.setItem('print3Model', model);
+          if (job) localStorage.setItem('print3JobId', job);
         });
 
-        addBasketBtn?.addEventListener("click", () => {
+        addBasketBtn?.addEventListener('click', () => {
           if (!window.addToBasket) return;
           const model = addBasketBtn.dataset.model;
           const job = addBasketBtn.dataset.job;
@@ -639,61 +330,49 @@
           }
         });
 
-        const copyBtn = document.getElementById("modal-copy-link");
-        const copyMsg = document.getElementById("modal-copy-msg");
-
-        const help = document.getElementById("modal-copy-help");
-        const tooltip = document.getElementById("modal-copy-tooltip");
-        copyBtn?.addEventListener("click", () => {
+        const copyBtn = document.getElementById('modal-copy-link');
+        const copyMsg = document.getElementById('modal-copy-msg');
+        const help = document.getElementById('modal-copy-help');
+        const tooltip = document.getElementById('modal-copy-tooltip');
+        copyBtn?.addEventListener('click', () => {
           const id = copyBtn.dataset.id;
           if (!id) return;
           const url = `${window.location.origin}/community/model/${id}`;
           navigator.clipboard.writeText(url).then(() => {
             if (copyMsg) {
-              const leftBtn = document.getElementById("carousel-left");
-              const rightBtn = document.getElementById("carousel-right");
-              const carousel = document.getElementById("others-carousel");
-              function scrollCarousel(amount) {
-                carousel?.scrollBy({ left: amount, behavior: "smooth" });
-              }
-              leftBtn?.addEventListener("click", () => scrollCarousel(-200));
-              rightBtn?.addEventListener("click", () => scrollCarousel(200));
-              copyMsg.classList.remove("opacity-0");
-              copyMsg.classList.add("opacity-100");
+              copyMsg.classList.remove('opacity-0');
+              copyMsg.classList.add('opacity-100');
               setTimeout(() => {
-                copyMsg.classList.add("opacity-0");
-                copyMsg.classList.remove("opacity-100");
+                copyMsg.classList.add('opacity-0');
+                copyMsg.classList.remove('opacity-100');
               }, 2000);
             }
           });
         });
         if (help && tooltip) {
-          ["mouseenter", "focus"].forEach((ev) =>
-            help.addEventListener(ev, () => tooltip.classList.remove("hidden")),
+          ['mouseenter', 'focus'].forEach((ev) =>
+            help.addEventListener(ev, () => tooltip.classList.remove('hidden'))
           );
-          ["mouseleave", "blur"].forEach((ev) =>
-            help.addEventListener(ev, () => tooltip.classList.add("hidden")),
+          ['mouseleave', 'blur'].forEach((ev) =>
+            help.addEventListener(ev, () => tooltip.classList.add('hidden'))
           );
         }
 
-        closeBtn.addEventListener("click", close);
-        document.addEventListener("keydown", (e) => {
-          if (e.key === "Escape") close();
+        closeBtn.addEventListener('click', close);
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') close();
         });
 
-        document.addEventListener("click", (e) => {
-          if (modal.classList.contains("hidden")) return;
-          const container = modal.querySelector("div");
-          const basketBtn = document.getElementById("basket-button");
-          if (
-            !container.contains(e.target) &&
-            !(basketBtn && basketBtn.contains(e.target))
-          ) {
+        document.addEventListener('click', (e) => {
+          if (modal.classList.contains('hidden')) return;
+          const container = modal.querySelector('div');
+          const basketBtn = document.getElementById('basket-button');
+          if (!container.contains(e.target) && !(basketBtn && basketBtn.contains(e.target))) {
             close();
           }
         });
 
-        setTier("silver");
+        setTier('silver');
         init();
         restoreOpenModel();
       });
@@ -705,8 +384,7 @@
       <div class="bg-[#2A2A2E] p-6 rounded-xl max-w-sm text-center">
         <h2 class="text-2xl font-semibold mb-2">print2 pro</h2>
         <p class="mb-4">
-          Get two prints (single or multicolour tiers) every week for
-          £149.99/month.
+          Get two prints (single or multicolour tiers) every week for £149.99/month.
         </p>
         <button
           id="printclub-close"
