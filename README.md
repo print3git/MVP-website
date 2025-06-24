@@ -205,7 +205,9 @@ Models can be shared publicly via unique slugs.
   redirect to `share.html` for viewing.
 - Item cards in **Community Creations** now include a share icon that copies a
   referral link like `https://prints3.com/item/<ID>?ref=<CODE>` to the clipboard.
-  Signups via this link grant both parties a £3 discount code.
+  Signups via this link grant both parties a £3 discount code. The referrer's
+  code is stored in their incentives list while the new user's code is returned
+  from `/api/referral-signup` for display after signup.
 
 ## Model Lists
 
