@@ -167,12 +167,12 @@ const prefetchedModels = new Set();
 function prefetchModel(url) {
   if (prefetchedModels.has(url)) return;
   const link = document.createElement("link");
-  // Preload with high priority so the model is ready when clicked
+  // Preload with low priority to reduce initial page load cost
   link.rel = "preload";
   link.href = url;
   link.as = "fetch";
   link.crossOrigin = "anonymous";
-  link.fetchPriority = "high";
+  link.fetchPriority = "low";
   document.head.appendChild(link);
   prefetchedModels.add(url);
 }

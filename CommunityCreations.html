@@ -173,11 +173,11 @@
       <!-- What People Are Printing -->
       <section class="mb-12">
         <h2 class="text-xl font-semibold mb-4">What people are printing</h2>
-        <div id="printing-carousel" class="relative">
+        <div id="printing-carousel" class="relative" data-slides="3">
           <div class="overflow-hidden rounded-xl">
             <div class="carousel-track flex transition-transform duration-300">
               <div
-                class="carousel-slide min-w-full p-4 flex items-center justify-center"
+                class="carousel-slide flex-none p-4 flex items-center justify-center"
               >
                 <model-viewer
                   src="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BoomBox/glTF-Binary/BoomBox.glb"
@@ -185,24 +185,28 @@
                   environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
                   camera-controls
                   auto-rotate
+                  reveal="interaction"
+                  loading="lazy"
                   class="w-full h-64 bg-[#2A2A2E] rounded-xl"
                 ></model-viewer>
               </div>
               <div
-                class="carousel-slide min-w-full p-4 flex items-center justify-center"
+                class="carousel-slide flex-none p-4 flex items-center justify-center"
               >
                 <img
                   src="https://images.unsplash.com/photo-1516117172878-fd2c41f4a759"
                   alt="Real-life print"
+                  loading="lazy"
                   class="w-full h-64 object-cover rounded-xl"
                 />
               </div>
               <div
-                class="carousel-slide min-w-full p-4 flex flex-col items-center justify-center text-center space-y-4"
+                class="carousel-slide flex-none p-4 flex flex-col items-center justify-center text-center space-y-4"
               >
                 <img
                   src="https://images.unsplash.com/photo-1502685104226-ee32379fefbe"
                   alt="User testimonial"
+                  loading="lazy"
                   class="w-20 h-20 rounded-full object-cover"
                 />
                 <p class="max-w-md italic">"I love using print3!"</p>
