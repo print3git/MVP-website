@@ -150,53 +150,96 @@
           class="bg-[#2A2A2E] border border-white/20 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4A4A4E] flex-1 min-w-[10rem] h-11"
         />
       </div>
-      <p class="text-center mb-6">
-        £8 942 credit earned by creators so far.
-        <a href="login.html" class="font-bold text-[#30D5C8]">Log In</a>
-        or
-        <a href="signup.html" class="font-bold text-[#30D5C8]">Sign Up</a>
-        to do the same.
-      </p>
-      <!-- Popular Creations -->
-      <section class="mb-12">
-        <h2 class="text-xl font-semibold mb-4">Bestselling</h2>
-        <div
-          id="popular-grid"
-          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
-        ></div>
-        <div id="popular-sentinel" class="h-8"></div>
-        <button
-          id="popular-load"
-          class="mt-4 px-4 py-2 bg-[#2A2A2E] border border-white/20 rounded-lg mx-auto block"
-        >
-          More
-        </button>
-      </section>
-
-      <!-- What Others Are Printing -->
-      <section class="mb-12">
-        <h2 class="text-xl font-semibold mb-4">What Others Are Printing</h2>
-        <div id="others-carousel" class="flex gap-4 overflow-x-auto pb-2">
-          <div class="flex gap-2 items-start min-w-[24rem]">
-            <model-viewer
-              src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
-              alt="Astronaut model"
-              environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
-              camera-controls
-              class="w-40 h-40 bg-[#2A2A2E] rounded-xl flex-shrink-0"
-              crossOrigin="anonymous"
-            ></model-viewer>
-            <img
-              src="https://images.unsplash.com/photo-1506880018603-6bdfb12f5fe5?auto=format&fit=crop&w=300&q=60"
-              alt="Astronaut print"
-              class="w-40 h-40 object-cover rounded-xl"
-            />
-          </div>
-          <div class="min-w-[12rem]">
-            <model-viewer
-              src="https://modelviewer.dev/shared-assets/models/RobotExpressive.glb"
-              alt="Expressive robot model"
-              environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
+        <div class="relative">
+          <button
+            type="button"
+            id="carousel-left"
+            aria-label="Scroll left"
+            class="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-[#2A2A2E] border border-white/20 rounded-full p-2"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+          </button>
+          <div
+            id="others-carousel"
+            class="flex gap-4 overflow-x-auto pb-2 scroll-smooth snap-x snap-mandatory"
+          >
+            <div class="flex gap-2 items-start min-w-[24rem]">
+              <model-viewer
+                src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
+                alt="Astronaut model"
+                environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
+                camera-controls
+                class="w-40 h-40 bg-[#2A2A2E] rounded-xl flex-shrink-0"
+                crossOrigin="anonymous"
+              ></model-viewer>
+              <img
+                src="https://images.unsplash.com/photo-1506880018603-6bdfb12f5fe5?auto=format&fit=crop&w=300&q=60"
+                alt="Astronaut print"
+                class="w-40 h-40 object-cover rounded-xl"
+              />
+            </div>
+            <div class="min-w-[12rem]">
+              <model-viewer
+                src="https://modelviewer.dev/shared-assets/models/RobotExpressive.glb"
+                alt="Expressive robot model"
+                environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
+                camera-controls
+                class="w-40 h-40 bg-[#2A2A2E] rounded-xl"
+                crossOrigin="anonymous"
+              ></model-viewer>
+            </div>
+            <div class="flex gap-2 items-start min-w-[24rem]">
+              <model-viewer
+                src="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/AntiqueCamera/glTF-Binary/AntiqueCamera.glb"
+                alt="Camera model"
+                environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
+                camera-controls
+                class="w-40 h-40 bg-[#2A2A2E] rounded-xl flex-shrink-0"
+                crossOrigin="anonymous"
+              ></model-viewer>
+              <img
+                src="https://images.unsplash.com/photo-1630681847349-d8c7f9eca5f4?auto=format&fit=crop&w=300&q=60"
+                alt="Camera print"
+                class="w-40 h-40 object-cover rounded-xl"
+              />
+            </div>
+            <div class="min-w-[12rem]">
+              <img
+                src="https://images.unsplash.com/photo-1602524202186-1e76ec7e17eb?auto=format&fit=crop&w=300&q=60"
+                alt="3D printed robot"
+                class="w-40 h-40 object-cover rounded-xl"
+              />
+            </div>
+          <button
+            type="button"
+            id="carousel-right"
+            aria-label="Scroll right"
+            class="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-[#2A2A2E] border border-white/20 rounded-full p-2"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M9 6l6 6-6 6" />
+            </svg>
+          </button>
               camera-controls
               class="w-40 h-40 bg-[#2A2A2E] rounded-xl"
               crossOrigin="anonymous"
@@ -440,6 +483,14 @@
           const url = `${window.location.origin}/community/model/${id}`;
           navigator.clipboard.writeText(url).then(() => {
             if (copyMsg) {
+        const leftBtn = document.getElementById("carousel-left");
+        const rightBtn = document.getElementById("carousel-right");
+        const carousel = document.getElementById("others-carousel");
+        function scrollCarousel(amount) {
+          carousel?.scrollBy({ left: amount, behavior: "smooth" });
+        }
+        leftBtn?.addEventListener("click", () => scrollCarousel(-200));
+        rightBtn?.addEventListener("click", () => scrollCarousel(200));
               copyMsg.classList.remove("opacity-0");
               copyMsg.classList.add("opacity-100");
               setTimeout(() => {
