@@ -16,7 +16,7 @@ const PRICES = {
 };
 
 const TWO_PRINT_DISCOUNT = 700;
-let PRICING_VARIANT = localStorage.getItem('pricingVariant');
+let PRICING_VARIANT = localStorage.getItem("pricingVariant");
 if (!PRICING_VARIANT) {
   PRICING_VARIANT = Math.random() < 0.5 ? "A" : "B";
   localStorage.setItem("pricingVariant", PRICING_VARIANT);
@@ -365,47 +365,53 @@ async function initPaymentPage() {
     } catch {}
   }
 
-  const loader = document.getElementById('loader');
-  const viewer = document.getElementById('viewer');
-  const optOut = document.getElementById('opt-out');
-  const emailEl = document.getElementById('checkout-email');
-  const successMsg = document.getElementById('success');
-  const cancelMsg = document.getElementById('cancel');
-  const flashBanner = document.getElementById('flash-banner');
-  const flashTimer = document.getElementById('flash-timer');
-  const costEl = document.getElementById('cost-estimate');
-  const etaEl = document.getElementById('eta-estimate');
-  const slotEl = document.getElementById('slot-count');
-  const colorSlotEl = document.getElementById('color-slot-count');
-  const bulkSlotEl = document.getElementById('bulk-slot-count');
-  const discountInput = document.getElementById('discount-code');
-  const discountMsg = document.getElementById('discount-msg');
-  const applyBtn = document.getElementById('apply-discount');
-  const surpriseToggle = document.getElementById('surprise-toggle');
-  const recipientFields = document.getElementById('recipient-fields');
-  const qtySelect = document.getElementById('print-qty');
-  const qtyDec = document.getElementById('qty-decrement');
-  const qtyInc = document.getElementById('qty-increment');
-  const bulkMsg = document.getElementById('bulk-discount-msg');
+  const loader = document.getElementById("loader");
+  const viewer = document.getElementById("viewer");
+  const optOut = document.getElementById("opt-out");
+  const emailEl = document.getElementById("checkout-email");
+  const successMsg = document.getElementById("success");
+  const cancelMsg = document.getElementById("cancel");
+  const flashBanner = document.getElementById("flash-banner");
+  const flashTimer = document.getElementById("flash-timer");
+  const savedBanner = document.getElementById("saved-reminder");
+  if (savedBanner) {
+    try {
+      const list = JSON.parse(localStorage.getItem("print3Saved") || "[]");
+      if (list.length) savedBanner.hidden = false;
+    } catch {}
+  }
+  const costEl = document.getElementById("cost-estimate");
+  const etaEl = document.getElementById("eta-estimate");
+  const slotEl = document.getElementById("slot-count");
+  const colorSlotEl = document.getElementById("color-slot-count");
+  const bulkSlotEl = document.getElementById("bulk-slot-count");
+  const discountInput = document.getElementById("discount-code");
+  const discountMsg = document.getElementById("discount-msg");
+  const applyBtn = document.getElementById("apply-discount");
+  const surpriseToggle = document.getElementById("surprise-toggle");
+  const recipientFields = document.getElementById("recipient-fields");
+  const qtySelect = document.getElementById("print-qty");
+  const qtyDec = document.getElementById("qty-decrement");
+  const qtyInc = document.getElementById("qty-increment");
+  const bulkMsg = document.getElementById("bulk-discount-msg");
   const inputIds = [
-    'ship-name',
-    'etch-name',
-    'checkout-email',
-    'ship-address',
-    'ship-city',
-    'ship-zip',
-    'discount-code',
+    "ship-name",
+    "etch-name",
+    "checkout-email",
+    "ship-address",
+    "ship-city",
+    "ship-zip",
+    "discount-code",
   ];
   const highlightValid = (el) => {
     if (!el) return;
-    const valid = !el.disabled && el.value.trim() !== '' && el.checkValidity();
+    const valid = !el.disabled && el.value.trim() !== "" && el.checkValidity();
     if (valid) {
-      el.classList.add('ring-2', 'ring-green-500');
+      el.classList.add("ring-2", "ring-green-500");
     } else {
-      el.classList.remove('ring-2', 'ring-green-500');
+      el.classList.remove("ring-2", "ring-green-500");
     }
   };
-
 
   fetchCampaignBundle();
   loadCheckoutCredits();
@@ -568,9 +574,9 @@ async function initPaymentPage() {
     } else {
       const qty = Math.max(1, parseInt(qtySelect?.value || "2", 10));
       let total = selectedPrice * qty;
-        if (qty > 1) {
-          total -= TWO_PRINT_DISCOUNT;
-        }
+      if (qty > 1) {
+        total -= TWO_PRINT_DISCOUNT;
+      }
       payBtn.textContent = `Pay £${(total / 100).toFixed(2)} (${qty} prints)`;
     }
   }
@@ -894,12 +900,12 @@ async function initPaymentPage() {
     const el = document.getElementById(id);
     if (el) {
       highlightValid(el);
-      el.addEventListener('input', () => highlightValid(el));
+      el.addEventListener("input", () => highlightValid(el));
     }
   });
 
-  ['ship-address', 'ship-city', 'ship-zip'].forEach((id) => {
-    document.getElementById(id)?.addEventListener('change', updateEstimate);
+  ["ship-address", "ship-city", "ship-zip"].forEach((id) => {
+    document.getElementById(id)?.addEventListener("change", updateEstimate);
   });
 
   applyBtn?.addEventListener("click", async () => {

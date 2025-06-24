@@ -454,8 +454,6 @@
           id="model-stats"
           class="absolute top-2 left-2 text-xs bg-black/60 text-white px-2 py-1 rounded z-10 pointer-events-none"
         >
-          <span id="likes-count">❤️ 12 likes</span>
-          •
           <span id="print-count">🛒 4 prints sold</span>
         </div>
         <div
@@ -505,9 +503,15 @@
         >
           Add to Basket
         </button>
+        <button
+          id="modal-save"
+          class="absolute bottom-4 left-40 font-bold py-2 px-4 rounded-full shadow-md bg-blue-600 text-white border-2 border-black"
+        >
+          Save
+        </button>
         <div
           id="modal-copy-container"
-          class="absolute bottom-4 left-40 flex items-center gap-2"
+          class="absolute bottom-4 left-72 flex items-center gap-2"
         >
           <button
             id="modal-copy-link"
@@ -557,6 +561,7 @@
         const modal = document.getElementById("model-modal");
         const checkoutBtn = document.getElementById("modal-checkout");
         const addBasketBtn = document.getElementById("modal-add-basket");
+        const saveBtn = document.getElementById("modal-save");
         const closeBtn = document.getElementById("close-modal");
         const tierToggle = document.getElementById("tier-toggle");
 
@@ -606,6 +611,15 @@
           if (model) {
             window.addToBasket({ jobId: job, modelUrl: model, snapshot });
           }
+        });
+
+        saveBtn?.addEventListener("click", () => {
+          const id = saveBtn.dataset.id;
+          const model = saveBtn.dataset.model;
+          const snapshot = saveBtn.dataset.snapshot;
+          if (!id) return;
+          window.toggleSave({ id, modelUrl: model, snapshot });
+          saveBtn.textContent = window.isSaved(id) ? "Saved" : "Save";
         });
 
         const copyBtn = document.getElementById("modal-copy-link");
@@ -691,6 +705,7 @@
     <script type="module" src="js/printclub.js"></script>
     <script type="module" src="js/rewardBadge.js"></script>
     <script type="module" src="js/basket.js"></script>
+    <script type="module" src="js/saves.js"></script>
     <script type="module" src="js/rewardBadge.js"></script>
   </body>
 </html>

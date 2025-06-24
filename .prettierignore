@@ -2,6 +2,7 @@ node_modules
 uploads
 js/model-viewer.min.js
 payment.html
+CommunityCreations.html
 
 # Build artifacts
 dist
