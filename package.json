@@ -36,6 +36,7 @@
   "author": "",
   "license": "ISC",
   "type": "commonjs",
+  "prettier": {},
   "devDependencies": {
     "@axe-core/cli": "^4.10.2",
     "@axe-core/playwright": "^4.10.2",
