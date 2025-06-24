@@ -44,6 +44,20 @@
         transition: transform 0.5s ease-in-out;
         will-change: transform;
       }
+      @keyframes tickerFade {
+        0% {
+          opacity: 0;
+        }
+        25%, 75% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0;
+        }
+      }
+      .ticker-fade {
+        animation: tickerFade 8s forwards;
+      }
     </style>
   </head>
   <body class="bg-[#1A1A1D] text-white font-sans flex flex-col min-h-screen">
@@ -182,6 +196,7 @@
       <!-- What People Are Printing -->
       <section class="mb-12">
         <h2 class="text-xl font-semibold mb-4">What people are printing</h2>
+        <div id="printing-ticker" class="text-sm mb-2 opacity-0"></div>
         <div id="printing-carousel" class="relative" data-slides="4">
           <div class="overflow-hidden rounded-xl">
             <div class="carousel-track flex transition-transform duration-300">
@@ -528,6 +543,7 @@
     <script type="module" src="js/basket.js"></script>
 
     <script type="module" src="js/saveList.js"></script>
+    <script type="module" src="js/printingTicker.js"></script>
     <script type="module" src="js/carousel.js"></script>
     <script type="module" src="js/rewardBadge.js"></script>
   </body>
