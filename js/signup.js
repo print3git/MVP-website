@@ -38,6 +38,8 @@ async function signup(e) {
   if (data.token) {
     localStorage.setItem("token", data.token);
     const ref = localStorage.getItem("referrerId");
+    const codeEl = document.getElementById("referral-code");
+    if (codeEl) codeEl.textContent = "";
     if (ref) {
       try {
         const r = await fetch(`${API_BASE}/referral-signup`, {
@@ -47,14 +49,14 @@ async function signup(e) {
         });
         if (r.ok) {
           const d = await r.json();
-          if (d.code) {
-            alert(`Your £3 discount code: ${d.code}`);
+          if (d.code && codeEl) {
+            codeEl.textContent = `Your £3 discount code: ${d.code}`;
           }
-        } else {
-          alert("Failed to apply referral");
+        } else if (codeEl) {
+          codeEl.textContent = "Failed to apply referral";
         }
       } catch (err) {
-        alert("Failed to apply referral");
+        if (codeEl) codeEl.textContent = "Failed to apply referral";
       }
     }
     if (optIn) {
