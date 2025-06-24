@@ -3,6 +3,9 @@ export function initCarousel() {
   if (!carousel) return;
   const track = carousel.querySelector(".carousel-track");
   if (!track) return;
+  const transitionStyle = "transform 0.5s ease-in-out";
+  track.style.willChange = "transform";
+  track.style.transition = transitionStyle;
   let slides = Array.from(track.children);
   if (slides.length === 0) return;
   function getSlidesPerView() {
@@ -23,7 +26,7 @@ export function initCarousel() {
   setWidths();
 
   function next() {
-    track.style.transition = "transform 0.3s";
+    track.style.transition = transitionStyle;
     track.style.transform = `translateX(-${slideWidth}%)`;
     track.addEventListener(
       "transitionend",
@@ -42,7 +45,7 @@ export function initCarousel() {
     track.insertBefore(track.lastElementChild, track.firstElementChild);
     track.style.transform = `translateX(-${slideWidth}%)`;
     requestAnimationFrame(() => {
-      track.style.transition = "transform 0.3s";
+      track.style.transition = transitionStyle;
       track.style.transform = "translateX(0)";
     });
     slides = Array.from(track.children);
