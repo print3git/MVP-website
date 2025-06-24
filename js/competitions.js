@@ -177,7 +177,7 @@ function renderEntriesPage(grid, pager, page) {
       "entry-card relative h-32 bg-[#2A2A2E] border border-white/10 rounded-xl flex items-center justify-center cursor-pointer";
     card.dataset.model = r.model_url;
     card.dataset.job = r.model_id;
-    card.innerHTML = `<img src="" alt="Model" class="w-full h-full object-contain pointer-events-none" />\n      <button class="like absolute bottom-1 right-1 text-xs bg-red-600 px-1 rounded">\u2665</button>\n      <span class="absolute bottom-8 right-1 text-xs bg-black/50 px-1 rounded" id="votes-${r.model_id}">${r.votes}</span>\n      <button class="purchase absolute bottom-1 left-1 font-bold text-lg py-2 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]">Buy</button>`;
+    card.innerHTML = `<img src="" alt="Model" class="w-full h-full object-contain pointer-events-none" />\n      <button class="like absolute bottom-1 right-1 text-xs bg-red-600 px-1 rounded">\u2665</button>\n      <span class="absolute bottom-8 right-1 text-xs bg-black/50 px-1 rounded" id="votes-${r.model_id}">${r.votes}</span>\n      <button class="purchase absolute bottom-1 left-1 font-bold text-lg py-2 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]" style="transform: scale(1.3); transform-origin: left bottom;">Buy</button>`;
     card.querySelector(".like").addEventListener("click", (e) => {
       e.stopPropagation();
       vote(r.model_id);
@@ -373,7 +373,7 @@ async function loadPast() {
     div.innerHTML = `<h3 class="text-lg">${c.name}</h3>
       <div class="model-card relative h-32 border border-white/10 rounded-xl flex items-center justify-center cursor-pointer" data-model="${c.model_url}" data-job="${c.winner_model_id}">
         <img src="${c.snapshot || ""}" alt="Winning model" class="w-full h-full object-contain pointer-events-none" />
-        <button class="order absolute bottom-1 left-1 font-bold text-lg py-2 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]">Buy Print</button>
+        <button class="order absolute bottom-1 left-1 font-bold text-lg py-2 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]" style="transform: scale(1.3); transform-origin: left bottom;">Buy Print</button>
       </div>`;
     container.appendChild(div);
     const card = div.querySelector(".model-card");
