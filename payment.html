@@ -536,6 +536,12 @@
 
             <p id="cost-estimate" class="text-sm text-center"></p>
             <p id="eta-estimate" class="text-sm text-center"></p>
+            <div class="flex justify-between mt-1 text-xs">
+              <pre id="price-breakdown" class="whitespace-pre-wrap"></pre>
+              <p class="text-red-300 text-right">
+                Only <span id="slot-count" style="visibility: hidden"></span> prints remaining
+              </p>
+            </div>
             <button
               id="submit-payment"
               type="button"
@@ -543,12 +549,6 @@
             >
               Pay £39.99
             </button>
-            <div class="flex justify-between mt-1 text-xs">
-              <pre id="price-breakdown" class="whitespace-pre-wrap"></pre>
-              <p class="text-red-300 text-right">
-                Only <span id="slot-count" style="visibility: hidden"></span> prints remaining
-              </p>
-            </div>
           </form>
 
         <!-- repositioned badge -->
