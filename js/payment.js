@@ -403,7 +403,12 @@ async function initPaymentPage() {
   ];
   const highlightValid = (el) => {
     if (!el) return;
-    const valid = !el.disabled && el.value.trim() !== "" && el.checkValidity();
+    const value = el.value.trim();
+    let valid = !el.disabled && value !== "" && el.checkValidity();
+    if (el.id === "checkout-email") {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      valid = valid && emailRegex.test(value);
+    }
     if (valid) {
       el.classList.add("ring-2", "ring-green-500");
     } else {
