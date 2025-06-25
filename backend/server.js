@@ -2506,7 +2506,7 @@ app.post("/api/create-order", authOptional, async (req, res) => {
     shippingInfo,
     qty,
     discount,
-    discountCode,
+    discountCodes,
     referral,
     etchName,
     useCredit,
@@ -2521,19 +2521,24 @@ app.post("/api/create-order", authOptional, async (req, res) => {
     }
 
     let totalDiscount = discount || 0;
-    let discountCodeId = null;
+    const discountCodeIds = [];
     let referrerId = null;
     if (referral) {
       referrerId = await db.getUserIdForReferral(referral);
     }
 
-    if (discountCode) {
-      const row = await getValidDiscountCode(discountCode);
+    const codes = Array.isArray(discountCodes)
+      ? discountCodes
+      : discountCodes
+        ? [discountCodes]
+        : [];
+    for (const code of codes) {
+      const row = await getValidDiscountCode(code);
       if (!row) {
         return res.status(400).json({ error: "Invalid discount code" });
       }
       totalDiscount += row.amount_cents;
-      discountCodeId = row.id;
+      discountCodeIds.push(row.id);
     }
 
     if (
@@ -2703,8 +2708,8 @@ app.post("/api/create-order", authOptional, async (req, res) => {
       );
     }
 
-    if (discountCodeId) {
-      await incrementDiscountUsage(discountCodeId);
+    for (const id of discountCodeIds) {
+      await incrementDiscountUsage(id);
     }
 
     res.json({ checkoutUrl: session.url });
