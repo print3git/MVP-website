@@ -230,6 +230,18 @@ export function setupBasketUI() {
         localStorage.removeItem("print3JobId");
       }
     }
+    // Save basket contents for payment page navigation
+    try {
+      const checkoutItems = items.map((it) => ({
+        modelUrl: it.modelUrl,
+        jobId: it.jobId,
+        material: localStorage.getItem("print3Material") || "multi",
+      }));
+      localStorage.setItem(
+        "print3CheckoutItems",
+        JSON.stringify(checkoutItems),
+      );
+    } catch {}
     closeBasket();
     window.location.href = "payment.html";
   });
