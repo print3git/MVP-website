@@ -4,8 +4,6 @@
 - Target ads to demographics most likely to convert.
 - Use retargeting pixels to bring back visitors who left.
 - Integrate pixel data with ad platform to build custom audiences.
-- Embed tracking pixel across all site pages.
-- Add exit-intent discount overlay offering a promo code when visitors try to leave.
 - Include a clear value proposition and call-to-action in each ad.
 
 ## Purchase & Checkout
@@ -16,12 +14,7 @@
 
 ## Decreasing CAC
 
-- Add real photo of printed object or user-generated image to hero section to reinforce the physical product.
-
 ## Competitions & print2 pro
-
-- Add images to the competitions page and print2 pro with participant quotes to show social proof.
-- Replace the placeholder "Real life image here" box on the print2 pro page with an actual photo.
 
 ## Hub Deployment Kit
 
@@ -302,7 +295,9 @@
 - Track referral clicks and signups through the referral link endpoints.
 - Send competition and reward updates via the mailing list workflow.
 - Expand leaderboards, badges and monthly challenges on community pages.
+
 ## Add-ons Page & Post-Purchase Flow
+
 - Send follow-up emails after purchase to promote accessories.
 - Automate STL merging for accessories so no manual design work is needed.
 - Provide micro personalisation nudges like small props and texture tweaks.

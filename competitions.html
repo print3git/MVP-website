@@ -130,6 +130,18 @@
           to submit your best designs.
         </p>
       </section>
+      <section class="bg-[#2A2A2E] p-4 rounded-xl flex items-center space-x-4">
+        <img
+          src="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=200&q=60"
+          alt="Contest winner"
+          class="w-24 h-24 rounded-full object-cover"
+        />
+        <p class="text-sm italic">
+          "Entering competitions pushed my skills and the free prints are
+          awesome!" –
+          <span class="font-semibold">Alex</span>
+        </p>
+      </section>
       <h2 class="text-2xl">Active Competitions</h2>
       <h3 id="current-theme" class="text-lg text-[#30D5C8] mt-1"></h3>
       <div id="list" class="space-y-4"></div>
@@ -552,5 +564,39 @@
     <script type="module" src="js/basket.js"></script>
     <script type="module" src="js/saveList.js"></script>
     <script type="module" src="js/rewardBadge.js"></script>
+    <div
+      id="exit-discount-overlay"
+      class="fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50"
+    >
+      <div
+        class="relative bg-[#2A2A2E] border border-white/10 rounded-3xl p-6 text-center"
+      >
+        <button
+          id="exit-discount-close"
+          class="absolute -top-3 -right-3 w-[3rem] h-[3rem] rounded-full bg-white text-black flex items-center justify-center z-50"
+          aria-label="Close"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            class="w-7 h-7"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="3"
+            stroke-linecap="round"
+          >
+            <line x1="6" y1="6" x2="18" y2="18" />
+            <line x1="6" y1="18" x2="18" y2="6" />
+          </svg>
+        </button>
+        <h2 class="text-xl font-semibold mb-2 text-white">Wait!</h2>
+        <p class="mb-4 text-gray-200">
+          Use code <span class="text-white font-mono px-1">SAVE5</span> for 5%
+          off.
+        </p>
+      </div>
+    </div>
+    <script type="module" src="js/exitDiscount.js" defer></script>
+    <script type="module" src="js/trackingPixel.js"></script>
   </body>
 </html>

@@ -127,11 +127,18 @@
             </ul>
           </div>
         </div>
-        <div
-          class="w-full md:max-w-lg h-96 flex items-center justify-center border border-white/20 rounded-2xl bg-[#2A2A2E] text-sm shadow-lg p-6"
+        <figure
+          class="w-full md:max-w-lg h-96 flex flex-col items-center justify-center border border-white/20 rounded-2xl bg-[#2A2A2E] text-sm shadow-lg p-6"
         >
-          Real life image here
-        </div>
+          <img
+            src="https://images.unsplash.com/photo-1608889171200-f30f1066b706?auto=format&fit=crop&w=600&q=60"
+            alt="Happy member with prints"
+            class="object-cover w-full h-full rounded-xl"
+          />
+          <figcaption class="mt-2 text-center text-gray-300 italic">
+            "print2 pro takes my prints to the next level!" – Jamie
+          </figcaption>
+        </figure>
       </div>
     </main>
     <script type="module">
@@ -188,5 +195,39 @@
         }
       });
     </script>
+    <div
+      id="exit-discount-overlay"
+      class="fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50"
+    >
+      <div
+        class="relative bg-[#2A2A2E] border border-white/10 rounded-3xl p-6 text-center"
+      >
+        <button
+          id="exit-discount-close"
+          class="absolute -top-3 -right-3 w-[3rem] h-[3rem] rounded-full bg-white text-black flex items-center justify-center z-50"
+          aria-label="Close"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            class="w-7 h-7"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="3"
+            stroke-linecap="round"
+          >
+            <line x1="6" y1="6" x2="18" y2="18" />
+            <line x1="6" y1="18" x2="18" y2="6" />
+          </svg>
+        </button>
+        <h2 class="text-xl font-semibold mb-2 text-white">Wait!</h2>
+        <p class="mb-4 text-gray-200">
+          Use code <span class="text-white font-mono px-1">SAVE5</span> for 5%
+          off.
+        </p>
+      </div>
+    </div>
+    <script type="module" src="js/exitDiscount.js" defer></script>
+    <script type="module" src="js/trackingPixel.js"></script>
   </body>
 </html>
