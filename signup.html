@@ -121,6 +121,13 @@
             aria-label="Username"
           />
           <input
+            id="su-phone"
+            type="tel"
+            class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10 text-gray-200"
+            placeholder="Phone number (optional)"
+            aria-label="Phone number"
+          />
+          <input
             id="su-pass"
             type="password"
             class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10 text-gray-200"
@@ -155,7 +162,6 @@
         class="mt-2 text-green-400 text-center"
         aria-live="polite"
       ></div>
-
     </main>
     <script type="module" src="js/signup.js"></script>
     <script type="module">
@@ -186,21 +192,24 @@
     <script type="module" src="js/basket.js"></script>
     <script type="module" src="js/rewardBadge.js"></script>
     <script>
-      document.addEventListener('DOMContentLoaded', () => {
-        const link = document.getElementById('back-link');
+      document.addEventListener("DOMContentLoaded", () => {
+        const link = document.getElementById("back-link");
         if (!link) return;
-        let target = 'login.html';
-        const from = sessionStorage.getItem('fromCommunity');
-        sessionStorage.removeItem('fromCommunity');
+        let target = "login.html";
+        const from = sessionStorage.getItem("fromCommunity");
+        sessionStorage.removeItem("fromCommunity");
         try {
           const ref = new URL(document.referrer);
-          if (from === '1' || ref.pathname.endsWith('CommunityCreations.html')) {
-            target = 'CommunityCreations.html';
+          if (
+            from === "1" ||
+            ref.pathname.endsWith("CommunityCreations.html")
+          ) {
+            target = "CommunityCreations.html";
           }
         } catch {
-          if (from === '1') target = 'CommunityCreations.html';
+          if (from === "1") target = "CommunityCreations.html";
         }
-        link.setAttribute('href', target);
+        link.setAttribute("href", target);
       });
     </script>
   </body>
