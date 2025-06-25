@@ -534,7 +534,6 @@ async function initPaymentPage() {
     }
   }
 
-
   // Capture the original colours every time a new model loads so that
   // switching between items restores the correct textures.
   viewer.addEventListener("load", captureOriginal);
@@ -787,6 +786,10 @@ async function initPaymentPage() {
   prevBtn?.addEventListener("click", () => showItem(currentIndex - 1));
   nextBtn?.addEventListener("click", () => showItem(currentIndex + 1));
   if (checkoutItems.length) showItem(0);
+  if (qtySelect) {
+    qtySelect.value = checkoutItems.length > 1 ? "1" : "2";
+    qtySelect.dispatchEvent(new Event("change"));
+  }
   const sessionId = qs("session_id");
   if (sessionId) {
     recordPurchase();
@@ -900,10 +903,12 @@ async function initPaymentPage() {
   } catch {}
   function saveCheckoutItems() {
     try {
-      localStorage.setItem("print3CheckoutItems", JSON.stringify(checkoutItems));
+      localStorage.setItem(
+        "print3CheckoutItems",
+        JSON.stringify(checkoutItems),
+      );
     } catch {}
   }
-
 
   if (!checkoutItems.length) {
     viewer.src = storedModel || FALLBACK_GLB;
@@ -1173,6 +1178,40 @@ async function initPaymentPage() {
   document
     .getElementById("submit-payment")
     .addEventListener("click", () => payHandler());
+
+  const summaryEl = document.getElementById("pay-summary");
+  function materialLabel(mat) {
+    if (mat === "single") return "single colour";
+    if (mat === "multi") return "multi-colour";
+    if (mat === "premium") return "premium";
+    return mat;
+  }
+  function updateSummary() {
+    if (!summaryEl) return;
+    const etch = etchInput && !etchInput.disabled ? etchInput.value.trim() : "";
+    const items = checkoutItems.length
+      ? checkoutItems
+      : [{ material: storedMaterial, color: storedColor }];
+    summaryEl.innerHTML =
+      "<ul class='list-disc pl-4'>" +
+      items
+        .map((it) => {
+          const parts = [materialLabel(it.material)];
+          if (it.material === "single" && it.color) parts.push(it.color);
+          if (etch) parts.push(`\u201C${etch}\u201D`);
+          return `<li>${parts.join(" – ")}</li>`;
+        })
+        .join("") +
+      "</ul>";
+  }
+
+  payBtn?.addEventListener("mouseenter", () => {
+    updateSummary();
+    summaryEl?.classList.remove("hidden");
+  });
+  payBtn?.addEventListener("mouseleave", () => {
+    summaryEl?.classList.add("hidden");
+  });
 
   const alignBadge = () => {
     const badge = document.getElementById("money-back-badge");
