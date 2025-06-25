@@ -51,35 +51,35 @@
         <div class="flex space-x-2">
           <button
             class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
-            onclick="shareOn('twitter')"
+            onclick="shareReferral('twitter')"
             aria-label="Share on Twitter"
           >
             <i class="fab fa-twitter"></i>
           </button>
           <button
             class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
-            onclick="shareOn('facebook')"
+            onclick="shareReferral('facebook')"
             aria-label="Share on Facebook"
           >
             <i class="fab fa-facebook-f"></i>
           </button>
           <button
             class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
-            onclick="shareOn('reddit')"
+            onclick="shareReferral('reddit')"
             aria-label="Share on Reddit"
           >
             <i class="fab fa-reddit-alien"></i>
           </button>
           <button
             class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
-            onclick="shareOn('tiktok')"
+            onclick="shareReferral('tiktok')"
             aria-label="Share on TikTok"
           >
             <i class="fab fa-tiktok"></i>
           </button>
           <button
             class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
-            onclick="shareOn('instagram')"
+            onclick="shareReferral('instagram')"
             aria-label="Share on Instagram"
           >
             <i class="fab fa-instagram"></i>
@@ -146,6 +146,30 @@
           >
             Redeem
           </button>
+        </div>
+        <p id="next-reward-msg" class="text-sm text-gray-300"></p>
+        <div class="text-left">
+          <h3 class="text-lg font-semibold mt-6 mb-2">Top Referrers</h3>
+          <table class="w-full text-sm">
+            <thead>
+              <tr>
+                <th class="text-left">User</th>
+                <th class="text-left">Points</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboard-body"></tbody>
+          </table>
+        </div>
+        <div class="text-left">
+          <h3 class="text-lg font-semibold mt-4 mb-2">Your Achievements</h3>
+          <ul id="achievements-list" class="list-disc list-inside text-sm"></ul>
+        </div>
+        <div class="mt-4">
+          <a
+            href="printclub.html"
+            class="inline-block bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-3xl px-4 py-2 text-sm"
+            >Join print2 pro &amp; get 100 bonus points</a
+          >
         </div>
       </div>
     </main>
