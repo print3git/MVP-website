@@ -427,7 +427,17 @@ async function getRewardOptions() {
   const { rows } = await query(
     "SELECT points, amount_cents FROM reward_options ORDER BY points",
   );
-  return rows;
+  const map = new Map(rows.map((r) => [r.points, r.amount_cents]));
+  for (let i = 1; i <= 200; i++) {
+    if (!map.has(i)) {
+      map.set(i, i * 5);
+    }
+  }
+  map.set(50, 500);
+  map.set(100, 1000);
+  return Array.from(map.entries())
+    .map(([points, amount_cents]) => ({ points, amount_cents }))
+    .sort((a, b) => a.points - b.points);
 }
 
 async function getRewardOption(points) {
@@ -435,7 +445,11 @@ async function getRewardOption(points) {
     "SELECT amount_cents FROM reward_options WHERE points=$1",
     [points],
   );
-  return rows[0] || null;
+  if (rows[0]) return rows[0];
+  if (points === 50) return { amount_cents: 500 };
+  if (points === 100) return { amount_cents: 1000 };
+  if (points >= 1 && points <= 200) return { amount_cents: points * 5 };
+  return null;
 }
 
 async function insertAdSpend(subreddit, date, spendCents) {
