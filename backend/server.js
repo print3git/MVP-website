@@ -3008,6 +3008,25 @@ app.post(
               );
             }
           }
+
+          const { rows: userRows } = await db.query(
+            "SELECT email, username FROM users WHERE id=$1",
+            [userId],
+          );
+          if (userRows.length) {
+            const code = await createTimedCode(500, 48);
+            const addonsUrl = `$\{process.env.SITE_URL || "http://localhost:3000"}/addons.html`;
+            await sendTemplate(
+              userRows[0].email,
+              "Check out add-ons",
+              "addon_upsell.txt",
+              {
+                username: userRows[0].username,
+                addons_url: addonsUrl,
+                code,
+              },
+            );
+          }
         }
       } catch (err) {
         logError(err);

@@ -1,0 +1,7 @@
+Hi {{username}},
+
+Thanks for your recent order! Enhance your prints with our accessory add-ons:
+
+{{addons_url}}
+
+Use code {{code}} for a discount on your next purchase.
