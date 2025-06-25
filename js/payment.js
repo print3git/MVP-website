@@ -65,7 +65,7 @@ async function fetchPaymentInit() {
 
 // Restore previously selected material option and colour
 let storedMaterial = localStorage.getItem("print3Material");
-const storedColor = localStorage.getItem("print3Color");
+let storedColor = localStorage.getItem("print3Color");
 const personalise = qs("personalise");
 if (personalise !== null) {
   storedMaterial = "multi";
@@ -639,7 +639,15 @@ async function initPaymentPage() {
         selectedPrice = PRICES[r.value] || PRICES.single;
         updatePayButton();
         updateFlashSaleBanner();
+        storedMaterial = r.value;
         localStorage.setItem("print3Material", r.value);
+        if (checkoutItems[currentIndex]) {
+          checkoutItems[currentIndex].material = r.value;
+          if (r.value !== "single") {
+            checkoutItems[currentIndex].color = null;
+          }
+          saveCheckoutItems();
+        }
         updateEtchVisibility(r.value);
         if (colorMenu) {
           if (r.value === "single") {
@@ -652,6 +660,7 @@ async function initPaymentPage() {
               singleButton.style.borderColor = "";
             }
             if (originalColor) applyModelColor(originalColor, true);
+            storedColor = null;
             localStorage.removeItem("print3Color");
           }
         }
@@ -716,8 +725,15 @@ async function initPaymentPage() {
 
       const factor = hexToFactor(color);
       if (factor) applyModelColor(factor);
+      storedColor = color;
+      storedMaterial = "single";
       localStorage.setItem("print3Color", color);
       localStorage.setItem("print3Material", "single");
+      if (checkoutItems[currentIndex]) {
+        checkoutItems[currentIndex].material = "single";
+        checkoutItems[currentIndex].color = color;
+        saveCheckoutItems();
+      }
       colorMenu.classList.add("hidden");
     };
     colorMenu.addEventListener("click", handleColorSelect);
@@ -735,13 +751,34 @@ async function initPaymentPage() {
     if (item.jobId) localStorage.setItem("print3JobId", item.jobId);
     else localStorage.removeItem("print3JobId");
     storedMaterial = item.material || "multi";
+    storedColor = item.color || null;
     localStorage.setItem("print3Material", storedMaterial);
+    if (storedColor) localStorage.setItem("print3Color", storedColor);
+    else localStorage.removeItem("print3Color");
     const radio = document.querySelector(
       `#material-options input[value="${storedMaterial}"]`,
     );
     if (radio) {
       radio.checked = true;
       radio.dispatchEvent(new Event("change"));
+    }
+    if (storedMaterial === "single") {
+      if (singleButton) {
+        if (storedColor) {
+          singleButton.style.backgroundColor = storedColor;
+          singleButton.style.borderColor = SINGLE_BORDER_COLOR;
+        } else {
+          singleButton.style.backgroundColor = "";
+          singleButton.style.borderColor = "";
+        }
+      }
+      if (colorMenu) {
+        if (storedColor) colorMenu.classList.add("hidden");
+        else colorMenu.classList.remove("hidden");
+      }
+    } else if (singleButton) {
+      singleButton.style.backgroundColor = "";
+      singleButton.style.borderColor = "";
     }
     updatePayButton();
     updateFlashSaleBanner();
@@ -861,6 +898,12 @@ async function initPaymentPage() {
     const arr = JSON.parse(localStorage.getItem("print3CheckoutItems"));
     if (Array.isArray(arr) && arr.length) checkoutItems = arr;
   } catch {}
+  function saveCheckoutItems() {
+    try {
+      localStorage.setItem("print3CheckoutItems", JSON.stringify(checkoutItems));
+    } catch {}
+  }
+
 
   if (!checkoutItems.length) {
     viewer.src = storedModel || FALLBACK_GLB;
