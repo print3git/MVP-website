@@ -30,5 +30,7 @@
   "shipping_confirmation.subject": "Your order has shipped",
   "shipping_confirmation.body": "Hi {{username}},\n\nYour order {{order_id}} has shipped! You can track its progress here:\n{{tracking_url}}\n\nThanks for supporting our community!",
   "shipping_update.subject": "Package update: {{status}}",
-  "shipping_update.body": "Hi {{username}},\n\nYour order {{order_id}} status update: {{status}}\n\nWe'll keep you posted until it's delivered."
+  "shipping_update.body": "Hi {{username}},\n\nYour order {{order_id}} status update: {{status}}\n\nWe'll keep you posted until it's delivered.",
+  "addon_upsell.subject": "Enhance your print",
+  "addon_upsell.body": "Thanks for your recent order! Want to enhance your print with accessories? Use code {{code}} for $5 off any add-on."
 }
