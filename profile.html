@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Profile</title>
     <meta property="og:title" content="Profile – print3" />
-    <meta property="og:description" content="View your generated models and past orders." />
+    <meta
+      property="og:description"
+      content="View your generated models and past orders."
+    />
     <meta property="og:image" content="img/boxlogo.png" />
     <script src="js/applyColorScheme.js"></script>
     <link rel="preconnect" href="https://modelviewer.dev" crossorigin />
@@ -39,7 +42,11 @@
           stroke-width="2"
           viewBox="0 0 24 24"
         >
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M15 19l-7-7 7-7"
+          />
         </svg>
         Back
       </a>
@@ -116,10 +123,17 @@
     </header>
     <main class="flex-1 px-6 py-4">
       <div id="profile-header" class="text-center mb-6">
-        <img id="profile-avatar" class="w-24 h-24 rounded-full mx-auto mb-2" alt="Profile avatar" />
+        <img
+          id="profile-avatar"
+          class="w-24 h-24 rounded-full mx-auto mb-2"
+          alt="Profile avatar"
+        />
         <h2 id="profile-display" class="text-xl font-semibold"></h2>
       </div>
-      <div id="models" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
+      <div
+        id="models"
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
+      ></div>
       <div id="auth-options" class="text-center mt-8 hidden">
         <a
           href="login.html"
@@ -204,7 +218,7 @@
     </div>
     <script type="module" src="js/profile.js"></script>
     <script type="module">
-      import { shareOn } from './js/share.js';
+      import { shareOn } from "./js/share.js";
       window.shareOn = shareOn;
     </script>
     <div
@@ -214,7 +228,8 @@
       <div class="bg-[#2A2A2E] p-6 rounded-xl max-w-sm text-center">
         <h2 class="text-2xl font-semibold mb-2">print2 pro</h2>
         <p class="mb-4">
-          Get two prints (single or multicolour tiers) every week for £149.99/month.
+          Get two prints (single or multicolour tiers) every week for
+          £149.99/month.
         </p>
         <button
           id="printclub-close"
@@ -229,5 +244,6 @@
     <script type="module" src="js/rewardBadge.js"></script>
     <script type="module" src="js/basket.js"></script>
     <script type="module" src="js/rewardBadge.js"></script>
+    <script type="module" src="js/trackingPixel.js"></script>
   </body>
 </html>
