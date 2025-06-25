@@ -60,11 +60,19 @@ export function removeFromBasket(index) {
   const items = getBasket();
   items.splice(index, 1);
   saveBasket(items);
+  try {
+    const arr = JSON.parse(localStorage.getItem("print3CheckoutItems"));
+    if (Array.isArray(arr) && index >= 0 && index < arr.length) {
+      arr.splice(index, 1);
+      localStorage.setItem("print3CheckoutItems", JSON.stringify(arr));
+    }
+  } catch {}
   updateBadge();
   renderList();
 }
 export function clearBasket() {
   saveBasket([]);
+  localStorage.removeItem("print3CheckoutItems");
   updateBadge();
   renderList();
 }
