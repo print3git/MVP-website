@@ -138,6 +138,11 @@
         animation: shimmer 3s ease-in-out forwards;
         pointer-events: none;
       }
+
+      /* Hide model-viewer's built-in loading bar */
+      model-viewer::part(progress-bar) {
+        display: none;
+      }
     </style>
   </head>
 
