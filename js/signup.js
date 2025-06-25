@@ -18,7 +18,7 @@ async function signup(e) {
   const password = passEl.value.trim();
   const optIn = optInEl && optInEl.checked;
   if (!username || !email || !password) {
-    document.getElementById("error").textContent = "All fields required";
+    document.getElementById("error").textContent = "Fields required";
     if (!username) nameEl.classList.add("border-red-500");
     if (!email) emailEl.classList.add("border-red-500");
     if (!password) passEl.classList.add("border-red-500");
