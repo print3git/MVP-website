@@ -534,7 +534,7 @@ async function initPaymentPage() {
     }
   }
 
-  viewer.addEventListener("load", captureOriginal, { once: true });
+  viewer.addEventListener("load", captureOriginal);
   if (viewer.model) captureOriginal();
 
   function updateEtchVisibility(val) {
