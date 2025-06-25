@@ -534,6 +534,9 @@ async function initPaymentPage() {
     }
   }
 
+
+  // Capture the original colours every time a new model loads so that
+  // switching between items restores the correct textures.
   viewer.addEventListener("load", captureOriginal);
   if (viewer.model) captureOriginal();
 
