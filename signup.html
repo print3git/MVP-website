@@ -162,7 +162,6 @@
         class="mt-2 text-green-400 text-center"
         aria-live="polite"
       ></div>
-
     </main>
     <script type="module" src="js/signup.js"></script>
     <script type="module">
@@ -193,35 +192,40 @@
     <script type="module" src="js/basket.js"></script>
     <script type="module" src="js/rewardBadge.js"></script>
     <script>
-      document.addEventListener('DOMContentLoaded', () => {
-        const link = document.getElementById('back-link');
+      document.addEventListener("DOMContentLoaded", () => {
+        const link = document.getElementById("back-link");
         if (!link) return;
-        let target = 'login.html';
+        let target = "login.html";
         const params = new URLSearchParams(location.search);
-        let from = params.get('from') || sessionStorage.getItem('fromCommunity');
+        let from =
+          params.get("from") || sessionStorage.getItem("fromCommunity");
 
-        if (from === '1') {
-          sessionStorage.setItem('fromCommunity', '1');
+        if (from === "1") {
+          sessionStorage.setItem("fromCommunity", "1");
         } else {
-          sessionStorage.removeItem('fromCommunity');
+          sessionStorage.removeItem("fromCommunity");
         }
 
         try {
           const ref = new URL(document.referrer);
-          if (from === '1' || ref.pathname.endsWith('CommunityCreations.html')) {
-            target = 'CommunityCreations.html';
+          if (
+            from === "1" ||
+            ref.pathname.endsWith("CommunityCreations.html")
+          ) {
+            target = "CommunityCreations.html";
           }
         } catch {
-          if (from === '1') target = 'CommunityCreations.html';
+          if (from === "1") target = "CommunityCreations.html";
         }
 
-        link.setAttribute('href', target);
+        link.setAttribute("href", target);
 
         const login = document.querySelector('a[href="login.html"]');
-        if (login && target === 'CommunityCreations.html') {
-          login.setAttribute('href', 'login.html?from=community');
+        if (login && target === "CommunityCreations.html") {
+          login.setAttribute("href", "login.html?from=community");
         }
       });
     </script>
+    <script type="module" src="js/trackingPixel.js"></script>
   </body>
 </html>
