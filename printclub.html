@@ -18,27 +18,78 @@
     />
   </head>
   <body class="bg-[#1A1A1D] text-white font-sans flex flex-col min-h-screen">
-        <header class="flex items-center justify-between py-4 px-6">
+    <header class="flex items-center justify-between py-4 px-6">
       <a
         id="back-link"
         href="index.html"
         class="inline-flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-3xl px-5 py-2 text-lg font-medium hover:bg-[#3A3A3E] transition-shape"
       >
-        <svg class="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        <svg
+          class="w-4 h-4 mr-2 flex-shrink-0"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M15 19l-7-7 7-7"
+          />
         </svg>
         Back
       </a>
       <h1 class="text-3xl font-semibold">print2 pro</h1>
-      <a
-        href="earn-rewards.html"
-        id="earn-rewards-badge"
-        class="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-3xl px-3 py-2 text-sm transition-shape"
-        >[🎉 NEW] Earn Rewards ⭐</a
-      >
+      <div class="flex items-center space-x-2">
+        <a
+          href="earn-rewards.html"
+          id="earn-rewards-badge"
+          class="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-3xl px-3 py-2 text-sm transition-shape"
+          >[🎉 NEW] Earn Rewards ⭐</a
+        >
+        <div class="flex space-x-2">
+          <button
+            class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
+            onclick="shareOn('twitter')"
+            aria-label="Share on Twitter"
+          >
+            <i class="fab fa-twitter"></i>
+          </button>
+          <button
+            class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
+            onclick="shareOn('facebook')"
+            aria-label="Share on Facebook"
+          >
+            <i class="fab fa-facebook-f"></i>
+          </button>
+          <button
+            class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
+            onclick="shareOn('reddit')"
+            aria-label="Share on Reddit"
+          >
+            <i class="fab fa-reddit-alien"></i>
+          </button>
+          <button
+            class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
+            onclick="shareOn('tiktok')"
+            aria-label="Share on TikTok"
+          >
+            <i class="fab fa-tiktok"></i>
+          </button>
+          <button
+            class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
+            onclick="shareOn('instagram')"
+            aria-label="Share on Instagram"
+          >
+            <i class="fab fa-instagram"></i>
+          </button>
+        </div>
+      </div>
     </header>
 
-        <main class="flex-1 flex flex-col items-center justify-center px-4 py-8 space-y-8">
+    <main
+      class="flex-1 flex flex-col items-center justify-center px-4 py-8 space-y-8"
+    >
       <img
         src="https://images.unsplash.com/photo-1546412414-459a6b85d181?auto=format&fit=crop&w=800&q=80"
         alt="3D printed figure"
@@ -99,6 +150,10 @@
     </div>
     <script type="module" src="js/printclub.js"></script>
     <script type="module" src="js/rewardBadge.js"></script>
+    <script type="module">
+      import { shareOn } from "./js/share.js";
+      window.shareOn = shareOn;
+    </script>
     <script>
       document.addEventListener("DOMContentLoaded", () => {
         const link = document.getElementById("back-link");
