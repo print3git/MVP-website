@@ -19,6 +19,19 @@ export function addToBasket(item, opts = {}) {
   updateBadge();
   renderList();
   startReservationTimer();
+  const basketBtn = document.getElementById("basket-button");
+  if (basketBtn) {
+    basketBtn.classList.add("basket-bob");
+    setTimeout(() => basketBtn.classList.remove("basket-bob"), 600);
+    if (window.__basketSound) {
+      try {
+        window.__basketSound.currentTime = 0;
+        window.__basketSound.play();
+      } catch {
+        /* ignore play errors */
+      }
+    }
+  }
 }
 
 export function addAutoItem(item) {
@@ -165,6 +178,17 @@ function closeBasket() {
   document.getElementById("basket-overlay")?.classList.add("hidden");
 }
 export function setupBasketUI() {
+  if (!document.getElementById("basket-bob-style")) {
+    const style = document.createElement("style");
+    style.id = "basket-bob-style";
+    style.textContent = `@keyframes basketBob {0%,100%{transform:translateY(0);}50%{transform:translateY(-1rem);}}.basket-bob{animation:basketBob 0.6s ease;}`;
+    document.head.appendChild(style);
+  }
+  if (!window.__basketSound) {
+    const audio = new Audio("sounds/click.mp3");
+    audio.preload = "auto";
+    window.__basketSound = audio;
+  }
   const btn = document.createElement("button");
   btn.type = "button";
   btn.id = "basket-button";
