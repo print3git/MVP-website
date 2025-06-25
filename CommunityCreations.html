@@ -197,6 +197,14 @@
           More
         </button>
       </section>
+      <!-- Public Galleries -->
+      <section class="mb-12">
+        <h2 class="text-xl font-semibold mb-4">Public Galleries</h2>
+        <p class="mb-4 text-sm text-gray-300">Automatically curated from popular subreddits. Share your models to be featured.</p>
+        <div id="subreddit-tags" class="flex gap-2 mb-4 overflow-x-auto"></div>
+        <div id="gallery-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
+        <button id="gallery-load" class="mt-4 px-4 py-2 bg-[#2A2A2E] border border-white/20 rounded-lg mx-auto block">More</button>
+      </section>
       <!-- What People Are Talking About -->
       <section class="mb-12">
         <h2 class="text-xl font-semibold mb-4">
@@ -552,6 +560,7 @@
 
     <script type="module" src="js/saveList.js"></script>
     <script type="module" src="js/printingTicker.js"></script>
+    <script type="module" src="js/publicGalleries.js"></script>
     <script type="module" src="js/carousel.js"></script>
     <script type="module" src="js/rewardBadge.js"></script>
   </body>
