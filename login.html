@@ -173,8 +173,15 @@
         const link = document.getElementById('back-link');
         if (!link) return;
         let target = 'index.html';
-        const from = sessionStorage.getItem('fromCommunity');
-        sessionStorage.removeItem('fromCommunity');
+        const params = new URLSearchParams(location.search);
+        let from = params.get('from') || sessionStorage.getItem('fromCommunity');
+
+        if (from === '1') {
+          sessionStorage.setItem('fromCommunity', '1');
+        } else {
+          sessionStorage.removeItem('fromCommunity');
+        }
+
         try {
           const ref = new URL(document.referrer);
           if (from === '1' || ref.pathname.endsWith('CommunityCreations.html')) {
@@ -183,7 +190,13 @@
         } catch {
           if (from === '1') target = 'CommunityCreations.html';
         }
+
         link.setAttribute('href', target);
+
+        const signup = document.querySelector('a[href="signup.html"]');
+        if (signup && target === 'CommunityCreations.html') {
+          signup.setAttribute('href', 'signup.html?from=community');
+        }
       });
     </script>
   </body>
