@@ -3,7 +3,8 @@ export function initCarousel() {
   if (!carousel) return;
   const track = carousel.querySelector(".carousel-track");
   if (!track) return;
-  const transitionStyle = "transform 0.5s ease-in-out";
+  const transitionStyle =
+    "transform 0.5s ease-in-out, opacity 0.15s ease-in-out";
   track.style.willChange = "transform";
   track.style.transition = transitionStyle;
   let slides = Array.from(track.children);
@@ -24,6 +25,12 @@ export function initCarousel() {
     });
   }
   setWidths();
+
+  // Reveal the carousel after layout calculations to avoid a flash of
+  // misplaced slides when the page first loads.
+  setTimeout(() => {
+    track.style.opacity = "1";
+  }, 50);
 
   function next() {
     track.style.transition = transitionStyle;
