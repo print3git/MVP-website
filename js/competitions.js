@@ -498,7 +498,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   load();
   loadPast();
-  loadTrending();
   const subForm = document.getElementById("comp-subscribe");
   const emailInput = document.getElementById("comp-email");
   const msgEl = document.getElementById("comp-subscribe-msg");
