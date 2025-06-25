@@ -19,7 +19,16 @@ jobs:
           if [ -f backend/hunyuan_server/package.json ]; then
             npm install --no-audit --no-fund --prefix backend/hunyuan_server
           fi
+      - name: Cache Playwright browsers
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
       - run: npx playwright install --with-deps
+        env:
+          PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
       - run: npm install -g netlify-cli
       - name: Deploy to Netlify
         if: env.NETLIFY_AUTH_TOKEN != '' && env.NETLIFY_SITE_ID != ''
@@ -32,4 +41,5 @@ jobs:
       - name: Run smoke tests
         env:
           PLAYWRIGHT_BASE_URL: ${{ env.PREVIEW_URL }}
+          PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
         run: npx playwright test e2e/smoke.test.js
