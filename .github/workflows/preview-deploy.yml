@@ -29,6 +29,7 @@ jobs:
       - run: npx playwright install --with-deps
         env:
           PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '0'
       - run: npm install -g netlify-cli
       - name: Deploy to Netlify
         if: env.NETLIFY_AUTH_TOKEN != '' && env.NETLIFY_SITE_ID != ''
@@ -42,4 +43,5 @@ jobs:
         env:
           PLAYWRIGHT_BASE_URL: ${{ env.PREVIEW_URL }}
           PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '0'
         run: npx playwright test e2e/smoke.test.js
