@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add-Ons</title>
+    <meta property="og:title" content="Add-Ons – print3" />
+    <meta
+      property="og:description"
+      content="Unlock extra bases, props and accessories for your models."
+    />
+    <meta property="og:image" content="img/boxlogo.png" />
+    <script src="js/applyColorScheme.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+  </head>
+  <body class="bg-[#1A1A1D] text-white font-sans flex flex-col min-h-screen">
+    <header class="relative flex items-center py-4 px-6">
+      <div class="flex items-center flex-1">
+        <a
+          href="index.html"
+          class="inline-flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-3xl px-5 py-2 text-lg font-medium hover:bg-[#3A3A3E] transition-shape"
+        >
+          <svg
+            class="w-4 h-4 mr-2 flex-shrink-0"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+          Back
+        </a>
+        <h1 class="flex-1 text-center text-3xl font-semibold">Add-Ons</h1>
+        <a
+          href="earn-rewards.html"
+          id="earn-rewards-badge"
+          class="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-3xl px-3 py-2 text-sm transition-shape"
+          >[🎉 NEW] Earn Rewards ⭐</a
+        >
+      </div>
+      <div class="flex items-center space-x-4 ml-4">
+        <a
+          href="printclub.html"
+          id="print-club-badge"
+          class="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-3xl px-3 py-2 text-sm transition-shape"
+          >print2 pro £149.99/mo</a
+        >
+      </div>
+    </header>
+    <main class="flex-1 p-6 space-y-8">
+      <div
+        id="locked-msg"
+        class="bg-[#2A2A2E] p-4 rounded-xl text-center hidden"
+      >
+        Unlock advanced customisation after your first purchase.
+      </div>
+      <section
+        id="addons-grid"
+        class="grid grid-cols-2 sm:grid-cols-3 gap-4"
+      ></section>
+    </main>
+    <script type="module" src="js/addons.js"></script>
+    <script type="module" src="js/rewardBadge.js"></script>
+  </body>
+</html>
