@@ -1,6 +1,4 @@
-Thanks for your recent order! Want to enhance your print with accessories?
-Use the code below for $5 off any add-on:
+Thanks for your order! Enhance your print with accessories that pair perfectly with your model.
+Use code {{code}} for $5 off any add-on for the next 48 hours.
 
-{{code}}
-
-Browse our accessories to upgrade your setup!
+Browse accessories and upgrade your setup today!
