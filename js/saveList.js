@@ -9,7 +9,25 @@ export function getSaved() {
 function saveList(items) {
   localStorage.setItem(KEY, JSON.stringify(items));
 }
+
+function showLoginPrompt() {
+  if (document.getElementById("login-save-prompt")) return;
+  const div = document.createElement("div");
+  div.id = "login-save-prompt";
+  div.className =
+    "fixed bottom-20 left-1/2 -translate-x-1/2 bg-[#2A2A2E] border border-white text-white rounded-lg px-4 py-2 z-50";
+  div.innerHTML =
+    'Log in to save models <a href="login.html" class="font-bold text-[#30D5C8] underline">Log In</a>';
+  document.body.appendChild(div);
+  setTimeout(() => div.remove(), 3000);
+}
+
 export function addSaved(item) {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    showLoginPrompt();
+    return;
+  }
   const items = getSaved();
   if (!items.find((it) => it.id === item.id)) {
     items.push(item);
