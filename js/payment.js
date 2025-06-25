@@ -534,7 +534,9 @@ async function initPaymentPage() {
     }
   }
 
-  viewer.addEventListener("load", captureOriginal, { once: true });
+  // Capture the original colours every time a new model loads so that
+  // switching between items restores the correct textures.
+  viewer.addEventListener("load", captureOriginal);
   if (viewer.model) captureOriginal();
 
   function updateEtchVisibility(val) {
