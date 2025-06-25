@@ -46,7 +46,7 @@ function renderList() {
     const token = localStorage.getItem("token");
     if (!token) {
       list.innerHTML =
-        '<p class="text-white col-span-2 text-center"><a href="login.html" class="font-bold text-[#30D5C8]">Log In</a> or <a href="signup.html" class="font-bold text-[#30D5C8]">Sign Up</a> to save items.</p>';
+        '<p class="text-white col-span-2 text-center"><a href="login.html" class="inline font-bold text-[#30D5C8]">Log In</a> or <a href="signup.html" class="inline font-bold text-[#30D5C8]">Sign Up</a> to save items.</p>';
     } else {
       list.innerHTML =
         '<p class="text-white col-span-2 text-center">No saved items</p>';
