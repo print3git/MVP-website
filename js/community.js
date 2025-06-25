@@ -3,6 +3,8 @@ import { captureSnapshots } from "./snapshot.js";
 const API_BASE = (window.API_ORIGIN || "") + "/api";
 
 const OPEN_KEY = "print3CommunityOpen";
+const FALLBACK_GLB =
+  "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
 
 function saveModel(model) {
   if (window.addSavedModel) {
@@ -290,6 +292,28 @@ function createCard(model) {
   return div;
 }
 
+function addRecentModel(model) {
+  if (!model || model.model_url === FALLBACK_GLB) return;
+  const grid = document.getElementById("recent-grid");
+  if (!grid) return;
+  const card = createCard(model);
+  grid.prepend(card);
+  const filters = getFilters();
+  if (
+    !filters.search &&
+    (!filters.category || filters.category === model.category) &&
+    filters.order !== "asc"
+  ) {
+    const key = `${filters.category}|${filters.search}|${filters.order}`;
+    const cache = window.communityState.recent;
+    if (!cache[key]) cache[key] = { offset: 0, models: [] };
+    cache[key].models.unshift(model);
+    cache[key].offset += 1;
+    saveState();
+  }
+  captureSnapshots(grid);
+}
+
 function getFilters() {
   const category = document.getElementById("category").value;
   const search = document.getElementById("search")?.value || "";
@@ -362,6 +386,32 @@ function createObserver(type) {
   });
   observer.observe(sentinel);
   window.communityState[type].observer = observer;
+}
+
+async function subscribeRealtime() {
+  const url = window.SUPABASE_URL;
+  const key = window.SUPABASE_ANON_KEY;
+  if (!url || !key) return;
+  const { createClient } = await import(
+    "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm"
+  );
+  const supabase = createClient(url, key);
+  supabase
+    .channel("community_creations")
+    .on(
+      "postgres_changes",
+      { event: "INSERT", schema: "public", table: "community_creations" },
+      async (payload) => {
+        const id = payload.new.id;
+        try {
+          const res = await fetch(`${API_BASE}/community/model/${id}`);
+          if (!res.ok) return;
+          const model = await res.json();
+          addRecentModel(model);
+        } catch {}
+      },
+    )
+    .subscribe();
 }
 
 function init() {
@@ -442,6 +492,7 @@ function init() {
   }
   renderGrid("popular");
   renderGrid("recent");
+  subscribeRealtime();
 }
 
 export { saveModel, init, closeModel, restoreOpenModel, copyReferral };
