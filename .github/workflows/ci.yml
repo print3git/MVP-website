@@ -42,6 +42,7 @@ jobs:
       - name: Install Playwright browsers
         env:
           PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '0'
         run: npx playwright install --with-deps
       - name: Install backend dependencies
         run: npm install --no-audit --no-fund --prefix backend
@@ -57,6 +58,7 @@ jobs:
       - name: Run CI
         env:
           PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '0'
         run: npm run ci
 
       - name: Run coverage
@@ -118,12 +120,14 @@ jobs:
         env:
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
           PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '0'
         run: npx percy exec -- npm run e2e
 
       - name: Run smoke tests
         if: ${{ !secrets.PERCY_TOKEN }}
         env:
           PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '0'
         run: npm run e2e
 
       # ← you can add additional steps here, like your tests
