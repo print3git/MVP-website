@@ -449,6 +449,7 @@ async function initPaymentPage() {
     });
   }
   const payBtn = document.getElementById("submit-payment");
+  const priceBreakdown = document.getElementById("price-breakdown");
   const singleLabel = document.getElementById("single-label");
   const singleInput = document.getElementById("opt-single");
   const colorMenu = document.getElementById("single-color-menu");
@@ -588,6 +589,43 @@ async function initPaymentPage() {
       }
       payBtn.textContent = `Pay £${(total / 100).toFixed(2)} (${qty} prints)`;
     }
+    updatePriceBreakdown();
+  }
+
+  function updatePriceBreakdown() {
+    if (!priceBreakdown) return;
+    const qty = Math.max(1, parseInt(qtySelect?.value || "2", 10));
+    let discount = 0;
+    const end = parseInt(localStorage.getItem("flashDiscountEnd"), 10) || 0;
+    if (end && end > Date.now()) {
+      discount += Math.round(selectedPrice * 0.05);
+    }
+    if (
+      flashSale &&
+      Date.now() < new Date(flashSale.end_time).getTime() &&
+      selectedMaterialValue() === flashSale.product_type
+    ) {
+      discount += Math.round(
+        selectedPrice * (flashSale.discount_percent / 100),
+      );
+    }
+    if (qty > 1) {
+      discount += TWO_PRINT_DISCOUNT;
+    }
+    const subtotal = (selectedPrice * qty) / 100;
+    const total = (selectedPrice * qty - discount) / 100;
+    const saved = discount / 100;
+    let lines = [`£${(selectedPrice / 100).toFixed(2)} each`];
+    lines.push(
+      `×${qty} prints${qty > 1 ? ` – £${(TWO_PRINT_DISCOUNT / 100).toFixed(0)} bundle discount` : ""}`,
+    );
+    lines.push("─────────────");
+    lines.push(`Total: £${total.toFixed(2)}`);
+    if (saved > 0) {
+      const pct = Math.round((saved / subtotal) * 100);
+      lines.push(`You save £${saved.toFixed(2)} (${pct}% off)`);
+    }
+    priceBreakdown.textContent = lines.join("\n");
   }
 
   materialRadios.forEach((r) => {
