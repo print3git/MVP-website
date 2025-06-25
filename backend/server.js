@@ -104,6 +104,17 @@ progressEmitter.on(COMPLETE_EVENT, async ({ jobId }) => {
         "Print Finished",
         `Your print for job ${jobId} has finished. We'll ship it soon!`,
       );
+      try {
+        const code = await createTimedCode(500, 48);
+        await sendTemplate(
+          rows[0].email,
+          "Enhance your print",
+          "addon_upsell.txt",
+          { code },
+        );
+      } catch (err) {
+        logError("Failed to send upsell email", err);
+      }
     }
   } catch (err) {
     logError("Failed to send completion email", err);

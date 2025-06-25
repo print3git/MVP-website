@@ -1,0 +1,6 @@
+Thanks for your recent order! Want to enhance your print with accessories?
+Use the code below for $5 off any add-on:
+
+{{code}}
+
+Browse our accessories to upgrade your setup!
