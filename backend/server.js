@@ -3019,6 +3019,29 @@ app.post(
               );
             }
           }
+
+          try {
+            const { rows: emailRows } = await db.query(
+              "SELECT email FROM users WHERE id=$1",
+              [userId],
+            );
+            const email = emailRows[0] && emailRows[0].email;
+            if (email) {
+              const base = process.env.SITE_URL || "http://localhost:3000";
+              const { data } = await axios.post(
+                `${base}/api/generate-discount`,
+                {},
+              );
+              await sendTemplate(
+                email,
+                "Enhance your print",
+                "addon_upsell.txt",
+                { code: data.code },
+              );
+            }
+          } catch (err) {
+            logError("Failed to send upsell email after order", err);
+          }
         }
       } catch (err) {
         logError(err);
