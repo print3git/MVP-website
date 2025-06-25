@@ -9,6 +9,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.38.0-jammy
     services:
       docker:
         image: docker:dind
@@ -32,17 +34,7 @@ jobs:
         env:
           NPM_CONFIG_LEGACY_PEER_DEPS: true
       - run: npm install --no-audit --no-fund
-      - name: Cache Playwright browsers
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-playwright-
-      - name: Install Playwright browsers
-        env:
-          PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
-        run: npx playwright install --with-deps
+      # Playwright dependencies and browsers are preinstalled in the container
       - name: Install backend dependencies
         run: npm install --no-audit --no-fund --prefix backend
 
@@ -55,8 +47,6 @@ jobs:
         run: npm run prepare
 
       - name: Run CI
-        env:
-          PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
         run: npm run ci
 
       - name: Run coverage
@@ -117,13 +107,10 @@ jobs:
         if: ${{ secrets.PERCY_TOKEN }}
         env:
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
-          PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
         run: npx percy exec -- npm run e2e
 
       - name: Run smoke tests
         if: ${{ !secrets.PERCY_TOKEN }}
-        env:
-          PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
         run: npm run e2e
 
       # ← you can add additional steps here, like your tests
