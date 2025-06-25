@@ -302,3 +302,10 @@
 - Track referral clicks and signups through the referral link endpoints.
 - Send competition and reward updates via the mailing list workflow.
 - Expand leaderboards, badges and monthly challenges on community pages.
+## Add-ons Page & Post-Purchase Flow
+- Send follow-up emails after purchase to promote accessories.
+- Automate STL merging for accessories so no manual design work is needed.
+- Provide micro personalisation nudges like small props and texture tweaks.
+- Plan future expansions such as accessory subscriptions and creator uploads.
+- Track add-on performance to refine marketing and bundle offers.
+- Keep fulfilment simple by printing merged models without extra steps.
