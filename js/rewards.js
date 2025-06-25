@@ -1,10 +1,14 @@
+import { shareOn } from "./share.js";
+
 const API_BASE = (window.API_ORIGIN || "") + "/api";
+let rewardOptions = [];
 
 async function loadRewardOptions() {
   try {
     const res = await fetch(`${API_BASE}/rewards/options`);
     if (res.ok) {
       const { options } = await res.json();
+      rewardOptions = options;
       const sel = document.getElementById("reward-select");
       if (sel) {
         sel.innerHTML = "";
@@ -45,6 +49,7 @@ async function loadRewards() {
       if (ptsEl) ptsEl.textContent = points;
       const bar = document.getElementById("reward-progress");
       if (bar) bar.value = points;
+      updateNextReward(points);
     }
   } catch (err) {
     console.error("Failed to load rewards", err);
@@ -55,6 +60,65 @@ function copyReferral() {
   const input = document.getElementById("referral-link");
   input?.select();
   document.execCommand("copy");
+}
+
+function updateNextReward(points) {
+  const msg = document.getElementById("next-reward-msg");
+  if (!msg || !rewardOptions.length) return;
+  const next = rewardOptions.find((o) => o.points > points);
+  if (!next) {
+    msg.textContent = "Max rewards unlocked!";
+  } else {
+    msg.textContent = `${next.points - points} pts until £${(
+      next.amount_cents / 100
+    ).toFixed(2)} off`;
+  }
+}
+
+async function loadLeaderboard() {
+  try {
+    const res = await fetch(`${API_BASE}/leaderboard?limit=5`);
+    if (!res.ok) return;
+    const data = await res.json();
+    const body = document.getElementById("leaderboard-body");
+    if (!body) return;
+    body.innerHTML = "";
+    data.forEach((e) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td class="px-2 py-1">${e.username}</td><td class="px-2 py-1">${e.points}</td>`;
+      body.appendChild(tr);
+    });
+  } catch (err) {
+    console.error("Failed to load leaderboard", err);
+  }
+}
+
+async function loadAchievements() {
+  const token = localStorage.getItem("token");
+  if (!token) return;
+  try {
+    const res = await fetch(`${API_BASE}/achievements`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) return;
+    const { achievements } = await res.json();
+    const list = document.getElementById("achievements-list");
+    if (!list) return;
+    list.innerHTML = "";
+    achievements.forEach((a) => {
+      const li = document.createElement("li");
+      li.textContent = a.name;
+      list.appendChild(li);
+    });
+  } catch (err) {
+    console.error("Failed to load achievements", err);
+  }
+}
+
+function shareReferral(network) {
+  const url =
+    document.getElementById("referral-link")?.value || window.location.href;
+  shareOn(network, url, "Join me on print2!");
 }
 
 async function redeemReward() {
@@ -84,6 +148,11 @@ async function redeemReward() {
 
 window.copyReferral = copyReferral;
 window.redeemReward = redeemReward;
+window.shareReferral = shareReferral;
 window.addEventListener("DOMContentLoaded", () => {
-  loadRewardOptions().then(loadRewards);
+  loadRewardOptions().then(() => {
+    loadRewards();
+    loadLeaderboard();
+    loadAchievements();
+  });
 });
