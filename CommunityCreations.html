@@ -41,14 +41,18 @@
     <style>
       #printing-carousel .carousel-track {
         transform: translateX(0);
-        transition: transform 0.5s ease-in-out;
+        opacity: 0;
+        transition:
+          transform 0.5s ease-in-out,
+          opacity 0.15s ease-in-out;
         will-change: transform;
       }
       @keyframes tickerFade {
         0% {
           opacity: 0;
         }
-        25%, 75% {
+        25%,
+        75% {
           opacity: 1;
         }
         100% {
@@ -241,7 +245,9 @@
                 <i class="fas fa-pen-fancy text-4xl text-[#30D5C8]"></i>
                 <p class="max-w-md">
                   Want personalisation? Have custom text etched on your design
-                  <span class="block text-sm text-gray-400">(colour or premium tier)</span>
+                  <span class="block text-sm text-gray-400"
+                    >(colour or premium tier)</span
+                  >
                 </p>
                 <a
                   href="payment.html?personalise=1"
