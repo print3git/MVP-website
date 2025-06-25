@@ -32,6 +32,16 @@ export function initCarousel() {
     track.style.opacity = "1";
   }, 50);
 
+  let autoMoveInterval;
+  let userInteracted = false;
+
+  function stopAutoMove() {
+    if (!userInteracted) {
+      userInteracted = true;
+      clearInterval(autoMoveInterval);
+    }
+  }
+
   function next() {
     track.style.transition = transitionStyle;
     track.style.transform = `translateX(-${slideWidth}%)`;
@@ -62,12 +72,25 @@ export function initCarousel() {
     );
   }
 
-  carousel.querySelector(".carousel-next")?.addEventListener("click", next);
-  carousel.querySelector(".carousel-prev")?.addEventListener("click", prev);
+  carousel.querySelector(".carousel-next")?.addEventListener("click", () => {
+    stopAutoMove();
+    next();
+  });
+  carousel.querySelector(".carousel-prev")?.addEventListener("click", () => {
+    stopAutoMove();
+    prev();
+  });
+
+  carousel.addEventListener("mousedown", stopAutoMove, { once: true });
+  carousel.addEventListener("touchstart", stopAutoMove, { once: true });
 
   window.addEventListener("resize", () => {
     setWidths();
   });
+
+  autoMoveInterval = setInterval(() => {
+    if (!userInteracted) next();
+  }, 6000);
 }
 
 document.addEventListener("DOMContentLoaded", initCarousel);
