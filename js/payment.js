@@ -34,6 +34,8 @@ const API_BASE = (window.API_ORIGIN || "") + "/api";
 const TZ = "America/New_York";
 let flashTimerId = null;
 let flashSale = null;
+let checkoutItems = [];
+let currentIndex = 0;
 const NEXT_PROMPTS = [
   "cute robot figurine",
   "ornate chess piece",
@@ -719,6 +721,32 @@ async function initPaymentPage() {
   }
   updatePayButton();
   updatePopularMessage();
+  const prevBtn = document.getElementById("prev-model");
+  const nextBtn = document.getElementById("next-model");
+
+  function showItem(idx) {
+    if (!checkoutItems.length) return;
+    currentIndex = (idx + checkoutItems.length) % checkoutItems.length;
+    const item = checkoutItems[currentIndex];
+    viewer.src = item.modelUrl || FALLBACK_GLB;
+    if (item.jobId) localStorage.setItem("print3JobId", item.jobId);
+    else localStorage.removeItem("print3JobId");
+    storedMaterial = item.material || "multi";
+    localStorage.setItem("print3Material", storedMaterial);
+    const radio = document.querySelector(
+      `#material-options input[value="${storedMaterial}"]`,
+    );
+    if (radio) {
+      radio.checked = true;
+      radio.dispatchEvent(new Event("change"));
+    }
+    updatePayButton();
+    updateFlashSaleBanner();
+  }
+
+  prevBtn?.addEventListener("click", () => showItem(currentIndex - 1));
+  nextBtn?.addEventListener("click", () => showItem(currentIndex + 1));
+  if (checkoutItems.length) showItem(0);
   const sessionId = qs("session_id");
   if (sessionId) {
     recordPurchase();
@@ -825,25 +853,40 @@ async function initPaymentPage() {
   loader.hidden = false;
   // Assign the model source only after the load/error listeners are in place
   const storedModel = localStorage.getItem("print3Model");
-  viewer.src = storedModel || FALLBACK_GLB;
-  if (!storedModel) {
-    viewer.addEventListener(
-      "load",
-      () => {
-        const temp = document.createElement("model-viewer");
-        temp.style.display = "none";
-        temp.crossOrigin = "anonymous";
-        temp.src = FALLBACK_GLB_HIGH;
-        temp.addEventListener("load", () => {
-          if (viewer.src === FALLBACK_GLB_LOW) {
-            viewer.src = FALLBACK_GLB_HIGH;
-          }
-          temp.remove();
-        });
-        document.body.appendChild(temp);
-      },
-      { once: true },
-    );
+  // Load saved basket items
+  try {
+    const arr = JSON.parse(localStorage.getItem("print3CheckoutItems"));
+    if (Array.isArray(arr) && arr.length) checkoutItems = arr;
+  } catch {}
+
+  if (!checkoutItems.length) {
+    viewer.src = storedModel || FALLBACK_GLB;
+    if (!storedModel) {
+      viewer.addEventListener(
+        "load",
+        () => {
+          const temp = document.createElement("model-viewer");
+          temp.style.display = "none";
+          temp.crossOrigin = "anonymous";
+          temp.src = FALLBACK_GLB_HIGH;
+          temp.addEventListener("load", () => {
+            if (viewer.src === FALLBACK_GLB_LOW) {
+              viewer.src = FALLBACK_GLB_HIGH;
+            }
+            temp.remove();
+          });
+          document.body.appendChild(temp);
+        },
+        { once: true },
+      );
+    }
+  } else {
+    const first = checkoutItems[0];
+    viewer.src = first.modelUrl || FALLBACK_GLB;
+    if (first.jobId) localStorage.setItem("print3JobId", first.jobId);
+    else localStorage.removeItem("print3JobId");
+    storedMaterial = first.material || storedMaterial;
+    localStorage.setItem("print3Material", storedMaterial);
   }
 
   // Hide the overlay if nothing happens after a short delay
