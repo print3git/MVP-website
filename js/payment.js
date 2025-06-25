@@ -403,6 +403,15 @@ async function initPaymentPage() {
     "ship-zip",
     "discount-code",
   ];
+  const persistMap = {
+    "ship-name": "print3ShipName",
+    "etch-name": "print3EtchName",
+    "checkout-email": "print3Email",
+    "ship-address": "print3ShipAddress",
+    "ship-city": "print3ShipCity",
+    "ship-zip": "print3ShipZip",
+    "discount-code": "print3DiscountCode",
+  };
   const highlightValid = (el) => {
     if (!el) return;
     const value = el.value.trim();
@@ -533,7 +542,6 @@ async function initPaymentPage() {
       if (factor) applyModelColor(factor);
     }
   }
-
 
   // Capture the original colours every time a new model loads so that
   // switching between items restores the correct textures.
@@ -900,10 +908,12 @@ async function initPaymentPage() {
   } catch {}
   function saveCheckoutItems() {
     try {
-      localStorage.setItem("print3CheckoutItems", JSON.stringify(checkoutItems));
+      localStorage.setItem(
+        "print3CheckoutItems",
+        JSON.stringify(checkoutItems),
+      );
     } catch {}
   }
-
 
   if (!checkoutItems.length) {
     viewer.src = storedModel || FALLBACK_GLB;
@@ -1024,24 +1034,57 @@ async function initPaymentPage() {
   // Prefill shipping fields from saved profile
   if (initData.profile) {
     const ship = initData.profile.shipping_info || {};
-    if (ship.name) document.getElementById("ship-name").value = ship.name;
-    if (ship.address)
+    if (ship.name) {
+      document.getElementById("ship-name").value = ship.name;
+      localStorage.setItem(persistMap["ship-name"], ship.name);
+    }
+    if (ship.address) {
       document.getElementById("ship-address").value = ship.address;
-    if (ship.city) document.getElementById("ship-city").value = ship.city;
-    if (ship.zip) document.getElementById("ship-zip").value = ship.zip;
+      localStorage.setItem(persistMap["ship-address"], ship.address);
+    }
+    if (ship.city) {
+      document.getElementById("ship-city").value = ship.city;
+      localStorage.setItem(persistMap["ship-city"], ship.city);
+    }
+    if (ship.zip) {
+      document.getElementById("ship-zip").value = ship.zip;
+      localStorage.setItem(persistMap["ship-zip"], ship.zip);
+    }
     await updateEstimate();
   }
+
+  Object.entries(persistMap).forEach(([id, key]) => {
+    const el = document.getElementById(id);
+    const val = localStorage.getItem(key);
+    if (el && val) el.value = val;
+  });
+  await updateEstimate();
 
   inputIds.forEach((id) => {
     const el = document.getElementById(id);
     if (el) {
       highlightValid(el);
-      el.addEventListener("input", () => highlightValid(el));
+      el.addEventListener("input", () => {
+        highlightValid(el);
+        const key = persistMap[id];
+        if (key) {
+          if (el.value) localStorage.setItem(key, el.value);
+          else localStorage.removeItem(key);
+        }
+      });
     }
   });
 
   ["ship-address", "ship-city", "ship-zip"].forEach((id) => {
-    document.getElementById(id)?.addEventListener("change", updateEstimate);
+    document.getElementById(id)?.addEventListener("change", () => {
+      updateEstimate();
+      const el = document.getElementById(id);
+      const key = persistMap[id];
+      if (el && key) {
+        if (el.value) localStorage.setItem(key, el.value);
+        else localStorage.removeItem(key);
+      }
+    });
   });
 
   applyBtn?.addEventListener("click", async () => {
