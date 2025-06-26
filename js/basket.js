@@ -240,13 +240,21 @@ export function setupBasketUI() {
     }
     // Save basket contents for payment page navigation
     try {
-      const checkoutItems = items.map((it) => ({
-        modelUrl: it.modelUrl,
-        jobId: it.jobId,
-        material: localStorage.getItem("print3Material") || "multi",
-        // Preserve personalised etch text per model for the payment page.
-        etchName: localStorage.getItem("print3EtchName") || "",
-      }));
+      const existing =
+        JSON.parse(localStorage.getItem("print3CheckoutItems")) || [];
+      const checkoutItems = items.map((it, idx) => {
+        const prev = existing[idx] || {};
+        return {
+          modelUrl: it.modelUrl,
+          jobId: it.jobId,
+          material:
+            prev.material || localStorage.getItem("print3Material") || "multi",
+          color: prev.color || null,
+          // Preserve personalised etch text per model for the payment page.
+          etchName:
+            prev.etchName || localStorage.getItem("print3EtchName") || "",
+        };
+      });
       localStorage.setItem(
         "print3CheckoutItems",
         JSON.stringify(checkoutItems),
@@ -321,7 +329,10 @@ export function setupBasketUI() {
     const btn = ev.target.closest("button[data-tier]");
     if (btn) setTier(btn.dataset.tier);
   });
-  setTier("silver");
+  const storedMat = localStorage.getItem("print3Material");
+  if (storedMat === "single") setTier("bronze");
+  else if (storedMat === "premium") setTier("gold");
+  else setTier("silver");
 
   updateBadge();
 }
