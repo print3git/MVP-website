@@ -15,6 +15,26 @@ function renderPreview() {
       name: "Companion Droid",
       img: "https://images.unsplash.com/photo-1604066867775-4a6c52db06f2?auto=format&fit=crop&w=200&q=60",
     },
+    {
+      name: "Display Stand",
+      img: "https://images.unsplash.com/photo-1595475033364-6e46f4735a53?auto=format&fit=crop&w=200&q=60",
+    },
+    {
+      name: "Diorama Arch",
+      img: "https://images.unsplash.com/photo-1615335283053-c5241ad3d7e1?auto=format&fit=crop&w=200&q=60",
+    },
+    {
+      name: "Miniature Tree",
+      img: "https://images.unsplash.com/photo-1526045612212-70caf35c14df?auto=format&fit=crop&w=200&q=60",
+    },
+    {
+      name: "Scenic Boulder",
+      img: "https://images.unsplash.com/photo-1470770903676-69b98201ea1c?auto=format&fit=crop&w=200&q=60",
+    },
+    {
+      name: "Ruins Wall",
+      img: "https://images.unsplash.com/photo-1608571423211-3f61272762ab?auto=format&fit=crop&w=200&q=60",
+    },
   ];
   grid.innerHTML = "";
   items.forEach((item) => {
