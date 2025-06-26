@@ -114,8 +114,16 @@
         class="fixed bottom-6 left-6 w-96 min-h-96 bg-[#2A2A2E] border border-white/10 rounded-xl p-4 flex flex-col items-center space-y-2"
       >
         <span class="font-semibold text-lg">Luckybox</span>
-        <p class="text-sm text-center">
-          Get a (usually £39.99) multicoloured print and 5 print points for just
+        <select
+          id="luckybox-tier"
+          class="bg-[#1A1A1D] text-sm border border-white/10 rounded px-2 py-1 w-full text-white"
+        >
+          <option value="basic" selected>Basic Luckybox £20</option>
+          <option value="multicolour">Multicolour Luckybox £29.99</option>
+          <option value="premium">Premium Luckybox £59.99</option>
+        </select>
+        <p id="luckybox-desc" class="text-sm text-center">
+          Get a (usually £39.99) single-colour print and 5 print points for just
           £20.
         </p>
         <label class="flex items-center space-x-2 text-sm">
@@ -144,6 +152,16 @@
             class="bg-[#1A1A1D] border border-white/10 rounded px-2 py-1 text-sm w-full"
           />
         </label>
+        <select
+          id="luckybox-theme"
+          class="bg-[#1A1A1D] text-sm border border-white/10 rounded px-2 py-1 w-full text-white"
+        >
+          <option value="random" selected>No Theme</option>
+          <option value="halloween">Halloween</option>
+          <option value="christmas">Christmas</option>
+          <option value="scifi">Sci-Fi</option>
+          <option value="fantasy">Fantasy</option>
+        </select>
         <button class="bg-[#30D5C8] text-black px-3 py-1 rounded text-sm">
           Add to Basket
         </button>
