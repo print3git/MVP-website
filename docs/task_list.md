@@ -272,12 +272,6 @@
   - Money-back guarantee for new members.
   - Clear terms of service.
 
-- **Upsell / add-on opportunities**
-  - "Super Subscriber" tier with more prints and perks.
-  - Custom print requests for higher tiers.
-  - Private sales or auctions for rare prints.
-  - Merchandising discounts on apparel or accessories.
-
 ## Seller Credits
 
 - Add migration introducing a table or column for `sale_credits` tied to `user_id`.
