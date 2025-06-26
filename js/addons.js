@@ -40,8 +40,8 @@ function renderPreview() {
   items.forEach((item) => {
     const div = document.createElement("div");
     div.className =
-      "w-72 bg-[#2A2A2E] border border-white/10 rounded-xl p-3 flex flex-col items-center";
-    div.innerHTML = `<img src="${item.img}" alt="${item.name}" class="h-24 object-contain mb-2" />\n      <span>${item.name}</span>`;
+      "model-card relative h-32 w-64 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape flex items-center justify-center";
+    div.innerHTML = `<img src="${item.img}" alt="${item.name}" class="w-full h-full object-contain pointer-events-none" />\n      <span class="sr-only">${item.name}</span>`;
     grid.appendChild(div);
   });
   adjustLuckyboxHeight();
