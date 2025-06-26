@@ -687,8 +687,6 @@ async function initPaymentPage() {
     r.addEventListener("change", () => {
       if (r.checked) {
         selectedPrice = PRICES[r.value] || PRICES.single;
-        updatePayButton();
-        updateFlashSaleBanner();
         storedMaterial = r.value;
         localStorage.setItem("print3Material", r.value);
         if (checkoutItems[currentIndex]) {
@@ -714,6 +712,8 @@ async function initPaymentPage() {
             localStorage.removeItem("print3Color");
           }
         }
+        updatePayButton();
+        updateFlashSaleBanner();
       }
     });
   });
