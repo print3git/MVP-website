@@ -635,7 +635,7 @@ async function initPaymentPage() {
     const saved = discount / 100;
     let lines = [`£${(selectedPrice / 100).toFixed(2)} each`];
     lines.push(
-      `×${qty} prints${qty > 1 ? ` – £${(TWO_PRINT_DISCOUNT / 100).toFixed(0)} bundle discount` : ""}`,
+      `×${qty} prints${qty > 1 ? ` – £${(TWO_PRINT_DISCOUNT / 100).toFixed(0)} discount` : ""}`,
     );
     lines.push("─────────────");
     let totalLine = `Total: £${total.toFixed(2)}`;
