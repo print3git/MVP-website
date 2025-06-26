@@ -662,15 +662,14 @@ async function initPaymentPage() {
       discount += d;
       totalQty += qty;
     }
-    const total = (subtotal - discount) / 100;
     const saved = discount / 100;
     const subtotalPounds = subtotal / 100;
-    let lines = [`Total: £${total.toFixed(2)}`];
+    let text = "";
     if (saved > 0) {
       const pct = Math.round((saved / subtotalPounds) * 100);
-      lines[0] += ` (saved ${pct}%)`;
+      text = `Saved ${pct}%`;
     }
-    priceBreakdown.textContent = lines.join("\n");
+    priceBreakdown.textContent = text;
   }
 
   materialRadios.forEach((r) => {
@@ -1337,18 +1336,14 @@ async function initPaymentPage() {
           },
         ];
     summaryEl.innerHTML =
-      "<ul class='list-disc pl-4'>" +
+      "<div class='flex flex-wrap justify-center gap-2'>" +
       items
         .map((it) => {
-          const parts = [materialLabel(it.material)];
-          if (it.material === "single" && it.color) parts.push(it.color);
-          const name =
-            it.material !== "single" && it.etchName ? it.etchName.trim() : "";
-          if (name) parts.push(`\u201C${name}\u201D`);
-          return `<li>${parts.join(" – ")}</li>`;
+          const src = it.snapshot || it.modelUrl || "";
+          return `<img src='${src}' alt='print' class='w-12 h-12 object-cover rounded' />`;
         })
         .join("") +
-      "</ul>";
+      "</div>";
   }
 
   payBtn?.addEventListener("mouseenter", () => {
