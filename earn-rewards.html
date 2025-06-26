@@ -89,8 +89,9 @@
     </header>
     <main class="flex-1 flex items-center justify-center p-4">
       <div
-        class="max-w-md w-full space-y-6 bg-[#2A2A2E] border border-white/10 p-6 rounded-2xl text-center shadow-lg"
+        class="max-w-4xl w-full bg-[#2A2A2E] border border-white/10 p-6 rounded-2xl shadow-lg flex flex-col md:flex-row md:space-x-8 space-y-6 md:space-y-0"
       >
+        <div class="md:w-1/2 space-y-6 text-center md:text-left">
         <h2 class="text-2xl font-semibold">Share &amp; earn discounts</h2>
         <p>
           You must
@@ -148,28 +149,31 @@
           </button>
         </div>
         <p id="next-reward-msg" class="text-sm text-gray-300"></p>
-        <div class="text-left">
-          <h3 class="text-lg font-semibold mt-6 mb-2">Top Referrers</h3>
-          <table class="w-full text-sm">
-            <thead>
-              <tr>
-                <th class="text-left">User</th>
-                <th class="text-left">Points</th>
-              </tr>
-            </thead>
-            <tbody id="leaderboard-body"></tbody>
-          </table>
         </div>
-        <div class="text-left">
-          <h3 class="text-lg font-semibold mt-4 mb-2">Your Achievements</h3>
-          <ul id="achievements-list" class="list-disc list-inside text-sm"></ul>
-        </div>
-        <div class="mt-4">
-          <a
-            href="printclub.html"
-            class="inline-block bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-3xl px-4 py-2 text-sm"
-            >Join print2 pro &amp; get 100 bonus points</a
-          >
+        <div class="md:w-1/2 space-y-6 text-left">
+          <div>
+            <h3 class="text-lg font-semibold mt-6 mb-2">Top Referrers</h3>
+            <table class="w-full text-sm">
+              <thead>
+                <tr>
+                  <th class="text-left">User</th>
+                  <th class="text-left">Points</th>
+                </tr>
+              </thead>
+              <tbody id="leaderboard-body"></tbody>
+            </table>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold mt-4 mb-2">Your Achievements</h3>
+            <ul id="achievements-list" class="list-disc list-inside text-sm"></ul>
+          </div>
+          <div class="mt-4">
+            <a
+              href="printclub.html"
+              class="inline-block bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-3xl px-4 py-2 text-sm"
+              >Join print2 pro &amp; get 100 bonus points</a
+            >
+          </div>
         </div>
       </div>
     </main>
