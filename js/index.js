@@ -98,7 +98,6 @@ function resetMaterialSelection() {
 }
 
 resetMaterialSelection();
-window.addEventListener("pageshow", resetMaterialSelection);
 
 /**
  * Load the <model-viewer> library if it hasn't already been loaded.
