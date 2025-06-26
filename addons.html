@@ -110,16 +110,43 @@
       ></section>
       <div
         id="luckybox"
-        class="fixed bottom-4 left-4 w-40 h-40 bg-[#2A2A2E] border border-white/10 rounded-xl flex flex-col items-center justify-center space-y-2"
+        class="fixed bottom-4 left-4 w-56 bg-[#2A2A2E] border border-white/10 rounded-xl flex flex-col items-center p-3 space-y-2"
       >
         <span class="font-semibold">Luckybox</span>
-        <select
-          class="bg-[#1A1A1D] border border-white/10 rounded px-2 py-1 text-sm"
-        >
-          <option>Goblin</option>
-          <option>Space</option>
-          <option>Sea life</option>
-        </select>
+        <p class="text-xs text-center">
+          Get a (usually £39.99) multicoloured print for just £20.
+        </p>
+        <div class="flex flex-col items-start space-y-1 w-full text-xs">
+          <label class="flex items-center space-x-1">
+            <input
+              type="radio"
+              name="lucky-choice"
+              value="a"
+              class="accent-[#30D5C8]"
+              checked
+            />
+            <span>Luckybox A: truly random print</span>
+          </label>
+          <label class="flex items-center space-x-1">
+            <input
+              type="radio"
+              name="lucky-choice"
+              value="b"
+              class="accent-[#30D5C8]"
+            />
+            <span>Luckybox B: choose a genre</span>
+          </label>
+          <select
+            class="bg-[#1A1A1D] border border-white/10 rounded px-2 py-1 w-full"
+          >
+            <option>Goblin</option>
+            <option>Space</option>
+            <option>Sea life</option>
+          </select>
+          <span class="text-[10px] self-center"
+            >Receive a print related to the genre.</span
+          >
+        </div>
         <button class="bg-[#30D5C8] text-black px-3 py-1 rounded text-sm">
           Add to Basket
         </button>
