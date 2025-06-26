@@ -633,11 +633,12 @@ async function initPaymentPage() {
       `×${qty} prints${qty > 1 ? ` – £${(TWO_PRINT_DISCOUNT / 100).toFixed(0)} bundle discount` : ""}`,
     );
     lines.push("─────────────");
-    lines.push(`Total: £${total.toFixed(2)}`);
+    let totalLine = `Total: £${total.toFixed(2)}`;
     if (saved > 0) {
       const pct = Math.round((saved / subtotal) * 100);
-      lines.push(`You save £${saved.toFixed(2)} (${pct}% off)`);
+      totalLine += ` You save £${saved.toFixed(2)} (${pct}% off)`;
     }
+    lines.push(totalLine);
     priceBreakdown.textContent = lines.join("\n");
   }
 
