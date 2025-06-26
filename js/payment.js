@@ -853,11 +853,12 @@ async function initPaymentPage() {
   nextBtn?.addEventListener("click", () => showItem(currentIndex + 1));
   if (checkoutItems.length) showItem(0);
   if (qtySelect) {
-    const initialQty = checkoutItems.length
-      ? checkoutItems[0].qty || 1
-      : checkoutItems.length > 1
+    const initialQty =
+      checkoutItems.length > 1
         ? 1
-        : 2;
+        : checkoutItems.length === 1
+          ? checkoutItems[0].qty || 2
+          : 2;
     qtySelect.value = String(initialQty);
     qtySelect.dispatchEvent(new Event("change"));
   }
@@ -991,6 +992,18 @@ async function initPaymentPage() {
       }));
     }
   } catch {}
+  // Reset quantities to 1 when multiple items are in the basket
+  if (checkoutItems.length > 1) {
+    checkoutItems.forEach((it) => {
+      it.qty = 1;
+    });
+    try {
+      localStorage.setItem(
+        "print3CheckoutItems",
+        JSON.stringify(checkoutItems),
+      );
+    } catch {}
+  }
   function saveCheckoutItems() {
     try {
       localStorage.setItem(
