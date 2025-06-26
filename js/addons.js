@@ -40,7 +40,7 @@ function renderPreview() {
   items.forEach((item) => {
     const div = document.createElement("div");
     div.className =
-      "w-64 bg-[#2A2A2E] border border-white/10 rounded-xl p-3 flex flex-col items-center";
+      "w-72 bg-[#2A2A2E] border border-white/10 rounded-xl p-3 flex flex-col items-center";
     div.innerHTML = `<img src="${item.img}" alt="${item.name}" class="h-24 object-contain mb-2" />\n      <span>${item.name}</span>`;
     grid.appendChild(div);
   });
@@ -52,14 +52,11 @@ function adjustLuckyboxHeight() {
   const firstAddon = document.querySelector("#addons-grid > div:first-child");
   const lucky = document.getElementById("luckybox");
   if (!locked || !firstAddon || !lucky) return;
-  const topGap =
-    firstAddon.getBoundingClientRect().top -
-    locked.getBoundingClientRect().bottom;
-  const bottomGap =
-    window.innerHeight -
-    firstAddon.getBoundingClientRect().bottom -
-    parseFloat(getComputedStyle(lucky).bottom);
-  const diff = topGap - bottomGap;
+  const lockedBottom = locked.getBoundingClientRect().bottom;
+  const topGap = firstAddon.getBoundingClientRect().top - lockedBottom;
+  const luckyTop = lucky.getBoundingClientRect().top;
+  const luckyGap = luckyTop - lockedBottom;
+  const diff = topGap - luckyGap;
   if (diff > 0) {
     lucky.style.height = `${lucky.offsetHeight + diff}px`;
   }
