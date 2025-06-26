@@ -73,3 +73,24 @@ async function checkAccess() {
 
 document.addEventListener("DOMContentLoaded", checkAccess);
 window.addEventListener("resize", adjustLuckyboxHeight);
+
+function initLuckybox() {
+  const tier = document.getElementById("luckybox-tier");
+  const desc = document.getElementById("luckybox-desc");
+  if (!tier || !desc) return;
+  const descriptions = {
+    basic:
+      "Get a (usually £39.99) single-colour print and 5 print points for just £20.",
+    multicolour:
+      "Get a (usually £39.99) multicolour print and 5 print points for £29.99.",
+    premium:
+      "Get a (usually £79.99) premium print and 10 print points for £59.99.",
+  };
+  function update() {
+    desc.textContent = descriptions[tier.value] || descriptions.basic;
+  }
+  tier.addEventListener("change", update);
+  update();
+}
+
+document.addEventListener("DOMContentLoaded", initLuckybox);
