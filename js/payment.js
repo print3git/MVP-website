@@ -568,6 +568,11 @@ async function initPaymentPage() {
     } else {
       etchInput.disabled = true;
       etchInput.value = "";
+      if (checkoutItems[currentIndex]) {
+        checkoutItems[currentIndex].etchName = "";
+        saveCheckoutItems();
+      }
+      localStorage.removeItem("print3EtchName");
       etchInput.classList.add("cursor-not-allowed");
       etchInput.classList.add(
         "border-[#30D5C8]",
@@ -770,6 +775,11 @@ async function initPaymentPage() {
       radio.checked = true;
       radio.dispatchEvent(new Event("change"));
     }
+    if (etchInput) {
+      etchInput.value = item.etchName || "";
+      localStorage.setItem("print3EtchName", item.etchName || "");
+      highlightValid(etchInput);
+    }
     if (storedMaterial === "single") {
       if (singleButton) {
         if (storedColor) {
@@ -908,7 +918,12 @@ async function initPaymentPage() {
   // Load saved basket items
   try {
     const arr = JSON.parse(localStorage.getItem("print3CheckoutItems"));
-    if (Array.isArray(arr) && arr.length) checkoutItems = arr;
+    if (Array.isArray(arr) && arr.length) {
+      checkoutItems = arr.map((it) => ({
+        ...it,
+        etchName: it.etchName || "",
+      }));
+    }
   } catch {}
   function saveCheckoutItems() {
     try {
@@ -1075,6 +1090,10 @@ async function initPaymentPage() {
           if (el.value) localStorage.setItem(key, el.value);
           else localStorage.removeItem(key);
         }
+        if (id === "etch-name" && checkoutItems[currentIndex]) {
+          checkoutItems[currentIndex].etchName = el.value.trim();
+          saveCheckoutItems();
+        }
       });
     }
   });
@@ -1230,17 +1249,25 @@ async function initPaymentPage() {
   }
   function updateSummary() {
     if (!summaryEl) return;
-    const etch = etchInput && !etchInput.disabled ? etchInput.value.trim() : "";
     const items = checkoutItems.length
       ? checkoutItems
-      : [{ material: storedMaterial, color: storedColor }];
+      : [
+          {
+            material: storedMaterial,
+            color: storedColor,
+            etchName:
+              etchInput && !etchInput.disabled ? etchInput.value.trim() : "",
+          },
+        ];
     summaryEl.innerHTML =
       "<ul class='list-disc pl-4'>" +
       items
         .map((it) => {
           const parts = [materialLabel(it.material)];
           if (it.material === "single" && it.color) parts.push(it.color);
-          if (etch) parts.push(`\u201C${etch}\u201D`);
+          const name =
+            it.material !== "single" && it.etchName ? it.etchName.trim() : "";
+          if (name) parts.push(`\u201C${name}\u201D`);
           return `<li>${parts.join(" – ")}</li>`;
         })
         .join("") +
