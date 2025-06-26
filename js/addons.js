@@ -24,6 +24,25 @@ function renderPreview() {
     div.innerHTML = `<img src="${item.img}" alt="${item.name}" class="h-24 object-contain mb-2" />\n      <span>${item.name}</span>`;
     grid.appendChild(div);
   });
+  adjustLuckyboxHeight();
+}
+
+function adjustLuckyboxHeight() {
+  const locked = document.getElementById("locked-msg");
+  const firstAddon = document.querySelector("#addons-grid > div:first-child");
+  const lucky = document.getElementById("luckybox");
+  if (!locked || !firstAddon || !lucky) return;
+  const topGap =
+    firstAddon.getBoundingClientRect().top -
+    locked.getBoundingClientRect().bottom;
+  const bottomGap =
+    window.innerHeight -
+    firstAddon.getBoundingClientRect().bottom -
+    parseFloat(getComputedStyle(lucky).bottom);
+  const diff = topGap - bottomGap;
+  if (diff > 0) {
+    lucky.style.height = `${lucky.offsetHeight + diff}px`;
+  }
 }
 
 async function checkAccess() {
@@ -53,3 +72,4 @@ async function checkAccess() {
 }
 
 document.addEventListener("DOMContentLoaded", checkAccess);
+window.addEventListener("resize", adjustLuckyboxHeight);
