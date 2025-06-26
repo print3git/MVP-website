@@ -653,28 +653,30 @@ async function initPaymentPage() {
         ];
     let subtotal = 0;
     let discount = 0;
-    let premium = 0;
-    let multi = 0;
-    let single = 0;
+    let premiumCount = 0;
+    let multiCount = 0;
+    let singleCount = 0;
     for (const it of items) {
       const price = PRICES[it.material] || PRICES.single;
       const qty = Math.max(1, parseInt(it.qty || 1, 10));
       const d = computeDiscountFor(it.material, qty);
       subtotal += price * qty;
       discount += d;
-      if (it.material === "premium") premium += price * qty;
-      else if (it.material === "multi") multi += price * qty;
-      else single += price * qty;
+      if (it.material === "premium") premiumCount += qty;
+      else if (it.material === "multi") multiCount += qty;
+      else singleCount += qty;
     }
     const saved = discount / 100;
     const parts = [];
-    if (premium > 0) parts.push(`£${(premium / 100).toFixed(2)} premium`);
-    if (multi > 0) parts.push(`£${(multi / 100).toFixed(2)} multicolout`);
-    if (single > 0) parts.push(`£${(single / 100).toFixed(2)} single colour`);
+    if (premiumCount > 0) parts.push(`${premiumCount} premium`);
+    if (multiCount > 0) parts.push(`${multiCount} multi`);
+    if (singleCount > 0) parts.push(`${singleCount} single-colour`);
     const total = (subtotal - discount) / 100;
     let text = parts.join(" + ");
     if (saved > 0) {
-      text += ` - £${saved.toFixed(2)} = £${total.toFixed(2)}`;
+      const percent =
+        subtotal > 0 ? Math.round((discount / subtotal) * 100) : 0;
+      text += ` - £${saved.toFixed(2)} (${percent}% saving) = £${total.toFixed(2)}`;
     } else {
       text += ` = £${total.toFixed(2)}`;
     }
@@ -1327,8 +1329,8 @@ async function initPaymentPage() {
 
   const summaryEl = document.getElementById("pay-summary");
   function materialLabel(mat) {
-    if (mat === "single") return "single colour";
-    if (mat === "multi") return "multi-colour";
+    if (mat === "single") return "single-colour";
+    if (mat === "multi") return "multi";
     if (mat === "premium") return "premium";
     return mat;
   }
