@@ -638,11 +638,7 @@ async function initPaymentPage() {
     const saved = (discount / 100) * items;
     let lines = [`£${(selectedPrice / 100).toFixed(2)} each`];
     lines.push(
-<<<<<<< codex/update-payments-page-quantity-and-pay-button
       `×${qty * items} prints${qty > 1 ? ` – £${((TWO_PRINT_DISCOUNT * items) / 100).toFixed(0)} bundle discount` : ""}`,
-=======
-      `×${qty} prints${qty > 1 ? ` – £${(TWO_PRINT_DISCOUNT / 100).toFixed(0)} discount` : ""}`,
->>>>>>> main
     );
     lines.push("─────────────");
     let totalLine = `Total: £${total.toFixed(2)}`;
@@ -825,7 +821,8 @@ async function initPaymentPage() {
       const q = JSON.parse(localStorage.getItem("pendingCheckouts") || "[]");
       if (q.length) {
         const next = q.shift();
-        if (q.length) localStorage.setItem("pendingCheckouts", JSON.stringify(q));
+        if (q.length)
+          localStorage.setItem("pendingCheckouts", JSON.stringify(q));
         else localStorage.removeItem("pendingCheckouts");
         setTimeout(() => {
           window.location.href = next;
@@ -1067,7 +1064,8 @@ async function initPaymentPage() {
       const q = JSON.parse(localStorage.getItem("pendingCheckouts") || "[]");
       if (q.length) {
         const next = q.shift();
-        if (q.length) localStorage.setItem("pendingCheckouts", JSON.stringify(q));
+        if (q.length)
+          localStorage.setItem("pendingCheckouts", JSON.stringify(q));
         else localStorage.removeItem("pendingCheckouts");
         setTimeout(() => {
           window.location.href = next;
