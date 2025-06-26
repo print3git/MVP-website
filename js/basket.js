@@ -246,6 +246,7 @@ export function setupBasketUI() {
         material: localStorage.getItem("print3Material") || "multi",
         // Preserve personalised etch text per model for the payment page.
         etchName: localStorage.getItem("print3EtchName") || "",
+        qty: 1,
       }));
       localStorage.setItem(
         "print3CheckoutItems",

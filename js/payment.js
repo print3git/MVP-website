@@ -36,6 +36,24 @@ let flashTimerId = null;
 let flashSale = null;
 let checkoutItems = [];
 let currentIndex = 0;
+
+function computeDiscountFor(material, qty) {
+  const price = PRICES[material] || PRICES.single;
+  let discount = 0;
+  const end = parseInt(localStorage.getItem("flashDiscountEnd"), 10) || 0;
+  if (end && end > Date.now()) {
+    discount += Math.round(price * 0.05);
+  }
+  if (
+    flashSale &&
+    Date.now() < new Date(flashSale.end_time).getTime() &&
+    material === flashSale.product_type
+  ) {
+    discount += Math.round(price * (flashSale.discount_percent / 100));
+  }
+  if (qty > 1) discount += TWO_PRINT_DISCOUNT;
+  return discount;
+}
 const NEXT_PROMPTS = [
   "cute robot figurine",
   "ornate chess piece",
@@ -600,53 +618,58 @@ async function initPaymentPage() {
         PRINT_CLUB_ANNUAL_PRICE / 100
       ).toFixed(2)}`;
     } else {
-      const items = checkoutItems.length || 1;
-      const qty = Math.max(1, parseInt(qtySelect?.value || "2", 10));
-      let total = selectedPrice * qty;
-      if (qty > 1) {
-        total -= TWO_PRINT_DISCOUNT;
+      const items = checkoutItems.length
+        ? checkoutItems
+        : [
+            {
+              material: selectedMaterialValue(),
+              qty: Math.max(1, parseInt(qtySelect?.value || "2", 10)),
+            },
+          ];
+      let total = 0;
+      let totalQty = 0;
+      for (const it of items) {
+        const price = PRICES[it.material] || PRICES.single;
+        const qty = Math.max(1, parseInt(it.qty || 1, 10));
+        let sub = price * qty;
+        if (qty > 1) sub -= TWO_PRINT_DISCOUNT;
+        total += sub;
+        totalQty += qty;
       }
-      total *= items;
-      payBtn.textContent = `Pay £${(total / 100).toFixed(2)} (${qty * items} prints)`;
+      payBtn.textContent = `Pay £${(total / 100).toFixed(2)} (${totalQty} prints)`;
     }
     updatePriceBreakdown();
   }
 
   function updatePriceBreakdown() {
     if (!priceBreakdown) return;
-    const items = checkoutItems.length || 1;
-    const qty = Math.max(1, parseInt(qtySelect?.value || "2", 10));
+    const items = checkoutItems.length
+      ? checkoutItems
+      : [
+          {
+            material: selectedMaterialValue(),
+            qty: Math.max(1, parseInt(qtySelect?.value || "2", 10)),
+          },
+        ];
+    let subtotal = 0;
     let discount = 0;
-    const end = parseInt(localStorage.getItem("flashDiscountEnd"), 10) || 0;
-    if (end && end > Date.now()) {
-      discount += Math.round(selectedPrice * 0.05);
+    let totalQty = 0;
+    for (const it of items) {
+      const price = PRICES[it.material] || PRICES.single;
+      const qty = Math.max(1, parseInt(it.qty || 1, 10));
+      const d = computeDiscountFor(it.material, qty);
+      subtotal += price * qty;
+      discount += d;
+      totalQty += qty;
     }
-    if (
-      flashSale &&
-      Date.now() < new Date(flashSale.end_time).getTime() &&
-      selectedMaterialValue() === flashSale.product_type
-    ) {
-      discount += Math.round(
-        selectedPrice * (flashSale.discount_percent / 100),
-      );
-    }
-    if (qty > 1) {
-      discount += TWO_PRINT_DISCOUNT;
-    }
-    const subtotal = ((selectedPrice * qty) / 100) * items;
-    const total = ((selectedPrice * qty - discount) / 100) * items;
-    const saved = (discount / 100) * items;
-    let lines = [`£${(selectedPrice / 100).toFixed(2)} each`];
-    lines.push(
-      `×${qty * items} prints${qty > 1 ? ` – £${((TWO_PRINT_DISCOUNT * items) / 100).toFixed(0)} bundle discount` : ""}`,
-    );
-    lines.push("─────────────");
-    let totalLine = `Total: £${total.toFixed(2)}`;
+    const total = (subtotal - discount) / 100;
+    const saved = discount / 100;
+    const subtotalPounds = subtotal / 100;
+    let lines = [`Total: £${total.toFixed(2)}`];
     if (saved > 0) {
-      const pct = Math.round((saved / subtotal) * 100);
-      totalLine += ` (saved ${pct}%)`;
+      const pct = Math.round((saved / subtotalPounds) * 100);
+      lines[0] += ` (saved ${pct}%)`;
     }
-    lines.push(totalLine);
     priceBreakdown.textContent = lines.join("\n");
   }
 
@@ -701,8 +724,14 @@ async function initPaymentPage() {
   }
 
   qtySelect?.addEventListener("change", () => {
+    if (checkoutItems[currentIndex]) {
+      checkoutItems[currentIndex].qty = Math.max(
+        1,
+        parseInt(qtySelect.value || "1", 10),
+      );
+      saveCheckoutItems();
+    }
     updatePayButton();
-
     updatePopularMessage();
   });
 
@@ -804,13 +833,22 @@ async function initPaymentPage() {
     }
     updatePayButton();
     updateFlashSaleBanner();
+    if (qtySelect) {
+      qtySelect.value = String(item.qty || 1);
+      qtySelect.dispatchEvent(new Event("change"));
+    }
   }
 
   prevBtn?.addEventListener("click", () => showItem(currentIndex - 1));
   nextBtn?.addEventListener("click", () => showItem(currentIndex + 1));
   if (checkoutItems.length) showItem(0);
   if (qtySelect) {
-    qtySelect.value = checkoutItems.length > 1 ? "1" : "2";
+    const initialQty = checkoutItems.length
+      ? checkoutItems[0].qty || 1
+      : checkoutItems.length > 1
+        ? 1
+        : 2;
+    qtySelect.value = String(initialQty);
     qtySelect.dispatchEvent(new Event("change"));
   }
   const sessionId = qs("session_id");
@@ -939,6 +977,7 @@ async function initPaymentPage() {
       checkoutItems = arr.map((it) => ({
         ...it,
         etchName: it.etchName || "",
+        qty: Math.max(1, parseInt(it.qty || "1", 10)),
       }));
     }
   } catch {}
@@ -1181,23 +1220,6 @@ async function initPaymentPage() {
       1,
       parseInt(document.getElementById("print-qty")?.value || "2", 10),
     );
-    let discount = 0;
-    const end = parseInt(localStorage.getItem("flashDiscountEnd"), 10) || 0;
-    if (end && end > Date.now()) {
-      discount += Math.round(selectedPrice * 0.05);
-    }
-    if (
-      flashSale &&
-      Date.now() < new Date(flashSale.end_time).getTime() &&
-      selectedMaterialValue() === flashSale.product_type
-    ) {
-      discount += Math.round(
-        selectedPrice * (flashSale.discount_percent / 100),
-      );
-    }
-    if (qty > 1) {
-      discount += TWO_PRINT_DISCOUNT;
-    }
     const shippingInfo = {
       name: document.getElementById("ship-name").value,
       address: document.getElementById("ship-address").value,
@@ -1220,14 +1242,17 @@ async function initPaymentPage() {
             jobId: localStorage.getItem("print3JobId"),
             material: selectedMaterialValue(),
             etchName: etchName || "",
+            qty,
           },
         ];
     const sessions = [];
     for (const item of items) {
+      const q = Math.max(1, parseInt(item.qty || qty, 10));
       if (item.jobId) localStorage.setItem("print3JobId", item.jobId);
       selectedPrice = PRICES[item.material] || PRICES.single;
+      const discount = computeDiscountFor(item.material, q);
       const resp = await createCheckout(
-        qty,
+        q,
         discount,
         discountCodes,
         shippingInfo,
