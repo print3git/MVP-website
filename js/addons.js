@@ -40,7 +40,7 @@ function renderPreview() {
   items.forEach((item) => {
     const div = document.createElement("div");
     div.className =
-      "bg-[#2A2A2E] border border-white/10 rounded-xl p-3 flex flex-col items-center";
+      "w-64 bg-[#2A2A2E] border border-white/10 rounded-xl p-3 flex flex-col items-center";
     div.innerHTML = `<img src="${item.img}" alt="${item.name}" class="h-24 object-contain mb-2" />\n      <span>${item.name}</span>`;
     grid.appendChild(div);
   });
