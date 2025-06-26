@@ -653,21 +653,30 @@ async function initPaymentPage() {
         ];
     let subtotal = 0;
     let discount = 0;
-    let totalQty = 0;
+    let premium = 0;
+    let multi = 0;
+    let single = 0;
     for (const it of items) {
       const price = PRICES[it.material] || PRICES.single;
       const qty = Math.max(1, parseInt(it.qty || 1, 10));
       const d = computeDiscountFor(it.material, qty);
       subtotal += price * qty;
       discount += d;
-      totalQty += qty;
+      if (it.material === "premium") premium += price * qty;
+      else if (it.material === "multi") multi += price * qty;
+      else single += price * qty;
     }
     const saved = discount / 100;
-    const subtotalPounds = subtotal / 100;
-    let text = "";
+    const parts = [];
+    if (premium > 0) parts.push(`£${(premium / 100).toFixed(2)} premium`);
+    if (multi > 0) parts.push(`£${(multi / 100).toFixed(2)} multicolout`);
+    if (single > 0) parts.push(`£${(single / 100).toFixed(2)} single colour`);
+    const total = (subtotal - discount) / 100;
+    let text = parts.join(" + ");
     if (saved > 0) {
-      const pct = Math.round((saved / subtotalPounds) * 100);
-      text = `Saved ${pct}%`;
+      text += ` - £${saved.toFixed(2)} = £${total.toFixed(2)}`;
+    } else {
+      text += ` = £${total.toFixed(2)}`;
     }
     priceBreakdown.textContent = text;
   }
