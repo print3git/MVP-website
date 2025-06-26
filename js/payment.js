@@ -600,18 +600,21 @@ async function initPaymentPage() {
         PRINT_CLUB_ANNUAL_PRICE / 100
       ).toFixed(2)}`;
     } else {
+      const items = checkoutItems.length || 1;
       const qty = Math.max(1, parseInt(qtySelect?.value || "2", 10));
       let total = selectedPrice * qty;
       if (qty > 1) {
         total -= TWO_PRINT_DISCOUNT;
       }
-      payBtn.textContent = `Pay £${(total / 100).toFixed(2)} (${qty} prints)`;
+      total *= items;
+      payBtn.textContent = `Pay £${(total / 100).toFixed(2)} (${qty * items} prints)`;
     }
     updatePriceBreakdown();
   }
 
   function updatePriceBreakdown() {
     if (!priceBreakdown) return;
+    const items = checkoutItems.length || 1;
     const qty = Math.max(1, parseInt(qtySelect?.value || "2", 10));
     let discount = 0;
     const end = parseInt(localStorage.getItem("flashDiscountEnd"), 10) || 0;
@@ -630,12 +633,16 @@ async function initPaymentPage() {
     if (qty > 1) {
       discount += TWO_PRINT_DISCOUNT;
     }
-    const subtotal = (selectedPrice * qty) / 100;
-    const total = (selectedPrice * qty - discount) / 100;
-    const saved = discount / 100;
+    const subtotal = ((selectedPrice * qty) / 100) * items;
+    const total = ((selectedPrice * qty - discount) / 100) * items;
+    const saved = (discount / 100) * items;
     let lines = [`£${(selectedPrice / 100).toFixed(2)} each`];
     lines.push(
+<<<<<<< codex/update-payments-page-quantity-and-pay-button
+      `×${qty * items} prints${qty > 1 ? ` – £${((TWO_PRINT_DISCOUNT * items) / 100).toFixed(0)} bundle discount` : ""}`,
+=======
       `×${qty} prints${qty > 1 ? ` – £${(TWO_PRINT_DISCOUNT / 100).toFixed(0)} discount` : ""}`,
+>>>>>>> main
     );
     lines.push("─────────────");
     let totalLine = `Total: £${total.toFixed(2)}`;
@@ -814,6 +821,18 @@ async function initPaymentPage() {
   if (sessionId) {
     recordPurchase();
     await loadCheckoutCredits();
+    try {
+      const q = JSON.parse(localStorage.getItem("pendingCheckouts") || "[]");
+      if (q.length) {
+        const next = q.shift();
+        if (q.length) localStorage.setItem("pendingCheckouts", JSON.stringify(q));
+        else localStorage.removeItem("pendingCheckouts");
+        setTimeout(() => {
+          window.location.href = next;
+        }, 500);
+        return;
+      }
+    } catch {}
   }
   let baseSlots = null;
 
@@ -1044,6 +1063,18 @@ async function initPaymentPage() {
   }
   if (qs("cancel")) {
     cancelMsg.hidden = false;
+    try {
+      const q = JSON.parse(localStorage.getItem("pendingCheckouts") || "[]");
+      if (q.length) {
+        const next = q.shift();
+        if (q.length) localStorage.setItem("pendingCheckouts", JSON.stringify(q));
+        else localStorage.removeItem("pendingCheckouts");
+        setTimeout(() => {
+          window.location.href = next;
+        }, 500);
+        return;
+      }
+    } catch {}
   }
 
   if (flashBanner && initData.flashSale) {
@@ -1184,26 +1215,48 @@ async function initPaymentPage() {
         .trim();
     }
     const useCredit = document.getElementById("use-credit")?.checked;
-    const data = await createCheckout(
-      qty,
-      discount,
-      discountCodes,
-      shippingInfo,
-      referralId,
-      etchName || undefined,
-      useCredit,
-    );
-    if (useCredit && data.success) {
+    const items = checkoutItems.length
+      ? checkoutItems
+      : [
+          {
+            jobId: localStorage.getItem("print3JobId"),
+            material: selectedMaterialValue(),
+            etchName: etchName || "",
+          },
+        ];
+    const sessions = [];
+    for (const item of items) {
+      if (item.jobId) localStorage.setItem("print3JobId", item.jobId);
+      selectedPrice = PRICES[item.material] || PRICES.single;
+      const resp = await createCheckout(
+        qty,
+        discount,
+        discountCodes,
+        shippingInfo,
+        referralId,
+        item.etchName || undefined,
+        useCredit,
+      );
+      if (resp.checkoutUrl) sessions.push(resp.checkoutUrl);
+    }
+    if (useCredit && sessions.length === 0) {
       recordPurchase();
       await loadCheckoutCredits();
       successMsg.hidden = false;
-    } else if (data.checkoutUrl) {
+    } else if (sessions.length) {
+      const rest = sessions.slice(1);
+      if (rest.length) {
+        localStorage.setItem("pendingCheckouts", JSON.stringify(rest));
+      } else {
+        localStorage.removeItem("pendingCheckouts");
+      }
+      const first = sessions[0];
       if (stripe) {
         stripe.redirectToCheckout({
-          sessionId: data.checkoutUrl.split("session_id=")[1],
+          sessionId: first.split("session_id=")[1],
         });
       } else {
-        window.location.href = data.checkoutUrl;
+        window.location.href = first;
       }
     }
     if (emailEl.value) {
