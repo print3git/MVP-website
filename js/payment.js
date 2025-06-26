@@ -985,6 +985,9 @@ async function initPaymentPage() {
   try {
     const arr = JSON.parse(localStorage.getItem("print3CheckoutItems"));
     if (Array.isArray(arr) && arr.length) {
+      if (arr.length === 1 && arr[0].qty == null) {
+        arr[0].qty = 2;
+      }
       checkoutItems = arr.map((it) => ({
         ...it,
         etchName: it.etchName || "",
