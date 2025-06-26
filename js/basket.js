@@ -248,6 +248,7 @@ export function setupBasketUI() {
         return {
           modelUrl: it.modelUrl,
           jobId: it.jobId,
+          snapshot: it.snapshot || prev.snapshot || "",
           material:
             prev.material || localStorage.getItem("print3Material") || "multi",
           color: prev.color || null,
