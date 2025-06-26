@@ -676,7 +676,7 @@ async function initPaymentPage() {
     if (saved > 0) {
       const percent =
         subtotal > 0 ? Math.round((discount / subtotal) * 100) : 0;
-      text += ` - £${saved.toFixed(2)} (${percent}% saving) = £${total.toFixed(2)}`;
+      text += ` - £${saved.toFixed(2)} = £${total.toFixed(2)} (${percent}% saving)`;
     } else {
       text += ` = £${total.toFixed(2)}`;
     }
