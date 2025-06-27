@@ -507,6 +507,84 @@ async function getBusinessIntelligenceMetrics() {
   }));
 }
 
+async function getMarginalCacMetrics(days = 7) {
+  days = parseInt(days, 10) || 7;
+  const recentSpend = await query(
+    `SELECT subreddit, SUM(spend_cents) AS spend
+       FROM ad_spend
+      WHERE date >= CURRENT_DATE - INTERVAL '${days} days'
+      GROUP BY subreddit`,
+  );
+  const prevSpend = await query(
+    `SELECT subreddit, SUM(spend_cents) AS spend
+       FROM ad_spend
+      WHERE date >= CURRENT_DATE - INTERVAL '${days * 2} days'
+        AND date < CURRENT_DATE - INTERVAL '${days} days'
+      GROUP BY subreddit`,
+  );
+  const recentOrders = await query(
+    `SELECT subreddit, COUNT(*) AS count
+       FROM orders
+      WHERE status='paid' AND created_at >= NOW() - INTERVAL '${days} days'
+      GROUP BY subreddit`,
+  );
+  const prevOrders = await query(
+    `SELECT subreddit, COUNT(*) AS count
+       FROM orders
+      WHERE status='paid'
+        AND created_at >= NOW() - INTERVAL '${days * 2} days'
+        AND created_at < NOW() - INTERVAL '${days} days'
+      GROUP BY subreddit`,
+  );
+
+  const map = {};
+  for (const row of recentSpend.rows) {
+    map[row.subreddit] = map[row.subreddit] || {
+      recentSpend: 0,
+      prevSpend: 0,
+      recentOrders: 0,
+      prevOrders: 0,
+    };
+    map[row.subreddit].recentSpend = parseInt(row.spend, 10) || 0;
+  }
+  for (const row of prevSpend.rows) {
+    map[row.subreddit] = map[row.subreddit] || {
+      recentSpend: 0,
+      prevSpend: 0,
+      recentOrders: 0,
+      prevOrders: 0,
+    };
+    map[row.subreddit].prevSpend = parseInt(row.spend, 10) || 0;
+  }
+  for (const row of recentOrders.rows) {
+    map[row.subreddit] = map[row.subreddit] || {
+      recentSpend: 0,
+      prevSpend: 0,
+      recentOrders: 0,
+      prevOrders: 0,
+    };
+    map[row.subreddit].recentOrders = parseInt(row.count, 10) || 0;
+  }
+  for (const row of prevOrders.rows) {
+    map[row.subreddit] = map[row.subreddit] || {
+      recentSpend: 0,
+      prevSpend: 0,
+      recentOrders: 0,
+      prevOrders: 0,
+    };
+    map[row.subreddit].prevOrders = parseInt(row.count, 10) || 0;
+  }
+
+  return Object.entries(map).map(([subreddit, d]) => {
+    const deltaSpend = d.recentSpend - d.prevSpend;
+    const deltaOrders = d.recentOrders - d.prevOrders;
+    return {
+      subreddit,
+      marginalCac: deltaOrders > 0 ? deltaSpend / deltaOrders : 0,
+    };
+  });
+}
+
 async function insertScalingEvent(subreddit, oldBudget, newBudget, reason) {
   await query(
     "INSERT INTO scaling_events(subreddit, old_budget_cents, new_budget_cents, reason) VALUES($1,$2,$3,$4)",
@@ -937,6 +1015,7 @@ module.exports = {
   insertAdSpend,
   getAverageJobCompletionSeconds,
   getBusinessIntelligenceMetrics,
+  getMarginalCacMetrics,
   adjustInventory,
   getLowInventory,
 };

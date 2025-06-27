@@ -1307,6 +1307,16 @@ app.get("/api/metrics/business-intel", async (req, res) => {
   }
 });
 
+app.get("/api/metrics/marginal-cac", async (req, res) => {
+  try {
+    const data = await db.getMarginalCacMetrics();
+    res.json(data);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: "Failed to fetch marginal CAC" });
+  }
+});
+
 app.get("/api/metrics/daily-profit", async (req, res) => {
   try {
     const end = new Date();

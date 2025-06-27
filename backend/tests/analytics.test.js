@@ -20,6 +20,7 @@ jest.mock("../db", () => ({
   getDemandForecast: jest.fn(),
   getOrCreateOrderReferralLink: jest.fn(),
   insertReferredOrder: jest.fn(),
+  getMarginalCacMetrics: jest.fn(),
 }));
 const db = require("../db");
 
@@ -134,4 +135,14 @@ test("GET /api/metrics/demand-forecast returns data", async () => {
   expect(res.status).toBe(200);
   expect(res.body[0].demand).toBe(10);
   expect(db.getDemandForecast).toHaveBeenCalled();
+});
+
+test("GET /api/metrics/marginal-cac returns data", async () => {
+  db.getMarginalCacMetrics.mockResolvedValue([
+    { subreddit: "funny", marginalCac: 2 },
+  ]);
+  const res = await request(app).get("/api/metrics/marginal-cac");
+  expect(res.status).toBe(200);
+  expect(res.body[0].marginalCac).toBe(2);
+  expect(db.getMarginalCacMetrics).toHaveBeenCalled();
 });
