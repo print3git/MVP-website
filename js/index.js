@@ -323,7 +323,7 @@ async function updatePrintRunInfo() {
   const hours = computePrintRunHours();
   hoursEl.textContent = hours;
   if (hoursLabelEl) hoursLabelEl.textContent = hours === 1 ? "hour" : "hours";
-  if (slotsEl) slotsEl.textContent = `${adjustedSlots(baseSlots) + 1}`;
+  if (slotsEl) slotsEl.textContent = `${adjustedSlots(baseSlots)}`;
 
   if (info) info.classList.remove("invisible");
   if (typeof window.positionQuote === "function") {
