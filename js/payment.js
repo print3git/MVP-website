@@ -844,6 +844,15 @@ async function initPaymentPage() {
     if (qtySelect) {
       qtySelect.value = String(item.qty || 1);
     }
+    const counter = document.getElementById("model-counter");
+    if (counter) {
+      if (checkoutItems.length > 1) {
+        counter.textContent = `${currentIndex + 1} / ${checkoutItems.length}`;
+        counter.classList.remove("hidden");
+      } else {
+        counter.classList.add("hidden");
+      }
+    }
     updatePayButton();
     updateFlashSaleBanner();
   }
