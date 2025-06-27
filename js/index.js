@@ -90,8 +90,9 @@ import { shareOn } from "./share.js";
 
 function resetMaterialSelection() {
   try {
-    localStorage.setItem("print3Material", "multi");
-    localStorage.removeItem("print3Color");
+    if (!localStorage.getItem("print3Material")) {
+      localStorage.setItem("print3Material", "multi");
+    }
   } catch {
     /* ignore quota errors */
   }
