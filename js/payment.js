@@ -1403,3 +1403,11 @@ if (document.readyState === "loading") {
 } else {
   initPaymentPage();
 }
+
+// Reload the page when returning via back/forward cache so newly added basket
+// items are displayed correctly.
+window.addEventListener("pageshow", (e) => {
+  if (e.persisted) {
+    window.location.reload();
+  }
+});
