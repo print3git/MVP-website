@@ -1,4 +1,4 @@
-const API_BASE = (window.API_ORIGIN || '') + '/api';
+const API_BASE = (window.API_ORIGIN || "") + "/api";
 
 function getParam(name) {
   const params = new URLSearchParams(window.location.search);
@@ -11,29 +11,29 @@ async function fetchSubredditInfo(sr) {
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     return await resp.json();
   } catch (err) {
-    console.error('Failed to load subreddit data', err);
+    console.error("Failed to load subreddit data", err);
     return null;
   }
 }
 
-const FALLBACK_QUOTE = "I'm astonished at how high-quality the print is";
+const FALLBACK_QUOTE = "The print is crazy good";
 
-window.addEventListener('DOMContentLoaded', async () => {
-  const sr = getParam('sr') || 'default';
-  const viewer = document.getElementById('viewer');
-  const quoteEl = document.getElementById('subreddit-quote');
+window.addEventListener("DOMContentLoaded", async () => {
+  const sr = getParam("sr") || "default";
+  const viewer = document.getElementById("viewer");
+  const quoteEl = document.getElementById("subreddit-quote");
 
   const entry = await fetchSubredditInfo(sr);
   if (entry && viewer) {
     viewer.src = entry.glb;
-    localStorage.setItem('print3Model', entry.glb);
-    localStorage.removeItem('print3JobId');
+    localStorage.setItem("print3Model", entry.glb);
+    localStorage.removeItem("print3JobId");
   }
 
   if (quoteEl) {
-    const p = quoteEl.querySelector('p');
+    const p = quoteEl.querySelector("p");
     if (entry && p) {
-      const srName = entry.subreddit || 'subreddit';
+      const srName = entry.subreddit || "subreddit";
       p.innerHTML = `"${entry.quote}" – email from an <span class="text-white">r/${srName}</span> user`;
     }
 
