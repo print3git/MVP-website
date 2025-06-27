@@ -841,12 +841,11 @@ async function initPaymentPage() {
       singleButton.style.backgroundColor = "";
       singleButton.style.borderColor = "";
     }
-    updatePayButton();
-    updateFlashSaleBanner();
     if (qtySelect) {
       qtySelect.value = String(item.qty || 1);
-      qtySelect.dispatchEvent(new Event("change"));
     }
+    updatePayButton();
+    updateFlashSaleBanner();
   }
 
   prevBtn?.addEventListener("click", () => showItem(currentIndex - 1));
