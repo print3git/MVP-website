@@ -38,7 +38,7 @@ async function processThumbnail(fileBuffer) {
       })
       // Keep thumbnails crisp
       .sharpen()
-      .flatten({ background: "#1e1e1e" })
+      .flatten({ background: "#2A2A2E" })
       .jpeg({ quality: 80 });
 
     const buffer = await square.toBuffer();
