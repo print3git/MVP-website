@@ -16,7 +16,7 @@ async function fetchSubredditInfo(sr) {
   }
 }
 
-const FALLBACK_QUOTE = "The print is crazy good";
+const FALLBACK_QUOTE = "Feels like magic";
 
 window.addEventListener("DOMContentLoaded", async () => {
   const sr = getParam("sr") || "default";
