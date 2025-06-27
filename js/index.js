@@ -684,7 +684,7 @@ function getThumbnail(file) {
         c.width = size;
         c.height = size;
         const ctx = c.getContext("2d");
-        ctx.fillStyle = "#1e1e1e";
+        ctx.fillStyle = "#2A2A2E";
         ctx.fillRect(0, 0, size, size);
         let sx = 0,
           sy = 0,
