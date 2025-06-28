@@ -28,9 +28,9 @@ document.addEventListener("DOMContentLoaded", () => {
       ((PRINT_CLUB_PRICE * FIRST_MONTH_DISCOUNT) / 100) *
       (hasReferral ? 0.9 : 1);
     if (priceSpan) {
-      priceSpan.textContent = `Join print2 pro £${firstMonth.toFixed(2)} first month`;
+      priceSpan.textContent = `Join print2 Pro £${firstMonth.toFixed(2)} first month`;
       if (payBtn)
-        payBtn.textContent = `Join print2 pro – Pay £${firstMonth.toFixed(2)}`;
+        payBtn.textContent = `Join print2 Pro – Pay £${firstMonth.toFixed(2)}`;
     }
     if (annualSpan)
       annualSpan.textContent = `Annual £${(PRINT_CLUB_ANNUAL_PRICE / 100).toFixed(2)}`;
@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
       r.addEventListener("change", () => {
         const val = r.value;
         if (val === "annual" && payBtn) {
-          payBtn.textContent = `Join print2 pro – Pay £${(PRINT_CLUB_ANNUAL_PRICE / 100).toFixed(2)}`;
+          payBtn.textContent = `Join print2 Pro – Pay £${(PRINT_CLUB_ANNUAL_PRICE / 100).toFixed(2)}`;
         } else {
           updatePrices();
         }

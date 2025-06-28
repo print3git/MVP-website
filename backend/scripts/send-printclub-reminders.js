@@ -1,9 +1,11 @@
-require('dotenv').config();
-const { Client } = require('pg');
-const { sendTemplate } = require('../mail');
+require("dotenv").config();
+const { Client } = require("pg");
+const { sendTemplate } = require("../mail");
 
 function startOfWeek(d = new Date()) {
-  const date = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+  const date = new Date(
+    Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()),
+  );
   const day = date.getUTCDay();
   const diff = date.getUTCDate() - day;
   return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), diff));
@@ -11,7 +13,9 @@ function startOfWeek(d = new Date()) {
 
 function daysUntilNextReset() {
   const today = new Date();
-  const nextWeekStart = new Date(startOfWeek(today).getTime() + 7 * 24 * 60 * 60 * 1000);
+  const nextWeekStart = new Date(
+    startOfWeek(today).getTime() + 7 * 24 * 60 * 60 * 1000,
+  );
   return Math.ceil((nextWeekStart - today) / (24 * 60 * 60 * 1000));
 }
 
@@ -32,15 +36,15 @@ async function sendReminders() {
           AND c.week_start=$1
           AND c.total_credits - c.used_credits > 0`,
 
-      [weekStr]
+      [weekStr],
     );
     for (const row of rows) {
       try {
-        await sendTemplate(row.email, 'print2 pro Reminder', 'reminder.txt', {
+        await sendTemplate(row.email, "print2 Pro Reminder", "reminder.txt", {
           username: row.username,
         });
       } catch (err) {
-        console.error('Failed to send reminder to', row.email, err);
+        console.error("Failed to send reminder to", row.email, err);
       }
     }
   } finally {

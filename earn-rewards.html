@@ -46,7 +46,7 @@
           href="printclub.html"
           id="print-club-badge"
           class="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-3xl px-3 py-2 text-sm transition-shape"
-          >print2 pro £149.99/mo</a
+          >print2 Pro £149.99/mo</a
         >
         <div class="flex space-x-2">
           <button
@@ -92,63 +92,63 @@
         class="max-w-4xl w-full bg-[#2A2A2E] border border-white/10 p-6 rounded-2xl shadow-lg flex flex-col md:flex-row md:space-x-8 space-y-6 md:space-y-0"
       >
         <div class="md:w-1/2 space-y-6 text-center md:text-left">
-        <h2 class="text-2xl font-semibold">Share &amp; earn discounts</h2>
-        <p class="text-gray-400">
-          You must
-          <a href="login.html" class="font-bold text-[#30D5C8]">Log In</a>
-          or
-          <a href="signup.html" class="font-bold text-[#30D5C8]">Sign Up</a>
-          to get rewards.
-        </p>
-        <p class="text-lg">
-          Invite friends to try print2 using your personal link below. When they
-          place orders you'll earn points that can be redeemed for discounts on
-          future prints.
-        </p>
-        <div class="space-y-1">
-          <label for="referral-link" class="block text-sm"
-            >Your referral link</label
-          >
-          <div class="flex">
-            <input
-              id="referral-link"
-              aria-label="Referral link"
-              class="flex-1 bg-[#1A1A1D] border border-white/10 rounded-l-xl px-3 py-2"
-              readonly
-            />
-            <button
-              aria-label="Copy referral link"
-              class="bg-blue-600 px-4 rounded-r-xl"
-              onclick="copyReferral()"
+          <h2 class="text-2xl font-semibold">Share &amp; earn discounts</h2>
+          <p class="text-gray-400">
+            You must
+            <a href="login.html" class="font-bold text-[#30D5C8]">Log In</a>
+            or
+            <a href="signup.html" class="font-bold text-[#30D5C8]">Sign Up</a>
+            to get rewards.
+          </p>
+          <p class="text-lg">
+            Invite friends to try print2 using your personal link below. When
+            they place orders you'll earn points that can be redeemed for
+            discounts on future prints.
+          </p>
+          <div class="space-y-1">
+            <label for="referral-link" class="block text-sm"
+              >Your referral link</label
             >
-              Copy
+            <div class="flex">
+              <input
+                id="referral-link"
+                aria-label="Referral link"
+                class="flex-1 bg-[#1A1A1D] border border-white/10 rounded-l-xl px-3 py-2"
+                readonly
+              />
+              <button
+                aria-label="Copy referral link"
+                class="bg-blue-600 px-4 rounded-r-xl"
+                onclick="copyReferral()"
+              >
+                Copy
+              </button>
+            </div>
+          </div>
+          <div class="space-y-1">
+            <label class="block text-sm"
+              >Points: <span id="reward-points">0</span> ⭐</label
+            >
+            <progress
+              id="reward-progress"
+              value="0"
+              max="200"
+              class="w-full h-2 rounded"
+            ></progress>
+          </div>
+          <div class="flex">
+            <select
+              id="reward-select"
+              class="flex-1 bg-[#1A1A1D] border border-white/10 rounded-l-xl px-3 py-2"
+            ></select>
+            <button
+              class="bg-green-600 px-4 rounded-r-xl"
+              onclick="redeemReward()"
+            >
+              Redeem
             </button>
           </div>
-        </div>
-        <div class="space-y-1">
-          <label class="block text-sm"
-            >Points: <span id="reward-points">0</span> ⭐</label
-          >
-          <progress
-            id="reward-progress"
-            value="0"
-            max="200"
-            class="w-full h-2 rounded"
-          ></progress>
-        </div>
-        <div class="flex">
-          <select
-            id="reward-select"
-            class="flex-1 bg-[#1A1A1D] border border-white/10 rounded-l-xl px-3 py-2"
-          ></select>
-          <button
-            class="bg-green-600 px-4 rounded-r-xl"
-            onclick="redeemReward()"
-          >
-            Redeem
-          </button>
-        </div>
-        <p id="next-reward-msg" class="text-sm text-gray-300"></p>
+          <p id="next-reward-msg" class="text-sm text-gray-300"></p>
         </div>
         <div class="md:w-1/2 space-y-6 text-left">
           <div>
@@ -165,13 +165,16 @@
           </div>
           <div>
             <h3 class="text-lg font-semibold mt-4 mb-2">Your Achievements</h3>
-            <ul id="achievements-list" class="list-disc list-inside text-sm"></ul>
+            <ul
+              id="achievements-list"
+              class="list-disc list-inside text-sm"
+            ></ul>
           </div>
           <div class="mt-4">
             <a
               href="printclub.html"
               class="inline-block bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-3xl px-4 py-2 text-sm"
-              >Join print2 pro &amp; get 100 bonus points</a
+              >Join print2 Pro &amp; get 100 bonus points</a
             >
           </div>
         </div>
@@ -187,7 +190,7 @@
       class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden"
     >
       <div class="bg-[#2A2A2E] p-6 rounded-xl max-w-sm text-center">
-        <h2 class="text-2xl font-semibold mb-2">print2 pro</h2>
+        <h2 class="text-2xl font-semibold mb-2">print2 Pro</h2>
         <p class="mb-4">
           Get two prints (single or multicolour tiers) every week for
           £149.99/month.
@@ -195,7 +198,7 @@
         <button
           id="printclub-close"
           class="mt-2 px-4 py-2 bg-blue-600 rounded-3xl"
-          aria-label="Close print2 pro modal"
+          aria-label="Close print2 Pro modal"
         >
           Close
         </button>
