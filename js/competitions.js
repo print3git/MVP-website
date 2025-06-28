@@ -125,7 +125,7 @@ async function load() {
   }
   comps.forEach((c) => {
     const div = document.createElement("div");
-    div.className = "bg-[#2A2A2E] p-4 rounded-xl space-y-2";
+    div.className = "bg-[#2A2A2E] p-4 rounded-xl space-y-2 border border-white/10";
     div.innerHTML = `<h2 class="text-xl">${c.name}</h2>
       <p class="text-[#30D5C8]">Theme: ${c.theme || ""}</p>
       <p>${c.prize_description || ""}</p>
@@ -413,7 +413,7 @@ async function loadPast() {
   }
   comps.forEach((c) => {
     const div = document.createElement("div");
-    div.className = "bg-[#2A2A2E] p-4 rounded-xl space-y-2 text-center";
+    div.className = "bg-[#2A2A2E] p-4 rounded-xl space-y-2 text-center border border-white/10";
     div.innerHTML = `<h3 class="text-lg">${c.name}</h3>
       <div class="model-card relative h-32 border border-white/10 rounded-xl flex items-center justify-center cursor-pointer" data-model="${c.model_url}" data-job="${c.winner_model_id}">
         <img src="${c.snapshot || ""}" alt="Winning model" class="w-full h-full object-contain pointer-events-none" />

@@ -22,7 +22,7 @@ async function load() {
   list.innerHTML = '';
   comps.forEach((c) => {
     const div = document.createElement('div');
-    div.className = 'bg-[#2A2A2E] p-4 rounded space-y-2';
+    div.className = 'bg-[#2A2A2E] p-4 rounded space-y-2 border border-white/10';
     div.innerHTML = `
       <h2 class="text-lg font-semibold">${c.name}</h2>
       <label class="block text-sm">Prize Description
