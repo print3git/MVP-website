@@ -1,14 +1,14 @@
-process.env.DB_URL = 'postgres://user:pass@localhost/db';
+process.env.DB_URL = "postgres://user:pass@localhost/db";
 
-jest.mock('pg');
-const { Client } = require('pg');
+jest.mock("pg");
+const { Client } = require("pg");
 const mClient = { connect: jest.fn(), end: jest.fn(), query: jest.fn() };
 Client.mockImplementation(() => mClient);
 
-jest.mock('../mail', () => ({ sendTemplate: jest.fn() }));
-const { sendTemplate } = require('../mail');
+jest.mock("../mail", () => ({ sendTemplate: jest.fn() }));
+const { sendTemplate } = require("../mail");
 
-const run = require('../scripts/send-printclub-reminders');
+const run = require("../scripts/send-printclub-reminders");
 
 beforeEach(() => {
   mClient.connect.mockClear();
@@ -17,20 +17,27 @@ beforeEach(() => {
   sendTemplate.mockClear();
 });
 
-test('sends reminders when credits unused and near reset', async () => {
-  jest.useFakeTimers().setSystemTime(new Date('2024-01-06T12:00:00Z'));
-  mClient.query.mockResolvedValueOnce({ rows: [{ email: 'a@a.com', username: 'alice' }] });
+test("sends reminders when credits unused and near reset", async () => {
+  jest.useFakeTimers().setSystemTime(new Date("2024-01-06T12:00:00Z"));
+  mClient.query.mockResolvedValueOnce({
+    rows: [{ email: "a@a.com", username: "alice" }],
+  });
   await run();
 
-  expect(sendTemplate).toHaveBeenCalledWith('a@a.com', 'print2 pro Reminder', 'reminder.txt', {
-    username: 'alice',
-  });
+  expect(sendTemplate).toHaveBeenCalledWith(
+    "a@a.com",
+    "print2 Pro Reminder",
+    "reminder.txt",
+    {
+      username: "alice",
+    },
+  );
   expect(mClient.end).toHaveBeenCalled();
   jest.useRealTimers();
 });
 
-test('exits early when reset is far away', async () => {
-  jest.useFakeTimers().setSystemTime(new Date('2024-01-02T12:00:00Z'));
+test("exits early when reset is far away", async () => {
+  jest.useFakeTimers().setSystemTime(new Date("2024-01-02T12:00:00Z"));
   await run();
   expect(mClient.connect).not.toHaveBeenCalled();
   expect(sendTemplate).not.toHaveBeenCalled();

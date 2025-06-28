@@ -475,7 +475,7 @@ async function initPaymentPage() {
     const first =
       ((PRINT_CLUB_PRICE * FIRST_MONTH_DISCOUNT) / 100) *
       (hasReferral ? 0.9 : 1);
-    priceSpan.textContent = `Join print2 pro £${first.toFixed(2)} first month`;
+    priceSpan.textContent = `Join print2 Pro £${first.toFixed(2)} first month`;
     if (annualSpan)
       annualSpan.textContent = `Annual £${(
         PRINT_CLUB_ANNUAL_PRICE / 100
@@ -623,9 +623,9 @@ async function initPaymentPage() {
       const price =
         ((PRINT_CLUB_PRICE * FIRST_MONTH_DISCOUNT) / 100) *
         (hasReferral ? 0.9 : 1);
-      payBtn.textContent = `Join print2 pro – Pay £${price.toFixed(2)}`;
+      payBtn.textContent = `Join print2 Pro – Pay £${price.toFixed(2)}`;
     } else if (planChoice === "annual") {
-      payBtn.textContent = `Join print2 pro – Pay £${(
+      payBtn.textContent = `Join print2 Pro – Pay £${(
         PRINT_CLUB_ANNUAL_PRICE / 100
       ).toFixed(2)}`;
     } else {
