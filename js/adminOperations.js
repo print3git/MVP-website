@@ -23,7 +23,7 @@ async function load() {
 
   data.hubs.forEach((hub) => {
     const div = document.createElement("div");
-    div.className = "bg-[#2A2A2E] p-4 rounded space-y-2";
+    div.className = "bg-[#2A2A2E] p-4 rounded space-y-2 border border-white/10";
     const errors = hub.errors
       .map((e) => `<div class="text-red-500 text-sm">${e.error}</div>`)
       .join("");
@@ -38,7 +38,7 @@ async function load() {
 
   if (forecast.length) {
     const div = document.createElement("div");
-    div.className = "bg-[#2A2A2E] p-4 rounded space-y-2";
+    div.className = "bg-[#2A2A2E] p-4 rounded space-y-2 border border-white/10";
     div.innerHTML =
       '<h2 class="text-lg font-semibold">Fulfillment Forecast</h2>' +
       '<canvas id="forecastChart" class="w-full"></canvas>';
@@ -70,7 +70,7 @@ async function load() {
 
   if (events.length) {
     const div = document.createElement("div");
-    div.className = "bg-[#2A2A2E] p-4 rounded space-y-2";
+    div.className = "bg-[#2A2A2E] p-4 rounded space-y-2 border border-white/10";
     div.innerHTML =
       '<h2 class="text-lg font-semibold">Recent Scaling Events</h2>' +
       events
