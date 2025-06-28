@@ -39,7 +39,7 @@ async function loadSubscription() {
     const manage = document.getElementById("manage-subscription");
     if (!sub || sub.active === false || sub.status === "canceled") {
       if (manage) {
-        manage.textContent = "Join print2 pro";
+        manage.textContent = "Join print2 Pro";
         manage.onclick = () => {
           window.location.href = "print2pro-checkout.html";
         };
