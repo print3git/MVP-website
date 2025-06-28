@@ -744,9 +744,7 @@ async function initPaymentPage() {
     let total = 0;
     const items = checkoutItems.length
       ? checkoutItems
-      : [
-          { qty: Math.max(1, parseInt(qtySelect?.value || "1", 10)) },
-        ];
+      : [{ qty: Math.max(1, parseInt(qtySelect?.value || "1", 10)) }];
     for (const it of items) {
       total += Math.max(1, parseInt(it.qty || 1, 10));
     }
@@ -1456,4 +1454,9 @@ window.addEventListener("storage", (e) => {
   if (e.key === "print3CheckoutItems") {
     window.location.reload();
   }
+});
+
+// Refresh the page if basket changes within this tab
+window.addEventListener("basket-change", () => {
+  window.location.reload();
 });
