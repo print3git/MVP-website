@@ -1019,6 +1019,40 @@ async function initPaymentPage() {
       }));
     }
   } catch {}
+
+  // Sync checkout items with the current basket in case this page was
+  // opened directly and the stored list is stale.
+  try {
+    const basket = JSON.parse(localStorage.getItem("print3Basket")) || [];
+    if (
+      basket.length &&
+      (basket.length !== checkoutItems.length ||
+        basket.some((it, idx) => {
+          const c = checkoutItems[idx];
+          return !c || c.modelUrl !== it.modelUrl || c.jobId !== it.jobId;
+        }))
+    ) {
+      const existing = checkoutItems;
+      checkoutItems = basket.map((it, idx) => {
+        const prev = existing[idx] || {};
+        return {
+          modelUrl: it.modelUrl,
+          jobId: it.jobId,
+          snapshot: it.snapshot || prev.snapshot || "",
+          material:
+            prev.material || localStorage.getItem("print3Material") || "multi",
+          color: prev.color || null,
+          etchName:
+            prev.etchName || localStorage.getItem("print3EtchName") || "",
+          qty: Math.max(1, parseInt(prev.qty || "1", 10)),
+        };
+      });
+      localStorage.setItem(
+        "print3CheckoutItems",
+        JSON.stringify(checkoutItems),
+      );
+    }
+  } catch {}
   // Reset quantities to 1 when multiple items are in the basket
   if (checkoutItems.length > 1) {
     checkoutItems.forEach((it) => {
