@@ -11,6 +11,9 @@ function saveBasket(items) {
 }
 const RESERVE_MINS = 10;
 let reserveInterval;
+function notifyBasketChange() {
+  window.dispatchEvent(new CustomEvent("basket-change"));
+}
 export function addToBasket(item, opts = {}) {
   const items = getBasket();
   const expire = Date.now() + RESERVE_MINS * 60 * 1000;
@@ -32,6 +35,7 @@ export function addToBasket(item, opts = {}) {
       }
     }
   }
+  notifyBasketChange();
 }
 
 export function addAutoItem(item) {
@@ -44,6 +48,7 @@ export function addAutoItem(item) {
   saveBasket(items);
   updateBadge();
   renderList();
+  notifyBasketChange();
 }
 
 export function manualizeItem(predicate) {
@@ -55,6 +60,7 @@ export function manualizeItem(predicate) {
   }
   updateBadge();
   renderList();
+  notifyBasketChange();
 }
 export function removeFromBasket(index) {
   const items = getBasket();
@@ -69,12 +75,14 @@ export function removeFromBasket(index) {
   } catch {}
   updateBadge();
   renderList();
+  notifyBasketChange();
 }
 export function clearBasket() {
   saveBasket([]);
   localStorage.removeItem("print3CheckoutItems");
   updateBadge();
   renderList();
+  notifyBasketChange();
 }
 function updateBadge() {
   const badge = document.getElementById("basket-count");
