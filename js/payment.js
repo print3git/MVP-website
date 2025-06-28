@@ -16,6 +16,7 @@ const PRICES = {
 };
 
 const TWO_PRINT_DISCOUNT = 700;
+const THIRD_PRINT_DISCOUNT = 1500;
 let PRICING_VARIANT = localStorage.getItem("pricingVariant");
 if (!PRICING_VARIANT) {
   PRICING_VARIANT = Math.random() < 0.5 ? "A" : "B";
@@ -59,7 +60,10 @@ function computeBulkDiscount(items) {
   for (const it of items) {
     totalQty += Math.max(1, parseInt(it.qty || 1, 10));
   }
-  return totalQty > 1 ? TWO_PRINT_DISCOUNT : 0;
+  let discount = 0;
+  if (totalQty >= 2) discount += TWO_PRINT_DISCOUNT;
+  if (totalQty >= 3) discount += THIRD_PRINT_DISCOUNT;
+  return discount;
 }
 const NEXT_PROMPTS = [
   "cute robot figurine",
@@ -735,9 +739,24 @@ async function initPaymentPage() {
 
   function updatePopularMessage() {
     if (!bulkMsg) return;
+    let total = 0;
+    const items = checkoutItems.length
+      ? checkoutItems
+      : [
+          { qty: Math.max(1, parseInt(qtySelect?.value || "1", 10)) },
+        ];
+    for (const it of items) {
+      total += Math.max(1, parseInt(it.qty || 1, 10));
+    }
+    const save =
+      total >= 3
+        ? `save £${((TWO_PRINT_DISCOUNT + THIRD_PRINT_DISCOUNT) / 100).toFixed(
+            2,
+          )}`
+        : `save £${(TWO_PRINT_DISCOUNT / 100).toFixed(2)}`;
     bulkMsg.innerHTML =
       '<span class="text-gray-400">Popular: keep one, gift one – </span>' +
-      '<span class="text-white">save £7.00</span>';
+      `<span class="text-white">${save}</span>`;
     bulkMsg.classList.remove("hidden");
   }
 
