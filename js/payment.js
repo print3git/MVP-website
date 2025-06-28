@@ -886,17 +886,6 @@ async function initPaymentPage() {
 
   prevBtn?.addEventListener("click", () => showItem(currentIndex - 1));
   nextBtn?.addEventListener("click", () => showItem(currentIndex + 1));
-  if (checkoutItems.length) showItem(0);
-  if (qtySelect) {
-    const initialQty =
-      checkoutItems.length > 1
-        ? 1
-        : checkoutItems.length === 1
-          ? checkoutItems[0].qty || 2
-          : 2;
-    qtySelect.value = String(initialQty);
-    qtySelect.dispatchEvent(new Event("change"));
-  }
   const sessionId = qs("session_id");
   if (sessionId) {
     recordPurchase();
@@ -1079,6 +1068,12 @@ async function initPaymentPage() {
     else localStorage.removeItem("print3JobId");
     storedMaterial = first.material || storedMaterial;
     localStorage.setItem("print3Material", storedMaterial);
+    showItem(0);
+  }
+
+  if (!checkoutItems.length && qtySelect) {
+    qtySelect.value = "2";
+    qtySelect.dispatchEvent(new Event("change"));
   }
 
   // Hide the overlay if nothing happens after a short delay
