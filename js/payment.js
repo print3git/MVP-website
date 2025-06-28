@@ -51,8 +51,15 @@ function computeDiscountFor(material, qty) {
   ) {
     discount += Math.round(price * (flashSale.discount_percent / 100));
   }
-  if (qty > 1) discount += TWO_PRINT_DISCOUNT;
   return discount;
+}
+
+function computeBulkDiscount(items) {
+  let totalQty = 0;
+  for (const it of items) {
+    totalQty += Math.max(1, parseInt(it.qty || 1, 10));
+  }
+  return totalQty > 1 ? TWO_PRINT_DISCOUNT : 0;
 }
 const NEXT_PROMPTS = [
   "cute robot figurine",
@@ -626,16 +633,16 @@ async function initPaymentPage() {
               qty: Math.max(1, parseInt(qtySelect?.value || "2", 10)),
             },
           ];
-      let total = 0;
+      let subtotal = 0;
       let totalQty = 0;
       for (const it of items) {
         const price = PRICES[it.material] || PRICES.single;
         const qty = Math.max(1, parseInt(it.qty || 1, 10));
-        let sub = price * qty;
-        if (qty > 1) sub -= TWO_PRINT_DISCOUNT;
-        total += sub;
+        subtotal += price * qty;
         totalQty += qty;
       }
+      const bulk = computeBulkDiscount(items);
+      const total = subtotal - bulk;
       payBtn.textContent = `Pay £${(total / 100).toFixed(2)} (${totalQty} prints)`;
     }
     updatePriceBreakdown();
@@ -666,6 +673,7 @@ async function initPaymentPage() {
       else if (it.material === "multi") multiCount += qty;
       else singleCount += qty;
     }
+    discount += computeBulkDiscount(items);
     const saved = discount / 100;
     const parts = [];
     if (premiumCount > 0) parts.push(`${premiumCount} premium`);
@@ -1280,11 +1288,17 @@ async function initPaymentPage() {
           },
         ];
     const sessions = [];
+    const bulk = computeBulkDiscount(items);
+    let bulkApplied = false;
     for (const item of items) {
       const q = Math.max(1, parseInt(item.qty || qty, 10));
       if (item.jobId) localStorage.setItem("print3JobId", item.jobId);
       selectedPrice = PRICES[item.material] || PRICES.single;
-      const discount = computeDiscountFor(item.material, q);
+      let discount = computeDiscountFor(item.material, q);
+      if (!bulkApplied && bulk > 0) {
+        discount += bulk;
+        bulkApplied = true;
+      }
       const resp = await createCheckout(
         q,
         discount,
