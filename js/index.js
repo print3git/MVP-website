@@ -1131,8 +1131,13 @@ async function init() {
   if (banner) {
     function updateCountdown() {
       const now = new Date();
+      const day = now.getDay();
+      if (day === 0 || day === 6) {
+        banner.classList.add("hidden");
+        return;
+      }
       const friday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      friday.setDate(friday.getDate() + ((5 - friday.getDay() + 7) % 7));
+      friday.setDate(friday.getDate() + ((5 - day + 7) % 7));
       const diff = friday - now;
       if (diff > 0 && diff < 7 * 86400000) {
         const hoursTotal = Math.floor(diff / 3600000);
