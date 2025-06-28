@@ -1434,3 +1434,10 @@ window.addEventListener("pageshow", (e) => {
     window.location.reload();
   }
 });
+
+// Refresh the page if basket contents change in another tab
+window.addEventListener("storage", (e) => {
+  if (e.key === "print3CheckoutItems") {
+    window.location.reload();
+  }
+});
