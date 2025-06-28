@@ -12,7 +12,7 @@ async function load() {
   app.innerHTML = '';
   ads.forEach((ad) => {
     const div = document.createElement('div');
-    div.className = 'bg-[#2A2A2E] p-4 rounded space-y-2';
+    div.className = 'bg-[#2A2A2E] p-4 rounded space-y-2 border border-white/10';
     div.innerHTML = `
       <p class="text-sm">Subreddit: r/${ad.subreddit}</p>
       <textarea class="copy w-full bg-[#1A1A1D] border border-white/10 rounded p-1">${ad.copy}</textarea>

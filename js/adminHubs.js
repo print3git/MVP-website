@@ -16,7 +16,7 @@ async function load() {
     });
     const shipments = shipRes.ok ? await shipRes.json() : [];
     const div = document.createElement("div");
-    div.className = "bg-[#2A2A2E] p-4 rounded space-y-2";
+    div.className = "bg-[#2A2A2E] p-4 rounded space-y-2 border border-white/10";
     div.innerHTML = `
       <h2 class="text-lg font-semibold">${hub.name}</h2>
       <div class="space-y-1">
