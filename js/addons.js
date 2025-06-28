@@ -45,6 +45,7 @@ function renderPreview() {
     grid.appendChild(div);
   });
   adjustLuckyboxHeight();
+  alignGridBottom();
 }
 
 function adjustLuckyboxHeight() {
@@ -59,6 +60,24 @@ function adjustLuckyboxHeight() {
   const diff = topGap - luckyGap;
   if (diff > 0) {
     lucky.style.height = `${lucky.offsetHeight + diff}px`;
+  }
+}
+
+function alignGridBottom() {
+  const lucky = document.getElementById("luckybox");
+  const grid = document.getElementById("addons-grid");
+  if (!lucky || !grid) return;
+  const items = grid.querySelectorAll(".model-card");
+  if (!items.length) return;
+  const luckyBottom = lucky.getBoundingClientRect().bottom;
+  const gridBottom = items[items.length - 1].getBoundingClientRect().bottom;
+  const diff = luckyBottom - gridBottom;
+  if (diff > 0) {
+    const rows = Math.ceil(items.length / 2);
+    const increase = diff / rows;
+    items.forEach((item) => {
+      item.style.height = `${item.offsetHeight + increase}px`;
+    });
   }
 }
 
@@ -89,7 +108,10 @@ async function checkAccess() {
 }
 
 document.addEventListener("DOMContentLoaded", checkAccess);
-window.addEventListener("resize", adjustLuckyboxHeight);
+window.addEventListener("resize", () => {
+  adjustLuckyboxHeight();
+  alignGridBottom();
+});
 
 function initLuckybox() {
   const tier = document.getElementById("luckybox-tier");
