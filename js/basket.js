@@ -240,7 +240,6 @@ export function setupBasketUI() {
     }
     // Save basket contents for payment page navigation
     try {
-
       const existing =
         JSON.parse(localStorage.getItem("print3CheckoutItems")) || [];
       const checkoutItems = items.map((it, idx) => {
@@ -263,6 +262,9 @@ export function setupBasketUI() {
       );
     } catch {}
     closeBasket();
+    if (location.pathname.endsWith("addons.html")) {
+      sessionStorage.setItem("fromAddons", "1");
+    }
     window.location.href = "payment.html";
   });
 

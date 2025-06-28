@@ -701,15 +701,23 @@
         const link = document.getElementById('back-link');
         if (!link) return;
         let target = 'index.html';
-        const from = sessionStorage.getItem('fromCommunity');
+        const fromCommunity = sessionStorage.getItem('fromCommunity');
         sessionStorage.removeItem('fromCommunity');
+        const fromAddons = sessionStorage.getItem('fromAddons');
+        sessionStorage.removeItem('fromAddons');
         try {
           const ref = new URL(document.referrer);
-          if (from === '1' || ref.pathname.endsWith('CommunityCreations.html')) {
+          if (
+            fromCommunity === '1' ||
+            ref.pathname.endsWith('CommunityCreations.html')
+          ) {
             target = 'CommunityCreations.html';
+          } else if (fromAddons === '1' || ref.pathname.endsWith('addons.html')) {
+            target = 'addons.html';
           }
         } catch {
-          if (from === '1') target = 'CommunityCreations.html';
+          if (fromCommunity === '1') target = 'CommunityCreations.html';
+          else if (fromAddons === '1') target = 'addons.html';
         }
         link.setAttribute('href', target);
       });
