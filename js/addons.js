@@ -57,7 +57,7 @@ function adjustLuckyboxHeight() {
   const topGap = firstAddon.getBoundingClientRect().top - lockedBottom;
   const luckyTop = lucky.getBoundingClientRect().top;
   const luckyGap = luckyTop - lockedBottom;
-  const diff = topGap - luckyGap;
+  const diff = luckyGap - topGap;
   if (diff > 0) {
     lucky.style.height = `${lucky.offsetHeight + diff}px`;
   }
