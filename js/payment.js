@@ -566,6 +566,10 @@ async function initPaymentPage() {
     originalTextures = mats.map(
       (m) => m.pbrMetallicRoughness?.baseColorTexture?.texture || null,
     );
+    applyStoredColorIfNeeded();
+  }
+
+  function applyStoredColorIfNeeded() {
     if (storedMaterial === "single" && storedColor) {
       const factor = hexToFactor(storedColor);
       if (factor) applyModelColor(factor);
@@ -880,6 +884,7 @@ async function initPaymentPage() {
         counter.classList.add("hidden");
       }
     }
+    applyStoredColorIfNeeded();
     updatePayButton();
     updateFlashSaleBanner();
   }
@@ -1095,6 +1100,7 @@ async function initPaymentPage() {
         { once: true },
       );
     }
+    viewer.addEventListener("load", applyStoredColorIfNeeded, { once: true });
   } else {
     const first = checkoutItems[0];
     viewer.src = first.modelUrl || FALLBACK_GLB;
@@ -1102,6 +1108,7 @@ async function initPaymentPage() {
     else localStorage.removeItem("print3JobId");
     storedMaterial = first.material || storedMaterial;
     localStorage.setItem("print3Material", storedMaterial);
+    viewer.addEventListener("load", applyStoredColorIfNeeded, { once: true });
     showItem(0);
   }
 
