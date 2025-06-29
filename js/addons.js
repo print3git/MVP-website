@@ -44,42 +44,6 @@ function renderPreview() {
     div.innerHTML = `<img src="${item.img}" alt="${item.name}" class="w-full h-full object-contain pointer-events-none" />\n      <span class="sr-only">${item.name}</span>`;
     grid.appendChild(div);
   });
-  adjustLuckyboxHeight();
-  alignGridBottom();
-  setupLuckyboxScroll();
-}
-
-function adjustLuckyboxHeight() {
-  const locked = document.getElementById("locked-msg");
-  const firstAddon = document.querySelector("#addons-grid > div:first-child");
-  const lucky = document.getElementById("luckybox");
-  if (!locked || !firstAddon || !lucky) return;
-  const lockedBottom = locked.getBoundingClientRect().bottom;
-  const topGap = firstAddon.getBoundingClientRect().top - lockedBottom;
-  const luckyTop = lucky.getBoundingClientRect().top;
-  const luckyGap = luckyTop - lockedBottom;
-  const diff = luckyGap - topGap;
-  if (diff > 0) {
-    lucky.style.height = `${lucky.offsetHeight + diff}px`;
-  }
-}
-
-function alignGridBottom() {
-  const lucky = document.getElementById("luckybox");
-  const grid = document.getElementById("addons-grid");
-  if (!lucky || !grid) return;
-  const items = grid.querySelectorAll(".model-card");
-  if (!items.length) return;
-  const luckyBottom = lucky.getBoundingClientRect().bottom;
-  const gridBottom = items[items.length - 1].getBoundingClientRect().bottom;
-  const diff = luckyBottom - gridBottom;
-  if (diff > 0) {
-    const rows = Math.ceil(items.length / 2);
-    const increase = diff / rows;
-    items.forEach((item) => {
-      item.style.height = `${item.offsetHeight + increase}px`;
-    });
-  }
 }
 
 async function checkAccess() {
@@ -109,27 +73,6 @@ async function checkAccess() {
 }
 
 document.addEventListener("DOMContentLoaded", checkAccess);
-window.addEventListener("resize", () => {
-  adjustLuckyboxHeight();
-  alignGridBottom();
-  setupLuckyboxScroll();
-  updateLuckyboxOnScroll();
-  updateLuckyboxBottom();
-});
-window.addEventListener("load", () => {
-  adjustLuckyboxHeight();
-  alignGridBottom();
-  setupLuckyboxScroll();
-  updateLuckyboxBottom();
-});
-
-if (window.visualViewport) {
-  window.visualViewport.addEventListener("resize", () => {
-    updateLuckyboxBottom();
-    adjustLuckyboxHeight();
-    updateLuckyboxOnScroll();
-  });
-}
 
 function initLuckybox() {
   const tier = document.getElementById("luckybox-tier");
@@ -151,49 +94,3 @@ function initLuckybox() {
 }
 
 document.addEventListener("DOMContentLoaded", initLuckybox);
-
-let luckyInitialHeight;
-let lockedInitialBottom;
-let luckyBaseBottom;
-let viewportInitialHeight;
-
-function setupLuckyboxScroll() {
-  const locked = document.getElementById("locked-msg");
-  const lucky = document.getElementById("luckybox");
-  if (!locked || !lucky || locked.classList.contains("hidden")) return;
-  luckyInitialHeight = lucky.offsetHeight;
-  lockedInitialBottom = locked.getBoundingClientRect().bottom;
-  luckyBaseBottom = parseFloat(getComputedStyle(lucky).bottom) || 0;
-  viewportInitialHeight = window.visualViewport
-    ? window.visualViewport.height
-    : window.innerHeight;
-  window.removeEventListener("scroll", updateLuckyboxOnScroll);
-  window.addEventListener("scroll", updateLuckyboxOnScroll);
-}
-
-function updateLuckyboxBottom() {
-  const lucky = document.getElementById("luckybox");
-  if (
-    !lucky ||
-    luckyBaseBottom === undefined ||
-    viewportInitialHeight === undefined
-  )
-    return;
-  const currentHeight = window.visualViewport
-    ? window.visualViewport.height
-    : window.innerHeight;
-  const delta = viewportInitialHeight - currentHeight;
-  lucky.style.bottom = `${Math.max(0, luckyBaseBottom + delta)}px`;
-}
-
-function updateLuckyboxOnScroll() {
-  const locked = document.getElementById("locked-msg");
-  const lucky = document.getElementById("luckybox");
-  if (!locked || !lucky || locked.classList.contains("hidden")) return;
-  if (luckyInitialHeight === undefined || lockedInitialBottom === undefined)
-    return;
-  const lockedBottom = locked.getBoundingClientRect().bottom;
-  const clamped = lockedBottom > 0 ? lockedBottom : 0;
-  const newHeight = luckyInitialHeight + (clamped - lockedInitialBottom);
-  lucky.style.height = `${Math.max(luckyInitialHeight, newHeight)}px`;
-}
