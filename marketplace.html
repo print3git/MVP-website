@@ -12,6 +12,14 @@
     />
   </head>
   <body class="bg-[#1A1A1D] text-white font-sans flex flex-col min-h-screen">
+    <div
+      id="flash-banner"
+      role="status"
+      hidden
+      class="relative z-30 text-[#1A1A1D] font-semibold text-center py-2 bg-gradient-to-r from-teal-400 via-cyan-300 to-teal-500"
+    >
+      Sale ends in <span id="flash-timer">5:00</span>
+    </div>
     <header class="relative flex items-center py-4 px-6">
       <div class="flex items-center flex-1">
         <a
@@ -51,35 +59,35 @@
         <div class="flex space-x-2">
           <button
             class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
-            onclick="shareOn('twitter')"
+            onclick="shareReferral('twitter')"
             aria-label="Share on Twitter"
           >
             <i class="fab fa-twitter"></i>
           </button>
           <button
             class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
-            onclick="shareOn('facebook')"
+            onclick="shareReferral('facebook')"
             aria-label="Share on Facebook"
           >
             <i class="fab fa-facebook-f"></i>
           </button>
           <button
             class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
-            onclick="shareOn('reddit')"
+            onclick="shareReferral('reddit')"
             aria-label="Share on Reddit"
           >
             <i class="fab fa-reddit-alien"></i>
           </button>
           <button
             class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
-            onclick="shareOn('tiktok')"
+            onclick="shareReferral('tiktok')"
             aria-label="Share on TikTok"
           >
             <i class="fab fa-tiktok"></i>
           </button>
           <button
             class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-full hover:bg-[#3A3A3E] transition-shape"
-            onclick="shareOn('instagram')"
+            onclick="shareReferral('instagram')"
             aria-label="Share on Instagram"
           >
             <i class="fab fa-instagram"></i>
@@ -136,10 +144,33 @@
           ></div>
         </div>
       </section>
+      <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-[#2A2A2E] p-4 rounded-xl border border-white/10">
+          <h2 class="text-xl font-semibold mb-2">Top Sellers</h2>
+          <table class="w-full text-sm">
+            <thead>
+              <tr>
+                <th class="text-left">User</th>
+                <th class="text-left">Points</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboard-body"></tbody>
+          </table>
+          <p
+            id="designer-month"
+            class="mt-4 text-center text-yellow-300 font-semibold"
+          ></p>
+        </div>
+        <div class="bg-[#2A2A2E] p-4 rounded-xl border border-white/10">
+          <h2 class="text-xl font-semibold mb-2">Recent Achievements</h2>
+          <ul id="achievements-list" class="list-disc list-inside text-sm"></ul>
+        </div>
+      </section>
+
     </main>
     <script type="module">
-      import { shareOn } from "./js/share.js";
-      window.shareOn = shareOn;
+      import { shareReferral } from "./js/rewards.js";
+      window.shareReferral = shareReferral;
     </script>
     <script type="module" src="js/rewardBadge.js"></script>
     <script type="module" src="js/trackingPixel.js"></script>
