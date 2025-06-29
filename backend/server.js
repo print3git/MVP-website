@@ -352,7 +352,7 @@ app.get("/api/me", authRequired, async (req, res) => {
     if (!rows.length) return res.status(404).json({ error: "User not found" });
     const user = rows[0];
     const profile = await db.query(
-      "SELECT display_name, avatar_url, shipping_info, payment_info, competition_notify FROM user_profiles WHERE user_id=$1",
+      "SELECT display_name, avatar_url, avatar_glb, shipping_info, payment_info, competition_notify FROM user_profiles WHERE user_id=$1",
       [req.user.id],
     );
     res.json({
@@ -361,6 +361,7 @@ app.get("/api/me", authRequired, async (req, res) => {
       email: user.email,
       displayName: profile.rows[0]?.display_name || null,
       avatarUrl: profile.rows[0]?.avatar_url || null,
+      avatarGlb: profile.rows[0]?.avatar_glb || null,
       profile: profile.rows[0] || {},
     });
   } catch (err) {
@@ -684,18 +685,19 @@ app.get("/api/profile", authRequired, async (req, res) => {
 });
 
 app.post("/api/profile", authRequired, async (req, res) => {
-  const { shippingInfo, paymentInfo, competitionNotify } = req.body;
+  const { shippingInfo, paymentInfo, competitionNotify, avatarGlb } = req.body;
   try {
     await db.query(
-      `INSERT INTO user_profiles(user_id, shipping_info, payment_info, competition_notify)
-       VALUES($1,$2,$3,$4)
+      `INSERT INTO user_profiles(user_id, shipping_info, payment_info, competition_notify, avatar_glb)
+       VALUES($1,$2,$3,$4,$5)
        ON CONFLICT (user_id)
-       DO UPDATE SET shipping_info=$2, payment_info=$3, competition_notify=$4`,
+       DO UPDATE SET shipping_info=$2, payment_info=$3, competition_notify=$4, avatar_glb=COALESCE($5, user_profiles.avatar_glb)`,
       [
         req.user.id,
         shippingInfo || {},
         paymentInfo || {},
         competitionNotify !== false,
+        avatarGlb || null,
       ],
     );
     res.sendStatus(204);
@@ -889,7 +891,7 @@ app.get("/api/dashboard", authRequired, async (req, res) => {
           req.user.id,
         ]),
         db.query(
-          "SELECT display_name, avatar_url, shipping_info, payment_info, competition_notify FROM user_profiles WHERE user_id=$1",
+          "SELECT display_name, avatar_url, avatar_glb, shipping_info, payment_info, competition_notify FROM user_profiles WHERE user_id=$1",
           [req.user.id],
         ),
         db.query(
@@ -1388,7 +1390,7 @@ app.get("/api/users/:username/models", async (req, res) => {
 app.get("/api/users/:username/profile", async (req, res) => {
   try {
     const { rows } = await db.query(
-      `SELECT p.display_name, p.avatar_url
+      `SELECT p.display_name, p.avatar_url, p.avatar_glb
        FROM users u
        JOIN user_profiles p ON u.id=p.user_id
        WHERE u.username=$1`,
