@@ -134,6 +134,15 @@
           class="w-24 h-24 rounded-full object-cover"
           alt="Avatar preview"
         />
+        <model-viewer
+          id="avatar-model-preview"
+          src=""
+          alt="3D avatar preview"
+          environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
+          camera-controls
+          auto-rotate
+          class="w-24 h-24 mx-auto mb-2 hidden"
+        ></model-viewer>
         <input
           id="avatar-input"
           type="file"
@@ -165,6 +174,12 @@
           class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
           placeholder="Payment Info"
           aria-label="Payment info"
+        />
+        <input
+          id="avatar-glb-input"
+          class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+          placeholder="Avatar GLB URL"
+          aria-label="Avatar GLB URL"
         />
         <label class="inline-flex items-center">
           <input type="checkbox" id="competition-toggle" class="mr-2" />
