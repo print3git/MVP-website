@@ -164,5 +164,5 @@ function updateLuckyboxOnScroll() {
   const lockedBottom = locked.getBoundingClientRect().bottom;
   const clamped = lockedBottom > 0 ? lockedBottom : 0;
   const newHeight = luckyInitialHeight + (clamped - lockedInitialBottom);
-  lucky.style.height = `${newHeight}px`;
+  lucky.style.height = `${Math.max(luckyInitialHeight, newHeight)}px`;
 }
