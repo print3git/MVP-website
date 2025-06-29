@@ -2563,7 +2563,7 @@ app.post("/api/create-order", authOptional, async (req, res) => {
   } = req.body;
   try {
     const job = await db.query(
-      "SELECT job_id, user_id FROM jobs WHERE job_id=$1",
+      "SELECT job_id, user_id, model_url FROM jobs WHERE job_id=$1",
       [jobId],
     );
     if (job.rows.length === 0) {
@@ -2748,7 +2748,14 @@ app.post("/api/create-order", authOptional, async (req, res) => {
       job.rows[0].user_id &&
       job.rows[0].user_id !== req.user.id
     ) {
-      const commission = Math.round(total * 0.1);
+      let royalty = 10;
+      try {
+        const sub = await db.getSubmissionByFilePath(job.rows[0].model_url);
+        if (sub) royalty = sub.royalty_percent || 10;
+      } catch (_err) {
+        /* ignore lookup errors */
+      }
+      const commission = Math.round(total * (royalty / 100));
       await db.insertCommission(
         session.id,
         jobId,
