@@ -1118,7 +1118,7 @@ async function init() {
       viewer.setAttribute("camera-controls", "");
       viewer.setAttribute("auto-rotate", "");
       viewer.setAttribute("crossOrigin", "anonymous");
-      viewer.className = "w-24 h-24";
+      viewer.className = "w-[30rem] h-[30rem] mb-2";
       popupEl.appendChild(viewer);
       popupEl.appendChild(span);
     } else if (popupIdx % popupMsgs.length === 0 && lastSnapshot) {
