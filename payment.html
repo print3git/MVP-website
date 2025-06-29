@@ -241,7 +241,15 @@
         <p class="absolute top-2 left-2 text-red-300 text-xs">
           Only <span id="slot-count" style="visibility: hidden"></span> print slots remaining
         </p>
-        <p id="model-counter" class="absolute top-2 right-2 text-white text-xs hidden"></p>
+        <button
+          id="remove-model"
+          type="button"
+          class="absolute top-2 right-2 w-6 h-6 rounded-full bg-white text-black border border-black flex items-center justify-center z-20"
+        >
+          <i class="fas fa-times"></i>
+          <span class="sr-only">Remove from basket</span>
+        </button>
+        <p id="model-counter" class="absolute top-10 right-2 text-white text-xs hidden"></p>
         <button
           id="prev-model"
           type="button"
