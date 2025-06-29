@@ -150,5 +150,14 @@
     <script type="module" src="js/trackingPixel.js"></script>
     <script type="module" src="js/marketplace.js"></script>
     <script type="module" src="js/basket.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll('a[href="payment.html"]').forEach((link) => {
+          link.addEventListener("click", () => {
+            sessionStorage.setItem("fromMarketplace", "1");
+          });
+        });
+      });
+    </script>
   </body>
 </html>
