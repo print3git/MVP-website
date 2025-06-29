@@ -329,6 +329,8 @@ export function setupBasketUI() {
     closeBasket();
     if (location.pathname.endsWith("addons.html")) {
       sessionStorage.setItem("fromAddons", "1");
+    } else if (location.pathname.endsWith("marketplace.html")) {
+      sessionStorage.setItem("fromMarketplace", "1");
     }
     window.location.href = "payment.html";
   });

@@ -752,6 +752,8 @@
         sessionStorage.removeItem('fromCommunity');
         const fromAddons = sessionStorage.getItem('fromAddons');
         sessionStorage.removeItem('fromAddons');
+        const fromMarketplace = sessionStorage.getItem('fromMarketplace');
+        sessionStorage.removeItem('fromMarketplace');
         try {
           const ref = new URL(document.referrer);
           if (
@@ -761,10 +763,16 @@
             target = 'CommunityCreations.html';
           } else if (fromAddons === '1' || ref.pathname.endsWith('addons.html')) {
             target = 'addons.html';
+          } else if (
+            fromMarketplace === '1' ||
+            ref.pathname.endsWith('marketplace.html')
+          ) {
+            target = 'marketplace.html';
           }
         } catch {
           if (fromCommunity === '1') target = 'CommunityCreations.html';
           else if (fromAddons === '1') target = 'addons.html';
+          else if (fromMarketplace === '1') target = 'marketplace.html';
         }
         link.setAttribute('href', target);
       });

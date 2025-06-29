@@ -8,6 +8,7 @@ function createCard(item) {
   div.querySelector(".buy").addEventListener("click", () => {
     localStorage.setItem("print3Model", item.file_path);
     if (item.job_id) localStorage.setItem("print3JobId", item.job_id);
+    sessionStorage.setItem("fromMarketplace", "1");
     window.location.href = "payment.html";
   });
   return div;
