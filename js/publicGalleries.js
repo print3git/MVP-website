@@ -58,7 +58,15 @@ window.addEventListener("DOMContentLoaded", () => {
     const urls = sampleGalleries[currentTag] || [];
     const visible = urls.slice(0, offset + 6);
     grid.innerHTML = "";
-    visible.forEach((u) => {
+
+    const advert = document.createElement("div");
+    advert.className =
+      "w-full h-32 bg-[#2A2A2E] border border-dashed border-white/40 rounded-xl flex items-center justify-center text-sm";
+    advert.textContent = "Advert Placeholder";
+    grid.appendChild(advert);
+
+    visible.forEach((u, idx) => {
+      if (idx === 0) return;
       const img = document.createElement("img");
       img.src = u;
       img.loading = "lazy";
