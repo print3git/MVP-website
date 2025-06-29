@@ -292,6 +292,45 @@ function createCard(model) {
   return div;
 }
 
+function createViewerCard(modelUrl) {
+  const div = document.createElement("div");
+  div.className =
+    "viewer-card model-card relative bg-[#2A2A2E] border border-white/10 rounded-xl flex items-center justify-center cursor-pointer";
+  div.dataset.model = modelUrl;
+  div.innerHTML = `<model-viewer src="${modelUrl}" alt="3D model preview" environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr" camera-controls auto-rotate loading="lazy" class="w-full h-full bg-[#2A2A2E] rounded-xl"></model-viewer>`;
+  div.addEventListener("pointerenter", () => prefetchModel(modelUrl));
+  div.addEventListener("click", (e) => {
+    e.stopPropagation();
+    openModel({ model_url: modelUrl, job_id: "" });
+  });
+  return div;
+}
+
+function applyPopularViewer() {
+  const grid = document.getElementById("popular-grid");
+  if (!grid) return;
+  const existing = grid.querySelector(".viewer-card");
+  if (existing) existing.remove();
+
+  const cards = Array.from(grid.children);
+  if (cards.length < 2) return;
+  const modelUrl = cards[1].dataset.model;
+  if (!modelUrl) return;
+
+  const toRemove = [];
+  for (let i = 2; i < Math.min(cards.length, 9); i += 3) {
+    if (cards[i]) toRemove.push(cards[i]);
+  }
+  toRemove.forEach((el) => el.remove());
+
+  const viewer = createViewerCard(modelUrl);
+  viewer.classList.add("row-span-3", "h-[24rem]");
+
+  const insertBefore = grid.children[2];
+  if (insertBefore) grid.insertBefore(viewer, insertBefore);
+  else grid.appendChild(viewer);
+}
+
 function addRecentModel(model) {
   if (!model || model.model_url === FALLBACK_GLB) return;
   const grid = document.getElementById("recent-grid");
@@ -342,6 +381,7 @@ async function loadMore(type, filters = getFilters()) {
   const grid = document.getElementById(`${type}-grid`);
   models.forEach((m) => grid.appendChild(createCard(m)));
   await captureSnapshots(grid);
+  if (type === "popular") applyPopularViewer();
   const btn = document.getElementById(`${type}-load`);
   if (btn) {
     if (models.length < 9) {
@@ -361,6 +401,7 @@ function renderGrid(type, filters = getFilters()) {
   if (state && state.models.length) {
     state.models.forEach((m) => grid.appendChild(createCard(m)));
     captureSnapshots(grid);
+    if (type === "popular") applyPopularViewer();
     const btn = document.getElementById(`${type}-load`);
     if (btn) {
       if (state.models.length < 9) btn.classList.add("hidden");
