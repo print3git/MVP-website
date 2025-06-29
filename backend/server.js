@@ -2838,6 +2838,93 @@ app.post("/api/gifts", authRequired, async (req, res) => {
   }
 });
 
+app.post("/api/cart/items", authRequired, async (req, res) => {
+  const { jobId, quantity } = req.body || {};
+  if (!jobId) return res.status(400).json({ error: "Missing job" });
+  try {
+    const item = await db.insertCartItem(req.user.id, jobId, quantity || 1);
+    res.json(item);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: "Failed to add item" });
+  }
+});
+
+app.patch("/api/cart/items/:id", authRequired, async (req, res) => {
+  const { quantity } = req.body || {};
+  try {
+    const item = await db.updateCartItem(req.params.id, quantity || 1);
+    res.json(item);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: "Failed to update" });
+  }
+});
+
+app.delete("/api/cart/items/:id", authRequired, async (req, res) => {
+  try {
+    await db.deleteCartItem(req.params.id);
+    res.sendStatus(204);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: "Failed to remove" });
+  }
+});
+
+app.get("/api/cart", authRequired, async (req, res) => {
+  try {
+    const items = await db.getCartItems(req.user.id);
+    res.json({ items });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: "Failed to fetch" });
+  }
+});
+
+app.delete("/api/cart", authRequired, async (req, res) => {
+  try {
+    await db.clearCart(req.user.id);
+    res.sendStatus(204);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: "Failed to clear" });
+  }
+});
+
+app.post("/api/cart/checkout", authRequired, async (req, res) => {
+  try {
+    const items = await db.getCartItems(req.user.id);
+    if (!items.length) return res.status(400).json({ error: "Cart empty" });
+    const lineItems = items.map((it) => ({
+      price_data: {
+        currency: "usd",
+        product_data: { name: "3D Model" },
+        unit_amount: 100,
+      },
+      quantity: it.quantity,
+    }));
+    const session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      line_items: lineItems,
+      success_url: `${req.headers.origin}/payment.html?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${req.headers.origin}/payment.html?cancel=1`,
+    });
+    await db.insertOrderItems(
+      session.id,
+      items.map((i) => ({ jobId: i.job_id, quantity: i.quantity })),
+    );
+    await db.query(
+      "INSERT INTO orders(session_id, user_id, price_cents, status, shipping_info) VALUES($1,$2,$3,$4,$5)",
+      [session.id, req.user.id, 0, "pending", {}],
+    );
+    await db.clearCart(req.user.id);
+    res.json({ checkoutUrl: session.url });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: "Failed to checkout" });
+  }
+});
+
 app.post("/api/subscribe", async (req, res) => {
   const { email } = req.body;
   if (!email) return res.status(400).json({ error: "Email required" });
