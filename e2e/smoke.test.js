@@ -1,3 +1,10 @@
+if (require.main === module) {
+  console.error(
+    'This file is a Playwright test. Run it with "npx playwright test e2e/smoke.test.js".'
+  );
+  process.exit(1);
+}
+
 const { test, expect } = require('@playwright/test');
 const { percySnapshot } = require('@percy/playwright');
 
