@@ -1,4 +1,5 @@
 const KEY = "print3Basket";
+const API_BASE = (window.API_ORIGIN || "") + "/api";
 export function getBasket() {
   try {
     return JSON.parse(localStorage.getItem(KEY)) || [];
@@ -17,8 +18,29 @@ function notifyBasketChange() {
 export function addToBasket(item, opts = {}) {
   const items = getBasket();
   const expire = Date.now() + RESERVE_MINS * 60 * 1000;
-  items.push({ ...item, auto: !!opts.auto, reserveUntil: expire });
+  const entry = { ...item, auto: !!opts.auto, reserveUntil: expire };
+  items.push(entry);
   saveBasket(items);
+  const token = localStorage.getItem("token");
+  if (token && item.jobId) {
+    fetch(`${API_BASE}/cart/items`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ jobId: item.jobId, quantity: 1 }),
+    })
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.id) {
+          const list = getBasket();
+          list[list.length - 1].serverId = d.id;
+          saveBasket(list);
+        }
+      })
+      .catch(() => {});
+  }
   updateBadge();
   renderList();
   startReservationTimer();
@@ -64,8 +86,15 @@ export function manualizeItem(predicate) {
 }
 export function removeFromBasket(index) {
   const items = getBasket();
-  items.splice(index, 1);
+  const [removed] = items.splice(index, 1);
   saveBasket(items);
+  const token = localStorage.getItem("token");
+  if (token && removed?.serverId) {
+    fetch(`${API_BASE}/cart/items/${removed.serverId}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    }).catch(() => {});
+  }
   try {
     const arr = JSON.parse(localStorage.getItem("print3CheckoutItems"));
     if (Array.isArray(arr) && index >= 0 && index < arr.length) {
@@ -80,6 +109,13 @@ export function removeFromBasket(index) {
 export function clearBasket() {
   saveBasket([]);
   localStorage.removeItem("print3CheckoutItems");
+  const token = localStorage.getItem("token");
+  if (token) {
+    fetch(`${API_BASE}/cart`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    }).catch(() => {});
+  }
   updateBadge();
   renderList();
   notifyBasketChange();
@@ -91,6 +127,27 @@ function updateBadge() {
     badge.textContent = String(n);
     badge.hidden = n === 0;
   }
+}
+
+async function syncServerCart() {
+  const token = localStorage.getItem("token");
+  if (!token) return;
+  try {
+    const res = await fetch(`${API_BASE}/cart`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await res.json();
+    if (Array.isArray(data.items)) {
+      const mapped = data.items.map((it) => ({
+        jobId: it.job_id,
+        quantity: it.quantity,
+        serverId: it.id,
+      }));
+      saveBasket(mapped);
+      updateBadge();
+      renderList();
+    }
+  } catch {}
 }
 
 function startReservationTimer() {
@@ -347,9 +404,11 @@ export function setupBasketUI() {
   else setTier("silver");
 
   updateBadge();
+  syncServerCart();
 }
 window.addEventListener("DOMContentLoaded", setupBasketUI);
 window.addToBasket = addToBasket;
 window.addAutoItem = addAutoItem;
 window.manualizeItem = manualizeItem;
 window.getBasket = getBasket;
+window.syncServerCart = syncServerCart;
