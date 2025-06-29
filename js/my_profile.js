@@ -168,6 +168,16 @@ async function loadDashboard() {
       if (data.profile.avatar_url) {
         document.getElementById("avatar-preview").src = data.profile.avatar_url;
       }
+      if (data.profile.avatar_glb) {
+        const mv = document.getElementById("avatar-model-preview");
+        if (mv) {
+          mv.src = data.profile.avatar_glb;
+          mv.classList.remove("hidden");
+          document.getElementById("avatar-preview")?.classList.add("hidden");
+        }
+        document.getElementById("avatar-glb-input").value =
+          data.profile.avatar_glb;
+      }
     }
     if (data.orders) {
       const body = document.getElementById("orders-body");
@@ -238,6 +248,8 @@ async function uploadAvatar(e) {
   if (res.ok) {
     const data = await res.json();
     document.getElementById("avatar-preview").src = data.url;
+    document.getElementById("avatar-preview").classList.remove("hidden");
+    document.getElementById("avatar-model-preview")?.classList.add("hidden");
   }
 }
 
@@ -247,6 +259,7 @@ async function saveProfile(e) {
   if (!token) return;
   const shipping = document.getElementById("shipping-input").value.trim();
   const payment = document.getElementById("payment-input").value.trim();
+  const avatarGlb = document.getElementById("avatar-glb-input").value.trim();
   const notify = document.getElementById("competition-toggle").checked;
   await fetch(`${API_BASE}/profile`, {
     method: "POST",
@@ -258,8 +271,17 @@ async function saveProfile(e) {
       shippingInfo: { address: shipping },
       paymentInfo: { details: payment },
       competitionNotify: notify,
+      avatarGlb: avatarGlb || null,
     }),
   });
+  if (avatarGlb) {
+    const mv = document.getElementById("avatar-model-preview");
+    if (mv) {
+      mv.src = avatarGlb;
+      mv.classList.remove("hidden");
+    }
+    document.getElementById("avatar-preview")?.classList.add("hidden");
+  }
 }
 
 async function loadOrders() {

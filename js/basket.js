@@ -9,7 +9,7 @@ export function getBasket() {
 function saveBasket(items) {
   localStorage.setItem(KEY, JSON.stringify(items));
 }
-const RESERVE_MINS = 10;
+const RESERVE_MINS = 15;
 let reserveInterval;
 function notifyBasketChange() {
   window.dispatchEvent(new CustomEvent("basket-change"));
@@ -107,13 +107,13 @@ function startReservationTimer() {
     const expire = Math.min(...items.map((i) => i.reserveUntil || 0));
     const diff = expire - Date.now();
     if (diff <= 0) {
-      label.textContent = "Reservation expired";
+      label.textContent = "Queue slot expired";
       clearInterval(reserveInterval);
       return;
     }
     const mins = Math.floor(diff / 60000);
     const secs = Math.floor((diff % 60000) / 1000);
-    label.textContent = `Reserved for ${mins}:${String(secs).padStart(2, "0")}`;
+    label.textContent = `Your slot in today's print queue expires in ${mins}:${String(secs).padStart(2, "0")}`;
     label.classList.remove("hidden");
   }
   tick();

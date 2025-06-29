@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Submit Design</title>
+    <meta property="og:title" content="Submit Design – print3" />
+    <meta property="og:image" content="img/boxlogo.png" />
+    <script src="js/applyColorScheme.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+  </head>
+  <body class="bg-[#1A1A1D] text-white font-sans flex flex-col min-h-screen">
+    <header class="relative flex items-center py-4 px-6">
+      <div class="flex items-center flex-1">
+        <a
+          href="marketplace.html"
+          class="inline-flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-3xl px-5 py-2 text-lg font-medium hover:bg-[#3A3A3E] transition-shape"
+        >
+          <svg
+            class="w-4 h-4 mr-2 flex-shrink-0"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+          Back</a
+        >
+        <h1 class="flex-1 text-center text-3xl font-semibold">Submit Design</h1>
+      </div>
+    </header>
+    <main class="flex-1 flex items-center justify-center p-6">
+      <form
+        id="designer-form"
+        class="space-y-4 bg-[#2A2A2E] border border-white/10 p-6 rounded-3xl w-96"
+      >
+        <input
+          id="title-input"
+          class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+          placeholder="Title"
+        />
+        <input
+          id="royalty-input"
+          type="number"
+          min="0"
+          max="100"
+          value="10"
+          class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+          placeholder="Royalty %"
+        />
+        <input
+          id="model-input"
+          type="file"
+          accept=".stl"
+          class="w-full"
+          required
+        />
+        <button
+          class="bg-[#30D5C8] text-[#1A1A1D] font-semibold px-4 py-2 rounded-xl w-full"
+          type="submit"
+        >
+          Submit
+        </button>
+        <p id="form-msg" class="text-center text-sm"></p>
+      </form>
+    </main>
+    <script type="module" src="js/designerUpload.js"></script>
+    <script type="module" src="js/trackingPixel.js"></script>
+  </body>
+</html>
