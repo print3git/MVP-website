@@ -114,12 +114,18 @@ window.addEventListener("resize", () => {
   alignGridBottom();
   setupLuckyboxScroll();
   updateLuckyboxOnScroll();
+  updateLuckyboxBottom();
 });
 window.addEventListener("load", () => {
   adjustLuckyboxHeight();
   alignGridBottom();
   setupLuckyboxScroll();
+  updateLuckyboxBottom();
 });
+
+if (window.visualViewport) {
+  window.visualViewport.addEventListener("resize", updateLuckyboxBottom);
+}
 
 function initLuckybox() {
   const tier = document.getElementById("luckybox-tier");
@@ -144,6 +150,8 @@ document.addEventListener("DOMContentLoaded", initLuckybox);
 
 let luckyInitialHeight;
 let lockedInitialBottom;
+let luckyBaseBottom;
+let viewportInitialHeight;
 
 function setupLuckyboxScroll() {
   const locked = document.getElementById("locked-msg");
@@ -151,8 +159,27 @@ function setupLuckyboxScroll() {
   if (!locked || !lucky || locked.classList.contains("hidden")) return;
   luckyInitialHeight = lucky.offsetHeight;
   lockedInitialBottom = locked.getBoundingClientRect().bottom;
+  luckyBaseBottom = parseFloat(getComputedStyle(lucky).bottom) || 0;
+  viewportInitialHeight = window.visualViewport
+    ? window.visualViewport.height
+    : window.innerHeight;
   window.removeEventListener("scroll", updateLuckyboxOnScroll);
   window.addEventListener("scroll", updateLuckyboxOnScroll);
+}
+
+function updateLuckyboxBottom() {
+  const lucky = document.getElementById("luckybox");
+  if (
+    !lucky ||
+    luckyBaseBottom === undefined ||
+    viewportInitialHeight === undefined
+  )
+    return;
+  const currentHeight = window.visualViewport
+    ? window.visualViewport.height
+    : window.innerHeight;
+  const delta = viewportInitialHeight - currentHeight;
+  lucky.style.bottom = `${Math.max(0, luckyBaseBottom + delta)}px`;
 }
 
 function updateLuckyboxOnScroll() {
