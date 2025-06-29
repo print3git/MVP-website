@@ -112,6 +112,8 @@ document.addEventListener("DOMContentLoaded", checkAccess);
 window.addEventListener("resize", () => {
   adjustLuckyboxHeight();
   alignGridBottom();
+  setupLuckyboxScroll();
+  updateLuckyboxOnScroll();
 });
 window.addEventListener("load", () => {
   adjustLuckyboxHeight();
@@ -161,6 +163,6 @@ function updateLuckyboxOnScroll() {
     return;
   const lockedBottom = locked.getBoundingClientRect().bottom;
   const clamped = lockedBottom > 0 ? lockedBottom : 0;
-  const newHeight = luckyInitialHeight + (lockedInitialBottom - clamped);
+  const newHeight = luckyInitialHeight + (clamped - lockedInitialBottom);
   lucky.style.height = `${newHeight}px`;
 }
