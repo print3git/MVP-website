@@ -144,6 +144,18 @@ async function loadProfileHeader() {
     model?.classList.add("hidden");
   }
   if (display) display.textContent = data.display_name || "";
+  if (!user && token) {
+    try {
+      const res2 = await fetch(`${API_BASE}/credits`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res2.ok) {
+        const d = await res2.json();
+        const el = document.getElementById("sale-credit");
+        if (el) el.textContent = `Store credit: £${(d.credit / 100).toFixed(2)}`;
+      }
+    } catch {}
+  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
