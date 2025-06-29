@@ -1112,6 +1112,33 @@ app.post("/api/rewards/redeem", authRequired, async (req, res) => {
   }
 });
 
+app.get("/api/credits", authRequired, async (req, res) => {
+  try {
+    const credit = await db.getSaleCredit(req.user.id);
+    res.json({ credit });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: "Failed to fetch credit" });
+  }
+});
+
+app.post("/api/credits/redeem", authRequired, async (req, res) => {
+  const amount = parseInt(req.body.amount_cents, 10);
+  if (!amount || amount <= 0)
+    return res.status(400).json({ error: "Invalid amount" });
+  try {
+    const current = await db.getSaleCredit(req.user.id);
+    if (current < amount) {
+      return res.status(400).json({ error: "Insufficient credit" });
+    }
+    const remaining = await db.adjustSaleCredit(req.user.id, -amount);
+    res.json({ credit: remaining });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: "Failed to redeem credit" });
+  }
+});
+
 app.get("/api/leaderboard", async (req, res) => {
   const limit = parseInt(req.query.limit, 10) || 10;
   try {
@@ -2974,13 +3001,17 @@ app.post(
 
         if (jobId) {
           let gcodePath = null;
+          let sellerId = null;
           try {
             const { rows: modelRows } = await db.query(
-              "SELECT model_url FROM jobs WHERE job_id=$1",
+              "SELECT model_url, user_id FROM jobs WHERE job_id=$1",
               [jobId],
             );
-            if (modelRows.length && modelRows[0].model_url) {
-              gcodePath = await sliceModel(modelRows[0].model_url);
+            if (modelRows.length) {
+              sellerId = modelRows[0].user_id;
+              if (modelRows[0].model_url) {
+                gcodePath = await sliceModel(modelRows[0].model_url);
+              }
             }
           } catch (err) {
             logError("Failed to slice model", err);
@@ -2994,6 +3025,13 @@ app.post(
           );
           enqueuePrint(jobId);
           processQueue();
+          if (sellerId && userId && sellerId !== userId) {
+            try {
+              await db.adjustSaleCredit(sellerId, 500);
+            } catch (err) {
+              logError("Failed to award sale credit", err);
+            }
+          }
         }
 
         if (userId) {
