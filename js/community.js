@@ -302,8 +302,11 @@ function createViewerCard(modelUrl) {
   div.innerHTML = `<model-viewer src="${modelUrl}" alt="3D model preview" environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr" camera-controls auto-rotate loading="lazy" class="w-full h-full bg-[#2A2A2E] rounded-xl"></model-viewer>`;
   div.addEventListener("pointerenter", () => prefetchModel(modelUrl));
   div.addEventListener("click", (e) => {
-    e.stopPropagation();
-    openModel({ model_url: modelUrl, job_id: "" });
+    // Avoid opening the modal when rotating the model preview
+    if (!e.target.closest("model-viewer")) {
+      e.stopPropagation();
+      openModel({ model_url: modelUrl, job_id: "" });
+    }
   });
   return div;
 }
@@ -328,7 +331,8 @@ function applyPopularViewer() {
   toRemove.forEach((el) => el.remove());
 
   const viewer = createViewerCard(modelUrl);
-  viewer.classList.add("row-span-3", "h-[24rem]");
+  // Let the grid determine the final height so alignment matches
+  viewer.classList.add("row-span-3");
 
   const insertBefore = grid.children[2];
   if (insertBefore) grid.insertBefore(viewer, insertBefore);
