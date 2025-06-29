@@ -163,6 +163,26 @@ async function adjustRewardPoints(userId, delta) {
   return parseInt(rows[0].points, 10);
 }
 
+async function getSaleCredit(userId) {
+  const { rows } = await query(
+    "SELECT credit_cents FROM sale_credits WHERE user_id=$1",
+    [userId],
+  );
+  return rows.length ? parseInt(rows[0].credit_cents, 10) : 0;
+}
+
+async function adjustSaleCredit(userId, delta) {
+  const { rows } = await query(
+    `INSERT INTO sale_credits(user_id, credit_cents)
+     VALUES($1, $2)
+     ON CONFLICT (user_id)
+     DO UPDATE SET credit_cents = sale_credits.credit_cents + EXCLUDED.credit_cents
+     RETURNING credit_cents`,
+    [userId, delta],
+  );
+  return parseInt(rows[0].credit_cents, 10);
+}
+
 async function getLeaderboard(limit = 10) {
   const { rows } = await query(
     `SELECT u.username, rp.points
@@ -959,6 +979,8 @@ module.exports = {
   getOrCreateReferralLink,
   getRewardPoints,
   adjustRewardPoints,
+  getSaleCredit,
+  adjustSaleCredit,
   getLeaderboard,
   getAchievements,
   addAchievement,
