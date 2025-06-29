@@ -124,7 +124,11 @@ window.addEventListener("load", () => {
 });
 
 if (window.visualViewport) {
-  window.visualViewport.addEventListener("resize", updateLuckyboxBottom);
+  window.visualViewport.addEventListener("resize", () => {
+    updateLuckyboxBottom();
+    adjustLuckyboxHeight();
+    updateLuckyboxOnScroll();
+  });
 }
 
 function initLuckybox() {
