@@ -1081,8 +1081,8 @@ async function init() {
 
   const popupEl = document.getElementById("purchase-popups");
   let popupMsgs = [
-    "Someone recently bought a print",
-    "Someone recently created a model",
+    "Someone just bought a print",
+    "Someone just created a model",
   ];
   async function loadPopupNames() {
     try {
@@ -1091,8 +1091,8 @@ async function init() {
         const names = await res.json();
         if (Array.isArray(names) && names.length >= 2) {
           popupMsgs = [
-            `${names[0]} recently bought a print`,
-            `${names[1]} recently created a model`,
+            `${names[0]} just bought a print`,
+            `${names[1]} just created a model`,
           ];
         }
       }
@@ -1108,7 +1108,6 @@ async function init() {
     popupEl.innerHTML = "";
     const span = document.createElement("span");
     span.textContent = msg;
-    popupEl.appendChild(span);
     if (msg.includes("created a model")) {
       const viewer = document.createElement("model-viewer");
       viewer.src = "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
@@ -1119,13 +1118,17 @@ async function init() {
       viewer.setAttribute("camera-controls", "");
       viewer.setAttribute("auto-rotate", "");
       viewer.setAttribute("crossOrigin", "anonymous");
-      viewer.className = "w-10 h-10 ml-2";
+      viewer.className = "w-24 h-24";
       popupEl.appendChild(viewer);
+      popupEl.appendChild(span);
     } else if (popupIdx % popupMsgs.length === 0 && lastSnapshot) {
       const img = document.createElement("img");
       img.src = lastSnapshot;
-      img.className = "w-10 h-10 ml-2 rounded";
+      img.className = "w-10 h-10 rounded";
       popupEl.appendChild(img);
+      popupEl.appendChild(span);
+    } else {
+      popupEl.appendChild(span);
     }
     popupEl.classList.remove("hidden");
     popupEl.classList.remove("purchase-fade");
