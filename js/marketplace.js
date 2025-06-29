@@ -13,50 +13,6 @@ function createCard(item) {
   return div;
 }
 
-async function loadLeaderboard() {
-  try {
-    const res = await fetch(`${API_BASE}/leaderboard?limit=5`);
-    if (!res.ok) return;
-    const data = await res.json();
-    const body = document.getElementById("leaderboard-body");
-    const promo = document.getElementById("designer-month");
-    if (!body) return;
-    body.innerHTML = "";
-    data.forEach((e, idx) => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `<td class="px-2 py-1">${e.username}</td><td class="px-2 py-1">${e.points}</td>`;
-      body.appendChild(tr);
-      if (idx === 0 && promo) {
-        promo.textContent = `Designer of the Month: ${e.username}`;
-      }
-    });
-  } catch (err) {
-    console.error("Failed to load leaderboard", err);
-  }
-}
-
-async function loadAchievements() {
-  const token = localStorage.getItem("token");
-  if (!token) return;
-  try {
-    const res = await fetch(`${API_BASE}/achievements`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!res.ok) return;
-    const { achievements } = await res.json();
-    const list = document.getElementById("achievements-list");
-    if (!list) return;
-    list.innerHTML = "";
-    achievements.forEach((a) => {
-      const li = document.createElement("li");
-      li.textContent = a.name;
-      list.appendChild(li);
-    });
-  } catch (err) {
-    console.error("Failed to load achievements", err);
-  }
-}
-
 async function checkFlashSale() {
   const banner = document.getElementById("flash-banner");
   if (!banner) return;
@@ -100,7 +56,5 @@ document.addEventListener("DOMContentLoaded", async () => {
   } catch (err) {
     console.error("Failed to load marketplace items", err);
   }
-  loadLeaderboard();
-  loadAchievements();
   checkFlashSale();
 });
