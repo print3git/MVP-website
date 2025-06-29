@@ -885,6 +885,56 @@ async function getLowInventory() {
   return rows;
 }
 
+async function insertCartItem(userId, jobId, quantity = 1) {
+  const { rows } = await query(
+    `INSERT INTO cart_items(user_id, job_id, quantity)
+     VALUES($1,$2,$3) RETURNING *`,
+    [userId, jobId, quantity],
+  );
+  return rows[0];
+}
+
+async function updateCartItem(id, quantity) {
+  const { rows } = await query(
+    `UPDATE cart_items SET quantity=$2 WHERE id=$1 RETURNING *`,
+    [id, quantity],
+  );
+  return rows[0];
+}
+
+async function deleteCartItem(id) {
+  await query("DELETE FROM cart_items WHERE id=$1", [id]);
+}
+
+async function getCartItems(userId) {
+  const { rows } = await query(
+    `SELECT id, job_id, quantity FROM cart_items WHERE user_id=$1 ORDER BY id`,
+    [userId],
+  );
+  return rows;
+}
+
+async function clearCart(userId) {
+  await query("DELETE FROM cart_items WHERE user_id=$1", [userId]);
+}
+
+async function insertOrderItems(orderId, items) {
+  for (const item of items) {
+    await query(
+      "INSERT INTO order_items(order_id, job_id, quantity) VALUES($1,$2,$3)",
+      [orderId, item.jobId, item.quantity || 1],
+    );
+  }
+}
+
+async function getOrderItems(orderId) {
+  const { rows } = await query(
+    "SELECT id, job_id, quantity FROM order_items WHERE order_id=$1 ORDER BY id",
+    [orderId],
+  );
+  return rows;
+}
+
 async function upsertHubSaturationSummary(date, hubId, saturation) {
   const { rows } = await query(
     `INSERT INTO hub_saturation_summary(summary_date, hub_id, avg_queue_saturation)
@@ -1070,4 +1120,11 @@ module.exports = {
   getMarginalCacMetrics,
   adjustInventory,
   getLowInventory,
+  insertCartItem,
+  updateCartItem,
+  deleteCartItem,
+  getCartItems,
+  clearCart,
+  insertOrderItems,
+  getOrderItems,
 };
