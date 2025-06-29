@@ -134,6 +134,9 @@ export function setupSavedUI() {
   });
   updateBadge();
 }
-window.addEventListener("DOMContentLoaded", setupSavedUI);
+if (!window.disableSaveButton) {
+  window.addEventListener("DOMContentLoaded", setupSavedUI);
+}
 window.addSavedModel = addSaved;
 window.getSavedModels = getSaved;
+window.clearSavedModels = clearSaved;
