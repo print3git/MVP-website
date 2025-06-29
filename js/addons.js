@@ -113,6 +113,11 @@ window.addEventListener("resize", () => {
   adjustLuckyboxHeight();
   alignGridBottom();
 });
+window.addEventListener("load", () => {
+  adjustLuckyboxHeight();
+  alignGridBottom();
+  setupLuckyboxScroll();
+});
 
 function initLuckybox() {
   const tier = document.getElementById("luckybox-tier");
