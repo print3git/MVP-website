@@ -90,10 +90,10 @@
     </header>
     <main class="flex-1 flex items-center justify-center px-4">
       <div
-        class="max-w-4xl w-full flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0 md:space-x-8"
+        class="max-w-4xl w-full flex flex-col md:flex-row items-center md:items-stretch justify-between space-y-6 md:space-y-0 md:space-x-8"
       >
         <div
-          class="text-center space-y-4 md:max-w-lg bg-[#2A2A2E] p-6 rounded-2xl shadow-lg border border-white/20"
+          class="text-center space-y-4 md:max-w-lg bg-[#2A2A2E] p-6 rounded-2xl shadow-lg border border-white/20 md:h-96 flex flex-col justify-center"
         >
           <p class="text-lg">
             Join print2 Pro for £149.99 per month to receive 2 prints (single or
@@ -146,7 +146,9 @@
       id="printclub-modal"
       class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden"
     >
-      <div class="bg-[#2A2A2E] p-6 rounded-xl max-w-sm text-center border border-white/10">
+      <div
+        class="bg-[#2A2A2E] p-6 rounded-xl max-w-sm text-center border border-white/10"
+      >
         <h2 class="text-2xl font-semibold mb-2">print2 Pro</h2>
         <p class="mb-4">
           Get two prints (single or multicolour tiers) every week for
