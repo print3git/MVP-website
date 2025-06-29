@@ -46,6 +46,7 @@ function renderPreview() {
   });
   adjustLuckyboxHeight();
   alignGridBottom();
+  setupLuckyboxScroll();
 }
 
 function adjustLuckyboxHeight() {
@@ -133,3 +134,28 @@ function initLuckybox() {
 }
 
 document.addEventListener("DOMContentLoaded", initLuckybox);
+
+let luckyInitialHeight;
+let lockedInitialBottom;
+
+function setupLuckyboxScroll() {
+  const locked = document.getElementById("locked-msg");
+  const lucky = document.getElementById("luckybox");
+  if (!locked || !lucky || locked.classList.contains("hidden")) return;
+  luckyInitialHeight = lucky.offsetHeight;
+  lockedInitialBottom = locked.getBoundingClientRect().bottom;
+  window.removeEventListener("scroll", updateLuckyboxOnScroll);
+  window.addEventListener("scroll", updateLuckyboxOnScroll);
+}
+
+function updateLuckyboxOnScroll() {
+  const locked = document.getElementById("locked-msg");
+  const lucky = document.getElementById("luckybox");
+  if (!locked || !lucky || locked.classList.contains("hidden")) return;
+  if (luckyInitialHeight === undefined || lockedInitialBottom === undefined)
+    return;
+  const lockedBottom = locked.getBoundingClientRect().bottom;
+  const clamped = lockedBottom > 0 ? lockedBottom : 0;
+  const newHeight = luckyInitialHeight + (lockedInitialBottom - clamped);
+  lucky.style.height = `${newHeight}px`;
+}
