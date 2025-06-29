@@ -132,8 +132,17 @@ async function loadProfileHeader() {
   document.getElementById("profile-name").textContent =
     data.display_name || "Profile";
   const avatar = document.getElementById("profile-avatar");
+  const model = document.getElementById("profile-avatar-model");
   const display = document.getElementById("profile-display");
-  if (avatar && data.avatar_url) avatar.src = data.avatar_url;
+  if (data.avatar_glb && model) {
+    model.src = data.avatar_glb;
+    model.classList.remove("hidden");
+    avatar?.classList.add("hidden");
+  } else if (avatar && data.avatar_url) {
+    avatar.src = data.avatar_url;
+    avatar.classList.remove("hidden");
+    model?.classList.add("hidden");
+  }
   if (display) display.textContent = data.display_name || "";
 }
 
