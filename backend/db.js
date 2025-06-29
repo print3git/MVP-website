@@ -163,6 +163,26 @@ async function adjustRewardPoints(userId, delta) {
   return parseInt(rows[0].points, 10);
 }
 
+async function getSaleCredit(userId) {
+  const { rows } = await query(
+    "SELECT credit_cents FROM sale_credits WHERE user_id=$1",
+    [userId],
+  );
+  return rows.length ? parseInt(rows[0].credit_cents, 10) : 0;
+}
+
+async function adjustSaleCredit(userId, delta) {
+  const { rows } = await query(
+    `INSERT INTO sale_credits(user_id, credit_cents)
+     VALUES($1, $2)
+     ON CONFLICT (user_id)
+     DO UPDATE SET credit_cents = sale_credits.credit_cents + EXCLUDED.credit_cents
+     RETURNING credit_cents`,
+    [userId, delta],
+  );
+  return parseInt(rows[0].credit_cents, 10);
+}
+
 async function getLeaderboard(limit = 10) {
   const { rows } = await query(
     `SELECT u.username, rp.points
@@ -646,17 +666,46 @@ async function insertDesignerSubmission(
   return rows[0];
 }
 
+async function createJob(modelUrl, userId, title = null) {
+  const jobId = uuidv4();
+  const { rows } = await query(
+    "INSERT INTO jobs(job_id, status, model_url, user_id, generated_title) VALUES($1,$2,$3,$4,$5) RETURNING *",
+    [jobId, "complete", modelUrl, userId, title],
+  );
+  return rows[0];
+}
+
 async function approveDesignerSubmission(id) {
   const { rows } = await query(
     "UPDATE designer_submissions SET status='approved', updated_at=NOW() WHERE id=$1 RETURNING *",
     [id],
+  );
+  const submission = rows[0];
+  if (!submission) return null;
+  const job = await createJob(
+    submission.file_path,
+    submission.user_id,
+    submission.title,
+  );
+  return { ...submission, job_id: job.job_id };
+}
+
+async function getSubmissionByFilePath(filePath) {
+  const { rows } = await query(
+    "SELECT * FROM designer_submissions WHERE file_path=$1",
+    [filePath],
   );
   return rows[0];
 }
 
 async function listApprovedSubmissions(limit = 10, offset = 0) {
   const { rows } = await query(
-    "SELECT * FROM designer_submissions WHERE status='approved' ORDER BY created_at DESC LIMIT $1 OFFSET $2",
+    `SELECT ds.*, j.job_id
+       FROM designer_submissions ds
+       LEFT JOIN jobs j ON ds.file_path=j.model_url
+      WHERE ds.status='approved'
+      ORDER BY ds.created_at DESC
+      LIMIT $1 OFFSET $2`,
     [limit, offset],
   );
   return rows;
@@ -959,6 +1008,8 @@ module.exports = {
   getOrCreateReferralLink,
   getRewardPoints,
   adjustRewardPoints,
+  getSaleCredit,
+  adjustSaleCredit,
   getLeaderboard,
   getAchievements,
   addAchievement,
@@ -980,6 +1031,7 @@ module.exports = {
   getCommunityComments,
   insertDesignerSubmission,
   approveDesignerSubmission,
+  getSubmissionByFilePath,
   listApprovedSubmissions,
   listSpaces,
   createSpace,

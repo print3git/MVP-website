@@ -110,8 +110,17 @@
           <h2 class="text-xl font-semibold mb-2">Your Marketplace</h2>
           <p>
             Models you upload appear here. When someone purchases one of your
-            designs, you earn credits towards future prints.
+            designs, you earn credits towards future prints. Either create a
+            model using this website, or
+            <a
+              href="#"
+              class="font-bold text-[#30D5C8]"
+              onclick="document.getElementById('glbUpload').click(); return false;"
+              >Upload</a
+            >
+            your own .glb file.
           </p>
+          <input id="glbUpload" type="file" accept=".glb" class="hidden" />
         </div>
         <div class="bg-[#2A2A2E] p-4 rounded-xl border border-white/10">
           <h2 class="text-xl font-semibold mb-2">
@@ -121,6 +130,10 @@
             Browse creations from the community. Buying these models rewards the
             original creator with credits.
           </p>
+          <div
+            id="marketplace-grid"
+            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4"
+          ></div>
         </div>
       </section>
     </main>
@@ -130,6 +143,7 @@
     </script>
     <script type="module" src="js/rewardBadge.js"></script>
     <script type="module" src="js/trackingPixel.js"></script>
+    <script type="module" src="js/marketplace.js"></script>
     <script type="module" src="js/basket.js"></script>
   </body>
 </html>

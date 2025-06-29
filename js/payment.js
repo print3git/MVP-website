@@ -269,17 +269,31 @@ async function loadCheckoutCredits() {
   const token = localStorage.getItem("token");
   if (!token) return;
   try {
-    const res = await fetch(`${API_BASE}/subscription/credits`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!res.ok) return;
-    const data = await res.json();
-    const container = document.getElementById("credit-option");
-    const span = document.getElementById("credits-remaining");
-    if (container && span) {
-      span.textContent = data.remaining;
-      if (data.remaining > 0) container.classList.remove("hidden");
-      else container.classList.add("hidden");
+    const [subRes, creditRes] = await Promise.all([
+      fetch(`${API_BASE}/subscription/credits`, {
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+      fetch(`${API_BASE}/credits`, { headers: { Authorization: `Bearer ${token}` } }),
+    ]);
+    if (subRes.ok) {
+      const data = await subRes.json();
+      const container = document.getElementById("credit-option");
+      const span = document.getElementById("credits-remaining");
+      if (container && span) {
+        span.textContent = data.remaining;
+        if (data.remaining > 0) container.classList.remove("hidden");
+        else container.classList.add("hidden");
+      }
+    }
+    if (creditRes.ok) {
+      const d = await creditRes.json();
+      const c2 = document.getElementById("sale-credit-option");
+      const s2 = document.getElementById("sale-credit-balance");
+      if (c2 && s2) {
+        s2.textContent = (d.credit / 100).toFixed(2);
+        if (d.credit > 0) c2.classList.remove("hidden");
+        else c2.classList.add("hidden");
+      }
     }
   } catch {}
 }
@@ -1356,6 +1370,7 @@ async function initPaymentPage() {
         .trim();
     }
     const useCredit = document.getElementById("use-credit")?.checked;
+    const useSaleCredit = document.getElementById("use-sale-credit")?.checked;
     const items = checkoutItems.length
       ? checkoutItems
       : [
@@ -1378,18 +1393,41 @@ async function initPaymentPage() {
         discount += bulk;
         bulkApplied = true;
       }
-      const resp = await createCheckout(
-        q,
-        discount,
-        discountCodes,
-        shippingInfo,
-        referralId,
-        item.etchName || undefined,
-        useCredit,
-      );
-      if (resp.checkoutUrl) sessions.push(resp.checkoutUrl);
+      if (useSaleCredit) {
+        const amount = selectedPrice * q - discount;
+        const token = localStorage.getItem("token");
+        const resp = await fetch(`${API_BASE}/credits/redeem`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            amount_cents: amount,
+            jobId: item.jobId,
+            qty: q,
+            shippingInfo,
+            etchName: item.etchName || undefined,
+            productType: item.material,
+          }),
+        });
+        const data = await resp.json();
+        if (resp.ok) sessions.push(null);
+        else alert(data.error || "Credit redemption failed");
+      } else {
+        const resp = await createCheckout(
+          q,
+          discount,
+          discountCodes,
+          shippingInfo,
+          referralId,
+          item.etchName || undefined,
+          useCredit,
+        );
+        if (resp.checkoutUrl) sessions.push(resp.checkoutUrl);
+      }
     }
-    if (useCredit && sessions.length === 0) {
+    if ((useCredit || useSaleCredit) && sessions.length === 0) {
       recordPurchase();
       await loadCheckoutCredits();
       successMsg.hidden = false;

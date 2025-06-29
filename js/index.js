@@ -1109,7 +1109,19 @@ async function init() {
     const span = document.createElement("span");
     span.textContent = msg;
     popupEl.appendChild(span);
-    if (popupIdx % popupMsgs.length === 0 && lastSnapshot) {
+    if (msg.includes("created a model")) {
+      const viewer = document.createElement("model-viewer");
+      viewer.src = "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
+      viewer.setAttribute(
+        "environment-image",
+        "https://modelviewer.dev/shared-assets/environments/neutral.hdr",
+      );
+      viewer.setAttribute("camera-controls", "");
+      viewer.setAttribute("auto-rotate", "");
+      viewer.setAttribute("crossOrigin", "anonymous");
+      viewer.className = "w-10 h-10 ml-2";
+      popupEl.appendChild(viewer);
+    } else if (popupIdx % popupMsgs.length === 0 && lastSnapshot) {
       const img = document.createElement("img");
       img.src = lastSnapshot;
       img.className = "w-10 h-10 ml-2 rounded";
