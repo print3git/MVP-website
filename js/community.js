@@ -363,6 +363,9 @@ function applyRecentViewer() {
   toRemove.forEach((el) => el.remove());
 
   const viewer = createViewerCard(modelUrl);
+
+  // Let the grid determine the final height so alignment matches
+  
   viewer.classList.add("row-span-3");
 
   const insertBefore = grid.children[0];
