@@ -68,6 +68,4 @@ document.addEventListener("DOMContentLoaded", async () => {
     const items = await res.json();
     items.forEach((it) => grid.appendChild(createCard(it)));
   } catch {}
-  loadLeaderboard();
-  loadAchievements();
 });
