@@ -365,7 +365,7 @@ function applyRecentViewer() {
   const viewer = createViewerCard(modelUrl);
 
   // Let the grid determine the final height so alignment matches
-  
+
   viewer.classList.add("row-span-3");
 
   const insertBefore = grid.children[0];
@@ -382,8 +382,7 @@ function addRecentModel(model) {
   const filters = getFilters();
   if (
     !filters.search &&
-    (!filters.category || filters.category === model.category) &&
-    filters.order !== "asc"
+    (!filters.category || filters.category === model.category)
   ) {
     const key = `${filters.category}|${filters.search}|${filters.order}`;
     const cache = window.communityState.recent;
@@ -399,7 +398,7 @@ function addRecentModel(model) {
 function getFilters() {
   const category = document.getElementById("category").value;
   const search = document.getElementById("search")?.value || "";
-  const order = document.getElementById("sort")?.value || "desc";
+  const order = "desc";
   return { category, search, order, key: `${category}|${search}|${order}` };
 }
 
@@ -549,17 +548,6 @@ function init() {
     loadMore("popular");
     loadMore("recent");
   });
-  const sortSelect = document.getElementById("sort");
-  if (sortSelect) {
-    sortSelect.addEventListener("change", () => {
-      document.getElementById("recent-grid").innerHTML = "";
-      document.getElementById("popular-grid").innerHTML = "";
-      window.communityState = { recent: {}, popular: {} };
-      saveState();
-      loadMore("popular");
-      loadMore("recent");
-    });
-  }
   const searchInput = document.getElementById("search");
   if (searchInput) {
     function onSearchInput() {
