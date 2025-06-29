@@ -273,7 +273,9 @@ async function loadCheckoutCredits() {
       fetch(`${API_BASE}/subscription/credits`, {
         headers: { Authorization: `Bearer ${token}` },
       }),
-      fetch(`${API_BASE}/credits`, { headers: { Authorization: `Bearer ${token}` } }),
+      fetch(`${API_BASE}/credits`, {
+        headers: { Authorization: `Bearer ${token}` },
+      }),
     ]);
     if (subRes.ok) {
       const data = await subRes.json();
@@ -1085,7 +1087,13 @@ async function initPaymentPage() {
           color: prev.color || null,
           etchName:
             prev.etchName || localStorage.getItem("print3EtchName") || "",
-          qty: Math.max(1, parseInt(prev.qty || "1", 10)),
+          qty: Math.max(
+            1,
+            parseInt(
+              prev.qty ?? it.quantity ?? (basket.length === 1 ? "2" : "1"),
+              10,
+            ),
+          ),
         };
       });
       localStorage.setItem(
