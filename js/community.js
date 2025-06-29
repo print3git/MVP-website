@@ -295,7 +295,9 @@ function createCard(model) {
 function createViewerCard(modelUrl) {
   const div = document.createElement("div");
   div.className =
-    "model-card relative h-32 bg-[#2A2A2E] border border-white/10 rounded-xl flex items-center justify-center cursor-pointer";
+
+    "viewer-card model-card relative bg-[#2A2A2E] border border-white/10 rounded-xl flex items-center justify-center cursor-pointer";
+
   div.dataset.model = modelUrl;
   div.innerHTML = `<model-viewer src="${modelUrl}" alt="3D model preview" environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr" camera-controls auto-rotate loading="lazy" class="w-full h-full bg-[#2A2A2E] rounded-xl"></model-viewer>`;
   div.addEventListener("pointerenter", () => prefetchModel(modelUrl));
@@ -309,17 +311,28 @@ function createViewerCard(modelUrl) {
 function applyPopularViewer() {
   const grid = document.getElementById("popular-grid");
   if (!grid) return;
+
+  const existing = grid.querySelector(".viewer-card");
+  if (existing) existing.remove();
+
   const cards = Array.from(grid.children);
   if (cards.length < 2) return;
   const modelUrl = cards[1].dataset.model;
   if (!modelUrl) return;
-  for (let i = 2; i < cards.length; i += 3) {
-    const card = cards[i];
-    if (!card) continue;
-    const viewer = createViewerCard(modelUrl);
-    card.replaceWith(viewer);
-    cards[i] = viewer;
+
+
+  const toRemove = [];
+  for (let i = 2; i < Math.min(cards.length, 9); i += 3) {
+    if (cards[i]) toRemove.push(cards[i]);
   }
+  toRemove.forEach((el) => el.remove());
+
+  const viewer = createViewerCard(modelUrl);
+  viewer.classList.add("row-span-3", "h-[24rem]");
+
+  const insertBefore = grid.children[2];
+  if (insertBefore) grid.insertBefore(viewer, insertBefore);
+  else grid.appendChild(viewer);
 }
 
 function addRecentModel(model) {
