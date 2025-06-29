@@ -179,7 +179,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const logoutBtn = document.getElementById("logout-btn");
   logoutBtn?.addEventListener("click", () => {
     localStorage.removeItem("token");
-    window.location.href = "index.html";
+    window.location.href = "/MVP-website/index.html";
   });
   loadProfileHeader();
   load();
