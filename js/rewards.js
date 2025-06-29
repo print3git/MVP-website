@@ -115,10 +115,24 @@ async function loadAchievements() {
   }
 }
 
-function shareReferral(network) {
-  const url =
-    document.getElementById("referral-link")?.value || window.location.href;
-  shareOn(network, url, "Join me on print2!");
+async function shareReferral(network) {
+  let link = document.getElementById("referral-link")?.value || null;
+  if (!link) {
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const res = await fetch(`${API_BASE}/referral-link`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.ok) {
+          const { code } = await res.json();
+          link = `${window.location.origin}?ref=${code}`;
+        }
+      } catch {}
+    }
+  }
+  if (!link) link = window.location.href;
+  shareOn(network, link, "Join me on print2!");
 }
 
 async function redeemReward() {
@@ -149,6 +163,7 @@ async function redeemReward() {
 window.copyReferral = copyReferral;
 window.redeemReward = redeemReward;
 window.shareReferral = shareReferral;
+export { shareReferral };
 window.addEventListener("DOMContentLoaded", () => {
   loadRewardOptions().then(() => {
     loadRewards();

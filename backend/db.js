@@ -247,6 +247,14 @@ async function insertReferredOrder(orderId, referrerId) {
   );
 }
 
+async function getReferrerForOrder(orderId) {
+  const { rows } = await query(
+    "SELECT referrer_id FROM referred_orders WHERE order_id=$1",
+    [orderId],
+  );
+  return rows.length ? rows[0].referrer_id : null;
+}
+
 async function updateWeeklyOrderStreak(userId, date = new Date()) {
   const week = startOfWeek(date);
   const weekStr = week.toISOString().slice(0, 10);
@@ -1067,6 +1075,7 @@ module.exports = {
   insertReferralEvent,
   getOrCreateOrderReferralLink,
   insertReferredOrder,
+  getReferrerForOrder,
   insertShareEvent,
   insertPageView,
   insertPixelEvent,
