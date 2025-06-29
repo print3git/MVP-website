@@ -190,6 +190,11 @@
             ref.pathname.endsWith("CommunityCreations.html")
           ) {
             target = "CommunityCreations.html";
+          } else if (
+            ref.origin === location.origin &&
+            !ref.pathname.endsWith("login.html")
+          ) {
+            target = ref.pathname.replace(/^\//, "") + ref.search + ref.hash;
           }
         } catch {
           if (from === "1") target = "CommunityCreations.html";
