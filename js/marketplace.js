@@ -97,9 +97,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!res.ok) return;
     const items = await res.json();
     items.forEach((it) => grid.appendChild(createCard(it)));
+  } catch (err) {
+    console.error("Failed to load marketplace items", err);
+  }
 
   loadLeaderboard();
   loadAchievements();
   checkFlashSale();
-
 });
