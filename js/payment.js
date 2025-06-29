@@ -900,7 +900,11 @@ async function initPaymentPage() {
       }
     }
     if (removeBtn) {
-      removeBtn.classList.remove("hidden");
+      if (checkoutItems.length > 1) {
+        removeBtn.classList.remove("hidden");
+      } else {
+        removeBtn.classList.add("hidden");
+      }
     }
     applyStoredColorIfNeeded();
     updatePayButton();
@@ -1147,7 +1151,10 @@ async function initPaymentPage() {
     localStorage.setItem("print3Material", storedMaterial);
     viewer.addEventListener("load", applyStoredColorIfNeeded, { once: true });
     showItem(0);
-    if (removeBtn) removeBtn.classList.remove("hidden");
+    if (removeBtn) {
+      if (checkoutItems.length > 1) removeBtn.classList.remove("hidden");
+      else removeBtn.classList.add("hidden");
+    }
   }
 
   if (!checkoutItems.length && qtySelect) {
