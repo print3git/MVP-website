@@ -100,7 +100,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   } catch (err) {
     console.error("Failed to load marketplace items", err);
   }
-
   loadLeaderboard();
   loadAchievements();
   checkFlashSale();
