@@ -524,14 +524,7 @@
                 aria-label="Email"
               />
             </div>
-            <button
-              id="advanced-toggle"
-              type="button"
-              class="text-sm underline text-gray-300"
-            >
-              More options
-            </button>
-            <div id="advanced-section" class="space-y-[0.33rem] hidden">
+            <div id="advanced-section" class="space-y-[0.33rem]">
               <div class="flex flex-col" id="addressStub">
                 <label for="ship-address" class="font-medium">Address</label>
                 <input
@@ -780,20 +773,6 @@
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('service-worker.js');
       }
-    </script>
-    <script>
-      document.addEventListener('DOMContentLoaded', () => {
-        const toggle = document.getElementById('advanced-toggle');
-        const section = document.getElementById('advanced-section');
-        if (toggle && section) {
-          toggle.addEventListener('click', () => {
-            section.classList.toggle('hidden');
-            toggle.textContent = section.classList.contains('hidden')
-              ? 'More options'
-              : 'Hide options';
-          });
-        }
-      });
     </script>
     <script>
       document.addEventListener('DOMContentLoaded', () => {
