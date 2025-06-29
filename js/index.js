@@ -1108,7 +1108,7 @@ async function init() {
     popupEl.innerHTML = "";
     const span = document.createElement("span");
     span.textContent = msg;
-    if (msg.includes("created a model")) {
+    if (msg.includes("created a model") || msg.includes("bought a print")) {
       const viewer = document.createElement("model-viewer");
       viewer.src = "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
       viewer.setAttribute(
