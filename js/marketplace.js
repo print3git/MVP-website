@@ -57,6 +57,36 @@ async function loadAchievements() {
   }
 }
 
+async function checkFlashSale() {
+  const banner = document.getElementById("flash-banner");
+  if (!banner) return;
+  let timerEl = document.getElementById("flash-timer");
+  if (!timerEl) return;
+  try {
+    const resp = await fetch(`${API_BASE}/flash-sale`);
+    if (!resp.ok) return;
+    const sale = await resp.json();
+    const end = new Date(sale.end_time).getTime();
+    banner.innerHTML = `Flash sale! <span id="flash-timer">5:00</span> left - ${sale.discount_percent}% off ${sale.product_type}`;
+    timerEl = banner.querySelector("#flash-timer");
+    const update = () => {
+      const diff = end - Date.now();
+      if (diff <= 0) {
+        banner.hidden = true;
+        clearInterval(int);
+        return;
+      }
+      const s = Math.ceil(diff / 1000);
+      const m = Math.floor(s / 60);
+      const sec = String(s % 60).padStart(2, "0");
+      timerEl.textContent = `${m}:${sec}`;
+    };
+    update();
+    const int = setInterval(update, 1000);
+    banner.hidden = false;
+  } catch {}
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
   const grid = document.getElementById("marketplace-grid");
   if (!grid) return;
@@ -70,4 +100,5 @@ document.addEventListener("DOMContentLoaded", async () => {
   } catch {}
   loadLeaderboard();
   loadAchievements();
+  checkFlashSale();
 });

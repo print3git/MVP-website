@@ -2172,11 +2172,15 @@ app.post("/api/generate-discount", async (req, res) => {
 
 app.get("/api/flash-sale", async (req, res) => {
   try {
-    const { rows } = await db.query(
-      `SELECT * FROM flash_sales
-       WHERE active=TRUE AND start_time<=NOW() AND end_time>NOW()
-       ORDER BY start_time DESC LIMIT 1`,
-    );
+    const productType = req.query.product_type;
+    const params = [];
+    let query = `SELECT * FROM flash_sales WHERE active=TRUE AND start_time<=NOW() AND end_time>NOW()`;
+    if (productType) {
+      params.push(productType);
+      query += ` AND product_type=$${params.length}`;
+    }
+    query += " ORDER BY start_time DESC LIMIT 1";
+    const { rows } = await db.query(query, params);
     if (!rows.length) return res.sendStatus(404);
     res.json(rows[0]);
   } catch (err) {
@@ -3053,7 +3057,7 @@ app.post(
         ]);
 
         const { rows } = await db.query(
-          "SELECT job_id, user_id, shipping_info, is_gift FROM orders WHERE session_id=$1",
+          "SELECT job_id, user_id, shipping_info, is_gift, product_type FROM orders WHERE session_id=$1",
           [sessionId],
         );
         const row = rows[0] || {};
@@ -3126,6 +3130,22 @@ app.post(
               logError("Failed to award sale credit", err);
             }
           }
+        }
+
+        try {
+          const referrerId = await db.getReferrerForOrder(sessionId);
+          if (referrerId) {
+            const { rows: saleRows } = await db.query(
+              `SELECT 1 FROM flash_sales WHERE product_type=$1 AND active=TRUE AND start_time<=NOW() AND end_time>NOW() LIMIT 1`,
+              [row.product_type],
+            );
+            if (saleRows.length) {
+              await db.adjustRewardPoints(referrerId, 100);
+              await db.adjustSaleCredit(referrerId, 500);
+            }
+          }
+        } catch (err) {
+          logError("Failed to process referral reward", err);
         }
 
         if (userId) {
