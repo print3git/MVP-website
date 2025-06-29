@@ -192,11 +192,27 @@
       </div>
 
       <div class="flex items-center space-x-4 self-start mt-1">
-        <a
-          href="competitions.html"
-          class="bg-[#2A2A2E] border border-white/10 rounded-3xl px-4 py-2 text-sm hover:bg-[#3A3A3E] transition-shape"
-          >Competitions</a
+        <div
+          class="bg-[#2A2A2E] border border-white/10 rounded-3xl inline-flex text-sm overflow-hidden"
         >
+          <a
+            href="competitions.html"
+            class="px-4 py-2 hover:bg-[#3A3A3E] rounded-l-3xl transition-shape"
+            >Competitions</a
+          >
+          <a
+            href="addons.html"
+            id="addons-link"
+            class="px-4 py-2 hover:bg-[#3A3A3E] border-l border-white/10 transition-shape"
+            >Add-Ons</a
+          >
+          <a
+            href="profile.html"
+            id="profile-link"
+            class="px-4 py-2 hover:bg-[#3A3A3E] border-l border-white/10 rounded-r-3xl transition-shape"
+            >Profile</a
+          >
+        </div>
         <div
           class="bg-[#2A2A2E] border border-white/10 rounded-3xl inline-flex text-sm overflow-hidden"
         >
@@ -211,18 +227,6 @@
             >Marketplace</a
           >
         </div>
-        <a
-          href="addons.html"
-          id="addons-link"
-          class="bg-[#2A2A2E] border border-white/10 rounded-3xl px-4 py-2 text-sm hover:bg-[#3A3A3E] transition-shape"
-          >Add-Ons</a
-        >
-        <a
-          href="profile.html"
-          id="profile-link"
-          class="bg-[#2A2A2E] border border-white/10 rounded-3xl px-4 py-2 text-sm hover:bg-[#3A3A3E] transition-shape"
-          >Profile</a
-        >
         <a
           href="earn-rewards.html"
           id="earn-rewards-badge"
@@ -629,7 +633,9 @@
       id="printclub-modal"
       class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden"
     >
-      <div class="bg-[#2A2A2E] p-6 rounded-xl max-w-sm text-center border border-white/10">
+      <div
+        class="bg-[#2A2A2E] p-6 rounded-xl max-w-sm text-center border border-white/10"
+      >
         <h2 class="text-2xl font-semibold mb-2">print2 Pro</h2>
         <p class="mb-4">
           Get two prints (single or multicolour tiers) every week for
