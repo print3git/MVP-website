@@ -110,8 +110,16 @@
           <h2 class="text-xl font-semibold mb-2">Your Marketplace</h2>
           <p>
             Models you upload appear here. When someone purchases one of your
-            designs, you earn credits towards future prints.
+            designs, you earn credits towards future prints. Either create a
+            model using this website, or
+            <label
+              for="glbUpload"
+              class="inline-block bg-[#30D5C8] text-[#1A1A1D] font-semibold px-2 py-1 rounded cursor-pointer hover:bg-[#28b7a8] transition"
+              >Upload</label
+            >
+            your own .glb file.
           </p>
+          <input id="glbUpload" type="file" accept=".glb" class="hidden" />
         </div>
         <div class="bg-[#2A2A2E] p-4 rounded-xl border border-white/10">
           <h2 class="text-xl font-semibold mb-2">
