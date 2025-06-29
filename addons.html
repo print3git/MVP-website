@@ -105,63 +105,68 @@
           >making your first purchase</a
         >.
       </div>
-      <section id="addons-grid" class="grid grid-cols-2 gap-6 mt-2"></section>
-      <div
-        id="luckybox"
-        class="model-card relative w-full min-h-96 bg-[#2A2A2E] border border-white/10 rounded-xl p-4 flex flex-col items-center space-y-2"
-      >
-        <span class="font-semibold text-lg">Luckybox</span>
-        <select
-          id="luckybox-tier"
-          class="bg-[#1A1A1D] text-sm border border-white/10 rounded px-2 py-1 w-full text-white"
+      <div class="flex flex-col lg:flex-row gap-6">
+        <div
+          id="luckybox"
+          class="model-card relative w-full lg:w-3/5 min-h-96 bg-[#2A2A2E] border border-white/10 rounded-xl p-4 flex flex-col items-center space-y-2"
         >
-          <option value="basic" selected>Basic Luckybox £20</option>
-          <option value="multicolour">Multicolour Luckybox £29.99</option>
-          <option value="premium">Premium Luckybox £59.99</option>
-        </select>
-        <p id="luckybox-desc" class="text-sm text-center">
-          Get a (usually £39.99) single-colour print and 5 print points for just
-          £20.
-        </p>
-        <label class="flex items-center space-x-2 text-sm">
-          <input
-            type="radio"
-            name="luckybox-option"
-            value="A"
-            class="accent-[#30D5C8]"
-            checked
-          />
-          <span>Luckybox A: get a truly random print</span>
-        </label>
-        <label class="flex flex-col items-center w-full text-sm space-y-2">
-          <span class="flex items-center space-x-2">
+          <span class="font-semibold text-lg">Luckybox</span>
+          <select
+            id="luckybox-tier"
+            class="bg-[#1A1A1D] text-sm border border-white/10 rounded px-2 py-1 w-full text-white"
+          >
+            <option value="basic" selected>Basic Luckybox £20</option>
+            <option value="multicolour">Multicolour Luckybox £29.99</option>
+            <option value="premium">Premium Luckybox £59.99</option>
+          </select>
+          <p id="luckybox-desc" class="text-sm text-center">
+            Get a (usually £39.99) single-colour print and 5 print points for
+            just £20.
+          </p>
+          <label class="flex items-center space-x-2 text-sm">
             <input
               type="radio"
               name="luckybox-option"
-              value="B"
+              value="A"
               class="accent-[#30D5C8]"
+              checked
             />
-            <span>Luckybox B: describe a genre</span>
-          </span>
-          <input
-            type="text"
-            placeholder="e.g. dragons in space"
-            class="bg-[#1A1A1D] border border-white/10 rounded px-2 py-1 text-sm w-full"
-          />
-        </label>
-        <select
-          id="luckybox-theme"
-          class="bg-[#1A1A1D] text-sm border border-white/10 rounded px-2 py-1 w-full text-white"
-        >
-          <option value="random" selected>No Theme</option>
-          <option value="halloween">Halloween</option>
-          <option value="christmas">Christmas</option>
-          <option value="scifi">Sci-Fi</option>
-          <option value="fantasy">Fantasy</option>
-        </select>
-        <button class="bg-[#30D5C8] text-black px-3 py-1 rounded text-sm">
-          Add to Basket
-        </button>
+            <span>Luckybox A: get a truly random print</span>
+          </label>
+          <label class="flex flex-col items-center w-full text-sm space-y-2">
+            <span class="flex items-center space-x-2">
+              <input
+                type="radio"
+                name="luckybox-option"
+                value="B"
+                class="accent-[#30D5C8]"
+              />
+              <span>Luckybox B: describe a genre</span>
+            </span>
+            <input
+              type="text"
+              placeholder="e.g. dragons in space"
+              class="bg-[#1A1A1D] border border-white/10 rounded px-2 py-1 text-sm w-full"
+            />
+          </label>
+          <select
+            id="luckybox-theme"
+            class="bg-[#1A1A1D] text-sm border border-white/10 rounded px-2 py-1 w-full text-white"
+          >
+            <option value="random" selected>No Theme</option>
+            <option value="halloween">Halloween</option>
+            <option value="christmas">Christmas</option>
+            <option value="scifi">Sci-Fi</option>
+            <option value="fantasy">Fantasy</option>
+          </select>
+          <button class="bg-[#30D5C8] text-black px-3 py-1 rounded text-sm">
+            Add to Basket
+          </button>
+        </div>
+        <section
+          id="addons-grid"
+          class="grid grid-cols-2 gap-6 mt-2 w-full lg:w-2/5"
+        ></section>
       </div>
     </main>
     <script type="module" src="js/addons.js"></script>
