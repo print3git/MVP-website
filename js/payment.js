@@ -829,6 +829,7 @@ async function initPaymentPage() {
   updatePopularMessage();
   const prevBtn = document.getElementById("prev-model");
   const nextBtn = document.getElementById("next-model");
+  const removeBtn = document.getElementById("remove-model");
 
   function showItem(idx) {
     if (!checkoutItems.length) return;
@@ -884,6 +885,9 @@ async function initPaymentPage() {
         counter.classList.add("hidden");
       }
     }
+    if (removeBtn) {
+      removeBtn.classList.remove("hidden");
+    }
     applyStoredColorIfNeeded();
     updatePayButton();
     updateFlashSaleBanner();
@@ -891,6 +895,24 @@ async function initPaymentPage() {
 
   prevBtn?.addEventListener("click", () => showItem(currentIndex - 1));
   nextBtn?.addEventListener("click", () => showItem(currentIndex + 1));
+  removeBtn?.addEventListener("click", () => {
+    if (!checkoutItems.length) return;
+    const idx = currentIndex;
+    checkoutItems.splice(idx, 1);
+    saveCheckoutItems();
+    try {
+      const basket = JSON.parse(localStorage.getItem("print3Basket")) || [];
+      if (idx >= 0 && idx < basket.length) {
+        basket.splice(idx, 1);
+        localStorage.setItem("print3Basket", JSON.stringify(basket));
+      }
+    } catch {}
+    if (checkoutItems.length) {
+      if (currentIndex >= checkoutItems.length) currentIndex = 0;
+      showItem(currentIndex);
+    }
+    window.dispatchEvent(new CustomEvent("basket-change"));
+  });
   const sessionId = qs("session_id");
   if (sessionId) {
     recordPurchase();
@@ -1080,6 +1102,7 @@ async function initPaymentPage() {
   }
 
   if (!checkoutItems.length) {
+    if (removeBtn) removeBtn.classList.add("hidden");
     viewer.src = storedModel || FALLBACK_GLB;
     if (!storedModel) {
       viewer.addEventListener(
@@ -1110,6 +1133,7 @@ async function initPaymentPage() {
     localStorage.setItem("print3Material", storedMaterial);
     viewer.addEventListener("load", applyStoredColorIfNeeded, { once: true });
     showItem(0);
+    if (removeBtn) removeBtn.classList.remove("hidden");
   }
 
   if (!checkoutItems.length && qtySelect) {
