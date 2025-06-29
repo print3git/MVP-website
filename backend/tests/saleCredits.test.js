@@ -60,6 +60,9 @@ jest.mock("../printers/slicer", () =>
   jest.fn().mockResolvedValue("/tmp/out.gcode"),
 );
 const sliceModel = require("../printers/slicer");
+void enqueuePrint;
+void enqueueDbPrint;
+void sliceModel;
 
 const jwt = require("jsonwebtoken");
 const request = require("supertest");
