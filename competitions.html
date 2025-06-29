@@ -357,10 +357,10 @@
           <span id="print-count">🛒 4 prints sold</span>
         </div>
         <div
-          id="modal-checkout-container"
-          class="absolute bottom-4 right-4 flex flex-col items-center"
+          id="modal-action-panel"
+          class="absolute bottom-4 right-4 flex flex-col items-end space-y-2"
         >
-          <div id="tier-toggle" class="flex gap-1 mb-2 text-xs">
+          <div id="tier-toggle" class="flex gap-1 text-xs">
             <button
               type="button"
               data-tier="bronze"
@@ -396,28 +396,25 @@
           >
             Print for £39.99 →
           </a>
-        </div>
-        <button
-          id="modal-add-basket"
-          class="absolute bottom-4 left-4 font-bold py-2 px-4 rounded-full shadow-md bg-[#30D5C8] text-[#1A1A1D] border-2 border-black"
-        >
-          Add to Basket
-        </button>
-        <div
-          id="modal-copy-container"
-          class="absolute bottom-4 left-40 flex items-center gap-2"
-        >
           <button
-            id="modal-copy-link"
-            class="font-bold py-2 px-4 rounded-full shadow-md bg-[#2A2A2E] border border-white/20"
+            id="modal-add-basket"
+            class="font-bold py-2 px-4 rounded-full shadow-md bg-[#30D5C8] text-[#1A1A1D] border-2 border-black"
           >
-            Share
+            Add to Basket
           </button>
-          <span
-            id="modal-copy-msg"
-            class="ml-2 text-sm opacity-0 transition-opacity"
-            >Link copied</span
-          >
+          <div id="modal-copy-container" class="flex items-center gap-2">
+            <button
+              id="modal-copy-link"
+              class="font-bold py-2 px-4 rounded-full shadow-md bg-[#2A2A2E] border border-white/20"
+            >
+              Share
+            </button>
+            <span
+              id="modal-copy-msg"
+              class="ml-2 text-sm opacity-0 transition-opacity"
+              >Link copied</span
+            >
+          </div>
         </div>
       </div>
     </div>
