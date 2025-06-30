@@ -37,6 +37,11 @@ function renderPreview() {
     },
   ];
   grid.innerHTML = "";
+  const advert = document.createElement("div");
+  advert.className =
+    "w-full h-32 bg-[#2A2A2E] border border-dashed border-white/40 rounded-xl flex items-center justify-center text-sm row-start-1 col-start-2";
+  advert.textContent = "Advert Placeholder";
+  grid.appendChild(advert);
   items.forEach((item) => {
     const div = document.createElement("div");
     div.className =
