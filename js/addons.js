@@ -20,13 +20,13 @@ function renderPreview() {
   grid.innerHTML = "";
   const advert = document.createElement("div");
   advert.className =
-    "w-full h-48 bg-[#2A2A2E] border border-dashed border-white/40 rounded-xl flex items-center justify-center text-sm row-start-1 col-start-2";
+    "w-full h-40 bg-[#2A2A2E] border border-dashed border-white/40 rounded-xl flex items-center justify-center text-sm row-start-1 col-start-2";
   advert.textContent = "Advert Placeholder";
   grid.appendChild(advert);
   items.forEach((item) => {
     const div = document.createElement("div");
     div.className =
-      "model-card relative h-48 w-full bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape flex items-center justify-center";
+      "model-card relative h-40 w-full bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape flex items-center justify-center";
     div.innerHTML = `<img src="${item.img}" alt="${item.name}" class="w-full h-full object-contain pointer-events-none" />\n      <span class="sr-only">${item.name}</span>`;
     grid.appendChild(div);
   });
