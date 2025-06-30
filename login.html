@@ -194,7 +194,8 @@
             target = "CommunityCreations.html";
           } else if (
             ref.origin === location.origin &&
-            !ref.pathname.endsWith("login.html")
+            !ref.pathname.endsWith("login.html") &&
+            !ref.pathname.endsWith("signup.html")
           ) {
             target = ref.href;
           }
