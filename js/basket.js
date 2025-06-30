@@ -352,7 +352,7 @@ export function setupBasketUI() {
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-10 h-10" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18" /><line x1="6" y1="18" x2="18" y2="6" /></svg>
         <span class="sr-only">Close</span>
       </button>
-      <model-viewer src="" alt="3D model preview" environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr" camera-controls auto-rotate class="w-full h-96 bg-[#2A2A2E] rounded-xl"></model-viewer>
+      <model-viewer src="" alt="3D model preview" environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr" camera-controls auto-rotate crossOrigin="anonymous" class="w-full h-96 bg-[#2A2A2E] rounded-xl"></model-viewer>
       <div id="basket-checkout-container" class="absolute bottom-4 right-4 flex flex-col items-center">
         <div id="basket-tier-toggle" class="flex gap-1 mb-2 text-xs">
           <button type="button" data-tier="bronze" class="basket-tier-option px-2 py-1 rounded-full border border-white/20 opacity-50 text-black" style="background-color: #cd7f32">1 colour</button>
