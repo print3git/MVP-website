@@ -155,20 +155,22 @@
           <span class="font-semibold text-lg">Luckybox</span>
           <fieldset id="luckybox-tiers" class="flex justify-center gap-4 my-2">
             <label
-              class="cursor-pointer text-center flex flex-col items-center"
+              class="cursor-not-allowed text-center flex flex-col items-center opacity-50"
             >
               <input
                 type="radio"
                 name="luckybox-tier"
                 value="premium"
                 class="sr-only peer"
+                disabled
               />
               <span
-                class="w-24 h-24 flex flex-col items-center justify-center rounded-full border border-white/20 peer-checked:border-2 peer-checked:border-[#30D5C8]"
+                class="w-24 h-24 flex flex-col items-center justify-center rounded-full border border-white/20"
               >
                 <span class="font-semibold">£59.99</span>
                 <span class="text-xs">premium</span>
               </span>
+              <span class="block text-xs mt-1">coming soon</span>
             </label>
             <label
               class="cursor-pointer text-center flex flex-col items-center"
