@@ -32,10 +32,6 @@ function renderPreview() {
       name: "Scenic Boulder",
       img: "https://images.unsplash.com/photo-1470770903676-69b98201ea1c?auto=format&fit=crop&w=200&q=60",
     },
-    {
-      name: "Ruins Wall",
-      img: "https://images.unsplash.com/photo-1608571423211-3f61272762ab?auto=format&fit=crop&w=200&q=60",
-    },
   ];
   grid.innerHTML = "";
   const advert = document.createElement("div");
