@@ -108,3 +108,13 @@ test("POST /api/credits/redeem deducts credit", async () => {
   expect(db.adjustSaleCredit).toHaveBeenCalledWith("u1", -500);
   expect(res.body.credit).toBe(100);
 });
+
+test("GET /api/credits returns credit balance", async () => {
+  db.getSaleCredit.mockResolvedValue(800);
+  const token = jwt.sign({ id: "u1" }, "secret");
+  const res = await request(app)
+    .get("/api/credits")
+    .set("authorization", `Bearer ${token}`);
+  expect(res.status).toBe(200);
+  expect(res.body.credit).toBe(800);
+});
