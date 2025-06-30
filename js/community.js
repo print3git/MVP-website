@@ -402,16 +402,17 @@ async function loadMore(type, filters = getFilters()) {
   const cache = window.communityState[type];
   if (!cache[key]) cache[key] = { offset: 0, models: [] };
   const state = cache[key];
+  const limit = type === "recent" && state.offset === 0 ? 8 : 9;
   let models = await fetchCreations(
     type,
     state.offset,
-    9,
+    limit,
     category,
     search,
     order,
   );
   if (models.length === 0) {
-    models = getFallbackModels(9, state.offset);
+    models = getFallbackModels(limit, state.offset);
   }
   state.offset += models.length;
   state.models = state.models.concat(models);
@@ -422,7 +423,7 @@ async function loadMore(type, filters = getFilters()) {
   else if (type === "recent") applyRecentViewer();
   const btn = document.getElementById(`${type}-load`);
   if (btn) {
-    if (models.length < 9) {
+    if (models.length < limit) {
       btn.classList.add("hidden");
     } else {
       btn.classList.remove("hidden");
@@ -450,7 +451,8 @@ function renderGrid(type, filters = getFilters()) {
     else if (type === "recent") applyRecentViewer();
     const btn = document.getElementById(`${type}-load`);
     if (btn) {
-      if (state.models.length < 9) btn.classList.add("hidden");
+      const threshold = type === "recent" ? 8 : 9;
+      if (state.models.length < threshold) btn.classList.add("hidden");
       else btn.classList.remove("hidden");
     }
   } else {
