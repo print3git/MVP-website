@@ -415,6 +415,10 @@ async function loadMore(type, filters = getFilters()) {
   if (models.length === 0) {
     models = getFallbackModels(limit, state.offset);
   }
+  if (type === "popular" && state.offset === 0 && models.length) {
+    models = models.slice(1);
+    state.offset += 1;
+  }
   state.offset += models.length;
   state.models = state.models.concat(models);
   const grid = document.getElementById(`${type}-grid`);
@@ -447,10 +451,12 @@ function renderGrid(type, filters = getFilters()) {
   const { key } = filters;
   const grid = document.getElementById(`${type}-grid`);
   grid.innerHTML = "";
-  if (type === "recent") {
+  if (type === "recent" || type === "popular") {
     const advert = document.createElement("div");
     advert.className =
-      "w-full h-32 bg-[#2A2A2E] border border-dashed border-white/40 rounded-xl flex items-center justify-center text-sm row-start-1 sm:col-start-2 md:col-start-3";
+      type === "recent"
+        ? "w-full h-32 bg-[#2A2A2E] border border-dashed border-white/40 rounded-xl flex items-center justify-center text-sm row-start-1 sm:col-start-2 md:col-start-3"
+        : "w-full h-32 bg-[#2A2A2E] border border-dashed border-white/40 rounded-xl flex items-center justify-center text-sm";
     advert.textContent = "Advert Placeholder";
     grid.appendChild(advert);
   }
@@ -560,8 +566,8 @@ function init() {
     document.getElementById("popular-grid").innerHTML = "";
     window.communityState = { recent: {}, popular: {} };
     saveState();
-    loadMore("popular");
-    loadMore("recent");
+    renderGrid("popular");
+    renderGrid("recent");
   });
   const searchInput = document.getElementById("search");
   if (searchInput) {
@@ -570,8 +576,8 @@ function init() {
       document.getElementById("popular-grid").innerHTML = "";
       window.communityState = { recent: {}, popular: {} };
       saveState();
-      loadMore("popular");
-      loadMore("recent");
+      renderGrid("popular");
+      renderGrid("recent");
     }
 
     searchInput.addEventListener(
