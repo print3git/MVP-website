@@ -84,8 +84,9 @@ async function loadLeaderboard() {
     if (!body) return;
     body.innerHTML = "";
     data.forEach((e) => {
+      const spend = Math.round(e.points / 2);
       const tr = document.createElement("tr");
-      tr.innerHTML = `<td class="px-2 py-1">${e.username}</td><td class="px-2 py-1">${e.points}</td>`;
+      tr.innerHTML = `<td class="px-2 py-1">${e.username}</td><td class="px-2 py-1 whitespace-nowrap"><span class="inline-block w-16 text-right">${e.points}</span> <span class="text-[#30D5C8]">(£${spend})</span></td>`;
       body.appendChild(tr);
     });
   } catch (err) {
