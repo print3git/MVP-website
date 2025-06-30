@@ -428,15 +428,12 @@ async function loadMore(type, filters = getFilters()) {
       btn.classList.add("hidden");
       if (type === "recent") {
         const advertOffset = 1;
-        const total = grid.children.length;
-        const remainder = (total - advertOffset) % 3;
-        for (let i = 0; i < remainder; i++) {
+        while ((grid.children.length - advertOffset) % 3 !== 0) {
           const last = grid.lastElementChild;
-          if (last) {
-            last.remove();
-            state.models.pop();
-            state.offset -= 1;
-          }
+          if (!last) break;
+          last.remove();
+          state.models.pop();
+          state.offset -= 1;
         }
       }
     } else {

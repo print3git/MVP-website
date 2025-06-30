@@ -2,6 +2,7 @@ node_modules
 uploads
 payment.html
 competitions.html
+addons.html
 
 # Build artifacts
 dist
