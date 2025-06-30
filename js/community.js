@@ -435,6 +435,13 @@ function renderGrid(type, filters = getFilters()) {
   const { key } = filters;
   const grid = document.getElementById(`${type}-grid`);
   grid.innerHTML = "";
+  if (type === "recent") {
+    const advert = document.createElement("div");
+    advert.className =
+      "w-full h-32 bg-[#2A2A2E] border border-dashed border-white/40 rounded-xl flex items-center justify-center text-sm row-start-1 sm:col-start-2 md:col-start-3";
+    advert.textContent = "Advert Placeholder";
+    grid.appendChild(advert);
+  }
   let state = window.communityState[type][key];
   if (state && state.models.length) {
     state.models.forEach((m) => grid.appendChild(createCard(m)));
