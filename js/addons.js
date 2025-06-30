@@ -82,7 +82,7 @@ function initLuckybox() {
   if (!tierRadios.length || !desc) return;
   const descriptions = {
     basic:
-      "Get a (usually £39.99) single-colour print and 5 print points for just £19.99.",
+      "Get a (usually £29.99) single-colour print and 5 print points for just £19.99.",
     multicolour:
       "Get a (usually £39.99) multicolour print and 5 print points for £29.99.",
     premium:
