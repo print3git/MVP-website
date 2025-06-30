@@ -342,14 +342,36 @@
         </div>
         <div
           id="modal-action-panel"
-          class="absolute bottom-4 left-4 flex flex-col items-start space-y-2"
+          class="absolute bottom-4 left-4 right-4 flex justify-between items-end"
         >
-          <div id="tier-toggle" class="flex gap-1 text-xs">
+          <div class="flex items-center space-x-2">
             <button
-              type="button"
-              data-tier="bronze"
-              class="tier-option px-2 py-1 rounded-full border border-white/20 opacity-50 text-black"
-              style="background-color: #cd7f32"
+              id="modal-add-basket"
+              class="font-bold py-2 px-4 rounded-full shadow-md bg-[#30D5C8] text-[#1A1A1D] border-2 border-black"
+            >
+              Add to Basket
+            </button>
+            <div id="modal-copy-container" class="flex items-center gap-2">
+              <button
+                id="modal-copy-link"
+                class="font-bold py-2 px-4 rounded-full shadow-md bg-[#2A2A2E] border border-white/20"
+              >
+                Share
+              </button>
+              <span
+                id="modal-copy-msg"
+                class="ml-2 text-sm opacity-0 transition-opacity"
+                >Link copied</span
+              >
+            </div>
+          </div>
+          <div class="flex flex-col items-end space-y-2">
+            <div id="tier-toggle" class="flex gap-1 text-xs">
+              <button
+                type="button"
+                data-tier="bronze"
+                class="tier-option px-2 py-1 rounded-full border border-white/20 opacity-50 text-black"
+                style="background-color: #cd7f32"
             >
               1 colour
             </button>
@@ -367,37 +389,19 @@
               class="tier-option px-2 py-1 rounded-full border border-white/20 opacity-50 text-black"
               style="background-color: #ffd700"
             >
-              premium
-            </button>
-          </div>
-          <a
-            id="modal-checkout"
-            href="payment.html"
-            class="font-bold py-3 px-5 rounded-full shadow-md transition border-2 border-black"
-            style="background-color: #30d5c8; color: #1a1a1d"
-            onmouseover="this.style.opacity='0.85'"
-            onmouseout="this.style.opacity='1'"
-          >
-            Print for £39.99 →
-          </a>
-          <button
-            id="modal-add-basket"
-            class="font-bold py-2 px-4 rounded-full shadow-md bg-[#30D5C8] text-[#1A1A1D] border-2 border-black"
-          >
-            Add to Basket
-          </button>
-          <div id="modal-copy-container" class="flex items-center gap-2">
-            <button
-              id="modal-copy-link"
-              class="font-bold py-2 px-4 rounded-full shadow-md bg-[#2A2A2E] border border-white/20"
+                premium
+              </button>
+            </div>
+            <a
+              id="modal-checkout"
+              href="payment.html"
+              class="font-bold py-3 px-5 rounded-full shadow-md transition border-2 border-black"
+              style="background-color: #30d5c8; color: #1a1a1d"
+              onmouseover="this.style.opacity='0.85'"
+              onmouseout="this.style.opacity='1'"
             >
-              Share
-            </button>
-            <span
-              id="modal-copy-msg"
-              class="ml-2 text-sm opacity-0 transition-opacity"
-              >Link copied</span
-            >
+              Print for £39.99 →
+            </a>
           </div>
         </div>
       </div>
