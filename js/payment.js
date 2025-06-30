@@ -540,6 +540,7 @@ async function initPaymentPage() {
   initPlaceAutocomplete();
   let discountCodes = [];
   let discountValue = 0;
+  let percentDiscount = 0;
   let originalColor = null;
   let originalTextures = null;
 
@@ -666,7 +667,16 @@ async function initPaymentPage() {
         totalQty += qty;
       }
       const bulk = computeBulkDiscount(items);
-      const total = subtotal - bulk;
+      let discount = bulk;
+      for (const it of items) {
+        const q = Math.max(1, parseInt(it.qty || 1, 10));
+        discount += computeDiscountFor(it.material, q);
+      }
+      let codeDisc = discountValue;
+      if (percentDiscount > 0) {
+        codeDisc += Math.round((subtotal - discount - discountValue) * (percentDiscount / 100));
+      }
+      const total = subtotal - discount - codeDisc;
       payBtn.textContent = `Pay £${(total / 100).toFixed(2)} (${totalQty} prints)`;
     }
     updatePriceBreakdown();
@@ -698,6 +708,11 @@ async function initPaymentPage() {
       else singleCount += qty;
     }
     discount += computeBulkDiscount(items);
+    let codeDisc = discountValue;
+    if (percentDiscount > 0) {
+      codeDisc += Math.round((subtotal - discount - discountValue) * (percentDiscount / 100));
+    }
+    discount += codeDisc;
     const saved = discount / 100;
     const parts = [];
     if (premiumCount > 0) parts.push(`${premiumCount} premium`);
@@ -1350,23 +1365,33 @@ async function initPaymentPage() {
     discountMsg.textContent = "Checking…";
     discountCodes = [];
     discountValue = 0;
+    percentDiscount = 0;
     try {
       for (const c of codes) {
+        const up = c.trim().toUpperCase();
         const resp = await fetch(`${API_BASE}/discount-code`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ code: c }),
+          body: JSON.stringify({ code: up }),
         });
         if (!resp.ok) throw new Error("invalid");
         const data = await resp.json();
-        discountCodes.push(c);
+        discountCodes.push(up);
         discountValue += data.discount || 0;
+        if (up === "SAVE5") percentDiscount = 5;
       }
-      discountMsg.textContent = `Code applied: -$${(discountValue / 100).toFixed(2)}`;
+      if (percentDiscount > 0) {
+        discountMsg.textContent = `Code applied: ${percentDiscount}% off`;
+      } else {
+        discountMsg.textContent = `Code applied: -$${(discountValue / 100).toFixed(2)}`;
+      }
+      updatePayButton();
     } catch {
       discountCodes = [];
       discountValue = 0;
+      percentDiscount = 0;
       discountMsg.textContent = "Invalid code";
+      updatePayButton();
     }
   });
 
