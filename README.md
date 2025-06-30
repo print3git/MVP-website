@@ -23,13 +23,15 @@ This repository contains the early MVP code for print2's website and backend.
 - Optional: `HUNYUAN_SERVER_URL` if your Hunyuan API runs on a custom URL.
 - Optional: `DALLE_SERVER_URL` if the DALL-E server runs on a custom URL.
 
-2. Install dependencies for the servers:
+2. Install all dependencies and the Playwright browsers:
 
    ```bash
-   cd backend && npm install
-   cd hunyuan_server && npm install
-   cd ../dalle_server && npm install
+   npm run setup
    ```
+
+   This script runs `npm ci` in the root, `backend/`, and
+   `backend/hunyuan_server/` if present, then downloads the browsers
+   required for the end-to-end tests.
 
 3. Initialize the database:
 
