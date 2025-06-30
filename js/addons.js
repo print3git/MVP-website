@@ -2,6 +2,7 @@ const API_BASE = (window.API_ORIGIN || "") + "/api";
 
 function renderPreview() {
   const grid = document.getElementById("addons-grid");
+  if (!grid) return;
   const items = [
     {
       name: "Snow Base",
