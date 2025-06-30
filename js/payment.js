@@ -776,22 +776,9 @@ async function initPaymentPage() {
 
   function updatePopularMessage() {
     if (!bulkMsg) return;
-    let total = 0;
-    const items = checkoutItems.length
-      ? checkoutItems
-      : [{ qty: Math.max(1, parseInt(qtySelect?.value || "1", 10)) }];
-    for (const it of items) {
-      total += Math.max(1, parseInt(it.qty || 1, 10));
-    }
-    const save =
-      total >= 3
-        ? `save £${((TWO_PRINT_DISCOUNT + THIRD_PRINT_DISCOUNT) / 100).toFixed(
-            2,
-          )}`
-        : `save £${(TWO_PRINT_DISCOUNT / 100).toFixed(2)}`;
     bulkMsg.innerHTML =
       '<span class="text-gray-400">Popular: keep one, gift one – </span>' +
-      `<span class="text-white">${save}</span>`;
+      '<span class="text-white">save £7.00</span>';
     bulkMsg.classList.remove("hidden");
   }
 
