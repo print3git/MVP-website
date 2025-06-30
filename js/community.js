@@ -322,7 +322,8 @@ function applyPopularViewer() {
   if (!grid) return;
 
   const existing = grid.querySelector(".viewer-card");
-  if (existing) existing.remove();
+  // Avoid removing cards when viewer already added
+  if (existing) return;
 
   const cards = Array.from(grid.children);
   if (cards.length < 2) return;
