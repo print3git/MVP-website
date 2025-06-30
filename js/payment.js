@@ -775,7 +775,7 @@ async function initPaymentPage() {
           )}`
         : `save £${(TWO_PRINT_DISCOUNT / 100).toFixed(2)}`;
     bulkMsg.innerHTML =
-      '<span class="text-gray-400">Popular: keep one, gift two – </span>' +
+      '<span class="text-gray-400">Popular: keep one, gift one – </span>' +
       `<span class="text-white">${save}</span>`;
     bulkMsg.classList.remove("hidden");
   }
