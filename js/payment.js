@@ -1083,7 +1083,10 @@ async function initPaymentPage() {
   try {
     const arr = JSON.parse(localStorage.getItem("print3CheckoutItems"));
     if (Array.isArray(arr) && arr.length) {
-      if (arr.length === 1 && arr[0].qty == null) {
+      if (
+        arr.length === 1 &&
+        (arr[0].qty == null || parseInt(arr[0].qty, 10) === 1)
+      ) {
         arr[0].qty = 2;
       }
       checkoutItems = arr.map((it) => ({
@@ -1118,13 +1121,14 @@ async function initPaymentPage() {
           color: prev.color || null,
           etchName:
             prev.etchName || localStorage.getItem("print3EtchName") || "",
-          qty: Math.max(
-            1,
-            parseInt(
-              prev.qty ?? it.quantity ?? (basket.length === 1 ? "2" : "1"),
-              10,
-            ),
-          ),
+          qty: (() => {
+            let q = prev.qty ?? it.quantity;
+            if (basket.length === 1 && (q == null || parseInt(q, 10) === 1)) {
+              q = "2";
+            }
+            if (q == null) q = "1";
+            return Math.max(1, parseInt(q, 10));
+          })(),
         };
       });
       localStorage.setItem(
