@@ -196,14 +196,8 @@
             ref.origin === location.origin &&
             !ref.pathname.endsWith("login.html")
           ) {
-            if (
-              ref.pathname.endsWith("/") ||
-              ref.pathname.endsWith("/index.html")
-            ) {
-              target = "index.html";
-            } else {
-              target = ref.pathname.replace(/^\//, "") + ref.search + ref.hash;
-            }
+
+            target = ref.href;
           }
         } catch {
           if (from === "1") target = "CommunityCreations.html";
