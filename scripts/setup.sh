@@ -6,3 +6,4 @@ npm ci --prefix backend
 if [ -f backend/hunyuan_server/package.json ]; then
   npm ci --prefix backend/hunyuan_server
 fi
+CI=1 npx playwright install --with-deps
