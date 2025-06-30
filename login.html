@@ -196,14 +196,9 @@
             ref.origin === location.origin &&
             !ref.pathname.endsWith("login.html")
           ) {
-            let path = ref.pathname;
-            const root = location.pathname.split("/")[1];
-            if (root && path.startsWith(`/${root}/`)) {
-              path = path.slice(root.length + 2);
-            } else {
-              path = path.replace(/^\//, "");
-            }
-            target = path + ref.search + ref.hash;
+
+            target = ref.href;
+
           }
         } catch {
           if (from === "1") target = "CommunityCreations.html";
