@@ -52,9 +52,10 @@ RUN if [ -f backend/hunyuan_server/package-lock.json ]; then \
 
 # -------- copy source and run CI
 COPY . .
-RUN apt-get update --fix-missing \
-    && npx playwright install --with-deps \
-    && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && \
+    npx playwright install --with-deps && \
+    rm -rf /var/lib/apt/lists/*
 RUN if [ "$SKIP_TESTS" = "1" ]; then \
       echo "\u2139\uFE0F  CI tests skipped (SKIP_TESTS=1)"; \
     else \
