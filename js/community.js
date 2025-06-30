@@ -425,6 +425,19 @@ async function loadMore(type, filters = getFilters()) {
   if (btn) {
     if (models.length < limit) {
       btn.classList.add("hidden");
+      if (type === "recent") {
+        const advertOffset = 1;
+        const total = grid.children.length;
+        const remainder = (total - advertOffset) % 3;
+        for (let i = 0; i < remainder; i++) {
+          const last = grid.lastElementChild;
+          if (last) {
+            last.remove();
+            state.models.pop();
+            state.offset -= 1;
+          }
+        }
+      }
     } else {
       btn.classList.remove("hidden");
     }
