@@ -354,19 +354,15 @@ function applyRecentViewer() {
   const existingAd = grid.querySelector(".recent-ad");
   if (existingAd) existingAd.remove();
 
-  const cards = Array.from(grid.children);
-  if (cards.length < 2) return;
+  const cards = Array.from(grid.children).filter(
+    (c) =>
+      !c.classList.contains("viewer-card") &&
+      !c.classList.contains("recent-ad"),
+  );
+  if (cards.length < 1) return;
 
-  const nonAds = cards.filter((c) => !c.classList.contains("recent-ad"));
-  if (nonAds.length < 2) return;
-  const modelUrl = nonAds[1].dataset.model;
+  const modelUrl = cards[0].dataset.model;
   if (!modelUrl) return;
-
-  const toRemove = [];
-  for (let i = 0; i < Math.min(nonAds.length, 9); i += 3) {
-    if (nonAds[i]) toRemove.push(nonAds[i]);
-  }
-  toRemove.forEach((el) => el.remove());
 
   const viewer = createViewerCard(modelUrl);
 
@@ -374,16 +370,9 @@ function applyRecentViewer() {
 
   viewer.classList.add("row-span-3");
 
-  const insertBefore = grid.children[0];
+  const insertBefore = cards[0];
   if (insertBefore) grid.insertBefore(viewer, insertBefore);
   else grid.appendChild(viewer);
-
-  const advert = document.createElement("div");
-  advert.className =
-    "recent-ad w-full h-32 bg-[#2A2A2E] border border-dashed border-white/40 rounded-xl flex items-center justify-center text-sm";
-  advert.textContent = "Advert Placeholder";
-  if (grid.children[2]) grid.insertBefore(advert, grid.children[2]);
-  else grid.appendChild(advert);
 }
 
 function addRecentModel(model) {
