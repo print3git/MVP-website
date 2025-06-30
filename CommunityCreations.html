@@ -328,7 +328,9 @@
       id="model-modal"
       class="fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50"
     >
-      <div class="relative w-11/12 max-w-3xl">
+      <div
+        class="relative w-11/12 max-w-3xl bg-[#2A2A2E] border border-white/10 outline outline-white/20 rounded-xl overflow-hidden"
+      >
         <button
           id="close-modal"
           class="absolute -top-8 -right-8 w-[9rem] h-[9rem] rounded-full bg-white text-black flex items-center justify-center z-50"
@@ -354,7 +356,7 @@
           environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
           camera-controls
           auto-rotate
-          class="w-full h-96 bg-[#2A2A2E] rounded-t-xl"
+          class="w-full h-96 bg-[#2A2A2E]"
         ></model-viewer>
         <div
           id="model-stats"
@@ -425,7 +427,7 @@
             >Link copied</span
           >
         </div>
-        <div class="bg-[#2A2A2E] p-4 rounded-b-xl border border-white/10">
+        <div class="p-4 border-t border-white/10">
           <ul
             id="comments-list"
             class="space-y-1 max-h-48 overflow-y-auto text-sm"
