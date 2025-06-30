@@ -75,9 +75,11 @@ async function checkAccess() {
 document.addEventListener("DOMContentLoaded", checkAccess);
 
 function initLuckybox() {
-  const tier = document.getElementById("luckybox-tier");
+  const tierRadios = document.querySelectorAll(
+    '#luckybox-tiers input[name="luckybox-tier"]',
+  );
   const desc = document.getElementById("luckybox-desc");
-  if (!tier || !desc) return;
+  if (!tierRadios.length || !desc) return;
   const descriptions = {
     basic:
       "Get a (usually £39.99) single-colour print and 5 print points for just £19.99.",
@@ -86,10 +88,16 @@ function initLuckybox() {
     premium:
       "Get a (usually £79.99) premium print and 10 print points for £59.99.",
   };
-  function update() {
-    desc.textContent = descriptions[tier.value] || descriptions.basic;
+  function selectedTier() {
+    const checked = document.querySelector(
+      '#luckybox-tiers input[name="luckybox-tier"]:checked',
+    );
+    return checked ? checked.value : "basic";
   }
-  tier.addEventListener("change", update);
+  function update() {
+    desc.textContent = descriptions[selectedTier()] || descriptions.basic;
+  }
+  tierRadios.forEach((r) => r.addEventListener("change", update));
   update();
 }
 
