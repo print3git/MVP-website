@@ -6,16 +6,6 @@
 - Integrate pixel data with ad platform to build custom audiences.
 - Include a clear value proposition and call-to-action in each ad.
 
-## Purchase & Checkout
-
-- Offer multiple payment methods including Apple Pay and Google Pay.
-- Reconfigure seasonal order bundles once promotions resume.
-- Finalise multi-item cart with add-to-basket buttons and reservation countdown.
-
-## Decreasing CAC
-
-## Competitions & print2 pro
-
 ## Hub Deployment Kit
 
 - Preconfigure printers with SD images and calibration files.
@@ -28,12 +18,6 @@
 - Detect failed prints via computer vision and trigger reprints.
 - Log maintenance events and schedule nozzle swaps.
 - Alert when a printer's failure rate rises above threshold.
-
-## Packaging Automation
-
-- Feed finished prints into automated bagging machines.
-- Connect bagged items to a boxing conveyor.
-- Print and apply shipping labels automatically.
 
 ## Customer Service Automation
 
@@ -195,7 +179,6 @@
 
 - **Exclusive content & features**
 
-  - Early access to new designs – give subscribers a preview window or ability to order upcoming prints first.
   - "Print of the Week" specials – curated weekly designs only available to members.
   - Limited-edition runs – exclusive prints that are never offered to non-members.
   - Digital extras – provide STL files, wallpapers, or design behind-the-scenes content.
