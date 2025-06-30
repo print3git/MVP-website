@@ -10,7 +10,7 @@ These guidelines apply to all automated agents (e.g. the Codex agent) working on
 4. **Run tests** – execute `npm test` in `backend/`. If tests cannot run because of environment limitations, mention this in the PR.
 5. **Run full CI locally** – execute `npm run ci` at the repo root before opening a PR.
 6. **Install Playwright browsers** – the setup script installs these automatically. If browsers are missing, run `CI=1 npx playwright install --with-deps` manually.
-7. **Run smoke tests** – execute `npx playwright test e2e/smoke.test.js` at the repository root. If the tests fail with messages like `Executable doesn't exist` or `Playwright Test did not expect test()`, run `npm run setup` (which installs the browsers) and re-run the smoke tests. If problems persist, mention the exact error in the PR.
+7. **Run smoke tests** – execute `npm run smoke` at the repository root. This script ensures dependencies and Playwright browsers are installed before running `npx playwright test e2e/smoke.test.js`. If problems persist, mention the exact error in the PR.
 8. **Limit scope** – only modify files related to the task. Do not change anything under `img/`, `models/`, or `uploads/` unless explicitly requested. Avoid editing `docs/` unless the task specifically involves documentation.
 9. **Review your diff** – run `git status --short` and `git diff --stat` to ensure only intended files were modified. Revert any unrelated changes.
 10. **Include logs** – paste the output of `npm test` (or `npm run test-ci`) and `npm run format` in the PR description so maintainers can verify the steps.
