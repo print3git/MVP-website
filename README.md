@@ -197,6 +197,11 @@ submits the order immediately and redirects to the Stripe checkout page.
 
 Users can drag and drop image files onto the upload area on `index.html`.
 
+### Payment Page Model Controls
+
+Hide the left and right arrow buttons on `payment.html`'s `.glb` viewer when the
+basket contains only one item.
+
 ## Sharing API
 
 Models can be shared publicly via unique slugs.

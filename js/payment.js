@@ -847,6 +847,17 @@ async function initPaymentPage() {
   const nextBtn = document.getElementById("next-model");
   const removeBtn = document.getElementById("remove-model");
 
+  function updateNavButtons() {
+    if (!prevBtn || !nextBtn) return;
+    if (checkoutItems.length > 1) {
+      prevBtn.classList.remove("hidden");
+      nextBtn.classList.remove("hidden");
+    } else {
+      prevBtn.classList.add("hidden");
+      nextBtn.classList.add("hidden");
+    }
+  }
+
   function showItem(idx) {
     if (!checkoutItems.length) return;
     currentIndex = (idx + checkoutItems.length) % checkoutItems.length;
@@ -908,6 +919,7 @@ async function initPaymentPage() {
         removeBtn.classList.add("hidden");
       }
     }
+    updateNavButtons();
     applyStoredColorIfNeeded();
     updatePayButton();
     updateFlashSaleBanner();
@@ -1150,6 +1162,7 @@ async function initPaymentPage() {
       );
     }
     viewer.addEventListener("load", applyStoredColorIfNeeded, { once: true });
+    updateNavButtons();
   } else {
     const first = checkoutItems[0];
     viewer.src = first.modelUrl || FALLBACK_GLB;
@@ -1163,6 +1176,7 @@ async function initPaymentPage() {
       if (checkoutItems.length > 1) removeBtn.classList.remove("hidden");
       else removeBtn.classList.add("hidden");
     }
+    updateNavButtons();
   }
 
   if (!checkoutItems.length && qtySelect) {
