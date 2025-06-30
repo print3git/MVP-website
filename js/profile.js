@@ -152,7 +152,8 @@ async function loadProfileHeader() {
       if (res2.ok) {
         const d = await res2.json();
         const el = document.getElementById("sale-credit");
-        if (el) el.textContent = `Store credit: £${(d.credit / 100).toFixed(2)}`;
+        if (el)
+          el.textContent = `Store credit: £${(d.credit / 100).toFixed(2)}`;
       }
     } catch {}
   }
@@ -179,7 +180,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const logoutBtn = document.getElementById("logout-btn");
   logoutBtn?.addEventListener("click", () => {
     localStorage.removeItem("token");
-    window.location.href = "/MVP-website/index.html";
+    window.location.href = "index.html";
   });
   loadProfileHeader();
   load();
