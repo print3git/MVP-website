@@ -52,6 +52,7 @@ RUN if [ -f backend/hunyuan_server/package-lock.json ]; then \
 
 # -------- copy source and run CI
 COPY . .
+
 RUN apt-get update && \
     npx playwright install --with-deps && \
     rm -rf /var/lib/apt/lists/*
