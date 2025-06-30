@@ -1,4 +1,3 @@
-
 const API_BASE = (window.API_ORIGIN || "") + "/api";
 window.addEventListener("DOMContentLoaded", async () => {
   const badge = document.getElementById("earn-rewards-badge");
@@ -8,12 +7,11 @@ window.addEventListener("DOMContentLoaded", async () => {
   if (!token) return;
   try {
     const res = await fetch(`${API_BASE}/rewards`, {
-
       headers: { authorization: `Bearer ${token}` },
     });
     if (!res.ok) return;
     const { points } = await res.json();
-    badge.textContent = `[🎉 NEW] Earn Rewards Points: ${points} ⭐`;
+    badge.textContent = `Earn Rewards Points: ${points} ⭐`;
   } catch {
     /* ignore */
   }
