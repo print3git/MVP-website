@@ -206,7 +206,7 @@ function renderEntriesPage(grid, pager, page) {
     card.dataset.model = r.model_url;
     card.dataset.job = r.model_id;
     card.dataset.id = r.model_id;
-    card.innerHTML = `<img src="" alt="Model" class="w-full h-full object-contain pointer-events-none" />\n      <button class="save absolute bottom-1 left-1 text-xs bg-blue-600 px-1 rounded">Save</button>\n      <button class="share absolute top-1 right-1 w-7 h-7 flex items-center justify-center bg-[#2A2A2E] border border-white/20 rounded-full hover:bg-[#3A3A3E] transition-shape"><i class=\"fas fa-share text-xs\"></i></button>\n      <button class="purchase absolute bottom-1 right-10 font-bold text-lg py-1.5 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]" style="transform: scale(0.78); transform-origin: right bottom;">Buy from £29.99</button>`;
+    card.innerHTML = `<img src="" alt="Model" class="w-full h-full object-contain pointer-events-none" />\n      <button class="save absolute bottom-1 left-1 text-xs bg-blue-600 px-1 rounded">Save</button>\n      <button class="purchase absolute bottom-1 right-2 font-bold text-lg py-1.5 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]" style="transform: scale(0.78); transform-origin: right bottom;">Buy from £29.99</button>`;
     const buyBtn = card.querySelector(".purchase");
     buyBtn.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -222,11 +222,6 @@ function renderEntriesPage(grid, pager, page) {
         snapshot: img ? img.src : "",
         title: "Model",
       });
-    });
-    const shareBtn = card.querySelector(".share");
-    shareBtn?.addEventListener("click", async (e) => {
-      e.stopPropagation();
-      await copyReferral(r.model_id);
     });
     card.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -445,7 +440,6 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll("#winners-grid .model-card").forEach((card) => {
     const buyBtn = card.querySelector(".purchase");
     const saveBtn = card.querySelector(".save");
-    const shareBtn = card.querySelector(".share");
     if (buyBtn) {
       buyBtn.addEventListener("click", (e) => {
         e.stopPropagation();
@@ -462,12 +456,6 @@ document.addEventListener("DOMContentLoaded", () => {
           snapshot: img ? img.src : "",
           title: "Model",
         });
-      });
-    }
-    if (shareBtn) {
-      shareBtn.addEventListener("click", async (e) => {
-        e.stopPropagation();
-        await copyReferral(card.dataset.job);
       });
     }
     card.addEventListener("click", (e) => {
