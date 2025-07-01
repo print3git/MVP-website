@@ -78,7 +78,15 @@ function initLuckybox() {
     return checked ? checked.value : "basic";
   }
   function update() {
-    desc.textContent = descriptions[selectedTier()] || descriptions.basic;
+    const tier = selectedTier();
+    desc.textContent = descriptions[tier] || descriptions.basic;
+    const material =
+      tier === "multicolour"
+        ? "multi"
+        : tier === "premium"
+          ? "premium"
+          : "single";
+    localStorage.setItem("print3Material", material);
   }
   tierRadios.forEach((r) => r.addEventListener("change", update));
   update();
