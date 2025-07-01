@@ -879,6 +879,14 @@ async function initPaymentPage() {
     if (!checkoutItems.length) return;
     currentIndex = (idx + checkoutItems.length) % checkoutItems.length;
     const item = checkoutItems[currentIndex];
+    if (viewer) {
+      const tag = viewer.tagName.toLowerCase();
+      if (tag === "img") {
+        viewer.src = item.snapshot || item.modelUrl || viewer.src;
+      } else {
+        viewer.src = item.modelUrl || storedModel || FALLBACK_GLB;
+      }
+    }
     if (item.jobId) localStorage.setItem("print3JobId", item.jobId);
     else localStorage.removeItem("print3JobId");
     storedMaterial = item.material || "multi";
@@ -1081,6 +1089,9 @@ async function initPaymentPage() {
   loader.hidden = false;
   // Assign the model source only after the load/error listeners are in place
   const storedModel = localStorage.getItem("print3Model");
+  if (viewer && viewer.tagName.toLowerCase() !== "img") {
+    viewer.src = storedModel || FALLBACK_GLB;
+  }
   // Load saved basket items
   try {
     const arr = JSON.parse(localStorage.getItem("print3CheckoutItems"));
