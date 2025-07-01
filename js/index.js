@@ -1081,8 +1081,11 @@ async function init() {
 
   const popupEl = document.getElementById("purchase-popups");
   let popupMsgs = [
-    "Someone just bought a print",
-    "Someone just created a model",
+    "Someone recently bought a print",
+    "Someone recently created a model",
+    "Someone bought 2 prints earlier",
+    "Someone earned £5 credit when someone bought this model",
+    "Someone just received their model by post",
   ];
   async function loadPopupNames() {
     try {
@@ -1091,8 +1094,11 @@ async function init() {
         const names = await res.json();
         if (Array.isArray(names) && names.length >= 2) {
           popupMsgs = [
-            `${names[0]} just bought a print`,
-            `${names[1]} just created a model`,
+            `${names[0]} recently bought a print`,
+            `${names[1]} recently created a model`,
+            `${names[0]} bought 2 prints earlier`,
+            `${names[1]} earned £5 credit when someone bought this model`,
+            `${names[0]} just received their model by post`,
           ];
         }
       }
@@ -1108,28 +1114,24 @@ async function init() {
     popupEl.innerHTML = "";
     const span = document.createElement("span");
     span.textContent = msg;
-    if (msg.includes("created a model") || msg.includes("bought a print")) {
-      const viewer = document.createElement("model-viewer");
-      viewer.src = "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
-      viewer.setAttribute(
-        "environment-image",
-        "https://modelviewer.dev/shared-assets/environments/neutral.hdr",
-      );
-      viewer.setAttribute("camera-controls", "");
-      viewer.setAttribute("auto-rotate", "");
-      viewer.setAttribute("crossOrigin", "anonymous");
-      viewer.className = "w-[13rem] h-[13rem] mb-2";
-      popupEl.appendChild(viewer);
-      popupEl.appendChild(span);
-    } else if (popupIdx % popupMsgs.length === 0 && lastSnapshot) {
+    const viewer = document.createElement("model-viewer");
+    viewer.src = "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
+    viewer.setAttribute(
+      "environment-image",
+      "https://modelviewer.dev/shared-assets/environments/neutral.hdr",
+    );
+    viewer.setAttribute("camera-controls", "");
+    viewer.setAttribute("auto-rotate", "");
+    viewer.setAttribute("crossOrigin", "anonymous");
+    viewer.className = "w-[13rem] h-[13rem] mb-2";
+    popupEl.appendChild(viewer);
+    if (popupIdx % popupMsgs.length === 0 && lastSnapshot) {
       const img = document.createElement("img");
       img.src = lastSnapshot;
       img.className = "w-10 h-10 rounded";
       popupEl.appendChild(img);
-      popupEl.appendChild(span);
-    } else {
-      popupEl.appendChild(span);
     }
+    popupEl.appendChild(span);
     popupEl.classList.remove("hidden");
     popupEl.classList.remove("purchase-fade");
     void popupEl.offsetWidth;
