@@ -92,6 +92,17 @@ container. If you want to skip running full CI inside the container, build with
 DOCKER_BUILDKIT=1 docker build --build-arg SKIP_TESTS=1 .
 ```
 
+If the build fails while installing Playwright browsers, the apt package lists
+may be stale. Re-run the build with `--no-cache` or `--pull` to refresh the base
+image:
+
+```bash
+DOCKER_BUILDKIT=1 docker build --no-cache .
+```
+
+Make sure any `HTTP_PROXY` or `HTTPS_PROXY` variables are unset so apt can
+download packages without proxy interference.
+
 ## Serving the Frontend Locally
 
 `index.html` and `payment.html` use ES module scripts. When opened directly from
