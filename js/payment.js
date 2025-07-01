@@ -15,6 +15,13 @@ const PRICES = {
   premium: 7999,
 };
 
+// Override prices for Luckybox checkout
+if (window.location.pathname.endsWith("luckybox-payment.html")) {
+  PRICES.single = 1999;
+  PRICES.multi = 2999;
+  PRICES.premium = 5999;
+}
+
 const TWO_PRINT_DISCOUNT = 700;
 const THIRD_PRINT_DISCOUNT = 1500;
 let PRICING_VARIANT = localStorage.getItem("pricingVariant");
