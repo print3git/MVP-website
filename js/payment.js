@@ -540,8 +540,8 @@ async function initPaymentPage() {
       singleButton.style.borderColor = SINGLE_BORDER_COLOR;
     }
     if (colorMenu) {
-      if (storedColor) colorMenu.classList.add("hidden");
-      else colorMenu.classList.remove("hidden");
+      // Always start hidden; user can open it manually
+      colorMenu.classList.add("hidden");
     }
   } else if (colorMenu) {
     colorMenu.classList.add("hidden");
@@ -689,7 +689,9 @@ async function initPaymentPage() {
       }
       let codeDisc = discountValue;
       if (percentDiscount > 0) {
-        codeDisc += Math.round((subtotal - discount - discountValue) * (percentDiscount / 100));
+        codeDisc += Math.round(
+          (subtotal - discount - discountValue) * (percentDiscount / 100),
+        );
       }
       const total = subtotal - discount - codeDisc;
       payBtn.textContent = `Pay £${(total / 100).toFixed(2)} (${totalQty} prints)`;
@@ -725,7 +727,9 @@ async function initPaymentPage() {
     discount += computeBulkDiscount(items);
     let codeDisc = discountValue;
     if (percentDiscount > 0) {
-      codeDisc += Math.round((subtotal - discount - discountValue) * (percentDiscount / 100));
+      codeDisc += Math.round(
+        (subtotal - discount - discountValue) * (percentDiscount / 100),
+      );
     }
     discount += codeDisc;
     const saved = discount / 100;
@@ -900,6 +904,10 @@ async function initPaymentPage() {
     if (radio) {
       radio.checked = true;
       radio.dispatchEvent(new Event("change"));
+      if (storedMaterial === "single" && !storedColor && colorMenu) {
+        // Keep menu collapsed when selecting stored single option
+        colorMenu.classList.add("hidden");
+      }
     }
     if (etchInput) {
       etchInput.value = item.etchName || "";
