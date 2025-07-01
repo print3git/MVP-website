@@ -9,18 +9,6 @@ async function loadRewardOptions() {
     if (res.ok) {
       const { options } = await res.json();
       rewardOptions = options;
-      const sel = document.getElementById("reward-select");
-      if (sel) {
-        sel.innerHTML = "";
-        options.forEach((o) => {
-          const opt = document.createElement("option");
-          opt.value = o.points;
-          opt.textContent = `${o.points} pts - £${(
-            o.amount_cents / 100
-          ).toFixed(2)} off`;
-          sel.appendChild(opt);
-        });
-      }
     }
   } catch (err) {
     console.error("Failed to load reward options", err);
@@ -137,9 +125,9 @@ async function shareReferral(network) {
 }
 
 async function redeemReward() {
-  const sel = document.getElementById("reward-select");
-  if (!sel) return;
-  const points = parseInt(sel.value, 10);
+  const input = document.getElementById("reward-input");
+  if (!input) return;
+  const points = parseInt(input.value, 10);
   const token = localStorage.getItem("token");
   if (!token || !points) return;
   try {
