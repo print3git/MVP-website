@@ -71,6 +71,19 @@ function initLuckybox() {
     multicolour: "£29.99 print + 5 print points (usually £39.99)",
     premium: "£59.99 print + 10 print points (usually £79.99)",
   };
+  const stored = localStorage.getItem("print3Material");
+  if (stored) {
+    const val =
+      stored === "multi"
+        ? "multicolour"
+        : stored === "premium"
+          ? "premium"
+          : "basic";
+    const radio = document.querySelector(
+      `#luckybox-tiers input[value="${val}"]`,
+    );
+    if (radio) radio.checked = true;
+  }
   function selectedTier() {
     const checked = document.querySelector(
       '#luckybox-tiers input[name="luckybox-tier"]:checked',
