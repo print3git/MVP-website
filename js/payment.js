@@ -584,7 +584,8 @@ async function initPaymentPage() {
       });
     };
     if (viewer.model) apply();
-    else viewer.addEventListener("load", apply, { once: true });
+    else if (viewer && viewer.tagName.toLowerCase() !== "img")
+      viewer.addEventListener("load", apply, { once: true });
   }
 
   function captureOriginal() {
@@ -607,8 +608,10 @@ async function initPaymentPage() {
 
   // Capture the original colours every time a new model loads so that
   // switching between items restores the correct textures.
-  viewer.addEventListener("load", captureOriginal);
-  if (viewer.model) captureOriginal();
+  if (viewer && viewer.tagName.toLowerCase() !== "img") {
+    viewer.addEventListener("load", captureOriginal);
+    if (viewer.model) captureOriginal();
+  }
 
   function updateEtchVisibility(val) {
     if (!etchInput || !etchContainer) return;
@@ -876,7 +879,6 @@ async function initPaymentPage() {
     if (!checkoutItems.length) return;
     currentIndex = (idx + checkoutItems.length) % checkoutItems.length;
     const item = checkoutItems[currentIndex];
-    viewer.src = item.modelUrl || FALLBACK_GLB;
     if (item.jobId) localStorage.setItem("print3JobId", item.jobId);
     else localStorage.removeItem("print3JobId");
     storedMaterial = item.material || "multi";
@@ -1058,11 +1060,12 @@ async function initPaymentPage() {
   // <model-viewer> element upgrades while this script is still loading. If the
   // library fails to load, the "error" handler falls back to the astronaut
   // model and hides the loader overlay.
-  viewer.addEventListener("load", hideLoader);
-  viewer.addEventListener("error", () => {
-    viewer.src = FALLBACK_GLB;
-    hideLoader();
-  });
+  if (viewer && viewer.tagName.toLowerCase() !== "img") {
+    viewer.addEventListener("load", hideLoader);
+    viewer.addEventListener("error", () => {
+      hideLoader();
+    });
+  }
 
   // Wait for the <model-viewer> definition before assigning the model source.
   // Some browsers won't process the "src" attribute on a custom element until
@@ -1159,36 +1162,16 @@ async function initPaymentPage() {
 
   if (!checkoutItems.length) {
     if (removeBtn) removeBtn.classList.add("hidden");
-    viewer.src = storedModel || FALLBACK_GLB;
-    if (!storedModel) {
-      viewer.addEventListener(
-        "load",
-        () => {
-          const temp = document.createElement("model-viewer");
-          temp.style.display = "none";
-          temp.crossOrigin = "anonymous";
-          temp.src = FALLBACK_GLB_HIGH;
-          temp.addEventListener("load", () => {
-            if (viewer.src === FALLBACK_GLB_LOW) {
-              viewer.src = FALLBACK_GLB_HIGH;
-            }
-            temp.remove();
-          });
-          document.body.appendChild(temp);
-        },
-        { once: true },
-      );
+    if (viewer && viewer.tagName.toLowerCase() !== "img") {
+      viewer.addEventListener("load", applyStoredColorIfNeeded, { once: true });
     }
-    viewer.addEventListener("load", applyStoredColorIfNeeded, { once: true });
     updateNavButtons();
   } else {
     const first = checkoutItems[0];
-    viewer.src = first.modelUrl || FALLBACK_GLB;
     if (first.jobId) localStorage.setItem("print3JobId", first.jobId);
     else localStorage.removeItem("print3JobId");
     storedMaterial = first.material || storedMaterial;
     localStorage.setItem("print3Material", storedMaterial);
-    viewer.addEventListener("load", applyStoredColorIfNeeded, { once: true });
     showItem(0);
     if (removeBtn) {
       if (checkoutItems.length > 1) removeBtn.classList.remove("hidden");
