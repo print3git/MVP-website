@@ -212,9 +212,6 @@
           alt="Luckybox preview"
           class="object-contain h-full w-full"
         />
-        <p class="absolute top-2 left-2 text-red-300 text-xs">
-          Only <span id="slot-count" style="visibility: hidden"></span> print slots remaining
-        </p>
         <button
           id="remove-model"
           type="button"
@@ -566,10 +563,13 @@
             </div>
 
             <p id="cost-estimate" class="text-sm text-center"></p>
-            <p id="eta-estimate" class="text-sm text-center"></p>
+              <p id="eta-estimate" class="text-sm text-center"></p>
+              <p class="text-red-300 text-xs text-center">
+                Only <span id="slot-count" style="visibility: hidden"></span> print slots remaining
+              </p>
 
-            <button
-              id="submit-payment"
+              <button
+                id="submit-payment"
               type="button"
               class="w-full bg-[#30D5C8] text-[#1A1A1D] py-3 rounded-xl font-semibold hover:bg-[#28b7a8] transition"
             >
