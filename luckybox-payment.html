@@ -757,6 +757,13 @@
         }
       });
     </script>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('#bulk-discount-popup li').forEach((li) => {
+          if (li.textContent.includes('£15')) li.remove();
+        });
+      });
+    </script>
     <script type="module" src="js/basket.js" defer></script>
     <script>window.disableSaveButton = true;</script>
     <script type="module" src="js/saveList.js" defer></script>
