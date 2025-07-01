@@ -389,7 +389,7 @@ export function setupBasketUI() {
       btn.classList.toggle("opacity-50", !active);
     });
     if (viewerCheckoutBtn) {
-      const price = tier === "bronze" ? 29.99 : tier === "gold" ? 79.99 : 39.99;
+      const price = tier === "bronze" ? 29.99 : tier === "gold" ? 59.99 : 39.99;
       viewerCheckoutBtn.textContent = `Print for £${price.toFixed(2)} →`;
     }
     const material =
