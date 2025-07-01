@@ -430,18 +430,18 @@ async function loadMore(type, filters = getFilters()) {
   if (btn) {
     if (models.length < limit) {
       btn.classList.add("hidden");
+      if (type === "recent") {
+        const advertOffset = 1;
+        while ((grid.children.length - advertOffset) % 3 !== 0) {
+          const last = grid.lastElementChild;
+          if (!last) break;
+          last.remove();
+          state.models.pop();
+          state.offset -= 1;
+        }
+      }
     } else {
       btn.classList.remove("hidden");
-    }
-  }
-  if (type === "recent") {
-    const advertOffset = 1;
-    while ((grid.children.length - advertOffset) % 3 !== 0) {
-      const last = grid.lastElementChild;
-      if (!last) break;
-      last.remove();
-      state.models.pop();
-      state.offset -= 1;
     }
   }
   saveState();
