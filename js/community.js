@@ -503,7 +503,7 @@ function renderGrid(type, filters = getFilters()) {
     else if (type === "recent") applyRecentViewer();
     const btn = document.getElementById(`${type}-load`);
     if (btn) {
-      const threshold = type === "recent" ? 8 : 9;
+      const threshold = 8;
       if (state.models.length < threshold) btn.classList.add("hidden");
       else btn.classList.remove("hidden");
     }
