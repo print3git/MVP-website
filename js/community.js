@@ -258,6 +258,29 @@ async function copyReferral(id) {
   await navigator.clipboard.writeText(url);
 }
 
+async function loadReferralLink() {
+  const token = localStorage.getItem("token");
+  if (!token) return;
+  try {
+    const res = await fetch(`${API_BASE}/referral-link`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (res.ok) {
+      const { code } = await res.json();
+      const input = document.getElementById("referral-link");
+      if (input) input.value = `${window.location.origin}?ref=${code}`;
+    }
+  } catch (err) {
+    console.error("Failed to fetch referral link", err);
+  }
+}
+
+function copyReferralLink() {
+  const input = document.getElementById("referral-link");
+  input?.select();
+  document.execCommand("copy");
+}
+
 function createCard(model) {
   const div = document.createElement("div");
   div.className =
@@ -455,9 +478,21 @@ function renderGrid(type, filters = getFilters()) {
     const advert = document.createElement("div");
     advert.className =
       type === "recent"
-        ? "w-full h-32 bg-[#2A2A2E] border border-dashed border-white/40 rounded-xl flex items-center justify-center text-sm row-start-1 sm:col-start-2 md:col-start-3"
-        : "w-full h-32 bg-[#2A2A2E] border border-dashed border-white/40 rounded-xl flex items-center justify-center text-sm";
-    advert.textContent = "Advert Placeholder";
+        ? "w-full min-h-32 bg-[#2A2A2E] border border-dashed border-white/40 rounded-xl flex items-center justify-center text-sm row-start-1 sm:col-start-2 md:col-start-3 p-2"
+        : "w-full min-h-32 bg-[#2A2A2E] border border-dashed border-white/40 rounded-xl flex items-center justify-center text-sm p-2";
+    if (type === "popular") {
+      advert.classList.add("flex-col");
+      advert.innerHTML =
+        '<p class="mb-2 text-center text-white">Refer others by <a href="login.html" class="text-blue-500">logging in</a>, then using this referral link (they copy it into the \u2018discount box\u2019 at the <a href="payment.html" class="text-blue-500">checkout</a>).</p>' +
+        '<div class="space-y-1 w-full max-w-xs">' +
+        '<label for="referral-link" class="block text-sm">Your referral link</label>' +
+        '<div class="flex">' +
+        '<input id="referral-link" aria-label="Referral link" class="flex-1 bg-[#1A1A1D] border border-white/10 rounded-l-xl px-3 py-2 text-white" readonly />' +
+        '<button aria-label="Copy referral link" class="bg-blue-600 px-4 rounded-r-xl" onclick="copyReferralLink()">Copy</button>' +
+        "</div></div>";
+    } else {
+      advert.textContent = "Advert Placeholder";
+    }
     grid.appendChild(advert);
   }
   let state = window.communityState[type][key];
@@ -590,4 +625,12 @@ function init() {
   subscribeRealtime();
 }
 
-export { saveModel, init, closeModel, restoreOpenModel, copyReferral };
+export {
+  saveModel,
+  init,
+  closeModel,
+  restoreOpenModel,
+  copyReferral,
+  loadReferralLink,
+  copyReferralLink,
+};

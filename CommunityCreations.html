@@ -448,8 +448,15 @@
     </div>
     <script type="module">
       import { shareOn } from "./js/share.js";
-      import { init, closeModel, restoreOpenModel } from "./js/community.js";
+      import {
+        init,
+        closeModel,
+        restoreOpenModel,
+        loadReferralLink,
+        copyReferralLink,
+      } from "./js/community.js";
       window.shareOn = shareOn;
+      window.copyReferralLink = copyReferralLink;
 
       document.addEventListener("DOMContentLoaded", () => {
         const modal = document.getElementById("model-modal");
@@ -561,6 +568,7 @@
         setTier("silver");
         init();
         restoreOpenModel();
+        loadReferralLink();
       });
     </script>
     <div
