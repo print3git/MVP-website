@@ -12,9 +12,10 @@ These guidelines apply to all automated agents (e.g. the Codex agent) working on
 6. **Install Playwright browsers** – the setup script installs these automatically. If browsers are missing, run `CI=1 npx playwright install --with-deps` manually.
 7. **Run smoke tests** – execute `npm run smoke` at the repository root. This script ensures dependencies and Playwright browsers are installed before running the Playwright runner. **Do not run `npx playwright test` directly** – that can trigger `"Playwright Test did not expect test() to be called here"` errors when dependencies are missing.
 8. **Limit scope** – only modify files related to the task. Do not change anything under `img/`, `models/`, or `uploads/` unless explicitly requested. Avoid editing `docs/` unless the task specifically involves documentation.
-9. **Review your diff** – run `git status --short` and `git diff --stat` to ensure only intended files were modified. Revert any unrelated changes.
-10. **Include logs** – paste the output of `npm test` (or `npm run test-ci`) and `npm run format` in the PR description so maintainers can verify the steps.
-11. **Avoid PRs with failing tests** – if `npm run ci` or the smoke tests fail for reasons other than environment limitations, do not open a pull request. Fix the issues or open an issue summarizing the failure instead.
+9. **Use Conventional Commits** – commit messages must follow the `type: description` format enforced by commitlint. Allowed types are `build`, `ci`, `docs`, `feat`, `fix`, `chore`, `refactor`, `test`, `style`, `perf`, and `revert`. Example: `fix: handle missing avatar images`.
+10. **Review your diff** – run `git status --short` and `git diff --stat` to ensure only intended files were modified. Revert any unrelated changes.
+11. **Include logs** – paste the output of `npm test` (or `npm run test-ci`) and `npm run format` in the PR description so maintainers can verify the steps.
+12. **Avoid PRs with failing tests** – if `npm run ci` or the smoke tests fail for reasons other than environment limitations, do not open a pull request. Fix the issues or open an issue summarizing the failure instead.
 
 ## PR notes
 
