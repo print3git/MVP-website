@@ -157,8 +157,11 @@
         >.
       </div>
 
-      <!-- ===== GRID LAYOUT ===== -->
-      <div class="grid gap-6 mt-12 lg:grid-cols-2 lg:grid-rows-2">
+
+      <!-- ===== FLEX ROW ===== -->
+      <div
+        class="flex flex-col gap-6 mt-12 lg:grid lg:grid-cols-2 lg:grid-rows-2 lg:items-stretch"
+      >
         <!-- ---------- LEFT (50 %) : LUCKYBOX ---------- -->
         <div
           id="luckybox"
@@ -243,7 +246,7 @@
         <!-- TOP: Print Minis -->
         <div
           id="print-minis"
-          class="model-card relative w-full lg:col-start-2 lg:row-start-1 bg-[#2A2A2E] border border-white/10 rounded-xl p-4 space-y-2"
+          class="model-card relative w-full bg-[#2A2A2E] border border-white/10 rounded-xl p-4 space-y-2 lg:col-start-2 lg:row-start-1"
         >
             <span class="font-semibold text-lg">Print Minis</span>
             <p class="text-sm text-center">
@@ -256,7 +259,11 @@
         </div>
 
         <!-- BOTTOM: Remix prints preview -->
-        <section id="addons-grid" class="w-full lg:col-start-2 lg:row-start-2">
+
+        <section
+          id="addons-grid"
+          class="w-full lg:col-start-2 lg:row-start-2"
+        >
           <div
             class="model-card p-4 bg-[#2A2A2E] border border-white/10 rounded-xl text-center opacity-50"
           >
@@ -264,7 +271,8 @@
             <span class="block text-xs mt-1">coming soon</span>
           </div>
         </section>
-      </div> <!-- /.grid layout -->
+
+      </div> <!-- /.flex row -->
     </main>
 
     <!-- ---------- SCRIPTS ---------- -->
