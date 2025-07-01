@@ -16,6 +16,17 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
     />
+    <style>
+      /* Hide number input spinners for the reward input */
+      #reward-input::-webkit-inner-spin-button,
+      #reward-input::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      #reward-input {
+        -moz-appearance: textfield;
+      }
+    </style>
   </head>
   <body class="bg-[#1A1A1D] text-white font-sans flex flex-col min-h-screen">
     <header class="relative flex items-center py-4 px-6">
