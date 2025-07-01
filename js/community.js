@@ -483,12 +483,12 @@ function renderGrid(type, filters = getFilters()) {
     if (type === "popular") {
       advert.classList.add("flex-col");
       advert.innerHTML =
-        '<p class="mb-2 text-center text-white">Refer others by <a href="login.html" class="text-blue-500">logging in</a>, then using this referral link (they copy it into the \u2018discount box\u2019 at the <a href="payment.html" class="text-blue-500">checkout</a>).</p>' +
+        '<p class="mb-2 text-center text-white">Refer others by <a href="login.html" class="text-[#30D5C8]">logging in</a>, then using this referral link (they copy it into the \u2018discount box\u2019 at the <a href="payment.html" class="text-[#30D5C8]">checkout</a>).</p>' +
         '<div class="space-y-1 w-full max-w-xs">' +
         '<label for="referral-link" class="block text-sm">Your referral link</label>' +
         '<div class="flex">' +
         '<input id="referral-link" aria-label="Referral link" class="flex-1 bg-[#1A1A1D] border border-white/10 rounded-l-xl px-3 py-2 text-white" readonly />' +
-        '<button aria-label="Copy referral link" class="bg-blue-600 px-4 rounded-r-xl" onclick="copyReferralLink()">Copy</button>' +
+        '<button aria-label="Copy referral link" class="bg-[#30D5C8] text-[#1A1A1D] px-4 rounded-r-xl" onclick="copyReferralLink()">Copy</button>' +
         "</div></div>";
     } else {
       advert.textContent = "Advert Placeholder";
@@ -503,7 +503,7 @@ function renderGrid(type, filters = getFilters()) {
     else if (type === "recent") applyRecentViewer();
     const btn = document.getElementById(`${type}-load`);
     if (btn) {
-      const threshold = type === "recent" ? 8 : 9;
+      const threshold = 8;
       if (state.models.length < threshold) btn.classList.add("hidden");
       else btn.classList.remove("hidden");
     }
