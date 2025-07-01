@@ -137,18 +137,13 @@
           </p>
         </div>
       </section>
-      <div
+      <a
         id="printclub-banner"
-        class="bg-[#30D5C8] text-black p-3 rounded-xl text-center hidden"
+        href="printclub.html"
+        class="block bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-3xl px-3 py-2 text-sm text-center transition-shape hidden"
       >
         Join <strong>print2 Pro</strong> for weekly prints.
-        <a
-          href="printclub.html"
-          id="printclub-banner-link"
-          class="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-3xl px-3 py-2 text-sm transition-shape ml-2 inline-block"
-          >Learn more</a
-        >
-      </div>
+      </a>
       <h2 class="text-2xl">Active Competitions</h2>
       <h3 id="current-theme" class="text-lg text-[#30D5C8] mt-1"></h3>
       <div id="list" class="space-y-4"></div>
@@ -492,34 +487,6 @@
         setTier("silver");
       });
     </script>
-    <div
-      id="printclub-modal"
-      class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden"
-    >
-      <div
-        class="bg-[#2A2A2E] p-6 rounded-xl max-w-sm text-center border border-white/10"
-      >
-        <h2 class="text-2xl font-semibold mb-2">print2 Pro</h2>
-          <p class="mb-4">
-            Receive 2 prints (single or multicolour) every week, and unlimited £20 off premium (£79.99 -> £59.99).
-          </p>
-        <div class="mt-4 grid grid-cols-4 gap-2 w-full">
-          <a
-            href="printclub.html"
-            id="printclub-learn"
-            class="col-span-3 flex items-center justify-center bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-3xl px-3 py-2 text-lg font-medium transition-shape"
-            >Learn More</a
-          >
-          <button
-            id="printclub-close"
-            class="col-span-1 flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-3xl px-4 py-2 text-lg font-medium hover:bg-[#3A3A3E] transition-shape"
-            aria-label="Close print2 Pro modal"
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    </div>
     <script type="module" src="js/printclub.js"></script>
     <script type="module" src="js/rewardBadge.js"></script>
     <script type="module" src="js/basket.js"></script>
