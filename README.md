@@ -335,8 +335,9 @@ scripts/netlify-preflight.sh
 The script checks that `NETLIFY_AUTH_TOKEN` and `NETLIFY_SITE_ID` are defined.
 If either variable is missing, deployment stops with a clear error.
 
-Install the Netlify CLI globally (`npm install -g netlify-cli`) and then invoke
-`netlify deploy` as usual once the preflight passes.
+Use the Netlify CLI via `npx netlify-cli` or the
+[`netlify/actions/cli`](https://github.com/netlify/actions) action and then
+run `netlify deploy` as usual once the preflight passes.
 
 ## Troubleshooting
 
