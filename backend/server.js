@@ -523,6 +523,28 @@ app.get("/api/usernames", async (req, res) => {
   }
 });
 
+app.get("/api/recent-purchases", async (req, res) => {
+  try {
+    const { rows } = await db.query(
+      "SELECT shipping_info, product_type FROM orders WHERE status='paid' ORDER BY created_at DESC LIMIT 10",
+    );
+    const msgs = rows
+      .map((r) => {
+        const info = r.shipping_info || {};
+        if (!info.name || !info.city) return null;
+        const first = String(info.name).split(" ")[0];
+        const city = String(info.city).split(",")[0];
+        const prod = r.product_type || "a print";
+        return `${first} from ${city} just bought ${prod}`;
+      })
+      .filter(Boolean);
+    res.json(msgs);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: "Failed to fetch recent purchases" });
+  }
+});
+
 app.get("/api/campaign", (req, res) => {
   res.json(campaigns);
 });

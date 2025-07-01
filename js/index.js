@@ -1107,6 +1107,21 @@ async function init() {
     }
   }
   loadPopupNames();
+
+  async function loadPurchaseFeed() {
+    try {
+      const res = await fetch(`${API_BASE}/recent-purchases`);
+      if (res.ok) {
+        const msgs = await res.json();
+        if (Array.isArray(msgs) && msgs.length) {
+          popupMsgs = popupMsgs.concat(msgs);
+        }
+      }
+    } catch {
+      /* ignore errors */
+    }
+  }
+  loadPurchaseFeed();
   let popupIdx = 0;
   function showPopup() {
     if (!popupEl) return;
