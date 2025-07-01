@@ -12,7 +12,7 @@ const FALLBACK_GLB = FALLBACK_GLB_LOW;
 const PRICES = {
   single: 2999,
   multi: 3999,
-  premium: 7999,
+  premium: 5999,
 };
 
 // Override prices for Luckybox checkout
