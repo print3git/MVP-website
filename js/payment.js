@@ -748,8 +748,10 @@ async function initPaymentPage() {
       const percent =
         subtotal > 0 ? Math.round((discount / subtotal) * 100) : 0;
       text += ` - £${saved.toFixed(2)} = £${total.toFixed(2)}`;
-      const indent = text.lastIndexOf("£");
-      text += `\n${" ".repeat(indent)}(${percent}% saving)`;
+      if (!window.location.pathname.endsWith("luckybox-payment.html")) {
+        const indent = text.lastIndexOf("£");
+        text += `\n${" ".repeat(indent)}(${percent}% saving)`;
+      }
     } else {
       text += ` = £${total.toFixed(2)}`;
     }
