@@ -454,8 +454,9 @@ async function loadMore(type, filters = getFilters()) {
     if (models.length < limit) {
       btn.classList.add("hidden");
       if (type === "recent") {
-        const advertOffset = 1;
-        while ((grid.children.length - advertOffset) % 3 !== 0) {
+        let offset = 1; // account for advert
+        if (grid.querySelector(".viewer-card")) offset += 1;
+        while ((grid.children.length - offset) % 3 !== 0) {
           const last = grid.lastElementChild;
           if (!last) break;
           last.remove();
