@@ -483,7 +483,7 @@ function renderGrid(type, filters = getFilters()) {
     if (type === "popular") {
       advert.classList.add("flex-col");
       advert.innerHTML =
-        '<p class="mb-2 text-center text-white">Refer others by <a href="login.html" class="text-[#30D5C8]">logging in</a>, then using this referral link (they copy it into the \u2018discount box\u2019 at the <a href="payment.html" class="text-[#30D5C8]">checkout</a>).</p>' +
+        '<p class="mb-2 text-center text-white">Refer others by <a href="login.html" class="text-[#30D5C8]">logging in</a>, then using this referral link (they copy it into the \u2018promo code box\u2019 at the <a href="payment.html" class="text-[#30D5C8]">checkout</a>).</p>' +
         '<div class="space-y-1 w-full max-w-xs">' +
         '<label for="referral-link" class="block text-sm">Your referral link</label>' +
         '<div class="flex">' +
