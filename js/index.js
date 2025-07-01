@@ -1084,7 +1084,7 @@ async function init() {
     "Someone recently bought a print",
     "Someone recently created a model",
     "Someone bought 2 prints earlier",
-    "Someone earned £5 credit when someone bought this model",
+    "Someone bought a model, earned £5 credit",
     "Someone just received their model by post",
   ];
   async function loadPopupNames() {
@@ -1097,7 +1097,7 @@ async function init() {
             `${names[0]} recently bought a print`,
             `${names[1]} recently created a model`,
             `${names[0]} bought 2 prints earlier`,
-            `${names[1]} earned £5 credit when someone bought this model`,
+            `${names[1]} bought a model, earned £5 credit`,
             `${names[0]} just received their model by post`,
           ];
         }
