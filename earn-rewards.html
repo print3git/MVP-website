@@ -103,67 +103,71 @@
         class="max-w-4xl w-full flex flex-col md:flex-row md:space-x-8 space-y-6 md:space-y-0"
       >
         <div
-          class="md:w-1/2 bg-[#2A2A2E] border border-white/10 p-6 rounded-2xl shadow-lg space-y-6 text-center md:text-left"
+          class="md:w-1/2 bg-[#2A2A2E] border border-white/10 p-6 rounded-2xl shadow-lg flex flex-col h-full text-center md:text-left"
         >
-          <h2 class="text-2xl font-semibold">Share &amp; earn discounts</h2>
-          <p class="text-gray-400">
-            You must
-            <a href="login.html" class="font-bold text-[#30D5C8]">Log In</a>
-            or
-            <a href="signup.html" class="font-bold text-[#30D5C8]">Sign Up</a>
-            to get rewards.
-          </p>
-          <p class="text-lg">
-            Invite other using the link below. Earn
-            <span class="text-[#30D5C8]">£ credits</span> if they buy.
-          </p>
-          <div class="space-y-1">
-            <label for="referral-link" class="block text-sm"
-              >Your referral link:</label
-            >
-            <div class="flex">
-              <input
-                id="referral-link"
-                aria-label="Referral link"
-                class="flex-1 bg-[#1A1A1D] border border-white/10 rounded-l-xl px-3 py-2"
-                readonly
-              />
-              <button
-                aria-label="Copy referral link"
-                class="font-bold px-4 w-24 rounded-r-xl shadow-md transition border-2 border-black"
-                style="background-color: #30d5c8; color: #1a1a1d"
-                onmouseover="this.style.opacity='0.85'"
-                onmouseout="this.style.opacity='1'"
-                onclick="copyReferral()"
+          <div class="space-y-6">
+            <h2 class="text-2xl font-semibold">Share &amp; earn discounts</h2>
+            <p class="text-gray-400">
+              You must
+              <a href="login.html" class="font-bold text-[#30D5C8]">Log In</a>
+              or
+              <a href="signup.html" class="font-bold text-[#30D5C8]">Sign Up</a>
+              to get rewards.
+            </p>
+            <p class="text-lg">
+              Invite other using the link below. Earn
+              <span class="text-[#30D5C8]">£ credits</span> if they buy.
+            </p>
+          </div>
+          <div class="mt-auto space-y-4">
+            <div class="space-y-1">
+              <label for="referral-link" class="block text-sm"
+                >Your referral link:</label
               >
-                Copy
-              </button>
+              <div class="flex">
+                <input
+                  id="referral-link"
+                  aria-label="Referral link"
+                  class="flex-1 bg-[#1A1A1D] border border-white/10 rounded-l-xl px-3 py-2"
+                  readonly
+                />
+                <button
+                  aria-label="Copy referral link"
+                  class="font-bold px-4 w-24 rounded-r-xl shadow-md transition border-2 border-black"
+                  style="background-color: #30d5c8; color: #1a1a1d"
+                  onmouseover="this.style.opacity='0.85'"
+                  onmouseout="this.style.opacity='1'"
+                  onclick="copyReferral()"
+                >
+                  Copy
+                </button>
+              </div>
             </div>
+            <div class="space-y-1">
+              <label class="block text-sm"
+                >Points: <span id="reward-points">0</span> ⭐ (5 points = £1
+                credit):</label
+              >
+              <div class="flex">
+                <input
+                  id="reward-input"
+                  type="number"
+                  placeholder="How many points?"
+                  class="flex-1 bg-[#1A1A1D] border border-white/10 rounded-l-xl px-3 py-2 placeholder-gray-500 appearance-none"
+                />
+                <button
+                  class="font-bold px-4 w-24 rounded-r-xl shadow-md transition border-2 border-black"
+                  style="background-color: #30d5c8; color: #1a1a1d"
+                  onmouseover="this.style.opacity='0.85'"
+                  onmouseout="this.style.opacity='1'"
+                  onclick="redeemReward()"
+                >
+                  Redeem
+                </button>
+              </div>
+            </div>
+            <p id="next-reward-msg" class="text-sm text-gray-300"></p>
           </div>
-          <div class="space-y-1">
-            <label class="block text-sm"
-              >Points: <span id="reward-points">0</span> ⭐ (5 points = £1
-              credit):</label
-            >
-            <div class="flex">
-            <input
-              id="reward-input"
-              type="number"
-              placeholder="How many points?"
-              class="flex-1 bg-[#1A1A1D] border border-white/10 rounded-l-xl px-3 py-2 placeholder-gray-500 appearance-none"
-            />
-            <button
-              class="font-bold px-4 w-24 rounded-r-xl shadow-md transition border-2 border-black"
-              style="background-color: #30d5c8; color: #1a1a1d"
-              onmouseover="this.style.opacity='0.85'"
-              onmouseout="this.style.opacity='1'"
-              onclick="redeemReward()"
-            >
-              Redeem
-            </button>
-          </div>
-          </div>
-          <p id="next-reward-msg" class="text-sm text-gray-300"></p>
         </div>
         <div
           class="md:w-1/2 bg-[#2A2A2E] border border-white/10 p-6 rounded-2xl shadow-lg space-y-6 text-left"
