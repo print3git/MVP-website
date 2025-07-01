@@ -337,3 +337,15 @@ If either variable is missing, deployment stops with a clear error.
 
 Install the Netlify CLI globally (`npm install -g netlify-cli`) and then invoke
 `netlify deploy` as usual once the preflight passes.
+
+## Troubleshooting
+
+### dpkg was interrupted
+
+If you encounter the message `dpkg was interrupted, you must manually run 'dpkg --configure -a' to correct the problem`, run:
+
+```bash
+sudo dpkg --configure -a
+```
+
+This resolves any partially configured packages left over from an interrupted `apt` operation.
