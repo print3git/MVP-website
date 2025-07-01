@@ -1125,12 +1125,6 @@ async function init() {
     viewer.setAttribute("crossOrigin", "anonymous");
     viewer.className = "w-[13rem] h-[13rem] mb-2";
     popupEl.appendChild(viewer);
-    if (popupIdx % popupMsgs.length === 0 && lastSnapshot) {
-      const img = document.createElement("img");
-      img.src = lastSnapshot;
-      img.className = "w-10 h-10 rounded";
-      popupEl.appendChild(img);
-    }
     popupEl.appendChild(span);
     popupEl.classList.remove("hidden");
     popupEl.classList.remove("purchase-fade");
