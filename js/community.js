@@ -426,7 +426,8 @@ async function loadMore(type, filters = getFilters()) {
   const cache = window.communityState[type];
   if (!cache[key]) cache[key] = { offset: 0, models: [] };
   const state = cache[key];
-  const limit = type === "recent" && state.offset === 0 ? 8 : 9;
+  const offsetBefore = state.offset;
+  const limit = type === "recent" && offsetBefore === 0 ? 8 : 9;
   let models = await fetchCreations(
     type,
     state.offset,
@@ -438,7 +439,8 @@ async function loadMore(type, filters = getFilters()) {
   if (models.length === 0) {
     models = getFallbackModels(limit, state.offset);
   }
-  if (type === "popular" && state.offset === 0 && models.length) {
+  const fetchedCount = models.length;
+  if (type === "popular" && offsetBefore === 0 && models.length) {
     models = models.slice(1);
     state.offset += 1;
   }
@@ -451,7 +453,9 @@ async function loadMore(type, filters = getFilters()) {
   else if (type === "recent") applyRecentViewer();
   const btn = document.getElementById(`${type}-load`);
   if (btn) {
-    if (models.length < limit) {
+    const effectiveCount =
+      type === "popular" && offsetBefore === 0 ? fetchedCount : models.length;
+    if (effectiveCount < limit) {
       btn.classList.add("hidden");
       if (type === "recent") {
         let offset = 1; // account for advert
