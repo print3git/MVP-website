@@ -158,11 +158,9 @@
       </div>
 
 
-      <!-- ===== GRID LAYOUT ===== -->
+      <!-- ===== FLEX ROW ===== -->
       <div
-
-        class="grid grid-cols-1 gap-6 mt-12 lg:grid-cols-2 lg:grid-rows-2"
-
+        class="flex flex-col gap-6 mt-12 lg:flex-row lg:items-stretch"
       >
         <!-- ---------- LEFT (50 %) : LUCKYBOX ---------- -->
         <div
@@ -245,31 +243,11 @@
 
 
         <!-- ---------- RIGHT (50 %) : PRINT MINIS + REMIX ---------- -->
-
-        <!-- TOP: Print Minis -->
-        <div
-          id="print-minis"
-          class="model-card relative w-full h-full bg-[#2A2A2E] border border-white/10 rounded-xl p-4 space-y-2 lg:col-start-2 lg:row-start-1"
-        >
-            <span class="font-semibold text-lg">Print Minis</span>
-            <p class="text-sm text-center">
-              We'll print your design at roughly 75% scale for a tiny version.
-            </p>
-            <p class="text-sm text-center font-semibold">£14.99 per mini</p>
-            <button class="bg-[#30D5C8] text-black px-3 py-1 rounded text-sm">
-              Add to Basket
-            </button>
-        </div>
-
-        <!-- BOTTOM: Remix prints preview -->
-
-        <section
-          id="addons-grid"
-          class="w-full h-full lg:col-start-2 lg:row-start-2"
-        >
+        <div class="flex flex-col gap-6 lg:w-1/2">
+          <!-- TOP: Print Minis -->
           <div
-            class="model-card p-4 bg-[#2A2A2E] border border-white/10 rounded-xl text-center opacity-50 h-full flex flex-col items-center justify-center"
-
+            id="print-minis"
+            class="model-card relative w-full bg-[#2A2A2E] border border-white/10 rounded-xl p-4 space-y-2"
           >
               <span class="font-semibold text-lg">Print Minis</span>
               <p class="text-sm text-center">
