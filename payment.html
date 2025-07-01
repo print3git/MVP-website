@@ -558,12 +558,15 @@
                 </div>
               </div>
 
-              <div class="flex gap-2">
+              <button type="button" class="promo-toggle text-sm underline">
+                Have a promo code?
+              </button>
+              <div class="promo-input flex gap-2 mt-2" hidden>
                 <input
                   id="discount-code"
                   class="flex-1 p-2 rounded-md bg-[#1A1A1D] border border-white/10"
-                  placeholder="Discount Codes (comma separated)"
-                  aria-label="Discount codes"
+                  placeholder="Promo code"
+                  aria-label="Promo code"
                 />
                 <button
                   id="apply-discount"

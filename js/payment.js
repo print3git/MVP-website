@@ -433,6 +433,8 @@ async function initPaymentPage() {
   const discountInput = document.getElementById("discount-code");
   const discountMsg = document.getElementById("discount-msg");
   const applyBtn = document.getElementById("apply-discount");
+  const promoToggle = document.querySelector(".promo-toggle");
+  const promoBox = document.querySelector(".promo-input");
   const surpriseToggle = document.getElementById("surprise-toggle");
   const recipientFields = document.getElementById("recipient-fields");
   const qtySelect = document.getElementById("print-qty");
@@ -538,6 +540,9 @@ async function initPaymentPage() {
     colorMenu.classList.add("hidden");
   }
   initPlaceAutocomplete();
+  promoToggle?.addEventListener("click", () => {
+    if (promoBox) promoBox.hidden = !promoBox.hidden;
+  });
   let discountCodes = [];
   let discountValue = 0;
   let percentDiscount = 0;
