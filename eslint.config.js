@@ -20,6 +20,7 @@ module.exports = [
       "scripts/ci_watchdog.ts",
       "scripts/ci_watchdog.js",
       "upload",
+      "src",
     ],
   },
   {
