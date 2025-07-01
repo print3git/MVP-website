@@ -31,7 +31,8 @@ This repository contains the early MVP code for print2's website and backend.
 
    This script runs `npm ci` in the root, `backend/`, and
    `backend/hunyuan_server/` if present, then downloads the browsers
-   required for the end-to-end tests.
+   required for the end-to-end tests. Browsers are stored under
+   `.cache/ms-playwright` so subsequent runs reuse the same installation.
 
 3. Initialize the database:
 

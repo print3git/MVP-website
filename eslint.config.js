@@ -16,6 +16,7 @@ module.exports = [
       "admin",
       "docs",
       "e2e",
+      ".cache",
       "backend",
       "scripts/ci_watchdog.ts",
       "scripts/ci_watchdog.js",

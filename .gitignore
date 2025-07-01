@@ -8,3 +8,4 @@ backend/hunyuan_server/uploads/
 reports/
 backend/coverage/
 coverage/
+.cache/

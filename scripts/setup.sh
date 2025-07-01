@@ -17,4 +17,6 @@ fi
 # Ensure dpkg is fully configured before Playwright installs dependencies
 sudo dpkg --configure -a || true
 
-CI=1 npx playwright install --with-deps
+PLAYWRIGHT_BROWSERS_PATH=.cache/ms-playwright
+mkdir -p "$PLAYWRIGHT_BROWSERS_PATH"
+CI=1 PLAYWRIGHT_BROWSERS_PATH="$PLAYWRIGHT_BROWSERS_PATH" npx playwright install --with-deps
