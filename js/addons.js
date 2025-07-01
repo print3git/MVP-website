@@ -3,33 +3,13 @@ const API_BASE = (window.API_ORIGIN || "") + "/api";
 function renderPreview() {
   const grid = document.getElementById("addons-grid");
   if (!grid) return;
-  const items = [
-    {
-      name: "Snow Base",
-      img: "https://images.unsplash.com/photo-1581905764498-f1ec34cc1373?auto=format&fit=crop&w=200&q=60",
-    },
-    {
-      name: "LED Stand",
-      img: "https://images.unsplash.com/photo-1518933165971-611dbc9c412d?auto=format&fit=crop&w=200&q=60",
-    },
-    {
-      name: "Companion Droid",
-      img: "https://images.unsplash.com/photo-1604066867775-4a6c52db06f2?auto=format&fit=crop&w=200&q=60",
-    },
-  ];
   grid.innerHTML = "";
-  const advert = document.createElement("div");
-  advert.className =
-    "w-full h-40 bg-[#2A2A2E] border border-dashed border-white/40 rounded-xl flex items-center justify-center text-sm row-start-1 col-start-2";
-  advert.textContent = "Advert Placeholder";
-  grid.appendChild(advert);
-  items.forEach((item) => {
-    const div = document.createElement("div");
-    div.className =
-      "model-card relative h-40 w-full bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape flex items-center justify-center";
-    div.innerHTML = `<img src="${item.img}" alt="${item.name}" class="w-full h-full object-contain pointer-events-none" />\n      <span class="sr-only">${item.name}</span>`;
-    grid.appendChild(div);
-  });
+  const div = document.createElement("div");
+  div.className =
+    "model-card p-4 bg-[#2A2A2E] border border-white/10 rounded-xl text-center opacity-50";
+  div.innerHTML =
+    '<span class="font-semibold">Remix prints</span><span class="block text-xs mt-1">coming soon</span>';
+  grid.appendChild(div);
 }
 
 async function checkAccess() {
