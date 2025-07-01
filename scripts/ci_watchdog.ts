@@ -61,6 +61,13 @@ async function handleCluster(slug: string, cluster: Cluster) {
       "npm install --no-audit --no-fund",
     );
   }
+  if (cluster.msg.includes("netlify/actions@")) {
+    console.log("Fixing Netlify action path");
+    changed ||= await patchFiles(
+      /uses:\s*netlify\/actions@v(\d+)/g,
+      'uses: netlify/actions/cli@v$1',
+    );
+  }
   if (cluster.msg.includes("Unauthorized: could not retrieve project")) {
     console.log("Adding secret guard to Netlify step");
     changed ||= await patchFiles(
