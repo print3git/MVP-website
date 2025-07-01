@@ -9,8 +9,10 @@ const API_BASE = (window.API_ORIGIN || "") + "/api";
 banner?.classList.remove("hidden");
 
 bannerLink?.addEventListener("click", (e) => {
-  e.preventDefault();
-  modal?.classList.remove("hidden");
+  if (bannerLink.getAttribute("href") === "#") {
+    e.preventDefault();
+    modal?.classList.remove("hidden");
+  }
 });
 closeBtn?.addEventListener("click", () => modal?.classList.add("hidden"));
 modal?.addEventListener("click", (e) => {

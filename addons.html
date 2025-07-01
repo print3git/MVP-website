@@ -147,11 +147,12 @@
           >making your first purchase</a
         >.
       </div>
-      <div class="flex flex-col lg:flex-row gap-6 mt-12">
+      <div class="flex flex-col lg:flex-row lg:items-stretch gap-6 mt-12">
         <div
           id="luckybox"
-          class="model-card relative w-full lg:w-3/5 min-h-72 bg-[#2A2A2E] border border-white/10 rounded-xl p-4 pb-20 flex flex-col items-center space-y-2"
+          class="model-card relative w-full lg:w-3/5 min-h-72 bg-[#2A2A2E] border border-white/10 rounded-xl p-4 pb-20 flex flex-col lg:flex-row items-center space-y-2 lg:space-y-0 lg:space-x-4"
         >
+          <div class="flex flex-col items-center flex-grow space-y-2">
           <span class="font-semibold text-lg">Luckybox</span>
           <fieldset id="luckybox-tiers" class="flex justify-center gap-4 my-2">
             <label
@@ -210,30 +211,42 @@
           <p id="luckybox-desc" class="text-sm text-center">
             £19.99 print + 5 print points (usually £29.99)
           </p>
-          <label class="flex items-center space-x-2 text-sm">
-            <input
-              type="radio"
-              name="luckybox-option"
-              value="A"
-              class="accent-[#30D5C8]"
-              checked
-            />
-            <span>Luckybox A: get a truly random print</span>
-          </label>
-          <label class="flex flex-col items-center w-full text-sm space-y-2">
-            <span class="flex items-center space-x-2">
+          <a
+            href="luckybox-payment.html"
+            class="font-bold py-2 px-5 rounded-full shadow-md transition border-2 border-black"
+            style="background-color: #30d5c8; color: #1a1a1d"
+            onmouseover="this.style.opacity='0.85'"
+            onmouseout="this.style.opacity='1'"
+          >
+            Buy →
+          </a>
+          <div
+            id="luckybox-options"
+            class="flex items-center justify-center gap-4 mt-6 text-lg flex-wrap"
+          >
+            <label class="flex items-center space-x-2 whitespace-nowrap">
+              <input
+                type="radio"
+                name="luckybox-option"
+                value="A"
+                class="accent-[#30D5C8]"
+                checked
+              />
+              <span>Luckybox A (truly random print)</span>
+            </label>
+            <label class="flex items-center space-x-2 whitespace-nowrap">
               <input
                 type="radio"
                 name="luckybox-option"
                 value="B"
                 class="accent-[#30D5C8]"
               />
-              <span>Luckybox B: describe a genre</span>
-            </span>
+              <span>Luckybox B (choose a theme):</span>
+            </label>
             <input
               type="text"
               placeholder="e.g. medieval"
-              class="bg-[#1A1A1D] border border-white/10 rounded px-2 py-1 text-sm w-full"
+              class="bg-[#1A1A1D] border border-white/10 rounded px-2 py-1 text-lg w-32"
             />
           </label>
           <a
@@ -245,11 +258,17 @@
           >
             Buy →
           </a>
+          </div>
+          <img
+            src="img/ChatGPT%20Image%20Jul%201,%202025,%2011_35_22%20AM.png"
+            alt="Luckybox preview"
+            class="w-32 h-32 rounded-lg object-cover lg:ml-auto"
+          />
         </div>
         <div class="w-full lg:w-2/5 flex flex-col gap-6">
           <div
             id="print-minis"
-            class="model-card relative w-full min-h-96 bg-[#2A2A2E] border border-white/10 rounded-xl p-4 pb-20 flex flex-col items-center space-y-2"
+            class="model-card relative w-full min-h-96 lg:h-full bg-[#2A2A2E] border border-white/10 rounded-xl p-4 pb-20 flex flex-col items-center space-y-2"
           >
             <span class="font-semibold text-lg">Print Minis</span>
             <p class="text-sm text-center">

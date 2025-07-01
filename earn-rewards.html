@@ -16,6 +16,17 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
     />
+    <style>
+      /* Hide number input spinners for the reward input */
+      #reward-input::-webkit-inner-spin-button,
+      #reward-input::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      #reward-input {
+        -moz-appearance: textfield;
+      }
+    </style>
   </head>
   <body class="bg-[#1A1A1D] text-white font-sans flex flex-col min-h-screen">
     <header class="relative flex items-center py-4 px-6">
@@ -221,9 +232,8 @@
       >
         <h2 class="text-2xl font-semibold mb-2">print2 Pro</h2>
         <p class="mb-4">
-          Join print2 Pro for £149.99 per month to receive 2 prints (single or
-          multicolour tiers) every week, and unlimited £20 off premium tier
-          (£79.99 -> £59.99).
+          Receive 2 prints (single or multicolour) every week, and unlimited £20
+          off premium (£79.99 -> £59.99).
         </p>
         <button
           id="printclub-close"
