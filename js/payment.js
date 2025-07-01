@@ -69,7 +69,12 @@ function computeBulkDiscount(items) {
   }
   let discount = 0;
   if (totalQty >= 2) discount += TWO_PRINT_DISCOUNT;
-  if (totalQty >= 3) discount += THIRD_PRINT_DISCOUNT;
+  if (
+    totalQty >= 3 &&
+    !window.location.pathname.endsWith("luckybox-payment.html")
+  ) {
+    discount += THIRD_PRINT_DISCOUNT;
+  }
   return discount;
 }
 const NEXT_PROMPTS = [
