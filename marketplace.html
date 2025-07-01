@@ -118,8 +118,8 @@
           <a href="payment.html" class="font-bold text-[#30D5C8]">Buy Here</a>.
         </p>
       </section>
-      <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="bg-[#2A2A2E] p-4 rounded-xl border border-white/10">
+      <section class="grid grid-cols-1 md:grid-cols-2 md:grid-rows-2 gap-6 h-full">
+        <div class="bg-[#2A2A2E] p-4 rounded-xl border border-white/10 md:row-span-2 flex flex-col">
           <h2 class="text-xl font-semibold mb-2">Your Marketplace</h2>
           <p>
             <a href="index.html" class="font-bold text-[#30D5C8]">Create</a>
@@ -140,11 +140,11 @@
             camera-controls
             auto-rotate
             crossOrigin="anonymous"
-            class="w-full h-[50vh] bg-[#2A2A2E] rounded-xl mt-4"
+            class="w-full flex-grow bg-[#2A2A2E] rounded-xl mt-4"
           ></model-viewer>
           <input id="glbUpload" type="file" accept=".glb" class="hidden" />
         </div>
-        <div class="bg-[#2A2A2E] p-4 rounded-xl border border-white/10">
+        <div class="bg-[#2A2A2E] p-4 rounded-xl border border-white/10 flex flex-col" style="height:40vh">
           <h2 class="text-xl font-semibold mb-2">Their Marketplace</h2>
           <p>
             Browse creations from the community. Buying these models rewards the
@@ -155,11 +155,7 @@
             class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4"
           ></div>
         </div>
-      </section>
-      <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div
-          class="bg-[#2A2A2E] p-4 rounded-xl border border-white/10 md:col-start-2"
-        >
+        <div class="bg-[#2A2A2E] p-4 rounded-xl border border-white/10 flex flex-col" style="height:60vh">
           <h2 class="text-xl font-semibold mb-2">Featured Deals</h2>
           <p>Selected models at discounted prices. Limited time only.</p>
         </div>
