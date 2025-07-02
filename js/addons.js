@@ -45,25 +45,17 @@ function initLuckybox() {
     '#luckybox-tiers input[name="luckybox-tier"]',
   );
   const desc = document.getElementById("luckybox-desc");
-  if (!tierRadios.length || !desc) return;
+  if (!tierRadios.length) return;
   const descriptions = {
     basic: "£19.99 print + 5 print points (usually £29.99)",
     multicolour: "£29.99 print + 5 print points (usually £39.99)",
     premium: "£59.99 print + 10 print points (usually £79.99)",
   };
-  const stored = localStorage.getItem("print3Material");
-  if (stored) {
-    const val =
-      stored === "multi"
-        ? "multicolour"
-        : stored === "premium"
-          ? "premium"
-          : "basic";
-    const radio = document.querySelector(
-      `#luckybox-tiers input[value="${val}"]`,
-    );
-    if (radio) radio.checked = true;
-  }
+  const defaultRadio = document.querySelector(
+    '#luckybox-tiers input[value="multicolour"]',
+  );
+  if (defaultRadio) defaultRadio.checked = true;
+  localStorage.setItem("print3Material", "multi");
   function selectedTier() {
     const checked = document.querySelector(
       '#luckybox-tiers input[name="luckybox-tier"]:checked',
@@ -72,7 +64,7 @@ function initLuckybox() {
   }
   function update() {
     const tier = selectedTier();
-    desc.textContent = descriptions[tier] || descriptions.basic;
+    if (desc) desc.textContent = descriptions[tier] || descriptions.basic;
     const material =
       tier === "multicolour"
         ? "multi"
