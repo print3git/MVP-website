@@ -1111,64 +1111,72 @@ async function initPaymentPage() {
     const storedModel = localStorage.getItem("print3Model");
     if (viewer) viewer.src = storedModel || FALLBACK_GLB;
   }
-  // Load saved basket items
-  try {
-    const arr = JSON.parse(localStorage.getItem("print3CheckoutItems"));
-    if (Array.isArray(arr) && arr.length) {
-      if (
-        arr.length === 1 &&
-        (arr[0].qty == null || parseInt(arr[0].qty, 10) === 1)
-      ) {
-        arr[0].qty = 2;
+  // Load saved basket items unless this is the Luckybox page
+  if (!window.location.pathname.endsWith("luckybox-payment.html")) {
+    try {
+      const arr = JSON.parse(localStorage.getItem("print3CheckoutItems"));
+      if (Array.isArray(arr) && arr.length) {
+        if (
+          arr.length === 1 &&
+          (arr[0].qty == null || parseInt(arr[0].qty, 10) === 1)
+        ) {
+          arr[0].qty = 2;
+        }
+        checkoutItems = arr.map((it) => ({
+          ...it,
+          etchName: it.etchName || "",
+          qty: Math.max(1, parseInt(it.qty || "1", 10)),
+        }));
       }
-      checkoutItems = arr.map((it) => ({
-        ...it,
-        etchName: it.etchName || "",
-        qty: Math.max(1, parseInt(it.qty || "1", 10)),
-      }));
-    }
-  } catch {}
+    } catch {}
+  } else {
+    localStorage.removeItem("print3CheckoutItems");
+  }
 
   // Sync checkout items with the current basket in case this page was
   // opened directly and the stored list is stale.
-  try {
-    const basket = JSON.parse(localStorage.getItem("print3Basket")) || [];
-    if (
-      basket.length &&
-      (basket.length !== checkoutItems.length ||
-        basket.some((it, idx) => {
-          const c = checkoutItems[idx];
-          return !c || c.modelUrl !== it.modelUrl || c.jobId !== it.jobId;
-        }))
-    ) {
-      const existing = checkoutItems;
-      checkoutItems = basket.map((it, idx) => {
-        const prev = existing[idx] || {};
-        return {
-          modelUrl: it.modelUrl,
-          jobId: it.jobId,
-          snapshot: it.snapshot || prev.snapshot || "",
-          material:
-            prev.material || localStorage.getItem("print3Material") || "multi",
-          color: prev.color || null,
-          etchName:
-            prev.etchName || localStorage.getItem("print3EtchName") || "",
-          qty: (() => {
-            let q = prev.qty ?? it.quantity;
-            if (basket.length === 1 && (q == null || parseInt(q, 10) === 1)) {
-              q = "2";
-            }
-            if (q == null) q = "1";
-            return Math.max(1, parseInt(q, 10));
-          })(),
-        };
-      });
-      localStorage.setItem(
-        "print3CheckoutItems",
-        JSON.stringify(checkoutItems),
-      );
-    }
-  } catch {}
+  if (!window.location.pathname.endsWith("luckybox-payment.html")) {
+    try {
+      const basket = JSON.parse(localStorage.getItem("print3Basket")) || [];
+      if (
+        basket.length &&
+        (basket.length !== checkoutItems.length ||
+          basket.some((it, idx) => {
+            const c = checkoutItems[idx];
+            return !c || c.modelUrl !== it.modelUrl || c.jobId !== it.jobId;
+          }))
+      ) {
+        const existing = checkoutItems;
+        checkoutItems = basket.map((it, idx) => {
+          const prev = existing[idx] || {};
+          return {
+            modelUrl: it.modelUrl,
+            jobId: it.jobId,
+            snapshot: it.snapshot || prev.snapshot || "",
+            material:
+              prev.material ||
+              localStorage.getItem("print3Material") ||
+              "multi",
+            color: prev.color || null,
+            etchName:
+              prev.etchName || localStorage.getItem("print3EtchName") || "",
+            qty: (() => {
+              let q = prev.qty ?? it.quantity;
+              if (basket.length === 1 && (q == null || parseInt(q, 10) === 1)) {
+                q = "2";
+              }
+              if (q == null) q = "1";
+              return Math.max(1, parseInt(q, 10));
+            })(),
+          };
+        });
+        localStorage.setItem(
+          "print3CheckoutItems",
+          JSON.stringify(checkoutItems),
+        );
+      }
+    } catch {}
+  }
   // Reset quantities to 1 when multiple items are in the basket
   if (checkoutItems.length > 1) {
     checkoutItems.forEach((it) => {
