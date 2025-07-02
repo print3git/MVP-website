@@ -893,7 +893,7 @@ async function initPaymentPage() {
     if (viewer) {
       const tag = viewer.tagName.toLowerCase();
       if (tag === "img") {
-        viewer.src = item.snapshot || item.modelUrl || viewer.src;
+        if (item.snapshot) viewer.src = item.snapshot;
       } else {
         viewer.src = item.modelUrl || storedModel || FALLBACK_GLB;
       }
