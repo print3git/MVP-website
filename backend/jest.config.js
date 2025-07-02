@@ -1,6 +1,7 @@
 // backend/jest.config.js
 module.exports = {
   rootDir: ".",
+  setupFiles: ["<rootDir>/tests/setupGlobals.js"],
   setupFilesAfterEnv: ["<rootDir>/tests/setup.js"],
   globalTeardown: "<rootDir>/tests/globalTeardown.js",
   testEnvironment: "node",
