@@ -295,6 +295,19 @@ function createCard(model) {
     sessionStorage.setItem("fromCommunity", "1");
     localStorage.setItem("print3Model", model.model_url);
     localStorage.setItem("print3JobId", model.job_id);
+    localStorage.removeItem("print3Basket");
+    try {
+      localStorage.setItem(
+        "print3CheckoutItems",
+        JSON.stringify([
+          {
+            modelUrl: model.model_url,
+            jobId: model.job_id,
+            snapshot: model.snapshot || "",
+          },
+        ]),
+      );
+    } catch {}
     window.location.href = "payment.html";
   });
   const saveBtn = div.querySelector(".save");
@@ -335,6 +348,13 @@ function createViewerCard(modelUrl) {
     sessionStorage.setItem("fromCommunity", "1");
     localStorage.setItem("print3Model", modelUrl);
     localStorage.setItem("print3JobId", "");
+    localStorage.removeItem("print3Basket");
+    try {
+      localStorage.setItem(
+        "print3CheckoutItems",
+        JSON.stringify([{ modelUrl, jobId: "", snapshot: "" }]),
+      );
+    } catch {}
     window.location.href = "payment.html";
   });
   return div;
