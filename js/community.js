@@ -457,19 +457,19 @@ async function loadMore(type, filters = getFilters()) {
       type === "popular" && offsetBefore === 0 ? fetchedCount : models.length;
     if (effectiveCount < limit) {
       btn.classList.add("hidden");
-      if (type === "recent") {
-        let offset = 1; // account for advert
-        if (grid.querySelector(".viewer-card")) offset += 1;
-        while ((grid.children.length - offset) % 3 !== 0) {
-          const last = grid.lastElementChild;
-          if (!last) break;
-          last.remove();
-          state.models.pop();
-          state.offset -= 1;
-        }
-      }
     } else {
       btn.classList.remove("hidden");
+    }
+  }
+  if (type === "recent") {
+    let offset = 1; // account for advert
+    if (grid.querySelector(".viewer-card")) offset += 1;
+    while ((grid.children.length - offset) % 3 !== 0) {
+      const last = grid.lastElementChild;
+      if (!last) break;
+      last.remove();
+      state.models.pop();
+      state.offset -= 1;
     }
   }
   saveState();
