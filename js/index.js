@@ -997,6 +997,17 @@ async function init() {
     } else {
       localStorage.removeItem("print3JobId");
     }
+    try {
+      const items = [
+        {
+          modelUrl: refs.viewer.src,
+          jobId: lastJobId || "",
+          snapshot: lastSnapshot || "",
+        },
+      ];
+      localStorage.setItem("print3CheckoutItems", JSON.stringify(items));
+      localStorage.removeItem("print3Basket");
+    } catch {}
     if (window.setWizardStage) window.setWizardStage("purchase");
   });
 
