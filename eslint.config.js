@@ -1,3 +1,11 @@
+// Display a helpful message if dependencies have not been installed.
+try {
+  require.resolve("@eslint/js");
+} catch {
+  console.error("Dependencies not installed. Run 'npm run setup' at the repository root.");
+  process.exit(1);
+}
+
 const js = require("@eslint/js");
 const prettier = require("eslint-config-prettier");
 const globals = require("globals");
