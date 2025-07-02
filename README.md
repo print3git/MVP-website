@@ -361,3 +361,8 @@ sudo dpkg --configure -a
 ```
 
 This resolves any partially configured packages left over from an interrupted `apt` operation.
+
+### "Cannot find module '@eslint/js'"
+
+If `eslint` fails with this error, it usually means dependencies aren't installed.
+Run `npm run setup` in the repository root to install them.
