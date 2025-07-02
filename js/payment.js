@@ -1101,11 +1101,15 @@ async function initPaymentPage() {
     }
   }
 
-  loader.hidden = false;
-  // Assign the model source only after the load/error listeners are in place
-  const storedModel = localStorage.getItem("print3Model");
-  if (viewer && viewer.tagName.toLowerCase() !== "img") {
-    viewer.src = storedModel || FALLBACK_GLB;
+  if (viewer && viewer.tagName.toLowerCase() === "img") {
+    // The Luckybox page uses a static <img> preview, so skip the loading
+    // overlay entirely to avoid covering the image.
+    loader.hidden = true;
+  } else {
+    loader.hidden = false;
+    // Assign the model source only after the load/error listeners are in place
+    const storedModel = localStorage.getItem("print3Model");
+    if (viewer) viewer.src = storedModel || FALLBACK_GLB;
   }
   // Load saved basket items
   try {
