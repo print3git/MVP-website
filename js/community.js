@@ -375,11 +375,10 @@ function applyRecentViewer() {
   const existingViewer = grid.querySelector(".viewer-card");
   if (existingViewer) existingViewer.remove();
 
-  const cards = Array.from(grid.children);
-  if (!cards.length) return;
+  const firstModel = Array.from(grid.children).find((c) => c.dataset?.model);
+  if (!firstModel) return;
 
-  const modelUrl = cards[0].dataset.model;
-  if (!modelUrl) return;
+  const modelUrl = firstModel.dataset.model;
 
   const viewer = createViewerCard(modelUrl);
 
@@ -387,7 +386,7 @@ function applyRecentViewer() {
 
   viewer.classList.add("row-span-3");
 
-  const insertBefore = grid.children[0];
+  const insertBefore = firstModel;
   if (insertBefore) grid.insertBefore(viewer, insertBefore);
   else grid.appendChild(viewer);
 }
@@ -462,10 +461,13 @@ async function loadMore(type, filters = getFilters()) {
     }
   }
   if (type === "recent") {
-    let offset = 1; // account for advert
-    if (grid.querySelector(".viewer-card")) offset += 1;
-    while ((grid.children.length - offset) % 3 !== 0) {
-      const last = grid.lastElementChild;
+    const hasViewer = !!grid.querySelector(".viewer-card");
+    let models = Array.from(
+      grid.querySelectorAll(".model-card:not(.viewer-card)"),
+    );
+    const base = hasViewer ? 5 : 0;
+    while ((models.length - base) % 3 !== 0) {
+      const last = models.pop();
       if (!last) break;
       last.remove();
       state.models.pop();
