@@ -502,6 +502,19 @@
           const job = checkoutBtn.dataset.job;
           if (model) localStorage.setItem("print3Model", model);
           if (job) localStorage.setItem("print3JobId", job);
+          localStorage.removeItem("print3Basket");
+          try {
+            localStorage.setItem(
+              "print3CheckoutItems",
+              JSON.stringify([
+                {
+                  modelUrl: model || "",
+                  jobId: job || "",
+                  snapshot: addBasketBtn?.dataset.snapshot || "",
+                },
+              ]),
+            );
+          } catch {}
         });
 
         addBasketBtn?.addEventListener("click", () => {
