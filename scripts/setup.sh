@@ -2,6 +2,12 @@
 set -e
 unset npm_config_http_proxy npm_config_https_proxy
 
+# Abort early if the npm registry is unreachable
+if ! npm ping >/dev/null 2>&1; then
+  echo "Unable to reach the npm registry. Check network connectivity or proxy settings." >&2
+  exit 1
+fi
+
 # Remove any existing node_modules directories to avoid ENOTEMPTY errors
 rm -rf node_modules backend/node_modules
 if [ -d backend/hunyuan_server/node_modules ]; then
