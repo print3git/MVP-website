@@ -890,13 +890,9 @@ async function initPaymentPage() {
     if (!checkoutItems.length) return;
     currentIndex = (idx + checkoutItems.length) % checkoutItems.length;
     const item = checkoutItems[currentIndex];
-    if (viewer) {
-      const tag = viewer.tagName.toLowerCase();
-      if (tag === "img") {
-        viewer.src = item.snapshot || item.modelUrl || viewer.src;
-      } else {
-        viewer.src = item.modelUrl || storedModel || FALLBACK_GLB;
-      }
+    if (viewer && viewer.tagName.toLowerCase() !== "img") {
+      const stored = localStorage.getItem("print3Model");
+      viewer.src = item.modelUrl || stored || FALLBACK_GLB;
     }
     if (item.jobId) localStorage.setItem("print3JobId", item.jobId);
     else localStorage.removeItem("print3JobId");
