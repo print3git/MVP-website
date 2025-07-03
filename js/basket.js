@@ -284,7 +284,7 @@ export function setupBasketUI() {
       </button>
       <h2 class="text-xl font-semibold mb-2 text-white">Basket</h2>
       <div id="basket-list" class="grid grid-cols-2 gap-3 mb-2"></div>
-      <div id="basket-reserve" class="hidden text-sm text-gray-200 mb-2"></div>
+      <div id="basket-reserve" class="hidden text-sm text-[#30D5C8] mb-2"></div>
       <div id="basket-queue" class="text-sm text-gray-200 mb-2"></div>
       <button id="basket-checkout" type="button" class="mb-2 font-bold py-2 px-4 rounded-full shadow-md bg-[#30D5C8] text-[#1A1A1D] border-2 border-black">Checkout</button>
     </div>`;
