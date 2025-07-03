@@ -19,6 +19,10 @@ These guidelines apply to all automated agents (e.g. the Codex agent) working on
 11. **Include logs** – paste the output of `npm test` (or `npm run test-ci`) and `npm run format` in the PR description so maintainers can verify the steps.
 12. **Avoid PRs with failing tests** – if `npm run ci` or the smoke tests fail for reasons other than environment limitations, do not open a pull request. Fix the issues or open an issue summarizing the failure instead.
 
+## Troubleshooting
+
+If `npm run ci` outputs messages like `1 interrupted` or `2 did not run` during the Playwright tests, the browsers were likely not installed. Run `npm run setup` and retry the CI and smoke steps.
+
 ## PR notes
 
 Include a short summary of your changes and how you validated them (formatting and test output).
