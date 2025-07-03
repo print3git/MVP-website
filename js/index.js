@@ -134,8 +134,7 @@ const API_BASE = (window.API_ORIGIN || "") + "/api";
 const TZ = "America/New_York";
 // Local fallback model used when generation fails or the viewer hasn't loaded a model yet.
 
-const FALLBACK_GLB_LOW =
-  "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
+const FALLBACK_GLB_LOW = "models/bag.glb";
 const FALLBACK_GLB_HIGH =
   "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
 const FALLBACK_GLB = FALLBACK_GLB_LOW;
