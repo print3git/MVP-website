@@ -774,5 +774,11 @@
     <script>window.disableSaveButton = true;</script>
     <script type="module" src="js/saveList.js" defer></script>
     <script type="module" src="js/trackingPixel.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const img = document.getElementById('viewer');
+        if (img) img.src = 'img/luckybox-preview.png';
+      });
+    </script>
   </body>
 </html>
