@@ -130,7 +130,8 @@
                 <input
                   id="referral-link"
                   aria-label="Referral link"
-                  class="flex-1 bg-[#1A1A1D] border border-white/10 rounded-l-xl px-3 py-2"
+                  class="flex-1 bg-[#1A1A1D] border border-white/10 rounded-l-xl px-3 py-2 placeholder-gray-500"
+                  placeholder="Log in to get link"
                   readonly
                 />
                 <button
@@ -146,10 +147,10 @@
               </div>
             </div>
             <div class="space-y-1">
-              <label class="block text-sm"
-                >Points: <span id="reward-points">0</span> ⭐ (5 points = £1
-                credit):</label
-              >
+              <label for="reward-input" class="block text-sm flex justify-between">
+                <span>Points: <span id="reward-points">0</span> ⭐</span>
+                <span class="text-right">(5 points = £1 credit):</span>
+              </label>
               <div class="flex">
                 <input
                   id="reward-input"
