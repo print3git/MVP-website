@@ -512,13 +512,16 @@ function renderGrid(type, filters = getFilters()) {
       advert.innerHTML =
         '<p class="mb-2 text-center text-white">Earn <span class="text-[#30D5C8]">£5 credit</span> when someone buys with your link.</p>' +
         '<div class="space-y-1 w-full max-w-xs">' +
-        '<label for="referral-link" class="block text-sm">Your referral link</label>' +
+        '<label for="referral-link" class="block text-sm">Your referral link:</label>' +
         '<div class="flex">' +
-        '<input id="referral-link" aria-label="Referral link" class="flex-1 bg-[#1A1A1D] border border-white/10 rounded-l-xl px-3 py-2 text-white" readonly />' +
+        '<input id="referral-link" aria-label="Referral link" class="flex-1 bg-[#1A1A1D] border border-white/10 rounded-l-xl px-3 py-2 text-white placeholder-gray-500" placeholder="Log in to get your link" readonly />' +
         '<button aria-label="Copy referral link" class="bg-[#30D5C8] text-[#1A1A1D] px-4 rounded-r-xl" onclick="copyReferralLink()">Copy</button>' +
         "</div></div>";
     } else {
-      advert.textContent = "Advert Placeholder";
+      advert.classList.add("flex-col", "text-center", "space-y-2");
+      advert.innerHTML =
+        '<p class="text-white"><span class="text-[#30D5C8]">£7 off</span> your 2nd and <span class="text-[#30D5C8]">£15 off</span> third items you buy here</p>' +
+        '<a href="payment.html" class="font-bold py-2 px-5 rounded-full shadow-md transition border-2 border-black inline-block" style="background-color: #30D5C8; color: #1A1A1D" onmouseover="this.style.opacity=\'0.85\'" onmouseout="this.style.opacity=\'1\'">Buy Current Basket →</a>';
     }
     grid.appendChild(advert);
   }
