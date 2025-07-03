@@ -2,6 +2,11 @@
 set -e
 unset npm_config_http_proxy npm_config_https_proxy
 
+# Persist proxy removal so new shells start clean
+if ! grep -q "unset npm_config_http_proxy" ~/.bashrc 2>/dev/null; then
+  echo "unset npm_config_http_proxy npm_config_https_proxy" >> ~/.bashrc
+fi
+
 # Abort early if the npm registry is unreachable
 if ! npm ping >/dev/null 2>&1; then
   echo "Unable to reach the npm registry. Check network connectivity or proxy settings." >&2
