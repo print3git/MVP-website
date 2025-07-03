@@ -4,9 +4,9 @@
 let stripe = null;
 
 // Use a lightweight fallback model and upgrade to the high detail version after load.
-const FALLBACK_GLB_LOW = "models/bag.glb";
-const FALLBACK_GLB_HIGH =
+const FALLBACK_GLB_LOW =
   "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
+const FALLBACK_GLB_HIGH = FALLBACK_GLB_LOW;
 const FALLBACK_GLB = FALLBACK_GLB_LOW;
 const PRICES = {
   single: 2999,
