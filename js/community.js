@@ -509,13 +509,17 @@ function renderGrid(type, filters = getFilters()) {
         : "w-full min-h-32 bg-[#2A2A2E] border border-dashed border-white/40 rounded-xl flex items-center justify-center text-sm p-2";
     if (type === "popular") {
       advert.classList.add("flex-col");
+      const loggedIn = !!localStorage.getItem("token");
+      const btnClass =
+        "bg-[#30D5C8] text-[#1A1A1D] px-4 rounded-r-xl" +
+        (loggedIn ? "" : " opacity-50");
       advert.innerHTML =
         '<p class="mb-2 text-center text-white">Earn <span class="text-[#30D5C8]">£5 credit</span> when someone buys with your link.</p>' +
         '<div class="space-y-1 w-full max-w-xs">' +
         '<label for="referral-link" class="block text-sm">Your referral link:</label>' +
         '<div class="flex">' +
         '<input id="referral-link" aria-label="Referral link" class="flex-1 bg-[#1A1A1D] border border-white/10 rounded-l-xl px-3 py-2 text-white placeholder-gray-500" placeholder="Log in to get your link" readonly />' +
-        '<button aria-label="Copy referral link" class="bg-[#30D5C8] text-[#1A1A1D] px-4 rounded-r-xl" onclick="copyReferralLink()">Copy</button>' +
+        `<button aria-label="Copy referral link" class="${btnClass}" onclick="copyReferralLink()">Copy</button>` +
         "</div></div>";
     } else {
       advert.classList.add("flex-col", "text-center", "space-y-2");
