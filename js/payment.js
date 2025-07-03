@@ -20,6 +20,12 @@ if (window.location.pathname.endsWith("luckybox-payment.html")) {
   PRICES.multi = 2999;
   PRICES.premium = 5999;
 }
+if (window.location.pathname.endsWith("minis-checkout.html")) {
+  PRICES.single = 1499;
+  PRICES.multi = 1499;
+  PRICES.premium = 1499;
+}
+
 
 const TWO_PRINT_DISCOUNT = 700;
 const THIRD_PRINT_DISCOUNT = 1500;
@@ -68,6 +74,9 @@ function computeBulkDiscount(items) {
   }
   if (window.location.pathname.endsWith("luckybox-payment.html")) {
     if (totalQty >= 2) return TWO_PRINT_DISCOUNT;
+    return 0;
+  }
+  if (window.location.pathname.endsWith("minis-checkout.html")) {
     return 0;
   }
 
