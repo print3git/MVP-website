@@ -133,7 +133,7 @@ if (!getFallbackModels)
       { name: "BoomBox", ext: "jpg" },
       { name: "BarramundiFish", ext: "jpg" },
       // FlightHelmet lacks a GLB; use a different sample that definitely has one
-      { name: "Fox", ext: "jpg" },
+      { placeholder: true },
       { name: "Avocado", ext: "jpg" },
       { name: "AntiqueCamera", ext: "png" },
       { name: "Lantern", ext: "jpg" },
@@ -150,12 +150,18 @@ if (!getFallbackModels)
       { name: "CesiumMilkTruck", ext: "gif" },
     ];
 
-    return samples.slice(start, start + count).map((s, i) => ({
-      model_url: `${base}/${s.name}/glTF-Binary/${s.name}.glb`,
-      id: `fallback-${start + i}`,
-      job_id: `fallback-${start + i}`,
-      snapshot: `${base}/${s.name}/screenshot/screenshot.${s.ext}`,
-    }));
+    return samples.slice(start, start + count).map((s, i) => {
+      const id = `fallback-${start + i}`;
+      if (s.placeholder) {
+        return { placeholder: true, id, job_id: id };
+      }
+      return {
+        model_url: `${base}/${s.name}/glTF-Binary/${s.name}.glb`,
+        id,
+        job_id: id,
+        snapshot: `${base}/${s.name}/screenshot/screenshot.${s.ext}`,
+      };
+    });
   };
 
 const prefetchedModels = new Set();
@@ -284,7 +290,13 @@ function copyReferralLink() {
 function createCard(model) {
   const div = document.createElement("div");
   div.className =
-    "model-card relative h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape flex items-center justify-center cursor-pointer";
+    "model-card relative h-32 bg-[#2A2A2E] border border-white/10 rounded-xl flex items-center justify-center";
+  if (model.placeholder) {
+    div.innerHTML =
+      '<span class="text-center text-sm p-2">put real life social proof image here</span>';
+    return div;
+  }
+  div.classList.add("hover:bg-[#3A3A3E]", "transition-shape", "cursor-pointer");
   div.dataset.model = model.model_url;
   div.dataset.job = model.job_id;
 
