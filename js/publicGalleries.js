@@ -25,7 +25,7 @@ const sampleGalleries = {
   ],
 };
 
-window.addEventListener("DOMContentLoaded", () => {
+async function init() {
   const tagsEl = document.getElementById("subreddit-tags");
   const grid = document.getElementById("gallery-grid");
   const loadBtn = document.getElementById("gallery-load");
@@ -148,11 +148,14 @@ window.addEventListener("DOMContentLoaded", () => {
     renderGallery();
   });
 
-  async function init() {
+  async function start() {
     await loadAdvertModels();
     renderTags();
     renderGallery();
   }
 
-  init();
-});
+  start();
+}
+
+if (document.readyState !== "loading") init();
+else document.addEventListener("DOMContentLoaded", init);
