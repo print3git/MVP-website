@@ -174,13 +174,35 @@ function ensureModelViewerLoaded() {
   if (window.customElements?.get("model-viewer")) {
     return Promise.resolve();
   }
+  if (
+    typeof navigator !== "undefined" &&
+    (navigator.userAgent?.includes("Node.js") || navigator.userAgent?.includes("jsdom"))
+  ) {
+    return Promise.resolve();
+  }
+  const cdnUrl =
+    "https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js";
+  const localUrl = "js/model-viewer.min.js";
   return new Promise((resolve) => {
     const s = document.createElement("script");
     s.type = "module";
-    s.src =
-      "https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js";
+    s.src = cdnUrl;
+    s.onload = resolve;
+    s.onerror = () => {
+      s.remove();
+      const fallback = document.createElement("script");
+      fallback.type = "module";
+      fallback.src = localUrl;
+      fallback.onload = resolve;
+      fallback.onerror = resolve;
+      document.head.appendChild(fallback);
+    };
     document.head.appendChild(s);
-    resolve();
+    setTimeout(() => {
+      if (!window.customElements?.get("model-viewer")) {
+        s.onerror();
+      }
+    }, 3000);
   });
 }
 
