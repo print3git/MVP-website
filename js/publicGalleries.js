@@ -30,8 +30,28 @@ window.addEventListener("DOMContentLoaded", () => {
   const grid = document.getElementById("gallery-grid");
   const loadBtn = document.getElementById("gallery-load");
 
+  const API_BASE = (window.API_ORIGIN || "") + "/api";
+  const fallbackAdvertModels = [
+    "models/bag.glb",
+    "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF-Binary/Avocado.glb",
+    "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/DamagedHelmet/glTF-Binary/DamagedHelmet.glb",
+  ];
+  let advertModels = [...fallbackAdvertModels];
   let currentTag = Object.keys(sampleGalleries)[0];
   let offset = 0;
+
+  async function loadAdvertModels() {
+    try {
+      const res = await fetch(`${API_BASE}/community/popular?limit=3`);
+      if (res.ok) {
+        const data = await res.json();
+        const urls = data.map((m) => m.model_url).filter(Boolean);
+        if (urls.length) advertModels = urls;
+      }
+    } catch (err) {
+      console.error("Failed to load advert models", err);
+    }
+  }
 
   function renderTags() {
     if (!tagsEl) return;
@@ -53,11 +73,7 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  const advertModels = [
-    "models/bag.glb",
-    "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF-Binary/Avocado.glb",
-    "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/DamagedHelmet/glTF-Binary/DamagedHelmet.glb",
-  ];
+  // Populated by loadAdvertModels()
   let advertIdx = 0;
   let advertInterval;
 
@@ -82,7 +98,8 @@ window.addEventListener("DOMContentLoaded", () => {
     const nextBtn = advert.querySelector("#advert-next");
 
     function show(delta) {
-      advertIdx = (advertIdx + delta + advertModels.length) % advertModels.length;
+      advertIdx =
+        (advertIdx + delta + advertModels.length) % advertModels.length;
       viewer.src = advertModels[advertIdx];
     }
 
@@ -131,6 +148,11 @@ window.addEventListener("DOMContentLoaded", () => {
     renderGallery();
   });
 
-  renderTags();
-  renderGallery();
+  async function init() {
+    await loadAdvertModels();
+    renderTags();
+    renderGallery();
+  }
+
+  init();
 });
