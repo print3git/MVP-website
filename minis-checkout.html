@@ -1,0 +1,869 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Minis Checkout – print3</title>
+
+    <!-- DNS preconnects to speed up third-party requests -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
+    <link rel="preconnect" href="https://js.stripe.com" crossorigin />
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link rel="preconnect" href="https://modelviewer.dev" crossorigin />
+
+    <!-- Preload 3D assets -->
+    <link
+      rel="preload"
+      href="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
+      as="fetch"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
+      as="fetch"
+      crossorigin
+    />
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Stripe.js -->
+    <script src="https://js.stripe.com/v3/" defer></script>
+
+    <!-- Font Awesome (back-arrow icon) -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      referrerpolicy="no-referrer"
+    />
+
+    <!-- model-viewer -->
+    <script
+      type="module"
+      src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js"
+    ></script>
+    <script
+      nomodule
+      src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer-legacy.js"
+      defer
+    ></script>
+    <style>
+      /* Add rainbow shimmer effect used on the index submit arrow */
+      #multi-color-button {
+        position: relative;
+        overflow: hidden;
+      }
+      #multi-color-button::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          120deg,
+          rgba(255, 255, 255, 0) 0%,
+          rgba(255, 0, 255, 0.3) 15%,
+          rgba(0, 255, 255, 0.3) 85%,
+          rgba(255, 255, 255, 0) 100%
+        );
+        transform: translateX(-100%);
+        animation: shimmer 3s ease-in-out infinite;
+      }
+      @keyframes shimmer {
+        to {
+          transform: translateX(100%);
+        }
+      }
+
+      /* Remove default number input arrows */
+      #print-qty::-webkit-inner-spin-button,
+      #print-qty::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      #print-qty {
+        -moz-appearance: textfield;
+      }
+
+      /* === Progressive–disclosure container === */
+      .collapsible {
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+      }
+      .collapsible.collapsed {
+        max-height: 0;
+      }
+      .collapsible.expanded {
+        max-height: 500px; /* big enough for any content */
+      }
+      /* Remove extra spacing when address fields are collapsed */
+      #advanced-section > .collapsible.collapsed {
+        margin-top: 0;
+      }
+
+      /* Highlight the selected pricing tier */
+      #material-options label span {
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+      #material-options label:hover span,
+      #material-options input:active + span {
+        transform: scale(1.04);
+      }
+      #material-options input:checked + span {
+        transform: scale(1.04);
+        box-shadow:
+          0 0 10px rgba(48, 213, 200, 0.6),
+          0 6px 10px rgba(0, 0, 0, 0.6);
+      }
+
+      #material-options label:hover span.no-transform,
+      #material-options input:active + span.no-transform,
+      #material-options input:checked + span.no-transform {
+        /* Retain the element's translation while preventing scaling */
+        transform: translateX(-4rem);
+        box-shadow: none;
+      }
+
+      /* Add glow and single-pass shimmer to the Pay button */
+      #submit-payment {
+        position: relative;
+        overflow: hidden;
+        box-shadow:
+          0 0 10px rgba(48, 213, 200, 0.6),
+          0 6px 10px rgba(0, 0, 0, 0.6);
+      }
+      #submit-payment::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          120deg,
+          rgba(255, 255, 255, 0) 0%,
+          rgba(255, 0, 255, 0.3) 15%,
+          rgba(0, 255, 255, 0.3) 85%,
+          rgba(255, 255, 255, 0) 100%
+        );
+        transform: translateX(-100%);
+        animation: shimmer 3s ease-in-out forwards;
+        pointer-events: none;
+      }
+
+      #pay-summary {
+        display: none;
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: calc(100% + 0.5rem);
+        background: #2a2a2e;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 0.5rem;
+        padding: 0.5rem;
+        font-size: 0.875rem;
+        text-align: left;
+        z-index: 20;
+      }
+      #pay-summary.visible {
+        display: block;
+      }
+
+      /* Hide model-viewer's built-in loading bar */
+      model-viewer::part(progress-bar) {
+        display: none;
+      }
+    </style>
+  </head>
+
+  <body class="bg-[#1A1A1D] text-white font-sans min-h-screen flex flex-col">
+    <div
+      id="flash-banner"
+      role="status"
+      hidden
+      class="relative z-30 text-[#1A1A1D] font-semibold text-center py-2 bg-gradient-to-r from-teal-400 via-cyan-300 to-teal-500"
+    >
+      Order within <span id="flash-timer">5:00</span> to get 5% off
+    </div>
+
+    <!-- Header -->
+    <header class="relative z-10 px-6 py-4">
+      <a
+        id="back-link"
+        href="index.html"
+        class="inline-flex items-center justify-center bg-[#2A2A2E] border border-white/10 rounded-3xl px-5 py-2 text-lg font-medium hover:bg-[#3A3A3E] transition-shape"
+      >
+        <svg
+          class="w-4 h-4 mr-2 flex-shrink-0"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M15 19l-7-7 7-7"
+          />
+        </svg>
+        Back
+      </a>
+    </header>
+
+    <!-- Main -->
+    <main
+      class="flex-1 flex flex-col items-center justify-center px-4 space-y-8 -mt-40"
+    >
+      <div id="success" class="hidden text-green-400 text-center space-y-2">
+        <p>Payment successful!</p>
+        <a href="profile.html" class="underline block">View profile</a>
+        <div id="referral" class="hidden space-y-1">
+          <span>Your referral link:</span>
+          <div class="flex justify-center items-center space-x-2">
+            <input
+              id="referral-link"
+              aria-label="Referral link"
+              readonly
+              class="bg-[#2A2A2E] px-2 py-1 rounded text-white w-64"
+            />
+            <button
+              aria-label="Copy referral link"
+              id="copy-referral"
+              class="px-2 py-1 bg-[#30D5C8] text-[#1A1A1D] rounded"
+            >
+              Copy
+            </button>
+          </div>
+        </div>
+        <button id="reorder-color" class="underline">
+          Order another color
+        </button>
+      </div>
+      <div id="cancel" class="hidden text-red-400 text-center">
+        Payment cancelled.
+      </div>
+      <div
+        class="relative flex flex-col md:flex-row items-start justify-center w-full max-w-4xl gap-8"
+      >
+        <!-- Model Preview -->
+        <section
+          id="preview-wrapper"
+          class="relative w-full md:w-1/2 max-w-lg h-80 bg-[#2A2A2E] border border-white/10 rounded-3xl overflow-visible"
+        >
+          <img
+            id="preview-img"
+            src="https://placehold.co/600x400/2A2A2E/2A2A2E?text="
+            class="object-contain h-full w-full"
+            style="display: none"
+            alt="Preview image"
+          />
+          <model-viewer
+            id="viewer"
+            alt="3D astronaut"
+            environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
+            camera-controls
+            auto-rotate
+            style="width: 100%; height: 100%; display: block"
+          ></model-viewer>
+          <p class="absolute top-2 left-2 text-red-300 text-xs">
+            Only <span id="slot-count" style="visibility: hidden"></span> print
+            slots remaining
+          </p>
+          <button
+            id="remove-model"
+            type="button"
+            class="absolute top-2 right-2 w-6 h-6 rounded-full bg-white text-black border border-black flex items-center justify-center z-20 hidden"
+          >
+            <i class="fas fa-times"></i>
+            <span class="sr-only">Remove from basket</span>
+          </button>
+          <p
+            id="model-counter"
+            class="absolute top-10 right-2 text-white text-xs hidden"
+          ></p>
+          <button
+            id="prev-model"
+            type="button"
+            class="absolute left-2 top-1/2 -translate-y-1/2 bg-[#2A2A2E] border border-white/20 rounded-full p-2"
+          >
+            <i class="fas fa-chevron-left"></i>
+            <span class="sr-only">Previous model</span>
+          </button>
+          <button
+            id="next-model"
+            type="button"
+            class="absolute right-2 top-1/2 -translate-y-1/2 bg-[#2A2A2E] border border-white/20 rounded-full p-2"
+          >
+            <i class="fas fa-chevron-right"></i>
+            <span class="sr-only">Next model</span>
+          </button>
+          <div
+            id="loader"
+            class="absolute inset-0 flex items-center justify-center bg-[#2A2A2E]/80"
+            style="display: none"
+          >
+            <div
+              class="h-10 w-10 border-4 border-white border-t-transparent rounded-full animate-spin"
+            ></div>
+          </div>
+          <div class="mt-4 text-center text-sm text-gray-400 relative h-full">
+            <p class="mb-1">
+              Trusted by <span class="text-white">thousands of makers:</span>
+            </p>
+            <p>
+              ✅︎ If you don’t love it, we’ll reprint or refund you – no <br />
+              questions asked:
+              <span class="text-white">enquiries@domain.com</span>
+            </p>
+          </div>
+        </section>
+
+        <!-- Checkout Form -->
+        <div
+          class="relative w-full md:w-1/2 max-w-md bg-[#2A2A2E] border border-white/10 rounded-3xl p-6"
+        >
+          <h2 class="text-2xl font-semibold mb-4 text-center">
+            Minis Checkout
+          </h2>
+          <form id="checkout-form" class="space-y-[0.33rem]">
+            <!-- Material/Size Options -->
+            <fieldset id="material-options" class="flex w-full justify-between">
+              <label
+                class="cursor-not-allowed text-center flex flex-col items-center w-1/3 opacity-50"
+              >
+                <input
+                  type="radio"
+                  name="material"
+                  value="premium"
+                  id="opt-premium"
+                  class="sr-only peer"
+                  disabled
+                />
+                <span
+                  class="w-24 h-24 flex flex-col items-center justify-center rounded-full border border-white/20 pt-0"
+                >
+                  <span class="font-semibold">£79.99</span>
+                  <span class="text-xs">premium</span>
+                </span>
+                <span class="block text-xs mt-1">coming soon</span>
+              </label>
+
+              <label
+                class="cursor-pointer text-center relative flex flex-col items-center w-1/3 z-10"
+              >
+                <input
+                  type="radio"
+                  name="material"
+                  value="multi"
+                  id="opt-multi"
+                  class="sr-only peer"
+                  checked
+                />
+                <span
+                  id="multi-color-button"
+                  class="relative w-28 h-28 flex flex-col items-center justify-center rounded-full border-4 border-white/20 shadow-xl peer-checked:border-[#30D5C8]"
+                >
+                  <span class="font-semibold">£14.99</span>
+                  <span class="text-xs">multi-colour</span>
+                  <span
+                    class="text-[10px] leading-tight text-center mt-2 text-[#30D5C8]"
+                    >+ (optional) name<br />etching</span
+                  >
+                </span>
+                <span
+                  class="absolute -top-2 left-1/2 -translate-x-16 text-base line-through whitespace-nowrap pointer-events-none z-10 no-transform"
+                  >£19.99</span
+                >
+                <span class="block text-xs mt-1 text-red-300 w-28">
+                  Only
+                  <span id="color-slot-count" style="visibility: hidden"></span>
+                  coloured prints left
+                </span>
+                <span class="block text-xs mt-1 text-white w-28"
+                  >(most popular)</span
+                >
+              </label>
+
+              <label
+                id="single-label"
+                class="cursor-pointer text-center relative flex flex-col items-center self-start w-1/3"
+              >
+                <input
+                  type="radio"
+                  name="material"
+                  value="single"
+                  id="opt-single"
+                  class="sr-only peer"
+                />
+                <span
+                  class="w-24 h-24 flex flex-col items-center justify-center rounded-full border border-white/20 peer-checked:border-4 peer-checked:border-[#30D5C8] pt-0"
+                >
+                  <span class="font-semibold">£14.99</span>
+                  <span class="text-xs">single-colour</span>
+                </span>
+
+                <div
+                  id="single-color-menu"
+                  class="absolute bottom-0 left-1/2 grid grid-cols-6 place-items-center gap-2 p-2 bg-[#2A2A2E] border border-white/20 rounded-3xl w-60 h-28 z-20 hidden"
+                  style="transform: translateX(-3.5rem) translateY(8%)"
+                >
+                  <button
+                    type="button"
+                    class="w-8 h-8 rounded-full border border-white/20"
+                    style="background-color: #ff0000"
+                    data-color="#ff0000"
+                  ></button>
+                  <button
+                    type="button"
+                    class="w-8 h-8 rounded-full border border-white/20"
+                    style="background-color: #ff6600"
+                    data-color="#ff6600"
+                  ></button>
+                  <button
+                    type="button"
+                    class="w-8 h-8 rounded-full border border-white/20"
+                    style="background-color: #fbbf24"
+                    data-color="#ffcc00"
+                  ></button>
+                  <button
+                    type="button"
+                    class="w-8 h-8 rounded-full border border-white/20"
+                    style="background-color: #34d399"
+                    data-color="#00cc00"
+                  ></button>
+                  <button
+                    type="button"
+                    class="w-8 h-8 rounded-full border border-white/20"
+                    style="background-color: #60a5fa"
+                    data-color="#0000ff"
+                  ></button>
+                  <button
+                    type="button"
+                    class="w-8 h-8 rounded-full border border-white/20"
+                    style="background-color: #7c3aed"
+                    data-color="#5b2ddf"
+                  ></button>
+                  <button
+                    type="button"
+                    class="w-8 h-8 rounded-full border border-white/20"
+                    style="background-color: #ff1493"
+                    data-color="#ff1493"
+                  ></button>
+                  <button
+                    type="button"
+                    class="w-8 h-8 rounded-full border border-white/20"
+                    style="background-color: #00ffff"
+                    data-color="#00ffff"
+                  ></button>
+                  <button
+                    type="button"
+                    class="w-8 h-8 rounded-full border border-white/20"
+                    style="background-color: #008080"
+                    data-color="#008080"
+                  ></button>
+                  <button
+                    type="button"
+                    class="w-8 h-8 rounded-full border border-white/20"
+                    style="background-color: #000000"
+                    data-color="#000000"
+                  ></button>
+                  <button
+                    type="button"
+                    class="w-8 h-8 rounded-full border border-white/20"
+                    style="background-color: #606060"
+                    data-color="#606060"
+                  ></button>
+                  <button
+                    type="button"
+                    class="w-8 h-8 rounded-full border border-white/20"
+                    style="background-color: #ffffff"
+                    data-color="#ffffff"
+                  ></button>
+                </div>
+              </label>
+            </fieldset>
+            <div class="flex items-center gap-2 mt-2 text-white text-sm">
+              <span>Quantity:</span>
+              <div
+                id="qty-pill"
+                class="flex items-center bg-[#2A2A2E] border border-white/20 rounded-full overflow-hidden p-1"
+              >
+                <button
+                  type="button"
+                  id="qty-decrement"
+                  aria-label="Decrease quantity"
+                  class="w-[2.1rem] h-[2.1rem] flex items-center justify-center text-[1.05rem]"
+                >
+                  &minus;
+                </button>
+                <input
+                  id="print-qty"
+                  type="number"
+                  min="1"
+                  value="2"
+                  class="w-[2.1rem] text-center bg-transparent appearance-none text-[0.875rem]"
+                />
+                <button
+                  type="button"
+                  id="qty-increment"
+                  aria-label="Increase quantity"
+                  class="w-[2.1rem] h-[2.1rem] flex items-center justify-center text-[1.05rem]"
+                >
+                  +
+                </button>
+              </div>
+              <p
+                id="bulk-discount-msg"
+                class="text-xs whitespace-nowrap ml-2 text-gray-400"
+              ></p>
+            </div>
+
+            <div>
+              <input
+                id="ship-name"
+                class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+                placeholder="Name"
+                autocomplete="name"
+                aria-label="Name"
+              />
+            </div>
+            <div id="etch-name-container" class="relative">
+              <input
+                id="etch-name"
+                class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+                placeholder="Name for etching (optional)"
+                maxlength="20"
+                aria-label="Etched Name"
+                disabled
+              />
+              <div
+                id="etch-warning"
+                class="pointer-events-none absolute inset-y-0 left-0 flex items-center gap-2 pl-2 hidden"
+              >
+                <div class="border-t-2 border-[#30D5C8] w-[20ch]"></div>
+                <span class="text-sm text-[#30D5C8] whitespace-nowrap"
+                  >Multi-colour required</span
+                >
+              </div>
+            </div>
+            <div>
+              <input
+                id="checkout-email"
+                type="email"
+                class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+                placeholder="Email"
+                autocomplete="email"
+                aria-label="Email"
+              />
+            </div>
+            <div id="advanced-section" class="space-y-[0.33rem]">
+              <div id="addressGroup" class="space-y-[0.33rem]">
+                <div>
+                  <input
+                    id="ship-address"
+                    class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+                    placeholder="Address"
+                    autocomplete="address-line1"
+                    aria-label="Address"
+                  />
+                </div>
+
+                <div class="flex gap-2">
+                  <input
+                    id="ship-city"
+                    class="flex-1 p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+                    placeholder="City + Country"
+                    autocomplete="address-level2"
+                    aria-label="City + Country"
+                  />
+                  <input
+                    id="ship-zip"
+                    class="w-28 p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+                    placeholder="ZIP"
+                    autocomplete="postal-code"
+                    aria-label="ZIP code"
+                  />
+                </div>
+              </div>
+
+              <button type="button" class="promo-toggle text-sm underline">
+                Have a promo code?
+              </button>
+              <div class="promo-input flex gap-2 mt-2" hidden>
+                <input
+                  id="discount-code"
+                  class="flex-1 p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+                  placeholder="Promo code"
+                  aria-label="Promo code"
+                />
+                <button
+                  id="apply-discount"
+                  type="button"
+                  class="px-3 bg-[#30D5C8] text-[#1A1A1D] rounded-md hover:bg-[#28b7a8] transition"
+                >
+                  Apply
+                </button>
+              </div>
+              <p id="discount-msg" class="text-xs text-center"></p>
+
+              <div id="credit-option" class="text-sm hidden">
+                <label class="flex items-center gap-1">
+                  <input
+                    type="checkbox"
+                    id="use-credit"
+                    class="accent-[#30D5C8]"
+                  />
+                  Use print2 Pro credit (<span id="credits-remaining">0</span>
+                  left this week)
+                </label>
+              </div>
+              <div id="sale-credit-option" class="text-sm hidden">
+                <label class="flex items-center gap-1">
+                  <input
+                    type="checkbox"
+                    id="use-sale-credit"
+                    class="accent-[#30D5C8]"
+                  />
+                  Use account credit (£<span id="sale-credit-balance"
+                    >0.00</span
+                  >
+                  available)
+                </label>
+              </div>
+            </div>
+
+            <div id="payment-element" class="text-center text-gray-400"></div>
+
+            <p id="cost-estimate" class="text-sm text-center"></p>
+            <p id="eta-estimate" class="text-sm text-center"></p>
+
+            <button
+              id="submit-payment"
+              type="button"
+              class="w-full bg-[#30D5C8] text-[#1A1A1D] py-3 rounded-xl font-semibold hover:bg-[#28b7a8] transition"
+            >
+              Pay £14.99
+            </button>
+            <!--
+              Use a fixed height so the panel doesn't jump when the price
+              breakdown spans two lines. h-8 corresponds to two lines of the
+              text-xs class.
+            -->
+            <div class="flex justify-between mt-2 mb-2 text-xs h-8">
+              <pre
+                id="price-breakdown"
+                class="whitespace-pre-wrap text-right"
+              ></pre>
+            </div>
+            <div
+              id="pay-summary"
+              class="hidden absolute left-1/2 -translate-x-1/2 bottom-[4.5rem] w-64 bg-[#2A2A2E] border border-white/20 rounded-lg p-2 text-sm"
+            ></div>
+          </form>
+
+          <!-- repositioned badge -->
+          <div
+            id="money-back-badge"
+            style="
+              position: absolute;
+              left: calc(100% + 0.55cm);
+              top: 85%;
+              transform: translateY(-72%);
+              visibility: hidden;
+            "
+            class="whitespace-nowrap text-sm pointer-events-none"
+          >
+            <p>🔒 Secure Checkout</p>
+            <p>🛡️ Money-Back Guarantee</p>
+            <p>🚚 Free UK Shipping</p>
+          </div>
+        </div>
+
+        <div
+          class="absolute left-0 bottom-4 w-full md:w-1/2 max-w-lg text-center text-sm text-gray-400"
+        >
+          <p>
+            Due to incredibly high demand, delivery will take ~3 days.<br />
+            Please allow for this. –
+            <span class="text-white">The print2 team: Jia and Matthew</span>
+          </p>
+        </div>
+      </div>
+    </main>
+
+    <!-- Exit-intent discount overlay -->
+    <div
+      id="exit-discount-overlay"
+      class="fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50"
+    >
+      <div
+        class="relative bg-[#2A2A2E] border border-white/10 outline outline-white/20 rounded-3xl p-6 text-center"
+      >
+        <button
+          id="exit-discount-close"
+          class="absolute -top-3 -right-3 w-[3rem] h-[3rem] rounded-full bg-white text-black flex items-center justify-center z-50"
+          aria-label="Close"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            class="w-7 h-7"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="3"
+            stroke-linecap="round"
+          >
+            <line x1="6" y1="6" x2="18" y2="18" />
+            <line x1="6" y1="18" x2="18" y2="6" />
+          </svg>
+        </button>
+        <h2 class="text-xl font-semibold mb-2 text-white">Wait!</h2>
+        <p class="mb-4 text-gray-200">
+          Use code <span class="text-white font-mono px-1">SAVE5</span> for 5%
+          off.
+        </p>
+      </div>
+    </div>
+
+    <!-- Bulk discount info -->
+    <div
+      id="bulk-discount-popup"
+      class="fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50"
+    >
+      <div
+        class="bg-[#2A2A2E] border border-white/10 rounded-3xl p-6 text-center"
+      >
+        <h2 class="text-xl font-semibold mb-2 text-white">Save on Prints</h2>
+        <ul class="mb-4 text-gray-200 list-disc list-inside text-left">
+          <li>£7 off when you buy more than one print</li>
+        </ul>
+        <p class="text-gray-200 text-sm mb-4">
+          Share this and get £5 credit on your next print.
+        </p>
+        <p class="mb-4 text-xs text-red-300 text-center">
+          Only
+          <span id="bulk-slot-count" style="visibility: hidden"></span> print
+          slots remaining
+        </p>
+        <button
+          id="bulk-discount-close"
+          class="px-4 py-2 rounded-md bg-[#30D5C8] text-[#1A1A1D]"
+        >
+          OK
+        </button>
+      </div>
+    </div>
+
+    <!-- Next print suggestion -->
+    <div
+      id="next-print-modal"
+      class="fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50"
+    >
+      <div
+        class="bg-[#2A2A2E] border border-white/10 rounded-3xl p-6 text-center"
+      >
+        <h2 class="text-xl font-semibold mb-2 text-white">
+          Start your next one?
+        </h2>
+        <p id="next-print-text" class="mb-4 text-gray-200">
+          Try this prompt: <span class="text-white font-mono"></span>
+        </p>
+        <button
+          id="next-print-btn"
+          class="px-4 py-2 mb-2 rounded-md bg-[#30D5C8] text-[#1A1A1D]"
+        >
+          Create it
+        </button>
+        <p class="text-sm text-gray-200">
+          Use code
+          <span id="next-discount" class="text-white font-mono px-1"></span>
+          within 48&nbsp;h
+        </p>
+      </div>
+    </div>
+
+    <div
+      id="wizard-banner"
+      class="fixed bottom-0 left-0 right-0 flex divide-x divide-[#1A1A1D] text-white font-semibold bg-[#1A1A1D] z-40"
+    >
+      <div id="wizard-step-prompt" class="flex-1 text-center py-2 bg-[#2A2A2E]">
+        Create prompt
+      </div>
+      <div id="wizard-step-building" class="flex-1 text-center py-2">
+        Building model
+      </div>
+
+      <div
+        id="wizard-step-purchase"
+        class="flex-1 text-center py-2 flex justify-center items-center"
+      >
+        <span>Purchase model</span>
+      </div>
+    </div>
+
+    <!-- Init scripts -->
+    <script src="js/modelViewerTouchFix.js" defer></script>
+    <script type="module" src="js/wizard.js" defer></script>
+    <script type="module" src="js/payment.js" defer></script>
+    <script type="module" src="js/exitDiscount.js" defer></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const link = document.getElementById("back-link");
+        if (!link) return;
+        let target = "index.html";
+        const fromCommunity = sessionStorage.getItem("fromCommunity");
+        sessionStorage.removeItem("fromCommunity");
+        const fromAddons = sessionStorage.getItem("fromAddons");
+        sessionStorage.removeItem("fromAddons");
+        const fromMarketplace = sessionStorage.getItem("fromMarketplace");
+        sessionStorage.removeItem("fromMarketplace");
+        try {
+          const ref = new URL(document.referrer);
+          if (
+            fromCommunity === "1" ||
+            ref.pathname.endsWith("CommunityCreations.html")
+          ) {
+            target = "CommunityCreations.html";
+          } else if (
+            fromAddons === "1" ||
+            ref.pathname.endsWith("addons.html")
+          ) {
+            target = "addons.html";
+          } else if (
+            fromMarketplace === "1" ||
+            ref.pathname.endsWith("marketplace.html")
+          ) {
+            target = "marketplace.html";
+          }
+        } catch {
+          if (fromCommunity === "1") target = "CommunityCreations.html";
+          else if (fromAddons === "1") target = "addons.html";
+          else if (fromMarketplace === "1") target = "marketplace.html";
+        }
+        link.setAttribute("href", target);
+      });
+    </script>
+    <script>
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("service-worker.js");
+      }
+    </script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const reminder = document.getElementById("saved-reminder");
+        if (
+          reminder &&
+          window.getSavedModels &&
+          window.getSavedModels().length
+        ) {
+          reminder.classList.remove("hidden");
+        }
+      });
+    </script>
+    <script type="module" src="js/basket.js" defer></script>
+    <script>
+      window.disableSaveButton = true;
+    </script>
+    <script type="module" src="js/saveList.js" defer></script>
+    <script type="module" src="js/trackingPixel.js"></script>
+  </body>
+</html>
