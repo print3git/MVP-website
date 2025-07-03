@@ -25,14 +25,14 @@ const sampleGalleries = {
   ],
 };
 
-window.addEventListener("DOMContentLoaded", () => {
+async function init() {
   const tagsEl = document.getElementById("subreddit-tags");
   const grid = document.getElementById("gallery-grid");
   const loadBtn = document.getElementById("gallery-load");
 
   const API_BASE = (window.API_ORIGIN || "") + "/api";
   const fallbackAdvertModels = [
-    "models/bag.glb",
+    "https://modelviewer.dev/shared-assets/models/Astronaut.glb",
     "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF-Binary/Avocado.glb",
     "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/DamagedHelmet/glTF-Binary/DamagedHelmet.glb",
   ];
@@ -148,11 +148,14 @@ window.addEventListener("DOMContentLoaded", () => {
     renderGallery();
   });
 
-  async function init() {
+  async function start() {
     await loadAdvertModels();
     renderTags();
     renderGallery();
   }
 
-  init();
-});
+  start();
+}
+
+if (document.readyState !== "loading") init();
+else document.addEventListener("DOMContentLoaded", init);

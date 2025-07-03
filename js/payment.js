@@ -4,9 +4,9 @@
 let stripe = null;
 
 // Use a lightweight fallback model and upgrade to the high detail version after load.
-const FALLBACK_GLB_LOW = "models/bag.glb";
-const FALLBACK_GLB_HIGH =
+const FALLBACK_GLB_LOW =
   "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
+const FALLBACK_GLB_HIGH = FALLBACK_GLB_LOW;
 const FALLBACK_GLB = FALLBACK_GLB_LOW;
 const PRICES = {
   single: 2999,
@@ -20,6 +20,12 @@ if (window.location.pathname.endsWith("luckybox-payment.html")) {
   PRICES.multi = 2999;
   PRICES.premium = 5999;
 }
+if (window.location.pathname.endsWith("minis-checkout.html")) {
+  PRICES.single = 1499;
+  PRICES.multi = 1499;
+  PRICES.premium = 1499;
+}
+
 
 const TWO_PRINT_DISCOUNT = 700;
 const THIRD_PRINT_DISCOUNT = 1500;
@@ -68,6 +74,9 @@ function computeBulkDiscount(items) {
   }
   if (window.location.pathname.endsWith("luckybox-payment.html")) {
     if (totalQty >= 2) return TWO_PRINT_DISCOUNT;
+    return 0;
+  }
+  if (window.location.pathname.endsWith("minis-checkout.html")) {
     return 0;
   }
 
