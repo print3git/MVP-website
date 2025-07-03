@@ -69,12 +69,13 @@
     </noscript>
 
     <!-- Preload default model assets -->
-    <link
-      rel="preload"
-      href="models/bag.glb"
-      as="fetch"
-      type="model/gltf-binary"
-    />
+      <link
+        rel="preload"
+        href="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
+        as="fetch"
+        type="model/gltf-binary"
+        crossorigin
+      />
     <link
       rel="preload"
       href="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
@@ -303,10 +304,10 @@
           />
 
           <!-- 3-D Astronaut (always visible) -->
-          <model-viewer
-            id="viewer"
-            src="models/bag.glb"
-            alt="3D model preview"
+            <model-viewer
+              id="viewer"
+              src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
+              alt="3D astronaut"
             environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
             camera-controls
             auto-rotate
