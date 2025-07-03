@@ -59,7 +59,7 @@
     </style>
   </head>
 
-  <body class="bg-[#1A1A1D] text-white font-sans flex flex-col min-h-screen">
+  <body class="bg-[#1A1A1D] text-white font-sans flex flex-col h-screen overflow-hidden">
     <!-- HEADER -->
     <header class="flex items-center py-4 px-6">
       <a
@@ -108,7 +108,7 @@
     </header>
 
     <!-- MAIN -->
-    <main class="flex-1 p-6">
+    <main class="flex-1 p-6 flex flex-col">
       <!-- locked message (hidden by default) -->
       <div id="locked-msg" class="hidden bg-[#2A2A2E] p-4 rounded-xl text-center border border-white/10">
         Unlock advanced customisation after
@@ -118,7 +118,7 @@
       </div>
 
       <!-- ROW: Luckybox (50%) | RIGHT COLUMN (50%) -->
-      <div class="flex gap-6 mt-12 items-stretch min-h-[calc(100vh-6rem)]">
+      <div class="flex gap-6 mt-12 items-stretch flex-1">
         <!-- Luckybox (50%) -->
 
         <div id="luckybox" class="model-card w-1/2 bg-[#2A2A2E] border border-white/10 rounded-xl p-4 pb-20 flex flex-col space-y-4 relative h-full flex-1 min-h-[36rem] justify-center">
@@ -163,9 +163,9 @@
         </div>
 
         <!-- RIGHT COLUMN (50%) -->
-        <div class="flex flex-col w-1/2 gap-6 h-full flex-1 min-h-[36rem] mb-4">
+        <div class="flex flex-col w-1/2 gap-6 h-full flex-1 min-h-[36rem]">
           <!-- Print Minis (50% of column) -->
-          <div id="print-minis" class="model-card w-full bg-[#2A2A2E] border border-white/10 rounded-xl p-4 flex flex-col justify-center space-y-2 flex-1">
+          <div id="print-minis" class="model-card w-full bg-[#2A2A2E] border border-white/10 rounded-xl p-4 pb-20 flex flex-col justify-center space-y-2 flex-1">
             <span class="font-semibold text-lg self-center text-center">Print Minis</span>
             <p class="text-sm text-center">We'll print your design at roughly 25% scale for a tiny version.</p>
             <p class="text-sm text-center font-semibold">£14.99 per mini</p>
