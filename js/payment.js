@@ -68,7 +68,6 @@ function computeBulkDiscount(items) {
     totalQty += Math.max(1, parseInt(it.qty || 1, 10));
   }
   if (window.location.pathname.endsWith("luckybox-payment.html")) {
-    if (totalQty >= 3) return THIRD_PRINT_DISCOUNT;
     if (totalQty >= 2) return TWO_PRINT_DISCOUNT;
     return 0;
   }
