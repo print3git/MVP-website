@@ -518,7 +518,10 @@ function renderGrid(type, filters = getFilters()) {
         '<button aria-label="Copy referral link" class="bg-[#30D5C8] text-[#1A1A1D] px-4 rounded-r-xl" onclick="copyReferralLink()">Copy</button>' +
         "</div></div>";
     } else {
-      advert.textContent = "Advert Placeholder";
+      advert.classList.add("flex-col", "text-center", "space-y-2");
+      advert.innerHTML =
+        '<p class="text-white"><span class="text-[#30D5C8]">£7 off</span> your 2nd and <span class="text-[#30D5C8]">£15 off</span> third items you buy here</p>' +
+        '<a href="payment.html" class="font-bold py-2 px-5 rounded-full shadow-md transition border-2 border-black inline-block" style="background-color: #30D5C8; color: #1A1A1D" onmouseover="this.style.opacity=\'0.85\'" onmouseout="this.style.opacity=\'1\'">Buy Current Basket →</a>';
     }
     grid.appendChild(advert);
   }
