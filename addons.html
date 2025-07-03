@@ -169,14 +169,13 @@
             <span class="font-semibold text-lg self-center text-center">Print Minis</span>
             <p class="text-sm text-center">We'll print your design at roughly 25% scale for a tiny version.</p>
             <p class="text-sm text-center font-semibold">£14.99 per mini</p>
-            <button
-              class="self-center font-bold py-2 px-5 rounded-full shadow-md transition border-2 border-black text-sm"
+            <a href="minis-checkout.html"               class="self-center font-bold py-2 px-5 rounded-full shadow-md transition border-2 border-black text-sm"
               style="background-color: #30d5c8; color: #1a1a1d"
               onmouseover="this.style.opacity='0.85'"
               onmouseout="this.style.opacity='1'"
             >
               Print my basket in mini size →
-            </button>
+            </a>
           </div>
 
           <!-- Remix prints (50% of column) -->
@@ -197,7 +196,7 @@
     <script type="module" src="js/trackingPixel.js"></script>
     <script>
       document.addEventListener("DOMContentLoaded", () => {
-        document.querySelectorAll('a[href="payment.html"]').forEach((link) =>
+        document.querySelectorAll('a[href="payment.html"], a[href="minis-checkout.html"]').forEach((link) =>
           link.addEventListener("click", () =>
             sessionStorage.setItem("fromAddons", "1")
           )
