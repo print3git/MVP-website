@@ -39,7 +39,7 @@
       </a>
     </header>
     <main
-      class="flex-1 flex flex-col items-center justify-center px-4 space-y-8 -mt-40"
+      class="flex-1 flex flex-col items-center justify-center px-4 space-y-8"
       style="visibility: hidden"
       id="page-main"
     >
@@ -50,99 +50,101 @@
       <div id="cancel" class="hidden text-red-400 text-center">
         Payment cancelled.
       </div>
-      <div
-        class="relative flex flex-col items-start justify-center w-full max-w-md"
-      >
-        <h2 class="text-2xl font-semibold mb-2 text-center w-full">Checkout</h2>
-        <p class="text-center text-white mb-6">
-          You must first
-          <a href="signup.html" class="font-bold text-[#30D5C8]">Sign Up</a>
-          before joining print2 Pro.
-        </p>
-        <form id="checkout-form" class="space-y-2 w-full mt-4">
-          <div>
-            <input
-              id="ship-name"
-              class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
-              placeholder="Full Name"
-              autocomplete="name"
-              aria-label="Full Name"
-            />
-          </div>
-          <div>
-            <input
-              id="checkout-email"
-              type="email"
-              class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
-              placeholder="Email"
-              autocomplete="email"
-              aria-label="Email"
-            />
-          </div>
-          <div id="addressGroup" class="flex flex-col">
-            <label for="ship-address" class="font-medium">Address</label>
+      <div class="relative w-full max-w-md">
+        <div
+          class="bg-[#2A2A2E] border border-white/10 p-6 rounded-3xl space-y-4"
+        >
+          <h2 class="text-2xl font-semibold text-center">Checkout</h2>
+          <p class="text-center text-white">
+            You must first
+            <a href="signup.html" class="font-bold text-[#30D5C8]">Sign Up</a>
+            before joining print2 Pro.
+          </p>
+          <form id="checkout-form" class="space-y-4">
             <div>
               <input
-                id="ship-address"
+                id="ship-name"
                 class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
-                placeholder="Address"
-                autocomplete="address-line1"
-                aria-label="Address"
+                placeholder="Full Name"
+                autocomplete="name"
+                aria-label="Full Name"
               />
             </div>
-            <div class="flex gap-2">
+            <div>
               <input
-                id="ship-city"
-                class="flex-1 p-2 rounded-md bg-[#1A1A1D] border border-white/10"
-                placeholder="City + Country"
-                autocomplete="address-level2"
-                aria-label="City + Country"
-              />
-              <input
-                id="ship-zip"
-                class="w-28 p-2 rounded-md bg-[#1A1A1D] border border-white/10"
-                placeholder="ZIP"
-                autocomplete="postal-code"
-                aria-label="ZIP code"
+                id="checkout-email"
+                type="email"
+                class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+                placeholder="Email"
+                autocomplete="email"
+                aria-label="Email"
               />
             </div>
+            <div id="addressGroup" class="flex flex-col space-y-2">
+              <label for="ship-address" class="font-medium">Address</label>
+              <div>
+                <input
+                  id="ship-address"
+                  class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+                  placeholder="Address"
+                  autocomplete="address-line1"
+                  aria-label="Address"
+                />
+              </div>
+              <div class="flex gap-2">
+                <input
+                  id="ship-city"
+                  class="flex-1 p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+                  placeholder="City + Country"
+                  autocomplete="address-level2"
+                  aria-label="City + Country"
+                />
+                <input
+                  id="ship-zip"
+                  class="w-28 p-2 rounded-md bg-[#1A1A1D] border border-white/10"
+                  placeholder="ZIP"
+                  autocomplete="postal-code"
+                  aria-label="ZIP code"
+                />
+              </div>
+            </div>
+            <fieldset
+              id="subscription-choice"
+              class="flex items-center justify-center gap-4 my-4 text-sm"
+            >
+              <label class="flex items-center gap-1 whitespace-nowrap">
+                <input
+                  type="radio"
+                  name="printclub"
+                  value="monthly"
+                  class="accent-[#30D5C8]"
+                  checked
+                />
+                <span id="printclub-price">Join print2 Pro £149.99/mo</span>
+              </label>
+              <label class="flex items-center gap-1 whitespace-nowrap">
+                <input
+                  type="radio"
+                  name="printclub"
+                  value="annual"
+                  class="accent-[#30D5C8]"
+                />
+                <span id="printclub-annual">Annual £0.00</span>
+              </label>
+            </fieldset>
+            <div id="payment-element" class="text-center text-gray-400"></div>
+            <button
+              id="submit-payment"
+              type="button"
+              class="w-full bg-[#30D5C8] text-[#1A1A1D] py-3 rounded-xl font-semibold hover:bg-[#28b7a8] transition"
+            >
+              Join print2 Pro
+            </button>
+          </form>
+          <div class="flex justify-center gap-4 mt-4 text-2xl text-white">
+            <i class="fas fa-lock" aria-label="Secure checkout"></i>
+            <i class="fas fa-shield-alt" aria-label="Money-back guarantee"></i>
           </div>
-          <fieldset
-            id="subscription-choice"
-            class="flex items-center justify-center gap-4 my-4 text-sm"
-          >
-            <label class="flex items-center gap-1 whitespace-nowrap">
-              <input
-                type="radio"
-                name="printclub"
-                value="monthly"
-                class="accent-[#30D5C8]"
-                checked
-              />
-              <span id="printclub-price">Join print2 Pro £149.99/mo</span>
-            </label>
-            <label class="flex items-center gap-1 whitespace-nowrap">
-              <input
-                type="radio"
-                name="printclub"
-                value="annual"
-                class="accent-[#30D5C8]"
-              />
-              <span id="printclub-annual">Annual £0.00</span>
-            </label>
-          </fieldset>
-          <div id="payment-element" class="text-center text-gray-400"></div>
-          <button
-            id="submit-payment"
-            type="button"
-            class="w-full bg-[#30D5C8] text-[#1A1A1D] py-3 rounded-xl font-semibold hover:bg-[#28b7a8] transition"
-          >
-            Join print2 Pro
-          </button>
-        </form>
-        <div class="flex justify-center gap-4 mt-4 text-2xl text-white">
-          <i class="fas fa-lock" aria-label="Secure checkout"></i>
-          <i class="fas fa-shield-alt" aria-label="Money-back guarantee"></i>
         </div>
       </div>
       <script type="module" src="js/printclubCheckout.js" defer></script>

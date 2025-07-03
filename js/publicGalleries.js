@@ -32,7 +32,7 @@ async function init() {
 
   const API_BASE = (window.API_ORIGIN || "") + "/api";
   const fallbackAdvertModels = [
-    "models/bag.glb",
+    "https://modelviewer.dev/shared-assets/models/Astronaut.glb",
     "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF-Binary/Avocado.glb",
     "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/DamagedHelmet/glTF-Binary/DamagedHelmet.glb",
   ];
@@ -148,13 +148,14 @@ async function init() {
     renderGallery();
   });
 
-  await loadAdvertModels();
-  renderTags();
-  renderGallery();
+  async function start() {
+    await loadAdvertModels();
+    renderTags();
+    renderGallery();
+  }
+
+  start();
 }
 
-if (document.readyState !== "loading") {
-  init();
-} else {
-  window.addEventListener("DOMContentLoaded", init);
-}
+if (document.readyState !== "loading") init();
+else document.addEventListener("DOMContentLoaded", init);
