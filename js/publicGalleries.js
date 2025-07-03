@@ -53,17 +53,62 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  const advertModels = [
+    "models/bag.glb",
+    "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF-Binary/Avocado.glb",
+    "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/DamagedHelmet/glTF-Binary/DamagedHelmet.glb",
+  ];
+  let advertIdx = 0;
+  let advertInterval;
+
+  function stopAdvert() {
+    if (advertInterval) {
+      clearInterval(advertInterval);
+      advertInterval = null;
+    }
+  }
+
+  function createAdvert() {
+    const advert = document.createElement("div");
+    advert.className =
+      "relative w-full h-32 bg-[#2A2A2E] border border-dashed border-white/40 rounded-xl flex items-center justify-center";
+    advert.innerHTML = `
+      <model-viewer id="advert-viewer" src="${advertModels[0]}" camera-controls auto-rotate environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr" class="w-full h-full rounded-xl"></model-viewer>
+      <button id="advert-prev" class="absolute top-1/2 left-2 -translate-y-1/2 bg-black/50 p-2 rounded-full text-white"><i class="fas fa-chevron-left"></i><span class="sr-only">Previous</span></button>
+      <button id="advert-next" class="absolute top-1/2 right-2 -translate-y-1/2 bg-black/50 p-2 rounded-full text-white"><i class="fas fa-chevron-right"></i><span class="sr-only">Next</span></button>
+    `;
+    const viewer = advert.querySelector("#advert-viewer");
+    const prevBtn = advert.querySelector("#advert-prev");
+    const nextBtn = advert.querySelector("#advert-next");
+
+    function show(delta) {
+      advertIdx = (advertIdx + delta + advertModels.length) % advertModels.length;
+      viewer.src = advertModels[advertIdx];
+    }
+
+    prevBtn.addEventListener("click", () => {
+      stopAdvert();
+      show(-1);
+    });
+    nextBtn.addEventListener("click", () => {
+      stopAdvert();
+      show(1);
+    });
+
+    advertInterval = setInterval(() => {
+      show(1);
+    }, 4000);
+    return advert;
+  }
+
   function renderGallery() {
     if (!grid) return;
     const urls = sampleGalleries[currentTag] || [];
     const visible = urls.slice(0, offset + 6);
     grid.innerHTML = "";
 
-    const advert = document.createElement("div");
-    advert.className =
-      "w-full h-32 bg-[#2A2A2E] border border-dashed border-white/40 rounded-xl flex items-center justify-center text-sm";
-    advert.textContent = "Advert Placeholder";
-    grid.appendChild(advert);
+    stopAdvert();
+    grid.appendChild(createAdvert());
 
     visible.forEach((u, idx) => {
       if (idx === 0) return;

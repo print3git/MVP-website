@@ -133,7 +133,7 @@ if (!getFallbackModels)
       { name: "BoomBox", ext: "jpg" },
       { name: "BarramundiFish", ext: "jpg" },
       // FlightHelmet lacks a GLB; use a different sample that definitely has one
-      { name: "Fox", ext: "jpg" },
+      { placeholder: true },
       { name: "Avocado", ext: "jpg" },
       { name: "AntiqueCamera", ext: "png" },
       { name: "Lantern", ext: "jpg" },
@@ -150,12 +150,18 @@ if (!getFallbackModels)
       { name: "CesiumMilkTruck", ext: "gif" },
     ];
 
-    return samples.slice(start, start + count).map((s, i) => ({
-      model_url: `${base}/${s.name}/glTF-Binary/${s.name}.glb`,
-      id: `fallback-${start + i}`,
-      job_id: `fallback-${start + i}`,
-      snapshot: `${base}/${s.name}/screenshot/screenshot.${s.ext}`,
-    }));
+    return samples.slice(start, start + count).map((s, i) => {
+      const id = `fallback-${start + i}`;
+      if (s.placeholder) {
+        return { placeholder: true, id, job_id: id };
+      }
+      return {
+        model_url: `${base}/${s.name}/glTF-Binary/${s.name}.glb`,
+        id,
+        job_id: id,
+        snapshot: `${base}/${s.name}/screenshot/screenshot.${s.ext}`,
+      };
+    });
   };
 
 const prefetchedModels = new Set();
@@ -284,7 +290,13 @@ function copyReferralLink() {
 function createCard(model) {
   const div = document.createElement("div");
   div.className =
-    "model-card relative h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape flex items-center justify-center cursor-pointer";
+    "model-card relative h-32 bg-[#2A2A2E] border border-white/10 rounded-xl flex items-center justify-center";
+  if (model.placeholder) {
+    div.innerHTML =
+      '<span class="text-center text-sm p-2">put real life social proof image here</span>';
+    return div;
+  }
+  div.classList.add("hover:bg-[#3A3A3E]", "transition-shape", "cursor-pointer");
   div.dataset.model = model.model_url;
   div.dataset.job = model.job_id;
 
@@ -509,16 +521,23 @@ function renderGrid(type, filters = getFilters()) {
         : "w-full min-h-32 bg-[#2A2A2E] border border-dashed border-white/40 rounded-xl flex items-center justify-center text-sm p-2";
     if (type === "popular") {
       advert.classList.add("flex-col");
+      const loggedIn = !!localStorage.getItem("token");
+      const btnClass =
+        "bg-[#30D5C8] text-[#1A1A1D] px-4 rounded-r-xl" +
+        (loggedIn ? "" : " opacity-50");
       advert.innerHTML =
         '<p class="mb-2 text-center text-white">Earn <span class="text-[#30D5C8]">£5 credit</span> when someone buys with your link.</p>' +
         '<div class="space-y-1 w-full max-w-xs">' +
-        '<label for="referral-link" class="block text-sm">Your referral link</label>' +
+        '<label for="referral-link" class="block text-sm">Your referral link:</label>' +
         '<div class="flex">' +
-        '<input id="referral-link" aria-label="Referral link" class="flex-1 bg-[#1A1A1D] border border-white/10 rounded-l-xl px-3 py-2 text-white" readonly />' +
-        '<button aria-label="Copy referral link" class="bg-[#30D5C8] text-[#1A1A1D] px-4 rounded-r-xl" onclick="copyReferralLink()">Copy</button>' +
+        '<input id="referral-link" aria-label="Referral link" class="flex-1 bg-[#1A1A1D] border border-white/10 rounded-l-xl px-3 py-2 text-white placeholder-gray-500" placeholder="Log in to get your link" readonly />' +
+        `<button aria-label="Copy referral link" class="${btnClass}" onclick="copyReferralLink()">Copy</button>` +
         "</div></div>";
     } else {
-      advert.textContent = "Advert Placeholder";
+      advert.classList.add("flex-col", "text-center", "space-y-2");
+      advert.innerHTML =
+        '<p class="text-white"><span class="text-[#30D5C8]">£7 off</span> your 2nd and <span class="text-[#30D5C8]">£15 off</span> third item you buy here</p>' +
+        '<a href="payment.html" class="font-bold py-2 px-5 rounded-full shadow-md transition border-2 border-black inline-block" style="background-color: #30D5C8; color: #1A1A1D" onmouseover="this.style.opacity=\'0.85\'" onmouseout="this.style.opacity=\'1\'">Buy Current Basket →</a>';
     }
     grid.appendChild(advert);
   }

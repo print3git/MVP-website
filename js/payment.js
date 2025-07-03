@@ -4,8 +4,7 @@
 let stripe = null;
 
 // Use a lightweight fallback model and upgrade to the high detail version after load.
-const FALLBACK_GLB_LOW =
-  "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
+const FALLBACK_GLB_LOW = "models/bag.glb";
 const FALLBACK_GLB_HIGH =
   "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
 const FALLBACK_GLB = FALLBACK_GLB_LOW;
@@ -67,14 +66,14 @@ function computeBulkDiscount(items) {
   for (const it of items) {
     totalQty += Math.max(1, parseInt(it.qty || 1, 10));
   }
+  if (window.location.pathname.endsWith("luckybox-payment.html")) {
+    if (totalQty >= 2) return TWO_PRINT_DISCOUNT;
+    return 0;
+  }
+
   let discount = 0;
   if (totalQty >= 2) discount += TWO_PRINT_DISCOUNT;
-  if (
-    totalQty >= 3 &&
-    !window.location.pathname.endsWith("luckybox-payment.html")
-  ) {
-    discount += THIRD_PRINT_DISCOUNT;
-  }
+  if (totalQty >= 3) discount += THIRD_PRINT_DISCOUNT;
   return discount;
 }
 const NEXT_PROMPTS = [
