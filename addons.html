@@ -120,17 +120,17 @@
       <!-- ROW: Luckybox (50%) | RIGHT COLUMN (50%) -->
       <div class="flex gap-6 mt-12 items-stretch min-h-[calc(100vh-6rem)]">
         <!-- Luckybox (50%) -->
-        <div id="luckybox" class="model-card w-1/2 bg-[#2A2A2E] border border-white/10 rounded-xl p-4 pb-20 flex flex-col space-y-4 relative h-full flex-1 min-h-[36rem]">
+        <div id="luckybox" class="model-card w-1/2 bg-[#2A2A2E] border border-white/10 rounded-xl p-4 pb-20 flex flex-col space-y-4 relative h-full flex-1 min-h-[36rem] justify-center">
           <span class="font-semibold text-lg self-center text-center">Luckybox</span>
-          <div class="flex items-center justify-between gap-4">
+          <div class="flex items-center justify-between gap-4 flex-1">
             <div class="w-32 h-32 rounded-lg border border-white/20 flex items-center justify-center">
               <span class="text-xs text-center">placeholder</span>
             </div>
-            <fieldset id="luckybox-tiers" class="flex gap-4 flex-1 justify-center">
+            <fieldset id="luckybox-tiers" class="flex gap-4 flex-1 justify-between">
               <!-- premium -->
               <label class="cursor-not-allowed flex flex-col items-center text-center opacity-50">
                 <input type="radio" name="luckybox-tier" value="premium" class="sr-only peer" disabled />
-                <span class="w-24 h-24 flex flex-col items-center justify-center rounded-full border border-white/20">
+                <span class="w-28 h-28 flex flex-col items-center justify-center rounded-full border border-white/20">
                   <span class="font-semibold">£59.99</span>
                   <span class="text-xs">premium</span>
                 </span>
@@ -139,7 +139,7 @@
               <!-- multicolour -->
               <label class="cursor-pointer flex flex-col items-center text-center">
                 <input type="radio" name="luckybox-tier" value="multicolour" class="sr-only peer" checked />
-                <span id="luckybox-multi" class="w-28 h-28 flex flex-col items-center justify-center rounded-full border-4 border-white/20 shadow-xl peer-checked:border-[#30D5C8]">
+                <span id="luckybox-multi" class="w-32 h-32 flex flex-col items-center justify-center rounded-full border-4 border-white/20 shadow-xl peer-checked:border-[#30D5C8]">
                   <span class="font-semibold">£29.99</span>
                   <span class="text-xs">multicolour</span>
                 </span>
@@ -147,7 +147,7 @@
               <!-- single colour -->
               <label class="cursor-pointer flex flex-col items-center text-center">
                 <input type="radio" name="luckybox-tier" value="basic" class="sr-only peer" />
-                <span class="w-24 h-24 flex flex-col items-center justify-center rounded-full border border-white/20 peer-checked:border-2 peer-checked:border-[#30D5C8]">
+                <span class="w-28 h-28 flex flex-col items-center justify-center rounded-full border border-white/20 peer-checked:border-2 peer-checked:border-[#30D5C8]">
                   <span class="font-semibold">£19.99</span>
                   <span class="text-xs">single colour</span>
                 </span>
