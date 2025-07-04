@@ -278,6 +278,9 @@ pull request:
 4. Check your diff with `git status --short` to verify no unrelated files were
    modified.
 5. Add the format and test logs to the PR so reviewers can confirm.
+6. If you add new binary asset types (like fonts or archives), update
+   `.gitattributes` so Git treats them as binary. This prevents Codex from
+   failing to create a patch.
 
 ## Printer Service
 
@@ -368,3 +371,9 @@ This resolves any partially configured packages left over from an interrupted `a
 
 If `eslint` fails with this error, it usually means dependencies aren't installed.
 Run `npm run setup` in the repository root to install them.
+
+## Contributing
+
+⚠️ **Note:** this project uses OpenAI Codex to generate PRs;
+binary files (images, compiled objects, etc.) will cause errors.
+Please remove or exclude any binary assets before opening a PR.

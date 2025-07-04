@@ -9,3 +9,15 @@ backend/hunyuan_server/uploads/
 reports/
 backend/coverage/
 coverage/
+# ignore compiled and binary files
+*.exe
+*.dll
+*.so
+*.bin
+*.o
+*.pyc
+/build/
+/dist/
+*.jpg
+*.png
+*.pdf
