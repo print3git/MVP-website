@@ -25,7 +25,38 @@ const sampleGalleries = {
   ],
 };
 
+function ensureModelViewerLoaded() {
+  if (window.customElements?.get("model-viewer")) {
+    return Promise.resolve();
+  }
+  const cdnUrl =
+    "https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js";
+  const localUrl = "js/model-viewer.min.js";
+  return new Promise((resolve) => {
+    const s = document.createElement("script");
+    s.type = "module";
+    s.src = cdnUrl;
+    s.onload = resolve;
+    s.onerror = () => {
+      s.remove();
+      const fallback = document.createElement("script");
+      fallback.type = "module";
+      fallback.src = localUrl;
+      fallback.onload = resolve;
+      fallback.onerror = resolve;
+      document.head.appendChild(fallback);
+    };
+    document.head.appendChild(s);
+    setTimeout(() => {
+      if (!window.customElements?.get("model-viewer")) {
+        s.onerror();
+      }
+    }, 3000);
+  });
+}
+
 async function init() {
+  await ensureModelViewerLoaded();
   const tagsEl = document.getElementById("subreddit-tags");
   const grid = document.getElementById("gallery-grid");
   const loadBtn = document.getElementById("gallery-load");
