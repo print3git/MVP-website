@@ -278,6 +278,9 @@ pull request:
 4. Check your diff with `git status --short` to verify no unrelated files were
    modified.
 5. Add the format and test logs to the PR so reviewers can confirm.
+6. If you add new binary asset types (like fonts or archives), update
+   `.gitattributes` so Git treats them as binary. This prevents Codex from
+   failing to create a patch.
 
 ## Printer Service
 
