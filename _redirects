@@ -1,3 +1,6 @@
 http://print2.io/* https://print2.io/:splat 301!
 http://www.print2.io/* https://print2.io/:splat 301!
 https://www.print2.io/* https://print2.io/:splat 301!
+
+# Note: The ab-uploads.print2.co.uk redirect used in Playwright tests is
+# not committed to this repo. Add it locally if needed.
