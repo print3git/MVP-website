@@ -6,13 +6,12 @@ const OPEN_KEY = "print3CommunityOpen";
 const FALLBACK_GLB =
   "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
 
-function saveModel(model) {
-  if (window.addSavedModel) {
-    window.addSavedModel({
-      id: model.id,
+function addBasketModel(model) {
+  if (window.addToBasket) {
+    window.addToBasket({
+      jobId: model.job_id,
       modelUrl: model.model_url,
-      snapshot: model.snapshot,
-      title: model.title,
+      snapshot: model.snapshot || "",
     });
   }
 }
@@ -300,7 +299,7 @@ function createCard(model) {
   div.dataset.model = model.model_url;
   div.dataset.job = model.job_id;
 
-  div.innerHTML = `\n      <img src="${model.snapshot || ""}" alt="Model" loading="lazy" fetchpriority="low" class="w-full h-full object-contain pointer-events-none" />\n      <span class="sr-only">${model.title || "Model"}</span>\n      <button class="save absolute bottom-1 left-1 text-xs bg-blue-600 px-1 rounded">Save</button>\n      <button class="share absolute top-1 right-1 w-7 h-7 flex items-center justify-center bg-[#2A2A2E] border border-white/20 rounded-full hover:bg-[#3A3A3E] transition-shape"><i class="fas fa-share text-xs"></i></button>\n      <button class="purchase absolute bottom-1 right-1 font-bold text-lg py-1.5 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]" style="transform: scale(0.78); transform-origin: right bottom;">Buy from £29.99</button>`;
+  div.innerHTML = `\n      <img src="${model.snapshot || ""}" alt="Model" loading="lazy" fetchpriority="low" class="w-full h-full object-contain pointer-events-none" />\n      <span class="sr-only">${model.title || "Model"}</span>\n      <button class="add-basket absolute bottom-1 left-1 font-bold text-lg py-1.5 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]" style="transform: scale(0.78); transform-origin: left bottom;">Add to Basket</button>\n      <button class="share absolute top-1 right-1 w-7 h-7 flex items-center justify-center bg-[#2A2A2E] border border-white/20 rounded-full hover:bg-[#3A3A3E] transition-shape"><i class="fas fa-share text-xs"></i></button>\n      <button class="purchase absolute bottom-1 right-1 font-bold text-lg py-1.5 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]" style="transform: scale(0.78); transform-origin: right bottom;">Buy from £29.99</button>`;
 
   div.querySelector(".purchase").addEventListener("click", (e) => {
     e.stopPropagation();
@@ -322,10 +321,10 @@ function createCard(model) {
     } catch {}
     window.location.href = "payment.html";
   });
-  const saveBtn = div.querySelector(".save");
-  saveBtn?.addEventListener("click", (e) => {
+  const basketBtn = div.querySelector(".add-basket");
+  basketBtn?.addEventListener("click", (e) => {
     e.stopPropagation();
-    saveModel(model);
+    addBasketModel(model);
   });
   const shareBtn = div.querySelector(".share");
   shareBtn?.addEventListener("click", (e) => {
@@ -676,7 +675,7 @@ function init() {
 }
 
 export {
-  saveModel,
+  addBasketModel,
   init,
   closeModel,
   restoreOpenModel,
