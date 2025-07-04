@@ -6,7 +6,7 @@ These guidelines apply to all automated agents (e.g. the Codex agent) working on
 
 1. **Unset proxy variables** – before running any `npm` commands, **and whenever you start a new shell session**, execute `unset npm_config_http_proxy npm_config_https_proxy` to silence `http-proxy` warnings.
    Run `npm ping` to verify that the registry is reachable before proceeding.
-2. **Install dependencies** – run `npm run setup` at the repository root. This script unsets proxy variables, checks registry connectivity, runs `npm ci` in the root, `backend/`, and `backend/hunyuan_server/` if present, and installs Playwright browsers.
+2. **Install dependencies** – run `npm run setup` at the repository root **before your first `npm run ci`**. This script unsets proxy variables, checks registry connectivity, runs `npm ci` in the root, `backend/`, and `backend/hunyuan_server/` if present, and installs Playwright browsers.
    - Set `SKIP_PW_DEPS=1` before running the setup script if Playwright dependencies are already installed. This skips the long `apt-get` step and reduces CI time. The `smoke` script automatically exports this variable.
 3. **Format code** – run `npm run format` in `backend/` to apply Prettier formatting.
 4. **Run tests** – execute `npm test` in `backend/`. If tests cannot run because of environment limitations, mention this in the PR.
@@ -23,6 +23,14 @@ These guidelines apply to all automated agents (e.g. the Codex agent) working on
 ## Troubleshooting
 
 If `npm run ci` outputs messages like `1 interrupted` or `2 did not run` during the Playwright tests, the browsers were likely not installed. Run `npm run setup` and retry the CI and smoke steps.
+
+These messages may show up in `/tmp/ci.log` as:
+
+```
+1 interrupted
+2 did not run
+```
+Running the setup script again installs the missing browsers and resolves the failure.
 
 ## PR notes
 
