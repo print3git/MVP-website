@@ -517,7 +517,7 @@ function renderGrid(type, filters = getFilters()) {
     const advert = document.createElement("div");
     advert.className =
       type === "recent"
-        ? "w-full min-h-32 bg-[#2A2A2E] border border-dashed border-white/40 rounded-xl flex items-center justify-center text-sm row-start-1 sm:col-start-2 md:col-start-3 p-2"
+        ? "w-full min-h-32 bg-[#2A2A2E] border border-dashed border-white/40 rounded-xl flex flex-col items-center justify-center text-sm row-start-1 sm:col-start-2 md:col-start-3 pt-4 pb-14 relative"
         : "w-full min-h-32 bg-[#2A2A2E] border border-dashed border-white/40 rounded-xl flex items-center justify-center text-sm p-2";
     if (type === "popular") {
       advert.classList.add("flex-col");
@@ -538,9 +538,8 @@ function renderGrid(type, filters = getFilters()) {
         `<button aria-label="Copy referral link" class="${btnClass}"${btnHandler}>Copy</button>` +
         "</div></div>";
     } else {
-      advert.classList.add("flex-col", "text-center", "space-y-2", "relative");
+      advert.classList.add("text-center");
       advert.innerHTML =
-
         '<p class="text-white"><span class="text-[#30D5C8]">£7 off</span> your 2nd and <span class="text-[#30D5C8]">£15 off</span> third item you buy from this page</p>' +
         '<a href="payment.html" class="absolute bottom-4 left-1/2 font-bold text-lg py-1.5 px-4 rounded-full shadow-md transition border-2 border-black inline-block" style="background-color: #30D5C8; color: #1A1A1D; transform: translateX(-50%) scale(0.78);" onmouseover="this.style.opacity=\'0.85\'" onmouseout="this.style.opacity=\'1\'">Buy Current Basket →</a>';
     }
