@@ -162,17 +162,14 @@
         <!-- RIGHT COLUMN (50%) -->
         <div class="flex flex-col w-1/2 gap-6 h-full flex-1 min-h-[33.5rem]">
           <!-- Print Minis (50% of column) -->
-          <div id="print-minis" class="model-card w-full bg-[#2A2A2E] border border-white/10 rounded-xl p-4 pb-20 flex flex-col justify-center space-y-2 flex-none h-64">
-            <span class="font-semibold text-lg self-center text-center">Print Minis</span>
-            <p class="text-sm text-center">We'll print your design at roughly 25% scale for a tiny version.</p>
-            <p class="text-sm text-center font-semibold">£14.99 per mini</p>
-            <a href="minis-checkout.html"               class="self-center font-bold py-2 px-5 rounded-full shadow-md transition border-2 border-black text-sm"
-              style="background-color: #30d5c8; color: #1a1a1d"
-              onmouseover="this.style.opacity='0.85'"
-              onmouseout="this.style.opacity='1'"
-            >
-              Print my basket in mini size →
-            </a>
+          <div id="print-minis" class="model-card w-full bg-[#2A2A2E] border border-white/10 rounded-xl p-4 flex items-center h-64">
+            <div class="flex-1 space-y-2">
+              <span class="font-semibold text-lg">Print Minis</span>
+              <p class="text-sm">We'll print your design at roughly 25% scale for a tiny version.</p>
+              <p class="text-sm font-semibold">£14.99 per mini</p>
+              <div id="minis-basket" class="text-xs overflow-y-auto max-h-20"></div>
+            </div>
+            <a href="minis-checkout.html" class="ml-4 font-bold py-2 px-5 rounded-full shadow-md transition border-2 border-black text-sm self-center" style="background-color: #30d5c8; color: #1a1a1d" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">Print my basket in mini size →</a>
           </div>
 
           <!-- Remix prints (50% of column) -->
@@ -198,6 +195,29 @@
             sessionStorage.setItem("fromAddons", "1")
           )
         );
+
+        function renderMinisBasket() {
+          const container = document.getElementById("minis-basket");
+          if (!container || !window.getBasket) return;
+          container.innerHTML = "";
+          const items = window.getBasket();
+          if (!items.length) {
+            container.textContent = "Basket empty";
+            return;
+          }
+          const ul = document.createElement("ul");
+          ul.className = "list-disc pl-4";
+          items.forEach((it) => {
+            const li = document.createElement("li");
+            const name = (it.modelUrl || "").split("/").pop() || "model.glb";
+            li.textContent = name.split("?")[0];
+            ul.appendChild(li);
+          });
+          container.appendChild(ul);
+        }
+
+        renderMinisBasket();
+        window.addEventListener("basket-change", renderMinisBasket);
       });
     </script>
     <div
