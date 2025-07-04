@@ -16,7 +16,7 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
     />
   </head>
-  <body class="bg-[#1A1A1D] text-white font-sans flex flex-col min-h-screen">
+  <body class="bg-[#1A1A1D] text-white font-sans flex flex-col min-h-screen overflow-y-hidden">
     <div
       id="flash-banner"
       role="status"
@@ -118,11 +118,9 @@
           <a href="payment.html" class="font-bold text-[#30D5C8]">Buy Here</a>.
         </p>
       </section>
-      <section
-        class="grid grid-cols-1 md:grid-cols-2 md:grid-rows-2 gap-x-6 gap-y-6 h-full"
-      >
+      <section class="grid grid-cols-1 md:grid-cols-2 gap-6 h-full">
         <div
-          class="bg-[#2A2A2E] p-4 rounded-xl border border-white/10 md:row-span-2 flex flex-col h-[60vh]"
+          class="bg-[#2A2A2E] p-4 rounded-xl border border-white/10 flex flex-col h-[30vh]"
         >
           <h2 class="text-xl font-semibold mb-2">Your Marketplace</h2>
           <p>
@@ -149,7 +147,7 @@
           <input id="glbUpload" type="file" accept=".glb" class="hidden" />
         </div>
         <div
-          class="bg-[#2A2A2E] p-4 rounded-xl border border-white/10 flex flex-col h-[40vh]"
+          class="bg-[#2A2A2E] p-4 rounded-xl border border-white/10 flex flex-col h-[30vh]"
         >
           <h2 class="text-xl font-semibold mb-2">Their Marketplace</h2>
           <p>
@@ -162,7 +160,7 @@
           ></div>
         </div>
         <div
-          class="bg-[#2A2A2E] p-4 rounded-xl border border-white/10 flex flex-col h-[40vh]"
+          class="bg-[#2A2A2E] p-4 rounded-xl border border-white/10 flex flex-col h-[25vh] md:col-span-2"
         >
           <h2 class="text-xl font-semibold mb-2">Featured Deals</h2>
           <p>Selected models at discounted prices. Limited time only.</p>
