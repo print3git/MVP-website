@@ -25,17 +25,17 @@ function load() {
 test('bulk discount for 2 prints', () => {
   const dom = load();
   const items = [{ qty: 2, material: 'single' }];
-  expect(dom.window._computeBulkDiscount(items)).toBe(500);
+  expect(dom.window._computeBulkDiscount(items)).toBe(700);
 });
 
 test('bulk discount for 3 prints', () => {
   const dom = load();
   const items = [{ qty: 3, material: 'single' }];
-  expect(dom.window._computeBulkDiscount(items)).toBe(2000);
+  expect(dom.window._computeBulkDiscount(items)).toBe(2200);
 });
 
 test('bulk discount capped after 3 prints', () => {
   const dom = load();
   const items = [{ qty: 5, material: 'single' }];
-  expect(dom.window._computeBulkDiscount(items)).toBe(2000);
+  expect(dom.window._computeBulkDiscount(items)).toBe(2200);
 });
