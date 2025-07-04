@@ -28,3 +28,19 @@ self.addEventListener("fetch", (event) => {
     );
   }
 });
+
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "prefetch-models") {
+    event.waitUntil(
+      caches
+        .open(CACHE_NAME)
+        .then((cache) =>
+          Promise.all(
+            ASSETS.map((url) =>
+              fetch(url).then((resp) => cache.put(url, resp.clone())),
+            ),
+          ),
+        ),
+    );
+  }
+});
