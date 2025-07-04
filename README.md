@@ -6,6 +6,7 @@ This repository contains the early MVP code for print2's website and backend.
 - General backend code is in the `backend/` folder.
 - The lightweight Hunyuan3D API server lives in `backend/hunyuan_server/`.
 - The `img/` folder is now reserved strictly for image assets.
+- HTML files in the `uploads/` directory should use the `.links` extension to avoid being served as plain text.
 
 ## Local Setup
 
