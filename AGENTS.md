@@ -10,7 +10,7 @@ These guidelines apply to all automated agents (e.g. the Codex agent) working on
    - Set `SKIP_PW_DEPS=1` before running the setup script if Playwright dependencies are already installed. This skips the long `apt-get` step and reduces CI time. The `smoke` script automatically exports this variable.
 3. **Format code** – run `npm run format` in `backend/` to apply Prettier formatting.
 4. **Run tests** – execute `npm test` in `backend/`. If tests cannot run because of environment limitations, mention this in the PR.
-5. **Run full CI locally** – execute `npm run ci` at the repo root before opening a PR.
+5. **Run full CI locally** – execute `npm run ci` at the repo root before opening a PR. Set `SKIP_PW_DEPS=1` if Playwright dependencies were installed previously to avoid redundant `apt-get` steps.
 6. **Install Playwright browsers** – the setup script installs these automatically. If browsers are missing, run `CI=1 npx playwright install --with-deps` manually.
 7. **Run smoke tests** – execute `npm run smoke` at the repository root. This script sets `SKIP_PW_DEPS=1` to bypass Playwright's dependency installation when the browsers are already installed. **Do not run `npx playwright test` directly** – that can trigger `"Playwright Test did not expect test() to be called here"` errors when dependencies are missing.
 8. **Limit scope** – only modify files related to the task. Do not change anything under `img/`, `models/`, or `uploads/` unless explicitly requested. Avoid editing `docs/` unless the task specifically involves documentation.
