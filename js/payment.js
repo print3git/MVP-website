@@ -27,7 +27,7 @@ if (window.location.pathname.endsWith("minis-checkout.html")) {
 }
 
 
-const TWO_PRINT_DISCOUNT = 700;
+const TWO_PRINT_DISCOUNT = 500;
 const THIRD_PRINT_DISCOUNT = 1500;
 let PRICING_VARIANT = localStorage.getItem("pricingVariant");
 if (!PRICING_VARIANT) {
@@ -834,7 +834,7 @@ async function initPaymentPage() {
     if (!bulkMsg) return;
     bulkMsg.innerHTML =
       '<span class="text-gray-400">Popular: keep one, gift one – </span>' +
-      '<span class="text-white">save £7.00</span>';
+      '<span class="text-white">save £5.00</span>';
     bulkMsg.classList.remove("hidden");
   }
 
