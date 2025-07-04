@@ -2,5 +2,5 @@
   "/index.html": ["button-name"],
   "/login.html": ["button-name"],
   "/signup.html": ["button-name"],
-  "/payment.html": ["button-name"]
+  "/payment.html": ["button-name", "label"]
 }
