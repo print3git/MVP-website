@@ -26,7 +26,11 @@ const sampleGalleries = {
 };
 
 function ensureModelViewerLoaded() {
-  if (window.customElements?.get("model-viewer")) {
+  if (
+    window.customElements &&
+    typeof window.customElements.get === "function" &&
+    window.customElements.get("model-viewer")
+  ) {
     return Promise.resolve();
   }
   const cdnUrl =
@@ -48,7 +52,13 @@ function ensureModelViewerLoaded() {
     };
     document.head.appendChild(s);
     setTimeout(() => {
-      if (!window.customElements?.get("model-viewer")) {
+      if (
+        !(
+          window.customElements &&
+          typeof window.customElements.get === "function" &&
+          window.customElements.get("model-viewer")
+        )
+      ) {
         s.onerror();
       }
     }, 3000);
@@ -174,10 +184,12 @@ async function init() {
     }
   }
 
-  loadBtn?.addEventListener("click", () => {
-    offset += 6;
-    renderGallery();
-  });
+  if (loadBtn) {
+    loadBtn.addEventListener("click", () => {
+      offset += 6;
+      renderGallery();
+    });
+  }
 
   async function start() {
     await loadAdvertModels();
