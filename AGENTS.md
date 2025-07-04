@@ -22,7 +22,7 @@ These guidelines apply to all automated agents (e.g. the Codex agent) working on
 
 ## Troubleshooting
 
-If `npm run ci` outputs messages like `1 interrupted` or `2 did not run` during the Playwright tests, the browsers were likely not installed. Run `npm run setup` and retry the CI and smoke steps.
+If `npm run ci` outputs messages like `1 interrupted` or `2 did not run` during the Playwright tests, the browsers were likely not installed. You may also see errors such as `browser.newContext: Test ended` or `Test was interrupted` in `/tmp/ci.log`. Run `npm run setup` and retry the CI and smoke steps.
 
 These messages may show up in `/tmp/ci.log` as:
 
