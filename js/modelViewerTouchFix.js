@@ -10,7 +10,9 @@ function applyTouchFix() {
       for (const node of rec.addedNodes) {
         if (node.nodeType !== 1) continue;
         if (node.tagName === "MODEL-VIEWER") setTouchNone(node);
-        node.querySelectorAll?.("model-viewer").forEach(setTouchNone);
+        if (typeof node.querySelectorAll === "function") {
+          node.querySelectorAll("model-viewer").forEach(setTouchNone);
+        }
       }
     }
   });
