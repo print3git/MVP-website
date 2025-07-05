@@ -170,7 +170,8 @@ function startReservationTimer() {
     }
     const mins = Math.floor(diff / 60000);
     const secs = Math.floor((diff % 60000) / 1000);
-    label.textContent = `Your slot in today's print queue expires in ${mins}:${String(secs).padStart(2, "0")}`;
+    const pos = items.length;
+    label.innerHTML = `Your slot in today's print queue expires in ${mins}:${String(secs).padStart(2, "0")} <span class="text-white">(Queue position: ${pos})</span>`;
     label.classList.remove("hidden");
   }
   tick();
@@ -239,11 +240,6 @@ function renderList() {
 }
 function openBasket() {
   renderList();
-  const queueLabel = document.getElementById("basket-queue");
-  if (queueLabel) {
-    const pos = getBasket().length;
-    queueLabel.textContent = pos ? `Queue position: ${pos}` : "";
-  }
   document.getElementById("basket-overlay")?.classList.remove("hidden");
   startReservationTimer();
 }
@@ -285,7 +281,6 @@ export function setupBasketUI() {
       <h2 class="text-xl font-semibold mb-2 text-white">Basket</h2>
       <div id="basket-list" class="grid grid-cols-2 gap-3 mb-2"></div>
       <div id="basket-reserve" class="hidden text-sm text-[#30D5C8] mb-2"></div>
-      <div id="basket-queue" class="text-sm text-gray-200 mb-2"></div>
       <button id="basket-checkout" type="button" class="mb-2 font-bold py-2 px-4 rounded-full shadow-md bg-[#30D5C8] text-[#1A1A1D] border-2 border-black">Checkout →</button>
     </div>`;
   document.body.appendChild(overlay);
