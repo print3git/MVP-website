@@ -54,3 +54,4 @@ if [ -z "$SKIP_PW_DEPS" ]; then
 else
   CI=1 npx playwright install
 fi
+touch .setup-complete
