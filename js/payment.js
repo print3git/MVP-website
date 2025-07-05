@@ -840,7 +840,7 @@ async function initPaymentPage() {
       `<span class="text-white">save ${amount}</span>` +
       (showGiftTwo
         ?
-          '<br><span class="text-gray-400">gift two – </span><span class="text-white">save £22</span>'
+          '<br><span class="invisible">Popular: keep one, </span><span class="text-gray-400">gift two – </span><span class="text-white">save £22</span>'
         : "");
     bulkMsg.classList.remove("hidden");
   }
