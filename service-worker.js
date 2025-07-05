@@ -1,4 +1,4 @@
-const CACHE_NAME = "model-cache-v1";
+const CACHE_NAME = "model-cache-v2";
 const ASSETS = [
   "/models/bag.glb",
   "https://modelviewer.dev/shared-assets/environments/neutral.hdr",
