@@ -72,11 +72,9 @@
     <!-- Preload default model assets -->
     <link
       rel="preload"
-      href="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
+      href="models/bag.glb"
       as="fetch"
       type="model/gltf-binary"
-      fetchpriority="high"
-      crossorigin
       fetchpriority="high"
     />
     <link
@@ -85,7 +83,6 @@
       as="fetch"
       fetchpriority="high"
       crossorigin
-      fetchpriority="high"
     />
 
     <!-- Google <model-viewer> -->
@@ -319,8 +316,8 @@
           <!-- 3-D Astronaut (always visible) -->
           <model-viewer
             id="viewer"
-            src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
-            alt="3D astronaut"
+            src="models/bag.glb"
+            alt="3D model preview"
             environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
             camera-controls
             auto-rotate
