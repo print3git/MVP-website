@@ -291,8 +291,11 @@ function createCard(model) {
   div.className =
     "model-card relative h-32 bg-[#2A2A2E] border border-white/10 rounded-xl flex items-center justify-center";
   if (model.placeholder) {
+    div.className =
+      "model-card relative min-h-32 bg-[#2A2A2E] border border-dashed border-white/40 rounded-xl flex flex-col items-center justify-center text-sm pt-4 pb-14";
     div.innerHTML =
-      '<span class="text-center text-sm p-2">put real life social proof image here</span>';
+      '<p class="text-white"><span class="text-[#30D5C8]">£7 off</span> your 2nd and <span class="text-[#30D5C8]">£15 off</span> 3rd item you buy from this page.</p>' +
+      '<a href="payment.html" class="absolute bottom-4 left-1/2 font-bold text-lg py-1.5 px-4 rounded-full shadow-md transition border-2 border-black inline-block" style="background-color: #30D5C8; color: #1A1A1D; transform: translateX(-50%) scale(0.78);" onmouseover="this.style.opacity=\'0.85\'" onmouseout="this.style.opacity=\'1\'">Buy Current Basket →</a>';
     return div;
   }
   div.classList.add("hover:bg-[#3A3A3E]", "transition-shape", "cursor-pointer");
