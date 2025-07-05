@@ -55,7 +55,7 @@
           class="bg-[#2A2A2E] border border-white/10 p-6 rounded-3xl space-y-4"
         >
           <h2 class="text-2xl font-semibold text-center">Checkout</h2>
-          <p class="text-center text-white">
+          <p id="signup-message" class="text-center text-white">
             You must first
             <a href="signup.html" class="font-bold text-[#30D5C8]">Sign Up</a>
             before joining print2 Pro.
@@ -122,6 +122,8 @@
         document.addEventListener("DOMContentLoaded", () => {
           const main = document.getElementById("page-main");
           if (main) main.style.visibility = "visible";
+          const signup = document.getElementById("signup-message");
+          if (signup && localStorage.getItem("token")) signup.remove();
         });
       </script>
     </main>
