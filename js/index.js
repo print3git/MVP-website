@@ -114,7 +114,8 @@ function ensureModelViewerLoaded() {
   }
   if (
     typeof navigator !== "undefined" &&
-    (navigator.userAgent?.includes("Node.js") || navigator.userAgent?.includes("jsdom"))
+    (navigator.userAgent?.includes("Node.js") ||
+      navigator.userAgent?.includes("jsdom"))
   ) {
     return Promise.resolve();
   }
@@ -155,9 +156,9 @@ const API_BASE = (window.API_ORIGIN || "") + "/api";
 const TZ = "America/New_York";
 // Local fallback model used when generation fails or the viewer hasn't loaded a model yet.
 
-const FALLBACK_GLB_LOW =
+const FALLBACK_GLB_LOW = "models/bag.glb";
+const FALLBACK_GLB_HIGH =
   "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
-const FALLBACK_GLB_HIGH = FALLBACK_GLB_LOW;
 const FALLBACK_GLB = FALLBACK_GLB_LOW;
 const LOW_POLY_GLB = FALLBACK_GLB_LOW;
 

@@ -4,9 +4,9 @@
 let stripe = null;
 
 // Use a lightweight fallback model and upgrade to the high detail version after load.
-const FALLBACK_GLB_LOW =
-  "/models/astronaut_low.glb";
-const FALLBACK_GLB_HIGH = FALLBACK_GLB_LOW;
+const FALLBACK_GLB_LOW = "models/bag.glb";
+const FALLBACK_GLB_HIGH =
+  "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
 const FALLBACK_GLB = FALLBACK_GLB_LOW;
 const PRICES = {
   single: 2999,
@@ -26,10 +26,12 @@ if (window.location.pathname.endsWith("minis-checkout.html")) {
   PRICES.premium = 1499;
 }
 
-
 const TWO_PRINT_DISCOUNT = 700;
-const THIRD_PRINT_DISCOUNT =
-  window.location.pathname.endsWith("luckybox-payment.html") ? 0 : 1500;
+const THIRD_PRINT_DISCOUNT = window.location.pathname.endsWith(
+  "luckybox-payment.html",
+)
+  ? 0
+  : 1500;
 const MINI_SECOND_DISCOUNT = 500;
 let PRICING_VARIANT = localStorage.getItem("pricingVariant");
 if (!PRICING_VARIANT) {
@@ -184,7 +186,8 @@ function ensureModelViewerLoaded() {
   }
   if (
     typeof navigator !== "undefined" &&
-    (navigator.userAgent?.includes("Node.js") || navigator.userAgent?.includes("jsdom"))
+    (navigator.userAgent?.includes("Node.js") ||
+      navigator.userAgent?.includes("jsdom"))
   ) {
     return Promise.resolve();
   }
@@ -840,6 +843,7 @@ async function initPaymentPage() {
       '<span class="text-gray-400">Popular: keep one, gift one – </span>' +
       `<span class="text-white">save ${amount}</span>` +
       (showGiftTwo
+
         ?
           '<br><span class="invisible">Popular: keep one, </span><span class="text-gray-400">gift two – </span><span class="text-white">save £22.00</span>'
         : "");
