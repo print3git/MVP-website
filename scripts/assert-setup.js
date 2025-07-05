@@ -1,19 +1,22 @@
 #!/usr/bin/env node
-const fs = require("fs");
-const os = require("os");
-const path = require("path");
-if (!fs.existsSync(".setup-complete")) {
-  console.error(
-    "Setup has not been run. Please execute 'npm run setup' first.",
-  );
-  process.exit(1);
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+
+function browsersInstalled() {
+  const envPath = process.env.PLAYWRIGHT_BROWSERS_PATH;
+  const defaultPath = path.join(os.homedir(), '.cache', 'ms-playwright');
+  const browserPath = envPath || defaultPath;
+  try {
+    return fs.existsSync(browserPath) && fs.readdirSync(browserPath).length > 0;
+  } catch {
+    return false;
+  }
 }
 
-// Ensure Playwright browsers are available before running tests.
-const pwDir = path.join(os.homedir(), ".cache", "ms-playwright");
-if (!fs.existsSync(pwDir) || fs.readdirSync(pwDir).length === 0) {
+if (!fs.existsSync('.setup-complete') || !browsersInstalled()) {
   console.error(
-    "Playwright browsers are missing. Please run 'npm run setup' to install them.",
+    "Playwright browsers not installed. Please execute 'npm run setup' first."
   );
   process.exit(1);
 }
