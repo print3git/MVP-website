@@ -47,7 +47,7 @@ export function addToBasket(item, opts = {}) {
   const basketBtn = document.getElementById("basket-button");
   if (basketBtn) {
     basketBtn.classList.add("basket-bob");
-    setTimeout(() => basketBtn.classList.remove("basket-bob"), 600);
+    setTimeout(() => basketBtn.classList.remove("basket-bob"), 800);
     if (window.__basketSound) {
       try {
         window.__basketSound.currentTime = 0;
@@ -254,7 +254,7 @@ export function setupBasketUI() {
   if (!document.getElementById("basket-bob-style")) {
     const style = document.createElement("style");
     style.id = "basket-bob-style";
-    style.textContent = `@keyframes basketBob {0%,100%{transform:translateY(0);}50%{transform:translateY(-1rem);}}.basket-bob{animation:basketBob 0.6s ease;}`;
+    style.textContent = `@keyframes basketBob {0%,100%{transform:translateY(0);}50%{transform:translateY(-2rem);}}.basket-bob{animation:basketBob 0.8s ease;}`;
     document.head.appendChild(style);
   }
   if (!window.__basketSound) {
