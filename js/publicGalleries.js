@@ -140,10 +140,12 @@ async function init() {
     grid.innerHTML = "";
 
     stopAdvert();
-    grid.appendChild(createAdvert());
 
     visible.forEach((u, idx) => {
-      if (idx === 0) return;
+      if (idx === 4) {
+        grid.appendChild(createAdvert());
+        return;
+      }
       const img = document.createElement("img");
       img.src = u;
       img.loading = "lazy";
