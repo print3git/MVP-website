@@ -14,10 +14,13 @@ if ! npm ping >/dev/null 2>&1; then
 fi
 
 # Remove any existing node_modules directories to avoid ENOTEMPTY errors
-rm -rf node_modules backend/node_modules || sudo rm -rf node_modules backend/node_modules
+sudo rm -rf node_modules backend/node_modules
 if [ -d backend/hunyuan_server/node_modules ]; then
-  rm -rf backend/hunyuan_server/node_modules || sudo rm -rf backend/hunyuan_server/node_modules
+  sudo rm -rf backend/hunyuan_server/node_modules
 fi
+
+# Clear the npm cache to avoid cleanup warnings
+npm cache clean --force
 
 # Remove stale apt or dpkg locks that may prevent dependency installation
 if pgrep apt-get >/dev/null 2>&1; then
