@@ -21,6 +21,8 @@ fi
 
 # Clear the npm cache to avoid cleanup warnings
 npm cache clean --force
+# Remove leftover tmp directories that can cause ENOTEMPTY errors
+rm -rf "$(npm config get cache)/_cacache/tmp" "$HOME/.npm/_cacache/tmp"
 
 # Remove stale apt or dpkg locks that may prevent dependency installation
 if pgrep apt-get >/dev/null 2>&1; then
