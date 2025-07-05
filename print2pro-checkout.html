@@ -55,7 +55,7 @@
           class="bg-[#2A2A2E] border border-white/10 p-6 rounded-3xl space-y-4"
         >
           <h2 class="text-2xl font-semibold text-center">Checkout</h2>
-          <p class="text-center text-white">
+          <p id="signup-message" class="text-center text-white">
             You must first
             <a href="signup.html" class="font-bold text-[#30D5C8]">Sign Up</a>
             before joining print2 Pro.
@@ -94,9 +94,21 @@
               Join print2 Pro
             </button>
           </form>
-          <div class="flex justify-center gap-4 mt-4 text-2xl text-white">
-            <i class="fas fa-lock" aria-label="Secure checkout"></i>
-            <i class="fas fa-shield-alt" aria-label="Money-back guarantee"></i>
+          <!-- repositioned badge -->
+          <div
+            id="money-back-badge"
+            style="
+              position: absolute;
+              left: calc(100% + 0.55cm);
+              top: 85%;
+              transform: translateY(-72%);
+              visibility: hidden;
+            "
+            class="whitespace-nowrap text-sm pointer-events-none"
+          >
+            <p>🔒 Secure Checkout</p>
+            <p>🛡️ Money-Back Guarantee</p>
+            <p>🚚 Free UK Shipping</p>
           </div>
         </div>
       </div>
@@ -110,6 +122,8 @@
         document.addEventListener("DOMContentLoaded", () => {
           const main = document.getElementById("page-main");
           if (main) main.style.visibility = "visible";
+          const signup = document.getElementById("signup-message");
+          if (signup && localStorage.getItem("token")) signup.remove();
         });
       </script>
     </main>

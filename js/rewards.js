@@ -154,9 +154,24 @@ window.redeemReward = redeemReward;
 window.shareReferral = shareReferral;
 export { shareReferral };
 window.addEventListener("DOMContentLoaded", () => {
+  const loggedIn = !!localStorage.getItem("token");
   const reminder = document.getElementById("login-reminder");
-  if (localStorage.getItem("token") && reminder) {
+  if (loggedIn && reminder) {
     reminder.classList.add("hidden");
+  }
+  if (!loggedIn) {
+    document
+      .getElementById("referral-link")
+      ?.classList.add("cursor-default", "pointer-events-none");
+    document
+      .getElementById("copy-referral")
+      ?.classList.add("opacity-50", "cursor-default", "pointer-events-none");
+    document
+      .getElementById("reward-input")
+      ?.classList.add("cursor-default", "pointer-events-none");
+    document
+      .getElementById("redeem-button")
+      ?.classList.add("opacity-50", "cursor-default", "pointer-events-none");
   }
   loadRewardOptions().then(() => {
     loadRewards();
