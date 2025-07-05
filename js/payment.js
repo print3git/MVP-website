@@ -830,12 +830,18 @@ async function initPaymentPage() {
 
   function updatePopularMessage() {
     if (!bulkMsg) return;
-    const amount = window.location.pathname.endsWith("minis-checkout.html")
-      ? "£5.00"
-      : "£7.00";
+    const path = window.location.pathname;
+    const amount = path.endsWith("minis-checkout.html") ? "£5.00" : "£7.00";
+    const showGiftTwo =
+      !path.endsWith("minis-checkout.html") &&
+      !path.endsWith("luckybox-payment.html");
     bulkMsg.innerHTML =
       '<span class="text-gray-400">Popular: keep one, gift one – </span>' +
-      `<span class="text-white">save ${amount}</span>`;
+      `<span class="text-white">save ${amount}</span>` +
+      (showGiftTwo
+        ?
+          '<br><span class="text-gray-400">gift two – </span><span class="text-white">save £22</span>'
+        : "");
     bulkMsg.classList.remove("hidden");
   }
 
