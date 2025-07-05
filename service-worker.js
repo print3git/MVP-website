@@ -1,6 +1,6 @@
 const CACHE_NAME = "model-cache-v1";
 const ASSETS = [
-  "models/bag.glb",
+  "/models/bag.glb",
   "https://modelviewer.dev/shared-assets/environments/neutral.hdr",
   "https://cdn.tailwindcss.com",
   "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css",

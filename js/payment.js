@@ -4,7 +4,7 @@
 let stripe = null;
 
 // Use a lightweight fallback model and upgrade to the high detail version after load.
-const FALLBACK_GLB_LOW = "models/bag.glb";
+const FALLBACK_GLB_LOW = "/models/bag.glb";
 const FALLBACK_GLB_HIGH =
   "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
 const FALLBACK_GLB = FALLBACK_GLB_LOW;
@@ -843,9 +843,7 @@ async function initPaymentPage() {
       '<span class="text-gray-400">Popular: keep one, gift one – </span>' +
       `<span class="text-white">save ${amount}</span>` +
       (showGiftTwo
-
-        ?
-          '<br><span class="invisible">Popular: keep one, </span><span class="text-gray-400">gift two – </span><span class="text-white">save £22.00</span>'
+        ? '<br><span class="invisible">Popular: keep one, </span><span class="text-gray-400">gift two – </span><span class="text-white">save £22.00</span>'
         : "");
     bulkMsg.classList.remove("hidden");
   }
