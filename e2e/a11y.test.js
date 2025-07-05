@@ -9,6 +9,11 @@ const baseline = fs.existsSync(baselinePath)
   ? JSON.parse(fs.readFileSync(baselinePath, "utf8"))
   : {};
 
+// Normalize stored baseline arrays so ordering doesn't cause test failures
+for (const url of Object.keys(baseline)) {
+  baseline[url] = baseline[url].sort();
+}
+
 for (const url of pages) {
   test(`a11y check ${url}`, async ({ page }) => {
     await page.goto(url);
