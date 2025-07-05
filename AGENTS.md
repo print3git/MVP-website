@@ -22,7 +22,17 @@ These guidelines apply to all automated agents (e.g. the Codex agent) working on
 
 ## Troubleshooting
 
-If `npm run ci` outputs messages like `1 interrupted` or `2 did not run` during the Playwright tests, the browsers were likely not installed. You may also see errors such as `browser.newContext: Test ended` or `Test was interrupted` in `/tmp/ci.log`. Run `npm run setup` and retry the CI and smoke steps.
+If `npm run ci` outputs messages like `1 interrupted` or `2 did not run` during the Playwright tests, the browsers were likely not installed. You may also see errors such as `browser.newContext: Test ended` or `Test was interrupted` in `/tmp/ci.log`:
+
+```
+Test was interrupted.
+
+Error: page.goto: Test ended.
+  - navigating to "http://localhost:3000/login.html", waiting until "load"
+    at e2e/a11y.test.js:14:16
+```
+
+Run `npm run setup` and retry the CI and smoke steps when this happens.
 
 These messages may show up in `/tmp/ci.log` as:
 
@@ -30,6 +40,7 @@ These messages may show up in `/tmp/ci.log` as:
 1 interrupted
 2 did not run
 ```
+
 Running the setup script again installs the missing browsers and resolves the failure.
 
 ## PR notes
