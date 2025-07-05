@@ -15,14 +15,15 @@
     <!-- Preload 3D assets -->
     <link
       rel="preload"
-      href="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
+      href="models/bag.glb"
       as="fetch"
-      crossorigin
+      fetchpriority="high"
     />
     <link
       rel="preload"
       href="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
       as="fetch"
+      fetchpriority="high"
       crossorigin
     />
 
@@ -319,7 +320,7 @@
 
         <!-- Checkout Form -->
         <div
-          class="relative w-full md:w-1/2 max-w-md bg-[#2A2A2E] border border-white/10 rounded-3xl p-6 pb-20"
+          class="relative w-full md:w-1/2 max-w-md bg-[#2A2A2E] border border-white/10 rounded-3xl p-6"
         >
           <h2 class="text-2xl font-semibold mb-4 text-center">
             Minis Checkout
@@ -640,7 +641,7 @@
             <button
               id="submit-payment"
               type="button"
-              class="absolute bottom-4 right-4 bg-[#30D5C8] text-[#1A1A1D] py-3 px-6 rounded-xl font-semibold hover:bg-[#28b7a8] transition"
+              class="w-full bg-[#30D5C8] text-[#1A1A1D] py-3 rounded-xl font-semibold hover:bg-[#28b7a8] transition"
             >
               Pay £14.99
             </button>
