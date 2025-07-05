@@ -154,6 +154,10 @@ window.redeemReward = redeemReward;
 window.shareReferral = shareReferral;
 export { shareReferral };
 window.addEventListener("DOMContentLoaded", () => {
+  const reminder = document.getElementById("login-reminder");
+  if (localStorage.getItem("token") && reminder) {
+    reminder.classList.add("hidden");
+  }
   loadRewardOptions().then(() => {
     loadRewards();
     loadLeaderboard();

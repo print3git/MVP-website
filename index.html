@@ -9,7 +9,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     />
-    <title>print3 Assistant</title>
+    <title>print2</title>
     <meta
       name="description"
       content="Create custom 3D models with generative AI and order high-quality prints with print3."
@@ -60,6 +60,7 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
       as="style"
       onload="this.rel='stylesheet'"
+      fetchpriority="high"
     />
     <noscript>
       <link
@@ -69,18 +70,22 @@
     </noscript>
 
     <!-- Preload default model assets -->
-      <link
-        rel="preload"
-        href="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
-        as="fetch"
-        type="model/gltf-binary"
-        crossorigin
-      />
+    <link
+      rel="preload"
+      href="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
+      as="fetch"
+      type="model/gltf-binary"
+      fetchpriority="high"
+      crossorigin
+      fetchpriority="high"
+    />
     <link
       rel="preload"
       href="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
       as="fetch"
+      fetchpriority="high"
       crossorigin
+      fetchpriority="high"
     />
 
     <!-- Google <model-viewer> -->
@@ -163,6 +168,14 @@
         animation: basketBob 0.6s ease;
       }
     </style>
+    <script>
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("service-worker.js");
+        navigator.serviceWorker.ready.then((reg) => {
+          reg.active?.postMessage({ type: "prefetch-models" });
+        });
+      }
+    </script>
   </head>
 
   <body class="bg-[#1A1A1D] text-white font-sans flex flex-col">
@@ -304,14 +317,15 @@
           />
 
           <!-- 3-D Astronaut (always visible) -->
-            <model-viewer
-              id="viewer"
-              src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
-              alt="3D astronaut"
+          <model-viewer
+            id="viewer"
+            src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
+            alt="3D astronaut"
             environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
             camera-controls
             auto-rotate
             crossOrigin="anonymous"
+            fetchpriority="high"
             style="width: 100%; height: 100%; display: block"
           ></model-viewer>
 
@@ -654,12 +668,14 @@
     <script>
       if ("serviceWorker" in navigator) {
         navigator.serviceWorker.register("service-worker.js");
+        navigator.serviceWorker.ready.then((reg) => {
+          reg.active?.postMessage({ type: "prefetch-models" });
+        });
       }
     </script>
     <script type="module" src="js/printclub.js"></script>
     <script type="module" src="js/rewardBadge.js"></script>
     <script type="module" src="js/basket.js" defer></script>
-    <script type="module" src="js/rewardBadge.js"></script>
     <div
       id="purchase-popups"
       class="fixed bottom-28 left-4 bg-black/80 text-white px-3 py-1 rounded hidden opacity-0 text-sm flex flex-col items-center space-y-2"

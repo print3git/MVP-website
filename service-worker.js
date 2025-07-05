@@ -8,6 +8,11 @@ self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)),
   );
+  self.skipWaiting();
+});
+
+self.addEventListener("activate", (event) => {
+  event.waitUntil(self.clients.claim());
 });
 
 self.addEventListener("fetch", (event) => {
@@ -25,6 +30,22 @@ self.addEventListener("fetch", (event) => {
           })
         );
       }),
+    );
+  }
+});
+
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "prefetch-models") {
+    event.waitUntil(
+      caches
+        .open(CACHE_NAME)
+        .then((cache) =>
+          Promise.all(
+            ASSETS.map((url) =>
+              fetch(url).then((resp) => cache.put(url, resp.clone())),
+            ),
+          ),
+        ),
     );
   }
 });

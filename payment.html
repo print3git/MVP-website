@@ -18,12 +18,14 @@
       href="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
       as="fetch"
       crossorigin
+      fetchpriority="high"
     />
     <link
       rel="preload"
       href="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
       as="fetch"
       crossorigin
+      fetchpriority="high"
     />
 
     <!-- Tailwind CSS -->
@@ -257,7 +259,7 @@
         <button
           id="prev-model"
           type="button"
-          class="absolute left-2 top-1/2 -translate-y-1/2 bg-[#2A2A2E] border border-white/20 rounded-full p-2"
+          class="absolute left-2 top-1/2 -translate-y-1/2 bg-[#2A2A2E] border border-white/20 rounded-full p-2 hidden"
         >
           <i class="fas fa-chevron-left"></i>
           <span class="sr-only">Previous model</span>
@@ -265,7 +267,7 @@
         <button
           id="next-model"
           type="button"
-          class="absolute right-2 top-1/2 -translate-y-1/2 bg-[#2A2A2E] border border-white/20 rounded-full p-2"
+          class="absolute right-2 top-1/2 -translate-y-1/2 bg-[#2A2A2E] border border-white/20 rounded-full p-2 hidden"
         >
           <i class="fas fa-chevron-right"></i>
           <span class="sr-only">Next model</span>
@@ -386,8 +388,8 @@
                 <button
                   type="button"
                   class="w-8 h-8 rounded-full border border-white/20"
-                  style="background-color: #ff6600"
-                  data-color="#ff6600"
+                  style="background-color: #ff5500"
+                  data-color="#ff5500"
                 ></button>
                 <button
                   type="button"
@@ -558,9 +560,7 @@
                 </div>
               </div>
 
-              <button type="button" class="promo-toggle text-sm underline">
-                Have a promo code?
-              </button>
+              <button type="button" class="promo-toggle text-sm underline"></button>
               <div class="promo-input flex gap-2 mt-2" hidden>
                 <input
                   id="discount-code"
@@ -686,7 +686,8 @@
       <div class="bg-[#2A2A2E] border border-white/10 rounded-3xl p-6 text-center">
         <h2 class="text-xl font-semibold mb-2 text-white">Save on Prints</h2>
         <ul class="mb-4 text-gray-200 list-disc list-inside text-left">
-          <li>£7 off when you buy more than one print</li>
+          <li>£7 off your 2nd print</li>
+          <li>£15 off your 3rd print</li>
         </ul>
         <p class="text-gray-200 text-sm mb-4">
           Share this and get £5 credit on your next print.
@@ -777,6 +778,9 @@
     <script>
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('service-worker.js');
+        navigator.serviceWorker.ready.then((reg) => {
+          reg.active?.postMessage({ type: 'prefetch-models' });
+        });
       }
     </script>
     <script>

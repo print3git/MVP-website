@@ -5,7 +5,7 @@ let stripe = null;
 
 // Use a lightweight fallback model and upgrade to the high detail version after load.
 const FALLBACK_GLB_LOW =
-  "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
+  "/models/astronaut_low.glb";
 const FALLBACK_GLB_HIGH = FALLBACK_GLB_LOW;
 const FALLBACK_GLB = FALLBACK_GLB_LOW;
 const PRICES = {
@@ -29,6 +29,7 @@ if (window.location.pathname.endsWith("minis-checkout.html")) {
 
 const TWO_PRINT_DISCOUNT = 700;
 const THIRD_PRINT_DISCOUNT = 1500;
+const MINI_SECOND_DISCOUNT = 500;
 let PRICING_VARIANT = localStorage.getItem("pricingVariant");
 if (!PRICING_VARIANT) {
   PRICING_VARIANT = Math.random() < 0.5 ? "A" : "B";
@@ -72,11 +73,8 @@ function computeBulkDiscount(items) {
   for (const it of items) {
     totalQty += Math.max(1, parseInt(it.qty || 1, 10));
   }
-  if (window.location.pathname.endsWith("luckybox-payment.html")) {
-    if (totalQty >= 2) return TWO_PRINT_DISCOUNT;
-    return 0;
-  }
   if (window.location.pathname.endsWith("minis-checkout.html")) {
+    if (totalQty >= 2) return MINI_SECOND_DISCOUNT;
     return 0;
   }
 
@@ -832,9 +830,12 @@ async function initPaymentPage() {
 
   function updatePopularMessage() {
     if (!bulkMsg) return;
+    const amount = window.location.pathname.endsWith("minis-checkout.html")
+      ? "£5.00"
+      : "£7.00";
     bulkMsg.innerHTML =
       '<span class="text-gray-400">Popular: keep one, gift one – </span>' +
-      '<span class="text-white">save £7.00</span>';
+      `<span class="text-white">save ${amount}</span>`;
     bulkMsg.classList.remove("hidden");
   }
 

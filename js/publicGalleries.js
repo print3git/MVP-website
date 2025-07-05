@@ -25,7 +25,48 @@ const sampleGalleries = {
   ],
 };
 
+function ensureModelViewerLoaded() {
+  if (
+    window.customElements &&
+    typeof window.customElements.get === "function" &&
+    window.customElements.get("model-viewer")
+  ) {
+    return Promise.resolve();
+  }
+  const cdnUrl =
+    "https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js";
+  const localUrl = "js/model-viewer.min.js";
+  return new Promise((resolve) => {
+    const s = document.createElement("script");
+    s.type = "module";
+    s.src = cdnUrl;
+    s.onload = resolve;
+    s.onerror = () => {
+      s.remove();
+      const fallback = document.createElement("script");
+      fallback.type = "module";
+      fallback.src = localUrl;
+      fallback.onload = resolve;
+      fallback.onerror = resolve;
+      document.head.appendChild(fallback);
+    };
+    document.head.appendChild(s);
+    setTimeout(() => {
+      if (
+        !(
+          window.customElements &&
+          typeof window.customElements.get === "function" &&
+          window.customElements.get("model-viewer")
+        )
+      ) {
+        s.onerror();
+      }
+    }, 3000);
+  });
+}
+
 async function init() {
+  await ensureModelViewerLoaded();
   const tagsEl = document.getElementById("subreddit-tags");
   const grid = document.getElementById("gallery-grid");
   const loadBtn = document.getElementById("gallery-load");
@@ -87,34 +128,8 @@ async function init() {
   function createAdvert() {
     const advert = document.createElement("div");
     advert.className =
-      "relative w-full h-32 bg-[#2A2A2E] border border-dashed border-white/40 rounded-xl flex items-center justify-center";
-    advert.innerHTML = `
-      <model-viewer id="advert-viewer" src="${advertModels[0]}" camera-controls auto-rotate environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr" class="w-full h-full rounded-xl"></model-viewer>
-      <button id="advert-prev" class="absolute top-1/2 left-2 -translate-y-1/2 bg-black/50 p-2 rounded-full text-white"><i class="fas fa-chevron-left"></i><span class="sr-only">Previous</span></button>
-      <button id="advert-next" class="absolute top-1/2 right-2 -translate-y-1/2 bg-black/50 p-2 rounded-full text-white"><i class="fas fa-chevron-right"></i><span class="sr-only">Next</span></button>
-    `;
-    const viewer = advert.querySelector("#advert-viewer");
-    const prevBtn = advert.querySelector("#advert-prev");
-    const nextBtn = advert.querySelector("#advert-next");
-
-    function show(delta) {
-      advertIdx =
-        (advertIdx + delta + advertModels.length) % advertModels.length;
-      viewer.src = advertModels[advertIdx];
-    }
-
-    prevBtn.addEventListener("click", () => {
-      stopAdvert();
-      show(-1);
-    });
-    nextBtn.addEventListener("click", () => {
-      stopAdvert();
-      show(1);
-    });
-
-    advertInterval = setInterval(() => {
-      show(1);
-    }, 4000);
+      "relative w-full h-32 bg-[#2A2A2E] border border-dashed border-white/40 rounded-xl flex items-center justify-center text-gray-400";
+    advert.textContent = "placeholder";
     return advert;
   }
 
@@ -143,10 +158,12 @@ async function init() {
     }
   }
 
-  loadBtn?.addEventListener("click", () => {
-    offset += 6;
-    renderGallery();
-  });
+  if (loadBtn) {
+    loadBtn.addEventListener("click", () => {
+      offset += 6;
+      renderGallery();
+    });
+  }
 
   async function start() {
     await loadAdvertModels();

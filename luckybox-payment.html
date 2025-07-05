@@ -353,8 +353,8 @@
                 <button
                   type="button"
                   class="w-8 h-8 rounded-full border border-white/20"
-                  style="background-color: #ff7f00"
-                  data-color="#ff7f00"
+                  style="background-color: #ff5500"
+                  data-color="#ff5500"
                 ></button>
                 <button
                   type="button"
@@ -525,9 +525,7 @@
                 </div>
               </div>
 
-              <button type="button" class="promo-toggle text-sm underline">
-                Have a promo code?
-              </button>
+              <button type="button" class="promo-toggle text-sm underline"></button>
               <div class="promo-input flex gap-2 mt-2" hidden>
                 <input
                   id="discount-code"
@@ -662,7 +660,8 @@
       <div class="bg-[#2A2A2E] border border-white/10 rounded-3xl p-6 text-center">
         <h2 class="text-xl font-semibold mb-2 text-white">Save on Prints</h2>
         <ul class="mb-4 text-gray-200 list-disc list-inside text-left">
-          <li>£7 off when you buy more than one print</li>
+          <li>£7 off your 2nd print</li>
+          <li>£15 off your 3rd print</li>
         </ul>
         <p class="text-gray-200 text-sm mb-4">
           Share this and get £5 credit on your next print.
@@ -761,13 +760,6 @@
         if (reminder && window.getSavedModels && window.getSavedModels().length) {
           reminder.classList.remove('hidden');
         }
-      });
-    </script>
-    <script>
-      document.addEventListener('DOMContentLoaded', () => {
-        document.querySelectorAll('#bulk-discount-popup li').forEach((li) => {
-          if (li.textContent.includes('£15')) li.remove();
-        });
       });
     </script>
     <script type="module" src="js/basket.js" defer></script>

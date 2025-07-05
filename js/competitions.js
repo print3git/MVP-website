@@ -15,9 +15,9 @@ function prefetchModel(url) {
   prefetchedModels.add(url);
 }
 
-function saveModel(item) {
-  if (window.addSavedModel) {
-    window.addSavedModel(item);
+function addBasketItem(item) {
+  if (window.addToBasket) {
+    window.addToBasket(item);
   }
 }
 
@@ -206,17 +206,17 @@ function renderEntriesPage(grid, pager, page) {
     card.dataset.model = r.model_url;
     card.dataset.job = r.model_id;
     card.dataset.id = r.model_id;
-    card.innerHTML = `<img src="" alt="Model" class="w-full h-full object-contain pointer-events-none" />\n      <button class="save absolute bottom-1 left-1 text-xs bg-blue-600 px-1 rounded">Save</button>\n      <button class="purchase absolute bottom-1 right-2 font-bold text-lg py-1.5 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]" style="transform: scale(0.78); transform-origin: right bottom;">Buy from £29.99</button>`;
+    card.innerHTML = `<img src="" alt="Model" class="w-full h-full object-contain pointer-events-none" />\n      <button class="add-basket absolute bottom-1 left-1 font-bold text-lg py-1.5 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]" style="transform: scale(0.78); transform-origin: left bottom;">Add to Basket</button>\n      <button class="purchase absolute bottom-1 right-2 font-bold text-lg py-1.5 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]" style="transform: scale(0.78); transform-origin: right bottom;">Buy from £29.99</button>`;
     const buyBtn = card.querySelector(".purchase");
     buyBtn.addEventListener("click", (e) => {
       e.stopPropagation();
       purchase(r.model_url, r.model_id);
     });
-    const saveBtn = card.querySelector(".save");
-    saveBtn?.addEventListener("click", (e) => {
+    const basketBtn = card.querySelector(".add-basket");
+    basketBtn?.addEventListener("click", (e) => {
       e.stopPropagation();
       const img = card.querySelector("img");
-      saveModel({
+      addBasketItem({
         id: r.model_id,
         modelUrl: r.model_url,
         snapshot: img ? img.src : "",
@@ -439,18 +439,18 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   document.querySelectorAll("#winners-grid .model-card").forEach((card) => {
     const buyBtn = card.querySelector(".purchase");
-    const saveBtn = card.querySelector(".save");
+    const basketBtn = card.querySelector(".add-basket");
     if (buyBtn) {
       buyBtn.addEventListener("click", (e) => {
         e.stopPropagation();
         purchase(card.dataset.model, card.dataset.job);
       });
     }
-    if (saveBtn) {
-      saveBtn.addEventListener("click", (e) => {
+    if (basketBtn) {
+      basketBtn.addEventListener("click", (e) => {
         e.stopPropagation();
         const img = card.querySelector("img");
-        saveModel({
+        addBasketItem({
           id: card.dataset.job,
           modelUrl: card.dataset.model,
           snapshot: img ? img.src : "",
