@@ -74,4 +74,19 @@ document.addEventListener("DOMContentLoaded", () => {
   } else if (qs("cancel")) {
     cancelMsg?.classList.remove("hidden");
   }
+
+  const badge = document.getElementById("money-back-badge");
+  const alignBadge = () => {
+    if (!badge || !payBtn) return;
+    const btnRect = payBtn.getBoundingClientRect();
+    const container = badge.parentElement;
+    const containerRect = container && container.getBoundingClientRect();
+    if (!containerRect) return;
+    const offset = btnRect.top + btnRect.height / 2 - containerRect.top;
+    badge.style.transform = "translateY(-50%)";
+    badge.style.top = offset + "px";
+    badge.style.visibility = "visible";
+  };
+  alignBadge();
+  window.addEventListener("resize", alignBadge);
 });
