@@ -28,7 +28,8 @@ if (window.location.pathname.endsWith("minis-checkout.html")) {
 
 
 const TWO_PRINT_DISCOUNT = 700;
-const THIRD_PRINT_DISCOUNT = 1500;
+const THIRD_PRINT_DISCOUNT =
+  window.location.pathname.endsWith("luckybox-payment.html") ? 0 : 1500;
 const MINI_SECOND_DISCOUNT = 500;
 let PRICING_VARIANT = localStorage.getItem("pricingVariant");
 if (!PRICING_VARIANT) {
@@ -840,7 +841,7 @@ async function initPaymentPage() {
       `<span class="text-white">save ${amount}</span>` +
       (showGiftTwo
         ?
-          '<br><span class="text-gray-400">gift two – </span><span class="text-white">save £22</span>'
+          '<br><span class="invisible">Popular: keep one, </span><span class="text-gray-400">gift two – </span><span class="text-white">save £22</span>'
         : "");
     bulkMsg.classList.remove("hidden");
   }

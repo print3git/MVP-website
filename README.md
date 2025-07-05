@@ -282,6 +282,29 @@ pull request:
    `.gitattributes` so Git treats them as binary. This prevents Codex from
    failing to create a patch.
 
+## Running Tests
+
+Install dependencies and Playwright browsers:
+
+```bash
+npm run setup
+```
+
+Run the full CI suite for linting, type checks, backend tests and accessibility checks:
+
+```bash
+npm run ci
+```
+
+For a quick end-to-end sanity check, run:
+
+```bash
+npm run smoke
+```
+
+Avoid calling `npx playwright test` directly. Missing browsers can cause
+`"Playwright Test did not expect test() to be called here"` errors.
+
 ## Printer Service
 
 The print worker posts completed jobs to an external printer API. See
