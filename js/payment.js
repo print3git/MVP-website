@@ -28,7 +28,8 @@ if (window.location.pathname.endsWith("minis-checkout.html")) {
 
 
 const TWO_PRINT_DISCOUNT = 700;
-const THIRD_PRINT_DISCOUNT = 1500;
+const THIRD_PRINT_DISCOUNT =
+  window.location.pathname.endsWith("luckybox-payment.html") ? 0 : 1500;
 const MINI_SECOND_DISCOUNT = 500;
 let PRICING_VARIANT = localStorage.getItem("pricingVariant");
 if (!PRICING_VARIANT) {
