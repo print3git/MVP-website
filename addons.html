@@ -14,6 +14,15 @@
 
     <script src="js/applyColorScheme.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script
+      type="module"
+      src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js"
+    ></script>
+    <script src="js/modelViewerTouchFix.js"></script>
+    <script
+      nomodule
+      src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer-legacy.js"
+    ></script>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
@@ -205,15 +214,26 @@
             container.textContent = "Basket empty";
             return;
           }
-          const ul = document.createElement("ul");
-          ul.className = "list-disc pl-4";
-          items.forEach((it) => {
-            const li = document.createElement("li");
-            const name = (it.modelUrl || "").split("/").pop() || "model.glb";
-            li.textContent = name.split("?")[0];
-            ul.appendChild(li);
+          const toShow = items.slice(0, 2);
+          toShow.forEach((it) => {
+            const mv = document.createElement("model-viewer");
+            mv.src = it.modelUrl || "";
+            mv.alt = "Mini model";
+            mv.setAttribute(
+              "environment-image",
+              "https://modelviewer.dev/shared-assets/environments/neutral.hdr",
+            );
+            mv.setAttribute("camera-controls", "");
+            mv.className = "w-20 h-20 bg-[#2A2A2E] rounded";
+            if (it.snapshot) mv.setAttribute("poster", it.snapshot);
+            container.appendChild(mv);
           });
-          container.appendChild(ul);
+          if (items.length > 2) {
+            const more = document.createElement("div");
+            more.textContent = `and ${items.length - 2} others`;
+            more.className = "text-xs mt-1";
+            container.appendChild(more);
+          }
         }
 
         renderMinisBasket();
