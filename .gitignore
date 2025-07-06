@@ -27,3 +27,8 @@ coverage/
 infra/.terraform/
 infra/*.tfstate
 infra/*.tfstate.backup
+
+# Terraform runtime files
+infra/.terraform/
+infra/*.tfstate*
+infra/AWSCLIV2.pkg
