@@ -22,3 +22,8 @@ coverage/
 *.png
 *.pdf
 .setup-complete
+
+# Terraform local files
+infra/.terraform/
+infra/*.tfstate
+infra/*.tfstate.backup
