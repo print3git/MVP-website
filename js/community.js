@@ -521,7 +521,7 @@ function renderGrid(type, filters = getFilters()) {
     advert.className =
       type === "recent"
         ? "w-full min-h-32 bg-[#2A2A2E] border border-dashed border-white/40 rounded-xl flex flex-col items-center justify-center text-sm row-start-1 sm:col-start-2 md:col-start-3 pt-4 pb-14 relative"
-        : "w-full min-h-32 bg-[#2A2A2E] border border-dashed border-white/40 rounded-xl flex items-center justify-center text-sm p-2";
+        : "w-full min-h-32 bg-[#2A2A2E] border border-dashed border-white/40 rounded-xl flex items-center justify-center text-sm p-2 row-start-3 sm:col-start-2 md:col-start-2";
     if (type === "popular") {
       advert.classList.add("flex-col");
       const loggedIn = !!localStorage.getItem("token");
