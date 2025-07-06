@@ -1,10 +1,11 @@
 terraform {
   backend "s3" {
-    bucket = "glb-models-prod"          # the bucket you created earlier
-    key    = "terraform/state/infra.tfstate"
+    bucket = "glb-models-prod"                  
+    key    = "terraform/state/infra.tfstate"    
     region = "eu-north-1"
   }
 }
+
 
 
 
