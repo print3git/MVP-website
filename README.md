@@ -290,6 +290,9 @@ Install dependencies and Playwright browsers:
 npm run setup
 ```
 
+If the browsers are missing, the CI scripts will automatically invoke this
+command for you. Running it manually first speeds up subsequent test runs.
+
 Run the full CI suite for linting, type checks, backend tests and accessibility checks:
 
 ```bash

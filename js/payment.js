@@ -775,6 +775,7 @@ async function initPaymentPage() {
     if (multiCount > 0) parts.push(`${multiCount} multi`);
     if (singleCount > 0) parts.push(`${singleCount} single-colour`);
     const total = (subtotal - discount) / 100;
+    const totalQty = premiumCount + multiCount + singleCount;
     let text = parts.join(" + ");
     if (saved > 0) {
       const percent =
@@ -782,7 +783,8 @@ async function initPaymentPage() {
       text += ` - £${saved.toFixed(2)} = £${total.toFixed(2)}`;
       if (!window.location.pathname.endsWith("luckybox-payment.html")) {
         const indent = text.lastIndexOf("£");
-        text += `\n${" ".repeat(indent)}(${percent}% saving)`;
+        const pct = totalQty > 3 ? "" : "%";
+        text += `\n${" ".repeat(indent)}(${percent}${pct} saving)`;
       }
     } else {
       text += ` = £${total.toFixed(2)}`;
