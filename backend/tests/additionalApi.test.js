@@ -564,6 +564,8 @@ test("POST /api/admin/competitions unauthorized", async () => {
 
 test("SSE progress endpoint streams updates", async () => {
   const req = request(app).get("/api/progress/job1");
+  // wait briefly to ensure the route attaches its listener
+  await new Promise((r) => setTimeout(r, 20));
   progressTimer = setTimeout(() => {
     progressEmitter.emit("progress", { jobId: "job1", progress: 100 });
   }, 50);
