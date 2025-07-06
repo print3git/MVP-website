@@ -912,6 +912,19 @@ test("POST /api/dalle requires prompt", async () => {
   expect(res.status).toBe(400);
 });
 
+test("POST /api/generate-model returns placeholder", async () => {
+  const res = await request(app)
+    .post("/api/generate-model")
+    .send({ prompt: "cat" });
+  expect(res.status).toBe(200);
+  expect(res.body).toEqual({ success: true, modelId: "placeholder-id" });
+});
+
+test("POST /api/generate-model requires prompt", async () => {
+  const res = await request(app).post("/api/generate-model").send({});
+  expect(res.status).toBe(400);
+});
+
 test("GET /api/dashboard returns aggregated info", async () => {
   const token = jwt.sign({ id: "u1" }, "secret");
   db.query

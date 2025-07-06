@@ -265,6 +265,16 @@ app.post("/api/dalle", async (req, res) => {
   }
 });
 
+/**
+ * POST /api/generate-model
+ * Placeholder endpoint that returns a fake model id
+ */
+app.post("/api/generate-model", (req, res) => {
+  const { prompt } = req.body || {};
+  if (!prompt) return res.status(400).json({ error: "Prompt required" });
+  res.json({ success: true, modelId: "placeholder-id" });
+});
+
 app.post("/api/login", async (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) {
