@@ -78,3 +78,25 @@ function initLuckybox() {
 }
 
 document.addEventListener("DOMContentLoaded", initLuckybox);
+
+function initLuckyboxOptions() {
+  const optionRadios = document.querySelectorAll(
+    'input[name="luckybox-option"]',
+  );
+  const genreInput = document.getElementById("genre-input");
+  if (!optionRadios.length || !genreInput) return;
+  function update() {
+    const selected = document.querySelector(
+      'input[name="luckybox-option"]:checked',
+    );
+    if (selected && selected.value === "B") {
+      genreInput.classList.remove("hidden");
+    } else {
+      genreInput.classList.add("hidden");
+    }
+  }
+  optionRadios.forEach((r) => r.addEventListener("change", update));
+  update();
+}
+
+document.addEventListener("DOMContentLoaded", initLuckyboxOptions);
