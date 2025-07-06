@@ -175,6 +175,19 @@ test("GET /api/users/:username/models 404 when missing", async () => {
   expect(res.status).toBe(404);
 });
 
+test("GET /api/models returns list", async () => {
+  db.query.mockResolvedValueOnce({
+    rows: [{ id: 1, s3_key: "m1.glb", uploaded_at: "2024-01-01" }],
+  });
+  const res = await request(app).get("/api/models");
+  expect(res.status).toBe(200);
+  expect(res.body).toEqual([
+    { id: 1, key: "m1.glb", uploaded_at: "2024-01-01" },
+  ]);
+  const call = db.query.mock.calls[0][0];
+  expect(call).toContain("FROM models");
+});
+
 test("POST /api/models/:id/like adds like", async () => {
   db.query
     .mockResolvedValueOnce({ rows: [] })
