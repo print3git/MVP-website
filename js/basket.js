@@ -142,6 +142,8 @@ async function syncServerCart() {
         jobId: it.job_id,
         quantity: it.quantity,
         serverId: it.id,
+        modelUrl: it.model_url,
+        snapshot: it.snapshot,
       }));
       saveBasket(mapped);
       updateBadge();
@@ -262,7 +264,7 @@ export function setupBasketUI() {
   btn.type = "button";
   btn.id = "basket-button";
   btn.className =
-    "fixed bottom-4 right-4 bg-[#30D5C8] text-black p-3 rounded-full shadow-lg z-50 border-2 border-black";
+    "fixed bottom-3 right-4 bg-[#30D5C8] text-black p-3 rounded-full shadow-lg z-50 border-2 border-black";
   btn.innerHTML =
     '<i class="fas fa-shopping-basket"></i> <span id="basket-count" class="ml-1"></span>';
   btn.addEventListener("click", openBasket);
