@@ -916,7 +916,11 @@ async function deleteCartItem(id) {
 
 async function getCartItems(userId) {
   const { rows } = await query(
-    `SELECT id, job_id, quantity FROM cart_items WHERE user_id=$1 ORDER BY id`,
+    `SELECT ci.id, ci.job_id, ci.quantity, j.model_url, j.snapshot
+     FROM cart_items ci
+     LEFT JOIN jobs j ON ci.job_id=j.job_id
+     WHERE ci.user_id=$1
+     ORDER BY ci.id`,
     [userId],
   );
   return rows;
