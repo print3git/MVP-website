@@ -398,6 +398,18 @@ This resolves any partially configured packages left over from an interrupted `a
 If `eslint` fails with this error, it usually means dependencies aren't installed.
 Run `npm run setup` in the repository root to install them.
 
+### ENOTEMPTY errors from npm
+
+If `npm` reports `ENOTEMPTY: directory not empty` while cleaning the cache, remove the
+cache directory manually:
+
+```bash
+rm -rf "$(npm config get cache)/_cacache"
+```
+
+The `npm run setup` script now performs this cleanup automatically, but manual
+removal may be required on older clones.
+
 ## Contributing
 
 ⚠️ **Note:** this project uses OpenAI Codex to generate PRs;
