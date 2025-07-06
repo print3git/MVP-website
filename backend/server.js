@@ -16,6 +16,7 @@ const db = require("./db");
 const axios = require("axios");
 const FormData = require("form-data");
 const fs = require("fs");
+const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const config = require("./config");
 const prohibitedCountries = ["CU", "IR", "KP", "RU", "SY"];
 const generateTitle = require("./utils/generateTitle");
@@ -62,6 +63,7 @@ const runScalingEngine = require("./scalingEngine");
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || "admin";
 
 const AUTH_SECRET = process.env.AUTH_SECRET || "secret";
+const s3 = new S3Client({ region: process.env.AWS_REGION });
 
 function logError(...args) {
   if (process.env.NODE_ENV !== "test") {
@@ -434,6 +436,29 @@ app.post(
     }
   },
 );
+
+app.post("/api/upload-model", upload.single("model"), async (req, res) => {
+  if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+  const timestamp = Date.now();
+  const key = `models/${timestamp}.glb`;
+  try {
+    await s3.send(
+      new PutObjectCommand({
+        Bucket: process.env.S3_BUCKET,
+        Key: key,
+        Body: fs.createReadStream(req.file.path),
+        ContentType: "model/gltf-binary",
+      }),
+    );
+    await db.insertModel(req.file.originalname, key);
+    res.json({ success: true, key });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: "Upload failed" });
+  } finally {
+    fs.unlink(req.file.path, () => {});
+  }
+});
 
 /**
  * GET /api/status
