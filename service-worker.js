@@ -1,12 +1,7 @@
-const CACHE_NAME = "model-cache-v2";
+const CACHE_NAME = "model-cache-v4";
+// Cache only same-origin assets. Remote resources can fail to load when served
+// from the service worker cache, breaking the 3D viewer.
 const ASSETS = [
-  "models/bag.glb",
-  "https://modelviewer.dev/shared-assets/environments/neutral.hdr",
-  "https://cdn.tailwindcss.com",
-  "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css",
-  "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css",
-  "https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js",
-  "https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer-legacy.js",
   "js/printclub.js",
   "js/rewardBadge.js",
   "js/basket.js",
@@ -21,7 +16,16 @@ self.addEventListener("install", (event) => {
 });
 
 self.addEventListener("activate", (event) => {
-  event.waitUntil(self.clients.claim());
+  event.waitUntil(
+    caches
+      .keys()
+      .then((keys) =>
+        Promise.all(
+          keys.map((key) => (key !== CACHE_NAME ? caches.delete(key) : null)),
+        ),
+      )
+      .then(() => self.clients.claim()),
+  );
 });
 
 self.addEventListener("fetch", (event) => {
