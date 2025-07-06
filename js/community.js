@@ -542,15 +542,22 @@ function renderGrid(type, filters = getFilters()) {
         "</div></div>";
     } else {
       advert.classList.add("text-center");
-      const loggedIn = !!localStorage.getItem("token");
-      const msg = loggedIn
-        ? '<p class="text-white">Earn <span class="text-[#30D5C8]">free prints</span></p>'
-        : '<p class="text-white">Sign up to earn <span class="text-[#30D5C8]">free prints</span>.</p>';
-      const link = loggedIn ? "earn-rewards.html" : "signup.html";
-      const btnText = loggedIn ? "Earn Rewards" : "Sign Up";
-      advert.innerHTML =
-        msg +
-        `<a href="${link}" class="absolute bottom-4 left-1/2 font-bold text-lg py-1.5 px-4 rounded-full shadow-md transition border-2 border-black inline-block" style="background-color: #30D5C8; color: #1A1A1D; transform: translateX(-50%) scale(0.78);" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">${btnText}</a>`;
+
+      if (type === "recent") {
+        const loggedIn = !!localStorage.getItem("token");
+        const msg = loggedIn
+          ? '<p class="text-white">Earn <span class="text-[#30D5C8]">free prints</span></p>'
+          : '<p class="text-white">Sign up to earn <span class="text-[#30D5C8]">free prints</span>.</p>';
+        const link = loggedIn ? "earn-rewards.html" : "signup.html";
+        const btnText = loggedIn ? "Earn Rewards" : "Sign Up";
+        advert.innerHTML =
+          msg +
+          `<a href="${link}" class="absolute bottom-4 left-1/2 font-bold text-lg py-1.5 px-4 rounded-full shadow-md transition border-2 border-black inline-block" style="background-color: #30D5C8; color: #1A1A1D; transform: translateX(-50%) scale(0.78);" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">${btnText}</a>`;
+      } else {
+        advert.innerHTML =
+          '<p class="text-white"><span class="text-[#30D5C8]">£7 off</span> your 2nd and <span class="text-[#30D5C8]">£15 off</span> 3rd item you buy from this page.</p>' +
+          '<a href="payment.html" class="absolute bottom-4 left-1/2 font-bold text-lg py-1.5 px-4 rounded-full shadow-md transition border-2 border-black inline-block" style="background-color: #30D5C8; color: #1A1A1D; transform: translateX(-50%) scale(0.78);" onmouseover="this.style.opacity=\'0.85\'" onmouseout="this.style.opacity=\'1\'">Buy Current Basket →</a>';
+      }
     }
     grid.appendChild(advert);
   }
