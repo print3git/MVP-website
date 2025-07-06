@@ -7,7 +7,7 @@ module.exports = defineConfig({
   webServer: process.env.PLAYWRIGHT_BASE_URL
     ? undefined
     : {
-        command: "npx http-server -c-1 -p 3000",
+        command: "node scripts/dev-server.js",
         port: 3000,
         timeout: 120 * 1000,
         reuseExistingServer: true,
