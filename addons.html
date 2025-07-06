@@ -135,7 +135,7 @@
           <span class="font-semibold text-xl self-center text-center">Luckybox</span>
           <div class="flex items-start gap-10 mt-2 px-10">
             <img src="img/luckybox-preview.png" alt="Luckybox preview" class="w-44 h-44 rounded-lg object-cover" />
-            <fieldset id="luckybox-tiers" class="flex flex-1 gap-4 justify-center">
+            <fieldset id="luckybox-tiers" class="flex gap-4">
               <!-- premium -->
               <label class="cursor-not-allowed flex flex-col items-center text-center opacity-50">
                 <input type="radio" name="luckybox-tier" value="premium" class="sr-only peer" disabled />
@@ -162,6 +162,17 @@
                 </span>
               </label>
             </fieldset>
+          </div>
+          <div id="luckybox-options" class="flex flex-col space-y-1 mt-4 px-10 text-sm">
+            <label class="flex items-center">
+              <input type="radio" name="luckybox-option" value="A" class="accent-[#30D5C8] mr-2" checked />
+              <span>- Luckybox A: random print</span>
+            </label>
+            <label class="flex items-center">
+              <input type="radio" name="luckybox-option" value="B" class="accent-[#30D5C8] mr-2" />
+              <span>- Luckybox B: random print in chosen genre</span>
+              <input id="genre-input" type="text" placeholder="Genre" class="hidden ml-2 px-1 py-0.5 text-black rounded" />
+            </label>
           </div>
           <a href="luckybox-payment.html" class="absolute bottom-4 right-4 font-bold py-2 px-5 rounded-full shadow-md transition border-2 border-black" style="background-color: #30d5c8; color: #1a1a1d" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
             Buy →
