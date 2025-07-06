@@ -1,4 +1,4 @@
-const CACHE_NAME = "model-cache-v3";
+const CACHE_NAME = "model-cache-v4";
 // Cache only same-origin assets. Remote resources can fail to load when served
 // from the service worker cache, breaking the 3D viewer.
 const ASSETS = [
@@ -16,25 +16,29 @@ self.addEventListener("install", (event) => {
   self.skipWaiting();
 });
 
-self.addEventListener("activate", (event) => {
-  event.waitUntil(self.clients.claim());
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.map(k => (k !== CACHE_NAME ? caches.delete(k) : null)))
+    ).then(() => self.clients.claim())
+  );
 });
 
 self.addEventListener("fetch", (event) => {
   if (ASSETS.some((url) => event.request.url.includes(url))) {
     event.respondWith(
-      caches.match(event.request).then((resp) => {
-        return (
-          resp ||
-          fetch(event.request).then((response) => {
-            const clone = response.clone();
-            caches
-              .open(CACHE_NAME)
-              .then((cache) => cache.put(event.request, clone));
-            return response;
-          })
-        );
-      }),
+      caches.open(CACHE_NAME).then(c => c.match(event.request)).then((resp) => {
+          return (
+            resp ||
+            fetch(event.request).then((response) => {
+              const clone = response.clone();
+              caches
+                .open(CACHE_NAME)
+                .then((cache) => cache.put(event.request, clone));
+              return response;
+            })
+          );
+        }),
     );
   }
 });
