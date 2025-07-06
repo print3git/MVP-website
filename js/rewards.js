@@ -164,11 +164,17 @@ window.addEventListener("DOMContentLoaded", () => {
       .getElementById("referral-link")
       ?.classList.add("cursor-default", "pointer-events-none");
     document
+      .querySelector('label[for="referral-link"]')
+      ?.classList.add("opacity-50", "cursor-default", "pointer-events-none");
+    document
       .getElementById("copy-referral")
       ?.classList.add("opacity-50", "cursor-default", "pointer-events-none");
     document
       .getElementById("reward-input")
       ?.classList.add("cursor-default", "pointer-events-none");
+    document
+      .querySelector('label[for="reward-input"]')
+      ?.classList.add("opacity-50", "cursor-default", "pointer-events-none");
     document
       .getElementById("redeem-button")
       ?.classList.add("opacity-50", "cursor-default", "pointer-events-none");
