@@ -1,8 +1,7 @@
-const CACHE_NAME = "model-cache-v3";
+const CACHE_NAME = "model-cache-v4";
 // Cache only same-origin assets. Remote resources can fail to load when served
 // from the service worker cache, breaking the 3D viewer.
 const ASSETS = [
-  "models/bag.glb",
   "js/printclub.js",
   "js/rewardBadge.js",
   "js/basket.js",
