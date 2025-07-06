@@ -563,6 +563,7 @@ test("POST /api/admin/competitions unauthorized", async () => {
 });
 
 test("SSE progress endpoint streams updates", async () => {
+  jest.useRealTimers();
   const req = request(app).get("/api/progress/job1");
   // wait briefly to ensure the route attaches its listener
   await new Promise((r) => setTimeout(r, 20));
