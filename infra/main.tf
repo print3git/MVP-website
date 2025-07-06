@@ -1,3 +1,13 @@
+terraform {
+  backend "s3" {
+    bucket = "glb-models-prod"          # the bucket you created earlier
+    key    = "terraform/state/infra.tfstate"
+    region = "eu-north-1"
+  }
+}
+
+
+
 provider "random" {}
 
 resource "random_password" "print3_db_password" {
