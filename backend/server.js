@@ -460,6 +460,23 @@ app.post("/api/upload-model", upload.single("model"), async (req, res) => {
   }
 });
 
+app.get("/api/models", async (req, res) => {
+  try {
+    const { rows } = await db.query(
+      "SELECT id, s3_key, uploaded_at FROM models ORDER BY uploaded_at DESC",
+    );
+    const models = rows.map((r) => ({
+      id: r.id,
+      key: r.s3_key,
+      uploaded_at: r.uploaded_at,
+    }));
+    res.json(models);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: "Failed to fetch models" });
+  }
+});
+
 /**
  * GET /api/status
  * List recent jobs with pagination
