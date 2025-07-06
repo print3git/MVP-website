@@ -178,7 +178,7 @@
               <p class="text-sm font-semibold">£14.99 per mini</p>
               <div id="minis-basket" class="text-xs overflow-y-auto max-h-20"></div>
             </div>
-            <a href="minis-checkout.html" class="absolute bottom-4 right-4 font-bold py-2 px-5 rounded-full shadow-md transition border-2 border-black text-sm" style="background-color: #30d5c8; color: #1a1a1d" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">Print my basket in mini size →</a>
+            <a href="minis-checkout.html" class="absolute bottom-4 right-4 font-bold py-2 px-5 rounded-full shadow-md transition border-2 border-black" style="background-color: #30d5c8; color: #1a1a1d" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">Print my basket in mini size →</a>
           </div>
 
           <!-- Remix prints (50% of column) -->
@@ -214,10 +214,12 @@
             container.textContent = "Basket empty";
             return;
           }
+          const placeholder =
+            'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAEElEQVR4nGNg+M9QzwAEYBxVSvzdgAAAAABJRU5ErkJggg==';
           const toShow = items.slice(0, 2);
           toShow.forEach((it) => {
             const img = document.createElement("img");
-            img.src = it.snapshot || it.modelUrl || "";
+            img.src = it.snapshot || it.modelUrl || placeholder;
             img.alt = "Mini thumbnail";
             img.className = "w-20 h-20 object-cover bg-[#2A2A2E] rounded";
             container.appendChild(img);
