@@ -930,6 +930,14 @@ async function clearCart(userId) {
   await query("DELETE FROM cart_items WHERE user_id=$1", [userId]);
 }
 
+async function insertModel(originalFilename, s3Key) {
+  const { rows } = await query(
+    "INSERT INTO models(original_filename, s3_key) VALUES($1,$2) RETURNING *",
+    [originalFilename, s3Key],
+  );
+  return rows[0];
+}
+
 async function insertOrderItems(orderId, items) {
   for (const item of items) {
     await query(
@@ -1138,6 +1146,7 @@ module.exports = {
   deleteCartItem,
   getCartItems,
   clearCart,
+  insertModel,
   insertOrderItems,
   getOrderItems,
 };
