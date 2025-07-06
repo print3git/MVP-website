@@ -142,6 +142,8 @@ async function syncServerCart() {
         jobId: it.job_id,
         quantity: it.quantity,
         serverId: it.id,
+        modelUrl: it.model_url,
+        snapshot: it.snapshot,
       }));
       saveBasket(mapped);
       updateBadge();
