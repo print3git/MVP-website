@@ -16,7 +16,11 @@ const db = require("./db");
 const axios = require("axios");
 const FormData = require("form-data");
 const fs = require("fs");
-const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+const {
+  S3Client,
+  PutObjectCommand,
+  HeadBucketCommand,
+} = require("@aws-sdk/client-s3");
 const config = require("./config");
 const prohibitedCountries = ["CU", "IR", "KP", "RU", "SY"];
 const generateTitle = require("./utils/generateTitle");
@@ -589,6 +593,17 @@ app.get("/api/recent-purchases", async (req, res) => {
 
 app.get("/api/campaign", (req, res) => {
   res.json(campaigns);
+});
+
+app.get("/api/health", async (req, res) => {
+  try {
+    await db.query("SELECT 1");
+    await s3.send(new HeadBucketCommand({ Bucket: process.env.S3_BUCKET }));
+    res.json({ db: "ok", s3: "ok" });
+  } catch (err) {
+    logError("Health check failed", err);
+    res.status(500).json({ error: "unhealthy" });
+  }
 });
 
 app.get("/api/init-data", authOptional, async (req, res) => {
