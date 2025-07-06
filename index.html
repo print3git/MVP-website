@@ -318,8 +318,8 @@
           <!-- 3-D Astronaut (always visible) -->
           <model-viewer
             id="viewer"
-            src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
-            alt="3D astronaut"
+            src="models/bag.glb"
+            alt="3D model preview"
             environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
             camera-controls
             auto-rotate
@@ -665,12 +665,6 @@
       </div>
     </div>
     <script>
-      if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("service-worker.js");
-        navigator.serviceWorker.ready.then((reg) => {
-          reg.active?.postMessage({ type: "prefetch-models" });
-        });
-      }
     </script>
     <script type="module" src="js/printclub.js"></script>
     <script type="module" src="js/rewardBadge.js"></script>
