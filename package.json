@@ -30,7 +30,7 @@
     "e2e": "playwright test",
     "smoke": "NODE_NO_WARNINGS=1 SKIP_PW_DEPS=1 npm run setup && NODE_NO_WARNINGS=1 npx playwright test e2e/smoke.test.js",
     "visual-test": "percy exec -- npm run e2e",
-    "test:a11y": "bash scripts/install-playwright.sh chromium && playwright test e2e/a11y.test.js",
+    "test:a11y": "node scripts/assert-setup.js && bash scripts/install-playwright.sh chromium && playwright test e2e/a11y.test.js",
     "netlify:deploy": "scripts/netlify-preflight.sh && netlify deploy"
   },
   "keywords": [],
