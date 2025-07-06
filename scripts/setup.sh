@@ -21,6 +21,7 @@ fi
 
 # Clear the npm cache to avoid cleanup warnings
 npm cache clean --force
+npm cache verify >/dev/null
 # Remove leftover tmp directories that can cause ENOTEMPTY errors
 rm -rf "$(npm config get cache)/_cacache/tmp" "$HOME/.npm/_cacache/tmp"
 

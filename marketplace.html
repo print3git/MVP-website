@@ -124,7 +124,7 @@
         class="grid grid-cols-1 md:grid-cols-2 gap-6 h-full mt-auto mb-6"
       >
         <div
-          class="bg-[#2A2A2E] p-4 rounded-xl border border-white/10 flex flex-col h-[36vh]"
+          class="bg-[#2A2A2E] p-4 rounded-xl border border-white/10 flex flex-col h-[40vh]"
         >
           <h2 class="text-xl font-semibold mb-2">Your Marketplace</h2>
           <p>
@@ -152,7 +152,7 @@
           <input id="glbUpload" type="file" accept=".glb" class="hidden" />
         </div>
         <div
-          class="bg-[#2A2A2E] p-4 rounded-xl border border-white/10 flex flex-col h-[36vh]"
+          class="bg-[#2A2A2E] p-4 rounded-xl border border-white/10 flex flex-col h-[40vh]"
         >
           <h2 class="text-xl font-semibold mb-2">Their Marketplace</h2>
           <p>
@@ -169,6 +169,23 @@
         >
           <h2 class="text-xl font-semibold mb-2">Featured Deals</h2>
         </div>
+      </section>
+      <section class="bg-[#2A2A2E] p-4 rounded-xl border border-white/10 mb-6">
+        <p class="text-center">
+          Purchase items here to get
+          <span class="text-[#30D5C8]">£7 off</span>
+          your 2nd and
+          <span class="text-[#30D5C8]">£15 off</span>
+          your 3rd print. Add them to your
+          <a
+            href="#"
+            class="font-bold text-[#30D5C8]"
+            onclick="document.getElementById('basket-button')?.click(); return false;"
+            >Basket</a
+          >
+          and
+          <a href="payment.html" class="font-bold text-[#30D5C8]">Buy Here</a>.
+        </p>
       </section>
     </main>
     <script type="module">
