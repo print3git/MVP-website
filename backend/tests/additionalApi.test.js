@@ -563,6 +563,7 @@ test("POST /api/admin/competitions unauthorized", async () => {
 });
 
 test("SSE progress endpoint streams updates", async () => {
+  jest.useRealTimers();
   const req = request(app).get("/api/progress/job1");
   progressTimer = setTimeout(() => {
     progressEmitter.emit("progress", { jobId: "job1", progress: 100 });
