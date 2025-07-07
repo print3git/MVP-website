@@ -496,21 +496,21 @@ app.get("/api/models", async (req, res) => {
 });
 
 app.post("/api/models", async (req, res) => {
+  const { prompt, fileKey } = req.body || {};
+  if (!prompt || !fileKey) {
+    return res.status(400).json({ error: "prompt and fileKey are required" });
+  }
   try {
-    const { prompt, fileKey } = req.body;
-    if (!prompt || !fileKey) {
-      return res.status(400).json({ error: "prompt and fileKey are required" });
-    }
-    const url = `${CLOUDFRONT_MODEL_DOMAIN.replace(/^https?:\/\//, "https://")}/${fileKey}`;
-    const result = await db.query(
-      "INSERT INTO models (prompt, file_key, url) VALUES ($1, $2, $3) RETURNING id, prompt, url, created_at",
-      [prompt, fileKey, url],
+    const { rows } = await db.query(
+      "INSERT INTO models(prompt, file_key) VALUES($1,$2) RETURNING id, created_at",
+      [prompt, fileKey],
     );
-    const record = result.rows[0];
-    res.status(201).json(record);
+    const { id, created_at } = rows[0];
+    const url = `https://${CLOUDFRONT_MODEL_DOMAIN}/${fileKey}`;
+    res.status(201).json({ id, prompt, url, created_at });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
+    logError(err);
+    res.status(500).json({ error: "Failed to create model" });
   }
 });
 
