@@ -1,0 +1,20 @@
+name: Package Helm Chart
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/setup-helm@v3
+      - name: Package chart
+        run: |
+          helm package deploy/helm/print3 --destination chart
+      - name: Upload release asset
+        uses: softprops/action-gh-release@v1
+        with:
+          files: chart/print3-*.tgz
