@@ -5,7 +5,10 @@ module.exports = {
   setupFilesAfterEnv: ["<rootDir>/tests/setup.js"],
   globalTeardown: "<rootDir>/tests/globalTeardown.js",
   testEnvironment: "node",
-  testMatch: ["<rootDir>/tests/**/*.test.js"],
+  testMatch: [
+    "<rootDir>/tests/**/*.test.js",
+    "<rootDir>/src/**/__tests__/**/*.test.js",
+  ],
   testTimeout: 10000,
   coverageDirectory: "coverage",
   coverageReporters: ["text", "lcov"],

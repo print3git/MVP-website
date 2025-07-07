@@ -16,6 +16,9 @@ new S3Client();
 
 router.post("/api/models", async (req, res) => {
   const { prompt, fileKey } = req.body;
+  if (!prompt || !fileKey) {
+    return res.status(400).json({ error: "Missing prompt or fileKey" });
+  }
   const url = `https://${process.env.CLOUDFRONT_DOMAIN}/${fileKey}`;
   try {
     const result = await pool.query(
