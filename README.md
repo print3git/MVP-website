@@ -381,6 +381,10 @@ Use the Netlify CLI via `npx netlify-cli` or the
 [`netlify/actions/cli`](https://github.com/netlify/actions) action and then
 run `netlify deploy` as usual once the preflight passes.
 
+## Cost Alerts
+
+The Terraform configuration sets up a budget that emails you if monthly AWS spend exceeds $20. Set `COST_ALERT_EMAIL` before running `terraform apply` to receive these notifications.
+
 ## Troubleshooting
 
 ### dpkg was interrupted

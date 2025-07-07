@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "print3.fullname" . }}
+  labels:
+    app: {{ include "print3.name" . }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "print3.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "print3.name" . }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          env:
+            - name: DATABASE_URL
+              value: {{ .Values.db.url | quote }}
+            - name: STRIPE_PUBLISHABLE_KEY
+              value: {{ .Values.stripe.publishableKey | quote }}
+            - name: STRIPE_SECRET_KEY
+              value: {{ .Values.stripe.secretKey | quote }}
+            - name: AI_KEY
+              value: {{ .Values.ai.key | quote }}
+            - name: NODE_ENV
+              value: {{ .Values.env | quote }}

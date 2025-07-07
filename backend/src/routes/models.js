@@ -1,6 +1,8 @@
 const express = require("express");
 const { S3Client } = require("@aws-sdk/client-s3");
 const { Pool } = require("pg");
+const validate = require("../../middleware/validate");
+const { z } = require("zod");
 
 const router = express.Router();
 
@@ -14,11 +16,12 @@ const pool = new Pool({
 // Initialize an S3 client so the SDK is available if needed
 new S3Client();
 
-router.post("/api/models", async (req, res) => {
+const createModelSchema = z.object({
+  prompt: z.string().min(1, "prompt is required"),
+  fileKey: z.string().regex(/^[A-Za-z0-9._-]+$/, "invalid fileKey"),
+});
+router.post("/api/models", validate(createModelSchema), async (req, res) => {
   const { prompt, fileKey } = req.body;
-  if (!prompt || !fileKey) {
-    return res.status(400).json({ error: "Missing prompt or fileKey" });
-  }
   const url = `https://${process.env.CLOUDFRONT_DOMAIN}/${fileKey}`;
   try {
     const result = await pool.query(

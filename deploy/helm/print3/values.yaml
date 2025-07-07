@@ -1,0 +1,15 @@
+image:
+  repository: ghcr.io/print3/print3
+  tag: "latest"
+
+db:
+  url: "postgres://user:pass@db:5432/print3"
+
+stripe:
+  publishableKey: "pk_test"
+  secretKey: "sk_test"
+
+ai:
+  key: "ai-key"
+
+env: "production"
