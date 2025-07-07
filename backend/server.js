@@ -491,6 +491,21 @@ app.get("/api/models", async (req, res) => {
   }
 });
 
+app.post("/api/models", async (req, res) => {
+  const { prompt, fileKey } = req.body || {};
+  const url = `https://${process.env.CLOUDFRONT_MODEL_DOMAIN}/${fileKey}`;
+  try {
+    const { rows } = await db.query(
+      "INSERT INTO models(prompt, file_key, url) VALUES($1,$2,$3) RETURNING id, prompt, url, created_at",
+      [prompt, fileKey, url],
+    );
+    res.status(201).json(rows[0]);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 /**
  * GET /api/status
  * List recent jobs with pagination
