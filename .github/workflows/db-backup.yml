@@ -1,0 +1,23 @@
+name: DB Backup
+
+on:
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run backup script
+        env:
+          DB_URL: ${{ secrets.DB_URL }}
+        run: |
+          ./scripts/backup-db.sh
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: db-backup-${{ github.run_id }}
+          path: backups/db-*.sql.gz
+          retention-days: 7
