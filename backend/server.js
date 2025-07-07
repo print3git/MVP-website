@@ -17,6 +17,7 @@ const { v4: uuidv4 } = require("uuid");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const db = require("./db");
+const modelsRouter = require("./routes/models");
 const axios = require("axios");
 const FormData = require("form-data");
 const fs = require("fs");
@@ -158,6 +159,7 @@ app.use(morgan("dev"));
 app.use(compression());
 app.use(cors());
 app.use(bodyParser.json());
+app.use('/api/models', modelsRouter);
 const staticOptions = {
   setHeaders(res, filePath) {
     if (/\.(?:glb|hdr|js|css|png|jpe?g|gif|svg)$/i.test(filePath)) {
@@ -495,24 +497,6 @@ app.get("/api/models", async (req, res) => {
   }
 });
 
-app.post("/api/models", async (req, res) => {
-  const { prompt, fileKey } = req.body || {};
-  if (!prompt || !fileKey) {
-    return res.status(400).json({ error: "prompt and fileKey are required" });
-  }
-  try {
-    const { rows } = await db.query(
-      "INSERT INTO models(prompt, file_key) VALUES($1,$2) RETURNING id, created_at",
-      [prompt, fileKey],
-    );
-    const { id, created_at } = rows[0];
-    const url = `https://${CLOUDFRONT_MODEL_DOMAIN}/${fileKey}`;
-    res.status(201).json({ id, prompt, url, created_at });
-  } catch (err) {
-    logError(err);
-    res.status(500).json({ error: "Failed to create model" });
-  }
-});
 
 /**
  * GET /api/status
