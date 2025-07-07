@@ -27,3 +27,7 @@ console.warn = (...args) => {
   }
   return originalConsoleWarn(...args);
 };
+
+if (!process.env.CLOUDFRONT_MODEL_DOMAIN) {
+  process.env.CLOUDFRONT_MODEL_DOMAIN = "cdn.test";
+}
