@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
+gitleaks protect --staged --no-banner --redact
 npm audit --audit-level=high
 npx lint-staged
