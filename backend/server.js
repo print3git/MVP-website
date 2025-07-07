@@ -13,6 +13,9 @@ const multer = require("multer");
 const path = require("path");
 const morgan = require("morgan");
 const compression = require("compression");
+const swaggerJsdoc = require("swagger-jsdoc");
+const swaggerUi = require("swagger-ui-express");
+const YAML = require("yaml");
 const { v4: uuidv4 } = require("uuid");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -159,7 +162,28 @@ app.use(morgan("dev"));
 app.use(compression());
 app.use(cors());
 app.use(bodyParser.json());
-app.use('/api/models', modelsRouter);
+const serverSource = fs.readFileSync(__filename, "utf8");
+const swaggerSpec = swaggerJsdoc({
+  definition: {
+    openapi: "3.0.0",
+    info: { title: "print2 API", version: "1.0.0" },
+  },
+  apis: [__filename],
+});
+swaggerSpec.paths = swaggerSpec.paths || {};
+const regex = /app\.(get|post|put|delete|patch)\(\s*"(\/api[^"\s]*)"/g;
+let m;
+while ((m = regex.exec(serverSource))) {
+  const method = m[1];
+  const p = m[2];
+  if (!swaggerSpec.paths[p]) swaggerSpec.paths[p] = {};
+  swaggerSpec.paths[p][method] = { responses: { 200: { description: "OK" } } };
+}
+app.get("/api-docs", (req, res) => {
+  res.type("yaml").send(YAML.stringify(swaggerSpec));
+});
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use("/api/models", modelsRouter);
 const staticOptions = {
   setHeaders(res, filePath) {
     if (/\.(?:glb|hdr|js|css|png|jpe?g|gif|svg)$/i.test(filePath)) {
@@ -496,7 +520,6 @@ app.get("/api/models", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch models" });
   }
 });
-
 
 /**
  * GET /api/status
