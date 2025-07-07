@@ -32,27 +32,35 @@ resource "aws_security_group" "metadata_sg" {
     from_port   = 5432
     to_port     = 5432
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [data.aws_vpc.default.cidr_block]
+    description = "Postgres from VPC"
   }
 
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [data.aws_vpc.default.cidr_block]
+    description = "Allow VPC egress"
   }
 }
 
 resource "aws_db_instance" "metadata_db" {
-  engine                 = "postgres"
-  instance_class         = "db.t3.micro"
-  allocated_storage      = 20
-  username               = "metadata_user"
-  password               = random_password.metadata_db_password.result
-  publicly_accessible    = false
-  skip_final_snapshot    = true
-  db_subnet_group_name   = aws_db_subnet_group.metadata_subnets.name
-  vpc_security_group_ids = [aws_security_group.metadata_sg.id]
+  engine                              = "postgres"
+  instance_class                      = "db.t3.micro"
+  allocated_storage                   = 20
+  username                            = "metadata_user"
+  password                            = random_password.metadata_db_password.result
+  publicly_accessible                 = false
+  skip_final_snapshot                 = true
+  storage_encrypted                   = true
+  backup_retention_period             = 7
+  deletion_protection                 = true
+  iam_database_authentication_enabled = true
+  performance_insights_enabled        = true
+  performance_insights_kms_key_id     = aws_kms_key.rds_pi.arn
+  db_subnet_group_name                = aws_db_subnet_group.metadata_subnets.name
+  vpc_security_group_ids              = [aws_security_group.metadata_sg.id]
 }
 
 output "metadata_db_endpoint" {

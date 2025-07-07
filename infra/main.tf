@@ -1,15 +1,26 @@
 terraform {
   backend "s3" {
-    bucket = "glb-models-prod"                  
-    key    = "terraform/state/infra.tfstate"    
+    bucket = "glb-models-prod"
+    key    = "terraform/state/infra.tfstate"
     region = "eu-north-1"
   }
+}
+
+variable "waf_web_acl_id" {
+  description = "Optional WAF web ACL ID for CloudFront"
+  type        = string
+  default     = null
 }
 
 
 
 
 provider "random" {}
+
+resource "aws_kms_key" "rds_pi" {
+  description         = "RDS performance insights"
+  enable_key_rotation = true
+}
 
 resource "random_password" "print3_db_password" {
   length  = 16
@@ -41,28 +52,36 @@ resource "aws_security_group" "print3_db_sg" {
     from_port   = 5432
     to_port     = 5432
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # Replace with backend IP/CIDR for production
+    cidr_blocks = [data.aws_vpc.model.cidr_block]
+    description = "Postgres from VPC"
   }
 
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [data.aws_vpc.model.cidr_block]
+    description = "Allow VPC egress"
   }
 }
 
 resource "aws_db_instance" "print3_metadata" {
-  identifier               = "print3-metadata-db"
-  engine                   = "postgres"
-  instance_class           = "db.t3.micro"
-  allocated_storage        = 20
-  username                 = "postgres"
-  password                 = random_password.print3_db_password.result
-  publicly_accessible      = false
-  skip_final_snapshot      = true
-  db_subnet_group_name     = aws_db_subnet_group.print3_db_subnet_group.name
-  vpc_security_group_ids   = [aws_security_group.print3_db_sg.id]
+  identifier                          = "print3-metadata-db"
+  engine                              = "postgres"
+  instance_class                      = "db.t3.micro"
+  allocated_storage                   = 20
+  username                            = "postgres"
+  password                            = random_password.print3_db_password.result
+  publicly_accessible                 = false
+  skip_final_snapshot                 = true
+  storage_encrypted                   = true
+  backup_retention_period             = 7
+  deletion_protection                 = true
+  iam_database_authentication_enabled = true
+  performance_insights_enabled        = true
+  performance_insights_kms_key_id     = aws_kms_key.rds_pi.arn
+  db_subnet_group_name                = aws_db_subnet_group.print3_db_subnet_group.name
+  vpc_security_group_ids              = [aws_security_group.print3_db_sg.id]
 }
 
 output "print3_db_endpoint" {
@@ -87,12 +106,12 @@ resource "aws_s3_bucket_policy" "glb_models_policy" {
     Version = "2012-10-17"
     Statement = [
       {
-        Sid = "AllowCloudFrontAccess"
+        Sid    = "AllowCloudFrontAccess"
         Effect = "Allow"
         Principal = {
           CanonicalUser = aws_cloudfront_origin_access_identity.model_oai.s3_canonical_user_id
         }
-        Action = ["s3:GetObject"]
+        Action   = ["s3:GetObject"]
         Resource = "arn:aws:s3:::glb-models-prod/*"
       }
     ]
@@ -110,6 +129,8 @@ resource "aws_s3_bucket_public_access_block" "glb_models_block" {
 
 resource "aws_cloudfront_distribution" "model_cdn" {
   enabled = true
+
+  web_acl_id = var.waf_web_acl_id
 
   origin {
     domain_name = "glb-models-prod.s3.amazonaws.com"
@@ -138,6 +159,12 @@ resource "aws_cloudfront_distribution" "model_cdn" {
 
   viewer_certificate {
     cloudfront_default_certificate = true
+    minimum_protocol_version       = "TLSv1.2_2021"
+  }
+
+  logging_config {
+    include_cookies = false
+    bucket          = "logs.example.com.s3.amazonaws.com"
   }
 
   tags = {

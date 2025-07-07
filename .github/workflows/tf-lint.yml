@@ -1,0 +1,21 @@
+name: Terraform Lint
+
+on:
+  pull_request:
+    paths:
+      - 'infra/**'
+
+jobs:
+  tf-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+      - name: Format
+        run: terraform fmt -check infra/
+      - name: Validate
+        run: terraform -chdir=infra validate
+      - name: tfsec
+        uses: aquasecurity/tfsec-action@v1
+        with:
+          working_directory: infra

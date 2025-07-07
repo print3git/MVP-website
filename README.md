@@ -262,6 +262,7 @@ We welcome pull requests! Please fork the repo and create a topic branch. Run
 clean before submitting.
 Run `npm run test-ci` for the same tests using a single process, which matches the CI configuration.
 Run `npm run format` in `backend/` to apply Prettier formatting before committing.
+CI: tfsec + fmt check
 For significant changes, please open an issue first to discuss what you would like to change. Be sure to follow the code style enforced by Prettier.
 
 ## Using Codex
