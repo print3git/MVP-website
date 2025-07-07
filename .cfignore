@@ -1,0 +1,39 @@
+.env
+node_modules/
+models/*
+!models/astronaut_low.glb
+uploads/
+backend/hunyuan_server/uploads/
+*.log
+.DS_Store
+reports/
+backend/coverage/
+coverage/
+# ignore compiled and binary files
+*.exe
+*.dll
+*.so
+*.bin
+*.o
+*.pyc
+/build/
+/dist/
+*.jpg
+*.png
+*.pdf
+.setup-complete
+
+# Terraform local files
+infra/.terraform/
+infra/*.tfstate
+infra/*.tfstate.backup
+
+# Terraform runtime files
+infra/.terraform/
+infra/*.tfstate*
+infra/AWSCLIV2.pkg
+infra/awscliv2.zip
+
+coverage/
+node_modules/
+infra/**/*.zip
