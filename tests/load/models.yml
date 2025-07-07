@@ -1,0 +1,16 @@
+config:
+  target: "http://localhost:3000"
+  phases:
+    - duration: 60
+      arrivalRate: 10
+  ensure:
+    thresholds:
+      http.response_time:
+        p95: 300
+scenarios:
+  - flow:
+      - post:
+          url: "/api/models"
+          json:
+            prompt: "load-test"
+            fileKey: "file.glb"
