@@ -8,6 +8,10 @@ This repository contains the early MVP code for print2's website and backend.
 - The `img/` folder is now reserved strictly for image assets.
 - HTML files in the `uploads/` directory should use the `.links` extension to avoid being served as plain text.
 
+## Quick Start
+
+Run `docker compose up` to start the API and Postgres services.
+
 ## Local Setup
 
 1. Copy `.env.example` to `.env` in the repository root and update the values:
