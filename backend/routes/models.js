@@ -18,8 +18,10 @@ router.post("/", async (req, res) => {
       "INSERT INTO models(prompt, fileKey, url) VALUES($1,$2,$3) RETURNING id, prompt, fileKey, url, created_at",
       [prompt, fileKey, url],
     );
+    req.logger.info("Model created", { id: rows[0].id });
     res.status(201).json(rows[0]);
   } catch (_err) {
+    req.logger.error("Failed to create model", _err);
     res.status(500).json({ error: "Failed to create model" });
   }
 });

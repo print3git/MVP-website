@@ -18,6 +18,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const db = require("./db");
 const modelsRouter = require("./routes/models");
+const logger = require("./utils/logger");
+const correlationId = require("./middleware/correlationId");
 const axios = require("axios");
 const FormData = require("form-data");
 const fs = require("fs");
@@ -76,7 +78,11 @@ const s3 = new S3Client({ region: process.env.AWS_REGION });
 
 function logError(...args) {
   if (process.env.NODE_ENV !== "test") {
-    console.error(...args);
+    logger.error(
+      args
+        .map((a) => (a instanceof Error ? a.stack || a.message : a))
+        .join(" "),
+    );
   }
 }
 
@@ -155,11 +161,12 @@ function saveGeneratedAds() {
 }
 
 const app = express();
+app.use(correlationId);
 app.use(morgan("dev"));
 app.use(compression());
 app.use(cors());
 app.use(bodyParser.json());
-app.use('/api/models', modelsRouter);
+app.use("/api/models", modelsRouter);
 const staticOptions = {
   setHeaders(res, filePath) {
     if (/\.(?:glb|hdr|js|css|png|jpe?g|gif|svg)$/i.test(filePath)) {
@@ -496,7 +503,6 @@ app.get("/api/models", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch models" });
   }
 });
-
 
 /**
  * GET /api/status
@@ -3389,11 +3395,11 @@ if (require.main === module) {
   if (process.env.HTTP2 === "true") {
     const server = http2.createServer({ allowHTTP1: true }, app);
     server.listen(PORT, () => {
-      console.log(`API server listening on http://localhost:${PORT} (HTTP/2)`);
+      logger.info(`API server listening on http://localhost:${PORT} (HTTP/2)`);
     });
   } else {
     app.listen(PORT, () => {
-      console.log(`API server listening on http://localhost:${PORT}`);
+      logger.info(`API server listening on http://localhost:${PORT}`);
     });
   }
   initDailyPrintsSold();

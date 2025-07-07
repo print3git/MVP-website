@@ -25,8 +25,10 @@ router.post("/api/models", async (req, res) => {
       "INSERT INTO models (prompt, url) VALUES ($1, $2) RETURNING *",
       [prompt, url],
     );
+    req.logger.info("Model created", { id: result.rows[0].id });
     res.status(201).json(result.rows[0]);
   } catch (_err) {
+    req.logger.error("Failed to insert model", _err);
     res.status(500).json({ error: "Failed to insert model" });
   }
 });
