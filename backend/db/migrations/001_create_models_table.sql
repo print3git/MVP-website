@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS models (
+  id SERIAL PRIMARY KEY,
+  prompt TEXT NOT NULL,
+  url TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
