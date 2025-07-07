@@ -410,6 +410,17 @@ rm -rf "$(npm config get cache)/_cacache"
 The `npm run setup` script now performs this cleanup automatically, but manual
 removal may be required on older clones.
 
+### Playwright host validation warnings
+
+If Playwright prints a message like `Host system is missing dependencies to run browsers`,
+install the required system packages with:
+
+```bash
+CI=1 npx playwright install --with-deps
+```
+
+This fetches the missing libraries via `apt` so the browsers can start correctly.
+
 ## Contributing
 
 ⚠️ **Note:** this project uses OpenAI Codex to generate PRs;
