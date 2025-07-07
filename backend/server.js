@@ -1,6 +1,10 @@
 // backend/server.js
 
 require("dotenv").config();
+const { CLOUDFRONT_MODEL_DOMAIN } = process.env;
+if (!CLOUDFRONT_MODEL_DOMAIN) {
+  throw new Error("Missing required env var CLOUDFRONT_MODEL_DOMAIN");
+}
 const express = require("express");
 const http2 = require("http2");
 const cors = require("cors");
@@ -492,16 +496,20 @@ app.get("/api/models", async (req, res) => {
 });
 
 app.post("/api/models", async (req, res) => {
-  const { prompt, fileKey } = req.body || {};
-  const url = `https://${process.env.CLOUDFRONT_MODEL_DOMAIN}/${fileKey}`;
   try {
-    const { rows } = await db.query(
-      "INSERT INTO models(prompt, file_key, url) VALUES($1,$2,$3) RETURNING id, prompt, url, created_at",
+    const { prompt, fileKey } = req.body;
+    if (!prompt || !fileKey) {
+      return res.status(400).json({ error: "prompt and fileKey are required" });
+    }
+    const url = `${CLOUDFRONT_MODEL_DOMAIN.replace(/^https?:\/\//, "https://")}/${fileKey}`;
+    const result = await db.query(
+      "INSERT INTO models (prompt, file_key, url) VALUES ($1, $2, $3) RETURNING id, prompt, url, created_at",
       [prompt, fileKey, url],
     );
-    res.status(201).json(rows[0]);
+    const record = result.rows[0];
+    res.status(201).json(record);
   } catch (err) {
-    logError(err);
+    console.error(err);
     res.status(500).json({ error: err.message });
   }
 });
