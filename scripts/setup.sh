@@ -44,10 +44,10 @@ if [ -z "$SKIP_PW_DEPS" ]; then
   done
 fi
 
-npm ci
-npm ci --prefix backend
+npm ci --no-audit
+npm ci --prefix backend --no-audit
 if [ -f backend/hunyuan_server/package.json ]; then
-  npm ci --prefix backend/hunyuan_server
+  npm ci --prefix backend/hunyuan_server --no-audit
 fi
 
 # Ensure dpkg is fully configured before Playwright installs dependencies
