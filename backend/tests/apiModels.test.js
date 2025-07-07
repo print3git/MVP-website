@@ -31,18 +31,31 @@ test("GET /api/models returns list", async () => {
 });
 
 test("POST /api/models creates model with CDN url", async () => {
-  db.query.mockResolvedValueOnce({
-    rows: [{ id: 2, created_at: "2024-01-02" }],
-  });
   const body = { prompt: "cat", fileKey: "cat.glb" };
+  const url = `https://${process.env.CLOUDFRONT_MODEL_DOMAIN}/${body.fileKey}`;
+  db.query.mockResolvedValueOnce({
+    rows: [
+      {
+        id: 2,
+        prompt: body.prompt,
+        filekey: body.fileKey,
+        url,
+        created_at: "2024-01-02",
+      },
+    ],
+  });
   const res = await request(app).post("/api/models").send(body);
   expect(res.status).toBe(201);
-  expect(res.body.url).toBe(
-    `https://${process.env.CLOUDFRONT_MODEL_DOMAIN}/${body.fileKey}`,
-  );
+  expect(res.body).toEqual({
+    id: 2,
+    prompt: body.prompt,
+    filekey: body.fileKey,
+    url,
+    created_at: "2024-01-02",
+  });
   const call = db.query.mock.calls[0];
   expect(call[0]).toContain("INSERT INTO models");
-  expect(call[1]).toEqual([body.prompt, body.fileKey]);
+  expect(call[1]).toEqual([body.prompt, body.fileKey, url]);
 });
 
 test("POST /api/models requires fields", async () => {
