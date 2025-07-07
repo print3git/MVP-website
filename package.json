@@ -75,7 +75,9 @@
     "wait-on": "^8.0.3"
   },
   "lint-staged": {
-    "*.{js,jsx,json,md,html}": "npm run format"
+    "*.{js,ts,json}": "prettier --write",
+    "backend/**/*.js": "eslint --fix",
+    "*.{js,ts}": "jest --bail --findRelatedTests"
   },
   "dependencies": {
     "react": "^18.2.0",
