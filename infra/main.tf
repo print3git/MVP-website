@@ -16,26 +16,26 @@ resource "random_password" "print3_db_password" {
   special = true
 }
 
-data "aws_vpc" "default" {
+data "aws_vpc" "model" {
   default = true
 }
 
-data "aws_subnets" "default" {
+data "aws_subnets" "model" {
   filter {
     name   = "vpc-id"
-    values = [data.aws_vpc.default.id]
+    values = [data.aws_vpc.model.id]
   }
 }
 
 resource "aws_db_subnet_group" "print3_db_subnet_group" {
   name       = "print3-db-subnet-group"
-  subnet_ids = data.aws_subnets.default.ids
+  subnet_ids = data.aws_subnets.model.ids
 }
 
 resource "aws_security_group" "print3_db_sg" {
   name        = "print3-db-sg"
   description = "Allow backend access to RDS"
-  vpc_id      = data.aws_vpc.default.id
+  vpc_id      = data.aws_vpc.model.id
 
   ingress {
     from_port   = 5432
