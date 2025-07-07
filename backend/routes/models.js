@@ -1,16 +1,20 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../db");
+const validate = require("../middleware/validate");
+const { z } = require("zod");
 
 if (!process.env.CLOUDFRONT_MODEL_DOMAIN) {
   throw new Error("Missing CLOUDFRONT_MODEL_DOMAIN");
 }
 
-router.post("/", async (req, res) => {
-  const { prompt, fileKey } = req.body || {};
-  if (!prompt || !fileKey) {
-    return res.status(400).json({ error: "prompt and fileKey are required" });
-  }
+const createModelSchema = z.object({
+  prompt: z.string().min(1, "prompt is required"),
+  fileKey: z.string().regex(/^[A-Za-z0-9._-]+$/, "invalid fileKey"),
+});
+
+router.post("/", validate(createModelSchema), async (req, res) => {
+  const { prompt, fileKey } = req.body;
   const domain = process.env.CLOUDFRONT_MODEL_DOMAIN;
   const url = `https://${domain}/${fileKey}`;
   try {
