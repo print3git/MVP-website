@@ -79,6 +79,35 @@ resource "aws_cloudfront_origin_access_identity" "model_oai" {
   comment = "OAI for glb-models-prod"
 }
 
+# Restrict S3 bucket access to the CloudFront OAI
+resource "aws_s3_bucket_policy" "glb_models_policy" {
+  bucket = "glb-models-prod"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid = "AllowCloudFrontAccess"
+        Effect = "Allow"
+        Principal = {
+          CanonicalUser = aws_cloudfront_origin_access_identity.model_oai.s3_canonical_user_id
+        }
+        Action = ["s3:GetObject"]
+        Resource = "arn:aws:s3:::glb-models-prod/*"
+      }
+    ]
+  })
+}
+
+# Block all direct public access to the bucket
+resource "aws_s3_bucket_public_access_block" "glb_models_block" {
+  bucket                  = "glb-models-prod"
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
 resource "aws_cloudfront_distribution" "model_cdn" {
   enabled = true
 
