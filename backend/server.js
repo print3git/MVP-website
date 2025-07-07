@@ -13,6 +13,9 @@ const multer = require("multer");
 const path = require("path");
 const morgan = require("morgan");
 const compression = require("compression");
+const client = require("prom-client");
+const winston = require("winston");
+const SentryTransport = require("winston-transport-sentry-node").default;
 const { v4: uuidv4 } = require("uuid");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -74,9 +77,26 @@ const ADMIN_TOKEN = process.env.ADMIN_TOKEN || "admin";
 const AUTH_SECRET = process.env.AUTH_SECRET || "secret";
 const s3 = new S3Client({ region: process.env.AWS_REGION });
 
+const logger = winston.createLogger({
+  level: "info",
+  transports: [new winston.transports.Console()],
+});
+
+if (process.env.SENTRY_DSN) {
+  logger.add(
+    new SentryTransport({
+      level: "error",
+      sentry: { dsn: process.env.SENTRY_DSN },
+    }),
+  );
+}
+
 function logError(...args) {
   if (process.env.NODE_ENV !== "test") {
-    console.error(...args);
+    const message = args
+      .map((a) => (a instanceof Error ? a.stack || a.message : a))
+      .join(" ");
+    logger.error(message);
   }
 }
 
@@ -159,7 +179,15 @@ app.use(morgan("dev"));
 app.use(compression());
 app.use(cors());
 app.use(bodyParser.json());
-app.use('/api/models', modelsRouter);
+client.collectDefaultMetrics();
+app.get("/metrics", async (req, res) => {
+  res.set("Content-Type", client.register.contentType);
+  res.end(await client.register.metrics());
+});
+app.get("/healthz", (req, res) => {
+  res.json({ status: "ok" });
+});
+app.use("/api/models", modelsRouter);
 const staticOptions = {
   setHeaders(res, filePath) {
     if (/\.(?:glb|hdr|js|css|png|jpe?g|gif|svg)$/i.test(filePath)) {
@@ -496,7 +524,6 @@ app.get("/api/models", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch models" });
   }
 });
-
 
 /**
  * GET /api/status
