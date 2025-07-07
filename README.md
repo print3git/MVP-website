@@ -34,6 +34,8 @@ This repository contains the early MVP code for print2's website and backend.
    `backend/hunyuan_server/` if present, then downloads the browsers
    required for the end-to-end tests. Set `SKIP_PW_DEPS=1` to skip the
    Playwright dependency installation when the browsers are already available.
+   It also installs the Husky git hooks used for pre-commit checks. If the hooks
+   are missing, run `npx husky install` manually.
 
 3. Initialize the database:
 
@@ -304,6 +306,12 @@ For a quick end-to-end sanity check, run:
 ```bash
 npm run smoke
 ```
+
+### Pre-commit Hook
+
+Husky installs a pre-commit hook that runs lint-staged. Staged `*.js`, `*.ts`,
+and `*.json` files are formatted with Prettier, backend JavaScript is linted
+with ESLint, and Jest runs against related tests.
 
 Avoid calling `npx playwright test` directly. Missing browsers can cause
 `"Playwright Test did not expect test() to be called here"` errors.
