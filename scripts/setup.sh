@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 unset npm_config_http_proxy npm_config_https_proxy
+export npm_config_fund=false
 
 # Persist proxy removal so new shells start clean
 if ! grep -q "unset npm_config_http_proxy" ~/.bashrc 2>/dev/null; then
@@ -44,10 +45,10 @@ if [ -z "$SKIP_PW_DEPS" ]; then
   done
 fi
 
-npm ci --no-audit
-npm ci --prefix backend --no-audit
+npm ci --no-audit --no-fund
+npm ci --prefix backend --no-audit --no-fund
 if [ -f backend/hunyuan_server/package.json ]; then
-  npm ci --prefix backend/hunyuan_server --no-audit
+  npm ci --prefix backend/hunyuan_server --no-audit --no-fund
 fi
 
 # Ensure dpkg is fully configured before Playwright installs dependencies
