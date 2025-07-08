@@ -1,5 +1,15 @@
 #!/bin/bash
 set -e
+
+cleanup_npm_cache() {
+  npm cache clean --force >/dev/null 2>&1 || true
+  rm -rf "$(npm config get cache)/_cacache" "$HOME/.npm/_cacache"
+  rm -rf "$(npm config get cache)/_cacache/tmp" "$HOME/.npm/_cacache/tmp"
+}
+
+trap cleanup_npm_cache EXIT
+cleanup_npm_cache
+
 unset npm_config_http_proxy npm_config_https_proxy
 export npm_config_fund=false
 
@@ -19,13 +29,6 @@ sudo rm -rf node_modules backend/node_modules
 if [ -d backend/hunyuan_server/node_modules ]; then
   sudo rm -rf backend/hunyuan_server/node_modules
 fi
-
-# Clear the npm cache to avoid cleanup warnings
-npm cache clean --force
-# Remove leftover cache directories that can cause ENOTEMPTY errors
-rm -rf "$(npm config get cache)/_cacache" "$HOME/.npm/_cacache"
-# Remove tmp directories that sometimes linger after cache clean
-rm -rf "$(npm config get cache)/_cacache/tmp" "$HOME/.npm/_cacache/tmp"
 
 # Remove stale apt or dpkg locks that may prevent dependency installation
 if pgrep apt-get >/dev/null 2>&1; then
@@ -50,6 +53,8 @@ npm ci --prefix backend --no-audit --no-fund
 if [ -f backend/hunyuan_server/package.json ]; then
   npm ci --prefix backend/hunyuan_server --no-audit --no-fund
 fi
+
+cleanup_npm_cache
 
 # Ensure dpkg is fully configured before Playwright installs dependencies
 sudo dpkg --configure -a || true

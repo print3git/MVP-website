@@ -2,6 +2,7 @@
 # Fail on any error, undefined variable, or pipe failure
 set -euo pipefail
 
+
 # Directory where the Space code lives (created if absent)
 SPACE_DIR="${SPACE_DIR:-Sparc3D-Space}"
 
@@ -15,6 +16,7 @@ if [ -z "$HF_TOKEN" ]; then
   echo "HF_TOKEN or HF_API_KEY must be set for authentication" >&2
   exit 1
 fi
+
 
 # Ensure URLs end with .git
 [[ $SPACE_URL != *.git ]] && SPACE_URL+=".git"
@@ -61,12 +63,14 @@ fi
 if git remote | grep -qx origin; then
   git remote set-url origin "$auth_model_url"
 else
+
   git remote add origin "$auth_model_url"
 fi
 
 # Push all branches and tags to the new origin
 git push origin --all
 git push origin --tags
+
 
 # Success indicator
 echo "✅ sync-space completed"
