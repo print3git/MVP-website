@@ -1,12 +1,20 @@
 #!/bin/bash
 set -euo pipefail
 
-# Clone the Space repository if it doesn't already exist
-if [ ! -d "Sparc3D-Space" ]; then
-  git clone --depth 1 https://huggingface.co/spaces/print2/Sparc3D Sparc3D-Space
+SPACE_DIR="Sparc3D-Space"
+SPACE_URL="https://huggingface.co/spaces/print2/Sparc3D"
+MODEL_URL="https://huggingface.co/print2/Sparc3D.git"
+
+# Clone the Space repository without heavy assets if it doesn't already exist
+if [ ! -d "$SPACE_DIR" ]; then
+  git clone --depth 1 --filter=blob:none "$SPACE_URL" "$SPACE_DIR"
 fi
 
-cd Sparc3D-Space
+cd "$SPACE_DIR"
+
+# Only check out the code directories to avoid heavy assets
+git sparse-checkout init --cone
+git sparse-checkout set src scripts
 
 # Rename default remote to upstream
 if git remote | grep -q '^origin$'; then
@@ -15,9 +23,9 @@ fi
 
 # Add new origin pointing to the model repo
 if git remote | grep -q '^origin$'; then
-  git remote set-url origin https://huggingface.co/print2/Sparc3D.git
+  git remote set-url origin "$MODEL_URL"
 else
-  git remote add origin https://huggingface.co/print2/Sparc3D.git
+  git remote add origin "$MODEL_URL"
 fi
 
 # Push all branches and tags to the new origin
