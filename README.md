@@ -1,5 +1,14 @@
 # MVP Website
 
+## 🤖 Codex Integration
+
+Before you run any Codex-driven prompts, always sync your code and Hugging Face Space:
+```bash
+bash scripts/sync_space.sh
+```
+
+This ensures Codex sees the latest local changes and model artifacts.
+
 This repository contains the early MVP code for print2's website and backend.
 
 - Frontend HTML pages are in the repository root.
@@ -40,6 +49,7 @@ Run `docker compose up` to start the API and Postgres services.
    Playwright dependency installation when the browsers are already available.
    It also installs the Husky git hooks used for pre-commit checks. If the hooks
    are missing, run `npx husky install` manually.
+Ensure your environment can reach `https://registry.npmjs.org` and `https://cdn.playwright.dev`. The setup script downloads packages and browsers from these domains, so network restrictions may cause it to fail.
 
 3. Initialize the database:
 
@@ -423,8 +433,9 @@ cache directory manually:
 rm -rf "$(npm config get cache)/_cacache"
 ```
 
-The `npm run setup` script now performs this cleanup automatically, but manual
-removal may be required on older clones.
+The `npm run setup` script now performs this cleanup before and after installing
+dependencies, so new clones shouldn't hit this error. If you still encounter it,
+re-run `npm run setup` to ensure the cache directory is cleared.
 
 ### Playwright host validation warnings
 

@@ -1,0 +1,24 @@
+name: Sync HF Space
+
+on:
+  push:
+    branches: [ dev ]          # ← adjust target branch if needed
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install git-lfs
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y git-lfs
+          git lfs install --skip-smudge --local
+
+      - name: Sync Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_API_KEY: ${{ secrets.HF_TOKEN }}
+        run: bash scripts/sync_space.sh

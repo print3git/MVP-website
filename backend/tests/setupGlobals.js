@@ -2,6 +2,11 @@
 // Disable Jest global object deletion warnings by turning off the deletion mode
 global[Symbol.for("$$jest-deletion-mode")] = "off";
 
+const dotenv = require("dotenv");
+const originalDotenvConfig = dotenv.config;
+dotenv.config = (options = {}) =>
+  originalDotenvConfig({ quiet: true, ...options });
+
 const originalEmitWarning = process.emitWarning;
 process.emitWarning = (warning, ...args) => {
   const msg = typeof warning === "string" ? warning : warning?.message;
