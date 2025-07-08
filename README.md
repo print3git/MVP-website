@@ -423,8 +423,9 @@ cache directory manually:
 rm -rf "$(npm config get cache)/_cacache"
 ```
 
-The `npm run setup` script now performs this cleanup automatically, but manual
-removal may be required on older clones.
+The `npm run setup` script now performs this cleanup before and after installing
+dependencies, so new clones shouldn't hit this error. If you still encounter it,
+re-run `npm run setup` to ensure the cache directory is cleared.
 
 ### Playwright host validation warnings
 
