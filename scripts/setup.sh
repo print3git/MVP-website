@@ -24,6 +24,11 @@ if ! npm ping >/dev/null 2>&1; then
   exit 1
 fi
 
+# Kill any lingering dev server processes to avoid port conflicts
+if pgrep -f "node scripts/dev-server.js" >/dev/null 2>&1; then
+  pkill -f "node scripts/dev-server.js" || true
+fi
+
 # Remove any existing node_modules directories to avoid ENOTEMPTY errors
 sudo rm -rf node_modules backend/node_modules
 if [ -d backend/hunyuan_server/node_modules ]; then
