@@ -1,47 +1,69 @@
 #!/bin/bash
+# Fail on any error, undefined variable, or pipe failure
 set -euo pipefail
 
-# Directory where the Space code lives
-SPACE_DIR="Sparc3D-Space"
-# Base URLs for cloning and pushing
-SPACE_URL="https://huggingface.co/spaces/print2/Sparc3D"
-MODEL_URL="https://huggingface.co/print2/Sparc3D.git"
 
-# Use token from HF_TOKEN or HF_API_KEY for authentication
+# Directory where the Space code lives (created if absent)
+SPACE_DIR="${SPACE_DIR:-Sparc3D-Space}"
+
+# Base URLs for cloning and pushing (allow override via env)
+SPACE_URL="${SPACE_URL:-https://huggingface.co/spaces/print2/Sparc3D}"
+MODEL_URL="${MODEL_URL:-https://huggingface.co/print2/Sparc3D.git}"
+
+# Authentication token (required)
 HF_TOKEN="${HF_TOKEN:-${HF_API_KEY:-}}"
 if [ -z "$HF_TOKEN" ]; then
   echo "HF_TOKEN or HF_API_KEY must be set for authentication" >&2
   exit 1
 fi
 
-# Build authenticated URLs (token omitted from log output)
+
+# Ensure URLs end with .git
+[[ $SPACE_URL != *.git ]] && SPACE_URL+=".git"
+[[ $MODEL_URL != *.git ]] && MODEL_URL+=".git"
+
+# Authenticated URLs (token hidden in logs)
 auth_space_url="https://user:${HF_TOKEN}@${SPACE_URL#https://}"
 auth_model_url="https://user:${HF_TOKEN}@${MODEL_URL#https://}"
 
-# Clone repository if the directory doesn't exist
-if [ ! -d "$SPACE_DIR" ]; then
-  # Perform a shallow, blobless clone and skip Git LFS downloads
+# Diagnosis checks
+auth_status="✔"; url_status="✔"; net_status="✔"; branch_status="✔"
+if ! git ls-remote "$auth_space_url" &>/dev/null; then
+  net_status="✖"; auth_status="✖"
+fi
+if ! git ls-remote "$auth_space_url" HEAD &>/dev/null; then
+  branch_status="✖"
+fi
+
+echo "Diagnosis: auth $auth_status | url $url_status | network $net_status | default branch $branch_status"
+if [ "$auth_status" = "✖" ] || [ "$net_status" = "✖" ] || [ "$branch_status" = "✖" ]; then
+  exit 1
+fi
+
+# Clone repository if needed using sparse checkout and LFS disabled
+if [ ! -d "$SPACE_DIR/.git" ]; then
+  rm -rf "$SPACE_DIR"
   GIT_LFS_SKIP_SMUDGE=1 git clone --depth 1 --filter=blob:none "$auth_space_url" "$SPACE_DIR"
   cd "$SPACE_DIR"
-  # Initialize sparse checkout to include only necessary paths
-  git sparse-checkout init --cone
+  git sparse-checkout init
   git sparse-checkout set src scripts app.py README.md
 else
   cd "$SPACE_DIR"
 fi
 
-# Ensure LFS doesn't download blobs on subsequent operations
+# Prevent downloading large LFS blobs
 git lfs install --skip-smudge --local
 
 # Rename existing origin to upstream if needed
-if git remote | grep -q '^origin$'; then
-  git remote rename origin upstream
+if git remote | grep -qx origin; then
+  git remote rename origin upstream || true
 fi
 
 # Configure new origin pointing to the model repo
-if git remote | grep -q '^origin$'; then
+if git remote | grep -qx origin; then
   git remote set-url origin "$auth_model_url"
 else
+
   git remote add origin "$auth_model_url"
 fi
 
@@ -49,8 +71,7 @@ fi
 git push origin --all
 git push origin --tags
 
-# Success message (hide token)
-printf '\nSpace synced successfully.\n'
-printf '  origin: %s\n' "$MODEL_URL"
-printf 'upstream: %s\n' "$SPACE_URL"
+
+# Success indicator
+echo "✅ sync-space completed"
 
