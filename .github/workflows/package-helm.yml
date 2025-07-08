@@ -15,6 +15,6 @@ jobs:
         run: |
           helm package deploy/helm/print3 --destination chart
       - name: Upload release asset
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: chart/print3-*.tgz
