@@ -8,12 +8,6 @@ if [[ -z "$TOKEN" ]]; then
   exit 1
 fi
 
-# 2) Check write scope
-if ! huggingface-cli whoami --token "$TOKEN" 2>/dev/null | grep -iq 'scope:.*write'; then
-  echo "✖️ Token must have WRITE scope" >&2
-  exit 1
-fi
-
 # 3) Define URLs (must end in .git)
 SPACE_URL="${SPACE_URL:-https://huggingface.co/spaces/print2/Sparc3D.git}"
 MODEL_URL="${MODEL_URL:-https://huggingface.co/print2/Sparc3D.git}"
