@@ -17,13 +17,14 @@ MODEL_URL="${MODEL_URL:-https://huggingface.co/print2/Sparc3D.git}"
 [[ "$SPACE_URL" == *.git ]] || SPACE_URL="${SPACE_URL}.git"
 [[ "$MODEL_URL" == *.git ]] || MODEL_URL="${MODEL_URL}.git"
 
-# 3) Create the Space if it doesn't already exist
+# 4) Create the Space if it doesn't already exist
 if ! huggingface-cli repo info "$SPACE_REPO" --repo-type space >/dev/null 2>&1; then
   huggingface-cli repo create "$SPACE_REPO" \
     --repo-type space \
     --space-sdk gradio \
     --private
 fi
+
 
 
 # 4) Clean up and clone
