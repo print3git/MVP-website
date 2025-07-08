@@ -49,6 +49,7 @@ Run `docker compose up` to start the API and Postgres services.
    Playwright dependency installation when the browsers are already available.
    It also installs the Husky git hooks used for pre-commit checks. If the hooks
    are missing, run `npx husky install` manually.
+Ensure your environment can reach `https://registry.npmjs.org` and `https://cdn.playwright.dev`. The setup script downloads packages and browsers from these domains, so network restrictions may cause it to fail.
 
 3. Initialize the database:
 
