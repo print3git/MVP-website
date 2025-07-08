@@ -1,5 +1,14 @@
 # MVP Website
 
+## 🤖 Codex Integration
+
+Before you run any Codex-driven prompts, always sync your code and Hugging Face Space:
+```bash
+bash scripts/sync_space.sh
+```
+
+This ensures Codex sees the latest local changes and model artifacts.
+
 This repository contains the early MVP code for print2's website and backend.
 
 - Frontend HTML pages are in the repository root.
