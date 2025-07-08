@@ -7,7 +7,9 @@ module.exports = {
   testEnvironment: "node",
   testMatch: [
     "<rootDir>/tests/**/*.test.js",
+    "<rootDir>/tests/**/*.test.ts",
     "<rootDir>/src/**/__tests__/**/*.test.js",
+    "<rootDir>/src/**/__tests__/**/*.test.ts",
   ],
   testTimeout: 10000,
   coverageDirectory: "coverage",
@@ -23,6 +25,7 @@ module.exports = {
     "<rootDir>/backend/shipping.js",
     "<rootDir>/backend/social.js",
     "<rootDir>/backend/utils/validateStl.js",
+    "<rootDir>/src/lib/sparc3dClient.ts",
   ],
   coverageThreshold: {
     global: {
