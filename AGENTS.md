@@ -19,6 +19,7 @@ These guidelines apply to all automated agents (e.g. the Codex agent) working on
 11. **Include logs** – paste the output of `npm test` (or `npm run test-ci`) and `npm run format` in the PR description so maintainers can verify the steps.
 12. **Avoid PRs with failing tests** – if `npm run ci` or the smoke tests fail for reasons other than environment limitations, do not open a pull request. Fix the issues or open an issue summarizing the failure instead.
 13. **Avoid committing binary files** – Codex cannot generate patches for binary changes. Do not modify images, audio, or other binary assets. If adding new ones, update `.gitattributes` so they are treated as binary.
+14. **Pin GitHub Action versions** – use explicit tags instead of broad majors to prevent resolution errors (e.g. `aquasecurity/tfsec-action@v1.0.3`).
 
 ## Troubleshooting
 
