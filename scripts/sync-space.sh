@@ -45,8 +45,8 @@ if [ ! -d "$SPACE_DIR/.git" ]; then
   rm -rf "$SPACE_DIR"
   GIT_LFS_SKIP_SMUDGE=1 git clone --depth 1 --filter=blob:none "$auth_space_url" "$SPACE_DIR"
   cd "$SPACE_DIR"
-  git sparse-checkout init
-  git sparse-checkout set src scripts app.py README.md
+  git sparse-checkout init --cone
+  git sparse-checkout set --skip-checks src scripts app.py
 else
   cd "$SPACE_DIR"
 fi
