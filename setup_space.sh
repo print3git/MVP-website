@@ -1,13 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
-
-# Verify token
-TOKEN="${HF_TOKEN:-${HF_API_KEY:-}}"
-if [[ -z "$TOKEN" ]]; then
+HF_TOKEN="${HF_TOKEN:-${HF_API_KEY:-}}"
+if [[ -z "$HF_TOKEN" ]]; then
   echo "HF_TOKEN or HF_API_KEY must be set" >&2
   exit 1
 fi
-SCOPES=$(huggingface-cli whoami --token "$TOKEN" 2>/dev/null | grep -i "scopes" || true)
+SCOPES=$(huggingface-cli whoami --token "$HF_TOKEN" 2>/dev/null | grep -i "scopes" || true)
 if ! echo "$SCOPES" | grep -q "write"; then
   echo "Token must have write scope" >&2
   exit 1
@@ -19,7 +17,12 @@ LOCAL_DIR="Sparc3D-Space"
 
 # Create space if it does not exist
 if ! huggingface-cli repo info "$SPACE_REPO" --type space >/dev/null 2>&1; then
-  huggingface-cli repo create "$SPACE_REPO" --type space --private -y
+  huggingface-cli repo create "$SPACE_REPO" \
+  --repo-type space \
+  --sdk gradio \
+  --private \
+  --yes
+
 fi
 
 # Remove existing local directory

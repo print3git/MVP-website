@@ -1,6 +1,15 @@
-#!/bin/bash
-# Fail on any error, undefined variable, or pipe failure
+#!/usr/bin/env bash
 set -euo pipefail
+HF_TOKEN="${HF_TOKEN:-${HF_API_KEY:-}}"
+if [[ -z "$HF_TOKEN" ]]; then
+  echo "HF_TOKEN or HF_API_KEY must be set" >&2
+  exit 1
+fi
+
+# Fail on any error, undefined variable, or pipe failure
+
+# Disable LFS smudge during clone for speed
+export GIT_LFS_SKIP_SMUDGE=1
 
 
 # Directory where the Space code lives (created if absent)
@@ -9,13 +18,6 @@ SPACE_DIR="${SPACE_DIR:-Sparc3D-Space}"
 # Base URLs for cloning and pushing (allow override via env)
 SPACE_URL="${SPACE_URL:-https://huggingface.co/spaces/print2/Sparc3D}"
 MODEL_URL="${MODEL_URL:-https://huggingface.co/print2/Sparc3D.git}"
-
-# Authentication token (required)
-HF_TOKEN="${HF_TOKEN:-${HF_API_KEY:-}}"
-if [ -z "$HF_TOKEN" ]; then
-  echo "HF_TOKEN or HF_API_KEY must be set for authentication" >&2
-  exit 1
-fi
 
 
 # Ensure URLs end with .git
@@ -28,15 +30,25 @@ auth_model_url="https://user:${HF_TOKEN}@${MODEL_URL#https://}"
 
 # Diagnosis checks
 auth_status="✔"; url_status="✔"; net_status="✔"; branch_status="✔"
-if ! git ls-remote "$auth_space_url" &>/dev/null; then
-  net_status="✖"; auth_status="✖"
+
+# Basic network test
+if ! curl -sfL https://huggingface.co > /dev/null; then
+  net_status="✖"
 fi
-if ! git ls-remote "$auth_space_url" HEAD &>/dev/null; then
+
+# Auth and URL validity
+if ! git ls-remote "$auth_space_url" &>/dev/null; then
+  auth_status="✖"; url_status="✖"; net_status="✖"
+fi
+
+# Detect default branch
+default_branch=$(git ls-remote --symref "$auth_space_url" HEAD 2>/dev/null | sed -n 's@^ref: refs/heads/\(.*\)\s*HEAD$@\1@p')
+if [ -z "$default_branch" ]; then
   branch_status="✖"
 fi
 
 echo "Diagnosis: auth $auth_status | url $url_status | network $net_status | default branch $branch_status"
-if [ "$auth_status" = "✖" ] || [ "$net_status" = "✖" ] || [ "$branch_status" = "✖" ]; then
+if [ "$auth_status" = "✖" ] || [ "$url_status" = "✖" ] || [ "$net_status" = "✖" ] || [ "$branch_status" = "✖" ]; then
   exit 1
 fi
 
@@ -46,7 +58,7 @@ if [ ! -d "$SPACE_DIR/.git" ]; then
   GIT_LFS_SKIP_SMUDGE=1 git clone --depth 1 --filter=blob:none "$auth_space_url" "$SPACE_DIR"
   cd "$SPACE_DIR"
   git sparse-checkout init --cone
-  git sparse-checkout set --skip-checks src scripts app.py
+  git sparse-checkout set --skip-checks src scripts
 else
   cd "$SPACE_DIR"
 fi
@@ -54,22 +66,19 @@ fi
 # Prevent downloading large LFS blobs
 git lfs install --skip-smudge --local
 
-# Rename existing origin to upstream if needed
-if git remote | grep -qx origin; then
-  git remote rename origin upstream || true
-fi
+# Rename existing origin to upstream if present
+git remote rename origin upstream 2>/dev/null || true
 
 # Configure new origin pointing to the model repo
 if git remote | grep -qx origin; then
   git remote set-url origin "$auth_model_url"
 else
-
   git remote add origin "$auth_model_url"
 fi
 
 # Push all branches and tags to the new origin
-git push origin --all
-git push origin --tags
+git push --force origin --all
+git push --force origin --tags
 
 
 # Success indicator

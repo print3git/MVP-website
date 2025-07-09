@@ -22,3 +22,8 @@ jobs:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
           HF_API_KEY: ${{ secrets.HF_TOKEN }}
         run: bash scripts/sync-space.sh
+
+      - name: Force immediate sleep
+        run: bash scripts/set-sleep-zero.sh
+        env:
+          HF_TOKEN: ${{ secrets.HF_WRITE_TOKEN }}
