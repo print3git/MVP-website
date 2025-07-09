@@ -1,6 +1,12 @@
-#!/bin/bash
-# Fail on any error, undefined variable, or pipe failure
+#!/usr/bin/env bash
 set -euo pipefail
+HF_TOKEN="${HF_TOKEN:-${HF_API_KEY:-}}"
+if [[ -z "$HF_TOKEN" ]]; then
+  echo "HF_TOKEN or HF_API_KEY must be set" >&2
+  exit 1
+fi
+
+# Fail on any error, undefined variable, or pipe failure
 
 # Disable LFS smudge during clone for speed
 export GIT_LFS_SKIP_SMUDGE=1
@@ -12,13 +18,6 @@ SPACE_DIR="${SPACE_DIR:-Sparc3D-Space}"
 # Base URLs for cloning and pushing (allow override via env)
 SPACE_URL="${SPACE_URL:-https://huggingface.co/spaces/print2/Sparc3D}"
 MODEL_URL="${MODEL_URL:-https://huggingface.co/print2/Sparc3D.git}"
-
-# Authentication token (required)
-HF_TOKEN="${HF_TOKEN:-${HF_API_KEY:-}}"
-if [ -z "$HF_TOKEN" ]; then
-  echo "HF_TOKEN or HF_API_KEY must be set for authentication" >&2
-  exit 1
-fi
 
 
 # Ensure URLs end with .git

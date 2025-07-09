@@ -1,13 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
-
-# Verify token
-TOKEN="${HF_TOKEN:-${HF_API_KEY:-}}"
-if [[ -z "$TOKEN" ]]; then
+HF_TOKEN="${HF_TOKEN:-${HF_API_KEY:-}}"
+if [[ -z "$HF_TOKEN" ]]; then
   echo "HF_TOKEN or HF_API_KEY must be set" >&2
   exit 1
 fi
-SCOPES=$(huggingface-cli whoami --token "$TOKEN" 2>/dev/null | grep -i "scopes" || true)
+SCOPES=$(huggingface-cli whoami --token "$HF_TOKEN" 2>/dev/null | grep -i "scopes" || true)
 if ! echo "$SCOPES" | grep -q "write"; then
   echo "Token must have write scope" >&2
   exit 1

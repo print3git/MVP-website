@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
+HF_TOKEN="${HF_TOKEN:-${HF_API_KEY:-}}"
+if [[ -z "$HF_TOKEN" ]]; then
+  echo "HF_TOKEN or HF_API_KEY must be set" >&2
+  exit 1
+fi
 
 trap 'echo "\e[31mError on line $LINENO: $BASH_COMMAND\e[0m" >&2' ERR
 
@@ -11,15 +16,8 @@ if [[ "$(basename "$SCRIPT_DIR")" != "scripts" ]]; then
 fi
 
 # Pull environment variables once
-TOKEN="${HF_TOKEN:-${HF_API_KEY:-}}"
 SPACE_REPO="${SPACE_REPO:-print2/Sparc3D}"
 SPACE_URL="${SPACE_URL:-https://huggingface.co/spaces/${SPACE_REPO}.git}"
-
-# Validate token
-if [[ -z "$TOKEN" ]]; then
-  echo "\u274c HF_TOKEN or HF_API_KEY must be set" >&2
-  exit 1
-fi
 
 # Install required tools if missing
 if ! command -v huggingface-cli >/dev/null 2>&1; then
@@ -33,7 +31,7 @@ if ! command -v git-lfs >/dev/null 2>&1; then
 fi
 
 # Verify write scope on the token
-SCOPES=$(huggingface-cli whoami --token "$TOKEN" 2>/dev/null | grep -i scopes || true)
+SCOPES=$(huggingface-cli whoami --token "$HF_TOKEN" 2>/dev/null | grep -i scopes || true)
 if ! echo "$SCOPES" | grep -q write; then
   echo "\u274c token lacks write scope" >&2
   exit 1
@@ -48,7 +46,7 @@ fi
 rm -rf Sparc3D-Space
 
 # Clone with blob filtering and skip LFS smudge
-GIT_LFS_SKIP_SMUDGE=1 git clone --depth 1 --filter=blob:none "https://user:$TOKEN@${SPACE_URL#https://}" Sparc3D-Space
+GIT_LFS_SKIP_SMUDGE=1 git clone --depth 1 --filter=blob:none "https://user:$HF_TOKEN@${SPACE_URL#https://}" Sparc3D-Space
 cd Sparc3D-Space
 git lfs install --skip-smudge --local
 cd ..
@@ -60,7 +58,7 @@ cd Sparc3D-Space
 
 # Rename remotes and push
 git remote rename origin upstream 2>/dev/null || true
-git remote add origin "https://user:$TOKEN@${SPACE_URL#https://}"
+git remote add origin "https://user:$HF_TOKEN@${SPACE_URL#https://}"
 
 git add .
 if ! git diff --cached --quiet; then
