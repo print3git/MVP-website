@@ -1,7 +1,8 @@
 name: Deploy
 
 on:
-  workflow_dispatch:
+  push:
+    branches: [00000production]
 
 jobs:
   deploy:
@@ -11,7 +12,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # — if you ever need a build step, uncomment these:
+      # — Uncomment & adjust these if you ever need a build step:
       # - name: Install dependencies
       #   run: npm ci
       # - name: Build
