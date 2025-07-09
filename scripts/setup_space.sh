@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
+HF_TOKEN="${HF_TOKEN:-${HF_API_KEY:-}}"
+if [[ -z "$HF_TOKEN" ]]; then
+  echo "HF_TOKEN or HF_API_KEY must be set" >&2
+  exit 1
+fi
 
 trap 'echo "\e[31mError on line $LINENO: $BASH_COMMAND\e[0m" >&2' ERR
 
@@ -11,7 +16,7 @@ if [[ "$(basename "$SCRIPT_DIR")" != "scripts" ]]; then
 fi
 
 # Pull environment variables once
-TOKEN="${HF_TOKEN:-${HF_API_KEY:-}}"
+TOKEN="$HF_TOKEN"
 SPACE_REPO="${SPACE_REPO:-print2/Sparc3D}"
 SPACE_URL="${SPACE_URL:-https://huggingface.co/spaces/${SPACE_REPO}.git}"
 

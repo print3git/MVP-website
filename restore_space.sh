@@ -1,21 +1,28 @@
 #!/usr/bin/env bash
+set -euo pipefail
+HF_TOKEN="${HF_TOKEN:-${HF_API_KEY:-}}"
+if [[ -z "$HF_TOKEN" ]]; then
+  echo "HF_TOKEN or HF_API_KEY must be set" >&2
+  exit 1
+fi
+
 # Restore the Sparc3D Hugging Face Space and push local code.
 # This script recreates the Space on the free tier and syncs our local files.
-
-set -euo pipefail
-
-# Fetch the HF token and export it for downstream commands
-export HF_TOKEN=${HF_TOKEN}
-export HF_API_KEY="$HF_TOKEN"
 
 SPACE_REPO="print2/Sparc3D"
 LOCAL_DIR="Sparc3D-Space"
 SPACE_URL="https://user:${HF_TOKEN}@huggingface.co/spaces/${SPACE_REPO}.git"
 
 # Create or recreate the Space repository on Hugging Face
-huggingface-cli repo create "$SPACE_REPO" --type space --private -y
+huggingface-cli repo create "$SPACE_REPO" \
+  --repo-type space \
+  --sdk gradio \
+  --private \
+  --yes
 # Ensure the Space uses ZeroGPU hardware
 huggingface-cli repo update "$SPACE_REPO" \
+  --repo-type space \
+  --sdk gradio \
   --hardware zero-gpu \
   --sleep-after 0 \
   --token "$HF_TOKEN"
