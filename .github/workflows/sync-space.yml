@@ -18,6 +18,7 @@ jobs:
           git lfs install --skip-smudge --local
 
       - name: Sync Space
+        continue-on-error: true
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
           HF_API_KEY: ${{ secrets.HF_TOKEN }}
