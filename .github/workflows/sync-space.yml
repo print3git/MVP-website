@@ -27,3 +27,11 @@ jobs:
         run: bash scripts/set-sleep-zero.sh
         env:
           HF_TOKEN: ${{ secrets.HF_WRITE_TOKEN }}
+
+      - name: Slack failure alert
+        if: failure()
+        run: |
+          curl -X POST -H 'Content-Type: application/json' \
+            --data '{"text":"Sync HF Space failed"}' "$SLACK_WEBHOOK"
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}

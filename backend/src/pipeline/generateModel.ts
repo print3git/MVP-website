@@ -1,6 +1,7 @@
 import { textToImage } from '../lib/textToImage';
 import { generateGlb } from '../lib/sparc3dClient';
 import { storeGlb } from '../lib/storeGlb';
+import { capture } from '../lib/logger';
 
 export interface GenerateModelParams {
   prompt: string;
@@ -13,11 +14,17 @@ export interface GenerateModelParams {
  */
 export async function generateModel({ prompt, imageURL }: GenerateModelParams): Promise<string> {
   console.time('pipeline');
-  if (!imageURL) {
-    imageURL = await textToImage(prompt);
+  try {
+    if (!imageURL) {
+      imageURL = await textToImage(prompt);
+    }
+    const glbData = await generateGlb({ prompt, imageURL });
+    const url = await storeGlb(glbData);
+    console.timeEnd('pipeline');
+    return url;
+  } catch (err) {
+    console.timeEnd('pipeline');
+    capture(err);
+    throw err;
   }
-  const glbData = await generateGlb({ prompt, imageURL });
-  const url = await storeGlb(glbData);
-  console.timeEnd('pipeline');
-  return url;
 }

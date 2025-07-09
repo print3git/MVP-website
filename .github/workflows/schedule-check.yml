@@ -1,0 +1,17 @@
+name: Check HF Space Sleep
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify sleep_after
+        env:
+          HF_TOKEN: ${{ secrets.HF_WRITE_TOKEN }}
+          HF_API_KEY: ${{ secrets.HF_WRITE_TOKEN }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        run: bash scripts/check_sleep_zero.sh
