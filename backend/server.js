@@ -22,7 +22,6 @@ const jwt = require("jsonwebtoken");
 const db = require("./db");
 const modelsRouter = require("./routes/models");
 const axios = require("axios");
-const FormData = require("form-data");
 const fs = require("fs");
 const {
   S3Client,
@@ -67,6 +66,8 @@ const { verifyTag } = require("./social");
 const QRCode = require("qrcode");
 const generateAdCopy = require("./utils/generateAdCopy");
 const generateShareCard = require("./utils/generateShareCard");
+const { generateModel } = require("./src/pipeline/generateModel");
+
 const { generateModel } = require("./src/pipeline/generateModel");
 
 const validateStl = require("./utils/validateStl");
@@ -200,8 +201,6 @@ fs.mkdirSync(uploadsDir, { recursive: true });
 const upload = multer({ dest: uploadsDir });
 
 const PORT = config.port;
-const FALLBACK_GLB =
-  "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
 
 function computePrintSlots(date = new Date()) {
   const dtf = new Intl.DateTimeFormat("en-US", {
@@ -444,6 +443,7 @@ app.post(
         "INSERT INTO jobs(job_id, prompt, image_ref, status, user_id, snapshot) VALUES ($1,$2,$3,$4,$5,$6)",
         [jobId, prompt, imageRef, "pending", userId, snapshot],
       );
+
 
       try {
         const url = await generateModel({
