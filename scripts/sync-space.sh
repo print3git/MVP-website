@@ -46,7 +46,7 @@ if [ ! -d "$SPACE_DIR/.git" ]; then
   GIT_LFS_SKIP_SMUDGE=1 git clone --depth 1 --filter=blob:none "$auth_space_url" "$SPACE_DIR"
   cd "$SPACE_DIR"
   git sparse-checkout init --cone
-  git sparse-checkout set --skip-checks src scripts app.py
+  git sparse-checkout set --skip-checks src scripts
 else
   cd "$SPACE_DIR"
 fi
@@ -54,16 +54,13 @@ fi
 # Prevent downloading large LFS blobs
 git lfs install --skip-smudge --local
 
-# Rename existing origin to upstream if needed
-if git remote | grep -qx origin; then
-  git remote rename origin upstream || true
-fi
+# Rename existing origin to upstream if present
+git remote rename origin upstream 2>/dev/null || true
 
 # Configure new origin pointing to the model repo
 if git remote | grep -qx origin; then
   git remote set-url origin "$auth_model_url"
 else
-
   git remote add origin "$auth_model_url"
 fi
 
