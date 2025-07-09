@@ -16,16 +16,15 @@ SPACE_URL="https://user:${HF_TOKEN}@huggingface.co/spaces/${SPACE_REPO}.git"
 # Create or recreate the Space repository on Hugging Face
 huggingface-cli repo create "$SPACE_REPO" \
   --repo-type space \
-  --sdk gradio \
+  --space_sdk gradio \
   --private \
-  --yes
+  --yes \
+  || true
 # Ensure the Space uses ZeroGPU hardware
-huggingface-cli repo update "$SPACE_REPO" \
-  --repo-type space \
-  --sdk gradio \
-  --hardware zero-gpu \
-  --sleep-after 0 \
-  --token "$HF_TOKEN"
+curl -s -X PATCH "https://huggingface.co/api/spaces/${SPACE_REPO}" \
+  -H "Authorization: Bearer ${HF_TOKEN}" \
+  -H "Content-Type: application/json" \
+  -d '{"hardware":"zero-gpu","sleep_time":0}' >/dev/null
 
 # Remove any existing local clone
 rm -rf "$LOCAL_DIR"
@@ -37,7 +36,6 @@ git lfs install --skip-smudge --local
 cd ..
 
 # Synchronize the files we care about
-rsync -a --delete app.py "$LOCAL_DIR/app.py"
 rsync -a --delete README.md "$LOCAL_DIR/README.md"
 rsync -a --delete src/ "$LOCAL_DIR/src/"
 rsync -a --delete scripts/ "$LOCAL_DIR/scripts/"
