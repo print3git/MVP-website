@@ -1,24 +1,27 @@
 name: Deploy
 
 on:
-  workflow_dispatch:
-
-env:                      # ONE place to set required secrets
-  NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-  NETLIFY_SITE_ID:   ${{ secrets.NETLIFY_SITE_ID }}
+  push:
+    branches: [00000production]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: netlify/actions/cli@master
-      - name: Deploy to Netlify
-        if: env.NETLIFY_AUTH_TOKEN != '' && env.NETLIFY_SITE_ID != ''
-        run: |
-          netlify deploy \
-            --dir=. \
-            --site "$NETLIFY_SITE_ID" \
-            --auth "$NETLIFY_AUTH_TOKEN" \
-            --json > deploy.json
-          echo "PREVIEW_URL=$(jq -r '.deploy_url' deploy.json)" >> "$GITHUB_ENV"
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # — Uncomment & adjust these if you ever need a build step:
+      # - name: Install dependencies
+      #   run: npm ci
+      # - name: Build
+      #   run: npm run build
+
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CF_PAGES_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          projectName: ${{ secrets.CF_PAGES_PROJECT }}
+          directory: '.'
