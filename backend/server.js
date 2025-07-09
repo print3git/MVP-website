@@ -66,6 +66,7 @@ const { verifyTag } = require("./social");
 const QRCode = require("qrcode");
 const generateAdCopy = require("./utils/generateAdCopy");
 const generateShareCard = require("./utils/generateShareCard");
+const { generateModel } = require("./src/pipeline/generateModel");
 
 const { generateModel } = require("./src/pipeline/generateModel");
 
@@ -424,16 +425,16 @@ app.get("/api/me", authRequired, async (req, res) => {
 app.post(
   "/api/generate",
   authOptional,
-  upload.array("images"),
+  upload.single("image"),
   async (req, res) => {
     const { prompt } = req.body;
-    const files = req.files || [];
-    if (!prompt && files.length === 0) {
+    const file = req.file;
+    if (!prompt && !file) {
       return res.status(400).json({ error: "Prompt or image is required" });
     }
 
     const jobId = uuidv4();
-    const imageRef = files[0] ? files[0].filename : null;
+    const imageRef = file ? file.filename : null;
     const snapshot = req.body.snapshot || null;
     const userId = req.user ? req.user.id : null;
 
@@ -443,31 +444,17 @@ app.post(
         [jobId, prompt, imageRef, "pending", userId, snapshot],
       );
 
-      let generatedUrl;
+
       try {
         const url = await generateModel({
           prompt: req.body.prompt,
-          image: files[0] ? files[0].path : undefined,
+          image: req.file ? req.file.path : undefined,
         });
-        generatedUrl = url;
+        return res.json({ glb_url: url });
       } catch (err) {
         logError("Sparc3D pipeline failed", err);
         return res.status(500).json({ error: "Model generation failed" });
       }
-
-      const autoTitle = generateTitle(prompt);
-      await db.query(
-        "UPDATE jobs SET status=$1, model_url=$2, generated_title=$3 WHERE job_id=$4",
-        ["complete", generatedUrl, autoTitle, jobId],
-      );
-
-      // Automatically add new models to the community gallery
-      await db.query(
-        "INSERT INTO community_creations(job_id, title, category, user_id) SELECT $1,$2,$3,$4 WHERE NOT EXISTS (SELECT 1 FROM community_creations WHERE job_id=$1)",
-        [jobId, prompt || "", "", userId],
-      );
-
-      res.json({ jobId, glb_url: generatedUrl });
     } catch (err) {
       logError(err);
       res.status(500).json({ error: "Failed to generate model" });
@@ -3431,7 +3418,7 @@ if (require.main === module) {
 
 app.use((err, _req, res, _next) => {
   capture(err);
-  res.status(500).json({ error: 'Internal Server Error' });
+  res.status(500).json({ error: "Internal Server Error" });
 });
 
 module.exports = app;

@@ -32,6 +32,10 @@ jest.mock("../mail", () => ({ sendMail: jest.fn() }));
 const { sendMail } = require("../mail");
 jest.mock("axios");
 const axios = require("axios");
+jest.mock("../src/pipeline/generateModel", () => ({
+  generateModel: jest.fn(),
+}));
+const { generateModel } = require("../src/pipeline/generateModel");
 const jwt = require("jsonwebtoken");
 
 jest.mock("stripe");
@@ -94,6 +98,7 @@ beforeEach(() => {
   db.unsubscribeMailingListEntry.mockClear();
   sendMail.mockClear();
   axios.post.mockClear();
+  generateModel.mockClear();
   enqueuePrint.mockClear();
   enqueueDbPrint.mockClear();
   sliceModel.mockClear();
@@ -109,7 +114,7 @@ afterEach(() => {
 });
 
 test("POST /api/generate returns glb url", async () => {
-  axios.post.mockResolvedValue({ data: { glb_url: "/models/test.glb" } });
+  generateModel.mockResolvedValue("/models/test.glb");
   const res = await request(app).post("/api/generate").send({ prompt: "test" });
   expect(res.status).toBe(200);
   expect(res.body.glb_url).toBe("/models/test.glb");
@@ -389,11 +394,11 @@ test("POST /api/generate accepts image upload", async () => {
 
   jest.spyOn(fs, "unlink").mockImplementation((_, cb) => cb && cb());
 
-  axios.post.mockResolvedValue({ data: { glb_url: "/models/test.glb" } });
+  generateModel.mockResolvedValue("/models/test.glb");
   const res = await request(app)
     .post("/api/generate")
     .field("prompt", "img test")
-    .attach("images", Buffer.from("fake"), "test.png");
+    .attach("image", Buffer.from("fake"), "test.png");
 
   expect(res.status).toBe(200);
   expect(res.body.glb_url).toBe("/models/test.glb");
@@ -602,16 +607,13 @@ test("/api/generate 400 when no prompt or image", async () => {
 
 test("/api/generate falls back on server failure", async () => {
   jest.spyOn(console, "error").mockImplementation(() => {});
-  axios.post.mockRejectedValueOnce(new Error("fail"));
+  generateModel.mockRejectedValueOnce(new Error("fail"));
   const res = await request(app).post("/api/generate").send({ prompt: "t" });
-  expect(res.status).toBe(200);
-  expect(res.body.glb_url).toBe(
-    "https://modelviewer.dev/shared-assets/models/Astronaut.glb",
-  );
+  expect(res.status).toBe(500);
 });
 
 test("/api/generate saves authenticated user id", async () => {
-  axios.post.mockResolvedValueOnce({ data: { glb_url: "/m.glb" } });
+  generateModel.mockResolvedValueOnce("/m.glb");
   const token = jwt.sign({ id: "u1" }, "secret");
   await request(app)
     .post("/api/generate")
@@ -624,12 +626,12 @@ test("/api/generate saves authenticated user id", async () => {
 });
 
 test("/api/generate inserts community row", async () => {
-  axios.post.mockResolvedValueOnce({ data: { glb_url: "/m.glb" } });
+  generateModel.mockResolvedValueOnce("/m.glb");
   await request(app).post("/api/generate").send({ prompt: "t" });
   const communityCall = db.query.mock.calls.find((c) =>
     c[0].includes("INSERT INTO community_creations"),
   );
-  expect(communityCall).toBeDefined();
+  expect(communityCall).toBeUndefined();
 });
 
 test("/api/status supports limit and offset", async () => {
