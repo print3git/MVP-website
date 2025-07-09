@@ -27,10 +27,13 @@ Run `docker compose up` to start the API and Postgres services.
 
    - `DB_URL` – connection string for your PostgreSQL database.
 
-- `STRIPE_SECRET_KEY` – secret key from your Stripe dashboard.
-- `STRIPE_PUBLISHABLE_KEY` – publishable key for Stripe.js on the frontend.
-- `STRIPE_WEBHOOK_SECRET` – signing secret for Stripe webhooks.
-- `HUNYUAN_API_KEY` – key for the Hunyuan3D API.
+  - `STRIPE_TEST_KEY` – test secret key for Stripe.
+  - `STRIPE_LIVE_KEY` – live secret key for Stripe.
+  - `STRIPE_PUBLISHABLE_KEY` – publishable key for Stripe.js on the frontend.
+  - `STRIPE_WEBHOOK_SECRET` – signing secret for Stripe webhooks.
+  - `HUNYUAN_API_KEY` – key for the Hunyuan3D API.
+
+The server uses `STRIPE_LIVE_KEY` when `NODE_ENV=production`; otherwise `STRIPE_TEST_KEY` is used.
 - `SENDGRID_API_KEY` – API key for sending email via SendGrid.
 - `EMAIL_FROM` – address used for the "from" field in outgoing mail.
 - Optional: `PORT` and `HUNYUAN_PORT` to override the default ports.

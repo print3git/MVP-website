@@ -28,3 +28,9 @@ jobs:
         run: bash scripts/set-sleep-zero.sh
         env:
           HF_TOKEN: ${{ secrets.HF_WRITE_TOKEN }}
+
+      - name: Run backend tests
+        run: npm test --prefix backend
+
+      - name: Run smoke tests
+        run: npm run smoke

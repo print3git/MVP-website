@@ -13,6 +13,12 @@ cleanup_npm_cache
 unset npm_config_http_proxy npm_config_https_proxy
 export npm_config_fund=false
 
+# Validate required Stripe env vars
+if [[ -z "$STRIPE_TEST_KEY" && -z "$STRIPE_LIVE_KEY" ]]; then
+  echo "STRIPE_TEST_KEY or STRIPE_LIVE_KEY must be set" >&2
+  exit 1
+fi
+
 # Persist proxy removal so new shells start clean
 if ! grep -q "unset npm_config_http_proxy" ~/.bashrc 2>/dev/null; then
   echo "unset npm_config_http_proxy npm_config_https_proxy" >> ~/.bashrc
