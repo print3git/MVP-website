@@ -2,6 +2,9 @@
 # Fail on any error, undefined variable, or pipe failure
 set -euo pipefail
 
+# Disable LFS smudge during clone for speed
+export GIT_LFS_SKIP_SMUDGE=1
+
 
 # Directory where the Space code lives (created if absent)
 SPACE_DIR="${SPACE_DIR:-Sparc3D-Space}"
@@ -28,15 +31,25 @@ auth_model_url="https://user:${HF_TOKEN}@${MODEL_URL#https://}"
 
 # Diagnosis checks
 auth_status="✔"; url_status="✔"; net_status="✔"; branch_status="✔"
-if ! git ls-remote "$auth_space_url" &>/dev/null; then
-  net_status="✖"; auth_status="✖"
+
+# Basic network test
+if ! curl -sfL https://huggingface.co > /dev/null; then
+  net_status="✖"
 fi
-if ! git ls-remote "$auth_space_url" HEAD &>/dev/null; then
+
+# Auth and URL validity
+if ! git ls-remote "$auth_space_url" &>/dev/null; then
+  auth_status="✖"; url_status="✖"; net_status="✖"
+fi
+
+# Detect default branch
+default_branch=$(git ls-remote --symref "$auth_space_url" HEAD 2>/dev/null | sed -n 's@^ref: refs/heads/\(.*\)\s*HEAD$@\1@p')
+if [ -z "$default_branch" ]; then
   branch_status="✖"
 fi
 
 echo "Diagnosis: auth $auth_status | url $url_status | network $net_status | default branch $branch_status"
-if [ "$auth_status" = "✖" ] || [ "$net_status" = "✖" ] || [ "$branch_status" = "✖" ]; then
+if [ "$auth_status" = "✖" ] || [ "$url_status" = "✖" ] || [ "$net_status" = "✖" ] || [ "$branch_status" = "✖" ]; then
   exit 1
 fi
 
@@ -65,8 +78,8 @@ else
 fi
 
 # Push all branches and tags to the new origin
-git push origin --all
-git push origin --tags
+git push --force origin --all
+git push --force origin --tags
 
 
 # Success indicator
