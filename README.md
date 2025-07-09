@@ -4,7 +4,7 @@
 
 Before you run any Codex-driven prompts, always sync your code and Hugging Face Space:
 ```bash
-bash scripts/sync_space.sh
+bash scripts/sync-space.sh
 ```
 
 This ensures Codex sees the latest local changes and model artifacts.
