@@ -19,7 +19,12 @@ LOCAL_DIR="Sparc3D-Space"
 
 # Create space if it does not exist
 if ! huggingface-cli repo info "$SPACE_REPO" --type space >/dev/null 2>&1; then
-  huggingface-cli repo create "$SPACE_REPO" --type space --private -y
+  huggingface-cli repo create "$SPACE_REPO" \
+  --repo-type space \
+  --sdk gradio \
+  --private \
+  --yes
+
 fi
 
 # Remove existing local directory
