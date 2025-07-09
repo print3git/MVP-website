@@ -21,4 +21,4 @@ jobs:
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
           HF_API_KEY: ${{ secrets.HF_TOKEN }}
-        run: bash scripts/sync_space.sh
+        run: bash scripts/sync-space.sh
