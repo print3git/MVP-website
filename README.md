@@ -32,6 +32,7 @@ Run `docker compose up` to start the API and Postgres services.
 - `STRIPE_WEBHOOK_SECRET` – signing secret for Stripe webhooks.
 - `HUNYUAN_API_KEY` – key for the Hunyuan3D API.
 - `SENDGRID_API_KEY` – API key for sending email via SendGrid.
+- `SENTRY_DSN` – connection string for sending errors to Sentry.
 - `EMAIL_FROM` – address used for the "from" field in outgoing mail.
 - Optional: `PORT` and `HUNYUAN_PORT` to override the default ports.
 - Optional: `HUNYUAN_SERVER_URL` if your Hunyuan API runs on a custom URL.

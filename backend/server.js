@@ -71,6 +71,7 @@ const generateShareCard = require("./utils/generateShareCard");
 const validateStl = require("./utils/validateStl");
 const syncMailingList = require("./scripts/sync-mailing-list");
 const runScalingEngine = require("./scalingEngine");
+const { capture } = require("./src/lib/logger");
 
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || "admin";
 
@@ -81,6 +82,7 @@ function logError(...args) {
   if (process.env.NODE_ENV !== "test") {
     console.error(...args);
   }
+  capture(args[0] instanceof Error ? args[0] : new Error(args.join(" ")));
 }
 
 function isValidEmail(email) {
@@ -3434,6 +3436,11 @@ if (require.main === module) {
     24 * 3600 * 1000,
   );
 }
+
+app.use((err, _req, res, _next) => {
+  capture(err);
+  res.status(500).json({ error: 'Internal Server Error' });
+});
 
 module.exports = app;
 module.exports.checkCompetitionStart = checkCompetitionStart;

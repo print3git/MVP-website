@@ -66,5 +66,8 @@ fi
 
 git push origin HEAD:main --tags
 
+# Ensure the Space stays awake
+bash "$(dirname "$0")/check_sleep_zero.sh" || true
+
 # Green success banner
 printf '\e[32m%s\e[0m\n' 'Space setup completed successfully'
