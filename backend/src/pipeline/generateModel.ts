@@ -3,6 +3,7 @@ import { imageToText } from '../lib/imageToText';
 import { prepareImage } from '../lib/prepareImage';
 import { generateGlb } from '../lib/sparc3dClient';
 import { storeGlb } from '../lib/storeGlb';
+import { capture } from '../lib/logger';
 
 export interface GenerateModelParams {
   prompt?: string;

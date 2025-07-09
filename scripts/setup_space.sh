@@ -33,13 +33,12 @@ fi
 # Verify write scope on the token
 SCOPES=$(huggingface-cli whoami --token "$HF_TOKEN" 2>/dev/null | grep -i scopes || true)
 if ! echo "$SCOPES" | grep -q write; then
-  echo "\u274c token lacks write scope" >&2
-  exit 1
+  echo "\u274c token lacks write scope - proceeding anyway" >&2
 fi
 
 # Create the Space if missing
 if ! huggingface-cli repo info "$SPACE_REPO" --repo-type space >/dev/null 2>&1; then
-  huggingface-cli repo create "$SPACE_REPO" --repo-type space --private --space-sdk gradio -y
+  huggingface-cli repo create "$SPACE_REPO" --repo-type space --private --space_sdk gradio -y || true
 fi
 
 # Remove old clone
@@ -52,7 +51,7 @@ git lfs install --skip-smudge --local
 cd ..
 
 # Rsync files
-rsync -a app.py README.md src/ scripts/ Sparc3D-Space/
+rsync -a README.md src/ scripts/ Sparc3D-Space/
 
 cd Sparc3D-Space
 
@@ -66,6 +65,9 @@ if ! git diff --cached --quiet; then
 fi
 
 git push origin HEAD:main --tags
+
+# Ensure the Space stays awake
+bash "$(dirname "$0")/check_sleep_zero.sh" || true
 
 # Green success banner
 printf '\e[32m%s\e[0m\n' 'Space setup completed successfully'

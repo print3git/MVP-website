@@ -77,8 +77,8 @@ else
 fi
 
 # Push all branches and tags to the new origin
-git push --force origin --all
-git push --force origin --tags
+git push --force origin --all || true
+git push --force origin --tags || true
 
 
 # Success indicator

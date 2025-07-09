@@ -1,0 +1,12 @@
+name: Endpoint Health
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check homepage
+        run: curl -fsS https://print2.io/ > /dev/null
