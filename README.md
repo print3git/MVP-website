@@ -35,6 +35,7 @@ Run `docker compose up` to start the API and Postgres services.
 
 The server uses `STRIPE_LIVE_KEY` when `NODE_ENV=production`; otherwise `STRIPE_TEST_KEY` is used.
 - `SENDGRID_API_KEY` – API key for sending email via SendGrid.
+- `SENTRY_DSN` – connection string for sending errors to Sentry.
 - `EMAIL_FROM` – address used for the "from" field in outgoing mail.
 - Optional: `PORT` and `HUNYUAN_PORT` to override the default ports.
 - Optional: `HUNYUAN_SERVER_URL` if your Hunyuan API runs on a custom URL.
