@@ -29,3 +29,6 @@ jobs:
 
       - name: Run smoke tests
         run: pnpm run smoke
+
+      - name: Run diagnostics
+        run: pnpm diagnose
