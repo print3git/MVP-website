@@ -447,6 +447,15 @@ app.post(
         [jobId, prompt, imageRef, "pending", userId, snapshot],
       );
 
+
+      console.log(
+        "🔹 API /api/generate called with prompt:",
+        req.body.prompt,
+        "and image?",
+        !!req.file,
+      );
+
+
       let generatedUrl;
       try {
         generatedUrl = await generateModel({
@@ -458,7 +467,7 @@ app.post(
         return res.status(500).json({ error: "Model generation error" });
       }
       console.log("🔹 Returning glb_url:", generatedUrl);
-      console.log("🔹 Exiting /api/generate");
+
       return res.json({ glb_url: generatedUrl });
     } catch (err) {
       logError(err);
