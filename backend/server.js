@@ -30,7 +30,6 @@ const {
 } = require("@aws-sdk/client-s3");
 const config = require("./config");
 const prohibitedCountries = ["CU", "IR", "KP", "RU", "SY"];
-const generateTitle = require("./utils/generateTitle");
 const stripe = require("stripe")(config.stripeKey);
 const campaigns = require("./campaigns.json");
 const internalIPs = (process.env.INTERNAL_IPS || "127.0.0.1")
@@ -66,8 +65,6 @@ const { verifyTag } = require("./social");
 const QRCode = require("qrcode");
 const generateAdCopy = require("./utils/generateAdCopy");
 const generateShareCard = require("./utils/generateShareCard");
-const { generateModel } = require("./src/pipeline/generateModel");
-
 const { generateModel } = require("./src/pipeline/generateModel");
 
 const validateStl = require("./utils/validateStl");
@@ -443,7 +440,6 @@ app.post(
         "INSERT INTO jobs(job_id, prompt, image_ref, status, user_id, snapshot) VALUES ($1,$2,$3,$4,$5,$6)",
         [jobId, prompt, imageRef, "pending", userId, snapshot],
       );
-
 
       try {
         const url = await generateModel({

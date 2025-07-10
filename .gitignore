@@ -3,7 +3,6 @@ node_modules/
 models/*
 !models/astronaut_low.glb
 uploads/
-backend/hunyuan_server/uploads/
 *.log
 .DS_Store
 reports/

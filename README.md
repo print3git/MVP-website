@@ -13,6 +13,7 @@ This repository contains the early MVP code for print2's website and backend.
 
 - Frontend HTML pages are in the repository root.
 - General backend code is in the `backend/` folder.
+
 - The backend communicates with the Sparc3D API service.
 - The `img/` folder is now reserved strictly for image assets.
 - HTML files in the `uploads/` directory should use the `.links` extension to avoid being served as plain text.
@@ -47,6 +48,7 @@ The server uses `STRIPE_LIVE_KEY` when `NODE_ENV=production`; otherwise `STRIPE_
    ```bash
    npm run setup
    ```
+
 
    This script runs `npm ci` in the root and `backend/`, then downloads the browsers
    required for the end-to-end tests. Set `SKIP_PW_DEPS=1` to skip the

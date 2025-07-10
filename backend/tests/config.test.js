@@ -1,7 +1,6 @@
 process.env.DB_URL = "postgres://user:pass@localhost/db";
 process.env.STRIPE_SECRET_KEY = "test";
 process.env.STRIPE_WEBHOOK_SECRET = "whsec";
-process.env.HUNYUAN_API_KEY = "test";
 process.env.CLOUDFRONT_MODEL_DOMAIN = "https://domain";
 
 const original = process.env.CLOUDFRONT_MODEL_DOMAIN;

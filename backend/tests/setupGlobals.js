@@ -36,3 +36,9 @@ console.warn = (...args) => {
 if (!process.env.CLOUDFRONT_MODEL_DOMAIN) {
   process.env.CLOUDFRONT_MODEL_DOMAIN = "cdn.test";
 }
+if (!process.env.SPARC3D_ENDPOINT) {
+  process.env.SPARC3D_ENDPOINT = "http://sparc3d.test";
+}
+if (!process.env.SPARC3D_TOKEN) {
+  process.env.SPARC3D_TOKEN = "token";
+}

@@ -26,10 +26,6 @@ jobs:
       - run: npm install --no-audit --no-fund
         working-directory: backend
 
-      - name: Install hunyuan_server deps (if exists)
-        if: ${{ hashFiles('backend/hunyuan_server/package.json') != '' }}
-        working-directory: backend/hunyuan_server
-        run: npm install --no-audit --no-fund
 
       - run: npm run lint
         working-directory: backend
@@ -54,9 +50,6 @@ jobs:
       - name: Audit dependencies
         run: |
           npm audit --audit-level=high --prefix backend
-          if [ -f backend/hunyuan_server/package.json ]; then
-            npm audit --audit-level=high --prefix backend/hunyuan_server
-          fi
 
       - name: Validate Snyk token
         if: ${{ secrets.SNYK_TOKEN }}
@@ -78,8 +71,3 @@ jobs:
           echo "⚠️ SNYK_TOKEN missing or invalid; running npm audit instead"
           npm audit --audit-level=high --prefix backend
 
-      - name: Snyk scan hunyuan_server
-        if: success() && secrets.SNYK_TOKEN && fileExists('backend/hunyuan_server/package.json')
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        run: npx snyk test --severity-threshold=high --file=backend/hunyuan_server/package.json
