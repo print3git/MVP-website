@@ -35,11 +35,3 @@ jobs:
 
       - name: Run smoke tests
         run: npm run smoke
-
-      - name: Slack failure alert
-        if: failure()
-        run: |
-          curl -X POST -H 'Content-Type: application/json' \
-            --data '{"text":"Sync HF Space failed"}' "$SLACK_WEBHOOK"
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
