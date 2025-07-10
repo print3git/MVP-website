@@ -13,7 +13,7 @@ This repository contains the early MVP code for print2's website and backend.
 
 - Frontend HTML pages are in the repository root.
 - General backend code is in the `backend/` folder.
-- The lightweight Hunyuan3D API server lives in `backend/hunyuan_server/`.
+- The backend communicates with the Sparc3D API service.
 - The `img/` folder is now reserved strictly for image assets.
 - HTML files in the `uploads/` directory should use the `.links` extension to avoid being served as plain text.
 
@@ -31,14 +31,15 @@ Run `docker compose up` to start the API and Postgres services.
   - `STRIPE_LIVE_KEY` – live secret key for Stripe.
   - `STRIPE_PUBLISHABLE_KEY` – publishable key for Stripe.js on the frontend.
   - `STRIPE_WEBHOOK_SECRET` – signing secret for Stripe webhooks.
-  - `HUNYUAN_API_KEY` – key for the Hunyuan3D API.
+  - `HUNYUAN_API_KEY` – key for the Sparc3D API.
 
 The server uses `STRIPE_LIVE_KEY` when `NODE_ENV=production`; otherwise `STRIPE_TEST_KEY` is used.
 - `SENDGRID_API_KEY` – API key for sending email via SendGrid.
 - `SENTRY_DSN` – connection string for sending errors to Sentry.
 - `EMAIL_FROM` – address used for the "from" field in outgoing mail.
-- Optional: `PORT` and `HUNYUAN_PORT` to override the default ports.
-- Optional: `HUNYUAN_SERVER_URL` if your Hunyuan API runs on a custom URL.
+- Optional: `PORT` and `HUNYUAN_PORT` to override the default ports for the
+  Sparc3D service.
+- Optional: `HUNYUAN_SERVER_URL` if your Sparc3D API runs on a custom URL.
 - Optional: `DALLE_SERVER_URL` if the DALL-E server runs on a custom URL.
 
 2. Install all dependencies and the Playwright browsers:
@@ -47,8 +48,7 @@ The server uses `STRIPE_LIVE_KEY` when `NODE_ENV=production`; otherwise `STRIPE_
    npm run setup
    ```
 
-   This script runs `npm ci` in the root, `backend/`, and
-   `backend/hunyuan_server/` if present, then downloads the browsers
+   This script runs `npm ci` in the root and `backend/`, then downloads the browsers
    required for the end-to-end tests. Set `SKIP_PW_DEPS=1` to skip the
    Playwright dependency installation when the browsers are already available.
    It also installs the Husky git hooks used for pre-commit checks. If the hooks
@@ -81,8 +81,7 @@ Ensure your environment can reach `https://registry.npmjs.org` and `https://cdn.
 
    ```bash
    npm start            # inside backend/
-   cd hunyuan_server && npm start  # inside backend/hunyuan_server/
-   cd ../dalle_server && npm start  # inside backend/dalle_server/
+   cd dalle_server && npm start  # inside backend/dalle_server/
    ```
 
 7. (Optional) Run the purchase reminder job periodically:
@@ -290,8 +289,7 @@ We sometimes rely on automated agents (such as the Codex agent) to make small
 changes. Agents must follow the steps in [AGENTS.md](AGENTS.md) before opening a
 pull request:
 
-1. Install dependencies with `npm ci` inside `backend/` (and
-   `backend/hunyuan_server/` if present).
+1. Install dependencies with `npm ci` inside `backend/`.
 2. Run `npm run format` in `backend/`.
 3. Run `npm test` in `backend/` and include the results in the PR description.
 

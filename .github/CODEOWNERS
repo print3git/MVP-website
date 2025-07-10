@@ -6,7 +6,7 @@
 # Backend code
 /backend/ @backend-team
 
-# Hunyuan3D API server
+# Sparc3D integration
 /backend/hunyuan_server/ @ml-team
 
 # GitHub workflows
