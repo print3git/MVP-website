@@ -426,6 +426,12 @@ app.post(
   async (req, res) => {
     const { prompt } = req.body;
     const file = req.file;
+    console.log(
+      "🔹 Entering /api/generate with prompt:",
+      prompt,
+      "image?",
+      !!file,
+    );
     if (!prompt && !file) {
       return res.status(400).json({ error: "Prompt or image is required" });
     }
@@ -441,12 +447,14 @@ app.post(
         [jobId, prompt, imageRef, "pending", userId, snapshot],
       );
 
+
       console.log(
         "🔹 API /api/generate called with prompt:",
         req.body.prompt,
         "and image?",
         !!req.file,
       );
+
 
       let generatedUrl;
       try {
@@ -459,9 +467,11 @@ app.post(
         return res.status(500).json({ error: "Model generation error" });
       }
       console.log("🔹 Returning glb_url:", generatedUrl);
+
       return res.json({ glb_url: generatedUrl });
     } catch (err) {
       logError(err);
+      console.log("🔹 Exiting /api/generate with error");
       res.status(500).json({ error: "Failed to generate model" });
     }
   },
