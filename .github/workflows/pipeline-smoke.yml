@@ -12,6 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     env:
       STRIPE_TEST_KEY: ${{ secrets.STRIPE_TEST_KEY }}
+      DB_URL: ${{ secrets.DB_URL }}
+      STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+      STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+      HF_API_KEY: ${{ secrets.HF_API_KEY }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
