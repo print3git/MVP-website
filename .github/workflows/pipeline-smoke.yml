@@ -1,0 +1,37 @@
+name: Full Pipeline Smoke Test
+
+on:
+  push:
+    branches: [ dev, 00000production ]
+  workflow_dispatch:
+
+jobs:
+  smoke_test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Validate env
+        run: bash scripts/validate-env.sh
+
+      - name: Start server
+        run: pnpm dev &
+      - name: Wait for server
+        run: |
+          for i in {1..20}; do
+            nc -z localhost 3000 && break
+            echo "Waiting for port 3000..."
+            sleep 1
+          done
+
+      - name: Run full-pipeline test
+        run: node scripts/test-full-pipeline.js
