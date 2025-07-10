@@ -27,6 +27,7 @@
     "deps:dedupe-check": "npm dedupe --dry-run",
     "bundle:size": "size-limit",
     "dev": "node backend/server.js",
+    "validate-env": "bash scripts/validate-env.sh",
     "setup": "scripts/setup.sh",
     "e2e": "playwright test",
     "smoke": "NODE_NO_WARNINGS=1 SKIP_PW_DEPS=1 npm run setup && NODE_NO_WARNINGS=1 npx playwright test e2e/smoke.test.js",
