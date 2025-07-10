@@ -1,18 +1,37 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "🔎 Running environment validation..."
+banner() {
+  echo -e "\n==============================\n$1\n==============================";
+}
+
+banner "Running environment validation"
 bash scripts/validate-env.sh
 
-echo "🚀 Spinning up dev server..."
+banner "Starting dev server"
 pnpm dev &
 SERVER_PID=$!
-trap "kill $SERVER_PID" EXIT
+trap 'kill $SERVER_PID' EXIT
 
-echo "⌛ Waiting for port 3000..."
-for i in {1..15}; do nc -z localhost 3000 && break; sleep 1; done
+echo "Waiting for port 3000..."
+for i in {1..30}; do
+  if nc -z localhost 3000; then break; fi
+  sleep 1
+done
 
-echo "🧪 Executing Jest integration tests"
+set +e
+node scripts/test-full-pipeline.js
+PIPELINE_STATUS=$?
+
 npx jest tests/pipeline.spec.ts --runInBand
+TEST_STATUS=$?
+set -e
 
-echo "✅ Diagnostics complete"
+if [[ $PIPELINE_STATUS -eq 0 && $TEST_STATUS -eq 0 ]]; then
+  banner "DIAGNOSTICS PASSED"
+  exit 0
+else
+  banner "DIAGNOSTICS FAILED"
+  exit 1
+fi
+
