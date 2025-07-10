@@ -2,7 +2,9 @@ name: Full Pipeline Smoke Test
 
 on:
   push:
-    branches: [ dev, 00000production ]
+    branches:
+      - dev
+      - 00000production
   workflow_dispatch:
 
 jobs:
@@ -18,11 +20,10 @@ jobs:
           node-version: 18
 
       - name: Install pnpm
-      run: npm install -g pnpm
+        run: npm install -g pnpm
 
       - name: Install dependencies
-      run: pnpm install
-
+        run: pnpm install
 
       - name: Run diagnostics
         run: pnpm diagnose
