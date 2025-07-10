@@ -6,8 +6,6 @@
 # Backend code
 /backend/ @backend-team
 
-# Hunyuan3D API server
-/backend/hunyuan_server/ @ml-team
 
 # GitHub workflows
 .github/workflows/ @devops-team
