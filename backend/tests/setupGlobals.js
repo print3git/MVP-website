@@ -36,3 +36,11 @@ console.warn = (...args) => {
 if (!process.env.CLOUDFRONT_MODEL_DOMAIN) {
   process.env.CLOUDFRONT_MODEL_DOMAIN = "cdn.test";
 }
+
+// Provide defaults for Sparc3D tests
+if (!process.env.SPARC3D_ENDPOINT) {
+  process.env.SPARC3D_ENDPOINT = "http://localhost:5000/generate";
+}
+if (!process.env.SPARC3D_TOKEN) {
+  process.env.SPARC3D_TOKEN = "token";
+}

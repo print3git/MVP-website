@@ -3,8 +3,6 @@ process.env.DALLE_API_URL = 'http://localhost:5002/generate';
 process.env.LLM_API_URL = '';
 process.env.STRIPE_SECRET_KEY = 'test';
 process.env.STRIPE_WEBHOOK_SECRET = 'whsec';
-process.env.HUNYUAN_API_KEY = 'test';
-process.env.HUNYUAN_SERVER_URL = 'http://localhost:4000';
 
 jest.mock('axios');
 const axios = require('axios');
