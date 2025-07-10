@@ -65,9 +65,7 @@ const { verifyTag } = require("./social");
 const QRCode = require("qrcode");
 const generateAdCopy = require("./utils/generateAdCopy");
 const generateShareCard = require("./utils/generateShareCard");
-// rename to avoid potential duplicate declarations
-const { generateModel: runPipeline } = require("./src/pipeline/generateModel");
-
+const { generateModel } = require("./src/pipeline/generateModel");
 
 const validateStl = require("./utils/validateStl");
 const syncMailingList = require("./scripts/sync-mailing-list");
@@ -428,6 +426,12 @@ app.post(
   async (req, res) => {
     const { prompt } = req.body;
     const file = req.file;
+    console.log(
+      "🔹 Entering /api/generate with prompt:",
+      prompt,
+      "image?",
+      !!file,
+    );
     if (!prompt && !file) {
       return res.status(400).json({ error: "Prompt or image is required" });
     }
@@ -443,18 +447,22 @@ app.post(
         [jobId, prompt, imageRef, "pending", userId, snapshot],
       );
 
+      let generatedUrl;
       try {
-        const url = await runPipeline({
+        generatedUrl = await generateModel({
           prompt: req.body.prompt,
           image: req.file ? req.file.path : undefined,
         });
-        return res.json({ glb_url: url });
       } catch (err) {
-        logError("Sparc3D pipeline failed", err);
-        return res.status(500).json({ error: "Model generation failed" });
+        console.error("🚨 generateModel() failed:", err);
+        return res.status(500).json({ error: "Model generation error" });
       }
+      console.log("🔹 Returning glb_url:", generatedUrl);
+      console.log("🔹 Exiting /api/generate");
+      return res.json({ glb_url: generatedUrl });
     } catch (err) {
       logError(err);
+      console.log("🔹 Exiting /api/generate with error");
       res.status(500).json({ error: "Failed to generate model" });
     }
   },
