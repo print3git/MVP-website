@@ -1,7 +1,7 @@
 # Architecture
 
 ```
-Browser --(HTTP)--> Express Backend --(API)--> Hunyuan Server
+Browser --(HTTP)--> Express Backend --(API)--> Sparc3D Service
     |                                   |
     +----> PostgreSQL <------------------+
     +----> Stripe -----------------------+
