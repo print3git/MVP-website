@@ -68,8 +68,6 @@ const generateAdCopy = require("./utils/generateAdCopy");
 const generateShareCard = require("./utils/generateShareCard");
 const { generateModel } = require("./src/pipeline/generateModel");
 
-const { generateModel } = require("./src/pipeline/generateModel");
-
 const validateStl = require("./utils/validateStl");
 const syncMailingList = require("./scripts/sync-mailing-list");
 const runScalingEngine = require("./scalingEngine");
@@ -443,7 +441,6 @@ app.post(
         "INSERT INTO jobs(job_id, prompt, image_ref, status, user_id, snapshot) VALUES ($1,$2,$3,$4,$5,$6)",
         [jobId, prompt, imageRef, "pending", userId, snapshot],
       );
-
 
       try {
         const url = await generateModel({
