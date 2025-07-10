@@ -27,5 +27,5 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Run diagnostics
-        run: pnpm diagnose
+      - name: Run smoke tests
+        run: pnpm run smoke
