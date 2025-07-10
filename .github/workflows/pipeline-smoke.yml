@@ -16,6 +16,10 @@ jobs:
       STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
       STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
       HF_API_KEY: ${{ secrets.HF_API_KEY }}
+      CLOUDFRONT_MODEL_DOMAIN: ${{ secrets.CLOUDFRONT_MODEL_DOMAIN }}
+      SPARC3D_ENDPOINT: ${{ secrets.SPARC3D_ENDPOINT }}
+      SPARC3D_TOKEN: ${{ secrets.SPARC3D_TOKEN }}
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -33,3 +37,6 @@ jobs:
 
       - name: Run smoke tests
         run: pnpm run smoke
+
+      - name: Run diagnostics
+        run: pnpm diagnose
