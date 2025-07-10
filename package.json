@@ -26,6 +26,8 @@
     "deps:dedupe": "npm dedupe",
     "deps:dedupe-check": "npm dedupe --dry-run",
     "bundle:size": "size-limit",
+    "dev": "node backend/server.js",
+    "validate-env": "bash scripts/validate-env.sh",
     "setup": "scripts/setup.sh",
     "e2e": "playwright test",
     "smoke": "NODE_NO_WARNINGS=1 SKIP_PW_DEPS=1 npm run setup && NODE_NO_WARNINGS=1 npx playwright test e2e/smoke.test.js",
@@ -33,7 +35,8 @@
     "visual-test": "percy exec -- npm run e2e",
     "test:a11y": "node scripts/assert-setup.js && bash scripts/install-playwright.sh chromium && playwright test e2e/a11y.test.js",
     "a11y": "jest --runTestsByPath tests/a11y",
-    "netlify:deploy": "scripts/netlify-preflight.sh && netlify deploy"
+    "netlify:deploy": "scripts/netlify-preflight.sh && netlify deploy",
+    "diagnose": "bash scripts/diagnose.sh"
   },
   "keywords": [],
   "author": "",
@@ -81,6 +84,7 @@
     "*.{js,ts}": "jest --bail --findRelatedTests"
   },
   "dependencies": {
+    "axios": "^1.10.0",
     "react": "^18.3.1",
     "react-dom": "^18.2.0",
     "react-places-autocomplete": "^7.3.0"

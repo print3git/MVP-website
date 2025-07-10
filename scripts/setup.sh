@@ -13,6 +13,10 @@ cleanup_npm_cache
 unset npm_config_http_proxy npm_config_https_proxy
 export npm_config_fund=false
 
+if [ -z "$STRIPE_TEST_KEY" ] && [ -n "$CI" ]; then
+  export STRIPE_TEST_KEY="sk_test_dummy_$(date +%s)"
+fi
+
 # Validate required Stripe env vars
 if [[ -z "$STRIPE_TEST_KEY" && -z "$STRIPE_LIVE_KEY" ]]; then
   echo "STRIPE_TEST_KEY or STRIPE_LIVE_KEY must be set" >&2
@@ -37,9 +41,6 @@ fi
 
 # Remove any existing node_modules directories to avoid ENOTEMPTY errors
 sudo rm -rf node_modules backend/node_modules
-if [ -d backend/hunyuan_server/node_modules ]; then
-  sudo rm -rf backend/hunyuan_server/node_modules
-fi
 
 # Remove stale apt or dpkg locks that may prevent dependency installation
 if pgrep apt-get >/dev/null 2>&1; then
@@ -61,9 +62,6 @@ fi
 
 npm ci --no-audit --no-fund
 npm ci --prefix backend --no-audit --no-fund
-if [ -f backend/hunyuan_server/package.json ]; then
-  npm ci --prefix backend/hunyuan_server --no-audit --no-fund
-fi
 
 cleanup_npm_cache
 

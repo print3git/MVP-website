@@ -22,7 +22,6 @@ const jwt = require("jsonwebtoken");
 const db = require("./db");
 const modelsRouter = require("./routes/models");
 const axios = require("axios");
-const FormData = require("form-data");
 const fs = require("fs");
 const {
   S3Client,
@@ -31,7 +30,6 @@ const {
 } = require("@aws-sdk/client-s3");
 const config = require("./config");
 const prohibitedCountries = ["CU", "IR", "KP", "RU", "SY"];
-const generateTitle = require("./utils/generateTitle");
 const stripe = require("stripe")(config.stripeKey);
 const campaigns = require("./campaigns.json");
 const internalIPs = (process.env.INTERNAL_IPS || "127.0.0.1")
@@ -67,6 +65,9 @@ const { verifyTag } = require("./social");
 const QRCode = require("qrcode");
 const generateAdCopy = require("./utils/generateAdCopy");
 const generateShareCard = require("./utils/generateShareCard");
+// rename to avoid potential duplicate declarations
+const { generateModel: runPipeline } = require("./src/pipeline/generateModel");
+
 
 const validateStl = require("./utils/validateStl");
 const syncMailingList = require("./scripts/sync-mailing-list");
@@ -199,8 +200,6 @@ fs.mkdirSync(uploadsDir, { recursive: true });
 const upload = multer({ dest: uploadsDir });
 
 const PORT = config.port;
-const FALLBACK_GLB =
-  "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
 
 function computePrintSlots(date = new Date()) {
   const dtf = new Intl.DateTimeFormat("en-US", {
@@ -425,16 +424,16 @@ app.get("/api/me", authRequired, async (req, res) => {
 app.post(
   "/api/generate",
   authOptional,
-  upload.array("images"),
+  upload.single("image"),
   async (req, res) => {
     const { prompt } = req.body;
-    const files = req.files || [];
-    if (!prompt && files.length === 0) {
+    const file = req.file;
+    if (!prompt && !file) {
       return res.status(400).json({ error: "Prompt or image is required" });
     }
 
     const jobId = uuidv4();
-    const imageRef = files[0] ? files[0].filename : null;
+    const imageRef = file ? file.filename : null;
     const snapshot = req.body.snapshot || null;
     const userId = req.user ? req.user.id : null;
 
@@ -444,38 +443,16 @@ app.post(
         [jobId, prompt, imageRef, "pending", userId, snapshot],
       );
 
-      const form = new FormData();
-      form.append("prompt", prompt);
-      if (files[0]) {
-        form.append("image", fs.createReadStream(files[0].path));
-      }
-      let generatedUrl = FALLBACK_GLB;
       try {
-        const resp = await axios.post(
-          `${config.hunyuanServerUrl}/generate`,
-          form,
-          {
-            headers: form.getHeaders(),
-          },
-        );
-        generatedUrl = resp.data.glb_url;
+        const url = await runPipeline({
+          prompt: req.body.prompt,
+          image: req.file ? req.file.path : undefined,
+        });
+        return res.json({ glb_url: url });
       } catch (err) {
-        logError("Hunyuan service failed, using fallback", err.message);
+        logError("Sparc3D pipeline failed", err);
+        return res.status(500).json({ error: "Model generation failed" });
       }
-
-      const autoTitle = generateTitle(prompt);
-      await db.query(
-        "UPDATE jobs SET status=$1, model_url=$2, generated_title=$3 WHERE job_id=$4",
-        ["complete", generatedUrl, autoTitle, jobId],
-      );
-
-      // Automatically add new models to the community gallery
-      await db.query(
-        "INSERT INTO community_creations(job_id, title, category, user_id) SELECT $1,$2,$3,$4 WHERE NOT EXISTS (SELECT 1 FROM community_creations WHERE job_id=$1)",
-        [jobId, prompt || "", "", userId],
-      );
-
-      res.json({ jobId, glb_url: generatedUrl });
     } catch (err) {
       logError(err);
       res.status(500).json({ error: "Failed to generate model" });
@@ -3439,7 +3416,7 @@ if (require.main === module) {
 
 app.use((err, _req, res, _next) => {
   capture(err);
-  res.status(500).json({ error: 'Internal Server Error' });
+  res.status(500).json({ error: "Internal Server Error" });
 });
 
 module.exports = app;

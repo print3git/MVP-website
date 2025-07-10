@@ -1,8 +1,6 @@
 process.env.STRIPE_SECRET_KEY = "test";
 process.env.STRIPE_WEBHOOK_SECRET = "whsec";
 process.env.DB_URL = "postgres://user:pass@localhost/db";
-process.env.HUNYUAN_API_KEY = "test";
-process.env.HUNYUAN_SERVER_URL = "http://localhost:4000";
 process.env.AWS_REGION = "us-east-1";
 process.env.S3_BUCKET = "bucket";
 
