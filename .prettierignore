@@ -3,6 +3,8 @@ uploads
 payment.html
 competitions.html
 addons.html
+e2e/smoke.test.js
+index.html
 
 # Build artifacts
 dist

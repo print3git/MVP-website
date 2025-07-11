@@ -1,18 +1,23 @@
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 
 /**
- * Upload GLB data to S3 and return its public CloudFront URL
+ * Upload GLB data to S3 and return its public URL
  * @param data Buffer containing .glb bytes
  * @returns {Promise<string>} public URL of uploaded model
  */
 export async function storeGlb(data: Buffer): Promise<string> {
   const region = process.env.AWS_REGION;
   const bucket = process.env.S3_BUCKET;
-  const domain = process.env.CLOUDFRONT_DOMAIN || process.env.CLOUDFRONT_MODEL_DOMAIN;
+  const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
+  const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
   if (!region) throw new Error('AWS_REGION is not set');
   if (!bucket) throw new Error('S3_BUCKET is not set');
-  if (!domain) throw new Error('CLOUDFRONT_DOMAIN is not set');
-  const client = new S3Client({ region });
+  if (!accessKeyId) throw new Error('AWS_ACCESS_KEY_ID is not set');
+  if (!secretAccessKey) throw new Error('AWS_SECRET_ACCESS_KEY is not set');
+  const client = new S3Client({
+    region,
+    credentials: { accessKeyId, secretAccessKey },
+  });
   const key = `models/${Date.now()}-${Math.random().toString(36).slice(2)}.glb`;
   await client.send(
     new PutObjectCommand({
@@ -23,5 +28,5 @@ export async function storeGlb(data: Buffer): Promise<string> {
       ACL: 'public-read',
     }),
   );
-  return `https://${domain}/${key}`;
+  return `https://${bucket}.s3.${region}.amazonaws.com/${key}`;
 }
