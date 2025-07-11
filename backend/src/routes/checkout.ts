@@ -54,7 +54,7 @@ router.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), as
   try {
     event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET || '');
   } catch (_err) {
-    return res.status(400).send('Webhook Error');
+    return res.sendStatus(400);
   }
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session;
@@ -65,7 +65,7 @@ router.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), as
       await sendMail(order.email, 'Your model is ready', link);
     }
   }
-  res.json({ received: true });
+  res.sendStatus(200);
 });
 
 export default router;
