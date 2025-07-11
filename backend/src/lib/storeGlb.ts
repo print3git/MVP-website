@@ -15,7 +15,13 @@ export async function storeGlb(data: Buffer): Promise<string> {
   const client = new S3Client({ region });
   const key = `models/${Date.now()}-${Math.random().toString(36).slice(2)}.glb`;
   await client.send(
-    new PutObjectCommand({ Bucket: bucket, Key: key, Body: data, ContentType: 'model/gltf-binary' }),
+    new PutObjectCommand({
+      Bucket: bucket,
+      Key: key,
+      Body: data,
+      ContentType: 'model/gltf-binary',
+      ACL: 'public-read',
+    }),
   );
   return `https://${domain}/${key}`;
 }
