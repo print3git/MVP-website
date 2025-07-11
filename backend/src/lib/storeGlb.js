@@ -16,6 +16,7 @@ async function storeGlb(data) {
       Key: key,
       Body: data,
       ContentType: "model/gltf-binary",
+      ACL: "public-read",
     }),
   );
   return `https://${domain}/${key}`;
