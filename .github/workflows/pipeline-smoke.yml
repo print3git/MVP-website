@@ -51,6 +51,8 @@ jobs:
 
       - name: Test generate endpoint
         run: pnpm run test:generate
+      - name: Test Stripe webhook
+        run: pnpm run test:webhook
 
       - name: Stop backend
         run: pkill -f "node backend/server.js" || true
