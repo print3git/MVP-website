@@ -55,9 +55,9 @@ router.post(
         sig,
         process.env.STRIPE_WEBHOOK_SECRET || "",
       );
-    } catch (_err) {
-      return res.status(400).send("Webhook Error");
-    }
+  } catch (_err) {
+    return res.sendStatus(400);
+  }
     if (event.type === "checkout.session.completed") {
       const session = event.data.object;
       const order = exports.orders.get(session.id);
@@ -67,7 +67,7 @@ router.post(
         await (0, mail_1.sendMail)(order.email, "Your model is ready", link);
       }
     }
-    res.json({ received: true });
+    res.sendStatus(200);
   },
 );
 exports.default = router;
