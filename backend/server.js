@@ -427,8 +427,9 @@ app.post(
     const { prompt } = req.body;
     const file = req.file;
     console.log(
-      "🔹 Entering /api/generate with prompt:",
-      prompt,
+      "🔹 Entering /api/generate",
+      "prompt?",
+      !!prompt,
       "image?",
       !!file,
     );
@@ -467,7 +468,13 @@ app.post(
         return res.status(500).json({ error: "Model generation error" });
       }
       console.log("🔹 Returning glb_url:", generatedUrl);
-      console.log("🔹 Exiting /api/generate");
+      console.log(
+        "🔹 Exiting /api/generate",
+        "prompt?",
+        !!prompt,
+        "image?",
+        !!file,
+      );
       return res.json({ glb_url: generatedUrl });
     } catch (err) {
       logError(err);

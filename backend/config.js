@@ -1,8 +1,6 @@
 "use strict";
-const required = [
-  "DB_URL",
-  "STRIPE_SECRET_KEY",
-  "STRIPE_WEBHOOK_SECRET",
+const required = ["DB_URL", "STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET"];
+const optionalGlb = [
   "CLOUDFRONT_MODEL_DOMAIN",
   "SPARC3D_ENDPOINT",
   "SPARC3D_TOKEN",
@@ -10,6 +8,10 @@ const required = [
 const missing = required.filter((key) => !process.env[key]);
 if (missing.length) {
   console.warn(`Missing required env vars: ${missing.join(', ')}`);
+}
+const missingGlb = optionalGlb.filter((key) => !process.env[key]);
+if (missingGlb.length) {
+  console.warn(`Missing optional GLB env vars: ${missingGlb.join(', ')}`);
 }
 module.exports = {
   dbUrl: process.env.DB_URL,
