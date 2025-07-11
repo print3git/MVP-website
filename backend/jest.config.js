@@ -7,8 +7,13 @@ module.exports = {
   testEnvironment: "node",
   testMatch: [
     "<rootDir>/tests/**/*.test.js",
+    "<rootDir>/tests/**/*.test.ts",
     "<rootDir>/src/**/__tests__/**/*.test.js",
+    "<rootDir>/src/**/__tests__/**/*.test.ts",
   ],
+  transform: {
+    "^.+\\.(t|j)sx?$": "babel-jest",
+  },
   testTimeout: 10000,
   coverageDirectory: "coverage",
   coverageReporters: ["text", "lcov"],
