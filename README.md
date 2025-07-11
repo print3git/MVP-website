@@ -35,6 +35,8 @@ Run `docker compose up` to start the API and Postgres services.
   - `HUNYUAN_API_KEY` – key for the Sparc3D API.
 
 The server uses `STRIPE_LIVE_KEY` when `NODE_ENV=production`; otherwise `STRIPE_TEST_KEY` is used.
+- If `STRIPE_TEST_KEY` isn't set, `npm run setup` generates a temporary dummy key
+  so local installs don't fail.
 - `SENDGRID_API_KEY` – API key for sending email via SendGrid.
 - `SENTRY_DSN` – connection string for sending errors to Sentry.
 - `EMAIL_FROM` – address used for the "from" field in outgoing mail.
