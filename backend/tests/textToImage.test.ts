@@ -1,6 +1,6 @@
-import nock from 'nock';
-import { textToImage } from '../src/lib/textToImage';
-import * as s3 from '../src/lib/uploadS3';
+const nock = require('nock');
+const { textToImage } = require('../src/lib/textToImage.js');
+const s3 = require('../src/lib/uploadS3.js');
 
 describe('textToImage', () => {
   const endpoint = 'https://api.stability.ai';
