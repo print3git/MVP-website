@@ -59,3 +59,17 @@ jobs:
 
       - name: Run diagnostics
         run: pnpm diagnose
+
+  ui_smoke:
+    needs: smoke_test
+    runs-on: ubuntu-latest
+    env:
+      PREVIEW_URL: ${{ secrets.PREVIEW_URL }}
+      AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npx playwright test --config=playwright.smoke.config.ts
