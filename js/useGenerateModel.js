@@ -5,15 +5,12 @@ export default function useGenerateModel() {
   const [modelUrl, setModelUrl] = useState(null);
   const [error, setError] = useState(null);
 
-  const generate = async (prompt, imageFile) => {
+  const generate = async (prompt) => {
     setLoading(true);
     setError(null);
     setModelUrl(null);
     try {
-      const formData = new FormData();
-      formData.append('prompt', prompt);
-      if (imageFile) formData.append('image', imageFile);
-      const res = await fetch('/api/generate', { method: 'POST', body: formData });
+      const res = await fetch(`/api/generate?prompt=${encodeURIComponent(prompt)}`);
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Request failed');
       setModelUrl(data.glb_url);
