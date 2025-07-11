@@ -199,6 +199,9 @@
           ) {
             target = ref.href;
           }
+          if (target.includes("signup.html")) {
+            target = "index.html";
+          }
         } catch {
           if (from === "1") target = "CommunityCreations.html";
         }
