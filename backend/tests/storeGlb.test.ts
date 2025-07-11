@@ -10,7 +10,8 @@ describe('storeGlb', () => {
   beforeEach(() => {
     process.env.AWS_REGION = 'us-east-1';
     process.env.S3_BUCKET = 'bucket';
-    process.env.CLOUDFRONT_DOMAIN = 'cdn';
+    process.env.AWS_ACCESS_KEY_ID = 'id';
+    process.env.AWS_SECRET_ACCESS_KEY = 'secret';
   });
 
   afterEach(() => {
@@ -31,7 +32,9 @@ describe('storeGlb', () => {
       ContentType: 'model/gltf-binary',
       ACL: 'public-read',
     });
-    expect(url).toMatch(/^https:\/\/cdn\/models\/\d+-[a-z0-9]+\.glb$/);
+    expect(url).toMatch(
+      /^https:\/\/bucket\.s3\.us-east-1\.amazonaws\.com\/models\/\d+-[a-z0-9]+\.glb$/,
+    );
     expect(send).toHaveBeenCalled();
   });
 });

@@ -37,3 +37,9 @@ test('generate flow', async ({ page }) => {
   await page.click('#gen-submit');
   await expect(page.locator('canvas')).toBeVisible();
 });
+
+
+test("model generator page", async ({ page }) => {
+  await page.goto("/index.html");
+  await expect(page.locator("#viewer")).toBeVisible();
+});
