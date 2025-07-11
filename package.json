@@ -31,7 +31,7 @@
     "setup": "scripts/setup.sh",
     "e2e": "playwright test",
     "serve": "npm run build && npx serve dist",
-    "smoke": "NODE_NO_WARNINGS=1 SKIP_PW_DEPS=1 npm run setup && NODE_NO_WARNINGS=1 npx playwright test e2e/smoke.test.js",
+    "smoke": "npm run setup && npx playwright install --with-deps && concurrently -k -s first \"npm run serve\" \"wait-on http://localhost:3000 && npx playwright test e2e/smoke.test.js\"",
     "load": "artillery run tests/load/models.yml",
     "visual-test": "percy exec -- npm run e2e",
     "test:a11y": "node scripts/assert-setup.js && bash scripts/install-playwright.sh chromium && playwright test e2e/a11y.test.js",
