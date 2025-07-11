@@ -1040,6 +1040,27 @@ async function getDemandForecast(days = 7) {
   }
   return arr;
 }
+
+async function startGenerationLog(prompt, source, costCents = 0) {
+  const { rows } = await query(
+    `INSERT INTO generation_logs(prompt, source, cost_cents, started_at)
+     VALUES($1,$2,$3,NOW()) RETURNING id`,
+    [prompt, source, costCents],
+  );
+  return rows[0];
+}
+
+async function finishGenerationLog(id) {
+  await query("UPDATE generation_logs SET finished_at=NOW() WHERE id=$1", [id]);
+}
+
+async function getGenerationLogs(limit = 50) {
+  const { rows } = await query(
+    "SELECT * FROM generation_logs ORDER BY started_at DESC LIMIT $1",
+    [limit],
+  );
+  return rows;
+}
 //
 // async function listSpaces() {
 //   const { rows } = await query('SELECT * FROM spaces ORDER BY id');
@@ -1133,6 +1154,9 @@ module.exports = {
   getDailyProfitSeries,
   getDailyCapacityUtilizationSeries,
   getDemandForecast,
+  startGenerationLog,
+  finishGenerationLog,
+  getGenerationLogs,
 
   // newly exposed helpers
   insertAdSpend,

@@ -23,6 +23,8 @@ jest.mock("../db", () => ({
   getOrCreateOrderReferralLink: jest.fn(),
   insertReferredOrder: jest.fn(),
   updateWeeklyOrderStreak: jest.fn(),
+  startGenerationLog: jest.fn().mockResolvedValue({ id: 1 }),
+  finishGenerationLog: jest.fn(),
 }));
 const db = require("../db");
 

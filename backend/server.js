@@ -441,6 +441,9 @@ app.post(
     const imageRef = file ? file.filename : null;
     const snapshot = req.body.snapshot || null;
     const userId = req.user ? req.user.id : null;
+    const source = "Sparc3D";
+    const cost = parseInt(process.env.SPARC3D_COST_CENTS || "0", 10);
+    let logRow;
 
     try {
       await db.query(
@@ -459,10 +462,12 @@ app.post(
       
       let generatedUrl;
       try {
+        logRow = await db.startGenerationLog(req.body.prompt || "", source, cost);
         generatedUrl = await generateModel({
           prompt: req.body.prompt,
           image: req.file ? req.file.path : undefined,
         });
+        await db.finishGenerationLog(logRow.id);
       } catch (err) {
         console.error("🚨 generateModel() failed:", err);
         return res.status(500).json({ error: "Model generation error" });
@@ -2627,6 +2632,16 @@ app.get("/api/admin/scaling-events", adminCheck, async (req, res) => {
   } catch (err) {
     logError(err);
     res.status(500).json({ error: "Failed to fetch events" });
+  }
+});
+
+app.get("/api/admin/analytics", adminCheck, async (req, res) => {
+  try {
+    const logs = await db.getGenerationLogs(50);
+    res.json(logs);
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: "Failed to fetch logs" });
   }
 });
 
