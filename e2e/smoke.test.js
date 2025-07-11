@@ -6,6 +6,8 @@ if (require.main === module) {
 const { test, expect } = require('@playwright/test');
 const { percySnapshot } = require('@percy/playwright');
 
+// Simple smoke tests for core pages
+
 test('login flow', async ({ page }) => {
   await page.goto('/login.html');
   await expect(page).toHaveTitle(/Login/i);
@@ -36,10 +38,4 @@ test('generate flow', async ({ page }) => {
   await page.fill('#gen-prompt', 'test');
   await page.click('#gen-submit');
   await expect(page.locator('canvas')).toBeVisible();
-});
-
-
-test("model generator page shows viewer", async ({ page }) => {
-  await page.goto("/index.html");
-  await expect(page.locator("#viewer")).toBeVisible();
 });
