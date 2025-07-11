@@ -27,3 +27,4 @@ test("checkout flow", async ({ page }) => {
   await expect(page.locator("#submit-payment")).toBeVisible();
   await percySnapshot(page, "checkout flow");
 });
+\ntest("model generator page", async ({ page }) => {\n  await page.goto("/index.html");\n  await expect(page.locator("#viewer")).toBeVisible();\n});
