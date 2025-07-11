@@ -1,3 +1,10 @@
+jest.mock("@aws-sdk/client-s3", () => ({
+  S3Client: jest.fn().mockImplementation(() => ({
+    send: jest.fn().mockResolvedValue({}),
+  })),
+  PutObjectCommand: jest.fn(),
+}));
+
 const nock = require('nock');
 const { textToImage } = require('../src/lib/textToImage.js');
 const s3 = require('../src/lib/uploadS3.js');
