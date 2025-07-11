@@ -1,14 +1,16 @@
 import React, { useState } from 'https://esm.sh/react@18';
+import useJobPolling from './useJobPolling.js';
 
 export default function useGenerateModel() {
   const [loading, setLoading] = useState(false);
-  const [modelUrl, setModelUrl] = useState(null);
+  const [jobId, setJobId] = useState(null);
   const [error, setError] = useState(null);
+  const { status, glbUrl, error: pollError } = useJobPolling(jobId);
 
   const generate = async (prompt, imageFile) => {
     setLoading(true);
     setError(null);
-    setModelUrl(null);
+    setJobId(null);
     try {
       const formData = new FormData();
       formData.append('prompt', prompt);
@@ -16,7 +18,13 @@ export default function useGenerateModel() {
       const res = await fetch('/api/generate', { method: 'POST', body: formData });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Request failed');
-      setModelUrl(data.glb_url);
+      const id = data.jobId || data.job_id;
+      if (id) {
+        setJobId(id);
+      } else if (data.glb_url) {
+        setJobId(null);
+        return data.glb_url;
+      }
     } catch (err) {
       setError(err.message || 'Error generating model');
     } finally {
@@ -24,5 +32,5 @@ export default function useGenerateModel() {
     }
   };
 
-  return { generate, loading, modelUrl, error };
+  return { generate, loading, status, modelUrl: glbUrl, jobId, error: error || pollError };
 }

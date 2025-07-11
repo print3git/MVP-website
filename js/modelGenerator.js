@@ -5,7 +5,7 @@ import useGenerateModel from './useGenerateModel.js';
 function GeneratorApp() {
   const [prompt, setPrompt] = useState('');
   const [file, setFile] = useState(null);
-  const { generate, loading, modelUrl, error } = useGenerateModel();
+  const { generate, loading, status, modelUrl, error } = useGenerateModel();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -39,25 +39,20 @@ function GeneratorApp() {
           id: 'gen-submit',
           type: 'submit',
           className: 'px-4 py-2 bg-blue-600 text-white rounded',
-          disabled: loading,
+          disabled: loading || status === 'pending',
         },
-        loading ? 'Generating...' : 'Generate 3D'
+        loading || status === 'pending' ? 'Generating...' : 'Generate 3D'
       )
     ),
-    loading &&
+    (loading || status === 'pending') &&
       React.createElement('div', {
+        id: 'gen-progress',
         className:
           'animate-spin h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full',
       }),
     error && React.createElement('p', { className: 'text-red-500' }, error),
     modelUrl &&
-      React.createElement('model-viewer', {
-        id: 'gen-viewer',
-        src: modelUrl,
-        style: 'width: 100%; height: 300px;',
-        autoplay: true,
-        'camera-controls': true,
-      })
+      React.createElement('a', { id: 'download-glb', href: modelUrl }, 'Download .glb')
   );
 }
 
