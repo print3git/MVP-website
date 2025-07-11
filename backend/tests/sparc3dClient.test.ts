@@ -1,5 +1,5 @@
-import nock from 'nock';
-import { generateGlb } from '../src/lib/sparc3dClient';
+const nock = require('nock');
+const { generateGlb } = require('../src/lib/sparc3dClient.js');
 
 describe('generateGlb', () => {
   const endpoint = 'https://api.example.com/generate';
