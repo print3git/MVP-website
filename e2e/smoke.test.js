@@ -39,7 +39,7 @@ test('generate flow', async ({ page }) => {
 });
 
 
-test("model generator page", async ({ page }) => {
+test("model generator page shows viewer", async ({ page }) => {
   await page.goto("/index.html");
   await expect(page.locator("#viewer")).toBeVisible();
 });
