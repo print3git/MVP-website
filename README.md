@@ -292,7 +292,7 @@ column of the `jobs` table.
 ## Contributing
 
 We welcome pull requests! Please fork the repo and create a topic branch. Run
-`npm ci` inside `backend/` to install dependencies, then ensure `npm test` runs
+`npm run setup` in the repository root to install all dependencies, then ensure `npm test` runs
 clean before submitting.
 Run `npm run test-ci` for the same tests using a single process, which matches the CI configuration.
 Run `npm run format` in `backend/` to apply Prettier formatting before committing.
@@ -304,7 +304,7 @@ We sometimes rely on automated agents (such as the Codex agent) to make small
 changes. Agents must follow the steps in [AGENTS.md](AGENTS.md) before opening a
 pull request:
 
-1. Install dependencies with `npm ci` inside `backend/`.
+1. Install dependencies with `npm run setup` in the repository root.
 2. Run `npm run format` in `backend/`.
 3. Run `npm test` in `backend/` and include the results in the PR description.
 
