@@ -42,6 +42,7 @@ describe("validate-env script", () => {
     expect(() => run(env)).toThrow();
   });
 
+
   test("fails when network unreachable", () => {
     const env = {
       ...process.env,
@@ -54,6 +55,5 @@ describe("validate-env script", () => {
       NETWORK_CHECK_URL: "http://127.0.0.1:9",
     };
     expect(() => run(env)).toThrow(/Network check failed/);
-
   });
 });

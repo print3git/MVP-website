@@ -36,6 +36,7 @@ Run `docker compose up` to start the API and Postgres services.
 - `HF_TOKEN` – Hugging Face access token used by scripts like `setup_space.sh`.
 - `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` – credentials for S3 uploads.
 
+
 The server uses `STRIPE_LIVE_KEY` when `NODE_ENV=production`; otherwise `STRIPE_TEST_KEY` is used.
 
 - If `STRIPE_TEST_KEY` isn't set, `npm run setup` generates a temporary dummy key
