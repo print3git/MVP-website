@@ -10,6 +10,7 @@ const targets = [
     url: "https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js",
     name: "jsdelivr",
   },
+
   {
     url: process.env.APT_CHECK_URL || "http://archive.ubuntu.com",
     name: "apt archive",
