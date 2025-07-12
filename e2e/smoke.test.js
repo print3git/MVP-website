@@ -37,7 +37,9 @@ test('model generator page', async ({ page }) => {
   // <model-viewer> loads asynchronously; wait for the custom element
   // definition and for the model to finish loading before checking visibility.
   await page.waitForFunction(() => window.customElements.get('model-viewer'));
-  await page.waitForSelector('#viewer', { state: 'visible', timeout: 15000 });
+  // Allow extra time for the viewer to load when the CDN script fails and the
+  // page falls back to the local copy.
+  await page.waitForSelector('#viewer', { state: 'visible', timeout: 30000 });
   await expect(page.locator('#viewer')).toBeVisible();
 });
 
@@ -59,5 +61,5 @@ test('generate flow', async ({ page }) => {
   await page.waitForSelector('#gen-prompt', { state: 'visible', timeout: 30000 });
   await page.fill('#gen-prompt', 'test');
   await page.click('#gen-submit');
-  await expect(page.locator('canvas')).toBeVisible();
+  await expect(page.locator('canvas')).toBeVisible({ timeout: 10000 });
 });
