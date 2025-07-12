@@ -18,12 +18,15 @@ describe("validate-env script", () => {
     const env = {
       ...process.env,
       HF_TOKEN: "test",
+      AWS_ACCESS_KEY_ID: "id",
+      AWS_SECRET_ACCESS_KEY: "secret",
       STRIPE_TEST_KEY: "",
       STRIPE_LIVE_KEY: "",
       npm_config_http_proxy: "",
       npm_config_https_proxy: "",
       http_proxy: "http://proxy",
       https_proxy: "http://proxy",
+      SKIP_NET_CHECKS: "1",
     };
     const output = run(env);
     expect(output).toContain("✅ environment OK");
@@ -34,9 +37,23 @@ describe("validate-env script", () => {
     const env = {
       ...process.env,
       HF_TOKEN: "test",
+      AWS_ACCESS_KEY_ID: "id",
+      AWS_SECRET_ACCESS_KEY: "secret",
       STRIPE_TEST_KEY: "sk_test",
       npm_config_http_proxy: "http://proxy",
+      SKIP_NET_CHECKS: "1",
     };
     expect(() => run(env)).toThrow();
+  });
+
+  test("fails when HF_TOKEN missing", () => {
+    const env = {
+      ...process.env,
+      HF_TOKEN: "",
+      AWS_ACCESS_KEY_ID: "id",
+      AWS_SECRET_ACCESS_KEY: "secret",
+      STRIPE_TEST_KEY: "sk_test",
+    };
+    expect(() => run(env)).toThrow(/HF_TOKEN must be set/);
   });
 });
