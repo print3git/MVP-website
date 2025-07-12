@@ -25,12 +25,8 @@ fi
 
 
 if [[ -z "${SKIP_NET_CHECKS:-}" ]]; then
-  if ! npm ping >/dev/null 2>&1; then
-    echo "Unable to reach the npm registry. Check network connectivity or proxy settings." >&2
-    exit 1
-  fi
-  if ! curl -sfI https://cdn.playwright.dev >/dev/null; then
-    echo "Unable to reach https://cdn.playwright.dev" >&2
+  if ! node scripts/network-check.js >/dev/null 2>&1; then
+    echo "Network check failed. Ensure access to the npm registry and Playwright CDN." >&2
     exit 1
   fi
 fi
