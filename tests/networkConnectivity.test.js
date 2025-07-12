@@ -22,8 +22,7 @@ describe("network connectivity", () => {
     try {
       status = await head("https://registry.npmjs.org");
     } catch (err) {
-      console.warn("npm registry unreachable", err.message);
-      return;
+      throw new Error(`npm registry unreachable: ${err.message}`);
     }
     expect(status).toBeLessThan(500);
   });
@@ -33,8 +32,7 @@ describe("network connectivity", () => {
     try {
       status = await head("https://cdn.playwright.dev");
     } catch (err) {
-      console.warn("playwright CDN unreachable", err.message);
-      return;
+      throw new Error(`playwright CDN unreachable: ${err.message}`);
     }
     expect(status).toBeLessThan(500);
   });
