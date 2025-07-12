@@ -13,8 +13,23 @@ ensureDefault("AWS_SECRET_ACCESS_KEY", "dummy");
 ensureDefault("DB_URL", "postgres://user:pass@localhost/db");
 ensureDefault("STRIPE_SECRET_KEY", "sk_test_dummy");
 
+let lastCommand = "";
+
 function run(cmd) {
+  lastCommand = cmd;
   execSync(cmd, { stdio: "inherit", env });
+}
+
+function dumpDiagnostics(err) {
+  console.error("Smoke test failed:");
+  console.error(err.stack || err.message);
+  console.error("Environment keys:", Object.keys(env).join(", "));
+  if (lastCommand) {
+    console.error("Command:", lastCommand);
+  }
+  console.error(
+    "Ensure required environment variables are set and run 'npm run setup' manually.",
+  );
 }
 
 function main() {
@@ -28,16 +43,16 @@ function main() {
       'npx -y concurrently -k -s first "npm run serve" "wait-on http://localhost:3000 && npx playwright test e2e/smoke.test.js"',
     );
   } catch (err) {
-    console.error("Smoke test failed:", err.message);
-    console.error(
-      "Ensure required environment variables are set and run 'npm run setup' manually.",
-    );
+    dumpDiagnostics(err);
     process.exit(err.status ?? 1);
   }
 }
+
+process.on("uncaughtException", dumpDiagnostics);
+process.on("unhandledRejection", dumpDiagnostics);
 
 if (require.main === module) {
   main();
 }
 
-module.exports = { main, env };
+module.exports = { main, env, run };
