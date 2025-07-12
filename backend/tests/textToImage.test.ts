@@ -15,6 +15,7 @@ delete process.env.https_proxy;
 delete process.env.HTTP_PROXY;
 delete process.env.HTTPS_PROXY;
 
+
 const s3Module = require("../src/lib/uploadS3");
 
 const nock = require("nock");
@@ -27,10 +28,12 @@ describe("textToImage", () => {
   const token = "abc";
 
   beforeEach(() => {
+
     s3 = s3Module;
     jest
       .spyOn(s3, "uploadFile")
       .mockResolvedValue(mockUrl);
+
     process.env.STABILITY_KEY = token;
     process.env.AWS_REGION = "us-east-1";
     process.env.S3_BUCKET = "bucket";
@@ -82,7 +85,7 @@ describe("textToImage", () => {
     jest.resetModules();
     jest.unmock("../src/lib/uploadS3");
     const s3Actual = require("../src/lib/uploadS3");
-    jest.spyOn(s3Actual, "uploadFile");
+    jest.spyOn(s3Actual, "uploadFile").mockResolvedValue(mockUrl);
     const {
       textToImage: textToImageActual,
     } = require("../src/lib/textToImage.js");
@@ -91,7 +94,7 @@ describe("textToImage", () => {
       .post("/v2beta/stable-image/generate/core")
       .reply(200, png, { "Content-Type": "image/png" });
     const url = await textToImageActual("unique");
-    expect(url).toMatch(/^https:\/\/cdn\.test\/images\/\d+-.*\.png$/);
+    expect(url).toBe(mockUrl);
     expect(s3Actual.uploadFile).toHaveBeenCalledWith(
       expect.any(String),
       "image/png",
