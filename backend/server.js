@@ -448,6 +448,7 @@ app.post(
         [jobId, prompt, imageRef, "pending", userId, snapshot],
       );
 
+      const startTime = new Date();
 
       console.log(
         "🔹 API /api/generate called with prompt:",
@@ -455,8 +456,7 @@ app.post(
         "and image?",
         !!req.file,
       );
-      
-      
+
       let generatedUrl;
       try {
         generatedUrl = await generateModel({
@@ -467,6 +467,21 @@ app.post(
         console.error("🚨 generateModel() failed:", err);
         return res.status(500).json({ error: "Model generation error" });
       }
+      const finishTime = new Date();
+      const cost =
+        (process.env.SPARC3D_COST_CENTS
+          ? parseInt(process.env.SPARC3D_COST_CENTS, 10)
+          : 0) +
+        (!req.file && prompt && process.env.STABILITY_COST_CENTS
+          ? parseInt(process.env.STABILITY_COST_CENTS, 10)
+          : 0);
+      await db.insertGenerationLog({
+        prompt: prompt || "(image)",
+        startTime,
+        finishTime,
+        source: "sparc3d",
+        costCents: cost,
+      });
       console.log("🔹 Returning glb_url:", generatedUrl);
       console.log(
         "🔹 Exiting /api/generate",
@@ -2668,6 +2683,17 @@ app.get("/api/admin/operations", adminCheck, async (req, res) => {
   } catch (err) {
     logError(err);
     res.status(500).json({ error: "Failed to fetch operations" });
+  }
+});
+
+app.get("/api/admin/analytics", adminCheck, async (req, res) => {
+  try {
+    const logs = await db.listGenerationLogs(100);
+    const stats = await db.getGenerationStats();
+    res.json({ logs, stats });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: "Failed to fetch analytics" });
   }
 });
 
