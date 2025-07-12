@@ -5,10 +5,14 @@ jest.mock("@aws-sdk/client-s3", () => ({
   PutObjectCommand: jest.fn(),
 }));
 
-process.env.http_proxy = 'http://proxy:8080';
-process.env.https_proxy = 'http://proxy:8080';
-process.env.HTTP_PROXY = 'http://proxy:8080';
-process.env.HTTPS_PROXY = 'http://proxy:8080';
+jest.mock("../src/lib/uploadS3.js", () => ({
+  uploadFile: jest.fn(),
+}));
+
+process.env.http_proxy = "http://proxy:8080";
+process.env.https_proxy = "http://proxy:8080";
+process.env.HTTP_PROXY = "http://proxy:8080";
+process.env.HTTPS_PROXY = "http://proxy:8080";
 
 delete process.env.http_proxy;
 delete process.env.https_proxy;
@@ -35,15 +39,13 @@ describe("textToImage", () => {
     delete process.env.HTTP_PROXY;
     delete process.env.HTTPS_PROXY;
     nock.disableNetConnect();
-    jest
-      .spyOn(s3, "uploadFile")
-      .mockResolvedValue("https://cdn.test/image.png");
+    s3.uploadFile.mockResolvedValue("https://cdn.test/image.png");
   });
 
   afterEach(() => {
     nock.cleanAll();
     nock.enableNetConnect();
-    jest.restoreAllMocks();
+    jest.resetAllMocks();
     delete process.env.AWS_ACCESS_KEY_ID;
     delete process.env.AWS_SECRET_ACCESS_KEY;
   });
