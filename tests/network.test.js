@@ -24,20 +24,16 @@ function check(url) {
 
 describe("network connectivity", () => {
   test("npm registry reachable", async () => {
-    const ok = await check("https://registry.npmjs.org").catch(() => false);
-    if (!ok) {
-      console.warn("Skipping npm registry check: network unreachable");
-      return;
-    }
+    const ok = await check("https://registry.npmjs.org").catch((err) => {
+      throw new Error(`npm registry unreachable: ${err.message}`);
+    });
     expect(ok).toBe(true);
   });
 
   test("Playwright CDN reachable", async () => {
-    const ok = await check("https://cdn.playwright.dev").catch(() => false);
-    if (!ok) {
-      console.warn("Skipping Playwright CDN check: network unreachable");
-      return;
-    }
+    const ok = await check("https://cdn.playwright.dev").catch((err) => {
+      throw new Error(`Playwright CDN unreachable: ${err.message}`);
+    });
     expect(ok).toBe(true);
   });
 });

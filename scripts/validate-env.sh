@@ -8,10 +8,16 @@ fi
 : "${AWS_ACCESS_KEY_ID:?AWS_ACCESS_KEY_ID must be set}"
 : "${AWS_SECRET_ACCESS_KEY:?AWS_SECRET_ACCESS_KEY must be set}"
 
-if [[ -n "${npm_config_http_proxy:-}" || -n "${npm_config_https_proxy:-}" || -n "${http_proxy:-}" || -n "${https_proxy:-}" ]]; then
+
+# Fail fast if any proxy variables are set. This includes both lowercase and
+# uppercase variants because different shells export them differently.
+if [[ -n "${npm_config_http_proxy:-}" || -n "${npm_config_https_proxy:-}" || \
+      -n "${http_proxy:-}" || -n "${https_proxy:-}" || \
+      -n "${HTTP_PROXY:-}" || -n "${HTTPS_PROXY:-}" ]]; then
   echo "npm proxy variables must be unset" >&2
   exit 1
 fi
+
 
 if [[ -z "${SKIP_NET_CHECKS:-}" ]]; then
   if ! npm ping >/dev/null 2>&1; then
@@ -25,4 +31,3 @@ if [[ -z "${SKIP_NET_CHECKS:-}" ]]; then
 fi
 
 echo "✅ environment OK"
-
