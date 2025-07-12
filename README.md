@@ -40,6 +40,7 @@ The server uses `STRIPE_LIVE_KEY` when `NODE_ENV=production`; otherwise `STRIPE_
 - The repository uses `mise` for toolchain management. The included `.mise.toml` enables
   automatic Node version detection via `.nvmrc`. Run `mise trust` after cloning if you
   see warnings about untrusted config files.
+- Node.js 20 or later is required. Ensure your local version matches the `.nvmrc` file.
 - `SENDGRID_API_KEY` – API key for sending email via SendGrid.
 - `SENTRY_DSN` – connection string for sending errors to Sentry.
 - `EMAIL_FROM` – address used for the "from" field in outgoing mail.
