@@ -57,6 +57,12 @@ if (!process.env.AWS_ACCESS_KEY_ID) {
 if (!process.env.AWS_SECRET_ACCESS_KEY) {
   process.env.AWS_SECRET_ACCESS_KEY = "test";
 }
+if (!process.env.DB_URL) {
+  process.env.DB_URL = "postgres://user:pass@localhost/db";
+}
+if (!process.env.STRIPE_SECRET_KEY) {
+  process.env.STRIPE_SECRET_KEY = "sk_test";
+}
 
 // Ensure any proxy environment variables do not interfere with HTTP mocking
 for (const key of [
