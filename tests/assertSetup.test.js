@@ -36,4 +36,21 @@ describe("assert-setup script", () => {
 
     expect(() => require("../scripts/assert-setup.js")).not.toThrow();
   });
+
+  test("invokes validate-env when HF_TOKEN missing", () => {
+    delete process.env.HF_TOKEN;
+    process.env.AWS_ACCESS_KEY_ID = "id";
+    process.env.AWS_SECRET_ACCESS_KEY = "secret";
+
+    fs.existsSync.mockReturnValue(true);
+    fs.readdirSync.mockReturnValue(["chromium"]);
+
+    child_process.execSync.mockImplementation(() => {});
+
+    expect(() => require("../scripts/assert-setup.js")).not.toThrow();
+    expect(child_process.execSync).toHaveBeenCalledWith(
+      "SKIP_NET_CHECKS=1 bash scripts/validate-env.sh >/dev/null",
+      { stdio: "inherit" },
+    );
+  });
 });
