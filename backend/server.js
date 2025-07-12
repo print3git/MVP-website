@@ -465,7 +465,7 @@ app.post(
         });
       } catch (err) {
         console.error("🚨 generateModel() failed:", err);
-        return res.status(500).json({ error: "Model generation error" });
+        return res.status(500).json({ error: err.message });
       }
       const finishTime = new Date();
       const cost =
@@ -494,7 +494,7 @@ app.post(
     } catch (err) {
       logError(err);
       console.log("🔹 Exiting /api/generate with error");
-      res.status(500).json({ error: "Failed to generate model" });
+      res.status(500).json({ error: err.message });
     }
   },
 );
