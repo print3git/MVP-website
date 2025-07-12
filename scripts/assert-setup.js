@@ -72,7 +72,9 @@ try {
 
 function rootDepsInstalled() {
   try {
-    return fs.existsSync(path.join("node_modules", ".bin", "playwright"));
+    const pw = fs.existsSync(path.join("node_modules", ".bin", "playwright"));
+    const cl = fs.existsSync(path.join("node_modules", ".bin", "commitlint"));
+    return pw && cl;
   } catch {
     return false;
   }

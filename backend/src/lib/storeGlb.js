@@ -1,6 +1,9 @@
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 
 async function storeGlb(data) {
+  if (data.length < 12 || data.toString("utf8", 0, 4) !== "glTF") {
+    throw new Error("Invalid GLB");
+  }
   const region = process.env.AWS_REGION;
   const bucket = process.env.S3_BUCKET;
   const accessKeyId = process.env.AWS_ACCESS_KEY_ID;

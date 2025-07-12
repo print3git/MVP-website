@@ -29,9 +29,13 @@ function hostDepsInstalled() {
 checkNetwork();
 
 if (!hostDepsInstalled()) {
-  console.log(
-    "Playwright host dependencies missing. Installing regardless of SKIP_PW_DEPS...",
-  );
+  if (process.env.SKIP_PW_DEPS) {
+    console.log(
+      "Playwright host dependencies missing. Installing despite SKIP_PW_DEPS...",
+    );
+  } else {
+    console.log("Playwright host dependencies missing. Installing...");
+  }
   try {
     execSync("CI=1 npx playwright install --with-deps", { stdio: "inherit" });
   } catch (err) {
