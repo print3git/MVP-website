@@ -8,7 +8,7 @@ const { execFileSync } = require("child_process");
  */
 function run(env) {
   return execFileSync("bash", ["scripts/validate-env.sh"], {
-    env,
+    env: { SKIP_NET_CHECKS: "1", ...env },
     encoding: "utf8",
   });
 }
@@ -36,6 +36,15 @@ describe("validate-env script", () => {
       HF_TOKEN: "test",
       STRIPE_TEST_KEY: "sk_test",
       npm_config_http_proxy: "http://proxy",
+    };
+    expect(() => run(env)).toThrow();
+  });
+
+  test("fails when HF_TOKEN is missing", () => {
+    const env = {
+      ...process.env,
+      STRIPE_TEST_KEY: "sk_test",
+      HF_TOKEN: "",
     };
     expect(() => run(env)).toThrow();
   });
