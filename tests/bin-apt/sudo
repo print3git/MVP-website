@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# pass through to real command but use PATH to our fake apt-get
+if [[ "$1" == "apt-get" ]]; then
+  shift
+  apt-get "$@"
+else
+  command sudo "$@"
+fi
