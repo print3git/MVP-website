@@ -16,7 +16,7 @@ jobs:
         run: |
           ./scripts/backup-db.sh
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: db-backup-${{ github.run_id }}
           path: backups/db-*.sql.gz
