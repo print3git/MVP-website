@@ -58,6 +58,14 @@ function jestInstalled() {
   }
 }
 
+function backendJestInstalled() {
+  try {
+    return fs.existsSync(path.join("backend", "node_modules", ".bin", "jest"));
+  } catch {
+    return false;
+  }
+}
+
 if (!jestInstalled()) {
   console.log("Jest not found. Installing root dependencies...");
   try {
@@ -77,4 +85,11 @@ if (!jestInstalled()) {
       process.exit(1);
     }
   }
+}
+
+if (!backendJestInstalled()) {
+  console.error(
+    "Backend dependencies missing. Run 'npm run setup' to install them.",
+  );
+  process.exit(1);
 }
