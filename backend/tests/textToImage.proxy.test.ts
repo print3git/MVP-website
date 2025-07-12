@@ -14,6 +14,7 @@ delete process.env.https_proxy;
 delete process.env.HTTP_PROXY;
 delete process.env.HTTPS_PROXY;
 
+
 const { textToImage } = require("../src/lib/textToImage.js");
 const s3 = require("../src/lib/uploadS3");
 
