@@ -50,7 +50,10 @@ if pgrep -f "node scripts/dev-server.js" >/dev/null 2>&1; then
 fi
 
 # Remove any existing node_modules directories to avoid ENOTEMPTY errors
-sudo rm -rf node_modules backend/node_modules
+# Use rimraf for reliability and fall back to rm if it fails
+if ! sudo npx --yes rimraf node_modules backend/node_modules >/dev/null 2>&1; then
+  sudo rm -rf node_modules backend/node_modules || true
+fi
 
 # Remove stale apt or dpkg locks that may prevent dependency installation
 if pgrep apt-get >/dev/null 2>&1; then
