@@ -60,14 +60,20 @@ sudo rm -f /var/lib/apt/lists/lock /var/lib/dpkg/lock /var/cache/apt/archives/lo
 
 if [ -z "$SKIP_PW_DEPS" ]; then
   # Retry apt-get update to ensure the proxy is respected and networking is ready
+  APT_OK=0
   for i in {1..3}; do
     if sudo -E apt-get update; then
+      APT_OK=1
       break
     else
       echo "apt-get update failed, retrying ($i/3)..." >&2
       sleep 5
     fi
   done
+  if [ "$APT_OK" -ne 1 ]; then
+    echo "apt-get update failed after 3 attempts, skipping Playwright system dependencies" >&2
+    export SKIP_PW_DEPS=1
+  fi
 fi
 
 run_ci() {
