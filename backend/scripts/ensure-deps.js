@@ -26,5 +26,10 @@ if (!fs.existsSync(jestPath)) {
     );
     process.exit(1);
   }
-  execSync("npm ci", { stdio: "inherit" });
+  try {
+    execSync("npm ci", { stdio: "inherit" });
+  } catch (err) {
+    console.error("Failed to install dependencies:", err.message);
+    process.exit(1);
+  }
 }
