@@ -10,7 +10,7 @@ cleanup_npm_cache() {
 trap cleanup_npm_cache EXIT
 cleanup_npm_cache
 
-unset npm_config_http_proxy npm_config_https_proxy http_proxy https_proxy
+unset npm_config_http_proxy npm_config_https_proxy
 export npm_config_fund=false
 
 # Validate required environment variables and network access
