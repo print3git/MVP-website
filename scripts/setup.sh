@@ -31,6 +31,9 @@ fi
 # Silence mise warnings about idiomatic version files
 mise trust . >/dev/null 2>&1 || true
 mise settings add idiomatic_version_file_enable_tools node --yes >/dev/null 2>&1 || true
+if [ -f .mise.toml ]; then
+  mise trust .mise.toml >/dev/null 2>&1 || true
+fi
 
 # Persist the setting so new shells don't emit warnings
 if ! grep -q "idiomatic_version_file_enable_tools" ~/.bashrc 2>/dev/null; then
