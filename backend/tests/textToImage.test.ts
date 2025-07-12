@@ -15,9 +15,8 @@ delete process.env.https_proxy;
 delete process.env.HTTP_PROXY;
 delete process.env.HTTPS_PROXY;
 
-const mockUrl = "https://cdn.test/image.png";
 jest.mock("../src/lib/uploadS3", () => ({
-  uploadFile: jest.fn().mockResolvedValue(mockUrl),
+  uploadFile: jest.fn().mockResolvedValue("https://cdn.test/image.png"),
 }));
 
 const nock = require("nock");
