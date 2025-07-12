@@ -38,6 +38,16 @@ test('model generator page', async ({ page }) => {
 });
 
 test('generate flow', async ({ page }) => {
+  // Skip if esm.sh is unreachable since the React bundle won't load.
+  try {
+    const resp = await page.request.get('https://esm.sh');
+    if (resp.status() >= 400) {
+      test.skip(true, 'esm.sh unreachable');
+    }
+  } catch {
+    test.skip(true, 'esm.sh unreachable');
+  }
+
   await page.goto('/generate.html');
   // The form is rendered via React after scripts load, so wait for the prompt
   // field before interacting with it.
