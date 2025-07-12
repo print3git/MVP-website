@@ -12,7 +12,7 @@ module.exports = {
   moduleFileExtensions: ["ts", "js", "json"],
   testTimeout: 10000,
   coverageDirectory: "coverage",
-  coverageReporters: ["text", "lcov"],
+  coverageReporters: ["text", "lcov", "json-summary"],
 };
 
 module.exports = {
