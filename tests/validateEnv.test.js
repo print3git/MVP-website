@@ -39,4 +39,28 @@ describe("validate-env script", () => {
     };
     expect(() => run(env)).toThrow();
   });
+
+  test("fails when HF_TOKEN missing", () => {
+    const env = {
+      ...process.env,
+      STRIPE_TEST_KEY: "sk_test",
+      AWS_ACCESS_KEY_ID: "id",
+      AWS_SECRET_ACCESS_KEY: "secret",
+      SKIP_NET_CHECKS: "1",
+    };
+    delete env.HF_TOKEN;
+    expect(() => run(env)).toThrow();
+  });
+
+  test("fails when AWS credentials missing", () => {
+    const env = {
+      ...process.env,
+      STRIPE_TEST_KEY: "sk_test",
+      HF_TOKEN: "token",
+      SKIP_NET_CHECKS: "1",
+    };
+    delete env.AWS_ACCESS_KEY_ID;
+    delete env.AWS_SECRET_ACCESS_KEY;
+    expect(() => run(env)).toThrow();
+  });
 });
