@@ -43,6 +43,14 @@ if (!process.env.SPARC3D_TOKEN) {
   process.env.SPARC3D_TOKEN = "token";
 }
 
+// Provide dummy AWS credentials so tests don't need real ones
+if (!process.env.AWS_ACCESS_KEY_ID) {
+  process.env.AWS_ACCESS_KEY_ID = "test";
+}
+if (!process.env.AWS_SECRET_ACCESS_KEY) {
+  process.env.AWS_SECRET_ACCESS_KEY = "test";
+}
+
 // Ensure any proxy environment variables do not interfere with HTTP mocking
 for (const key of [
   "http_proxy",
