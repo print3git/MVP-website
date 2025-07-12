@@ -1,15 +1,15 @@
-jest.mock('../src/lib/textToImage.js', () => ({ textToImage: jest.fn() }));
-jest.mock('../src/lib/imageToText.js', () => ({ imageToText: jest.fn() }));
-jest.mock('../src/lib/prepareImage.js', () => ({ prepareImage: jest.fn() }));
-jest.mock('../src/lib/sparc3dClient.js', () => ({ generateGlb: jest.fn() }));
-jest.mock('../src/lib/storeGlb.js', () => ({ storeGlb: jest.fn() }));
+jest.mock('../src/lib/textToImage', () => ({ textToImage: jest.fn() }));
+jest.mock('../src/lib/imageToText', () => ({ imageToText: jest.fn() }));
+jest.mock('../src/lib/prepareImage', () => ({ prepareImage: jest.fn() }));
+jest.mock('../src/lib/sparc3dClient', () => ({ generateGlb: jest.fn() }));
+jest.mock('../src/lib/storeGlb', () => ({ storeGlb: jest.fn() }));
 
 const { generateModel } = require('../src/pipeline/generateModel.js');
-const text = require('../src/lib/textToImage.js');
-const img2text = require('../src/lib/imageToText.js');
-const prep = require('../src/lib/prepareImage.js');
-const sparc = require('../src/lib/sparc3dClient.js');
-const s3 = require('../src/lib/storeGlb.js');
+const text = require('../src/lib/textToImage');
+const img2text = require('../src/lib/imageToText');
+const prep = require('../src/lib/prepareImage');
+const sparc = require('../src/lib/sparc3dClient');
+const s3 = require('../src/lib/storeGlb');
 const fs = require('fs');
 const path = require('path');
 
