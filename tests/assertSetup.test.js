@@ -17,6 +17,7 @@ describe("assert-setup script", () => {
     process.env.HF_TOKEN = "x";
     process.env.AWS_ACCESS_KEY_ID = "id";
     process.env.AWS_SECRET_ACCESS_KEY = "secret";
+    process.env.CLOUDFRONT_MODEL_DOMAIN = "cdn.test";
   }
 
   test("runs setup when browsers missing", () => {

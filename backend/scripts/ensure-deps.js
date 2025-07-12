@@ -5,6 +5,7 @@ const { execSync } = require("child_process");
 const jestPath = "node_modules/.bin/jest";
 const repoRoot = path.join(__dirname, "..", "..");
 const expressPath = path.join(repoRoot, "node_modules", "express");
+const setupFlag = path.join(repoRoot, ".setup-complete");
 
 const networkCheck = path.join(
   __dirname,
@@ -35,6 +36,22 @@ function canReachRegistry() {
     );
     return false;
   }
+}
+
+function runSetup() {
+  console.log("Setup flag missing. Running 'npm run setup'...");
+  try {
+    execSync("npm run setup", { stdio: "inherit", cwd: repoRoot });
+  } catch (err) {
+    console.error("Failed to run setup:", err.message);
+    process.exit(1);
+  }
+}
+
+if (!fs.existsSync(setupFlag)) {
+  runNetworkCheck();
+  if (!canReachRegistry()) process.exit(1);
+  runSetup();
 }
 
 if (!fs.existsSync(expressPath)) {
