@@ -111,6 +111,9 @@ importers:
       lockfile-diff:
         specifier: ^0.1.0
         version: 0.1.0
+      yaml:
+        specifier: ^2.3.4
+        version: 2.8.0
       prettier:
         specifier: ^3.5.3
         version: 3.6.2
