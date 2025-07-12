@@ -1,14 +1,20 @@
 #!/usr/bin/env node
-const { execSync } = require('child_process');
+const { execSync } = require("child_process");
 
 const targets = [
-  { url: 'https://registry.npmjs.org', name: 'npm registry' },
-  { url: 'https://cdn.playwright.dev', name: 'Playwright CDN' },
+  { url: "https://registry.npmjs.org", name: "npm registry" },
+  { url: "https://cdn.playwright.dev", name: "Playwright CDN" },
 ];
+
+// Allow tests to override the first target URL so failure scenarios can be
+// simulated without manipulating the real network environment.
+if (process.env.NETWORK_CHECK_URL) {
+  targets[0] = { url: process.env.NETWORK_CHECK_URL, name: "test url" };
+}
 
 function check(url) {
   try {
-    execSync(`curl -sI --max-time 10 ${url}`, { stdio: 'ignore' });
+    execSync(`curl -sI --max-time 10 ${url}`, { stdio: "ignore" });
     return true;
   } catch {
     return false;
@@ -21,4 +27,4 @@ for (const { url, name } of targets) {
     process.exit(1);
   }
 }
-console.log('✅ network OK');
+console.log("✅ network OK");
