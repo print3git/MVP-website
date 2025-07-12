@@ -131,18 +131,25 @@ function ensureModelViewerLoaded() {
   const cdnUrl =
     "https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js";
   const localUrl = "js/model-viewer.min.js";
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const script = document.createElement("script");
     script.type = "module";
     script.src = cdnUrl;
-    script.onload = resolve;
+    const done = () => {
+      if (window.customElements?.get("model-viewer")) {
+        resolve();
+      } else {
+        reject(new Error("model-viewer failed to load"));
+      }
+    };
+    script.onload = done;
     script.onerror = () => {
       script.remove();
       const fallback = document.createElement("script");
       fallback.type = "module";
       fallback.src = localUrl;
-      fallback.onload = resolve;
-      fallback.onerror = resolve;
+      fallback.onload = done;
+      fallback.onerror = done;
       document.head.appendChild(fallback);
     };
     document.head.appendChild(script);

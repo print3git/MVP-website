@@ -1,4 +1,3 @@
-/** @file Tests for the assert-setup script */
 jest.mock("fs");
 jest.mock("child_process");
 
@@ -12,7 +11,6 @@ describe("assert-setup script", () => {
     fs.readdirSync.mockReset();
     child_process.execSync.mockReset();
   });
-
 
   /** Set required environment variables for tests */
   function setEnv() {
@@ -35,5 +33,22 @@ describe("assert-setup script", () => {
     fs.readdirSync.mockReturnValue(["chromium"]);
 
     expect(() => require("../scripts/assert-setup.js")).not.toThrow();
+  });
+
+  test("invokes validate-env when HF_TOKEN missing", () => {
+    delete process.env.HF_TOKEN;
+    process.env.AWS_ACCESS_KEY_ID = "id";
+    process.env.AWS_SECRET_ACCESS_KEY = "secret";
+
+    fs.existsSync.mockReturnValue(true);
+    fs.readdirSync.mockReturnValue(["chromium"]);
+
+    child_process.execSync.mockImplementation(() => {});
+
+    expect(() => require("../scripts/assert-setup.js")).not.toThrow();
+    expect(child_process.execSync).toHaveBeenCalledWith(
+      "SKIP_NET_CHECKS=1 bash scripts/validate-env.sh >/dev/null",
+      { stdio: "inherit" },
+    );
   });
 });

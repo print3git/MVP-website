@@ -25,4 +25,14 @@ describe("smoke script", () => {
     expect(validateIdx).toBeGreaterThan(-1);
     expect(setupIdx).toBeGreaterThan(validateIdx);
   });
+
+  test("run-smoke.js sets fallback env vars", () => {
+    jest.isolateModules(() => {
+      const { env } = require("../scripts/run-smoke.js");
+      expect(env.AWS_ACCESS_KEY_ID).toBe("dummy");
+      expect(env.AWS_SECRET_ACCESS_KEY).toBe("dummy");
+      expect(env.DB_URL).toBe("postgres://user:pass@localhost/db");
+      expect(env.STRIPE_SECRET_KEY).toBe("sk_test_dummy");
+    });
+  });
 });

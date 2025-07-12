@@ -57,6 +57,7 @@ describe("validate-env script", () => {
       AWS_SECRET_ACCESS_KEY: "secret",
       STRIPE_SECRET_KEY: "sk_test",
     };
+    delete env.DB_URL;
     expect(() => run(env)).toThrow();
   });
 
@@ -83,6 +84,7 @@ describe("validate-env script", () => {
       npm_config_http_proxy: "",
       npm_config_https_proxy: "",
       NETWORK_CHECK_URL: "http://127.0.0.1:9",
+      SKIP_NET_CHECKS: "",
     };
     expect(() => run(env)).toThrow(/Network check failed/);
   });

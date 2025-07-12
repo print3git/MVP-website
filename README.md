@@ -36,7 +36,6 @@ Run `docker compose up` to start the API and Postgres services.
 - `HF_TOKEN` – Hugging Face access token used by scripts like `setup_space.sh`.
 - `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` – credentials for S3 uploads.
 
-
 The server uses `STRIPE_LIVE_KEY` when `NODE_ENV=production`; otherwise `STRIPE_TEST_KEY` is used.
 
 - If `STRIPE_TEST_KEY` isn't set, `npm run setup` generates a temporary dummy key
@@ -123,9 +122,9 @@ The server uses `STRIPE_LIVE_KEY` when `NODE_ENV=production`; otherwise `STRIPE_
 
 10. (Optional) Clean up expired password reset tokens periodically:
 
-   ```bash
-   npm run cleanup-tokens  # inside backend/
-   ```
+```bash
+npm run cleanup-tokens  # inside backend/
+```
 
 ## Development Container
 
@@ -347,6 +346,14 @@ For a quick end-to-end sanity check, run:
 ```bash
 npm run smoke
 ```
+
+To run Jest directly from the repository root, use:
+
+```bash
+npm run jest -- --runInBand --silent
+```
+
+This script automatically runs Jest in `backend/`, so passing `--prefix` is unnecessary.
 
 ### Pre-commit Hook
 

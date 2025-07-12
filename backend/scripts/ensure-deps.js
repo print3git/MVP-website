@@ -3,6 +3,8 @@ const path = require("path");
 const { execSync } = require("child_process");
 
 const jestPath = "node_modules/.bin/jest";
+const repoRoot = path.join(__dirname, "..", "..");
+const expressPath = path.join(repoRoot, "node_modules", "express");
 
 const networkCheck = path.join(
   __dirname,
@@ -32,6 +34,18 @@ function canReachRegistry() {
       "Unable to reach the npm registry. Check network connectivity or proxy settings.",
     );
     return false;
+  }
+}
+
+if (!fs.existsSync(expressPath)) {
+  runNetworkCheck();
+  if (!canReachRegistry()) process.exit(1);
+  console.log("Express not found. Installing root dependencies...");
+  try {
+    execSync("npm ci", { stdio: "inherit", cwd: repoRoot });
+  } catch (err) {
+    console.error("Failed to install root dependencies:", err.message);
+    process.exit(1);
   }
 }
 

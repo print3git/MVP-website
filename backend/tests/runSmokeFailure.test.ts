@@ -2,7 +2,7 @@ const child_process = require("child_process");
 
 jest.mock("child_process");
 
-const main = require("../../scripts/run-smoke");
+const { main } = require("../../scripts/run-smoke");
 
 describe("run-smoke failure handling", () => {
   beforeEach(() => {

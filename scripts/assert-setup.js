@@ -26,6 +26,16 @@ if (fs.existsSync(".env")) {
 }
 
 try {
+  child_process.execSync(
+    "SKIP_NET_CHECKS=1 bash scripts/validate-env.sh >/dev/null",
+    { stdio: "inherit" },
+  );
+} catch (err) {
+  console.error("Environment validation failed:", err.message);
+  process.exit(1);
+}
+
+try {
   child_process.execSync("mise trust .mise.toml >/dev/null 2>&1");
   child_process.execSync(
     "mise settings add idiomatic_version_file_enable_tools node --yes >/dev/null 2>&1",
@@ -58,6 +68,35 @@ try {
 } catch (err) {
   console.error("Network check failed:", err.message);
   process.exit(1);
+}
+
+function rootDepsInstalled() {
+  try {
+    return fs.existsSync(path.join("node_modules", ".bin", "playwright"));
+  } catch {
+    return false;
+  }
+}
+
+if (!rootDepsInstalled()) {
+  console.log("Root dependencies missing. Installing...");
+  try {
+    child_process.execSync("npm ci", { stdio: "inherit" });
+  } catch (err) {
+    const msg = String(err.message || err);
+    if (msg.includes("EUSAGE")) {
+      console.warn("npm ci failed, falling back to 'npm install'");
+      try {
+        child_process.execSync("npm install", { stdio: "inherit" });
+      } catch (err2) {
+        console.error("Failed to install dependencies:", err2.message);
+        process.exit(1);
+      }
+    } else {
+      console.error("Failed to install dependencies:", err.message);
+      process.exit(1);
+    }
+  }
 }
 
 function browsersInstalled() {
