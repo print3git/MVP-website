@@ -1,4 +1,4 @@
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 
 /**
  * Upload GLB data to S3 and return its public URL
@@ -6,14 +6,17 @@ import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
  * @returns {Promise<string>} public URL of uploaded model
  */
 export async function storeGlb(data: Buffer): Promise<string> {
+  if (data.length < 12 || data.toString("utf8", 0, 4) !== "glTF") {
+    throw new Error("Invalid GLB");
+  }
   const region = process.env.AWS_REGION;
   const bucket = process.env.S3_BUCKET;
   const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
   const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
-  if (!region) throw new Error('AWS_REGION is not set');
-  if (!bucket) throw new Error('S3_BUCKET is not set');
-  if (!accessKeyId) throw new Error('AWS_ACCESS_KEY_ID is not set');
-  if (!secretAccessKey) throw new Error('AWS_SECRET_ACCESS_KEY is not set');
+  if (!region) throw new Error("AWS_REGION is not set");
+  if (!bucket) throw new Error("S3_BUCKET is not set");
+  if (!accessKeyId) throw new Error("AWS_ACCESS_KEY_ID is not set");
+  if (!secretAccessKey) throw new Error("AWS_SECRET_ACCESS_KEY is not set");
   const client = new S3Client({
     region,
     credentials: { accessKeyId, secretAccessKey },
@@ -24,8 +27,8 @@ export async function storeGlb(data: Buffer): Promise<string> {
       Bucket: bucket,
       Key: key,
       Body: data,
-      ContentType: 'model/gltf-binary',
-      ACL: 'public-read',
+      ContentType: "model/gltf-binary",
+      ACL: "public-read",
     }),
   );
   return `https://${bucket}.s3.${region}.amazonaws.com/${key}`;
