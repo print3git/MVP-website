@@ -17,6 +17,7 @@
     "check-conflicts": "! grep -R --include=*.js --include=*.jsx --include=*.ts --include=*.tsx '^(<{7}|={7}|>{7})' .",
     "check-root": "node scripts/check-repo-root.js",
     "pretest": "node scripts/check-repo-root.js",
+    "jest": "node scripts/run-jest.js",
     "test:structure": "jest --runTestsByPath tests/projectStructure.test.js",
     "test": "npm test --prefix backend",
     "coverage": "npm run coverage --prefix backend",
