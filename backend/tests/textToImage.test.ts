@@ -21,7 +21,7 @@ jest.mock("../src/lib/uploadS3", () => ({
 
 const nock = require("nock");
 const s3 = require("../src/lib/uploadS3");
-const { textToImage } = require("../src/lib/textToImage");
+const { textToImage } = require("../src/lib/textToImage.js");
 
 describe("textToImage", () => {
   const endpoint = "https://api.stability.ai";
