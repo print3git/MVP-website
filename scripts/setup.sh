@@ -29,6 +29,7 @@ if ! grep -q "unset npm_config_http_proxy" ~/.bashrc 2>/dev/null; then
 fi
 
 # Silence mise warnings about idiomatic version files
+mise trust . >/dev/null 2>&1 || true
 mise settings add idiomatic_version_file_enable_tools node --yes >/dev/null 2>&1 || true
 
 # Persist the setting so new shells don't emit warnings
