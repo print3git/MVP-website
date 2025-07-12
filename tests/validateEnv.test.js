@@ -8,7 +8,7 @@ const { execFileSync } = require("child_process");
  */
 function run(env) {
   return execFileSync("bash", ["scripts/validate-env.sh"], {
-    env,
+    env: { SKIP_NET_CHECKS: "1", ...env },
     encoding: "utf8",
   });
 }
@@ -34,18 +34,26 @@ describe("validate-env script", () => {
     const env = {
       ...process.env,
       HF_TOKEN: "test",
+      AWS_ACCESS_KEY_ID: "id",
+      AWS_SECRET_ACCESS_KEY: "secret",
       STRIPE_TEST_KEY: "sk_test",
       npm_config_http_proxy: "http://proxy",
     };
     expect(() => run(env)).toThrow();
   });
 
-  test("fails when HF_TOKEN missing", () => {
+
+  test("fails when network unreachable", () => {
     const env = {
       ...process.env,
-      HF_TOKEN: "",
+      HF_TOKEN: "test",
+      AWS_ACCESS_KEY_ID: "id",
+      AWS_SECRET_ACCESS_KEY: "secret",
       STRIPE_TEST_KEY: "sk_test",
+      npm_config_http_proxy: "",
+      npm_config_https_proxy: "",
+      NETWORK_CHECK_URL: "http://127.0.0.1:9",
     };
-    expect(() => run(env)).toThrow();
+    expect(() => run(env)).toThrow(/Network check failed/);
   });
 });
