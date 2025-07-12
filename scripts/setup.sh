@@ -65,15 +65,7 @@ fi
 sudo rm -f /var/lib/apt/lists/lock /var/lib/dpkg/lock /var/cache/apt/archives/lock
 
 if [ -z "$SKIP_PW_DEPS" ]; then
-  # Retry apt-get update to ensure the proxy is respected and networking is ready
-  for i in {1..3}; do
-    if sudo -E apt-get update; then
-      break
-    else
-      echo "apt-get update failed, retrying ($i/3)..." >&2
-      sleep 5
-    fi
-  done
+  node scripts/check-apt.js
 fi
 
 run_ci() {

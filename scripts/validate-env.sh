@@ -52,4 +52,11 @@ if [[ -z "${SKIP_NET_CHECKS:-}" ]]; then
   fi
 fi
 
+if [[ -z "${SKIP_PW_DEPS:-}" ]]; then
+  if ! node scripts/check-apt.js >/dev/null 2>&1; then
+    echo "APT repository check failed. Set SKIP_PW_DEPS=1 to skip Playwright dependencies." >&2
+    exit 1
+  fi
+fi
+
 echo "✅ environment OK"
