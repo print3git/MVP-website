@@ -14,13 +14,18 @@ unset npm_config_http_proxy npm_config_https_proxy
 export npm_config_fund=false
 
 
-if [ -z "$STRIPE_TEST_KEY" ]; then
-  export STRIPE_TEST_KEY="sk_test_dummy_$(date +%s)"
+if [ -z "$STRIPE_TEST_KEY" ] && [ -z "$STRIPE_LIVE_KEY" ]; then
+  echo "Using dummy STRIPE_TEST_KEY" >&2
+  STRIPE_TEST_KEY="sk_test_dummy_$(date +%s)"
+  export STRIPE_TEST_KEY
 fi
 
-if [[ -z "$STRIPE_TEST_KEY" && -z "$STRIPE_LIVE_KEY" ]]; then
-  echo "Using dummy STRIPE_TEST_KEY" >&2
-  export STRIPE_TEST_KEY="sk_test_dummy_$(date +%s)"
+# Persist the generated key in .env so subsequent npm scripts inherit it
+if [ -n "$STRIPE_TEST_KEY" ] && [ ! -f .env ]; then
+  echo "STRIPE_TEST_KEY=$STRIPE_TEST_KEY" > .env
+fi
+if [ -n "$STRIPE_TEST_KEY" ] && ! grep -q '^STRIPE_TEST_KEY=' .env 2>/dev/null; then
+  echo "STRIPE_TEST_KEY=$STRIPE_TEST_KEY" >> .env
 fi
 
 # Persist proxy removal so new shells start clean
