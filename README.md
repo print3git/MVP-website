@@ -26,7 +26,6 @@ Run `docker compose up` to start the API and Postgres services.
 ## Local Setup
 
 1. Copy `.env.example` to `.env` in the repository root and update the values:
-
    - `DB_URL` – connection string for your PostgreSQL database.
 
 - `STRIPE_TEST_KEY` – test secret key for Stripe.
@@ -67,6 +66,7 @@ The server uses `STRIPE_LIVE_KEY` when `NODE_ENV=production`; otherwise `STRIPE_
    If `npm ci` fails with an `EUSAGE` error complaining about missing lock file entries,
    run `npm install` in the affected directory and re-run this setup step.
    Ensure your environment can reach `https://registry.npmjs.org` and `https://cdn.playwright.dev`. The setup script downloads packages and browsers from these domains, so network restrictions may cause it to fail.
+   Run `npm run net:check` to verify connectivity before running the setup script.
 
 3. Initialize the database:
 

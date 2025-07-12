@@ -1,14 +1,27 @@
 #!/usr/bin/env node
-const { execSync } = require('child_process');
+const { execSync } = require("child_process");
 
-const targets = [
-  { url: 'https://registry.npmjs.org', name: 'npm registry' },
-  { url: 'https://cdn.playwright.dev', name: 'Playwright CDN' },
+const defaultTargets = [
+  { url: "https://registry.npmjs.org", name: "npm registry" },
+  { url: "https://cdn.playwright.dev", name: "Playwright CDN" },
 ];
+
+let targets;
+try {
+  targets = process.env.NETWORK_CHECK_TARGETS
+    ? JSON.parse(process.env.NETWORK_CHECK_TARGETS)
+    : defaultTargets;
+} catch {
+  console.error("Invalid NETWORK_CHECK_TARGETS value");
+  process.exit(1);
+}
 
 function check(url) {
   try {
-    execSync(`curl -sI --max-time 10 ${url}`, { stdio: 'ignore' });
+    execSync(`curl -sI --max-time 10 ${url}`, {
+      stdio: "ignore",
+      env: { ...process.env, http_proxy: "", https_proxy: "" },
+    });
     return true;
   } catch {
     return false;
@@ -21,4 +34,4 @@ for (const { url, name } of targets) {
     process.exit(1);
   }
 }
-console.log('✅ network OK');
+console.log("✅ network OK");
