@@ -22,8 +22,8 @@ describe("validate-env script", () => {
       STRIPE_LIVE_KEY: "",
       npm_config_http_proxy: "",
       npm_config_https_proxy: "",
-      http_proxy: "",
-      https_proxy: "",
+      http_proxy: "http://proxy",
+      https_proxy: "http://proxy",
     };
     const output = run(env);
     expect(output).toContain("✅ environment OK");
@@ -34,7 +34,7 @@ describe("validate-env script", () => {
       ...process.env,
       HF_TOKEN: "test",
       STRIPE_TEST_KEY: "sk_test",
-      http_proxy: "http://proxy",
+      npm_config_http_proxy: "http://proxy",
     };
     expect(() => run(env)).toThrow();
   });
