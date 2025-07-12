@@ -1,5 +1,5 @@
-const fs = require("fs");
-const child_process = require("child_process");
+let fs;
+let child_process;
 
 jest.mock("fs");
 jest.mock("child_process");
@@ -7,6 +7,8 @@ jest.mock("child_process");
 describe("ensure-deps", () => {
   beforeEach(() => {
     jest.resetModules();
+    fs = require("fs");
+    child_process = require("child_process");
     fs.existsSync.mockReset();
     child_process.execSync.mockReset();
   });
