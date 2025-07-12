@@ -30,7 +30,7 @@
     "validate-env": "bash scripts/validate-env.sh",
     "setup": "scripts/setup.sh",
     "e2e": "playwright test",
-    "serve": "npm run build && npx serve dist",
+    "serve": "npm run build && npx serve -s .",
     "smoke": "npm run setup && npx playwright install --with-deps && concurrently -k -s first \"npm run serve\" \"wait-on http://localhost:3000 && npx playwright test e2e/smoke.test.js\"",
     "build": "echo 'no build step'",
     "load": "artillery run tests/load/models.yml",
