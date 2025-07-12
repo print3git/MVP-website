@@ -10,21 +10,17 @@ cleanup_npm_cache() {
 trap cleanup_npm_cache EXIT
 cleanup_npm_cache
 
-unset npm_config_http_proxy npm_config_https_proxy
+unset npm_config_http_proxy npm_config_https_proxy http_proxy https_proxy
 export npm_config_fund=false
 
-# Ensure required environment variables are present and proxies remain unset
-bash "$(dirname "$0")/validate-env.sh"
-
-
-if [ -z "$STRIPE_TEST_KEY" ]; then
-  export STRIPE_TEST_KEY="sk_test_dummy_$(date +%s)"
-fi
-
+# Provide a temporary Stripe key if none is configured so validation succeeds
 if [[ -z "$STRIPE_TEST_KEY" && -z "$STRIPE_LIVE_KEY" ]]; then
   echo "Using dummy STRIPE_TEST_KEY" >&2
   export STRIPE_TEST_KEY="sk_test_dummy_$(date +%s)"
 fi
+
+# Ensure required environment variables are present and proxies remain unset
+bash "$(dirname "$0")/validate-env.sh"
 
 # Persist proxy removal so new shells start clean
 if ! grep -q "unset npm_config_http_proxy" ~/.bashrc 2>/dev/null; then
