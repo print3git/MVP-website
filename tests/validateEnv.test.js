@@ -35,6 +35,20 @@ describe("validate-env script", () => {
     expect(output).not.toMatch(/mise WARN/);
   });
 
+  test("succeeds when HF_TOKEN is missing", () => {
+    const env = {
+      ...process.env,
+      HF_TOKEN: "",
+      HF_API_KEY: "",
+      AWS_ACCESS_KEY_ID: "id",
+      AWS_SECRET_ACCESS_KEY: "secret",
+      DB_URL: "postgres://user:pass@localhost/db",
+      STRIPE_SECRET_KEY: "sk_test_dummy",
+    };
+    const output = run(env);
+    expect(output).toContain("✅ environment OK");
+  });
+
   test("fails when DB_URL is missing", () => {
     const env = {
       ...process.env,
@@ -58,7 +72,6 @@ describe("validate-env script", () => {
     };
     expect(() => run(env)).toThrow();
   });
-
 
   test("fails when network unreachable", () => {
     const env = {
