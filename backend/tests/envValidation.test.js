@@ -41,7 +41,7 @@ describe("validate-env script", () => {
     ).not.toThrow();
   });
 
-  test("fails without stripe keys", () => {
+  test("uses dummy stripe key when none provided", () => {
     expect(() =>
       execSync(`bash ${script}`, {
         env: {
@@ -52,7 +52,7 @@ describe("validate-env script", () => {
         },
         stdio: "pipe",
       }),
-    ).toThrow();
+    ).not.toThrow();
   });
 
   test("fails when npm proxy vars are set", () => {
