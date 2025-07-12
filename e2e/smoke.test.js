@@ -35,6 +35,7 @@ test('model generator page', async ({ page }) => {
 
 test('generate flow', async ({ page }) => {
   await page.goto('/generate.html');
+  await page.waitForSelector('#gen-prompt');
   await page.fill('#gen-prompt', 'test');
   await page.click('#gen-submit');
   await expect(page.locator('canvas')).toBeVisible();

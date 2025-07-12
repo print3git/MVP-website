@@ -14,7 +14,24 @@
       <a href="index.html" class="text-blue-400 underline">Home</a>
     </header>
     <main class="flex-1 flex flex-col items-center p-4">
-      <div id="gen-app" class="w-full max-w-md"></div>
+      <div id="gen-app" class="w-full max-w-md">
+        <form class="space-y-2">
+          <input
+            id="gen-prompt"
+            type="text"
+            class="border p-2 w-full text-black"
+            placeholder="Enter prompt"
+            required
+          />
+          <button
+            id="gen-submit"
+            type="submit"
+            class="px-4 py-2 bg-blue-600 text-white rounded"
+          >
+            Generate 3D
+          </button>
+        </form>
+      </div>
     </main>
     <script type="module" src="js/modelGenerator.js"></script>
     <script type="module" src="js/trackingPixel.js"></script>
