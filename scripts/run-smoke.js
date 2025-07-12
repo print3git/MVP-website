@@ -2,6 +2,15 @@
 const { execSync } = require("child_process");
 const env = { ...process.env };
 
+if (!env.DB_URL) {
+  env.DB_URL = 'postgres://ci:ci@localhost:5432/ci';
+  console.log('⬇️  using dummy DB_URL for smoke');
+}
+if (!env.HF_TOKEN) {
+  env.HF_TOKEN = 'dummy-hf-token';
+}
+env.SKIP_NET_CHECKS = '1';
+
 function run(cmd) {
   execSync(cmd, { stdio: "inherit", env });
 }
