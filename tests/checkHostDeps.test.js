@@ -48,7 +48,7 @@ test("skips network check when SKIP_NET_CHECKS is set", () => {
 });
 
 
-test("installs deps even when SKIP_PW_DEPS is set", () => {
+test("fails when SKIP_PW_DEPS is set and deps are missing", () => {
   process.env.SKIP_PW_DEPS = "1";
   child_process.execSync
     .mockReturnValueOnce("network ok")
