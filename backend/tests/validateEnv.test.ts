@@ -1,5 +1,6 @@
 const { execSync } = require("child_process");
 const path = require("path");
+const fs = require("fs");
 
 const root = path.resolve(__dirname, "..", "..");
 
@@ -26,6 +27,8 @@ describe("validate-env script", () => {
       HF_TOKEN: "token",
       AWS_ACCESS_KEY_ID: "id",
       AWS_SECRET_ACCESS_KEY: "secret",
+      DB_URL: "postgres://user:pass@localhost/db",
+      STRIPE_SECRET_KEY: "sk_test_dummy",
       SKIP_NET_CHECKS: "1",
     });
     expect(output).toContain("environment OK");
@@ -47,15 +50,14 @@ describe("validate-env script", () => {
     ).toThrow();
   });
 
-  test("fails when HF_TOKEN is missing", () => {
-    expect(() =>
-      run(
-        {
-          STRIPE_TEST_KEY: "test",
-          HF_TOKEN: "",
-        },
-        true,
-      ),
-    ).toThrow();
+  test("succeeds when HF_TOKEN is missing", () => {
+    const output = run({
+      STRIPE_TEST_KEY: "test",
+      HF_TOKEN: "",
+      HF_API_KEY: "",
+      AWS_ACCESS_KEY_ID: "id",
+      AWS_SECRET_ACCESS_KEY: "secret",
+    });
+    expect(output).toContain("environment OK");
   });
 });

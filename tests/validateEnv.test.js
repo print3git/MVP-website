@@ -35,6 +35,20 @@ describe("validate-env script", () => {
     expect(output).not.toMatch(/mise WARN/);
   });
 
+  test("succeeds when HF_TOKEN is missing", () => {
+    const env = {
+      ...process.env,
+      HF_TOKEN: "",
+      HF_API_KEY: "",
+      AWS_ACCESS_KEY_ID: "id",
+      AWS_SECRET_ACCESS_KEY: "secret",
+      DB_URL: "postgres://user:pass@localhost/db",
+      STRIPE_SECRET_KEY: "sk_test_dummy",
+    };
+    const output = run(env);
+    expect(output).toContain("✅ environment OK");
+  });
+
   test("fails when DB_URL is missing", () => {
     const env = {
       ...process.env,
@@ -43,6 +57,7 @@ describe("validate-env script", () => {
       AWS_SECRET_ACCESS_KEY: "secret",
       STRIPE_SECRET_KEY: "sk_test",
     };
+    delete env.DB_URL;
     expect(() => run(env)).toThrow();
   });
 
@@ -59,7 +74,6 @@ describe("validate-env script", () => {
     expect(() => run(env)).toThrow();
   });
 
-
   test("fails when network unreachable", () => {
     const env = {
       ...process.env,
@@ -70,6 +84,7 @@ describe("validate-env script", () => {
       npm_config_http_proxy: "",
       npm_config_https_proxy: "",
       NETWORK_CHECK_URL: "http://127.0.0.1:9",
+      SKIP_NET_CHECKS: "",
     };
     expect(() => run(env)).toThrow(/Network check failed/);
   });

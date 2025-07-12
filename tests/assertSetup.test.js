@@ -13,6 +13,8 @@ describe("assert-setup script", () => {
     child_process.execSync.mockReset();
   });
 
+
+  /** Set required environment variables for tests */
   function setEnv() {
     process.env.HF_TOKEN = "x";
     process.env.AWS_ACCESS_KEY_ID = "id";
