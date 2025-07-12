@@ -24,6 +24,7 @@ describe("validate-env script", () => {
       npm_config_https_proxy: "",
       http_proxy: "http://proxy",
       https_proxy: "http://proxy",
+      SKIP_NET_CHECKS: "1",
     };
     const output = run(env);
     expect(output).toContain("✅ environment OK");
@@ -36,7 +37,36 @@ describe("validate-env script", () => {
       HF_TOKEN: "test",
       STRIPE_TEST_KEY: "sk_test",
       npm_config_http_proxy: "http://proxy",
+      SKIP_NET_CHECKS: "1",
     };
     expect(() => run(env)).toThrow();
+  });
+
+  test("fails when HF_TOKEN is missing", () => {
+    const env = {
+      ...process.env,
+      STRIPE_TEST_KEY: "sk_test",
+      npm_config_http_proxy: "",
+      npm_config_https_proxy: "",
+      AWS_ACCESS_KEY_ID: "id",
+      AWS_SECRET_ACCESS_KEY: "secret",
+      SKIP_NET_CHECKS: "1",
+    };
+    delete env.HF_TOKEN;
+    expect(() => run(env)).toThrow(/HF_TOKEN must be set/);
+  });
+
+  test("fails when AWS credentials are missing", () => {
+    const env = {
+      ...process.env,
+      HF_TOKEN: "test",
+      STRIPE_TEST_KEY: "sk_test",
+      npm_config_http_proxy: "",
+      npm_config_https_proxy: "",
+      SKIP_NET_CHECKS: "1",
+    };
+    delete env.AWS_ACCESS_KEY_ID;
+    delete env.AWS_SECRET_ACCESS_KEY;
+    expect(() => run(env)).toThrow(/AWS_ACCESS_KEY_ID must be set/);
   });
 });

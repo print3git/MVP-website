@@ -8,6 +8,9 @@ These guidelines apply to all automated agents (e.g. the Codex agent) working on
 1. **Go to the repository root** – run `cd "$(git rev-parse --show-toplevel)"` after opening a shell to ensure paths resolve correctly.
 2. **Unset proxy variables** – before running any `npm` commands, **and whenever you start a new shell session**, execute `unset npm_config_http_proxy npm_config_https_proxy` to silence `http-proxy` warnings.
 3. **Validate the environment** – run `npm run validate-env` to ensure required variables are set and proxy vars remain unset.
+   - `HF_TOKEN`, `AWS_ACCESS_KEY_ID`, and `AWS_SECRET_ACCESS_KEY` must be defined
+     for the setup script and tests to run correctly. Dummy values are fine for
+     local development.
 4. **Check network access** – ensure the environment can reach both
    `https://registry.npmjs.org` and `https://cdn.playwright.dev`. The setup
    script downloads packages and browsers from these domains. If they are

@@ -20,7 +20,11 @@ function run(env, clean = true) {
 
 describe("validate-env script", () => {
   test("succeeds when required vars set and proxies unset", () => {
-    const output = run({ STRIPE_TEST_KEY: "test", HF_TOKEN: "token" });
+    const output = run({
+      STRIPE_TEST_KEY: "test",
+      HF_TOKEN: "token",
+      SKIP_NET_CHECKS: "1",
+    });
     expect(output).toContain("environment OK");
   });
 
@@ -30,6 +34,7 @@ describe("validate-env script", () => {
         {
           STRIPE_TEST_KEY: "test",
           HF_TOKEN: "token",
+          SKIP_NET_CHECKS: "1",
           npm_config_http_proxy: "http://proxy",
         },
         false,

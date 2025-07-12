@@ -47,6 +47,8 @@ The server uses `STRIPE_LIVE_KEY` when `NODE_ENV=production`; otherwise `STRIPE_
   persists, run that command manually.
 - `SENDGRID_API_KEY` – API key for sending email via SendGrid.
 - `SENTRY_DSN` – connection string for sending errors to Sentry.
+- `HF_TOKEN` – token used to sync the Hugging Face Space.
+- `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` – credentials for S3 access.
 - `EMAIL_FROM` – address used for the "from" field in outgoing mail.
 - Optional: `PORT` and `HUNYUAN_PORT` to override the default ports for the
   Sparc3D service.
