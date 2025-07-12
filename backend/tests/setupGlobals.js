@@ -30,6 +30,13 @@ console.warn = (...args) => {
   ) {
     return;
   }
+  if (
+    args[0] &&
+    typeof args[0] === "string" &&
+    args[0].includes("non-retryable streaming request")
+  ) {
+    return;
+  }
   return originalConsoleWarn(...args);
 };
 
