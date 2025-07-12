@@ -72,8 +72,25 @@ if [ -z "$SKIP_PW_DEPS" ]; then
   done
 fi
 
-npm ci --no-audit --no-fund
-npm ci --prefix backend --no-audit --no-fund
+run_ci_with_fix() {
+  local dir="$1"
+  if [ "$dir" = "." ]; then
+    if ! npm ci --no-audit --no-fund; then
+      echo "npm ci failed in $dir, running npm install to update lockfile..." >&2
+      npm install --no-audit --no-fund
+      npm ci --no-audit --no-fund
+    fi
+  else
+    if ! npm ci --prefix "$dir" --no-audit --no-fund; then
+      echo "npm ci failed in $dir, running npm install to update lockfile..." >&2
+      npm install --prefix "$dir" --no-audit --no-fund
+      npm ci --prefix "$dir" --no-audit --no-fund
+    fi
+  fi
+}
+
+run_ci_with_fix "."
+run_ci_with_fix "backend"
 
 cleanup_npm_cache
 
