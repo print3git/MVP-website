@@ -30,11 +30,18 @@ test('checkout flow', async ({ page }) => {
 
 test('model generator page', async ({ page }) => {
   await page.goto('/index.html');
+  // <model-viewer> loads asynchronously; wait for the custom element
+  // definition and for the model to finish loading before checking visibility.
+  await page.waitForFunction(() => window.customElements.get('model-viewer'));
+  await page.waitForSelector('#viewer', { state: 'visible', timeout: 15000 });
   await expect(page.locator('#viewer')).toBeVisible();
 });
 
 test('generate flow', async ({ page }) => {
   await page.goto('/generate.html');
+  // The form is rendered via React after scripts load, so wait for the prompt
+  // field before interacting with it.
+  await page.waitForSelector('#gen-prompt', { state: 'visible', timeout: 10000 });
   await page.fill('#gen-prompt', 'test');
   await page.click('#gen-submit');
   await expect(page.locator('canvas')).toBeVisible();
