@@ -6,7 +6,7 @@ module.exports = {
   globalTeardown: "<rootDir>/tests/globalTeardown.js",
   testEnvironment: "node",
   transform: {
-    "^.+\\.tsx?$": "babel-jest",
+    "^.+\\.[tj]s$": "babel-jest",
   },
   testMatch: ["**/?(*.)+(spec|test).ts?(x)"],
   moduleFileExtensions: ["ts", "js", "json"],
