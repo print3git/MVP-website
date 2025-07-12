@@ -43,5 +43,5 @@ test("POST /api/models returns 500 on db error", async () => {
     .post("/api/models")
     .send({ prompt: "p", fileKey: "file.glb" });
   expect(res.status).toBe(500);
-  expect(res.body.error).toBe("Failed to insert model");
+  expect(res.body.error).toBe("Internal Server Error");
 });

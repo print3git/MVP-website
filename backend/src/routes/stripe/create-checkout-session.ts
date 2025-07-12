@@ -5,9 +5,9 @@ import db from '../../db';
 const router = Router();
 const stripe = new Stripe(process.env.STRIPE_KEY as string, { apiVersion: '2022-11-15' });
 
-router.post('/api/create-checkout-session', async (req, res) => {
-  const { price, qty = 1, metadata = {} } = req.body;
+router.post('/api/create-checkout-session', async (req, res, next) => {
   try {
+    const { price, qty = 1, metadata = {} } = req.body;
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
       payment_method_types: ['card'],
@@ -21,7 +21,7 @@ router.post('/api/create-checkout-session', async (req, res) => {
     await db.query('INSERT INTO orders(session_id,status) VALUES($1,$2)', [session.id, 'created']);
     res.json({ id: session.id, url: session.url });
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 });
 
