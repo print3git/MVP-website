@@ -44,6 +44,8 @@ function GeneratorApp() {
           'animate-spin h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full',
       }),
     error && React.createElement('p', { className: 'text-red-500' }, error),
+    modelUrl &&
+      React.createElement('p', { id: 'gen-success', className: 'text-green-500' }, 'Model generated!'),
     modelUrl && React.createElement(ModelViewer, { url: modelUrl })
   );
 }
