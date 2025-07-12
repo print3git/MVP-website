@@ -1,7 +1,9 @@
 const fs = require("fs");
+const path = require("path");
 const { execSync } = require("child_process");
 
 const jestPath = "node_modules/.bin/jest";
+const rootExpress = path.join(__dirname, "..", "..", "node_modules", "express");
 
 function canReachRegistry() {
   try {
@@ -27,4 +29,13 @@ if (!fs.existsSync(jestPath)) {
     process.exit(1);
   }
   execSync("npm ci", { stdio: "inherit" });
+}
+
+if (!fs.existsSync(rootExpress)) {
+  if (!canReachRegistry()) process.exit(1);
+  console.log("Root dependencies missing. Installing...");
+  execSync("npm ci --no-audit --no-fund", {
+    cwd: path.resolve(__dirname, ".."),
+    stdio: "inherit",
+  });
 }
