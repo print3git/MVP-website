@@ -8,7 +8,12 @@ const targets = [
   { url: "https://esm.sh", name: "esm.sh" },
   {
     url: "https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js",
-    name: "jsdelivr" },
+    name: "jsdelivr",
+  },
+  {
+    url: process.env.APT_CHECK_URL || "http://archive.ubuntu.com",
+    name: "apt archive",
+  },
 ];
 
 // Allow tests to override the first target URL so failure scenarios can be
