@@ -87,6 +87,11 @@ run_ci() {
       echo "npm ci failed in $dir due to lock mismatch. Running npm install..." >&2
       npm install $extra --no-audit --no-fund
       npm ci $extra --no-audit --no-fund
+    elif grep -E -q "TAR_ENTRY_ERROR|ENOENT" ci.log; then
+      echo "npm ci encountered tar errors in $dir. Cleaning cache and retrying..." >&2
+      cleanup_npm_cache
+      rm -rf ${dir:-.}/node_modules
+      npm ci $extra --no-audit --no-fund
     else
       cat ci.log >&2
       rm ci.log
