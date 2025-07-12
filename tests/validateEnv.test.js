@@ -27,6 +27,7 @@ describe("validate-env script", () => {
     };
     const output = run(env);
     expect(output).toContain("✅ environment OK");
+    expect(output).not.toMatch(/mise WARN/);
   });
 
   test("fails when proxy variables set", () => {
