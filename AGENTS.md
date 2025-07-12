@@ -11,8 +11,8 @@ These guidelines apply to all automated agents (e.g. the Codex agent) working on
    `https://registry.npmjs.org` and `https://cdn.playwright.dev`. The setup
    script downloads packages and browsers from these domains. If they are
    blocked, adjust your environment or proxy settings.
-
 4. **Install dependencies** – run `npm run setup` at the repository root **before your first `npm run ci`**. Run it again whenever the container is restarted or if Playwright tests fail with messages like "Test was interrupted" or "page.evaluate: Test ended". This script unsets proxy variables, checks registry connectivity, runs `npm ci` in the root and `backend/`, and installs Playwright browsers.
+   - If `npm ci` fails with an `EUSAGE` error complaining that packages are missing from the lock file, run `npm install` in the affected directory and then re-run the setup script.
    - Set `SKIP_PW_DEPS=1` before running the setup script if Playwright dependencies are already installed. This skips the long `apt-get` step and reduces CI time. The `smoke` script also runs the setup script, so use `SKIP_PW_DEPS=1 npm run smoke` to avoid reinstalling Playwright dependencies when they are already present.
 5. **Format code** – run `npm run format` in `backend/` to apply Prettier formatting.
 6. **Run tests** – execute `npm test` in `backend/`. If tests cannot run because of environment limitations, mention this in the PR.
