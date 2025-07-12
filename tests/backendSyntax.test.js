@@ -4,9 +4,9 @@ const path = require("path");
 const parser = require("@babel/parser");
 
 /**
- * Recursively gather .ts files
+ * Recursively gather TypeScript test files
  * @param {string} dir directory to search
- * @returns {string[]} list of TypeScript files
+ * @returns {string[]} list of file paths
  */
 function getTsFiles(dir) {
   let files = [];

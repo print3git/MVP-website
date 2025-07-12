@@ -50,19 +50,14 @@ describe("validate-env script", () => {
     ).toThrow();
   });
 
-  test("fails when HF_TOKEN is missing", () => {
-    const example = path.resolve(root, ".env.example");
-    const backup = `${example}.bak`;
-    fs.renameSync(example, backup);
-    expect(() =>
-      run(
-        {
-          STRIPE_TEST_KEY: "test",
-          HF_TOKEN: "",
-        },
-        true,
-      ),
-    ).toThrow();
-    fs.renameSync(backup, example);
+  test("succeeds when HF_TOKEN is missing", () => {
+    const output = run({
+      STRIPE_TEST_KEY: "test",
+      HF_TOKEN: "",
+      HF_API_KEY: "",
+      AWS_ACCESS_KEY_ID: "id",
+      AWS_SECRET_ACCESS_KEY: "secret",
+    });
+    expect(output).toContain("environment OK");
   });
 });

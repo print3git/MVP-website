@@ -27,7 +27,10 @@ if [[ -z "${STRIPE_TEST_KEY:-}" && -z "${STRIPE_LIVE_KEY:-}" ]]; then
   echo "Using dummy STRIPE_TEST_KEY" >&2
   export STRIPE_TEST_KEY="sk_test_dummy_$(date +%s)"
 fi
-: "${HF_TOKEN:?HF_TOKEN must be set}"
+if [[ -z "${HF_TOKEN:-}" && -z "${HF_API_KEY:-}" ]]; then
+  echo "Using dummy HF_TOKEN" >&2
+  export HF_TOKEN="hf_dummy_$(date +%s)"
+fi
 : "${AWS_ACCESS_KEY_ID:?AWS_ACCESS_KEY_ID must be set}"
 : "${AWS_SECRET_ACCESS_KEY:?AWS_SECRET_ACCESS_KEY must be set}"
 : "${DB_URL:?DB_URL must be set}"
