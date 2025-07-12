@@ -48,16 +48,18 @@ test("skips network check when SKIP_NET_CHECKS is set", () => {
 });
 
 
-test("fails when SKIP_PW_DEPS is set and deps are missing", () => {
+test("exits when deps missing and SKIP_PW_DEPS is set", () => {
   process.env.SKIP_PW_DEPS = "1";
   child_process.execSync
     .mockReturnValueOnce("network ok")
     .mockImplementationOnce(() => {
       throw new Error("missing deps");
-    })
-
-    .mockReturnValueOnce("");
-  require("../scripts/check-host-deps.js");
+    });
+  const exitSpy = jest.spyOn(process, "exit").mockImplementation(() => {
+    throw new Error("exit");
+  });
+  expect(() => require("../scripts/check-host-deps.js")).toThrow("exit");
+  expect(exitSpy).toHaveBeenCalledWith(1);
   expect(child_process.execSync).toHaveBeenNthCalledWith(
     1,
     "node scripts/network-check.js",
@@ -68,11 +70,7 @@ test("fails when SKIP_PW_DEPS is set and deps are missing", () => {
     "npx playwright install --with-deps --dry-run",
     { encoding: "utf8" },
   );
-  expect(child_process.execSync).toHaveBeenNthCalledWith(
-    3,
-    "CI=1 npx playwright install --with-deps",
-    { stdio: "inherit" },
-  );
+  expect(child_process.execSync).toHaveBeenCalledTimes(2);
   delete process.env.SKIP_PW_DEPS;
 });
 
@@ -92,10 +90,6 @@ test("skips install when deps satisfied even if SKIP_PW_DEPS is set", () => {
     "npx playwright install --with-deps --dry-run",
     { encoding: "utf8" },
   );
-  expect(child_process.execSync).toHaveBeenNthCalledWith(
-    3,
-    "CI=1 npx playwright install --with-deps",
-    { stdio: "inherit" },
-  );
+  expect(child_process.execSync).toHaveBeenCalledTimes(2);
   delete process.env.SKIP_PW_DEPS;
 });

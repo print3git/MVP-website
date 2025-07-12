@@ -4,7 +4,6 @@ These guidelines apply to all automated agents (e.g. the Codex agent) working on
 
 ## Mandatory steps
 
-
 1. **Go to the repository root** – run `cd "$(git rev-parse --show-toplevel)"` after opening a shell to ensure paths resolve correctly.
 2. **Unset proxy variables** – before running any `npm` commands, **and whenever you start a new shell session**, execute `unset npm_config_http_proxy npm_config_https_proxy` to silence `http-proxy` warnings.
 3. **Ensure Node 20** – run `mise use -g node@20` (or `mise install`) so the required Node version is active before running setup.
@@ -29,6 +28,7 @@ These guidelines apply to all automated agents (e.g. the Codex agent) working on
 17. **Avoid PRs with failing tests** – if `npm run ci` or the smoke tests fail for reasons other than environment limitations, do not open a pull request. Fix the issues or open an issue summarizing the failure instead.
 18. **Avoid committing binary files** – Codex cannot generate patches for binary changes. Do not modify images, audio, or other binary assets. If adding new ones, update `.gitattributes` so they are treated as binary.
 19. **Pin GitHub Action versions** – use explicit tags instead of broad majors to prevent resolution errors (e.g. `aquasecurity/tfsec-action@v1.0.3`).
+
 
 ## Troubleshooting
 

@@ -10,7 +10,11 @@ const targets = [
     url: "https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js",
     name: "jsdelivr",
   },
-  { url: "http://archive.ubuntu.com/ubuntu/", name: "Ubuntu archive" },
+
+  {
+    url: process.env.APT_CHECK_URL || "http://archive.ubuntu.com",
+    name: "apt archive",
+  },
 ];
 
 // Allow tests to override the first target URL so failure scenarios can be
