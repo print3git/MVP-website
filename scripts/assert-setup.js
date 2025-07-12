@@ -66,8 +66,17 @@ function jestInstalled() {
   }
 }
 
-if (!jestInstalled()) {
-  console.log("Jest not found. Installing root dependencies...");
+function pluginInstalled() {
+  try {
+    require.resolve("@babel/plugin-syntax-typescript");
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+if (!jestInstalled() || !pluginInstalled()) {
+  console.log("Dependencies missing. Installing root dependencies...");
   try {
     require("child_process").execSync("npm ci", { stdio: "inherit" });
   } catch (err) {
