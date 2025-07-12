@@ -16,15 +16,19 @@ delete process.env.HTTP_PROXY;
 delete process.env.HTTPS_PROXY;
 
 const s3 = require("../src/lib/uploadS3");
-
 const nock = require("nock");
 const { textToImage } = require("../src/lib/textToImage.js");
+let s3;
 
 describe("textToImage", () => {
   const endpoint = "https://api.stability.ai";
   const token = "abc";
 
   beforeEach(() => {
+    s3 = require("../src/lib/uploadS3");
+    jest
+      .spyOn(s3, "uploadFile")
+      .mockResolvedValue("https://cdn.test/image.png");
     process.env.STABILITY_KEY = token;
     process.env.AWS_REGION = "us-east-1";
     process.env.S3_BUCKET = "bucket";
@@ -43,7 +47,7 @@ describe("textToImage", () => {
   afterEach(() => {
     nock.cleanAll();
     nock.enableNetConnect();
-    jest.restoreAllMocks();
+    jest.clearAllMocks();
     delete process.env.AWS_ACCESS_KEY_ID;
     delete process.env.AWS_SECRET_ACCESS_KEY;
   });
@@ -54,7 +58,7 @@ describe("textToImage", () => {
       .post("/v2beta/stable-image/generate/core")
       .reply(200, png, { "Content-Type": "image/png" });
     const url = await textToImage("hello");
-    expect(url).toBe("https://cdn.test/image.png");
+    expect(url).toBe(mockUrl);
     expect(s3.uploadFile).toHaveBeenCalledWith(expect.any(String), "image/png");
   });
 
@@ -66,7 +70,27 @@ describe("textToImage", () => {
       .post("/v2beta/stable-image/generate/core")
       .reply(200, png, { "Content-Type": "image/png" });
     const url = await textToImage("hello again");
-    expect(url).toBe("https://cdn.test/image.png");
+    expect(url).toBe(mockUrl);
     expect(s3.uploadFile).toHaveBeenCalledWith(expect.any(String), "image/png");
+  });
+
+  test("returns unique url with real uploadFile", async () => {
+    jest.resetModules();
+    jest.unmock("../src/lib/uploadS3");
+    const s3Actual = require("../src/lib/uploadS3");
+    jest.spyOn(s3Actual, "uploadFile");
+    const {
+      textToImage: textToImageActual,
+    } = require("../src/lib/textToImage.js");
+    const png = Buffer.from("png");
+    nock(endpoint)
+      .post("/v2beta/stable-image/generate/core")
+      .reply(200, png, { "Content-Type": "image/png" });
+    const url = await textToImageActual("unique");
+    expect(url).toMatch(/^https:\/\/cdn\.test\/images\/\d+-.*\.png$/);
+    expect(s3Actual.uploadFile).toHaveBeenCalledWith(
+      expect.any(String),
+      "image/png",
+    );
   });
 });
