@@ -12,6 +12,14 @@ if (currentMajor < requiredMajor) {
   process.exit(1);
 }
 
+const requiredEnv = ["HF_TOKEN", "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY"];
+for (const name of requiredEnv) {
+  if (!process.env[name]) {
+    console.error(`Environment variable ${name} must be set`);
+    process.exit(1);
+  }
+}
+
 function browsersInstalled() {
   const envPath = process.env.PLAYWRIGHT_BROWSERS_PATH;
   const defaultPath = path.join(os.homedir(), ".cache", "ms-playwright");
