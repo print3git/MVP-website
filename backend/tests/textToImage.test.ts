@@ -15,19 +15,19 @@ delete process.env.https_proxy;
 delete process.env.HTTP_PROXY;
 delete process.env.HTTPS_PROXY;
 
-jest.mock("../src/lib/uploadS3", () => ({
-  uploadFile: jest.fn().mockResolvedValue("https://cdn.test/image.png"),
-}));
-
 const nock = require("nock");
-const s3 = require("../src/lib/uploadS3");
 const { textToImage } = require("../src/lib/textToImage.js");
+let s3;
 
 describe("textToImage", () => {
   const endpoint = "https://api.stability.ai";
   const token = "abc";
 
   beforeEach(() => {
+    s3 = require("../src/lib/uploadS3");
+    jest
+      .spyOn(s3, "uploadFile")
+      .mockResolvedValue("https://cdn.test/image.png");
     process.env.STABILITY_KEY = token;
     process.env.AWS_REGION = "us-east-1";
     process.env.S3_BUCKET = "bucket";
