@@ -34,6 +34,11 @@ if [ -f .mise.toml ]; then
   mise trust .mise.toml >/dev/null 2>&1 || true
 fi
 
+# Persist trust so new shells don't emit warnings
+if ! grep -q "mise trust $(pwd)" ~/.bashrc 2>/dev/null; then
+  echo "mise trust $(pwd) >/dev/null 2>&1 || true" >> ~/.bashrc
+fi
+
 # Persist the setting so new shells don't emit warnings
 if ! grep -q "idiomatic_version_file_enable_tools" ~/.bashrc 2>/dev/null; then
   echo "mise settings add idiomatic_version_file_enable_tools node >/dev/null 2>&1 || true" >> ~/.bashrc

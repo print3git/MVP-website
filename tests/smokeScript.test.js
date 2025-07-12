@@ -14,4 +14,15 @@ describe("smoke script", () => {
     );
     expect(/SKIP_PW_DEPS/.test(content)).toBe(true);
   });
+
+  test("run-smoke.js validates env before setup", () => {
+    const content = fs.readFileSync(
+      path.join(__dirname, "..", "scripts", "run-smoke.js"),
+      "utf8",
+    );
+    const validateIdx = content.indexOf("npm run validate-env");
+    const setupIdx = content.indexOf("npm run setup");
+    expect(validateIdx).toBeGreaterThan(-1);
+    expect(setupIdx).toBeGreaterThan(validateIdx);
+  });
 });

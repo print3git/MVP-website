@@ -26,7 +26,6 @@ Run `docker compose up` to start the API and Postgres services.
 ## Local Setup
 
 1. Copy `.env.example` to `.env` in the repository root and update the values:
-
    - `DB_URL` – connection string for your PostgreSQL database.
 
 - `STRIPE_TEST_KEY` – test secret key for Stripe.
@@ -34,6 +33,9 @@ Run `docker compose up` to start the API and Postgres services.
 - `STRIPE_PUBLISHABLE_KEY` – publishable key for Stripe.js on the frontend.
 - `STRIPE_WEBHOOK_SECRET` – signing secret for Stripe webhooks.
 - `HUNYUAN_API_KEY` – key for the Sparc3D API.
+- `HF_TOKEN` – Hugging Face access token used by scripts like `setup_space.sh`.
+- `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` – credentials for S3 uploads.
+
 
 The server uses `STRIPE_LIVE_KEY` when `NODE_ENV=production`; otherwise `STRIPE_TEST_KEY` is used.
 
@@ -68,14 +70,24 @@ The server uses `STRIPE_LIVE_KEY` when `NODE_ENV=production`; otherwise `STRIPE_
    run `npm install` in the affected directory and re-run this setup step.
    Ensure your environment can reach `https://registry.npmjs.org` and `https://cdn.playwright.dev`. The setup script downloads packages and browsers from these domains, so network restrictions may cause it to fail.
 
-3. Initialize the database:
+3. Verify your environment and test pipeline:
+
+   ```bash
+   npm run diagnose
+   ```
+
+   This starts the dev server, runs a sample generation through `/api/generate`,
+   and executes the Jest suite. Use it if setup succeeds but subsequent commands
+   fail.
+
+4. Initialize the database:
 
    ```bash
    cd ..
    npm run init-db
    ```
 
-4. Create an admin user (optional):
+5. Create an admin user (optional):
 
    Set `ADMIN_USERNAME` and `ADMIN_PASSWORD` in your `.env` file or as environment
    variables, then run:
@@ -84,32 +96,32 @@ The server uses `STRIPE_LIVE_KEY` when `NODE_ENV=production`; otherwise `STRIPE_
    npm run create-admin  # inside backend/
    ```
 
-5. Configure the admin token used by protected endpoints:
+6. Configure the admin token used by protected endpoints:
 
    Add `ADMIN_TOKEN=yoursecret` to `.env`. You can authenticate either by sending
    this token in the `x-admin-token` header or by logging in with the admin
    account and including the returned JWT in the `Authorization` header.
 
-6. Start the servers in separate terminals:
+7. Start the servers in separate terminals:
 
    ```bash
    npm start            # inside backend/
    cd dalle_server && npm start  # inside backend/dalle_server/
    ```
 
-7. (Optional) Run the purchase reminder job periodically:
+8. (Optional) Run the purchase reminder job periodically:
 
    ```bash
    npm run send-reminders  # inside backend/
    ```
 
-8. (Optional) Send discount offers to abandoned checkouts:
+9. (Optional) Send discount offers to abandoned checkouts:
 
    ```bash
    npm run send-abandoned-offers  # inside backend/
    ```
 
-9. (Optional) Clean up expired password reset tokens periodically:
+10. (Optional) Clean up expired password reset tokens periodically:
 
    ```bash
    npm run cleanup-tokens  # inside backend/
@@ -290,7 +302,7 @@ column of the `jobs` table.
 ## Contributing
 
 We welcome pull requests! Please fork the repo and create a topic branch. Run
-`npm ci` inside `backend/` to install dependencies, then ensure `npm test` runs
+`npm run setup` in the repository root to install all dependencies, then ensure `npm test` runs
 clean before submitting.
 Run `npm run test-ci` for the same tests using a single process, which matches the CI configuration.
 Run `npm run format` in `backend/` to apply Prettier formatting before committing.
@@ -302,7 +314,7 @@ We sometimes rely on automated agents (such as the Codex agent) to make small
 changes. Agents must follow the steps in [AGENTS.md](AGENTS.md) before opening a
 pull request:
 
-1. Install dependencies with `npm ci` inside `backend/`.
+1. Install dependencies with `npm run setup` in the repository root.
 2. Run `npm run format` in `backend/`.
 3. Run `npm test` in `backend/` and include the results in the PR description.
 

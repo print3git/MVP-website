@@ -30,6 +30,15 @@ for (const name of requiredEnv) {
   }
 }
 
+try {
+  require("child_process").execSync("node scripts/network-check.js", {
+    stdio: "inherit",
+  });
+} catch (err) {
+  console.error("Network check failed:", err.message);
+  process.exit(1);
+}
+
 function browsersInstalled() {
   const envPath = process.env.PLAYWRIGHT_BROWSERS_PATH;
   const defaultPath = path.join(os.homedir(), ".cache", "ms-playwright");
@@ -76,8 +85,17 @@ function jestInstalled() {
   }
 }
 
-if (!jestInstalled()) {
-  console.log("Jest not found. Installing root dependencies...");
+function pluginInstalled() {
+  try {
+    require.resolve("@babel/plugin-syntax-typescript");
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+if (!jestInstalled() || !pluginInstalled()) {
+  console.log("Dependencies missing. Installing root dependencies...");
   try {
     require("child_process").execSync("npm ci", { stdio: "inherit" });
   } catch (err) {

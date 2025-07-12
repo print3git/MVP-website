@@ -15,24 +15,20 @@ delete process.env.https_proxy;
 delete process.env.HTTP_PROXY;
 delete process.env.HTTPS_PROXY;
 
-
 const s3Module = require("../src/lib/uploadS3");
 
 const nock = require("nock");
 const { textToImage } = require("../src/lib/textToImage.js");
 const mockUrl = "https://cdn.test/image.png";
-let s3;
+let s3Mock;
 
 describe("textToImage", () => {
   const endpoint = "https://api.stability.ai";
   const token = "abc";
 
   beforeEach(() => {
-
-    s3 = s3Module;
-    jest
-      .spyOn(s3, "uploadFile")
-      .mockResolvedValue(mockUrl);
+    s3Mock = s3Module;
+    jest.spyOn(s3Mock, "uploadFile").mockResolvedValue(mockUrl);
 
     process.env.STABILITY_KEY = token;
     process.env.AWS_REGION = "us-east-1";
@@ -46,9 +42,9 @@ describe("textToImage", () => {
     delete process.env.HTTPS_PROXY;
     nock.disableNetConnect();
     jest
-      .spyOn(s3, "uploadFile")
+      .spyOn(s3Mock, "uploadFile")
       .mockResolvedValue("https://cdn.test/image.png");
-    expect(jest.isMockFunction(s3.uploadFile)).toBe(true);
+    expect(jest.isMockFunction(s3Mock.uploadFile)).toBe(true);
   });
 
   afterEach(() => {
@@ -66,7 +62,10 @@ describe("textToImage", () => {
       .reply(200, png, { "Content-Type": "image/png" });
     const url = await textToImage("hello");
     expect(url).toBe(mockUrl);
-    expect(s3.uploadFile).toHaveBeenCalledWith(expect.any(String), "image/png");
+    expect(s3Mock.uploadFile).toHaveBeenCalledWith(
+      expect.any(String),
+      "image/png",
+    );
   });
 
   test("works without AWS credentials when uploadFile is mocked", async () => {
@@ -78,7 +77,10 @@ describe("textToImage", () => {
       .reply(200, png, { "Content-Type": "image/png" });
     const url = await textToImage("hello again");
     expect(url).toBe(mockUrl);
-    expect(s3.uploadFile).toHaveBeenCalledWith(expect.any(String), "image/png");
+    expect(s3Mock.uploadFile).toHaveBeenCalledWith(
+      expect.any(String),
+      "image/png",
+    );
   });
 
   test("returns unique url with real uploadFile", async () => {

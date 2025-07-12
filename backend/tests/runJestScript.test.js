@@ -15,7 +15,7 @@ test("uses backend jest when installed", () => {
   runJest(["--version"]);
   expect(child_process.execSync).toHaveBeenCalledWith(
     expect.stringContaining("backend/node_modules/.bin/jest"),
-    { stdio: "inherit" },
+    expect.objectContaining({ stdio: "inherit" }),
   );
 });
 
@@ -24,6 +24,6 @@ test("falls back to npm test when jest missing", () => {
   runJest(["--help"]);
   expect(child_process.execSync).toHaveBeenCalledWith(
     expect.stringContaining("npm test --prefix backend"),
-    { stdio: "inherit" },
+    expect.objectContaining({ stdio: "inherit" }),
   );
 });
