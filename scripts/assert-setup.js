@@ -14,6 +14,15 @@ function browsersInstalled() {
   }
 }
 
+try {
+  require('child_process').execSync('node scripts/check-host-deps.js', {
+    stdio: 'inherit',
+  });
+} catch (err) {
+  console.error('Failed to verify Playwright host dependencies:', err.message);
+  process.exit(1);
+}
+
 if (!fs.existsSync('.setup-complete') || !browsersInstalled()) {
   console.log(
     "Playwright browsers not installed. Running 'bash scripts/setup.sh' to install them"
