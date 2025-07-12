@@ -26,6 +26,16 @@ if (fs.existsSync(".env")) {
 }
 
 try {
+  child_process.execSync(
+    "SKIP_NET_CHECKS=1 bash scripts/validate-env.sh >/dev/null",
+    { stdio: "inherit" },
+  );
+} catch (err) {
+  console.error("Environment validation failed:", err.message);
+  process.exit(1);
+}
+
+try {
   child_process.execSync("mise trust .mise.toml >/dev/null 2>&1");
   child_process.execSync(
     "mise settings add idiomatic_version_file_enable_tools node --yes >/dev/null 2>&1",
