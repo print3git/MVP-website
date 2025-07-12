@@ -87,7 +87,8 @@
     "tslib": "^2.8.1",
     "typescript": "^5.8.3",
     "wait-on": "^8.0.3",
-    "concurrently": "^9.2.0"
+    "express": "^4.21.2",
+    "supertest": "^6.3.4"
   },
   "lint-staged": {
     "*.{js,ts,json}": "prettier --write",
