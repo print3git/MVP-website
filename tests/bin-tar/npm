@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+if [[ "$1" == "ci" && -z "$TAR_ERROR_DONE" ]]; then
+  echo "npm WARN tar TAR_ENTRY_ERROR ENOENT: no such file or directory, open '/fake/file.js'" >&2
+  export TAR_ERROR_DONE=1
+  exit 1
+fi
+exec "$REAL_NPM" "$@"
