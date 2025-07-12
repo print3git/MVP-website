@@ -45,7 +45,7 @@ describe("textToImage", () => {
   afterEach(() => {
     nock.cleanAll();
     nock.enableNetConnect();
-    jest.restoreAllMocks();
+    jest.clearAllMocks();
     delete process.env.AWS_ACCESS_KEY_ID;
     delete process.env.AWS_SECRET_ACCESS_KEY;
   });

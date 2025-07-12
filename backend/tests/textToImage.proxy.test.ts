@@ -30,7 +30,7 @@ describe("textToImage proxy cleanup", () => {
   afterEach(() => {
     nock.cleanAll();
     nock.enableNetConnect();
-    jest.restoreAllMocks();
+    jest.clearAllMocks();
   });
 
   test("uses nock endpoint even when proxy env was set", async () => {
