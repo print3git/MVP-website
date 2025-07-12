@@ -1,11 +1,13 @@
 "use strict";
 const { getEnv } = require("./utils/getEnv");
+
 const required = ["DB_URL", "STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET"];
 const optionalGlb = [
   "CLOUDFRONT_MODEL_DOMAIN",
   "SPARC3D_ENDPOINT",
   "SPARC3D_TOKEN",
 ];
+
 const missing = required.filter((key) => !getEnv(key));
 if (missing.length) {
   console.warn(`Missing required env vars: ${missing.join(", ")}`);
@@ -14,6 +16,7 @@ const missingGlb = optionalGlb.filter((key) => !getEnv(key));
 if (missingGlb.length) {
   console.warn(`Missing optional GLB env vars: ${missingGlb.join(", ")}`);
 }
+
 module.exports = {
   dbUrl: getEnv("DB_URL"),
   stripeKey: getEnv("STRIPE_SECRET_KEY"),

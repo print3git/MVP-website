@@ -10,7 +10,7 @@ cleanup_npm_cache() {
 trap cleanup_npm_cache EXIT
 cleanup_npm_cache
 
-unset npm_config_http_proxy npm_config_https_proxy http_proxy https_proxy
+unset npm_config_http_proxy npm_config_https_proxy
 export npm_config_fund=false
 
 # Validate required environment variables and network access
@@ -50,7 +50,10 @@ if pgrep -f "node scripts/dev-server.js" >/dev/null 2>&1; then
 fi
 
 # Remove any existing node_modules directories to avoid ENOTEMPTY errors
-sudo rm -rf node_modules backend/node_modules
+# Use rimraf for reliability and fall back to rm if it fails
+if ! sudo npx --yes rimraf node_modules backend/node_modules >/dev/null 2>&1; then
+  sudo rm -rf node_modules backend/node_modules || true
+fi
 
 # Remove stale apt or dpkg locks that may prevent dependency installation
 if pgrep apt-get >/dev/null 2>&1; then
@@ -60,14 +63,18 @@ sudo rm -f /var/lib/apt/lists/lock /var/lib/dpkg/lock /var/cache/apt/archives/lo
 
 if [ -z "$SKIP_PW_DEPS" ]; then
   # Retry apt-get update to ensure the proxy is respected and networking is ready
+  set +e
+  success=0
   for i in {1..3}; do
-    if sudo -E apt-get update; then
-      break
-    else
-      echo "apt-get update failed, retrying ($i/3)..." >&2
-      sleep 5
-    fi
+    sudo -E apt-get update && success=1 && break
+    echo "apt-get update failed, retrying ($i/3)..." >&2
+    sleep 5
   done
+  set -e
+  if [ $success -ne 1 ]; then
+    echo "apt-get update failed after retries, proceeding without Playwright system dependencies" >&2
+    SKIP_PW_DEPS=1
+  fi
 fi
 
 run_ci() {

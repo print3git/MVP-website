@@ -48,20 +48,33 @@ if (!fs.existsSync(pluginPath)) {
     );
     process.exit(1);
   }
-  try {
-    execSync("npm ci", { stdio: "inherit" });
-  } catch (err) {
-    const msg = String(err.message || err);
-    if (msg.includes("EUSAGE")) {
-      console.warn("npm ci failed, falling back to 'npm install'");
-      try {
+  const install = () => {
+    try {
+      execSync("npm ci", { stdio: "inherit" });
+      return true;
+    } catch (err) {
+      const msg = String(err.message || err);
+      if (msg.includes("EUSAGE")) {
+        console.warn("npm ci failed, falling back to 'npm install'");
         execSync("npm install", { stdio: "inherit" });
-      } catch (err2) {
-        console.error("Failed to install dependencies:", err2.message);
-        process.exit(1);
+        return true;
       }
-    } else {
+      if (/ECONNRESET|ENOTFOUND|network|ETIMEDOUT/i.test(msg)) {
+        return false;
+      }
       console.error("Failed to install dependencies:", err.message);
+      process.exit(1);
+    }
+  };
+
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    if (install()) break;
+    console.warn(
+      `npm ci failed due to network issue, retrying (${attempt}/3)...`,
+    );
+    runNetworkCheck();
+    if (attempt === 3) {
+      console.error("Failed to install dependencies after multiple attempts.");
       process.exit(1);
     }
   }

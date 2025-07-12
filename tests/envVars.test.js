@@ -4,6 +4,7 @@ const requiredVars = [
   "AWS_SECRET_ACCESS_KEY",
   "DB_URL",
   "STRIPE_SECRET_KEY",
+  "CLOUDFRONT_MODEL_DOMAIN",
 ];
 
 describe("required environment variables", () => {

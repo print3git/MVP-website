@@ -23,11 +23,12 @@ function run(env) {
 }
 
 describe("setup script apt-get failure", () => {
-  test("fails when apt-get is not available and deps not skipped", () => {
-    expect(() => run({})).toThrow();
+  test("script falls back to skipping deps when apt-get fails", () => {
+    const output = run({ SKIP_NET_CHECKS: "1" });
+    expect(output).toMatch(/apt-get update failed after retries/);
   });
 
-  test("succeeds when SKIP_PW_DEPS=1", () => {
+  test("still succeeds when SKIP_PW_DEPS=1", () => {
     expect(() =>
       run({ SKIP_PW_DEPS: "1", SKIP_NET_CHECKS: "1" }),
     ).not.toThrow();
