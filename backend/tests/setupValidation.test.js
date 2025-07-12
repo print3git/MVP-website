@@ -15,4 +15,9 @@ describe("environment setup", () => {
     expect(fs.existsSync(browserPath)).toBe(true);
     expect(fs.readdirSync(browserPath).length).toBeGreaterThan(0);
   });
+
+  test("jest installed", () => {
+    const jestBin = path.resolve(__dirname, "../../node_modules/.bin/jest");
+    expect(fs.existsSync(jestBin)).toBe(true);
+  });
 });

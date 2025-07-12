@@ -34,6 +34,7 @@ beforeEach(() => {
     if (msg.includes("Could not load script")) return;
     throw new Error("console.error called: " + msg);
   });
+  jest.spyOn(console, "log").mockImplementation(() => {});
 });
 
 // Clean up between tests

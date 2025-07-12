@@ -3,6 +3,7 @@
 ## 🤖 Codex Integration
 
 Before you run any Codex-driven prompts, always sync your code and Hugging Face Space:
+
 ```bash
 bash scripts/sync-space.sh
 ```
@@ -28,19 +29,22 @@ Run `docker compose up` to start the API and Postgres services.
 
    - `DB_URL` – connection string for your PostgreSQL database.
 
-  - `STRIPE_TEST_KEY` – test secret key for Stripe.
-  - `STRIPE_LIVE_KEY` – live secret key for Stripe.
-  - `STRIPE_PUBLISHABLE_KEY` – publishable key for Stripe.js on the frontend.
-  - `STRIPE_WEBHOOK_SECRET` – signing secret for Stripe webhooks.
-  - `HUNYUAN_API_KEY` – key for the Sparc3D API.
+- `STRIPE_TEST_KEY` – test secret key for Stripe.
+- `STRIPE_LIVE_KEY` – live secret key for Stripe.
+- `STRIPE_PUBLISHABLE_KEY` – publishable key for Stripe.js on the frontend.
+- `STRIPE_WEBHOOK_SECRET` – signing secret for Stripe webhooks.
+- `HUNYUAN_API_KEY` – key for the Sparc3D API.
 
 The server uses `STRIPE_LIVE_KEY` when `NODE_ENV=production`; otherwise `STRIPE_TEST_KEY` is used.
+
 - If `STRIPE_TEST_KEY` isn't set, `npm run setup` generates a temporary dummy key
   so local installs don't fail.
 - The repository uses `mise` for toolchain management. The included `.mise.toml` enables
   automatic Node version detection via `.nvmrc`. Run `mise trust` after cloning if you
-  see warnings about untrusted config files.
-- Node.js 20 or later is required. Ensure your local version matches the `.nvmrc` file.
+  see warnings about untrusted config files. The setup script also configures
+  `mise settings add idiomatic_version_file_enable_tools node` to remove the
+  `deprecated [idiomatic_version_file_enable_tools]` message. If the warning
+  persists, run that command manually.
 - `SENDGRID_API_KEY` – API key for sending email via SendGrid.
 - `SENTRY_DSN` – connection string for sending errors to Sentry.
 - `EMAIL_FROM` – address used for the "from" field in outgoing mail.
@@ -55,13 +59,14 @@ The server uses `STRIPE_LIVE_KEY` when `NODE_ENV=production`; otherwise `STRIPE_
    npm run setup
    ```
 
-
    This script runs `npm ci` in the root and `backend/`, then downloads the browsers
    required for the end-to-end tests. Set `SKIP_PW_DEPS=1` to skip the
    Playwright dependency installation when the browsers are already available.
    It also installs the Husky git hooks used for pre-commit checks. If the hooks
    are missing, run `npx husky install` manually.
-Ensure your environment can reach `https://registry.npmjs.org` and `https://cdn.playwright.dev`. The setup script downloads packages and browsers from these domains, so network restrictions may cause it to fail.
+   If `npm ci` fails with an `EUSAGE` error complaining about missing lock file entries,
+   run `npm install` in the affected directory and re-run this setup step.
+   Ensure your environment can reach `https://registry.npmjs.org` and `https://cdn.playwright.dev`. The setup script downloads packages and browsers from these domains, so network restrictions may cause it to fail.
 
 3. Initialize the database:
 
