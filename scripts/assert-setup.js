@@ -16,9 +16,10 @@ function browsersInstalled() {
 
 if (!fs.existsSync('.setup-complete') || !browsersInstalled()) {
   console.log(
-    "Playwright browsers not installed. Running 'npm run setup' to install them"
+    "Playwright browsers not installed. Running 'bash scripts/setup.sh' to install them"
   );
   try {
+
   const env = { ...process.env };
   delete env.npm_config_http_proxy;
   delete env.npm_config_https_proxy;
