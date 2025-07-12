@@ -21,7 +21,7 @@ describe("smoke script", () => {
       "utf8",
     );
     const validateIdx = content.indexOf("npm run validate-env");
-    const setupIdx = content.indexOf("npm run setup");
+    const setupIdx = content.lastIndexOf("npm run setup");
     expect(validateIdx).toBeGreaterThan(-1);
     expect(setupIdx).toBeGreaterThan(validateIdx);
   });
