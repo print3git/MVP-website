@@ -31,7 +31,7 @@ describe("textToImage proxy cleanup", () => {
   afterEach(() => {
     nock.cleanAll();
     nock.enableNetConnect();
-    jest.restoreAllMocks();
+    jest.clearAllMocks();
   });
 
   test("uses nock endpoint even when proxy env was set", async () => {
@@ -42,6 +42,8 @@ describe("textToImage proxy cleanup", () => {
 
     const url = await textToImage("hello");
     expect(url).toBe("https://cdn.test/image.png");
+    expect(s3.uploadFile).toHaveBeenCalledTimes(1);
+    expect(nock.isDone()).toBe(true);
   });
 
   test("works without AWS credentials when uploadFile is mocked", async () => {
@@ -53,5 +55,7 @@ describe("textToImage proxy cleanup", () => {
       .reply(200, png, { "Content-Type": "image/png" });
     const url = await textToImage("no-creds");
     expect(url).toBe("https://cdn.test/image.png");
+    expect(s3.uploadFile).toHaveBeenCalledTimes(1);
+    expect(nock.isDone()).toBe(true);
   });
 });
