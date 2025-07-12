@@ -31,6 +31,11 @@ fi
 # Silence mise warnings about idiomatic version files
 mise settings add idiomatic_version_file_enable_tools node --yes >/dev/null 2>&1 || true
 
+# Persist the setting so new shells don't emit warnings
+if ! grep -q "idiomatic_version_file_enable_tools" ~/.bashrc 2>/dev/null; then
+  echo "mise settings add idiomatic_version_file_enable_tools node >/dev/null 2>&1 || true" >> ~/.bashrc
+fi
+
 # Abort early if the npm registry is unreachable
 if ! npm ping >/dev/null 2>&1; then
   echo "Unable to reach the npm registry. Check network connectivity or proxy settings." >&2

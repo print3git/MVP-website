@@ -1,31 +1,38 @@
 // backend/tests/setup.js
 
-const { TextEncoder, TextDecoder } = require('util');
-require('jest-localstorage-mock');
+const { TextEncoder, TextDecoder } = require("util");
+require("jest-localstorage-mock");
+const nock = require("nock");
 
 // On GitHub Actions “Cancel workflow” → SIGTERM path
-process.on('SIGTERM', () => {
+process.on("SIGTERM", () => {
   process.exit(1);
 });
 
 // Ensure TextEncoder/TextDecoder in Node
-if (typeof global.TextEncoder === 'undefined') {
+if (typeof global.TextEncoder === "undefined") {
   global.TextEncoder = TextEncoder;
 }
-if (typeof global.TextDecoder === 'undefined') {
+if (typeof global.TextDecoder === "undefined") {
   global.TextDecoder = TextDecoder;
 }
 
 // Polyfill setImmediate if missing
-if (typeof global.setImmediate === 'undefined') {
+if (typeof global.setImmediate === "undefined") {
   global.setImmediate = (cb) => setTimeout(cb, 0);
 }
 
 beforeEach(() => {
-  jest.spyOn(console, 'error').mockImplementation((...args) => {
-    const msg = args.join(' ');
-    if (msg.includes('Could not load script')) return;
-    throw new Error('console.error called: ' + msg);
+  delete process.env.http_proxy;
+  delete process.env.https_proxy;
+  delete process.env.HTTP_PROXY;
+  delete process.env.HTTPS_PROXY;
+  nock.disableNetConnect();
+  nock.enableNetConnect("127.0.0.1");
+  jest.spyOn(console, "error").mockImplementation((...args) => {
+    const msg = args.join(" ");
+    if (msg.includes("Could not load script")) return;
+    throw new Error("console.error called: " + msg);
   });
 });
 
@@ -33,7 +40,9 @@ beforeEach(() => {
 afterEach(() => {
   jest.restoreAllMocks();
 
-  if (global.window && typeof global.window.close === 'function') {
+  nock.cleanAll();
+
+  if (global.window && typeof global.window.close === "function") {
     global.window.close();
   }
   global.window = undefined;
@@ -52,4 +61,5 @@ afterEach(() => {
 // console.log('Timeout Warning: ...');
 afterAll(() => {
   // debug logs removed to keep test output clean
+  nock.enableNetConnect();
 });
