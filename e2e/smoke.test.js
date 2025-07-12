@@ -33,7 +33,17 @@ test('checkout flow', async ({ page }) => {
 });
 
 test('model generator page', async ({ page }) => {
-  // Skip if external assets required by <model-viewer> are unreachable.
+  // Skip if esm.sh is unreachable since the React bundle won't load.
+  try {
+    const resp = await page.request.get('https://esm.sh');
+    if (resp.status() >= 400) {
+      test.skip(true, 'esm.sh unreachable');
+    }
+  } catch {
+    test.skip(true, 'esm.sh unreachable');
+  }
+
+  // Skip if the CDN hosting <model-viewer> is unreachable.
   try {
     const resp = await page.request.get(
       'https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js',
