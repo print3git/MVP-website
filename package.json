@@ -7,6 +7,7 @@
     "doc": "docs"
   },
   "scripts": {
+    "perf-events": "node scripts/perf-events.js",
     "preinstall": "node scripts/check-node-version.js",
     "lhci": "lhci autorun",
     "prepare": "husky install && tsc -p scripts/tsconfig.json",
@@ -32,6 +33,7 @@
     "deps:check": "npx -y lockfile-diff HEAD package-lock.json && npx -y lockfile-diff HEAD backend/package-lock.json && npx -y lockfile-diff HEAD backend/hunyuan_server/package-lock.json",
     "deps:dedupe": "npm dedupe",
     "deps:dedupe-check": "npm dedupe --dry-run",
+    "check-cycles": "node scripts/check-cycles.js",
     "bundle:size": "size-limit",
     "dev": "node backend/server.js",
     "validate-env": "bash scripts/validate-env.sh",
@@ -49,7 +51,8 @@
     "netlify:deploy": "scripts/netlify-preflight.sh && netlify deploy",
     "diagnose": "bash scripts/diagnose.sh",
     "test:generate": "node scripts/test-generate.js",
-    "test:webhook": "node scripts/test-webhook.js"
+    "test:webhook": "node scripts/test-webhook.js",
+    "commitlint": "commitlint --from=HEAD~1"
   },
   "keywords": [],
   "author": "",
