@@ -2,6 +2,7 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const DRY_RUN = process.env.ASSERT_SETUP_DRY_RUN;
 
 function browsersInstalled() {
   const envPath = process.env.PLAYWRIGHT_BROWSERS_PATH;
@@ -15,13 +16,19 @@ function browsersInstalled() {
 }
 
 if (!fs.existsSync('.setup-complete') || !browsersInstalled()) {
+  const skipDeps = browsersInstalled() ? 'SKIP_PW_DEPS=1 ' : '';
   console.log(
-    "Playwright browsers not installed. Running 'npm run setup' to install them"
+    `Playwright browsers ${browsersInstalled() ? 'already' : 'not'} installed. Running '${skipDeps}npm run setup'`
   );
-  try {
-    require('child_process').execSync('CI=1 npm run setup', { stdio: 'inherit' });
-  } catch (err) {
-    console.error('Failed to run setup:', err.message);
-    process.exit(1);
+  const cmd = `CI=1 ${skipDeps}npm run setup`;
+  if (DRY_RUN) {
+    console.log(`[dry-run] ${cmd}`);
+  } else {
+    try {
+      require('child_process').execSync(cmd, { stdio: 'inherit' });
+    } catch (err) {
+      console.error('Failed to run setup:', err.message);
+      process.exit(1);
+    }
   }
 }

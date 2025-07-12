@@ -40,7 +40,7 @@ jobs:
         run: pnpm install
 
       - name: Run smoke tests
-        run: pnpm run smoke
+        run: SKIP_PW_DEPS=1 pnpm run smoke
 
       - name: Start backend
         run: pnpm dev &
