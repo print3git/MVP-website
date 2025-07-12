@@ -1,12 +1,25 @@
-jest.mock("express");
+jest.mock(
+  "express",
+  () => {
+    const mExpress = jest.fn(() => ({
+      use: jest.fn(),
+      get: jest.fn(),
+      listen: jest.fn(),
+    }));
+    mExpress.static = jest.fn();
+    return mExpress;
+  },
+  { virtual: true },
+);
 const express = require("express");
 
 describe("startDevServer", () => {
   test("builds middleware chain without real server", () => {
     const use = jest.fn();
     const get = jest.fn();
+    const post = jest.fn();
     const listen = jest.fn();
-    express.mockReturnValue({ use, get, listen });
+    express.mockReturnValue({ use, get, post, listen });
 
     jest.isolateModules(() => {
       const { startDevServer } = require("../scripts/dev-server");
@@ -15,6 +28,7 @@ describe("startDevServer", () => {
 
     expect(use).toHaveBeenCalled();
     expect(get).toHaveBeenCalledWith("/healthz", expect.any(Function));
+    expect(post).toHaveBeenCalledWith("/api/generate", expect.any(Function));
     expect(listen).toHaveBeenCalledWith(3000, expect.any(Function));
   });
 });

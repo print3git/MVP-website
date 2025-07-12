@@ -12,4 +12,12 @@ describe("setup script", () => {
     expect(fs.existsSync(flag)).toBe(true);
     expect(fs.existsSync(jestBin)).toBe(true);
   });
+
+  test("setup.sh invokes check-host-deps script", () => {
+    const content = fs.readFileSync(
+      path.join(__dirname, "..", "scripts", "setup.sh"),
+      "utf8",
+    );
+    expect(content).toMatch(/check-host-deps\.js/);
+  });
 });

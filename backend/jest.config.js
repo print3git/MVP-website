@@ -12,18 +12,24 @@ module.exports = {
   moduleFileExtensions: ["ts", "js", "json"],
   testTimeout: 10000,
   coverageDirectory: "coverage",
-  coverageReporters: ["text", "lcov"],
+  coverageReporters: ["text", "lcov", "json-summary"],
 };
 
 module.exports = {
   ...module.exports,
   collectCoverage: true,
-  collectCoverageFrom: ["**/*.{js,jsx,ts,tsx}"],
+  collectCoverageFrom: [
+    "**/*.{js,jsx,ts,tsx}",
+    "!<rootDir>/node_modules/**",
+    "!<rootDir>/tests/**",
+  ],
   coveragePathIgnorePatterns: [
-    "<rootDir>/backend/db.js",
-    "<rootDir>/backend/shipping.js",
-    "<rootDir>/backend/social.js",
-    "<rootDir>/backend/utils/validateStl.js",
+    "<rootDir>/db.js",
+    "<rootDir>/shipping.js",
+    "<rootDir>/social.js",
+    "<rootDir>/utils/validateStl.js",
+    "<rootDir>/node_modules/",
+    "<rootDir>/tests/",
   ],
   coverageThreshold: {
     global: {

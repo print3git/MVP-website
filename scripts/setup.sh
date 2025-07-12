@@ -110,4 +110,8 @@ if [ -z "$SKIP_PW_DEPS" ]; then
 else
   CI=1 npx playwright install
 fi
+
+# Verify Playwright host dependencies
+node scripts/check-host-deps.js
+
 touch .setup-complete
