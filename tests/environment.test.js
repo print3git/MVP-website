@@ -9,4 +9,8 @@ describe("environment checks", () => {
   test("lock file contains all devDependencies", () => {
     execSync("node scripts/check-lockfile.js");
   });
+
+  test("pnpm lock file matches package.json", () => {
+    execSync("node scripts/check-pnpm-lockfile.js");
+  });
 });
