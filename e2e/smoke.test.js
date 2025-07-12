@@ -4,6 +4,10 @@ if (require.main === module) {
 }
 
 const { test, expect } = require('@playwright/test');
+test.use({
+  baseURL: 'http://localhost:3000',
+  timeout: 60000,
+});
 const { percySnapshot } = require('@percy/playwright');
 
 // Simple smoke tests for core pages

@@ -12,7 +12,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
+          cache: "npm"
       - run: npm install --no-audit --no-fund
       - run: npm install --no-audit --no-fund --prefix backend
       - run: |
@@ -29,7 +29,7 @@ jobs:
       - run: npx playwright install --with-deps
         env:
           PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
-          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '0'
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "0"
       - uses: netlify/actions/cli@master
       - name: Deploy to Netlify
         if: env.NETLIFY_AUTH_TOKEN != '' && env.NETLIFY_SITE_ID != ''
@@ -39,9 +39,15 @@ jobs:
         run: |
           netlify deploy --dir=. --site $NETLIFY_SITE_ID --auth $NETLIFY_AUTH_TOKEN --json > deploy.json
           echo "PREVIEW_URL=$(jq -r '.deploy_url' deploy.json)" >> $GITHUB_ENV
+      - name: Install Playwright deps & browsers
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-4-1 libxss1 libasound2 libpangocairo-1.0-0 libnss3 \
+                                 libxshmfence1 libgbm1 libdrm2 libxrandr2 libu2f-udev
+          npx playwright install --with-deps
       - name: Run smoke tests
         env:
           PLAYWRIGHT_BASE_URL: ${{ env.PREVIEW_URL }}
           PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
-          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '0'
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "0"
         run: npx playwright test e2e/smoke.test.js
