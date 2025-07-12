@@ -3,6 +3,15 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 
+const requiredMajor = 20;
+const currentMajor = parseInt(process.versions.node.split(".")[0], 10);
+if (currentMajor < requiredMajor) {
+  console.error(
+    `Node ${requiredMajor} or newer is required. Current version: ${process.versions.node}`,
+  );
+  process.exit(1);
+}
+
 function browsersInstalled() {
   const envPath = process.env.PLAYWRIGHT_BROWSERS_PATH;
   const defaultPath = path.join(os.homedir(), ".cache", "ms-playwright");
