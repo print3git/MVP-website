@@ -1,7 +1,13 @@
+/** @file Ensures backend test files parse correctly */
 const fs = require("fs");
 const path = require("path");
 const parser = require("@babel/parser");
 
+/**
+ * Recursively gather .ts files
+ * @param {string} dir directory to search
+ * @returns {string[]} list of TypeScript files
+ */
 function getTsFiles(dir) {
   let files = [];
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {

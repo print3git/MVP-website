@@ -1,5 +1,6 @@
 const { execSync } = require("child_process");
 const path = require("path");
+const fs = require("fs");
 
 const script = path.join(__dirname, "..", "..", "scripts", "validate-env.sh");
 
@@ -68,9 +69,27 @@ describe("validate-env script", () => {
     ).toThrow();
   });
 
-  test("fails when DB_URL missing", () => {
+  test("falls back to .env.example when DB_URL missing", () => {
     const env = { ...process.env, ...baseEnv };
     delete env.DB_URL;
-    expect(() => execSync(`bash ${script}`, { env, stdio: "pipe" })).toThrow();
+    expect(() =>
+      execSync(`bash ${script}`, { env, stdio: "pipe" }),
+    ).not.toThrow();
+  });
+
+  test("fails when DB_URL missing and example file absent", () => {
+    const env = { ...process.env, ...baseEnv };
+    delete env.DB_URL;
+    const example = path.resolve(process.cwd(), ".env.example");
+    const backup = `${example}.bak`;
+    fs.renameSync(example, backup);
+    let threw = false;
+    try {
+      execSync(`bash ${script}`, { env, stdio: "pipe" });
+    } catch (_err) {
+      threw = true;
+    }
+    fs.renameSync(backup, example);
+    expect(threw).toBe(true);
   });
 });

@@ -4,6 +4,27 @@ const os = require("os");
 const path = require("path");
 const child_process = require("child_process");
 
+function loadEnvFile(file) {
+  if (!fs.existsSync(file)) return;
+  const lines = fs.readFileSync(file, "utf8").split(/\r?\n/);
+  for (const line of lines) {
+    if (!line || line.startsWith("#")) continue;
+    const idx = line.indexOf("=");
+    if (idx === -1) continue;
+    const key = line.slice(0, idx);
+    const value = line.slice(idx + 1);
+    if (!process.env[key]) {
+      process.env[key] = value;
+    }
+  }
+}
+
+if (fs.existsSync(".env")) {
+  loadEnvFile(".env");
+} else if (fs.existsSync(".env.example")) {
+  loadEnvFile(".env.example");
+}
+
 try {
   child_process.execSync("mise trust .mise.toml >/dev/null 2>&1");
   child_process.execSync(

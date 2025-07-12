@@ -1,5 +1,6 @@
 const { execSync } = require("child_process");
 const path = require("path");
+const fs = require("fs");
 
 const root = path.resolve(__dirname, "..", "..");
 
@@ -48,6 +49,9 @@ describe("validate-env script", () => {
   });
 
   test("fails when HF_TOKEN is missing", () => {
+    const example = path.resolve(root, ".env.example");
+    const backup = `${example}.bak`;
+    fs.renameSync(example, backup);
     expect(() =>
       run(
         {
@@ -57,5 +61,6 @@ describe("validate-env script", () => {
         true,
       ),
     ).toThrow();
+    fs.renameSync(backup, example);
   });
 });
