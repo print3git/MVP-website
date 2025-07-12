@@ -2,4 +2,5 @@
 . "$(dirname -- "$0")/_/husky.sh"
 
 npm audit --audit-level=high
+npm run validate-env
 npx lint-staged
