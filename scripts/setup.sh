@@ -28,6 +28,9 @@ if ! grep -q "unset npm_config_http_proxy" ~/.bashrc 2>/dev/null; then
   echo "unset npm_config_http_proxy npm_config_https_proxy" >> ~/.bashrc
 fi
 
+# Silence mise warnings about idiomatic version files
+mise settings add idiomatic_version_file_enable_tools node --yes >/dev/null 2>&1 || true
+
 # Abort early if the npm registry is unreachable
 if ! npm ping >/dev/null 2>&1; then
   echo "Unable to reach the npm registry. Check network connectivity or proxy settings." >&2
