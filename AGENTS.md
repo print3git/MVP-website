@@ -6,6 +6,7 @@ These guidelines apply to all automated agents (e.g. the Codex agent) working on
 
 1. **Unset proxy variables** – before running any `npm` commands, **and whenever you start a new shell session**, execute `unset npm_config_http_proxy npm_config_https_proxy` to silence `http-proxy` warnings.
    Run `npm ping` to verify that the registry is reachable before proceeding.
+   Run `mise trust` once to trust `.mise.toml`, then run `mise settings add idiomatic_version_file_enable_tools node --yes` to silence warnings about idiomatic version files.
 2. **Check network access** – ensure the environment can reach both
    `https://registry.npmjs.org` and `https://cdn.playwright.dev`. The setup
    script downloads packages and browsers from these domains. If they are
