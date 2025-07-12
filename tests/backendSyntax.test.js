@@ -1,12 +1,12 @@
-/** @file Ensure backend JS files compile */
+/** @file Ensures backend test files parse correctly */
 const fs = require("fs");
 const path = require("path");
 const parser = require("@babel/parser");
 
 /**
- * Recursively collect TypeScript test files
- * @param {string} dir directory to scan
- * @returns {string[]} list of file paths
+ * Recursively gather .ts files
+ * @param {string} dir directory to search
+ * @returns {string[]} list of TypeScript files
  */
 function getTsFiles(dir) {
   let files = [];
