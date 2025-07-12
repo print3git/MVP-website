@@ -21,7 +21,7 @@ Stripe.mockImplementation(() => stripeMock);
 
 const request = require("supertest");
 const app = require("../src/app");
-const { orders } = require("../src/routes/checkout.js");
+const { orders } = require("../src/routes/checkout");
 
 afterEach(() => {
   orders.clear();
