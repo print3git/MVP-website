@@ -490,3 +490,15 @@ This fetches the missing libraries via `apt` so the browsers can start correctly
 ⚠️ **Note:** this project uses OpenAI Codex to generate PRs;
 binary files (images, compiled objects, etc.) will cause errors.
 Please remove or exclude any binary assets before opening a PR.
+
+## Performance
+
+### Performance Testing
+
+We include a simple load-test script:
+
+```bash
+npm run perf-events
+
+This will fire 1,000 requests at /v2/events with 50 concurrent connections; adjust parameters in scripts/perf-events.js.
+```
