@@ -19,7 +19,7 @@ if (!fs.existsSync('.setup-complete') || !browsersInstalled()) {
     "Playwright browsers not installed. Running 'npm run setup' to install them"
   );
   try {
-    require('child_process').execSync('npm run setup', { stdio: 'inherit' });
+    require('child_process').execSync('CI=1 npm run setup', { stdio: 'inherit' });
   } catch (err) {
     console.error('Failed to run setup:', err.message);
     process.exit(1);
