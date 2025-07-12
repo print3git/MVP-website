@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 const { execSync } = require("child_process");
 
+// Use the npm ping endpoint to ensure the registry fully responds.
 const targets = [
-  { url: "https://registry.npmjs.org", name: "npm registry" },
+  { url: "https://registry.npmjs.org/-/ping", name: "npm registry" },
   { url: "https://cdn.playwright.dev", name: "Playwright CDN" },
 ];
 

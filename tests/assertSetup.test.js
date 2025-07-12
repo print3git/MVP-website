@@ -1,3 +1,4 @@
+/* eslint-disable jsdoc/require-jsdoc */
 jest.mock("fs");
 jest.mock("child_process");
 
