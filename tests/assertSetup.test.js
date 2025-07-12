@@ -13,6 +13,7 @@ describe("assert-setup script", () => {
     child_process.execSync.mockReset();
   });
 
+
   /** Set required env vars for the script */
   function setEnv() {
     process.env.HF_TOKEN = "x";

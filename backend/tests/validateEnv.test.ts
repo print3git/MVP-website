@@ -27,6 +27,8 @@ describe("validate-env script", () => {
       HF_TOKEN: "token",
       AWS_ACCESS_KEY_ID: "id",
       AWS_SECRET_ACCESS_KEY: "secret",
+      DB_URL: "postgres://user:pass@localhost/db",
+      STRIPE_SECRET_KEY: "sk_test_dummy",
       SKIP_NET_CHECKS: "1",
     });
     expect(output).toContain("environment OK");

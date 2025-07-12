@@ -27,7 +27,7 @@ describe("backend test syntax", () => {
     test(`${file} parses`, () => {
       const code = fs.readFileSync(file, "utf8");
       expect(() =>
-        parser.parse(code, { sourceType: "script", plugins: ["typescript"] }),
+        parser.parse(code, { sourceType: "module", plugins: ["typescript"] }),
       ).not.toThrow();
     });
   }
