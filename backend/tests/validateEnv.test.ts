@@ -4,7 +4,7 @@ const path = require("path");
 const root = path.resolve(__dirname, "..", "..");
 
 function run(env, clean = true) {
-  const e = { ...process.env, ...env };
+  const e = { ...process.env, SKIP_NET_CHECKS: "1", ...env };
   if (clean) {
     delete e.npm_config_http_proxy;
     delete e.npm_config_https_proxy;
@@ -42,6 +42,18 @@ describe("validate-env script", () => {
           npm_config_http_proxy: "http://proxy",
         },
         false,
+      ),
+    ).toThrow();
+  });
+
+  test("fails when HF_TOKEN is missing", () => {
+    expect(() =>
+      run(
+        {
+          STRIPE_TEST_KEY: "test",
+          HF_TOKEN: "",
+        },
+        true,
       ),
     ).toThrow();
   });

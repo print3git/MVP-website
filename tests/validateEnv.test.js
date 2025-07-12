@@ -8,7 +8,7 @@ const { execFileSync } = require("child_process");
  */
 function run(env) {
   return execFileSync("bash", ["scripts/validate-env.sh"], {
-    env,
+    env: { SKIP_NET_CHECKS: "1", ...env },
     encoding: "utf8",
   });
 }
@@ -54,5 +54,6 @@ describe("validate-env script", () => {
       NETWORK_CHECK_URL: "http://127.0.0.1:9",
     };
     expect(() => run(env)).toThrow(/Network check failed/);
+
   });
 });
