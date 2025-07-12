@@ -7,6 +7,7 @@
     "doc": "docs"
   },
   "scripts": {
+    "preinstall": "node scripts/check-node-version.js",
     "lhci": "lhci autorun",
     "prepare": "husky install && tsc -p scripts/tsconfig.json",
     "format": "prettier --write \"**/*.{js,jsx,json,md,html}\"",
@@ -102,5 +103,8 @@
     "react": "^18.3.1",
     "react-dom": "^18.2.0",
     "react-places-autocomplete": "^7.3.0"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }
