@@ -41,6 +41,7 @@
     "visual-test": "percy exec -- npm run e2e",
     "test:a11y": "node scripts/assert-setup.js && bash scripts/install-playwright.sh chromium && playwright test e2e/a11y.test.js",
     "a11y": "jest --runTestsByPath tests/a11y",
+    "net:check": "node scripts/network-check.js",
     "netlify:deploy": "scripts/netlify-preflight.sh && netlify deploy",
     "diagnose": "bash scripts/diagnose.sh",
     "test:generate": "node scripts/test-generate.js",
