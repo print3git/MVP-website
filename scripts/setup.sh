@@ -13,7 +13,9 @@ cleanup_npm_cache
 unset npm_config_http_proxy npm_config_https_proxy
 export npm_config_fund=false
 
-if [ -z "$STRIPE_TEST_KEY" ] && [ -n "$CI" ]; then
+# Provide a dummy Stripe key when none is configured. This avoids setup failures
+# in ephemeral environments like Codex where real credentials are not available.
+if [ -z "$STRIPE_TEST_KEY" ]; then
   export STRIPE_TEST_KEY="sk_test_dummy_$(date +%s)"
 fi
 
