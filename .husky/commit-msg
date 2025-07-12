@@ -1,5 +1,4 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-SKIP_PW_DEPS=1 node scripts/assert-setup.js >/dev/null
-npx --no-install commitlint --edit $1
+npm run commitlint --edit "$1"

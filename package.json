@@ -49,7 +49,8 @@
     "netlify:deploy": "scripts/netlify-preflight.sh && netlify deploy",
     "diagnose": "bash scripts/diagnose.sh",
     "test:generate": "node scripts/test-generate.js",
-    "test:webhook": "node scripts/test-webhook.js"
+    "test:webhook": "node scripts/test-webhook.js",
+    "commitlint": "commitlint --from=HEAD~1"
   },
   "keywords": [],
   "author": "",

@@ -47,6 +47,7 @@ test("skips network check when SKIP_NET_CHECKS is set", () => {
   delete process.env.SKIP_NET_CHECKS;
 });
 
+
 test("exits when deps missing and SKIP_PW_DEPS is set", () => {
   process.env.SKIP_PW_DEPS = "1";
   child_process.execSync
