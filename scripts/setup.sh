@@ -13,6 +13,9 @@ cleanup_npm_cache
 unset npm_config_http_proxy npm_config_https_proxy
 export npm_config_fund=false
 
+# Ensure required environment variables are present and proxies remain unset
+bash "$(dirname "$0")/validate-env.sh"
+
 
 if [ -z "$STRIPE_TEST_KEY" ]; then
   export STRIPE_TEST_KEY="sk_test_dummy_$(date +%s)"
