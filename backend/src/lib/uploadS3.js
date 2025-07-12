@@ -20,9 +20,12 @@ async function uploadFile(filePath, contentType) {
   const bucket = process.env.S3_BUCKET;
   const domain =
     process.env.CLOUDFRONT_DOMAIN || process.env.CLOUDFRONT_MODEL_DOMAIN;
+  const accessKey = process.env.AWS_ACCESS_KEY_ID;
+  const secretKey = process.env.AWS_SECRET_ACCESS_KEY;
   if (!region) throw new Error("AWS_REGION is not set");
   if (!bucket) throw new Error("S3_BUCKET is not set");
   if (!domain) throw new Error("CLOUDFRONT_DOMAIN is not set");
+  if (!accessKey || !secretKey) throw new Error("AWS credentials are not set");
   const client = new client_s3_1.S3Client({ region });
   const key = `images/${Date.now()}-${path_1.default.basename(filePath)}`;
   await client.send(
