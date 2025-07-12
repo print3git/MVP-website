@@ -3,6 +3,10 @@ const fs = require("fs");
 const { execSync } = require("child_process");
 const path = require("path");
 
+if (!process.env.SKIP_ROOT_DEPS_CHECK) {
+  require("./ensure-root-deps.js");
+}
+
 function runJest(args) {
   const repoRoot = path.resolve(__dirname, "..");
   const backendDir = path.join(repoRoot, "backend");
