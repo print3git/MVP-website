@@ -103,5 +103,7 @@ test('generate flow', async ({ page }) => {
   await page.waitForSelector('#gen-prompt', { state: 'visible', timeout: 30000 });
   await page.fill('#gen-prompt', 'test');
   await page.click('#gen-submit');
-  await expect(page.locator('canvas')).toBeVisible({ timeout: 20000 });
+  // Wait longer for the model viewer to load on slow networks
+  await page.waitForSelector('canvas', { state: 'visible', timeout: 60000 });
+  await expect(page.locator('canvas')).toBeVisible();
 });
