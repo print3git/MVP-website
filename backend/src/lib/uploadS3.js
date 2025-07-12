@@ -25,11 +25,12 @@ async function uploadFile(filePath, contentType) {
   if (!domain) throw new Error("CLOUDFRONT_DOMAIN is not set");
   const client = new client_s3_1.S3Client({ region });
   const key = `images/${Date.now()}-${path_1.default.basename(filePath)}`;
+  const body = fs_1.default.readFileSync(filePath);
   await client.send(
     new client_s3_1.PutObjectCommand({
       Bucket: bucket,
       Key: key,
-      Body: fs_1.default.createReadStream(filePath),
+      Body: body,
       ContentType: contentType,
     }),
   );
