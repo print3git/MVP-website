@@ -2,6 +2,9 @@
 const { execSync } = require("child_process");
 
 function checkNetwork() {
+  if (process.env.SKIP_NET_CHECKS) {
+    return;
+  }
   try {
     execSync("node scripts/network-check.js", { stdio: "ignore" });
   } catch {
@@ -26,15 +29,19 @@ function hostDepsInstalled() {
 checkNetwork();
 
 if (!hostDepsInstalled()) {
-  console.log("Playwright host dependencies missing. Installing...");
-  try {
-    execSync("CI=1 npx playwright install --with-deps", { stdio: "inherit" });
-  } catch (err) {
-    console.error(
-      "Failed to install Playwright host dependencies:",
-      err.message,
-    );
-    process.exit(1);
+  if (process.env.SKIP_PW_DEPS) {
+    console.log("Skipping Playwright host dependency install");
+  } else {
+    console.log("Playwright host dependencies missing. Installing...");
+    try {
+      execSync("CI=1 npx playwright install --with-deps", { stdio: "inherit" });
+    } catch (err) {
+      console.error(
+        "Failed to install Playwright host dependencies:",
+        err.message,
+      );
+      process.exit(1);
+    }
   }
 } else {
   console.log("Playwright host dependencies already satisfied.");
