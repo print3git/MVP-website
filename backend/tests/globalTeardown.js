@@ -1,4 +1,7 @@
+const nock = require("nock");
+
 module.exports = async () => {
+  nock.enableNetConnect();
   const leaks = global.__LEAKS__ || [];
   for (const leak of leaks) {
     if (typeof leak.close === "function") {
