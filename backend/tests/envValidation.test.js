@@ -41,7 +41,8 @@ describe("validate-env script", () => {
     ).not.toThrow();
   });
 
-  test("sets dummy stripe key when none provided", () => {
+
+  test("uses dummy stripe key when none provided", () => {
     expect(() =>
       execSync(`bash ${script}`, {
         env: {
