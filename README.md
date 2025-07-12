@@ -26,7 +26,6 @@ Run `docker compose up` to start the API and Postgres services.
 ## Local Setup
 
 1. Copy `.env.example` to `.env` in the repository root and update the values:
-
    - `DB_URL` – connection string for your PostgreSQL database.
 
 - `STRIPE_TEST_KEY` – test secret key for Stripe.
@@ -34,6 +33,7 @@ Run `docker compose up` to start the API and Postgres services.
 - `STRIPE_PUBLISHABLE_KEY` – publishable key for Stripe.js on the frontend.
 - `STRIPE_WEBHOOK_SECRET` – signing secret for Stripe webhooks.
 - `HUNYUAN_API_KEY` – key for the Sparc3D API.
+- `HF_TOKEN` – token for Hugging Face API access used by setup scripts.
 
 The server uses `STRIPE_LIVE_KEY` when `NODE_ENV=production`; otherwise `STRIPE_TEST_KEY` is used.
 
