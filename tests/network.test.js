@@ -24,7 +24,7 @@ function check(url) {
 
 describe("network connectivity", () => {
   test("npm registry reachable", async () => {
-    const ok = await check("https://registry.npmjs.org").catch((err) => {
+    const ok = await check("https://registry.npmjs.org/-/ping").catch((err) => {
       throw new Error(`npm registry unreachable: ${err.message}`);
     });
     expect(ok).toBe(true);
