@@ -68,14 +68,24 @@ The server uses `STRIPE_LIVE_KEY` when `NODE_ENV=production`; otherwise `STRIPE_
    run `npm install` in the affected directory and re-run this setup step.
    Ensure your environment can reach `https://registry.npmjs.org` and `https://cdn.playwright.dev`. The setup script downloads packages and browsers from these domains, so network restrictions may cause it to fail.
 
-3. Initialize the database:
+3. Verify your environment and test pipeline:
+
+   ```bash
+   npm run diagnose
+   ```
+
+   This starts the dev server, runs a sample generation through `/api/generate`,
+   and executes the Jest suite. Use it if setup succeeds but subsequent commands
+   fail.
+
+4. Initialize the database:
 
    ```bash
    cd ..
    npm run init-db
    ```
 
-4. Create an admin user (optional):
+5. Create an admin user (optional):
 
    Set `ADMIN_USERNAME` and `ADMIN_PASSWORD` in your `.env` file or as environment
    variables, then run:
@@ -84,32 +94,32 @@ The server uses `STRIPE_LIVE_KEY` when `NODE_ENV=production`; otherwise `STRIPE_
    npm run create-admin  # inside backend/
    ```
 
-5. Configure the admin token used by protected endpoints:
+6. Configure the admin token used by protected endpoints:
 
    Add `ADMIN_TOKEN=yoursecret` to `.env`. You can authenticate either by sending
    this token in the `x-admin-token` header or by logging in with the admin
    account and including the returned JWT in the `Authorization` header.
 
-6. Start the servers in separate terminals:
+7. Start the servers in separate terminals:
 
    ```bash
    npm start            # inside backend/
    cd dalle_server && npm start  # inside backend/dalle_server/
    ```
 
-7. (Optional) Run the purchase reminder job periodically:
+8. (Optional) Run the purchase reminder job periodically:
 
    ```bash
    npm run send-reminders  # inside backend/
    ```
 
-8. (Optional) Send discount offers to abandoned checkouts:
+9. (Optional) Send discount offers to abandoned checkouts:
 
    ```bash
    npm run send-abandoned-offers  # inside backend/
    ```
 
-9. (Optional) Clean up expired password reset tokens periodically:
+10. (Optional) Clean up expired password reset tokens periodically:
 
    ```bash
    npm run cleanup-tokens  # inside backend/
