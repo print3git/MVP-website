@@ -17,10 +17,12 @@ function checkNetwork() {
 
 function hostDepsInstalled() {
   try {
-    const out = execSync("npx playwright install --with-deps --dry-run", {
+    const out = execSync("npx playwright install --with-deps --dry-run 2>&1", {
       encoding: "utf8",
     });
-    return !/Missing libraries/i.test(out);
+    return !/(Missing libraries|Host system is missing dependencies)/i.test(
+      out,
+    );
   } catch {
     return false;
   }
