@@ -66,7 +66,7 @@ The server uses `STRIPE_LIVE_KEY` when `NODE_ENV=production`; otherwise `STRIPE_
    are missing, run `npx husky install` manually.
    If `npm ci` fails with an `EUSAGE` error complaining about missing lock file entries,
    run `npm install` in the affected directory and re-run this setup step.
-   Ensure your environment can reach `https://registry.npmjs.org` and `https://cdn.playwright.dev`. The setup script downloads packages and browsers from these domains, so network restrictions may cause it to fail.
+  Ensure your environment can reach `https://registry.npmjs.org` and `https://cdn.playwright.dev`. Run `node scripts/network-check.js` to verify connectivity. The setup script downloads packages and browsers from these domains, so network restrictions may cause it to fail.
 
 3. Initialize the database:
 

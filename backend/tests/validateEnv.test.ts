@@ -13,7 +13,12 @@ function run(env, clean = true) {
   }
   return execSync("npm run validate-env", {
     cwd: root,
-    env: e,
+    env: {
+      AWS_ACCESS_KEY_ID: "test",
+      AWS_SECRET_ACCESS_KEY: "test",
+      ...e,
+      SKIP_NET_CHECKS: "1",
+    },
     stdio: "pipe",
   }).toString();
 }

@@ -8,10 +8,12 @@ These guidelines apply to all automated agents (e.g. the Codex agent) working on
 1. **Go to the repository root** – run `cd "$(git rev-parse --show-toplevel)"` after opening a shell to ensure paths resolve correctly.
 2. **Unset proxy variables** – before running any `npm` commands, **and whenever you start a new shell session**, execute `unset npm_config_http_proxy npm_config_https_proxy` to silence `http-proxy` warnings.
 3. **Validate the environment** – run `npm run validate-env` to ensure required variables are set and proxy vars remain unset.
-4. **Check network access** – ensure the environment can reach both
-   `https://registry.npmjs.org` and `https://cdn.playwright.dev`. The setup
-   script downloads packages and browsers from these domains. If they are
-   blocked, adjust your environment or proxy settings.
+4. **Check network access** – run `node scripts/network-check.js` to verify
+   connectivity to `https://registry.npmjs.org` and
+   `https://cdn.playwright.dev`. The setup script downloads packages and
+   browsers from these domains. If they are blocked, adjust your environment
+   or proxy settings. Override the default URLs by setting `NPM_REGISTRY_URL`,
+   `PLAYWRIGHT_CDN_URL`, or adjust `NETWORK_CHECK_TIMEOUT` for debugging.
 5. **Install dependencies** – run `npm run setup` at the repository root **before your first `npm run ci`**. Run it again whenever the container is restarted or if Playwright tests fail with messages like "Test was interrupted" or "page.evaluate: Test ended". This script unsets proxy variables, checks registry connectivity, runs `npm ci` in the root and `backend/`, and installs Playwright browsers.
    - If `npm ci` fails with an `EUSAGE` error complaining that packages are missing from the lock file, run `npm install` in the affected directory and then re-run the setup script.
    - Set `SKIP_PW_DEPS=1` before running the setup script if Playwright dependencies are already installed. This skips the long `apt-get` step and reduces CI time. The `smoke` script also runs the setup script, so use `SKIP_PW_DEPS=1 npm run smoke` to avoid reinstalling Playwright dependencies when they are already present.

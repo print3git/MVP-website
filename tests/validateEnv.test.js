@@ -8,7 +8,12 @@ const { execFileSync } = require("child_process");
  */
 function run(env) {
   return execFileSync("bash", ["scripts/validate-env.sh"], {
-    env,
+    env: {
+      AWS_ACCESS_KEY_ID: "test",
+      AWS_SECRET_ACCESS_KEY: "test",
+      ...env,
+      SKIP_NET_CHECKS: "1",
+    },
     encoding: "utf8",
   });
 }
