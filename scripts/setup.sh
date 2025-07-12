@@ -100,6 +100,12 @@ cleanup_npm_cache
 # Ensure dpkg is fully configured before Playwright installs dependencies
 sudo dpkg --configure -a || true
 
+# Verify network connectivity again before downloading Playwright browsers
+if ! node scripts/network-check.js >/dev/null 2>&1; then
+  echo "Network check failed. Ensure access to the npm registry and Playwright CDN." >&2
+  exit 1
+fi
+
 if [ -z "$SKIP_PW_DEPS" ]; then
   CI=1 npx playwright install --with-deps
 else
