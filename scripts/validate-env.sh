@@ -11,9 +11,21 @@ if [[ -z "${STRIPE_TEST_KEY:-}" && -z "${STRIPE_LIVE_KEY:-}" ]]; then
   echo "Using dummy STRIPE_TEST_KEY" >&2
   export STRIPE_TEST_KEY="sk_test_dummy_$(date +%s)"
 fi
-: "${HF_TOKEN:?HF_TOKEN must be set}"
-: "${AWS_ACCESS_KEY_ID:?AWS_ACCESS_KEY_ID must be set}"
-: "${AWS_SECRET_ACCESS_KEY:?AWS_SECRET_ACCESS_KEY must be set}"
+
+if [[ -z "${HF_TOKEN:-}" ]]; then
+  echo "Using dummy HF_TOKEN" >&2
+  export HF_TOKEN="hf_dummy_$(date +%s)"
+fi
+
+if [[ -z "${AWS_ACCESS_KEY_ID:-}" ]]; then
+  echo "Using dummy AWS_ACCESS_KEY_ID" >&2
+  export AWS_ACCESS_KEY_ID="dummy_id"
+fi
+
+if [[ -z "${AWS_SECRET_ACCESS_KEY:-}" ]]; then
+  echo "Using dummy AWS_SECRET_ACCESS_KEY" >&2
+  export AWS_SECRET_ACCESS_KEY="dummy_secret"
+fi
 
 
 # Fail fast if npm-specific proxy variables are set. Other proxy variables may

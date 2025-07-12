@@ -69,4 +69,24 @@ describe("validate-env script", () => {
       }),
     ).toThrow();
   });
+
+  test("passes without HF_TOKEN or AWS creds", () => {
+    expect(() =>
+      execSync(`bash ${script}`, {
+        env: {
+          ...process.env,
+          STRIPE_TEST_KEY: "sk_test",
+          HF_TOKEN: "",
+          AWS_ACCESS_KEY_ID: "",
+          AWS_SECRET_ACCESS_KEY: "",
+          SKIP_NET_CHECKS: "1",
+          http_proxy: "",
+          https_proxy: "",
+          npm_config_http_proxy: "",
+          npm_config_https_proxy: "",
+        },
+        stdio: "pipe",
+      }),
+    ).not.toThrow();
+  });
 });
