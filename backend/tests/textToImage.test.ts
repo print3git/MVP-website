@@ -15,6 +15,7 @@ delete process.env.https_proxy;
 delete process.env.HTTP_PROXY;
 delete process.env.HTTPS_PROXY;
 
+const s3Module = require("../src/lib/uploadS3");
 
 const nock = require("nock");
 const { textToImage } = require("../src/lib/textToImage.js");
@@ -26,7 +27,7 @@ describe("textToImage", () => {
   const token = "abc";
 
   beforeEach(() => {
-    s3 = require("../src/lib/uploadS3");
+    s3 = s3Module;
     jest
       .spyOn(s3, "uploadFile")
       .mockResolvedValue(mockUrl);
