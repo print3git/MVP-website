@@ -14,29 +14,27 @@ function browsersInstalled() {
   }
 }
 
-
 try {
-  require('child_process').execSync('node scripts/check-host-deps.js', {
-    stdio: 'inherit',
+  require("child_process").execSync("node scripts/check-host-deps.js", {
+    stdio: "inherit",
   });
 } catch (err) {
-  console.error('Failed to verify Playwright host dependencies:', err.message);
+  console.error("Failed to verify Playwright host dependencies:", err.message);
   process.exit(1);
 }
 
-if (!fs.existsSync('.setup-complete') || !browsersInstalled()) {
+if (!fs.existsSync(".setup-complete") || !browsersInstalled()) {
   console.log(
-    "Playwright browsers not installed. Running 'bash scripts/setup.sh' to install them"
+    "Playwright browsers not installed. Running 'bash scripts/setup.sh' to install them",
   );
   try {
-
-  const env = { ...process.env };
-  delete env.npm_config_http_proxy;
-  delete env.npm_config_https_proxy;
-  require('child_process').execSync('CI=1 npm run setup', {
-    stdio: 'inherit',
-    env,
-  });
+    const env = { ...process.env };
+    delete env.npm_config_http_proxy;
+    delete env.npm_config_https_proxy;
+    require("child_process").execSync("CI=1 npm run setup", {
+      stdio: "inherit",
+      env,
+    });
   } catch (err) {
     console.error("Failed to run setup:", err.message);
     process.exit(1);
@@ -56,7 +54,18 @@ if (!jestInstalled()) {
   try {
     require("child_process").execSync("npm ci", { stdio: "inherit" });
   } catch (err) {
-    console.error("Failed to install dependencies:", err.message);
-    process.exit(1);
+    const msg = String(err.message || err);
+    if (msg.includes("EUSAGE")) {
+      console.warn("npm ci failed, falling back to 'npm install'");
+      try {
+        require("child_process").execSync("npm install", { stdio: "inherit" });
+      } catch (err2) {
+        console.error("Failed to install dependencies:", err2.message);
+        process.exit(1);
+      }
+    } else {
+      console.error("Failed to install dependencies:", err.message);
+      process.exit(1);
+    }
   }
 }
