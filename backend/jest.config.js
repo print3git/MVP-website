@@ -5,15 +5,11 @@ module.exports = {
   setupFilesAfterEnv: ["<rootDir>/tests/setup.js"],
   globalTeardown: "<rootDir>/tests/globalTeardown.js",
   testEnvironment: "node",
-  testMatch: [
-    "<rootDir>/tests/**/*.test.js",
-    "<rootDir>/tests/**/*.test.ts",
-    "<rootDir>/src/**/__tests__/**/*.test.js",
-    "<rootDir>/src/**/__tests__/**/*.test.ts",
-  ],
   transform: {
-    "^.+\\.(t|j)sx?$": "babel-jest",
+    "^.+\\.tsx?$": "babel-jest",
   },
+  testMatch: ["**/?(*.)+(spec|test).ts?(x)"],
+  moduleFileExtensions: ["ts", "js", "json"],
   testTimeout: 10000,
   coverageDirectory: "coverage",
   coverageReporters: ["text", "lcov"],
