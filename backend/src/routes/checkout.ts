@@ -20,6 +20,7 @@ if (!secretKey) {
 const stripe = new Stripe(secretKey);
 
 const router = express.Router();
+(router as any).orders = orders;
 
 router.post('/api/checkout', async (req, res) => {
   const { slug, email } = req.body as Order;

@@ -17,6 +17,7 @@ const secretKey =
     : process.env.STRIPE_TEST_KEY || "sk_test";
 const stripe = new stripe_1.default(secretKey);
 const router = express_1.default.Router();
+router.orders = exports.orders;
 router.post("/api/checkout", async (req, res) => {
   const { slug, email } = req.body;
   if (!slug || !email) return res.status(400).json({ error: "missing fields" });
@@ -55,9 +56,9 @@ router.post(
         sig,
         process.env.STRIPE_WEBHOOK_SECRET || "",
       );
-  } catch (_err) {
-    return res.sendStatus(400);
-  }
+    } catch (_err) {
+      return res.sendStatus(400);
+    }
     if (event.type === "checkout.session.completed") {
       const session = event.data.object;
       const order = exports.orders.get(session.id);
