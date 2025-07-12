@@ -1,5 +1,6 @@
 const nock = require('nock');
 const { generateGlb } = require('../src/lib/sparc3dClient.js');
+nock.disableNetConnect();
 
 describe('generateGlb', () => {
   const endpoint = 'https://api.example.com/generate';
