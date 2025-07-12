@@ -1,7 +1,27 @@
 const fs = require("fs");
+const path = require("path");
 const { execSync } = require("child_process");
 
 const jestPath = "node_modules/.bin/jest";
+
+const networkCheck = path.join(
+  __dirname,
+  "..",
+  "..",
+  "scripts",
+  "network-check.js",
+);
+
+function runNetworkCheck() {
+  try {
+    execSync(`node ${networkCheck}`, { stdio: "inherit" });
+  } catch {
+    console.error(
+      "Network check failed. Ensure access to the npm registry and Playwright CDN.",
+    );
+    process.exit(1);
+  }
+}
 
 function canReachRegistry() {
   try {
@@ -16,6 +36,7 @@ function canReachRegistry() {
 }
 
 if (!fs.existsSync(jestPath)) {
+  runNetworkCheck();
   if (!canReachRegistry()) process.exit(1);
   console.log("Jest not found. Installing backend dependencies...");
   try {
