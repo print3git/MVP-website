@@ -42,3 +42,15 @@ if (!process.env.SPARC3D_ENDPOINT) {
 if (!process.env.SPARC3D_TOKEN) {
   process.env.SPARC3D_TOKEN = "token";
 }
+
+// Ensure any proxy environment variables do not interfere with HTTP mocking
+for (const key of [
+  "http_proxy",
+  "https_proxy",
+  "HTTP_PROXY",
+  "HTTPS_PROXY",
+  "npm_config_http_proxy",
+  "npm_config_https_proxy",
+]) {
+  delete process.env[key];
+}
