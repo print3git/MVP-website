@@ -64,6 +64,8 @@ The server uses `STRIPE_LIVE_KEY` when `NODE_ENV=production`; otherwise `STRIPE_
    This script runs `npm ci` in the root and `backend/`, then downloads the browsers
    required for the end-to-end tests. Set `SKIP_PW_DEPS=1` to skip the
    Playwright dependency installation when the browsers are already available.
+   If the dependencies are missing, the script installs them even when
+   `SKIP_PW_DEPS` is set so new environments don't fail.
    It also installs the Husky git hooks used for pre-commit checks. If the hooks
    are missing, run `npx husky install` manually.
    If `npm ci` fails with an `EUSAGE` error complaining about missing lock file entries,
