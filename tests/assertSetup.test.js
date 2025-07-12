@@ -1,3 +1,4 @@
+/** @file Tests for assert-setup script */
 jest.mock("fs");
 jest.mock("child_process");
 
@@ -12,7 +13,9 @@ describe("assert-setup script", () => {
     child_process.execSync.mockReset();
   });
 
-  /** Set up dummy environment variables */
+
+  /** Set required environment variables for tests */
+
   function setEnv() {
     process.env.HF_TOKEN = "x";
     process.env.AWS_ACCESS_KEY_ID = "id";

@@ -1,3 +1,4 @@
+/** @file Ensure backend JS files compile */
 const fs = require("fs");
 const path = require("path");
 const parser = require("@babel/parser");
@@ -26,7 +27,7 @@ describe("backend test syntax", () => {
     test(`${file} parses`, () => {
       const code = fs.readFileSync(file, "utf8");
       expect(() =>
-        parser.parse(code, { sourceType: "script", plugins: ["typescript"] }),
+        parser.parse(code, { sourceType: "module", plugins: ["typescript"] }),
       ).not.toThrow();
     });
   }
