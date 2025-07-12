@@ -41,9 +41,9 @@ The server uses `STRIPE_LIVE_KEY` when `NODE_ENV=production`; otherwise `STRIPE_
 - If `STRIPE_TEST_KEY` isn't set, `npm run setup` generates a temporary dummy key
   so local installs don't fail.
 - The repository uses `mise` for toolchain management. The included `.mise.toml` enables
-  automatic Node version detection via `.nvmrc`. Run `mise trust` after cloning if you
-  see warnings about untrusted config files. Use `mise use -g node@20` (or `mise install`)
-  to install the required Node version before running any npm scripts. The setup script also configures
+  automatic Node version detection via `.nvmrc`. If you don't have `mise` installed,
+  run `bash scripts/install-mise.sh` before continuing. After cloning, run `mise trust`
+  if you see warnings about untrusted config files. The setup script also configures
   `mise settings add idiomatic_version_file_enable_tools node` to remove the
   `deprecated [idiomatic_version_file_enable_tools]` message. If the warning
   persists, run that command manually.
@@ -70,7 +70,10 @@ The server uses `STRIPE_LIVE_KEY` when `NODE_ENV=production`; otherwise `STRIPE_
    are missing, run `npx husky install` manually.
    If `npm ci` fails with an `EUSAGE` error complaining about missing lock file entries,
    run `npm install` in the affected directory and re-run this setup step.
-   Ensure your environment can reach `https://registry.npmjs.org` and `https://cdn.playwright.dev`. The setup script downloads packages and browsers from these domains, so network restrictions may cause it to fail.
+   Ensure your environment can reach `https://registry.npmjs.org`,
+   `https://cdn.playwright.dev`, and `http://archive.ubuntu.com`. The setup
+   script downloads packages, browsers, and system libraries from these domains,
+   so network restrictions may cause it to fail.
 
 3. Verify your environment and test pipeline:
 

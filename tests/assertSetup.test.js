@@ -52,4 +52,22 @@ describe("assert-setup script", () => {
       { stdio: "inherit" },
     );
   });
+
+  test("fails when host deps missing and SKIP_PW_DEPS is set", () => {
+    setEnv();
+    process.env.SKIP_PW_DEPS = "1";
+    fs.existsSync.mockReturnValue(true);
+    fs.readdirSync.mockReturnValue(["chromium"]);
+    child_process.execSync
+      .mockImplementationOnce(() => {})
+      .mockImplementationOnce(() => {
+        throw new Error("missing deps");
+      });
+    const exitSpy = jest.spyOn(process, "exit").mockImplementation(() => {
+      throw new Error("exit");
+    });
+    expect(() => require("../scripts/assert-setup.js")).toThrow("exit");
+    expect(exitSpy).toHaveBeenCalledWith(1);
+    delete process.env.SKIP_PW_DEPS;
+  });
 });
