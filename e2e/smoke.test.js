@@ -14,11 +14,10 @@ if (process.env.JEST_WORKER_ID) {
   });
   const { percySnapshot } = require('@percy/playwright');
 
-async function canFetch(page, url) {
+const { execSync } = require('child_process');
+function canFetchSync(url) {
   try {
-    await page.evaluate(async (u) => {
-      await fetch(u, { mode: 'no-cors' });
-    }, url);
+    execSync(`curl -Is --max-time 5 --noproxy '*' ${url}`, { stdio: 'ignore' });
     return true;
   } catch {
     return false;
@@ -48,18 +47,17 @@ test('checkout flow', async ({ page }) => {
 });
 
 test('model generator page', async ({ page }) => {
-  if (!(await canFetch(page, 'https://esm.sh'))) {
+  if (!canFetchSync('https://esm.sh')) {
     test.skip(true, 'esm.sh unreachable');
   }
   if (
-    !(await canFetch(
-      page,
+    !canFetchSync(
       'https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js',
-    ))
+    )
   ) {
     test.skip(true, 'cdn.jsdelivr.net unreachable');
   }
-  if (!(await canFetch(page, 'https://modelviewer.dev'))) {
+  if (!canFetchSync('https://modelviewer.dev')) {
     test.skip(true, 'modelviewer.dev unreachable');
   }
 
@@ -76,20 +74,19 @@ test('model generator page', async ({ page }) => {
 });
 
 test('generate flow', async ({ page }) => {
-  if (!(await canFetch(page, 'https://esm.sh'))) {
+  if (!canFetchSync('https://esm.sh')) {
     test.skip(true, 'esm.sh unreachable');
   }
 
   if (
-    !(await canFetch(
-      page,
+    !canFetchSync(
       'https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js',
-    ))
+    )
   ) {
     test.skip(true, 'cdn.jsdelivr.net unreachable');
   }
 
-  if (!(await canFetch(page, 'https://modelviewer.dev'))) {
+  if (!canFetchSync('https://modelviewer.dev')) {
     test.skip(true, 'modelviewer.dev unreachable');
   }
 
