@@ -20,6 +20,15 @@ for (const name of requiredEnv) {
   }
 }
 
+try {
+  require("child_process").execSync("node scripts/network-check.js", {
+    stdio: "inherit",
+  });
+} catch (err) {
+  console.error("Network check failed:", err.message);
+  process.exit(1);
+}
+
 function browsersInstalled() {
   const envPath = process.env.PLAYWRIGHT_BROWSERS_PATH;
   const defaultPath = path.join(os.homedir(), ".cache", "ms-playwright");

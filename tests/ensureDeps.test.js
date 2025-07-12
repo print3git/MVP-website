@@ -10,13 +10,20 @@ describe("ensure-deps", () => {
     fs.existsSync.mockReset();
     child_process.execSync.mockReset();
   });
-  test("pings npm registry before installing", () => {
+  test("checks network then installs", () => {
     fs.existsSync.mockReturnValue(false);
     const execMock = jest.fn();
     child_process.execSync.mockImplementation(execMock);
     require("../backend/scripts/ensure-deps");
-    expect(execMock).toHaveBeenCalledWith("npm ping", { stdio: "ignore" });
-    expect(execMock).toHaveBeenCalledWith("npm ci", { stdio: "inherit" });
+    expect(execMock).toHaveBeenNthCalledWith(
+      1,
+      expect.stringContaining("network-check.js"),
+      expect.any(Object),
+    );
+    expect(execMock).toHaveBeenNthCalledWith(2, "npm ping", {
+      stdio: "ignore",
+    });
+    expect(execMock).toHaveBeenNthCalledWith(4, "npm ci", { stdio: "inherit" });
   });
 
   test("exits when npm ping fails", () => {
