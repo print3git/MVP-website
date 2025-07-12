@@ -4,6 +4,7 @@ These guidelines apply to all automated agents (e.g. the Codex agent) working on
 
 ## Mandatory steps
 
+
 1. **Go to the repository root** – run `cd "$(git rev-parse --show-toplevel)"` after opening a shell to ensure paths resolve correctly.
 2. **Unset proxy variables** – before running any `npm` commands, **and whenever you start a new shell session**, execute `unset npm_config_http_proxy npm_config_https_proxy` to silence `http-proxy` warnings.
   Run `npm ping` to verify that the registry is reachable before proceeding.
