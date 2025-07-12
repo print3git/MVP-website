@@ -15,12 +15,9 @@ delete process.env.https_proxy;
 delete process.env.HTTP_PROXY;
 delete process.env.HTTPS_PROXY;
 
-jest.mock("../src/lib/uploadS3", () => ({
-  uploadFile: jest.fn().mockResolvedValue("https://cdn.test/image.png"),
-}));
+const s3 = require("../src/lib/uploadS3");
 
 const nock = require("nock");
-const s3 = require("../src/lib/uploadS3");
 const { textToImage } = require("../src/lib/textToImage.js");
 
 describe("textToImage", () => {
@@ -39,6 +36,7 @@ describe("textToImage", () => {
     delete process.env.HTTP_PROXY;
     delete process.env.HTTPS_PROXY;
     nock.disableNetConnect();
+    jest.spyOn(s3, "uploadFile").mockResolvedValue("https://cdn.test/image.png");
     expect(jest.isMockFunction(s3.uploadFile)).toBe(true);
   });
 
