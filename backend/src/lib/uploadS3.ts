@@ -16,6 +16,7 @@ export async function uploadFile(
   const bucket = process.env.S3_BUCKET;
   const domain =
     process.env.CLOUDFRONT_DOMAIN || process.env.CLOUDFRONT_MODEL_DOMAIN;
+
   const accessKey = process.env.AWS_ACCESS_KEY_ID;
   const secretKey = process.env.AWS_SECRET_ACCESS_KEY;
   if (!region) throw new Error("AWS_REGION is not set");
@@ -24,10 +25,12 @@ export async function uploadFile(
   if (!accessKey || !secretKey) throw new Error("AWS credentials are not set");
   const client = new S3Client({ region });
   const key = `images/${Date.now()}-${path.basename(filePath)}`;
+  const body = fs.readFileSync(filePath);
   await client.send(
     new PutObjectCommand({
       Bucket: bucket,
       Key: key,
+
       Body: fs.createReadStream(filePath),
       ContentType: contentType,
     }),
