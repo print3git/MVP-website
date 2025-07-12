@@ -1,8 +1,9 @@
 // backend/server.js
 
 require("dotenv").config();
-const { CLOUDFRONT_MODEL_DOMAIN } = process.env;
-if (!CLOUDFRONT_MODEL_DOMAIN) {
+const { getEnv } = require("./utils/getEnv");
+const CLOUDFRONT_MODEL_DOMAIN = getEnv("CLOUDFRONT_MODEL_DOMAIN");
+if (!CLOUDFRONT_MODEL_DOMAIN && process.env.NODE_ENV !== "test") {
   throw new Error("Missing required env var CLOUDFRONT_MODEL_DOMAIN");
 }
 const express = require("express");

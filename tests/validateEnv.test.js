@@ -24,6 +24,7 @@ describe("validate-env script", () => {
       STRIPE_LIVE_KEY: "",
       DB_URL: "postgres://user:pass@localhost/db",
       STRIPE_SECRET_KEY: "sk_test_dummy",
+      CLOUDFRONT_MODEL_DOMAIN: "cdn.test",
       npm_config_http_proxy: "",
       npm_config_https_proxy: "",
       http_proxy: "http://proxy",
@@ -44,6 +45,7 @@ describe("validate-env script", () => {
       AWS_SECRET_ACCESS_KEY: "secret",
       DB_URL: "postgres://user:pass@localhost/db",
       STRIPE_SECRET_KEY: "sk_test_dummy",
+      CLOUDFRONT_MODEL_DOMAIN: "cdn.test",
     };
     const output = run(env);
     expect(output).toContain("✅ environment OK");
@@ -56,6 +58,7 @@ describe("validate-env script", () => {
       AWS_ACCESS_KEY_ID: "id",
       AWS_SECRET_ACCESS_KEY: "secret",
       STRIPE_SECRET_KEY: "sk_test",
+      CLOUDFRONT_MODEL_DOMAIN: "cdn.test",
     };
     delete env.DB_URL;
     expect(() => run(env)).toThrow();
@@ -68,6 +71,7 @@ describe("validate-env script", () => {
       AWS_ACCESS_KEY_ID: "id",
       AWS_SECRET_ACCESS_KEY: "secret",
       STRIPE_TEST_KEY: "sk_test",
+      CLOUDFRONT_MODEL_DOMAIN: "cdn.test",
       npm_config_http_proxy: "http://proxy",
       SKIP_NET_CHECKS: "1",
     };
@@ -84,6 +88,7 @@ describe("validate-env script", () => {
       npm_config_http_proxy: "",
       npm_config_https_proxy: "",
       NETWORK_CHECK_URL: "http://127.0.0.1:9",
+      CLOUDFRONT_MODEL_DOMAIN: "cdn.test",
       SKIP_NET_CHECKS: "",
     };
     expect(() => run(env)).toThrow(/Network check failed/);

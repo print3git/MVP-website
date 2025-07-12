@@ -4,6 +4,12 @@ const os = require("os");
 const path = require("path");
 const child_process = require("child_process");
 
+// Ensure this script runs from the repo root so relative paths work
+const repoRoot = path.resolve(__dirname, "..");
+if (process.cwd() !== repoRoot) {
+  process.chdir(repoRoot);
+}
+
 function loadEnvFile(file) {
   if (!fs.existsSync(file)) return;
   const lines = fs.readFileSync(file, "utf8").split(/\r?\n/);

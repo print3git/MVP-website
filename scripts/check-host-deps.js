@@ -17,10 +17,12 @@ function checkNetwork() {
 
 function hostDepsInstalled() {
   try {
-    const out = execSync("npx playwright install --with-deps --dry-run", {
+    const out = execSync("npx playwright install --with-deps --dry-run 2>&1", {
       encoding: "utf8",
     });
-    return !/Missing libraries/i.test(out);
+    return !/(Missing libraries|Host system is missing dependencies)/i.test(
+      out,
+    );
   } catch {
     return false;
   }
@@ -30,14 +32,12 @@ checkNetwork();
 
 if (!hostDepsInstalled()) {
   if (process.env.SKIP_PW_DEPS) {
-
     console.error(
-      "Playwright host dependencies missing. Remove SKIP_PW_DEPS and run 'CI=1 npx playwright install --with-deps'.",
+      "Playwright host dependencies are missing. Run 'npx playwright install --with-deps' or remove SKIP_PW_DEPS.",
     );
     process.exit(1);
-  } else {
-    console.log("Playwright host dependencies missing. Installing...");
   }
+  console.log("Playwright host dependencies missing. Installing...");
   try {
     execSync("CI=1 npx playwright install --with-deps", { stdio: "inherit" });
   } catch (err) {
