@@ -65,7 +65,9 @@ test('model generator page', async ({ page }) => {
   await page.waitForFunction(() => window.customElements.get('model-viewer'));
   // Allow extra time for the viewer to load when the CDN script fails and the
   // page falls back to the local copy.
-  await page.waitForSelector('#viewer', { state: 'visible', timeout: 60000 });
+  await page.waitForSelector('body[data-viewer-ready="true"]', {
+    timeout: 60000,
+  });
   await expect(page.locator('#viewer')).toBeVisible();
 });
 
