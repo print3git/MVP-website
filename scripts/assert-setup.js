@@ -60,6 +60,35 @@ try {
   process.exit(1);
 }
 
+function rootDepsInstalled() {
+  try {
+    return fs.existsSync(path.join("node_modules", ".bin", "playwright"));
+  } catch {
+    return false;
+  }
+}
+
+if (!rootDepsInstalled()) {
+  console.log("Root dependencies missing. Installing...");
+  try {
+    child_process.execSync("npm ci", { stdio: "inherit" });
+  } catch (err) {
+    const msg = String(err.message || err);
+    if (msg.includes("EUSAGE")) {
+      console.warn("npm ci failed, falling back to 'npm install'");
+      try {
+        child_process.execSync("npm install", { stdio: "inherit" });
+      } catch (err2) {
+        console.error("Failed to install dependencies:", err2.message);
+        process.exit(1);
+      }
+    } else {
+      console.error("Failed to install dependencies:", err.message);
+      process.exit(1);
+    }
+  }
+}
+
 function browsersInstalled() {
   const envPath = process.env.PLAYWRIGHT_BROWSERS_PATH;
   const defaultPath = path.join(os.homedir(), ".cache", "ms-playwright");
