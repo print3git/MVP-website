@@ -1,4 +1,16 @@
-jest.mock("express");
+jest.mock(
+  "express",
+  () => {
+    const mExpress = jest.fn(() => ({
+      use: jest.fn(),
+      get: jest.fn(),
+      listen: jest.fn(),
+    }));
+    mExpress.static = jest.fn();
+    return mExpress;
+  },
+  { virtual: true },
+);
 const express = require("express");
 
 describe("startDevServer", () => {
