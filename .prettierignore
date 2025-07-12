@@ -5,6 +5,7 @@ competitions.html
 addons.html
 e2e/smoke.test.js
 index.html
+package-lock.json
 
 # Build artifacts
 dist
