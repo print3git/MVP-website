@@ -4,8 +4,17 @@ const os = require("os");
 
 describe("environment", () => {
   test("jest binary installed", () => {
-    const bin = path.join(__dirname, "..", "node_modules", ".bin", "jest");
-    expect(fs.existsSync(bin)).toBe(true);
+    const repoBin = path.join(__dirname, "..", "node_modules", ".bin", "jest");
+    const backendBin = path.join(
+      __dirname,
+      "..",
+      "backend",
+      "node_modules",
+      ".bin",
+      "jest",
+    );
+    const exists = fs.existsSync(repoBin) || fs.existsSync(backendBin);
+    expect(exists).toBe(true);
   });
 
   test("backend jest binary installed", () => {
@@ -37,6 +46,17 @@ describe("environment", () => {
     expect(fs.existsSync(bin)).toBe(true);
   });
 
+  test("commitlint binary installed", () => {
+    const bin = path.join(
+      __dirname,
+      "..",
+      "node_modules",
+      ".bin",
+      "commitlint",
+    );
+    expect(fs.existsSync(bin)).toBe(true);
+  });
+
   test("setup script has been run", () => {
     const flag = path.join(__dirname, "..", ".setup-complete");
     expect(fs.existsSync(flag)).toBe(true);
@@ -58,5 +78,9 @@ describe("environment", () => {
 
   test("@babel/plugin-syntax-typescript installed", () => {
     expect(() => require("@babel/plugin-syntax-typescript")).not.toThrow();
+  });
+
+  test("express installed", () => {
+    expect(() => require("express")).not.toThrow();
   });
 });

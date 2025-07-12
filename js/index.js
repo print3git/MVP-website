@@ -479,6 +479,9 @@ const hideAll = () => {
   if (typeof refs.viewer.pause === "function") {
     refs.viewer.pause();
   }
+  if (globalThis.document) {
+    delete document.body.dataset.viewerReady;
+  }
 };
 const showLoader = (withProgress = true) => {
   // Keep the viewer visible while showing the loader so the fallback model
@@ -501,6 +504,10 @@ const showModel = () => {
   refs.viewer.style.pointerEvents = "auto";
   if (typeof refs.viewer.play === "function") {
     refs.viewer.play();
+  }
+
+  if (globalThis.document) {
+    document.body.dataset.viewerReady = "true";
   }
 
   stopProgress();

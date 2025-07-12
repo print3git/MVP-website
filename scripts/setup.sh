@@ -10,17 +10,11 @@ cleanup_npm_cache() {
 trap cleanup_npm_cache EXIT
 cleanup_npm_cache
 
-unset npm_config_http_proxy npm_config_https_proxy http_proxy https_proxy
+unset npm_config_http_proxy npm_config_https_proxy
 export npm_config_fund=false
 
-# Provide a temporary Stripe key if none is configured so validation succeeds
-if [[ -z "$STRIPE_TEST_KEY" && -z "$STRIPE_LIVE_KEY" ]]; then
-  echo "Using dummy STRIPE_TEST_KEY" >&2
-  export STRIPE_TEST_KEY="sk_test_dummy_$(date +%s)"
-fi
-
-# Ensure required environment variables are present and proxies remain unset
-bash "$(dirname "$0")/validate-env.sh"
+# Validate required environment variables and network access
+bash "$(dirname "$0")/check-env.sh"
 
 # Persist proxy removal so new shells start clean
 if ! grep -q "unset npm_config_http_proxy" ~/.bashrc 2>/dev/null; then
@@ -66,14 +60,18 @@ sudo rm -f /var/lib/apt/lists/lock /var/lib/dpkg/lock /var/cache/apt/archives/lo
 
 if [ -z "$SKIP_PW_DEPS" ]; then
   # Retry apt-get update to ensure the proxy is respected and networking is ready
+  set +e
+  success=0
   for i in {1..3}; do
-    if sudo -E apt-get update; then
-      break
-    else
-      echo "apt-get update failed, retrying ($i/3)..." >&2
-      sleep 5
-    fi
+    sudo -E apt-get update && success=1 && break
+    echo "apt-get update failed, retrying ($i/3)..." >&2
+    sleep 5
   done
+  set -e
+  if [ $success -ne 1 ]; then
+    echo "apt-get update failed after retries, proceeding without Playwright system dependencies" >&2
+    SKIP_PW_DEPS=1
+  fi
 fi
 
 run_ci() {
