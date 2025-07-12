@@ -1,4 +1,3 @@
-/* eslint-disable jsdoc/require-jsdoc */
 const fs = require("fs");
 const path = require("path");
 const parser = require("@babel/parser");

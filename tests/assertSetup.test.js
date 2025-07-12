@@ -1,4 +1,3 @@
-/* eslint-disable jsdoc/require-jsdoc */
 jest.mock("fs");
 jest.mock("child_process");
 
@@ -12,7 +11,6 @@ describe("assert-setup script", () => {
     fs.readdirSync.mockReset();
     child_process.execSync.mockReset();
   });
-
 
   /** Set required environment variables for tests */
   function setEnv() {
