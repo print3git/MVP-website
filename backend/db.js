@@ -930,6 +930,39 @@ async function clearCart(userId) {
   await query("DELETE FROM cart_items WHERE user_id=$1", [userId]);
 }
 
+async function insertGenerationLog({
+  prompt,
+  startTime,
+  finishTime,
+  source,
+  costCents = 0,
+}) {
+  const { rows } = await query(
+    `INSERT INTO generation_logs(prompt, start_time, finish_time, source, cost_cents)
+     VALUES($1,$2,$3,$4,$5) RETURNING *`,
+    [prompt, startTime, finishTime, source, costCents],
+  );
+  return rows[0];
+}
+
+async function listGenerationLogs(limit = 50) {
+  const { rows } = await query(
+    `SELECT * FROM generation_logs ORDER BY start_time DESC LIMIT $1`,
+    [limit],
+  );
+  return rows;
+}
+
+async function getGenerationStats() {
+  const { rows } = await query(
+    `SELECT COUNT(*)::int AS total,
+            AVG(EXTRACT(EPOCH FROM (finish_time - start_time))) AS avg_duration,
+            SUM(cost_cents)::int AS total_cost
+       FROM generation_logs`,
+  );
+  return rows[0];
+}
+
 async function insertModel(originalFilename, s3Key) {
   const { rows } = await query(
     "INSERT INTO models(original_filename, s3_key) VALUES($1,$2) RETURNING *",
@@ -1146,6 +1179,9 @@ module.exports = {
   deleteCartItem,
   getCartItems,
   clearCart,
+  insertGenerationLog,
+  listGenerationLogs,
+  getGenerationStats,
   insertModel,
   insertOrderItems,
   getOrderItems,
