@@ -41,18 +41,17 @@ describe("validate-env script", () => {
     ).not.toThrow();
   });
 
-  test("fails without stripe keys", () => {
-    expect(() =>
-      execSync(`bash ${script}`, {
-        env: {
-          ...process.env,
-          STRIPE_TEST_KEY: "",
-          STRIPE_LIVE_KEY: "",
-          HF_TOKEN: "t",
-        },
-        stdio: "pipe",
-      }),
-    ).toThrow();
+  test("succeeds without stripe keys", () => {
+    const output = execSync(`bash ${script}`, {
+      env: {
+        ...process.env,
+        STRIPE_TEST_KEY: "",
+        STRIPE_LIVE_KEY: "",
+        HF_TOKEN: "",
+      },
+      stdio: "pipe",
+    }).toString();
+    expect(output).toContain("environment OK");
   });
 
   test("fails when npm proxy vars are set", () => {

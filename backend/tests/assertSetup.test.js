@@ -37,4 +37,19 @@ describe("assert-setup script", () => {
     const res = runAssertSetup("20.0.0");
     expect(res.status).toBe(0);
   });
+
+  test("sets dummy env vars when missing", () => {
+    const env = {
+      NODE_OPTIONS: `--require ${stub}`,
+      PLAYWRIGHT_BROWSERS_PATH: os.tmpdir(),
+    };
+    const result = spawnSync(process.execPath, [script], {
+      env,
+      encoding: "utf8",
+    });
+    expect(result.status).toBe(0);
+    expect(result.stderr).toContain("Using dummy HF_TOKEN");
+    expect(result.stderr).toContain("Using dummy AWS_ACCESS_KEY_ID");
+    expect(result.stderr).toContain("Using dummy AWS_SECRET_ACCESS_KEY");
+  });
 });

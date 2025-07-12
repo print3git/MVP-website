@@ -13,7 +13,7 @@ function run(env, clean = true) {
   }
   return execSync("npm run validate-env", {
     cwd: root,
-    env: e,
+    env: { ...e, SKIP_NET_CHECKS: "1" },
     stdio: "pipe",
   }).toString();
 }

@@ -17,7 +17,7 @@ describe("validate-env script", () => {
   test("sets dummy Stripe key when missing", () => {
     const env = {
       ...process.env,
-      HF_TOKEN: "test",
+      HF_TOKEN: "",
       STRIPE_TEST_KEY: "",
       STRIPE_LIVE_KEY: "",
       npm_config_http_proxy: "",
@@ -28,6 +28,23 @@ describe("validate-env script", () => {
     const output = run(env);
     expect(output).toContain("✅ environment OK");
     expect(output).not.toMatch(/mise WARN/);
+  });
+
+  test("sets dummy HF and AWS credentials when missing", () => {
+    const env = {
+      ...process.env,
+      HF_TOKEN: "",
+      AWS_ACCESS_KEY_ID: "",
+      AWS_SECRET_ACCESS_KEY: "",
+      STRIPE_TEST_KEY: "sk_test",
+      npm_config_http_proxy: "",
+      npm_config_https_proxy: "",
+    };
+    const output = run(env);
+    expect(output).toContain("Using dummy HF_TOKEN");
+    expect(output).toContain("Using dummy AWS_ACCESS_KEY_ID");
+    expect(output).toContain("Using dummy AWS_SECRET_ACCESS_KEY");
+    expect(output).toContain("environment OK");
   });
 
   test("fails when proxy variables set", () => {
