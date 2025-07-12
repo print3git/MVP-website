@@ -33,6 +33,18 @@ test('checkout flow', async ({ page }) => {
 });
 
 test('model generator page', async ({ page }) => {
+  // Skip if the CDN hosting <model-viewer> is unreachable.
+  try {
+    const resp = await page.request.get(
+      'https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js',
+    );
+    if (resp.status() >= 400) {
+      test.skip(true, 'cdn.jsdelivr.net unreachable');
+    }
+  } catch {
+    test.skip(true, 'cdn.jsdelivr.net unreachable');
+  }
+
   await page.goto('/index.html');
   // <model-viewer> loads asynchronously; wait for the custom element
   // definition and for the model to finish loading before checking visibility.
@@ -52,6 +64,18 @@ test('generate flow', async ({ page }) => {
     }
   } catch {
     test.skip(true, 'esm.sh unreachable');
+  }
+
+  // Skip if the CDN hosting <model-viewer> is unreachable.
+  try {
+    const resp = await page.request.get(
+      'https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js',
+    );
+    if (resp.status() >= 400) {
+      test.skip(true, 'cdn.jsdelivr.net unreachable');
+    }
+  } catch {
+    test.skip(true, 'cdn.jsdelivr.net unreachable');
   }
 
   await page.goto('/generate.html');
