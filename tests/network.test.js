@@ -36,4 +36,20 @@ describe("network connectivity", () => {
     });
     expect(ok).toBe(true);
   });
+
+  test("esm.sh reachable", async () => {
+    const ok = await check("https://esm.sh").catch((err) => {
+      throw new Error(`esm.sh unreachable: ${err.message}`);
+    });
+    expect(ok).toBe(true);
+  });
+
+  test("jsdelivr reachable", async () => {
+    const ok = await check(
+      "https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js",
+    ).catch((err) => {
+      throw new Error(`jsdelivr unreachable: ${err.message}`);
+    });
+    expect(ok).toBe(true);
+  });
 });

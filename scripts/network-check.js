@@ -5,6 +5,10 @@ const { execSync } = require("child_process");
 const targets = [
   { url: "https://registry.npmjs.org/-/ping", name: "npm registry" },
   { url: "https://cdn.playwright.dev", name: "Playwright CDN" },
+  { url: "https://esm.sh", name: "esm.sh" },
+  {
+    url: "https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js",
+    name: "jsdelivr" },
 ];
 
 // Allow tests to override the first target URL so failure scenarios can be
