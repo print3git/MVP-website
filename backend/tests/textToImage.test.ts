@@ -5,6 +5,16 @@ jest.mock("@aws-sdk/client-s3", () => ({
   PutObjectCommand: jest.fn(),
 }));
 
+process.env.http_proxy = 'http://proxy:8080';
+process.env.https_proxy = 'http://proxy:8080';
+process.env.HTTP_PROXY = 'http://proxy:8080';
+process.env.HTTPS_PROXY = 'http://proxy:8080';
+
+delete process.env.http_proxy;
+delete process.env.https_proxy;
+delete process.env.HTTP_PROXY;
+delete process.env.HTTPS_PROXY;
+
 const nock = require("nock");
 const { textToImage } = require("../src/lib/textToImage.js");
 const s3 = require("../src/lib/uploadS3.js");

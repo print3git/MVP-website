@@ -4,20 +4,22 @@ These guidelines apply to all automated agents (e.g. the Codex agent) working on
 
 ## Mandatory steps
 
-1. **Unset proxy variables** – before running any `npm` commands, **and whenever you start a new shell session**, execute `unset npm_config_http_proxy npm_config_https_proxy` to silence `http-proxy` warnings.
-   Run `npm ping` to verify that the registry is reachable before proceeding.
-2. **Check network access** – ensure the environment can reach both
+
+1. **Go to the repository root** – run `cd "$(git rev-parse --show-toplevel)"` after opening a shell to ensure paths resolve correctly.
+2. **Unset proxy variables** – before running any `npm` commands, **and whenever you start a new shell session**, execute `unset npm_config_http_proxy npm_config_https_proxy` to silence `http-proxy` warnings.
+  Run `npm ping` to verify that the registry is reachable before proceeding.
+3. **Check network access** – ensure the environment can reach both
    `https://registry.npmjs.org` and `https://cdn.playwright.dev`. The setup
    script downloads packages and browsers from these domains. If they are
    blocked, adjust your environment or proxy settings.
-
-3. **Install dependencies** – run `npm run setup` at the repository root **before your first `npm run ci`**. Run it again whenever the container is restarted or if Playwright tests fail with messages like "Test was interrupted" or "page.evaluate: Test ended". This script unsets proxy variables, checks registry connectivity, runs `npm ci` in the root and `backend/`, and installs Playwright browsers.
+4. **Install dependencies** – run `npm run setup` at the repository root **before your first `npm run ci`**. Run it again whenever the container is restarted or if Playwright tests fail with messages like "Test was interrupted" or "page.evaluate: Test ended". This script unsets proxy variables, checks registry connectivity, runs `npm ci` in the root and `backend/`, and installs Playwright browsers.
+   - If `npm ci` fails with an `EUSAGE` error complaining that packages are missing from the lock file, run `npm install` in the affected directory and then re-run the setup script.
    - Set `SKIP_PW_DEPS=1` before running the setup script if Playwright dependencies are already installed. This skips the long `apt-get` step and reduces CI time. The `smoke` script also runs the setup script, so use `SKIP_PW_DEPS=1 npm run smoke` to avoid reinstalling Playwright dependencies when they are already present.
-4. **Format code** – run `npm run format` in `backend/` to apply Prettier formatting.
-5. **Run tests** – execute `npm test` in `backend/`. If tests cannot run because of environment limitations, mention this in the PR.
-6. **Run full CI locally** – execute `npm run ci` at the repo root before opening a PR. Set `SKIP_PW_DEPS=1` if Playwright dependencies were installed previously to avoid redundant `apt-get` steps.
-7. **Install Playwright browsers** – the setup script installs these automatically. If browsers or host dependencies are missing (e.g. Playwright warns that the host system lacks libraries), run `CI=1 npx playwright install --with-deps` manually.
-8. **Run smoke tests** – execute `npm run smoke` at the repository root. This script starts the dev server and runs the Playwright smoke test. If the browsers are already installed, prepend `SKIP_PW_DEPS=1` to skip reinstalling them. **Do not run `npx playwright test` directly** – that can trigger `"Playwright Test did not expect test() to be called here"` errors when dependencies are missing.
+5. **Format code** – run `npm run format` in `backend/` to apply Prettier formatting.
+6. **Run tests** – execute `npm test` in `backend/`. If tests cannot run because of environment limitations, mention this in the PR.
+7. **Run full CI locally** – execute `npm run ci` at the repo root before opening a PR. Set `SKIP_PW_DEPS=1` if Playwright dependencies were installed previously to avoid redundant `apt-get` steps.
+8. **Install Playwright browsers** – the setup script installs these automatically. If browsers or host dependencies are missing (e.g. Playwright warns that the host system lacks libraries), run `CI=1 npx playwright install --with-deps` manually.
+9. **Run smoke tests** – execute `npm run smoke` at the repository root. This script starts the dev server and runs the Playwright smoke test. If the browsers are already installed, prepend `SKIP_PW_DEPS=1` to skip reinstalling them. **Do not run `npx playwright test` directly** – that can trigger `"Playwright Test did not expect test() to be called here"` errors when dependencies are missing.
 9. **Limit scope** – only modify files related to the task. Do not change anything under `img/`, `models/`, or `uploads/` unless explicitly requested. Avoid editing `docs/` unless the task specifically involves documentation.
 10. **Use Conventional Commits** – commit messages must follow the `type: description` format enforced by commitlint. Allowed types are `build`, `ci`, `docs`, `feat`, `fix`, `chore`, `refactor`, `test`, `style`, `perf`, and `revert`. Example: `fix: handle missing avatar images`.
 11. **Review your diff** – run `git status --short` and `git diff --stat` to ensure only intended files were modified. Revert any unrelated changes.
