@@ -7,6 +7,14 @@ mise settings add idiomatic_version_file_enable_tools node --yes >/dev/null 2>&1
 if [ -f .mise.toml ]; then
   mise trust .mise.toml >/dev/null 2>&1 || true
 fi
+
+# Enforce Node.js version 20 or newer
+required_major=20
+current_major=$(node -v | sed 's/^v//' | cut -d. -f1)
+if [ "$current_major" -lt "$required_major" ]; then
+  echo "Node $required_major or newer is required. Current version: $(node -v)" >&2
+  exit 1
+fi
 if [[ -z "${STRIPE_TEST_KEY:-}" && -z "${STRIPE_LIVE_KEY:-}" ]]; then
   echo "Using dummy STRIPE_TEST_KEY" >&2
   export STRIPE_TEST_KEY="sk_test_dummy_$(date +%s)"

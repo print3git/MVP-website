@@ -18,6 +18,9 @@ describe("validate-env script", () => {
     const env = {
       ...process.env,
       HF_TOKEN: "test",
+      AWS_ACCESS_KEY_ID: "id",
+      AWS_SECRET_ACCESS_KEY: "secret",
+      SKIP_NET_CHECKS: "1",
       STRIPE_TEST_KEY: "",
       STRIPE_LIVE_KEY: "",
       npm_config_http_proxy: "",
@@ -34,6 +37,9 @@ describe("validate-env script", () => {
     const env = {
       ...process.env,
       HF_TOKEN: "test",
+      AWS_ACCESS_KEY_ID: "id",
+      AWS_SECRET_ACCESS_KEY: "secret",
+      SKIP_NET_CHECKS: "1",
       STRIPE_TEST_KEY: "sk_test",
       npm_config_http_proxy: "http://proxy",
     };
