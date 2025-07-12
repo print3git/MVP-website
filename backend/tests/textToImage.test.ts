@@ -15,12 +15,12 @@ delete process.env.https_proxy;
 delete process.env.HTTP_PROXY;
 delete process.env.HTTPS_PROXY;
 
-jest.mock("../src/lib/uploadS3.js", () => ({
+jest.mock("../src/lib/uploadS3", () => ({
   uploadFile: jest.fn().mockResolvedValue("https://cdn.test/image.png"),
 }));
 
 const nock = require("nock");
-const s3 = require("../src/lib/uploadS3.js");
+const s3 = require("../src/lib/uploadS3");
 const { textToImage } = require("../src/lib/textToImage.js");
 
 describe("textToImage", () => {
@@ -47,6 +47,10 @@ describe("textToImage", () => {
     jest.restoreAllMocks();
     delete process.env.AWS_ACCESS_KEY_ID;
     delete process.env.AWS_SECRET_ACCESS_KEY;
+  });
+
+  test("uploadFile is mocked", () => {
+    expect(jest.isMockFunction(s3.uploadFile)).toBe(true);
   });
 
   test("uploads generated image and returns url", async () => {
