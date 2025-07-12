@@ -29,7 +29,7 @@ if [[ -z "${SKIP_NET_CHECKS:-}" ]]; then
     echo "Unable to reach the npm registry. Check network connectivity or proxy settings." >&2
     exit 1
   fi
-  if ! curl -sfI https://cdn.playwright.dev >/dev/null; then
+  if ! curl -sI https://cdn.playwright.dev >/dev/null; then
     echo "Unable to reach https://cdn.playwright.dev" >&2
     exit 1
   fi
