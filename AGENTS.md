@@ -17,16 +17,17 @@ These guidelines apply to all automated agents (e.g. the Codex agent) working on
    - Set `SKIP_PW_DEPS=1` before running the setup script if Playwright dependencies are already installed. This skips the long `apt-get` step and reduces CI time. The `smoke` script also runs the setup script, so use `SKIP_PW_DEPS=1 npm run smoke` to avoid reinstalling Playwright dependencies when they are already present.
 5. **Format code** – run `npm run format` in `backend/` to apply Prettier formatting.
 6. **Run tests** – execute `npm test` in `backend/`. If tests cannot run because of environment limitations, mention this in the PR.
-7. **Run full CI locally** – execute `npm run ci` at the repo root before opening a PR. Set `SKIP_PW_DEPS=1` if Playwright dependencies were installed previously to avoid redundant `apt-get` steps.
-8. **Install Playwright browsers** – the setup script installs these automatically. If browsers or host dependencies are missing (e.g. Playwright warns that the host system lacks libraries), run `CI=1 npx playwright install --with-deps` manually.
-9. **Run smoke tests** – execute `npm run smoke` at the repository root. This script starts the dev server and runs the Playwright smoke test. If the browsers are already installed, prepend `SKIP_PW_DEPS=1` to skip reinstalling them. **Do not run `npx playwright test` directly** – that can trigger `"Playwright Test did not expect test() to be called here"` errors when dependencies are missing.
-9. **Limit scope** – only modify files related to the task. Do not change anything under `img/`, `models/`, or `uploads/` unless explicitly requested. Avoid editing `docs/` unless the task specifically involves documentation.
-10. **Use Conventional Commits** – commit messages must follow the `type: description` format enforced by commitlint. Allowed types are `build`, `ci`, `docs`, `feat`, `fix`, `chore`, `refactor`, `test`, `style`, `perf`, and `revert`. Example: `fix: handle missing avatar images`.
-11. **Review your diff** – run `git status --short` and `git diff --stat` to ensure only intended files were modified. Revert any unrelated changes.
-12. **Include logs** – paste the output of `npm test` (or `npm run test-ci`) and `npm run format` in the PR description so maintainers can verify the steps.
-13. **Avoid PRs with failing tests** – if `npm run ci` or the smoke tests fail for reasons other than environment limitations, do not open a pull request. Fix the issues or open an issue summarizing the failure instead.
-14. **Avoid committing binary files** – Codex cannot generate patches for binary changes. Do not modify images, audio, or other binary assets. If adding new ones, update `.gitattributes` so they are treated as binary.
-15. **Pin GitHub Action versions** – use explicit tags instead of broad majors to prevent resolution errors (e.g. `aquasecurity/tfsec-action@v1.0.3`).
+7. **AWS credentials** – when `STABILITY_KEY` is provided (for text-to-image tests), set `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` to placeholder values so environment validation passes.
+8. **Run full CI locally** – execute `npm run ci` at the repo root before opening a PR. Set `SKIP_PW_DEPS=1` if Playwright dependencies were installed previously to avoid redundant `apt-get` steps.
+9. **Install Playwright browsers** – the setup script installs these automatically. If browsers or host dependencies are missing (e.g. Playwright warns that the host system lacks libraries), run `CI=1 npx playwright install --with-deps` manually.
+10. **Run smoke tests** – execute `npm run smoke` at the repository root. This script starts the dev server and runs the Playwright smoke test. If the browsers are already installed, prepend `SKIP_PW_DEPS=1` to skip reinstalling them. **Do not run `npx playwright test` directly** – that can trigger `"Playwright Test did not expect test() to be called here"` errors when dependencies are missing.
+11. **Limit scope** – only modify files related to the task. Do not change anything under `img/`, `models/`, or `uploads/` unless explicitly requested. Avoid editing `docs/` unless the task specifically involves documentation.
+12. **Use Conventional Commits** – commit messages must follow the `type: description` format enforced by commitlint. Allowed types are `build`, `ci`, `docs`, `feat`, `fix`, `chore`, `refactor`, `test`, `style`, `perf`, and `revert`. Example: `fix: handle missing avatar images`.
+13. **Review your diff** – run `git status --short` and `git diff --stat` to ensure only intended files were modified. Revert any unrelated changes.
+14. **Include logs** – paste the output of `npm test` (or `npm run test-ci`) and `npm run format` in the PR description so maintainers can verify the steps.
+15. **Avoid PRs with failing tests** – if `npm run ci` or the smoke tests fail for reasons other than environment limitations, do not open a pull request. Fix the issues or open an issue summarizing the failure instead.
+16. **Avoid committing binary files** – Codex cannot generate patches for binary changes. Do not modify images, audio, or other binary assets. If adding new ones, update `.gitattributes` so they are treated as binary.
+17. **Pin GitHub Action versions** – use explicit tags instead of broad majors to prevent resolution errors (e.g. `aquasecurity/tfsec-action@v1.0.3`).
 
 ## Troubleshooting
 
