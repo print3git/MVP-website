@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+if [[ "$1" == "rm" && -z "$RM_FAIL_DONE" ]]; then
+  echo "rm: cannot remove '$3': Directory not empty" >&2
+  export RM_FAIL_DONE=1
+  exit 1
+fi
+exec "$@"
+

@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+# Ensure mise is available for toolchain management
+"$(dirname "$0")/install-mise.sh" >/dev/null
+
 cleanup_npm_cache() {
   npm cache clean --force >/dev/null 2>&1 || true
   rm -rf "$(npm config get cache)/_cacache" "$HOME/.npm/_cacache"
@@ -10,7 +13,7 @@ cleanup_npm_cache() {
 trap cleanup_npm_cache EXIT
 cleanup_npm_cache
 
-unset npm_config_http_proxy npm_config_https_proxy http_proxy https_proxy
+unset npm_config_http_proxy npm_config_https_proxy
 export npm_config_fund=false
 
 # Validate required environment variables and network access
@@ -50,7 +53,10 @@ if pgrep -f "node scripts/dev-server.js" >/dev/null 2>&1; then
 fi
 
 # Remove any existing node_modules directories to avoid ENOTEMPTY errors
-sudo rm -rf node_modules backend/node_modules
+# Use rimraf for reliability and fall back to rm if it fails
+if ! sudo npx --yes rimraf node_modules backend/node_modules >/dev/null 2>&1; then
+  sudo rm -rf node_modules backend/node_modules || true
+fi
 
 # Remove stale apt or dpkg locks that may prevent dependency installation
 if pgrep apt-get >/dev/null 2>&1; then
@@ -60,14 +66,20 @@ sudo rm -f /var/lib/apt/lists/lock /var/lib/dpkg/lock /var/cache/apt/archives/lo
 
 if [ -z "$SKIP_PW_DEPS" ]; then
   # Retry apt-get update to ensure the proxy is respected and networking is ready
+  APT_OK=0
   for i in {1..3}; do
     if sudo -E apt-get update; then
+      APT_OK=1
       break
     else
       echo "apt-get update failed, retrying ($i/3)..." >&2
       sleep 5
     fi
   done
+  if [ "$APT_OK" -ne 1 ]; then
+    echo "apt-get update failed after 3 attempts, skipping Playwright system dependencies" >&2
+    export SKIP_PW_DEPS=1
+  fi
 fi
 
 run_ci() {

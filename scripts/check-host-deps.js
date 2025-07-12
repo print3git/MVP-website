@@ -30,14 +30,12 @@ checkNetwork();
 
 if (!hostDepsInstalled()) {
   if (process.env.SKIP_PW_DEPS) {
-
     console.error(
-      "Playwright host dependencies missing. Remove SKIP_PW_DEPS and run 'CI=1 npx playwright install --with-deps'.",
+      "Playwright host dependencies are missing. Run 'npx playwright install --with-deps' or remove SKIP_PW_DEPS.",
     );
     process.exit(1);
-  } else {
-    console.log("Playwright host dependencies missing. Installing...");
   }
+  console.log("Playwright host dependencies missing. Installing...");
   try {
     execSync("CI=1 npx playwright install --with-deps", { stdio: "inherit" });
   } catch (err) {
