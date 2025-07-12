@@ -15,13 +15,13 @@ delete process.env.https_proxy;
 delete process.env.HTTP_PROXY;
 delete process.env.HTTPS_PROXY;
 
-jest.mock("../src/lib/uploadS3.js", () => ({
+jest.mock("../src/lib/uploadS3", () => ({
   uploadFile: jest.fn().mockResolvedValue("https://cdn.test/image.png"),
 }));
 
 const nock = require("nock");
-const s3 = require("../src/lib/uploadS3.js");
-const { textToImage } = require("../src/lib/textToImage.js");
+const s3 = require("../src/lib/uploadS3");
+const { textToImage } = require("../src/lib/textToImage");
 
 describe("textToImage", () => {
   const endpoint = "https://api.stability.ai";
