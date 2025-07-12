@@ -10,7 +10,7 @@ describe("validate-env script", () => {
         env: {
           ...process.env,
           STRIPE_TEST_KEY: "sk_test",
-          HF_TOKEN: "t",
+          HF_TOKEN: "",
           http_proxy: "",
           https_proxy: "",
           npm_config_http_proxy: "",
@@ -28,7 +28,24 @@ describe("validate-env script", () => {
           ...process.env,
           STRIPE_LIVE_KEY: "sk_live",
           STRIPE_TEST_KEY: "",
-          HF_TOKEN: "t",
+          HF_TOKEN: "",
+          http_proxy: "",
+          https_proxy: "",
+          npm_config_http_proxy: "",
+          npm_config_https_proxy: "",
+        },
+        stdio: "pipe",
+      }),
+    ).not.toThrow();
+  });
+
+  test("generates dummy HF_TOKEN when unset", () => {
+    expect(() =>
+      execSync(`bash ${script}`, {
+        env: {
+          ...process.env,
+          STRIPE_TEST_KEY: "sk_test",
+          HF_TOKEN: "",
           http_proxy: "",
           https_proxy: "",
           npm_config_http_proxy: "",
@@ -46,7 +63,7 @@ describe("validate-env script", () => {
           ...process.env,
           STRIPE_TEST_KEY: "",
           STRIPE_LIVE_KEY: "",
-          HF_TOKEN: "t",
+          HF_TOKEN: "",
         },
         stdio: "pipe",
       }),
@@ -59,7 +76,7 @@ describe("validate-env script", () => {
         env: {
           ...process.env,
           STRIPE_TEST_KEY: "sk_test",
-          HF_TOKEN: "t",
+          HF_TOKEN: "",
           npm_config_http_proxy: "http://proxy",
         },
         stdio: "pipe",

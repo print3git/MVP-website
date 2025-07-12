@@ -13,6 +13,11 @@ cleanup_npm_cache
 unset npm_config_http_proxy npm_config_https_proxy
 export npm_config_fund=false
 
+# Provide a dummy HF_TOKEN to allow local setup without credentials
+if [ -z "$HF_TOKEN" ]; then
+  export HF_TOKEN="hf_dummy_$(date +%s)"
+fi
+
 # Ensure required environment variables are present and proxies remain unset
 bash "$(dirname "$0")/validate-env.sh"
 

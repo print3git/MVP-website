@@ -1,5 +1,8 @@
 node_modules
 uploads
+package-lock.json
+backend/package-lock.json
+backend/dalle_server/package-lock.json
 payment.html
 competitions.html
 addons.html
