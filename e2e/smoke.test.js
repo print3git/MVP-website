@@ -51,8 +51,12 @@ test('model generator page', async ({ page }) => {
     if (resp.status() >= 400) {
       test.skip(true, 'cdn.jsdelivr.net unreachable');
     }
+    const mv = await page.request.get('https://modelviewer.dev');
+    if (mv.status() >= 400) {
+      test.skip(true, 'modelviewer.dev unreachable');
+    }
   } catch {
-    test.skip(true, 'cdn.jsdelivr.net unreachable');
+    test.skip(true, 'viewer assets unreachable');
   }
 
   await page.goto('/index.html');
@@ -61,7 +65,7 @@ test('model generator page', async ({ page }) => {
   await page.waitForFunction(() => window.customElements.get('model-viewer'));
   // Allow extra time for the viewer to load when the CDN script fails and the
   // page falls back to the local copy.
-  await page.waitForSelector('#viewer', { state: 'visible', timeout: 30000 });
+  await page.waitForSelector('#viewer', { state: 'visible', timeout: 60000 });
   await expect(page.locator('#viewer')).toBeVisible();
 });
 
@@ -76,7 +80,7 @@ test('generate flow', async ({ page }) => {
     test.skip(true, 'esm.sh unreachable');
   }
 
-  // Skip if the CDN hosting <model-viewer> is unreachable.
+  // Skip if the CDN hosting <model-viewer> or its assets are unreachable.
   try {
     const resp = await page.request.get(
       'https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js',
@@ -84,8 +88,12 @@ test('generate flow', async ({ page }) => {
     if (resp.status() >= 400) {
       test.skip(true, 'cdn.jsdelivr.net unreachable');
     }
+    const mv = await page.request.get('https://modelviewer.dev');
+    if (mv.status() >= 400) {
+      test.skip(true, 'modelviewer.dev unreachable');
+    }
   } catch {
-    test.skip(true, 'cdn.jsdelivr.net unreachable');
+    test.skip(true, 'viewer assets unreachable');
   }
 
   await page.goto('/generate.html');
@@ -95,5 +103,5 @@ test('generate flow', async ({ page }) => {
   await page.waitForSelector('#gen-prompt', { state: 'visible', timeout: 30000 });
   await page.fill('#gen-prompt', 'test');
   await page.click('#gen-submit');
-  await expect(page.locator('canvas')).toBeVisible({ timeout: 30000 });
+  await expect(page.locator('canvas')).toBeVisible({ timeout: 20000 });
 });

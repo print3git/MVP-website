@@ -39,6 +39,19 @@ describe("network connectivity", () => {
     expect(status).toBeLessThan(500);
   });
 
+
+  test("jsdelivr reachable", async () => {
+    let status;
+    try {
+      status = await head(
+        "https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js",
+      );
+    } catch (err) {
+      console.warn("Skipping jsdelivr connectivity test:", err.message);
+      return;
+    }
+    expect(status).toBeLessThan(500);
+  });
   test("esm.sh reachable", async () => {
     let status;
     try {
