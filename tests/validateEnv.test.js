@@ -39,4 +39,15 @@ describe("validate-env script", () => {
     };
     expect(() => run(env)).toThrow();
   });
+
+  test("fails when HF_TOKEN missing", () => {
+    const env = {
+      ...process.env,
+      STRIPE_TEST_KEY: "sk_test",
+      HF_TOKEN: "",
+      npm_config_http_proxy: "",
+      npm_config_https_proxy: "",
+    };
+    expect(() => run(env)).toThrow();
+  });
 });

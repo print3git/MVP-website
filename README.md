@@ -34,6 +34,8 @@ Run `docker compose up` to start the API and Postgres services.
 - `STRIPE_PUBLISHABLE_KEY` – publishable key for Stripe.js on the frontend.
 - `STRIPE_WEBHOOK_SECRET` – signing secret for Stripe webhooks.
 - `HUNYUAN_API_KEY` – key for the Sparc3D API.
+- `HF_TOKEN` – authentication token for the Hugging Face API.
+- `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` – credentials for S3 uploads.
 
 The server uses `STRIPE_LIVE_KEY` when `NODE_ENV=production`; otherwise `STRIPE_TEST_KEY` is used.
 
