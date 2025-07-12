@@ -14,4 +14,12 @@ describe("smoke script", () => {
     );
     expect(/SKIP_PW_DEPS/.test(content)).toBe(true);
   });
+
+  test("run-smoke.js hints when setup fails", () => {
+    const content = fs.readFileSync(
+      path.join(__dirname, "..", "scripts", "run-smoke.js"),
+      "utf8",
+    );
+    expect(content).toMatch(/net:check/);
+  });
 });

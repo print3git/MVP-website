@@ -18,12 +18,15 @@ describe("validate-env script", () => {
     const env = {
       ...process.env,
       HF_TOKEN: "test",
+      AWS_ACCESS_KEY_ID: "id",
+      AWS_SECRET_ACCESS_KEY: "secret",
       STRIPE_TEST_KEY: "",
       STRIPE_LIVE_KEY: "",
       npm_config_http_proxy: "",
       npm_config_https_proxy: "",
       http_proxy: "http://proxy",
       https_proxy: "http://proxy",
+      SKIP_NET_CHECKS: "1",
     };
     const output = run(env);
     expect(output).toContain("✅ environment OK");
@@ -38,5 +41,22 @@ describe("validate-env script", () => {
       npm_config_http_proxy: "http://proxy",
     };
     expect(() => run(env)).toThrow();
+  });
+
+  test("fails when network unreachable", () => {
+    const env = {
+      ...process.env,
+      HF_TOKEN: "test",
+      AWS_ACCESS_KEY_ID: "id",
+      AWS_SECRET_ACCESS_KEY: "secret",
+      npm_config_http_proxy: "",
+      npm_config_https_proxy: "",
+      http_proxy: "",
+      https_proxy: "",
+      HTTP_PROXY: "",
+      HTTPS_PROXY: "",
+      NET_CHECK_URLS: "http://127.0.0.1:9",
+    };
+    expect(() => run(env)).toThrow(/Network check failed/);
   });
 });

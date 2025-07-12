@@ -1,14 +1,20 @@
 #!/usr/bin/env node
-const { execSync } = require('child_process');
+const { execSync } = require("child_process");
 
-const targets = [
-  { url: 'https://registry.npmjs.org', name: 'npm registry' },
-  { url: 'https://cdn.playwright.dev', name: 'Playwright CDN' },
+const defaultTargets = [
+  { url: "https://registry.npmjs.org", name: "npm registry" },
+  { url: "https://cdn.playwright.dev", name: "Playwright CDN" },
 ];
+
+const envTargets = process.env.NET_CHECK_URLS
+  ? process.env.NET_CHECK_URLS.split(",").map((url) => ({ url, name: url }))
+  : null;
+
+const targets = envTargets || defaultTargets;
 
 function check(url) {
   try {
-    execSync(`curl -sI --max-time 10 ${url}`, { stdio: 'ignore' });
+    execSync(`curl -sI --max-time 10 ${url}`, { stdio: "ignore" });
     return true;
   } catch {
     return false;
@@ -21,4 +27,4 @@ for (const { url, name } of targets) {
     process.exit(1);
   }
 }
-console.log('✅ network OK');
+console.log("✅ network OK");

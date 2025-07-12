@@ -3,7 +3,16 @@ const { execSync } = require("child_process");
 const env = { ...process.env };
 
 function run(cmd) {
-  execSync(cmd, { stdio: "inherit", env });
+  try {
+    execSync(cmd, { stdio: "inherit", env });
+  } catch (err) {
+    if (cmd === "npm run setup") {
+      console.error(
+        'setup failed. Run "npm run net:check" to verify network connectivity.',
+      );
+    }
+    process.exit(err.status || 1);
+  }
 }
 
 run("npm run setup");
