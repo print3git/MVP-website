@@ -10,7 +10,11 @@ export default function useGenerateModel() {
     setError(null);
     setModelUrl(null);
     try {
-      const res = await fetch(`/api/generate?prompt=${encodeURIComponent(prompt)}`);
+      const res = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt }),
+      });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Request failed');
       setModelUrl(data.glb_url);
