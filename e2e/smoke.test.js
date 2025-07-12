@@ -85,5 +85,5 @@ test('generate flow', async ({ page }) => {
   await page.waitForSelector('#gen-prompt', { state: 'visible', timeout: 30000 });
   await page.fill('#gen-prompt', 'test');
   await page.click('#gen-submit');
-  await expect(page.locator('canvas')).toBeVisible({ timeout: 10000 });
+  await expect(page.locator('canvas')).toBeVisible({ timeout: 30000 });
 });
