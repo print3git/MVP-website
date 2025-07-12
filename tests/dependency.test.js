@@ -38,4 +38,8 @@ describe("environment", () => {
     }
     expect(installed).toBe(true);
   });
+
+  test("@babel/plugin-syntax-typescript installed", () => {
+    expect(() => require("@babel/plugin-syntax-typescript")).not.toThrow();
+  });
 });

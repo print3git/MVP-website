@@ -11,6 +11,7 @@ function run(env, clean = true) {
     delete e.http_proxy;
     delete e.https_proxy;
   }
+  e.SKIP_NET_CHECKS = "1";
   return execSync("npm run validate-env", {
     cwd: root,
     env: e,
