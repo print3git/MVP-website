@@ -39,6 +39,7 @@ describe("textToImage", () => {
     delete process.env.HTTP_PROXY;
     delete process.env.HTTPS_PROXY;
     nock.disableNetConnect();
+    expect(jest.isMockFunction(s3.uploadFile)).toBe(true);
   });
 
   afterEach(() => {

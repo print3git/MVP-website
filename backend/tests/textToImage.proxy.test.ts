@@ -25,6 +25,7 @@ describe("textToImage proxy cleanup", () => {
     process.env.S3_BUCKET = "bucket";
     process.env.CLOUDFRONT_DOMAIN = "cdn.test";
     nock.disableNetConnect();
+    expect(jest.isMockFunction(s3.uploadFile)).toBe(true);
   });
 
   afterEach(() => {
