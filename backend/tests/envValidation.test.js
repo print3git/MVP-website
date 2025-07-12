@@ -66,4 +66,18 @@ describe("validate-env script", () => {
       }),
     ).toThrow();
   });
+
+  test("fails when npm registry is unreachable", () => {
+    expect(() =>
+      execSync(`bash ${script}`, {
+        env: {
+          ...process.env,
+          STRIPE_TEST_KEY: "sk_test",
+          HF_TOKEN: "t",
+          npm_config_registry: "http://127.0.0.1:9",
+        },
+        stdio: "pipe",
+      }),
+    ).toThrow();
+  });
 });

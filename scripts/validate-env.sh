@@ -11,4 +11,14 @@ if [[ -n "${npm_config_http_proxy:-}" || -n "${npm_config_https_proxy:-}" || -n 
   exit 1
 fi
 
+if ! npm ping >/dev/null 2>&1; then
+  echo "Unable to reach the npm registry. Check network connectivity or proxy settings." >&2
+  exit 1
+fi
+
+if ! curl -I https://cdn.playwright.dev --max-time 10 >/dev/null 2>&1; then
+  echo "Unable to reach cdn.playwright.dev" >&2
+  exit 1
+fi
+
 echo "✅ environment OK"
