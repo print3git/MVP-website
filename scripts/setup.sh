@@ -72,8 +72,29 @@ if [ -z "$SKIP_PW_DEPS" ]; then
   done
 fi
 
-npm ci --no-audit --no-fund
-npm ci --prefix backend --no-audit --no-fund
+run_ci() {
+  local dir="$1"
+  local extra=""
+  if [ -n "$dir" ]; then
+    extra="--prefix $dir"
+  fi
+  if ! npm ci $extra --no-audit --no-fund 2>ci.log; then
+    if grep -q "EUSAGE" ci.log; then
+      echo "npm ci failed in $dir due to lock mismatch. Running npm install..." >&2
+      npm install $extra --no-audit --no-fund
+      npm ci $extra --no-audit --no-fund
+    else
+      cat ci.log >&2
+      rm ci.log
+      return 1
+    fi
+  fi
+  rm -f ci.log
+}
+
+run_ci ""
+run_ci backend
+run_ci backend/dalle_server
 
 cleanup_npm_cache
 
