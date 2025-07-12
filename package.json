@@ -7,6 +7,7 @@
     "doc": "docs"
   },
   "scripts": {
+    "perf-events": "node scripts/perf-events.js",
     "preinstall": "node scripts/check-node-version.js",
     "lhci": "lhci autorun",
     "prepare": "husky install && tsc -p scripts/tsconfig.json",
