@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+# Ensure mise is available for toolchain management
+"$(dirname "$0")/install-mise.sh" >/dev/null
+
 cleanup_npm_cache() {
   npm cache clean --force >/dev/null 2>&1 || true
   rm -rf "$(npm config get cache)/_cacache" "$HOME/.npm/_cacache"
