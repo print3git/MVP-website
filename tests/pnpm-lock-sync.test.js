@@ -4,7 +4,6 @@ const YAML = require("yaml");
 
 /**
  * Verify the pnpm lock file matches dependencies for the given directory.
- *
  * @param {string} dir directory to check
  */
 function verifyPnpmLockSync(dir) {
