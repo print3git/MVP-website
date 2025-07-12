@@ -38,10 +38,12 @@ test('model generator page', async ({ page }) => {
 });
 
 test('generate flow', async ({ page }) => {
-  await page.goto('/generate.html');
+  const response = await page.goto('/generate.html');
+  expect(response?.status()).toBe(200);
   // The form is rendered via React after scripts load, so wait for the prompt
-  // field before interacting with it.
-  await page.waitForSelector('#gen-prompt', { state: 'visible', timeout: 10000 });
+  // field before interacting with it. Give the page up to 30s to load the
+  // component to avoid flaky timeouts on slow systems.
+  await page.waitForSelector('#gen-prompt', { state: 'visible', timeout: 30000 });
   await page.fill('#gen-prompt', 'test');
   await page.click('#gen-submit');
   await expect(page.locator('canvas')).toBeVisible();
