@@ -14,6 +14,8 @@ fi
 : "${HF_TOKEN:?HF_TOKEN must be set}"
 : "${AWS_ACCESS_KEY_ID:?AWS_ACCESS_KEY_ID must be set}"
 : "${AWS_SECRET_ACCESS_KEY:?AWS_SECRET_ACCESS_KEY must be set}"
+: "${DB_URL:?DB_URL must be set}"
+: "${STRIPE_SECRET_KEY:?STRIPE_SECRET_KEY must be set}"
 
 
 # Fail fast if npm-specific proxy variables are set. Other proxy variables may

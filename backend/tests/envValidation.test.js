@@ -4,19 +4,23 @@ const path = require("path");
 const script = path.join(__dirname, "..", "..", "scripts", "validate-env.sh");
 
 describe("validate-env script", () => {
+  const baseEnv = {
+    HF_TOKEN: "t",
+    AWS_ACCESS_KEY_ID: "id",
+    AWS_SECRET_ACCESS_KEY: "secret",
+    DB_URL: "postgres://user:pass@localhost/db",
+    STRIPE_SECRET_KEY: "sk_test",
+    SKIP_NET_CHECKS: "1",
+    http_proxy: "",
+    https_proxy: "",
+    npm_config_http_proxy: "",
+    npm_config_https_proxy: "",
+  };
+
   test("passes with STRIPE_TEST_KEY set", () => {
     expect(() =>
       execSync(`bash ${script}`, {
-        env: {
-          ...process.env,
-          STRIPE_TEST_KEY: "sk_test",
-          HF_TOKEN: "t",
-          SKIP_NET_CHECKS: "1",
-          http_proxy: "",
-          https_proxy: "",
-          npm_config_http_proxy: "",
-          npm_config_https_proxy: "",
-        },
+        env: { ...process.env, ...baseEnv, STRIPE_TEST_KEY: "sk_test" },
         stdio: "pipe",
       }),
     ).not.toThrow();
@@ -27,14 +31,9 @@ describe("validate-env script", () => {
       execSync(`bash ${script}`, {
         env: {
           ...process.env,
+          ...baseEnv,
           STRIPE_LIVE_KEY: "sk_live",
           STRIPE_TEST_KEY: "",
-          HF_TOKEN: "t",
-          SKIP_NET_CHECKS: "1",
-          http_proxy: "",
-          https_proxy: "",
-          npm_config_http_proxy: "",
-          npm_config_https_proxy: "",
         },
         stdio: "pipe",
       }),
@@ -46,9 +45,9 @@ describe("validate-env script", () => {
       execSync(`bash ${script}`, {
         env: {
           ...process.env,
+          ...baseEnv,
           STRIPE_TEST_KEY: "",
           STRIPE_LIVE_KEY: "",
-          HF_TOKEN: "t",
         },
         stdio: "pipe",
       }),
@@ -60,13 +59,18 @@ describe("validate-env script", () => {
       execSync(`bash ${script}`, {
         env: {
           ...process.env,
+          ...baseEnv,
           STRIPE_TEST_KEY: "sk_test",
-          HF_TOKEN: "t",
-          SKIP_NET_CHECKS: "1",
           npm_config_http_proxy: "http://proxy",
         },
         stdio: "pipe",
       }),
     ).toThrow();
+  });
+
+  test("fails when DB_URL missing", () => {
+    const env = { ...process.env, ...baseEnv };
+    delete env.DB_URL;
+    expect(() => execSync(`bash ${script}`, { env, stdio: "pipe" })).toThrow();
   });
 });
