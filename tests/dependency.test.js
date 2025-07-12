@@ -8,6 +8,18 @@ describe("environment", () => {
     expect(fs.existsSync(bin)).toBe(true);
   });
 
+  test("backend jest binary installed", () => {
+    const bin = path.join(
+      __dirname,
+      "..",
+      "backend",
+      "node_modules",
+      ".bin",
+      "jest",
+    );
+    expect(fs.existsSync(bin)).toBe(true);
+  });
+
   test("setup script has been run", () => {
     const flag = path.join(__dirname, "..", ".setup-complete");
     expect(fs.existsSync(flag)).toBe(true);
