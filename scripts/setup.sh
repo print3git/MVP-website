@@ -42,6 +42,13 @@ if ! npm ping >/dev/null 2>&1; then
   exit 1
 fi
 
+# Verify access to esm.sh which serves ESM React bundles used by the frontend.
+# Smoke tests fail if these modules cannot be downloaded.
+if ! curl -Is https://esm.sh/ >/dev/null 2>&1; then
+  echo "Unable to reach https://esm.sh. Remote ESM modules may fail to load." >&2
+  exit 1
+fi
+
 # Kill any lingering dev server processes to avoid port conflicts
 if pgrep -f "node scripts/dev-server.js" >/dev/null 2>&1; then
   pkill -f "node scripts/dev-server.js" || true
