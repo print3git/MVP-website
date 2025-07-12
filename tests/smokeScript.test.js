@@ -13,5 +13,7 @@ describe("smoke script", () => {
       "utf8",
     );
     expect(/SKIP_PW_DEPS/.test(content)).toBe(true);
+    expect(content).toMatch(/HF_TOKEN/);
+    expect(content).toMatch(/validate-env/);
   });
 });
