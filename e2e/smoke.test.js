@@ -70,7 +70,7 @@ test('model generator page', async ({ page }) => {
   // Allow extra time for the viewer to load when the CDN script fails and the
   // page falls back to the local copy.
   await page.waitForSelector('body[data-viewer-ready="true"]', {
-    timeout: 60000,
+    timeout: 120000,
   });
   await expect(page.locator('#viewer')).toBeVisible();
 });
@@ -102,7 +102,7 @@ test('generate flow', async ({ page }) => {
   // Wait for the viewer to signal readiness before checking the canvas.
   // This prevents flaky timeouts when external scripts load slowly.
   await page.waitForSelector('body[data-viewer-ready="true"]', {
-    timeout: 60000,
+    timeout: 120000,
   });
   // Wait longer for the model viewer to load on slow networks
   await page.waitForSelector('canvas', { state: 'visible', timeout: 60000 });
