@@ -13,6 +13,12 @@ describe("generateGlb", () => {
     delete process.env.https_proxy;
     delete process.env.HTTP_PROXY;
     delete process.env.HTTPS_PROXY;
+    if (!process.env.SPARC3D_ENDPOINT) {
+      process.env.SPARC3D_ENDPOINT = "http://sparc3d.test/generate";
+    }
+    if (!process.env.SPARC3D_TOKEN) {
+      process.env.SPARC3D_TOKEN = "token";
+    }
   });
   afterEach(() => {
     nock_1.default.cleanAll();
@@ -58,6 +64,8 @@ describe("generateGlb", () => {
   test("ignores proxy environment variables", async () => {
     process.env.http_proxy = "http://proxy:9999";
     process.env.https_proxy = "http://proxy:9999";
+    process.env.SPARC3D_ENDPOINT = "https://api.example.com/generate";
+    const token = process.env.SPARC3D_TOKEN;
     const data = Buffer.from("abc");
     (0, nock_1.default)("https://api.example.com")
       .post("/generate", { prompt: "p2" })
