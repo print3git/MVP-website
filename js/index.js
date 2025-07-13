@@ -151,11 +151,38 @@ function ensureModelViewerLoaded() {
       document.head.appendChild(fallback);
     };
     document.head.appendChild(s);
-    setTimeout(() => {
-      if (!window.customElements?.get("model-viewer")) {
-        s.onerror();
+  }
+
+  return new Promise((resolve, reject) => {
+    const finalize = (attemptedLocal) => {
+      if (window.customElements?.get("model-viewer")) {
+        resolve();
+      } else if (!attemptedLocal) {
+        window.modelViewerSource = "local";
+        loadScript(localUrl, () => finalize(true));
+      } else {
+        reject(new Error("model-viewer failed to load"));
       }
-    }, 3000);
+    };
+
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 3000);
+
+    fetch(cdnUrl, {
+      method: "HEAD",
+      mode: "no-cors",
+      signal: controller.signal,
+    })
+      .then(() => {
+        clearTimeout(timer);
+        window.modelViewerSource = "cdn";
+        loadScript(cdnUrl, () => finalize(false));
+      })
+      .catch(() => {
+        clearTimeout(timer);
+        window.modelViewerSource = "local";
+        loadScript(localUrl, () => finalize(true));
+      });
   });
 }
 
