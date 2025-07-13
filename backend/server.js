@@ -462,6 +462,7 @@ app.post(
 
       let generatedUrl;
       try {
+
         const url = await generateModelPipeline({
           prompt: req.body.prompt,
           image: req.file ? req.file.path : undefined,

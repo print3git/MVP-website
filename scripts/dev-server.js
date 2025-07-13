@@ -25,9 +25,15 @@ app.get("/healthz", (_req, res) => {
 });
 
 function startDevServer(port = 3000) {
-  return app.listen(port, () => {
-    console.log(`Dev server listening on http://localhost:${port}`);
-  });
+  const server = app
+    .listen(port, () => {
+      console.log(`Dev server listening on http://localhost:${port}`);
+    })
+    .on("error", (err) => {
+      console.error("Dev server failed", err.message);
+      process.exit(1);
+    });
+  return server;
 }
 
 if (require.main === module) {
