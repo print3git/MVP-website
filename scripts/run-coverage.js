@@ -37,7 +37,13 @@ const lcovPath = path.join("coverage", "lcov.info");
 fs.mkdirSync(path.dirname(lcovPath), { recursive: true });
 let output = result.stdout || "";
 const start = output.indexOf("TN:");
-if (start !== -1) output = output.slice(start);
+if (start !== -1) {
+  const end = output.lastIndexOf("end_of_record");
+  output = output.slice(
+    start,
+    end !== -1 ? end + "end_of_record".length : undefined,
+  );
+}
 fs.writeFileSync(lcovPath, output);
 console.log(`LCOV written to ${lcovPath}`);
 if (result.status) {
