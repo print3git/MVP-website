@@ -31,6 +31,7 @@ test("exits when network check fails", () => {
   const exitSpy = jest.spyOn(process, "exit").mockImplementation(() => {
     throw new Error("exit");
   });
+  exitSpy.mockClear();
   expect(() => require("../scripts/check-host-deps.js")).toThrow("exit");
   expect(exitSpy).toHaveBeenCalledWith(1);
 });
@@ -47,14 +48,11 @@ test("skips network check when SKIP_NET_CHECKS is set", () => {
   delete process.env.SKIP_NET_CHECKS;
 });
 
-
 test("fails when SKIP_PW_DEPS is set and deps are missing", () => {
   process.env.SKIP_PW_DEPS = "1";
   child_process.execSync
     .mockReturnValueOnce("network ok")
-    .mockImplementationOnce(() => {
-
-    })
+    .mockReturnValueOnce("Host system is missing dependencies")
     .mockReturnValueOnce("");
   const exitSpy = jest.spyOn(process, "exit").mockImplementation(() => {
     throw new Error("exit");
@@ -122,4 +120,28 @@ test("skips install when deps satisfied even if SKIP_PW_DEPS is set", () => {
   );
   expect(child_process.execSync).toHaveBeenCalledTimes(2);
   delete process.env.SKIP_PW_DEPS;
+});
+
+test("retries without deps when apt-get fails", () => {
+  child_process.execSync
+    .mockReturnValueOnce("network ok")
+    .mockReturnValueOnce("Host system is missing dependencies")
+    .mockImplementationOnce(() => {
+      const err = new Error("exit code: 100");
+      throw err;
+    })
+    .mockReturnValueOnce("");
+
+  expect(() => require("../scripts/check-host-deps.js")).not.toThrow();
+
+  expect(child_process.execSync).toHaveBeenNthCalledWith(
+    3,
+    "CI=1 npx playwright install --with-deps",
+    { stdio: "inherit" },
+  );
+  expect(child_process.execSync).toHaveBeenNthCalledWith(
+    4,
+    "CI=1 npx playwright install",
+    { stdio: "inherit" },
+  );
 });
