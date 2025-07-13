@@ -150,20 +150,26 @@ try {
 }
 
 if (!fs.existsSync(".setup-complete") || !browsersInstalled()) {
-  console.log(
-    "Playwright browsers not installed. Running 'bash scripts/setup.sh' to install them",
-  );
-  try {
-    const env = { ...process.env };
-    delete env.npm_config_http_proxy;
-    delete env.npm_config_https_proxy;
-    require("child_process").execSync("CI=1 npm run setup", {
-      stdio: "inherit",
-      env,
-    });
-  } catch (err) {
-    console.error("Failed to run setup:", err.message);
-    process.exit(1);
+  if (process.env.SKIP_PW_DEPS) {
+    console.log(
+      "Playwright browsers not installed. Skipping setup due to SKIP_PW_DEPS",
+    );
+  } else {
+    console.log(
+      "Playwright browsers not installed. Running 'bash scripts/setup.sh' to install them",
+    );
+    try {
+      const env = { ...process.env };
+      delete env.npm_config_http_proxy;
+      delete env.npm_config_https_proxy;
+      require("child_process").execSync("CI=1 npm run setup", {
+        stdio: "inherit",
+        env,
+      });
+    } catch (err) {
+      console.error("Failed to run setup:", err.message);
+      process.exit(1);
+    }
   }
 }
 

@@ -27,10 +27,10 @@ describe("assert-setup script", () => {
     child_process.execSync.mockImplementation(() => {});
 
     expect(() => require("../scripts/assert-setup.js")).not.toThrow();
-    expect(child_process.execSync).toHaveBeenCalledWith(
-      "CI=1 npm run setup",
-      { stdio: "inherit", env: expect.any(Object) },
-    );
+    expect(child_process.execSync).toHaveBeenCalledWith("CI=1 npm run setup", {
+      stdio: "inherit",
+      env: expect.any(Object),
+    });
   });
 
   test("skips setup when browsers installed", () => {
@@ -58,7 +58,6 @@ describe("assert-setup script", () => {
     );
   });
 
-
   test("skips network check when SKIP_NET_CHECKS is set", () => {
     setEnv();
     process.env.SKIP_NET_CHECKS = "1";
@@ -75,5 +74,19 @@ describe("assert-setup script", () => {
       expect.any(Object),
     );
     delete process.env.SKIP_NET_CHECKS;
+  });
+
+  test("skips setup when SKIP_PW_DEPS is set", () => {
+    setEnv();
+    process.env.SKIP_PW_DEPS = "1";
+    fs.existsSync.mockReturnValue(false);
+    fs.readdirSync.mockReturnValue([]);
+    child_process.execSync.mockImplementation(() => {});
+    expect(() => require("../scripts/assert-setup.js")).not.toThrow();
+    expect(child_process.execSync).not.toHaveBeenCalledWith(
+      "CI=1 npm run setup",
+      expect.any(Object),
+    );
+    delete process.env.SKIP_PW_DEPS;
   });
 });
