@@ -359,6 +359,14 @@ To run Jest directly from the repository root, use:
 npm run jest -- --runInBand --silent
 ```
 
+If you encounter environment issues running backend tests, use the helper script
+below. It sets Node 20, validates the environment and saves output to
+`/tmp/test.log`:
+
+```bash
+./scripts/test-backend.sh
+```
+
 This script automatically runs Jest in `backend/`, so passing `--prefix` is unnecessary.
 
 ### Pre-commit Hook

@@ -1,14 +1,14 @@
 jest.useFakeTimers();
 
-jest.mock('../../db', () => ({
+jest.mock("../../db", () => ({
   query: jest.fn().mockResolvedValue({}),
 }));
-const db = require('../../db');
+const db = require("../../db");
 
-const queue = require('../../queue/jobQueue');
+const queue = require("../../queue/jobQueue");
 
-jest.spyOn(queue, 'getNextPendingJob');
-jest.spyOn(queue, 'updateJobStatus');
+jest.spyOn(queue, "getNextPendingJob");
+jest.spyOn(queue, "updateJobStatus");
 
 beforeEach(() => {
   queue.getNextPendingJob.mockReset();
@@ -22,13 +22,16 @@ afterEach(() => {
   delete global.fetch;
 });
 
-test('processes pending job and marks sent', async () => {
-  queue.getNextPendingJob.mockResolvedValue({ job_id: 'j1', webhook_url: 'http://example.com' });
+test("processes pending job and marks sent", async () => {
+  queue.getNextPendingJob.mockResolvedValue({
+    job_id: "j1",
+    webhook_url: "http://example.com",
+  });
   global.fetch.mockResolvedValue({ ok: true });
   queue.startProcessing(1000);
 
   await jest.runOnlyPendingTimersAsync();
   await Promise.resolve();
 
-  expect(queue.updateJobStatus).toHaveBeenCalledWith('j1', 'sent');
+  expect(queue.updateJobStatus).toHaveBeenCalledWith("j1", "sent");
 });
