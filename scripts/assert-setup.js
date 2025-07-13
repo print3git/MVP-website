@@ -67,13 +67,15 @@ for (const name of requiredEnv) {
   }
 }
 
-try {
-  require("child_process").execSync("node scripts/network-check.js", {
-    stdio: "inherit",
-  });
-} catch (err) {
-  console.error("Network check failed:", err.message);
-  process.exit(1);
+if (!process.env.SKIP_NET_CHECKS) {
+  try {
+    require("child_process").execSync("node scripts/network-check.js", {
+      stdio: "inherit",
+    });
+  } catch (err) {
+    console.error("Network check failed:", err.message);
+    process.exit(1);
+  }
 }
 
 function rootDepsInstalled() {

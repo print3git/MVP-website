@@ -1,6 +1,11 @@
 #!/usr/bin/env node
 const { execSync } = require("child_process");
 
+if (process.env.SKIP_NET_CHECKS) {
+  console.log("Skipping network checks");
+  process.exit(0);
+}
+
 // Use the npm ping endpoint to ensure the registry fully responds.
 const targets = [
   { url: "https://registry.npmjs.org/-/ping", name: "npm registry" },
@@ -25,7 +30,7 @@ if (process.env.NETWORK_CHECK_URL) {
 
 function check(url) {
   try {
-    execSync(`curl -sS -I --max-time 10 -o /dev/null ${url}`, {
+    execSync(`curl -fsSL --max-time 10 -o /dev/null ${url}`, {
       stdio: "pipe",
     });
     return null;
