@@ -12,7 +12,10 @@ These guidelines apply to all automated agents (e.g. the Codex agent) working on
 6. **Check network access** – ensure the environment can reach both
    `https://registry.npmjs.org` and `https://cdn.playwright.dev`. The setup
    script downloads packages and browsers from these domains. If they are
-   blocked, adjust your environment or proxy settings.
+   blocked, adjust your environment or proxy settings. When access to the
+   Playwright CDN fails (for example the proxy returns HTTP 4xx responses), set
+   `SKIP_PW_DEPS=1` before running the setup or validate scripts so the CDN check
+   is skipped.
 7. **Install dependencies** – run `npm run setup` at the repository root **before your first `npm run ci`**. Run it again whenever the container is restarted or if Playwright tests fail with messages like "Test was interrupted" or "page.evaluate: Test ended". This script unsets proxy variables, checks registry connectivity, runs `npm ci` in the root and `backend/`, and installs Playwright browsers.
    - If `npm ci` fails with an `EUSAGE` error complaining that packages are missing from the lock file, run `npm install` in the affected directory and then re-run the setup script.
    - Set `SKIP_PW_DEPS=1` before running the setup script if Playwright dependencies are already installed. This skips the long `apt-get` step and reduces CI time. The `smoke` script also runs the setup script, so use `SKIP_PW_DEPS=1 npm run smoke` to avoid reinstalling Playwright dependencies when they are already present.
@@ -29,7 +32,6 @@ These guidelines apply to all automated agents (e.g. the Codex agent) working on
 18. **Avoid PRs with failing tests** – if `npm run ci` or the smoke tests fail for reasons other than environment limitations, do not open a pull request. Fix the issues or open an issue summarizing the failure instead.
 19. **Avoid committing binary files** – Codex cannot generate patches for binary changes. Do not modify images, audio, or other binary assets. If adding new ones, update `.gitattributes` so they are treated as binary.
 20. **Pin GitHub Action versions** – use explicit tags instead of broad majors to prevent resolution errors (e.g. `aquasecurity/tfsec-action@v1.0.3`).
-
 
 ## Troubleshooting
 

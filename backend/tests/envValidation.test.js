@@ -12,6 +12,7 @@ describe("validate-env script", () => {
     DB_URL: "postgres://user:pass@localhost/db",
     STRIPE_SECRET_KEY: "sk_test",
     SKIP_NET_CHECKS: "1",
+    SKIP_DB_CHECK: "1",
     http_proxy: "",
     https_proxy: "",
     npm_config_http_proxy: "",
@@ -91,5 +92,20 @@ describe("validate-env script", () => {
     }
     fs.renameSync(backup, example);
     expect(threw).toBe(true);
+  });
+
+  test("fails when database unreachable", () => {
+    expect(() =>
+      execSync(`bash ${script}`, {
+        env: {
+          ...process.env,
+          ...baseEnv,
+          DB_URL: "postgres://user:pass@127.0.0.1:9/db",
+          SKIP_NET_CHECKS: "1",
+          SKIP_DB_CHECK: "",
+        },
+        stdio: "pipe",
+      }),
+    ).toThrow(/Database connection check failed/);
   });
 });
