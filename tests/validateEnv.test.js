@@ -1,5 +1,5 @@
 /** @file Tests for validate-env script */
-const { execFileSync } = require("child_process");
+const { spawnSync } = require("child_process");
 const path = require("path");
 
 /**
@@ -8,10 +8,20 @@ const path = require("path");
  * @returns {string} script output
  */
 function run(env) {
-  return execFileSync("bash", ["scripts/validate-env.sh"], {
-    env: { SKIP_NET_CHECKS: "1", ...env },
+  const baseEnv = { SKIP_NET_CHECKS: "1", ...env };
+  if (!Object.prototype.hasOwnProperty.call(baseEnv, "SKIP_DB_CHECK")) {
+    baseEnv.SKIP_DB_CHECK = "1";
+  }
+  const res = spawnSync("bash", ["-c", "scripts/validate-env.sh 2>&1"], {
+    env: baseEnv,
     encoding: "utf8",
   });
+  if (res.status !== 0) {
+    const err = new Error(res.stdout);
+    err.code = res.status;
+    throw err;
+  }
+  return res.stdout;
 }
 
 describe("validate-env script", () => {
@@ -60,6 +70,7 @@ describe("validate-env script", () => {
       AWS_SECRET_ACCESS_KEY: "secret",
       STRIPE_SECRET_KEY: "sk_test",
       CLOUDFRONT_MODEL_DOMAIN: "cdn.test",
+      SKIP_DB_CHECK: "",
     };
     delete env.DB_URL;
     expect(() => run(env)).toThrow();

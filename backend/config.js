@@ -8,7 +8,6 @@ const optionalGlb = [
   "SPARC3D_TOKEN",
 ];
 
-
 const missing = required.filter((key) => !getEnv(key));
 if (missing.length) {
   console.warn(`Missing required env vars: ${missing.join(", ")}`);
@@ -22,7 +21,7 @@ module.exports = {
   dbUrl: getEnv("DB_URL"),
   stripeKey: getEnv("STRIPE_SECRET_KEY"),
   stripeWebhook: getEnv("STRIPE_WEBHOOK_SECRET"),
-  stripePublishable: getEnv("STRIPE_PUBLISHABLE_KEY", { default: "" }),
+  stripePublishable: getEnv("STRIPE_PUBLISHABLE_KEY", { defaultValue: "" }),
   dalleServerUrl: getEnv("DALLE_SERVER_URL", {
     default: "http://localhost:5002",
   }),

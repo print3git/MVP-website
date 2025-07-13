@@ -1,4 +1,4 @@
-const { execSync } = require("child_process");
+const { spawnSync } = require("child_process");
 const path = require("path");
 const fs = require("fs");
 
@@ -13,11 +13,21 @@ function run(env, clean = true) {
     delete e.https_proxy;
   }
   e.SKIP_NET_CHECKS = "1";
-  return execSync("npm run validate-env", {
+  if (!Object.prototype.hasOwnProperty.call(e, "SKIP_DB_CHECK")) {
+    e.SKIP_DB_CHECK = "1";
+  }
+  const res = spawnSync("npm", ["run", "validate-env", "2>&1"], {
     cwd: root,
     env: e,
-    stdio: "pipe",
-  }).toString();
+    shell: true,
+    encoding: "utf8",
+  });
+  if (res.status !== 0) {
+    const err = new Error(res.stdout);
+    err.code = res.status;
+    throw err;
+  }
+  return res.stdout;
 }
 
 describe("validate-env script", () => {
