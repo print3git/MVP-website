@@ -40,6 +40,12 @@ if (!hostDepsInstalled()) {
   console.log("Playwright host dependencies missing. Installing...");
   try {
     execSync("CI=1 npx playwright install --with-deps", { stdio: "inherit" });
+    if (!hostDepsInstalled()) {
+      console.error(
+        "Playwright host dependencies remain missing after installation.",
+      );
+      process.exit(1);
+    }
   } catch (err) {
     console.error(
       "Failed to install Playwright host dependencies:",
