@@ -388,7 +388,7 @@ Run coverage after installing dependencies:
 
 ```bash
 npm run setup
-npm run coverage -- --reporter=text-lcov | npx coveralls
+npm run coverage -- --coverageReporters=text-lcov | npx coveralls
 ```
 
 Using `npx coveralls` ensures the CLI runs even if it's not installed globally.

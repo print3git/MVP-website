@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 let fs;
 let child_process;
 

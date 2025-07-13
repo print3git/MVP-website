@@ -11,4 +11,4 @@ jobs:
         with:
           node-version: "20"
       - run: SKIP_PW_DEPS=1 npm run setup
-      - run: npm run coverage -- --reporter=text-lcov | npx coveralls
+      - run: npm run coverage -- --coverageReporters=text-lcov | npx coveralls

@@ -35,6 +35,7 @@
     "send-ops-report": "node scripts/send-ops-report.js",
     "flag-overdue-printers": "node scripts/flag-overdue-procurement-orders.js",
     "pretest": "node scripts/ensure-deps.js",
+    "precoverage": "node scripts/ensure-deps.js",
     "format:check": "prettier --check \"**/*.{js,jsx,json,md}\""
   },
   "keywords": [],
