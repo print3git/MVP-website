@@ -4,7 +4,17 @@ const { execSync } = require("child_process");
 // Use the npm ping endpoint to ensure the registry fully responds.
 const targets = [
   { url: "https://registry.npmjs.org/-/ping", name: "npm registry" },
-  { url: "https://cdn.playwright.dev/browser.json", name: "Playwright CDN" },
+  // Skip the Playwright CDN check if the browsers are already installed or the
+  // caller explicitly sets SKIP_PW_DEPS. This allows tests to run without
+  // network access to the CDN when Playwright is preinstalled.
+  ...(process.env.SKIP_PW_DEPS
+    ? []
+    : [
+        {
+          url: "https://cdn.playwright.dev/browser.json",
+          name: "Playwright CDN",
+        },
+      ]),
   { url: "https://esm.sh", name: "esm.sh" },
   {
     url: "https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js",
