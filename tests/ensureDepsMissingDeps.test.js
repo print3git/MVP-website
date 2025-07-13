@@ -9,6 +9,7 @@ describe("ensure-deps missing dependency handling", () => {
     jest.resetModules();
     fs.existsSync.mockReset();
     child_process.execSync.mockReset();
+    delete process.env.SKIP_NET_CHECKS;
   });
 
   function run() {
