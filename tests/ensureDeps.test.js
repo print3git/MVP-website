@@ -75,6 +75,7 @@ describe("ensure-deps", () => {
     expect(exitSpy).toHaveBeenCalledWith(1);
   });
 
+
   test("falls back to SKIP_PW_DEPS when apt check fails", () => {
     fs.existsSync.mockReturnValue(false);
     const execMock = jest
