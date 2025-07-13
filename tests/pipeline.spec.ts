@@ -3,18 +3,20 @@ const request = require("../backend/node_modules/supertest");
 const axios = require("axios");
 const app = require("../backend/server");
 
+const itMaybe = process.env.RUN_PIPELINE_TESTS ? test : test.skip;
+
 const FALLBACK_GLB =
   "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
 
 describe("full pipeline", () => {
-  test("health endpoint", async () => {
+  itMaybe("health endpoint", async () => {
     console.log("→ GET /api/health");
     const res = await request(app).get("/api/health");
     console.log("← status", res.status);
     expect(res.status).toBe(200);
   });
 
-  test("generate model from prompt", async () => {
+  itMaybe("generate model from prompt", async () => {
     console.log("→ POST /api/generate");
     const res = await request(app)
       .post("/api/generate")

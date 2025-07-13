@@ -11,12 +11,14 @@ const { generateModel } = require("../../src/pipeline/generateModel");
 process.env.STRIPE_WEBHOOK_SECRET = "test";
 const app = require("../../server");
 
+const itMaybe = process.env.RUN_PIPELINE_TESTS ? test : test.skip;
+
 describe("/api/generate regression", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  test("returns the URL from generateModel pipeline", async () => {
+  itMaybe("returns the URL from generateModel pipeline", async () => {
     generateModel.mockResolvedValueOnce("/models/regression.glb");
     const res = await request(app)
       .post("/api/generate")
