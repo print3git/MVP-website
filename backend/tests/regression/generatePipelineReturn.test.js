@@ -1,5 +1,8 @@
 const request = require("supertest");
 const app = require("../../server");
+jest.mock("../../src/pipeline/generateModel", () => ({
+  generateModel: jest.fn(),
+}));
 const { generateModel } = require("../../src/pipeline/generateModel");
 
 describe("/api/generate regression", () => {
