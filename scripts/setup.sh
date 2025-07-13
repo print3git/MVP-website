@@ -54,10 +54,28 @@ if pgrep -f "node scripts/dev-server.js" >/dev/null 2>&1; then
 fi
 
 # Remove any existing node_modules directories to avoid ENOTEMPTY errors
-# Use rimraf for reliability and fall back to rm if it fails
-if ! sudo npx --yes rimraf node_modules backend/node_modules >/dev/null 2>&1; then
-  sudo rm -rf node_modules backend/node_modules || true
-fi
+# Use rimraf for reliability and fall back to rm. Retry up to 3 times in case
+# the filesystem temporarily refuses to remove a directory.
+remove_modules() {
+  local target="$1"
+  for i in {1..3}; do
+    if sudo npx --yes rimraf "$target" >/dev/null 2>&1; then
+      break
+    fi
+    sudo rm -rf "$target" >/dev/null 2>&1 || true
+    if [ ! -d "$target" ]; then
+      break
+    fi
+    echo "retrying removal of $target ($i/3)" >&2
+    sleep 1
+  done
+  if [ -d "$target" ]; then
+    echo "warning: $target could not be fully removed" >&2
+  fi
+}
+
+remove_modules node_modules
+remove_modules backend/node_modules
 
 # Remove stale apt or dpkg locks that may prevent dependency installation
 if pgrep apt-get >/dev/null 2>&1; then
