@@ -3,6 +3,7 @@
   "compilerOptions": {
     "allowJs": true,
     "checkJs": true,
+    "strict": true,
     "noEmit": true,
     "lib": ["ESNext", "DOM"],
     "skipLibCheck": true
