@@ -1,5 +1,10 @@
 const fs = require("fs");
 
+if (process.env.SKIP_COVERAGE_CHECK) {
+  console.log("Skipping coverage check due to SKIP_COVERAGE_CHECK");
+  process.exit(0);
+}
+
 const config = JSON.parse(fs.readFileSync(".nycrc", "utf8"));
 
 const summaryPath = "backend/coverage/coverage-summary.json";

@@ -32,4 +32,17 @@ describe("check-coverage script", () => {
       expect(output).toMatch(/Missing coverage summary/);
     }
   });
+
+  test("skips check when SKIP_COVERAGE_CHECK=1", () => {
+    const output = execFileSync(
+      "node",
+      [path.join("scripts", "check-coverage.js")],
+      {
+        encoding: "utf8",
+        stdio: "pipe",
+        env: { ...process.env, SKIP_COVERAGE_CHECK: "1" },
+      },
+    );
+    expect(output).toMatch(/Skipping coverage check/);
+  });
 });

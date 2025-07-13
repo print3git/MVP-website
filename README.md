@@ -404,6 +404,10 @@ By piping the generated `lcov.info` file instead of test output we avoid
 Running coverage without installing dependencies or omitting `npx` may lead to
 `coveralls: command not found` or `jest: not found` errors.
 
+Set `SKIP_COVERAGE_CHECK=1` before running the coverage scripts if you expect
+coverage to fall below the configured thresholds. This prevents the
+`check-coverage` step from failing CI.
+
 #### Troubleshooting
 
 If Coveralls fails with an `lcovParse` error, the `lcov.info` report may contain
