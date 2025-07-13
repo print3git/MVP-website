@@ -469,7 +469,6 @@ app.post(
           prompt: req.body.prompt,
           image: req.file ? req.file.path : undefined,
         });
-        generatedUrl = url;
       } catch (err) {
         logger.error("🚨 generateModel() failed:", err);
         return res.status(500).json({ error: err.message });

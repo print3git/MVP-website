@@ -6,6 +6,7 @@ addons.html
 e2e/smoke.test.js
 index.html
 package-lock.json
+js/model-viewer.min.js
 
 # Build artifacts
 dist
