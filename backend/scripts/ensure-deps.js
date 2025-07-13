@@ -15,6 +15,8 @@ const networkCheck = path.join(
   "network-check.js",
 );
 
+const aptCheck = path.join(__dirname, "..", "..", "scripts", "check-apt.js");
+
 function runNetworkCheck() {
   try {
     execSync(`node ${networkCheck}`, { stdio: "inherit" });
@@ -40,8 +42,19 @@ function canReachRegistry() {
 
 function runSetup() {
   console.log("Setup flag missing. Running 'npm run setup'...");
+  const env = { ...process.env };
+  if (!env.SKIP_PW_DEPS) {
+    try {
+      execSync(`node ${aptCheck}`, { stdio: "inherit" });
+    } catch {
+      console.warn(
+        "APT repositories unreachable. Falling back to SKIP_PW_DEPS=1",
+      );
+      env.SKIP_PW_DEPS = "1";
+    }
+  }
   try {
-    execSync("npm run setup", { stdio: "inherit", cwd: repoRoot });
+    execSync("npm run setup", { stdio: "inherit", cwd: repoRoot, env });
   } catch (err) {
     console.error("Failed to run setup:", err.message);
     process.exit(1);
