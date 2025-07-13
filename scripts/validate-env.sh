@@ -59,4 +59,11 @@ if [[ -z "${SKIP_PW_DEPS:-}" ]]; then
   fi
 fi
 
+if [[ -z "${SKIP_DB_CHECK:-}" ]]; then
+  if ! node scripts/check-db.js >/dev/null 2>&1; then
+    echo "Database connection check failed. Set SKIP_DB_CHECK=1 to skip." >&2
+    exit 1
+  fi
+fi
+
 echo "✅ environment OK"
