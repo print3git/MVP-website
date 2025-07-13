@@ -55,8 +55,8 @@ fi
 
 # Remove any existing node_modules directories to avoid ENOTEMPTY errors
 # Use rimraf for reliability and fall back to rm if it fails
-if ! sudo npx --yes rimraf node_modules backend/node_modules >/dev/null 2>&1; then
-  sudo rm -rf node_modules backend/node_modules || true
+if ! sudo npx --yes rimraf node_modules backend/node_modules backend/dalle_server/node_modules >/dev/null 2>&1; then
+  sudo rm -rf node_modules backend/node_modules backend/dalle_server/node_modules || true
 fi
 
 # Remove stale apt or dpkg locks that may prevent dependency installation
@@ -97,7 +97,7 @@ run_ci() {
     elif grep -E -q "TAR_ENTRY_ERROR|ENOENT|ENOTEMPTY|tarball .*corrupted" ci.log; then
       echo "npm ci encountered tar or filesystem errors in $dir. Cleaning cache and retrying..." >&2
       cleanup_npm_cache
-      rm -rf ${dir:-.}/node_modules
+      sudo rm -rf ${dir:-.}/node_modules
       npm ci $extra --no-audit --no-fund
     else
       cat ci.log >&2

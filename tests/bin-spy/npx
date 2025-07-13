@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+if [[ "$1" == "rimraf" ]]; then
+  echo "$@" >> "$RIMRAF_LOG"
+fi
+exec "$REAL_NPX" "$@"
