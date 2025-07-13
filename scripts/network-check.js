@@ -8,7 +8,11 @@ if (process.env.SKIP_NET_CHECKS) {
 
 // Use the npm ping endpoint to ensure the registry fully responds.
 const targets = [
-  { url: "https://registry.npmjs.org/-/ping", name: "npm registry" },
+  {
+    url: "https://registry.npmjs.org/-/ping",
+    name: "npm registry",
+    required: true,
+  },
   // Skip the Playwright CDN check if the browsers are already installed or the
   // caller explicitly sets SKIP_PW_DEPS. This allows tests to run without
   // network access to the CDN when Playwright is preinstalled.
@@ -18,17 +22,19 @@ const targets = [
         {
           url: "https://cdn.playwright.dev/browser.json",
           name: "Playwright CDN",
+          required: true,
         },
       ]),
-  { url: "https://esm.sh", name: "esm.sh" },
+  { url: "https://esm.sh", name: "esm.sh", required: false },
   {
     url: "https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js",
     name: "jsdelivr",
+    required: false,
   },
-
   {
     url: process.env.APT_CHECK_URL || "http://archive.ubuntu.com",
     name: "apt archive",
+    required: !process.env.SKIP_PW_DEPS,
   },
 ];
 
@@ -58,15 +64,18 @@ function check(url) {
   }
 }
 
-for (const { url, name } of targets) {
+for (const { url, name, required } of targets) {
   const error = check(url);
   if (error) {
-    console.error(`Unable to reach ${name}: ${url}`);
-    if (error) console.error(error);
-    if (name === "Playwright CDN" && /error:\s*[45][0-9]{2}/i.test(error)) {
-      console.error("Set SKIP_PW_DEPS=1 to skip Playwright dependencies.");
+    const log = required ? console.error : console.warn;
+    log(`Unable to reach ${name}: ${url}`);
+    if (error) log(error);
+    if (required) {
+      if (name === "Playwright CDN" && /error:\s*[45][0-9]{2}/i.test(error)) {
+        console.error("Set SKIP_PW_DEPS=1 to skip Playwright dependencies.");
+      }
+      process.exit(1);
     }
-    process.exit(1);
   }
 }
 console.log("✅ network OK");
