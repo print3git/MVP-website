@@ -59,6 +59,18 @@ if (!fs.existsSync(pluginPath)) {
         execSync("npm install", { stdio: "inherit" });
         return true;
       }
+      if (/TAR_ENTRY_ERROR|ENOENT|ENOTEMPTY|tarball .*corrupted/.test(msg)) {
+        console.warn(
+          "npm ci encountered tar or ENOTEMPTY errors. Cleaning cache and retrying...",
+        );
+        try {
+          execSync("npx --yes rimraf node_modules", { stdio: "inherit" });
+        } catch {
+          execSync("rm -rf node_modules", { stdio: "inherit" });
+        }
+        execSync("npm ci", { stdio: "inherit" });
+        return true;
+      }
       if (/ECONNRESET|ENOTFOUND|network|ETIMEDOUT/i.test(msg)) {
         return false;
       }

@@ -1,30 +1,26 @@
-const fs = require("fs");
-const child_process = require("child_process");
-
-jest.mock("fs");
-jest.mock("child_process");
-
 describe("ensure-root-deps", () => {
-  beforeEach(() => {
-    fs.existsSync.mockReset();
-    child_process.execSync.mockReset();
-  });
-
   test("checks network then installs", () => {
-    fs.existsSync.mockReturnValue(false);
-    require("../scripts/ensure-root-deps.js");
-    const calls = child_process.execSync.mock.calls.map((c) => c[0]);
-    expect(calls).toContain("npm ci");
+    jest.isolateModules(() => {
+      jest.doMock("fs", () => ({ existsSync: () => false }));
+      const execSync = jest.fn();
+      jest.doMock("child_process", () => ({ execSync }));
+      require("../scripts/ensure-root-deps.js");
+      expect(execSync.mock.calls.map((c) => c[0])).toContain("npm ci");
+    });
   });
 
   test("retries on network failure", () => {
-    fs.existsSync.mockReturnValue(false);
-    child_process.execSync
-      .mockImplementationOnce(() => {
-        throw new Error("ECONNRESET");
-      })
-      .mockImplementation(() => {});
-    require("../scripts/ensure-root-deps.js");
-    expect(child_process.execSync.mock.calls.length).toBeGreaterThanOrEqual(5);
+    jest.isolateModules(() => {
+      jest.doMock("fs", () => ({ existsSync: () => false }));
+      const execSync = jest.fn((cmd) => {
+        if (cmd.startsWith("npm ci") && !execSync.failed) {
+          execSync.failed = true;
+          throw new Error("ECONNRESET");
+        }
+      });
+      jest.doMock("child_process", () => ({ execSync }));
+      require("../scripts/ensure-root-deps.js");
+      expect(execSync.mock.calls.length).toBeGreaterThanOrEqual(5);
+    });
   });
 });
