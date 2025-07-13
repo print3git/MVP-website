@@ -40,6 +40,14 @@ if (!fs.existsSync(pluginPath)) {
   runNetworkCheck();
   if (!canReachRegistry()) process.exit(1);
   console.log("Dependencies missing. Installing root dependencies...");
+  const nodeModules = path.join(__dirname, "..", "node_modules");
+  if (fs.existsSync(nodeModules)) {
+    try {
+      fs.rmSync(nodeModules, { recursive: true, force: true });
+    } catch (err) {
+      console.warn("Failed to clean node_modules:", err.message);
+    }
+  }
   try {
     execSync("npm ping", { stdio: "ignore" });
   } catch {

@@ -2,12 +2,13 @@ const fs = require("fs");
 const child_process = require("child_process");
 
 jest.mock("fs");
-jest.mock("child_process");
 
 describe("ensure-root-deps", () => {
   beforeEach(() => {
     fs.existsSync.mockReset();
-    child_process.execSync.mockReset();
+    jest.restoreAllMocks();
+    jest.spyOn(child_process, "execSync").mockImplementation(() => {});
+    jest.resetModules();
   });
 
   test("checks network then installs", () => {
@@ -20,11 +21,17 @@ describe("ensure-root-deps", () => {
   test("retries on network failure", () => {
     fs.existsSync.mockReturnValue(false);
     child_process.execSync
+      .mockImplementationOnce(() => {})
+      .mockImplementationOnce(() => {})
+      .mockImplementationOnce(() => {})
       .mockImplementationOnce(() => {
         throw new Error("ECONNRESET");
       })
       .mockImplementation(() => {});
     require("../scripts/ensure-root-deps.js");
-    expect(child_process.execSync.mock.calls.length).toBeGreaterThanOrEqual(5);
+    const ciCalls = child_process.execSync.mock.calls.filter(
+      (c) => c[0] === "npm ci",
+    );
+    expect(ciCalls.length).toBeGreaterThan(1);
   });
 });
