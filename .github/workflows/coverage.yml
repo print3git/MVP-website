@@ -12,4 +12,12 @@ jobs:
           node-version: "20"
       - run: SKIP_PW_DEPS=1 npm run setup
       - run: npm run coverage
+      - name: Validate LCOV report
+        run: |
+          if grep -qE '^TN:|^SF:' backend/coverage/lcov.info; then
+            echo '✅ lcov.info is valid'
+          else
+            echo '❌ lcov.info malformed or missing'
+            exit 1
+          fi
       - run: cat backend/coverage/lcov.info | npx coveralls
