@@ -31,6 +31,7 @@ describe("validate-env script", () => {
       http_proxy: "http://proxy",
       https_proxy: "http://proxy",
       SKIP_NET_CHECKS: "1",
+      SKIP_DB_CHECK: "1",
     };
     const output = run(env);
     expect(output).toContain("✅ environment OK");
@@ -47,6 +48,7 @@ describe("validate-env script", () => {
       DB_URL: "postgres://user:pass@localhost/db",
       STRIPE_SECRET_KEY: "sk_test_dummy",
       CLOUDFRONT_MODEL_DOMAIN: "cdn.test",
+      SKIP_DB_CHECK: "1",
     };
     const output = run(env);
     expect(output).toContain("✅ environment OK");
@@ -93,6 +95,20 @@ describe("validate-env script", () => {
       SKIP_NET_CHECKS: "",
     };
     expect(() => run(env)).toThrow(/Network check failed/);
+  });
+
+  test("fails when database unreachable", () => {
+    const env = {
+      ...process.env,
+      HF_TOKEN: "test",
+      AWS_ACCESS_KEY_ID: "id",
+      AWS_SECRET_ACCESS_KEY: "secret",
+      STRIPE_TEST_KEY: "sk_test",
+      DB_URL: "postgres://user:pass@127.0.0.1:9/db",
+      CLOUDFRONT_MODEL_DOMAIN: "cdn.test",
+      SKIP_NET_CHECKS: "1",
+    };
+    expect(() => run(env)).toThrow(/Database connection check failed/);
   });
 
   test("falls back to SKIP_PW_DEPS when apt check fails", () => {

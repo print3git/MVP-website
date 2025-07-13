@@ -30,6 +30,7 @@ describe("validate-env script", () => {
       DB_URL: "postgres://user:pass@localhost/db",
       STRIPE_SECRET_KEY: "sk_test_dummy",
       SKIP_NET_CHECKS: "1",
+      SKIP_DB_CHECK: "1",
     });
     expect(output).toContain("environment OK");
   });
@@ -57,7 +58,21 @@ describe("validate-env script", () => {
       HF_API_KEY: "",
       AWS_ACCESS_KEY_ID: "id",
       AWS_SECRET_ACCESS_KEY: "secret",
+      SKIP_DB_CHECK: "1",
     });
     expect(output).toContain("environment OK");
+  });
+
+  test("fails when database unreachable", () => {
+    expect(() =>
+      run({
+        STRIPE_TEST_KEY: "test",
+        HF_TOKEN: "token",
+        AWS_ACCESS_KEY_ID: "id",
+        AWS_SECRET_ACCESS_KEY: "secret",
+        DB_URL: "postgres://user:pass@127.0.0.1:9/db",
+        SKIP_NET_CHECKS: "1",
+      }),
+    ).toThrow(/Database connection check failed/);
   });
 });
