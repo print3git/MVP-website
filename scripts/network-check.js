@@ -40,7 +40,7 @@ if (process.env.NETWORK_CHECK_URL) {
 
 function check(url) {
   try {
-    execSync(`curl -fsSL --max-time 10 -o /dev/null ${url}`, {
+    execSync(`curl -sSL --max-time 10 -o /dev/null ${url}`, {
       stdio: "pipe",
     });
     return null;
