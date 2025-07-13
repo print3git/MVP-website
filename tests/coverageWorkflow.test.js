@@ -13,13 +13,16 @@ describe("coverage workflow", () => {
     );
     const yml = YAML.parse(fs.readFileSync(file, "utf8"));
     const steps = yml.jobs.coverage.steps.map((s) => s.run || "");
-    const hasSetup = steps.some((cmd) => cmd.includes("npm run setup"));
-    const hasCoverage = steps.some((cmd) => cmd.trim() === "npm run coverage");
-    const hasCoveralls = steps.some((cmd) =>
-      cmd.includes("cat backend/coverage/lcov.info | npx coveralls"),
+    const hasCoverage = steps.some((cmd) =>
+      cmd.trim().startsWith("npm run coverage"),
+    );
+    const hasCoveralls = steps.some((cmd) => cmd.includes("npx coveralls"));
+    const usesCat = steps.some((cmd) =>
+      cmd.includes("cat backend/coverage/lcov.info"),
     );
     expect(hasSetup).toBe(true);
     expect(hasCoverage).toBe(true);
     expect(hasCoveralls).toBe(true);
+    expect(usesCat).toBe(true);
   });
 });

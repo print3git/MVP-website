@@ -389,10 +389,13 @@ Run coverage after installing dependencies:
 ```bash
 npm run setup
 npm run coverage
+
 cat backend/coverage/lcov.info | npx coveralls
 ```
 
 Using `npx coveralls` ensures the CLI runs even if it's not installed globally.
+By piping the generated `lcov.info` file instead of test output we avoid
+`Failed to parse string` errors from Coveralls when console logs appear.
 Running coverage without installing dependencies or omitting `npx` may lead to
 `coveralls: command not found` or `jest: not found` errors.
 

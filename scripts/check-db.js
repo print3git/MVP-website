@@ -1,5 +1,19 @@
 #!/usr/bin/env node
-const { Client } = require("pg");
+const path = require("path");
+let pg;
+try {
+  pg = require("pg");
+} catch {
+  try {
+    pg = require(require.resolve("pg", {
+      paths: [path.join(__dirname, "..", "backend", "node_modules")],
+    }));
+  } catch {
+    console.error("Unable to load 'pg' module. Run 'npm run setup' to install dependencies.");
+    process.exit(1);
+  }
+}
+const { Client } = pg;
 
 if (process.env.SKIP_DB_CHECK) {
   console.log("Skipping DB check due to SKIP_DB_CHECK");
