@@ -15,6 +15,7 @@ const jestArgs = [
   "--detectOpenHandles",
   "--forceExit",
   "--coverageReporters=text-lcov",
+  "--coverageReporters=json-summary",
   "--coverageThreshold={}",
   "--silent",
   "--config",
@@ -54,4 +55,10 @@ console.log(`LCOV written to ${lcovPath}`);
 if (result.status) {
   console.error(`Jest exited with code ${result.status}`);
   process.exit(result.status);
+}
+
+const summaryPath = path.join("backend", "coverage", "coverage-summary.json");
+if (!fs.existsSync(summaryPath)) {
+  console.error(`Missing coverage summary: ${summaryPath}`);
+  process.exit(1);
 }

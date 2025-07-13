@@ -4,8 +4,7 @@ import { shareOn } from "./share.js";
 const API_BASE = (window.API_ORIGIN || "") + "/api";
 const TZ = "America/New_York";
 // Local fallback model used when generation fails or the viewer hasn't loaded a model yet.
-const FALLBACK_GLB_LOW =
-  "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
+const FALLBACK_GLB_LOW = "models/bag.glb";
 const FALLBACK_GLB_HIGH = FALLBACK_GLB_LOW;
 const FALLBACK_GLB = FALLBACK_GLB_LOW;
 const LOW_POLY_GLB = FALLBACK_GLB_LOW;
@@ -133,12 +132,24 @@ function ensureModelViewerLoaded() {
     "https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js";
   const localUrl = "js/model-viewer.min.js";
 
-  function loadScript(src, done) {
+  return new Promise((resolve) => {
     const s = document.createElement("script");
     s.type = "module";
-    s.src = src;
-    s.onload = done;
-    s.onerror = done;
+    s.src = cdnUrl;
+    s.onload = () => {
+      window.modelViewerSource = "cdn";
+      resolve();
+    };
+    s.onerror = () => {
+      s.remove();
+      window.modelViewerSource = "local";
+      const fallback = document.createElement("script");
+      fallback.type = "module";
+      fallback.src = localUrl;
+      fallback.onload = resolve;
+      fallback.onerror = resolve;
+      document.head.appendChild(fallback);
+    };
     document.head.appendChild(s);
   }
 
