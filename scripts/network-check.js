@@ -40,7 +40,9 @@ if (process.env.NETWORK_CHECK_URL) {
 
 function check(url) {
   try {
-    execSync(`curl -fsSL --max-time 10 -o /dev/null ${url}`, {
+    // Use HEAD requests without `-f` so HTTP errors (e.g. 400) still
+    // indicate connectivity instead of failing the check.
+    execSync(`curl -sSIL --max-time 10 -o /dev/null ${url}`, {
       stdio: "pipe",
     });
     return null;
@@ -55,6 +57,9 @@ for (const { url, name } of targets) {
   if (error) {
     console.error(`Unable to reach ${name}: ${url}`);
     if (error) console.error(error);
+    if (name === "Playwright CDN" && /error:\s*[45][0-9]{2}/i.test(error)) {
+      console.error("Set SKIP_PW_DEPS=1 to skip Playwright dependencies.");
+    }
     process.exit(1);
   }
 }

@@ -7,6 +7,7 @@ function cleanupNpmCache() {
   try {
     execSync("npm cache clean --force", { stdio: "ignore" });
   } catch {
+
     /* ignore cleanup errors */
   }
   try {
