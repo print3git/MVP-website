@@ -6,8 +6,9 @@ set -e
 
 cleanup_npm_cache() {
   npm cache clean --force >/dev/null 2>&1 || true
-  rm -rf "$(npm config get cache)/_cacache" "$HOME/.npm/_cacache"
-  rm -rf "$(npm config get cache)/_cacache/tmp" "$HOME/.npm/_cacache/tmp"
+  rm -rf "$(npm config get cache)/_cacache" "$HOME/.npm/_cacache" 2>/dev/null || true
+  rm -rf "$(npm config get cache)/_cacache/tmp" "$HOME/.npm/_cacache/tmp" 2>/dev/null || true
+  npm cache verify >/dev/null 2>&1 || true
 }
 
 trap cleanup_npm_cache EXIT
@@ -93,7 +94,7 @@ run_ci() {
       echo "npm ci failed in $dir due to lock mismatch. Running npm install..." >&2
       npm install $extra --no-audit --no-fund
       npm ci $extra --no-audit --no-fund
-    elif grep -E -q "TAR_ENTRY_ERROR|ENOENT" ci.log; then
+    elif grep -E -iq "TAR_ENTRY_ERROR|ENOENT|npm WARN tarball" ci.log; then
       echo "npm ci encountered tar errors in $dir. Cleaning cache and retrying..." >&2
       cleanup_npm_cache
       rm -rf ${dir:-.}/node_modules
