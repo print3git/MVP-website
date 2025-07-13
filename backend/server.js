@@ -14,7 +14,6 @@ const multer = require("multer");
 const path = require("path");
 const morgan = require("morgan");
 const compression = require("compression");
-const swaggerJsdoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 const YAML = require("yaml");
 const { v4: uuidv4 } = require("uuid");
@@ -166,23 +165,8 @@ app.use(morgan("dev"));
 app.use(compression());
 app.use(cors());
 app.use(bodyParser.json());
-const serverSource = fs.readFileSync(__filename, "utf8");
-const swaggerSpec = swaggerJsdoc({
-  definition: {
-    openapi: "3.0.0",
-    info: { title: "print2 API", version: "1.0.0" },
-  },
-  apis: [__filename],
-});
-swaggerSpec.paths = swaggerSpec.paths || {};
-const regex = /app\.(get|post|put|delete|patch)\(\s*"(\/api[^"\s]*)"/g;
-let m;
-while ((m = regex.exec(serverSource))) {
-  const method = m[1];
-  const p = m[2];
-  if (!swaggerSpec.paths[p]) swaggerSpec.paths[p] = {};
-  swaggerSpec.paths[p][method] = { responses: { 200: { description: "OK" } } };
-}
+const openapiPath = path.join(__dirname, "..", "docs", "openapi.yaml");
+const swaggerSpec = YAML.parse(fs.readFileSync(openapiPath, "utf8"));
 app.get("/api-docs", (req, res) => {
   res.type("yaml").send(YAML.stringify(swaggerSpec));
 });
@@ -462,7 +446,7 @@ app.post(
 
       let generatedUrl;
       try {
-        const url = await generateModelPipeline({
+        generatedUrl = await generateModelPipeline({
           prompt: req.body.prompt,
           image: req.file ? req.file.path : undefined,
         });
