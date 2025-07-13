@@ -18,6 +18,8 @@ const targets = [
         {
           url: "https://cdn.playwright.dev/browser.json",
           name: "Playwright CDN",
+          head: true,
+          http1: true,
         },
       ]),
   { url: "https://esm.sh", name: "esm.sh" },
@@ -38,9 +40,12 @@ if (process.env.NETWORK_CHECK_URL) {
   targets[0] = { url: process.env.NETWORK_CHECK_URL, name: "test url" };
 }
 
-function check(url) {
+function check(target) {
+  const { url, head, http1 } =
+    typeof target === "string" ? { url: target } : target;
   try {
-    execSync(`curl -fsSL --max-time 10 -o /dev/null ${url}`, {
+    const flags = [head ? "-I -L" : "", http1 ? "--http1.1" : ""].join(" ");
+    execSync(`curl ${flags} -sSL --max-time 10 -o /dev/null ${url}`.trim(), {
       stdio: "pipe",
     });
     return null;
@@ -50,8 +55,9 @@ function check(url) {
   }
 }
 
-for (const { url, name } of targets) {
-  const error = check(url);
+for (const target of targets) {
+  const { url, name } = target;
+  const error = check(target);
   if (error) {
     console.error(`Unable to reach ${name}: ${url}`);
     if (error) console.error(error);
