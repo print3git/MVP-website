@@ -167,9 +167,9 @@ if (!fs.existsSync(".setup-complete") || !browsersInstalled()) {
   }
 }
 
-function jestInstalled() {
+function prettierInstalled() {
   try {
-    return fs.existsSync(path.join("node_modules", ".bin", "jest"));
+    return fs.existsSync(path.join("node_modules", ".bin", "prettier"));
   } catch {
     return false;
   }
@@ -184,7 +184,7 @@ function pluginInstalled() {
   }
 }
 
-if (!jestInstalled() || !pluginInstalled()) {
+if (!prettierInstalled() || !pluginInstalled()) {
   console.log("Dependencies missing. Installing root dependencies...");
   try {
     require("child_process").execSync("npm ci", { stdio: "inherit" });

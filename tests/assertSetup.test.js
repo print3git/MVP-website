@@ -3,6 +3,7 @@ jest.mock("child_process");
 
 const fs = require("fs");
 const child_process = require("child_process");
+const path = require("path");
 
 describe("assert-setup script", () => {
   beforeEach(() => {
@@ -27,10 +28,10 @@ describe("assert-setup script", () => {
     child_process.execSync.mockImplementation(() => {});
 
     expect(() => require("../scripts/assert-setup.js")).not.toThrow();
-    expect(child_process.execSync).toHaveBeenCalledWith(
-      "CI=1 npm run setup",
-      { stdio: "inherit", env: expect.any(Object) },
-    );
+    expect(child_process.execSync).toHaveBeenCalledWith("CI=1 npm run setup", {
+      stdio: "inherit",
+      env: expect.any(Object),
+    });
   });
 
   test("skips setup when browsers installed", () => {
@@ -58,7 +59,6 @@ describe("assert-setup script", () => {
     );
   });
 
-
   test("skips network check when SKIP_NET_CHECKS is set", () => {
     setEnv();
     process.env.SKIP_NET_CHECKS = "1";
@@ -75,5 +75,23 @@ describe("assert-setup script", () => {
       expect.any(Object),
     );
     delete process.env.SKIP_NET_CHECKS;
+  });
+
+  test("doesn't reinstall when deps present", () => {
+    setEnv();
+    fs.existsSync.mockImplementation((p) => {
+      if (p.includes(path.join("node_modules", ".bin", "playwright")))
+        return true;
+      if (p.includes(path.join("node_modules", ".bin", "commitlint")))
+        return true;
+      if (p.includes(path.join("node_modules", ".bin", "prettier")))
+        return true;
+      return false;
+    });
+    fs.readdirSync.mockReturnValue(["chromium"]);
+    child_process.execSync.mockImplementation(() => {});
+    expect(() => require("../scripts/assert-setup.js")).not.toThrow();
+    const calls = child_process.execSync.mock.calls.map((c) => c[0]);
+    expect(calls).not.toContain("npm ci");
   });
 });
