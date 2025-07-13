@@ -712,6 +712,12 @@ test("GET /api/payment-init bundles payment data", async () => {
   expect(res.body.publishableKey).toBeDefined();
 });
 
+test("GET /api/config/stripe returns key", async () => {
+  const res = await request(app).get("/api/config/stripe");
+  expect(res.status).toBe(200);
+  expect(res.body.publishableKey).toBeDefined();
+});
+
 test("GET /api/campaign returns campaign info", async () => {
   const res = await request(app).get("/api/campaign");
   expect(res.status).toBe(200);
