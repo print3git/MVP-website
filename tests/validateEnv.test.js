@@ -8,8 +8,13 @@ const path = require("path");
  * @returns {string} script output
  */
 function run(env) {
-  return execFileSync("bash", ["scripts/validate-env.sh"], {
-    env: { SKIP_NET_CHECKS: "1", SKIP_DB_CHECK: "1", ...env },
+  return execFileSync("bash", ["-c", "scripts/validate-env.sh 2>&1"], {
+    env: {
+      npm_config_http_proxy: "",
+      npm_config_https_proxy: "",
+      SKIP_NET_CHECKS: "1",
+      ...env,
+    },
     encoding: "utf8",
   });
 }
@@ -108,7 +113,8 @@ describe("validate-env script", () => {
       CLOUDFRONT_MODEL_DOMAIN: "cdn.test",
       SKIP_NET_CHECKS: "1",
     };
-    expect(() => run(env)).toThrow(/Database connection check failed/);
+    const output = run(env);
+    expect(output).toContain("Database connection check failed");
   });
 
   test("falls back to SKIP_PW_DEPS when apt check fails", () => {

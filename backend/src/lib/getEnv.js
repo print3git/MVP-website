@@ -1,13 +1,15 @@
 function getEnv(name, options = {}) {
-  const { required = false, defaultValue } = options;
-  let value = process.env[name];
-  if (value === undefined || value === "") {
-    if (defaultValue !== undefined) return defaultValue;
-    if (required) {
-      throw new Error(`Environment variable ${name} is required`);
-    }
-    return undefined;
+  const { required = false, default: def, defaultValue = def } = options;
+  const value = process.env[name];
+  if (value !== undefined && value !== "") {
+    return value;
   }
-  return value;
+  if (defaultValue !== undefined) {
+    return defaultValue;
+  }
+  if (required) {
+    throw new Error(`Environment variable ${name} is required`);
+  }
+  return undefined;
 }
 module.exports = { getEnv };
