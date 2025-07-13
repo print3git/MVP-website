@@ -161,6 +161,7 @@ if (!fs.existsSync(".setup-complete") || !browsersInstalled()) {
     const env = { ...process.env };
     delete env.npm_config_http_proxy;
     delete env.npm_config_https_proxy;
+    delete env.PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD;
     require("child_process").execSync("CI=1 npm run setup", {
       stdio: "inherit",
       env,
@@ -173,7 +174,10 @@ if (!fs.existsSync(".setup-complete") || !browsersInstalled()) {
 
 function jestInstalled() {
   try {
-    return fs.existsSync(path.join("node_modules", ".bin", "jest"));
+    return (
+      fs.existsSync(path.join("node_modules", ".bin", "jest")) ||
+      fs.existsSync(path.join("backend", "node_modules", ".bin", "jest"))
+    );
   } catch {
     return false;
   }
