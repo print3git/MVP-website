@@ -3,7 +3,7 @@ const path = require("path");
 const YAML = require("yaml");
 
 describe("coverage workflow", () => {
-  test("runs coverage and uploads lcov info via coveralls", () => {
+  test("runs setup, coverage, and pipes lcov to coveralls", () => {
     const file = path.join(
       __dirname,
       "..",
@@ -15,10 +15,8 @@ describe("coverage workflow", () => {
     const steps = yml.jobs.coverage.steps.map((s) => s.run || "");
     const hasSetup = steps.some((cmd) => cmd.includes("npm run setup"));
     const hasCoverage = steps.some((cmd) => cmd.trim() === "npm run coverage");
-    const hasCoveralls = steps.some(
-      (cmd) =>
-        cmd.includes("npx coveralls") &&
-        cmd.includes("< backend/coverage/lcov.info"),
+    const hasCoveralls = steps.some((cmd) =>
+      cmd.includes("npx coveralls < backend/coverage/lcov.info"),
     );
     expect(hasSetup).toBe(true);
     expect(hasCoverage).toBe(true);

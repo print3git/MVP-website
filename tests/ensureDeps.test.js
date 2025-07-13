@@ -110,6 +110,7 @@ describe("ensure-deps", () => {
           throw new Error("setup fail");
         }
       });
+    void execMock;
 
     require("../backend/scripts/ensure-deps");
 
