@@ -1,7 +1,7 @@
 {
   "default": {
     "subreddit": "subreddit",
-    "glb": "https://modelviewer.dev/shared-assets/models/Astronaut.glb",
+    "glb": "models/bag.glb",
     "quote": "Feels like<br />magic"
   },
   "art": {
@@ -26,7 +26,7 @@
   },
   "magic": {
     "subreddit": "magic",
-    "glb": "https://modelviewer.dev/shared-assets/models/Astronaut.glb",
+    "glb": "models/bag.glb",
     "quote": "It feels like<br />magic"
   }
 }
