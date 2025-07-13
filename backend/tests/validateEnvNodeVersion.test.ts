@@ -14,6 +14,7 @@ describe("validate-env node version check", () => {
       STRIPE_SECRET_KEY: "sk",
       SKIP_NET_CHECKS: "1",
       SKIP_PW_DEPS: "1",
+      SKIP_DB_CHECK: "1",
     };
     expect(() => {
       execFileSync(
