@@ -76,4 +76,20 @@ describe("assert-setup script", () => {
     );
     delete process.env.SKIP_NET_CHECKS;
   });
+
+  test("uses ensure-root-deps when root deps missing", () => {
+    setEnv();
+    fs.existsSync.mockImplementation((p) => {
+      if (p === ".setup-complete") return true;
+      return false;
+    });
+    fs.readdirSync.mockReturnValue(["chromium"]);
+    child_process.execSync.mockImplementation(() => {});
+
+    expect(() => require("../scripts/assert-setup.js")).not.toThrow();
+    expect(child_process.execSync).toHaveBeenCalledWith(
+      "node scripts/ensure-root-deps.js",
+      { stdio: "inherit" },
+    );
+  });
 });

@@ -93,39 +93,12 @@ function rootDepsInstalled() {
 if (!rootDepsInstalled()) {
   console.log("Root dependencies missing. Installing...");
   try {
-    child_process.execSync("npm ci", { stdio: "inherit" });
+    child_process.execSync("node scripts/ensure-root-deps.js", {
+      stdio: "inherit",
+    });
   } catch (err) {
-    const msg = String(err.message || err);
-    if (msg.includes("EUSAGE")) {
-      console.warn("npm ci failed, falling back to 'npm install'");
-      try {
-        child_process.execSync("npm install", { stdio: "inherit" });
-      } catch (err2) {
-        console.error("Failed to install dependencies:", err2.message);
-        process.exit(1);
-      }
-    } else if (/(TAR_ENTRY_ERROR|ENOENT|ENOTEMPTY)/.test(msg)) {
-      console.warn("npm ci encountered tar errors. Retrying after cleanup...");
-      try {
-        child_process.execSync(
-          "npx --yes rimraf node_modules backend/node_modules",
-          { stdio: "inherit" },
-        );
-      } catch {
-        child_process.execSync("rm -rf node_modules backend/node_modules", {
-          stdio: "inherit",
-        });
-      }
-      try {
-        child_process.execSync("npm ci", { stdio: "inherit" });
-      } catch (err2) {
-        console.error("Failed to reinstall dependencies:", err2.message);
-        process.exit(1);
-      }
-    } else {
-      console.error("Failed to install dependencies:", err.message);
-      process.exit(1);
-    }
+    console.error("Failed to install dependencies:", err.message);
+    process.exit(1);
   }
 }
 
@@ -187,20 +160,11 @@ function pluginInstalled() {
 if (!jestInstalled() || !pluginInstalled()) {
   console.log("Dependencies missing. Installing root dependencies...");
   try {
-    require("child_process").execSync("npm ci", { stdio: "inherit" });
+    child_process.execSync("node scripts/ensure-root-deps.js", {
+      stdio: "inherit",
+    });
   } catch (err) {
-    const msg = String(err.message || err);
-    if (msg.includes("EUSAGE")) {
-      console.warn("npm ci failed, falling back to 'npm install'");
-      try {
-        require("child_process").execSync("npm install", { stdio: "inherit" });
-      } catch (err2) {
-        console.error("Failed to install dependencies:", err2.message);
-        process.exit(1);
-      }
-    } else {
-      console.error("Failed to install dependencies:", err.message);
-      process.exit(1);
-    }
+    console.error("Failed to install dependencies:", err.message);
+    process.exit(1);
   }
 }
