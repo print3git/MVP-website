@@ -19,6 +19,10 @@ const networkCheck = path.join(
 const aptCheck = path.join(__dirname, "..", "..", "scripts", "check-apt.js");
 
 function runNetworkCheck() {
+  if (process.env.SKIP_NET_CHECKS) {
+    console.log("Skipping network check due to SKIP_NET_CHECKS");
+    return;
+  }
   try {
     execSync(`node ${networkCheck}`, { stdio: "inherit" });
   } catch {
