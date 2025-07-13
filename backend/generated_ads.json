@@ -40,5 +40,19 @@
     "copy": "Bring r/test creativity to life. Print with us today.",
     "image": "imgdata",
     "status": "approved"
+  },
+  {
+    "id": "b2ec18ae-d971-4a64-9656-8c88574882cc",
+    "subreddit": "test",
+    "copy": "Bring r/test creativity to life. Print with us today.",
+    "image": "imgdata",
+    "status": "pending"
+  },
+  {
+    "id": "016f532d-4525-4bfa-baa0-802ee8ddf635",
+    "subreddit": "test",
+    "copy": "Hey r/test – your next favorite model is just a click away!",
+    "image": "imgdata",
+    "status": "approved"
   }
 ]
