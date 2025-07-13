@@ -22,7 +22,9 @@ test("model-viewer loads from local copy when CDN HEAD fails", async () => {
     timeout: 30000,
   });
   const visible = await page.isVisible("#viewer");
+  const source = await page.evaluate(() => window["modelViewerSource"]);
   await browser.close();
   await new Promise((resolve) => server.close(resolve));
   expect(visible).toBe(true);
+  expect(source).toBe("local");
 });

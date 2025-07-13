@@ -161,10 +161,12 @@ function ensureModelViewerLoaded() {
     })
       .then(() => {
         clearTimeout(timer);
+        window.modelViewerSource = "cdn";
         loadScript(cdnUrl, finalize);
       })
       .catch(() => {
         clearTimeout(timer);
+        window.modelViewerSource = "local";
         loadScript(localUrl, finalize);
       });
   });
