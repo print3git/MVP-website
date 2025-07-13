@@ -5,7 +5,12 @@ test("coverage workflow uses setup script", () => {
   const content = fs.readFileSync(".github/workflows/coverage.yml", "utf8");
   const workflow = YAML.parse(content);
   const steps = workflow.jobs.coverage.steps || [];
-  const hasSetup = steps.some((s) => s.run && s.run.includes("npm run setup"));
+  const hasSetup = steps.some(
+    (s) =>
+      s.run &&
+      s.run.includes("npm run setup") &&
+      s.run.includes("SKIP_PW_DEPS=1"),
+  );
   expect(hasSetup).toBe(true);
 });
 

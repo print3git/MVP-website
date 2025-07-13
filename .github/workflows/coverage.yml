@@ -10,6 +10,5 @@ jobs:
       - uses: actions/setup-node@v4.4.0
         with:
           node-version: "20"
-      - run: npm ci
-      - run: npm ci --prefix backend
+      - run: SKIP_PW_DEPS=1 npm run setup
       - run: npm run coverage -- --reporter=text-lcov | npx coveralls
