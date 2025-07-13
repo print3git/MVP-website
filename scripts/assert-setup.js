@@ -157,11 +157,24 @@ if (!fs.existsSync(".setup-complete") || !browsersInstalled()) {
   console.log(
     "Playwright browsers not installed. Running 'bash scripts/setup.sh' to install them",
   );
+  const env = { ...process.env };
+  delete env.npm_config_http_proxy;
+  delete env.npm_config_https_proxy;
+  if (!process.env.SKIP_NET_CHECKS) {
+    try {
+      require("child_process").execSync("node scripts/network-check.js", {
+        stdio: "inherit",
+      });
+    } catch {
+      console.warn(
+        "Network check failed, falling back to SKIP_PW_DEPS=1 and skipping browser download",
+      );
+      env.SKIP_PW_DEPS = "1";
+      env.PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD =
+        env.PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD || "1";
+    }
+  }
   try {
-    const env = { ...process.env };
-    delete env.npm_config_http_proxy;
-    delete env.npm_config_https_proxy;
-    delete env.PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD;
     require("child_process").execSync("CI=1 npm run setup", {
       stdio: "inherit",
       env,
