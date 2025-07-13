@@ -62,8 +62,11 @@ function main() {
     if (!process.env.SKIP_PW_DEPS) {
       run("npx -y playwright install --with-deps");
     }
+    const waitArgs = process.env.WAIT_ON_TIMEOUT
+      ? `-t ${process.env.WAIT_ON_TIMEOUT} `
+      : "";
     run(
-      'npx -y concurrently -k -s first "npm run serve" "wait-on http://localhost:3000 && npx playwright test e2e/smoke.test.js"',
+      `npx -y concurrently -k -s first "npm run serve" "wait-on ${waitArgs}http://localhost:3000 && npx playwright test e2e/smoke.test.js"`,
     );
   } catch (err) {
     dumpDiagnostics(err);
