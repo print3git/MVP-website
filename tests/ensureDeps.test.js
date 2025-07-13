@@ -75,7 +75,6 @@ describe("ensure-deps", () => {
     expect(exitSpy).toHaveBeenCalledWith(1);
   });
 
-
   test("falls back to SKIP_PW_DEPS when apt check fails", () => {
     fs.existsSync.mockReturnValue(false);
     const execMock = jest
@@ -97,5 +96,28 @@ describe("ensure-deps", () => {
         env: expect.objectContaining({ SKIP_PW_DEPS: "1" }),
       }),
     );
+  });
+
+  test("retries without SKIP_PW_DEPS when setup fails", () => {
+    process.env.SKIP_PW_DEPS = "1";
+    fs.existsSync.mockReturnValue(false);
+    const calls = [];
+    const execMock = jest
+      .spyOn(child_process, "execSync")
+      .mockImplementation((cmd, opts) => {
+        calls.push({ cmd, env: { ...(opts.env || {}) } });
+        if (cmd === "npm run setup" && opts.env.SKIP_PW_DEPS) {
+          throw new Error("setup fail");
+        }
+      });
+
+    require("../backend/scripts/ensure-deps");
+
+    const setupCalls = calls.filter((c) => c.cmd === "npm run setup");
+    expect(setupCalls.length).toBe(2);
+    expect(setupCalls[0].env.SKIP_PW_DEPS).toBe("1");
+    expect(setupCalls[1].env).not.toHaveProperty("SKIP_PW_DEPS");
+
+    delete process.env.SKIP_PW_DEPS;
   });
 });
