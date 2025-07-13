@@ -66,7 +66,9 @@ const { verifyTag } = require("./social");
 const QRCode = require("qrcode");
 const generateAdCopy = require("./utils/generateAdCopy");
 const generateShareCard = require("./utils/generateShareCard");
-const { generateModel: generateModelPipeline } = require("./src/pipeline/generateModel");
+const {
+  generateModel: generateModelPipeline,
+} = require("./src/pipeline/generateModel");
 
 const validateStl = require("./utils/validateStl");
 const syncMailingList = require("./scripts/sync-mailing-list");
@@ -460,8 +462,7 @@ app.post(
 
       let generatedUrl;
       try {
-
-        const url = await generateModelPipeline({
+        generatedUrl = await generateModelPipeline({
           prompt: req.body.prompt,
           image: req.file ? req.file.path : undefined,
         });
