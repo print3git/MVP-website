@@ -112,7 +112,7 @@ if (!rootDepsInstalled()) {
       console.warn("npm ci encountered tar errors. Retrying after cleanup...");
       try {
         child_process.execSync(
-          "npx --yes rimraf node_modules backend/node_modules",
+          "npx --yes rimraf@5 node_modules backend/node_modules",
           { stdio: "inherit" },
         );
       } catch {
