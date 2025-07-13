@@ -15,6 +15,26 @@ describe("setup script tar error", () => {
       REAL_NPM: execSync("command -v npm").toString().trim(),
       PATH: path.join(__dirname, "bin-tar") + ":" + process.env.PATH,
     };
-    execSync("bash scripts/setup.sh", { env, stdio: "inherit" });
+    try {
+      execSync("bash scripts/setup.sh", { env, stdio: "inherit" });
+    } finally {
+      const restoreEnv = {
+        ...process.env,
+        SKIP_NET_CHECKS: "1",
+        SKIP_PW_DEPS: "1",
+      };
+      execSync("npm ci --no-audit --no-fund", {
+        stdio: "inherit",
+        env: restoreEnv,
+      });
+      execSync("npm ci --prefix backend --no-audit --no-fund", {
+        stdio: "inherit",
+        env: restoreEnv,
+      });
+      execSync("npm ci --prefix backend/dalle_server --no-audit --no-fund", {
+        stdio: "inherit",
+        env: restoreEnv,
+      });
+    }
   });
 });
