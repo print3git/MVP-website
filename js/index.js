@@ -133,42 +133,30 @@ function ensureModelViewerLoaded() {
     "https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js";
   const localUrl = "js/model-viewer.min.js";
 
-  function loadScript(src, done) {
+  return new Promise((resolve) => {
     const s = document.createElement("script");
     s.type = "module";
-    s.src = src;
-    s.onload = done;
-    s.onerror = done;
-    document.head.appendChild(s);
-  }
-
-  return new Promise((resolve, reject) => {
-    const finalize = () => {
-      if (window.customElements?.get("model-viewer")) {
-        resolve();
-      } else {
-        reject(new Error("model-viewer failed to load"));
-      }
+    s.src = cdnUrl;
+    s.onload = () => {
+      window.modelViewerSource = "cdn";
+      resolve();
     };
-
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 3000);
-
-    fetch(cdnUrl, {
-      method: "HEAD",
-      mode: "no-cors",
-      signal: controller.signal,
-    })
-      .then(() => {
-        clearTimeout(timer);
-        window.modelViewerSource = "cdn";
-        loadScript(cdnUrl, finalize);
-      })
-      .catch(() => {
-        clearTimeout(timer);
-        window.modelViewerSource = "local";
-        loadScript(localUrl, finalize);
-      });
+    s.onerror = () => {
+      s.remove();
+      window.modelViewerSource = "local";
+      const fallback = document.createElement("script");
+      fallback.type = "module";
+      fallback.src = localUrl;
+      fallback.onload = resolve;
+      fallback.onerror = resolve;
+      document.head.appendChild(fallback);
+    };
+    document.head.appendChild(s);
+    setTimeout(() => {
+      if (!window.customElements?.get("model-viewer")) {
+        s.onerror();
+      }
+    }, 3000);
   });
 }
 
