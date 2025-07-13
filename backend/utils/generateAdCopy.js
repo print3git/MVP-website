@@ -1,11 +1,11 @@
-const axios = require('axios');
-const templates = require('../ad_templates.json');
+const axios = require("axios");
+const templates = require("../ad_templates.json");
 
 function pickTemplate() {
   return templates[Math.floor(Math.random() * templates.length)].template;
 }
 
-async function generateAdCopy(subreddit, context = '') {
+async function generateAdCopy(subreddit, context = "") {
   const apiUrl = process.env.LLM_API_URL;
   if (apiUrl) {
     try {
@@ -14,11 +14,11 @@ async function generateAdCopy(subreddit, context = '') {
       });
       if (data && data.text) return data.text.trim();
     } catch (err) {
-      console.error('LLM API failed', err.message);
+      console.error("LLM API failed", err.message);
     }
   }
   const tpl = pickTemplate();
-  return tpl.replace('{subreddit}', subreddit);
+  return tpl.replace("{subreddit}", subreddit);
 }
 
 module.exports = generateAdCopy;

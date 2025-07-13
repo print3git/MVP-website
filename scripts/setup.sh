@@ -6,8 +6,9 @@ set -e
 
 cleanup_npm_cache() {
   npm cache clean --force >/dev/null 2>&1 || true
-  rm -rf "$(npm config get cache)/_cacache" "$HOME/.npm/_cacache"
-  rm -rf "$(npm config get cache)/_cacache/tmp" "$HOME/.npm/_cacache/tmp"
+  rm -rf "$(npm config get cache)/_cacache" "$HOME/.npm/_cacache" 2>/dev/null || true
+  rm -rf "$(npm config get cache)/_cacache/tmp" "$HOME/.npm/_cacache/tmp" 2>/dev/null || true
+  npm cache verify >/dev/null 2>&1 || true
 }
 
 trap cleanup_npm_cache EXIT

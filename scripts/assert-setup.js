@@ -67,13 +67,17 @@ for (const name of requiredEnv) {
   }
 }
 
-try {
-  require("child_process").execSync("node scripts/network-check.js", {
-    stdio: "inherit",
-  });
-} catch (err) {
-  console.error("Network check failed:", err.message);
-  process.exit(1);
+if (!process.env.SKIP_NET_CHECKS) {
+  try {
+    require("child_process").execSync("node scripts/network-check.js", {
+      stdio: "inherit",
+    });
+  } catch (err) {
+    console.error("Network check failed:", err.message);
+    process.exit(1);
+  }
+} else {
+  console.log("Skipping network check due to SKIP_NET_CHECKS");
 }
 
 function rootDepsInstalled() {
@@ -98,6 +102,24 @@ if (!rootDepsInstalled()) {
         child_process.execSync("npm install", { stdio: "inherit" });
       } catch (err2) {
         console.error("Failed to install dependencies:", err2.message);
+        process.exit(1);
+      }
+    } else if (/(TAR_ENTRY_ERROR|ENOENT|ENOTEMPTY)/.test(msg)) {
+      console.warn("npm ci encountered tar errors. Retrying after cleanup...");
+      try {
+        child_process.execSync(
+          "npx --yes rimraf node_modules backend/node_modules",
+          { stdio: "inherit" },
+        );
+      } catch {
+        child_process.execSync("rm -rf node_modules backend/node_modules", {
+          stdio: "inherit",
+        });
+      }
+      try {
+        child_process.execSync("npm ci", { stdio: "inherit" });
+      } catch (err2) {
+        console.error("Failed to reinstall dependencies:", err2.message);
         process.exit(1);
       }
     } else {
