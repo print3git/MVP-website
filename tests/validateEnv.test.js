@@ -1,5 +1,6 @@
 /** @file Tests for validate-env script */
 const { execFileSync } = require("child_process");
+const path = require("path");
 
 /**
  * Run the validate-env script with the provided environment variables.
@@ -92,5 +93,21 @@ describe("validate-env script", () => {
       SKIP_NET_CHECKS: "",
     };
     expect(() => run(env)).toThrow(/Network check failed/);
+  });
+
+  test("falls back to SKIP_PW_DEPS when apt check fails", () => {
+    const env = {
+      ...process.env,
+      HF_TOKEN: "test",
+      AWS_ACCESS_KEY_ID: "id",
+      AWS_SECRET_ACCESS_KEY: "secret",
+      DB_URL: "postgres://user:pass@localhost/db",
+      STRIPE_SECRET_KEY: "sk_test",
+      CLOUDFRONT_MODEL_DOMAIN: "cdn.test",
+      PATH: path.join(__dirname, "bin-apt") + ":" + process.env.PATH,
+    };
+    const output = run(env);
+    expect(output).toContain("APT repository check failed");
+    expect(output).toContain("✅ environment OK");
   });
 });
