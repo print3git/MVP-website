@@ -5,11 +5,15 @@ try {
   pg = require("pg");
 } catch {
   try {
-    pg = require(require.resolve("pg", {
-      paths: [path.join(__dirname, "..", "backend", "node_modules")],
-    }));
+    pg = require(
+      require.resolve("pg", {
+        paths: [path.join(__dirname, "..", "backend", "node_modules")],
+      }),
+    );
   } catch {
-    console.error("Unable to load 'pg' module. Run 'npm run setup' to install dependencies.");
+    console.error(
+      "Unable to load 'pg' module. Run 'npm run setup' to install dependencies.",
+    );
     process.exit(1);
   }
 }
@@ -24,6 +28,12 @@ const dbUrl = process.env.DB_URL;
 if (!dbUrl) {
   console.error("DB_URL is not set");
   process.exit(1);
+}
+
+const placeholderDb = "postgres://user:password@localhost:5432/your_database";
+if (dbUrl === placeholderDb) {
+  console.log("Skipping DB check for placeholder DB_URL");
+  process.exit(0);
 }
 
 (async () => {
