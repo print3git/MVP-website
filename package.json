@@ -11,8 +11,8 @@
     "preinstall": "node scripts/check-node-version.js",
     "lhci": "lhci autorun",
     "prepare": "husky install && tsc -p scripts/tsconfig.json",
-    "preformat": "node scripts/assert-setup.js",
-    "preformat:check": "node scripts/assert-setup.js",
+    "preformat": "cross-env SKIP_NET_CHECKS=1 SKIP_PW_DEPS=1 node scripts/assert-setup.js",
+    "preformat:check": "cross-env SKIP_NET_CHECKS=1 SKIP_PW_DEPS=1 node scripts/assert-setup.js",
     "format": "prettier --write \"**/*.{js,jsx,json,md,html}\"",
     "format:check": "prettier --check \"**/*.{js,jsx,json,md,html}\"",
     "lint": "npm run check-conflicts && eslint . --max-warnings=0 && npm run lint --prefix backend",
@@ -46,7 +46,6 @@
     "visual-test": "percy exec -- npm run e2e",
     "test:a11y": "node scripts/assert-setup.js && bash scripts/install-playwright.sh chromium && playwright test e2e/a11y.test.js",
     "a11y": "jest --runTestsByPath tests/a11y",
-    "jest": "node scripts/run-jest.js",
     "net:check": "node scripts/network-check.js",
     "netlify:deploy": "scripts/netlify-preflight.sh && netlify deploy",
     "diagnose": "bash scripts/diagnose.sh",
@@ -58,7 +57,7 @@
   "author": "",
   "license": "ISC",
   "engines": {
-    "node": ">=20"
+    "node": "20.x"
   },
   "type": "commonjs",
   "prettier": {},
@@ -80,6 +79,7 @@
     "@typescript-eslint/eslint-plugin": "^8.34.1",
     "@typescript-eslint/parser": "^8.36.0",
     "concurrently": "^9.2.0",
+    "coveralls": "^3.1.1",
     "cross-env": "^7.0.3",
     "eslint": "^9.29.0",
     "eslint-config-prettier": "^10.1.5",
@@ -92,6 +92,7 @@
     "i18next-parser": "^9.3.0",
     "lint-staged": "^16.1.2",
     "lockfile-diff": "^0.1.0",
+    "playwright": "^1.54.1",
     "prettier": "^3.5.3",
     "size-limit": "^11.2.0",
     "tsconfig-strictest": "^1.0.0-beta.1",

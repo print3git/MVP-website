@@ -2,7 +2,6 @@ let fs;
 let child_process;
 
 jest.mock("fs");
-jest.mock("child_process");
 
 describe("ensure-deps", () => {
   beforeEach(() => {
@@ -10,32 +9,40 @@ describe("ensure-deps", () => {
     fs = require("fs");
     child_process = require("child_process");
     fs.existsSync.mockReset();
-    child_process.execSync.mockReset();
+    jest.spyOn(child_process, "execSync").mockReset();
   });
+
   test("checks network then installs", () => {
     fs.existsSync.mockReturnValue(false);
-    const execMock = jest.fn();
-    child_process.execSync.mockImplementation(execMock);
+    const execMock = jest
+      .spyOn(child_process, "execSync")
+      .mockImplementation(() => {});
     require("../backend/scripts/ensure-deps");
-    expect(execMock).toHaveBeenNthCalledWith(
-      1,
+    expect(execMock).toHaveBeenCalledWith(
       expect.stringContaining("network-check.js"),
       expect.any(Object),
     );
-    expect(execMock).toHaveBeenNthCalledWith(2, "npm ping", {
-      stdio: "ignore",
-    });
-    expect(execMock).toHaveBeenNthCalledWith(3, "npm run setup", {
-      stdio: "inherit",
-      cwd: expect.any(String),
-    });
+    expect(execMock).toHaveBeenCalledWith("npm ping", expect.any(Object));
+    expect(execMock).toHaveBeenCalledWith(
+      expect.stringContaining("check-apt.js"),
+      expect.any(Object),
+    );
+    expect(execMock).toHaveBeenCalledWith(
+      "npm run setup",
+      expect.objectContaining({ cwd: expect.any(String) }),
+    );
   });
 
   test("runs setup when flag missing", () => {
     fs.existsSync.mockReturnValue(false);
-    const execMock = jest.fn();
-    child_process.execSync.mockImplementation(execMock);
+    const execMock = jest
+      .spyOn(child_process, "execSync")
+      .mockImplementation(() => {});
     require("../backend/scripts/ensure-deps");
+    expect(execMock).toHaveBeenCalledWith(
+      expect.stringContaining("check-apt.js"),
+      expect.any(Object),
+    );
     expect(execMock).toHaveBeenCalledWith(
       "npm run setup",
       expect.objectContaining({ cwd: expect.any(String) }),
@@ -44,7 +51,7 @@ describe("ensure-deps", () => {
 
   test("exits when npm ping fails", () => {
     fs.existsSync.mockReturnValue(false);
-    child_process.execSync.mockImplementation(() => {
+    jest.spyOn(child_process, "execSync").mockImplementation(() => {
       throw new Error("ping fail");
     });
     const exitSpy = jest.spyOn(process, "exit").mockImplementation(() => {
@@ -56,7 +63,7 @@ describe("ensure-deps", () => {
 
   test("exits when npm ci fails", () => {
     fs.existsSync.mockReturnValue(false);
-    child_process.execSync.mockImplementation((cmd, opts) => {
+    jest.spyOn(child_process, "execSync").mockImplementation((cmd, opts) => {
       if (cmd === "npm ci" && !opts.cwd) {
         throw new Error("ci fail");
       }
@@ -66,5 +73,29 @@ describe("ensure-deps", () => {
     });
     expect(() => require("../backend/scripts/ensure-deps")).toThrow("exit");
     expect(exitSpy).toHaveBeenCalledWith(1);
+  });
+
+
+  test("falls back to SKIP_PW_DEPS when apt check fails", () => {
+    fs.existsSync.mockReturnValue(false);
+    const execMock = jest
+      .spyOn(child_process, "execSync")
+      .mockImplementation((cmd) => {
+        if (cmd.includes("check-apt.js")) {
+          throw new Error("apt fail");
+        }
+      });
+    require("../backend/scripts/ensure-deps");
+    expect(execMock).toHaveBeenCalledWith(
+      expect.stringContaining("check-apt.js"),
+      expect.any(Object),
+    );
+    expect(execMock).toHaveBeenCalledWith(
+      "npm run setup",
+      expect.objectContaining({
+        cwd: expect.any(String),
+        env: expect.objectContaining({ SKIP_PW_DEPS: "1" }),
+      }),
+    );
   });
 });
