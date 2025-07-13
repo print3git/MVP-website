@@ -9,6 +9,8 @@ const nock_1 = __importDefault(require("nock"));
 const sparc3dClient_1 = require("../src/lib/sparc3dClient");
 describe("generateGlb", () => {
   beforeEach(() => {
+    process.env.SPARC3D_ENDPOINT = "https://api.example.com/generate";
+    process.env.SPARC3D_TOKEN = "token";
     delete process.env.http_proxy;
     delete process.env.https_proxy;
     delete process.env.HTTP_PROXY;
@@ -58,6 +60,7 @@ describe("generateGlb", () => {
   test("ignores proxy environment variables", async () => {
     process.env.http_proxy = "http://proxy:9999";
     process.env.https_proxy = "http://proxy:9999";
+    const token = process.env.SPARC3D_TOKEN;
     const data = Buffer.from("abc");
     (0, nock_1.default)("https://api.example.com")
       .post("/generate", { prompt: "p2" })
