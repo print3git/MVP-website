@@ -1,4 +1,5 @@
 const fs = require("fs");
+const path = require("path");
 const YAML = require("yaml");
 
 describe("coverage workflow", () => {
@@ -12,10 +13,8 @@ describe("coverage workflow", () => {
     );
     const yml = YAML.parse(fs.readFileSync(file, "utf8"));
     const steps = yml.jobs.coverage.steps.map((s) => s.run || "");
-    const hasRootCi = steps.some((cmd) => cmd.trim() === "npm ci");
-    const hasBackendCi = steps.some((cmd) =>
-      cmd.includes("npm ci --prefix backend"),
-    );
+    const hasRootCi = steps.some((cmd) => cmd.trim() === "SKIP_PW_DEPS=1 npm run setup");
+    const hasBackendCi = steps.some((cmd) => cmd.includes("npm run coverage"));
     const hasCoveralls = steps.some((cmd) => cmd.includes("npx coveralls"));
     expect(hasRootCi).toBe(true);
     expect(hasBackendCi).toBe(true);

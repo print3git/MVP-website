@@ -1,5 +1,11 @@
 #!/usr/bin/env node
-const { Client } = require("pg");
+const path = require("path");
+let Client;
+try {
+  ({ Client } = require("pg"));
+} catch {
+  ({ Client } = require(path.join(__dirname, "..", "backend", "node_modules", "pg")));
+}
 
 if (process.env.SKIP_DB_CHECK) {
   console.log("Skipping DB check due to SKIP_DB_CHECK");
