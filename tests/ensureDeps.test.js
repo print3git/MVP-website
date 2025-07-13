@@ -75,7 +75,6 @@ describe("ensure-deps", () => {
     expect(exitSpy).toHaveBeenCalledWith(1);
   });
 
-
   test("falls back to SKIP_PW_DEPS when apt check fails", () => {
     fs.existsSync.mockReturnValue(false);
     const execMock = jest
@@ -97,5 +96,12 @@ describe("ensure-deps", () => {
         env: expect.objectContaining({ SKIP_PW_DEPS: "1" }),
       }),
     );
+  });
+
+  test("skips setup when flag and deps exist", () => {
+    fs.existsSync.mockReturnValue(true);
+    const execMock = jest.spyOn(child_process, "execSync");
+    require("../backend/scripts/ensure-deps");
+    expect(execMock).not.toHaveBeenCalled();
   });
 });
