@@ -102,7 +102,7 @@ describe("ensure-deps", () => {
     process.env.SKIP_PW_DEPS = "1";
     fs.existsSync.mockReturnValue(false);
     const calls = [];
-    const execMock = jest
+    const _execMock = jest
       .spyOn(child_process, "execSync")
       .mockImplementation((cmd, opts) => {
         calls.push({ cmd, env: { ...(opts.env || {}) } });
@@ -117,6 +117,7 @@ describe("ensure-deps", () => {
     expect(setupCalls.length).toBe(2);
     expect(setupCalls[0].env.SKIP_PW_DEPS).toBe("1");
     expect(setupCalls[1].env).not.toHaveProperty("SKIP_PW_DEPS");
+    expect(_execMock).toHaveBeenCalled();
 
     delete process.env.SKIP_PW_DEPS;
   });
