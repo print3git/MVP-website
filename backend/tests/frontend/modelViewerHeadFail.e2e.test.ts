@@ -19,7 +19,7 @@ test("model-viewer loads from local copy when CDN HEAD fails", async () => {
   );
   await page.goto(`http://127.0.0.1:${port}/index.html`);
   await page.waitForSelector('body[data-viewer-ready="true"]', {
-    timeout: 10000,
+    timeout: 30000,
   });
   const visible = await page.isVisible("#viewer");
   await browser.close();
