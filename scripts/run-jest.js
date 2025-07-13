@@ -3,7 +3,19 @@ const fs = require("fs");
 const { execSync } = require("child_process");
 const path = require("path");
 
+const rootPlugin = path.join(
+  __dirname,
+  "..",
+  "node_modules",
+  "@babel",
+  "plugin-syntax-typescript",
+  "package.json",
+);
+
 if (!process.env.SKIP_ROOT_DEPS_CHECK) {
+  require("./ensure-root-deps.js");
+} else if (!fs.existsSync(rootPlugin)) {
+  console.warn("Root dependencies missing. Running ensure-root-deps...");
   require("./ensure-root-deps.js");
 }
 
