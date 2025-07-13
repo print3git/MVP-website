@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+if [[ "$1" == "ci" && -z "$EEXIST_ERROR_DONE" ]]; then
+  echo "npm ERR! code EEXIST" >&2
+  echo "npm ERR! syscall rename" >&2
+  echo "npm ERR! path /fake/cache/tmp123" >&2
+  echo "npm ERR! dest /fake/cache/content123" >&2
+  echo "npm ERR! errno -2" >&2
+  echo "npm ERR! ENOENT: no such file or directory, rename '/fake/cache/tmp123' -> '/fake/cache/content123'" >&2
+  export EEXIST_ERROR_DONE=1
+  exit 1
+fi
+exec "$REAL_NPM" "$@"
