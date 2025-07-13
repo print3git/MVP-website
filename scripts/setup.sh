@@ -89,17 +89,22 @@ run_ci() {
   if [ -n "$dir" ]; then
     extra="--prefix $dir"
   fi
-  if ! npm ci $extra --no-audit --no-fund 2>ci.log; then
+  npm ci $extra --no-audit --no-fund >ci.log 2>&1
+  local status=$?
+  if [ $status -ne 0 ] || grep -E -q "TAR_ENTRY_ERROR|ENOENT|ENOTEMPTY|tarball .*corrupted|invalid tar file" ci.log; then
     if grep -q "EUSAGE" ci.log; then
       echo "npm ci failed in $dir due to lock mismatch. Running npm install..." >&2
       npm install $extra --no-audit --no-fund
-      npm ci $extra --no-audit --no-fund
-    elif grep -E -q "TAR_ENTRY_ERROR|ENOENT|ENOTEMPTY|tarball .*corrupted" ci.log; then
+      npm ci $extra --no-audit --no-fund >ci.log 2>&1
+      status=$?
+    else
       echo "npm ci encountered tar or filesystem errors in $dir. Cleaning cache and retrying..." >&2
       cleanup_npm_cache
       rm -rf ${dir:-.}/node_modules
-      npm ci $extra --no-audit --no-fund
-    else
+      npm ci $extra --no-audit --no-fund >ci.log 2>&1
+      status=$?
+    fi
+    if [ $status -ne 0 ]; then
       cat ci.log >&2
       rm ci.log
       return 1
