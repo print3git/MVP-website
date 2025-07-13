@@ -3,6 +3,7 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 const child_process = require("child_process");
+const { runNpmCi } = require("./run-npm-ci.js");
 
 // Ensure this script runs from the repo root so relative paths work
 const repoRoot = path.resolve(__dirname, "..");
@@ -96,7 +97,7 @@ function rootDepsInstalled() {
 if (!rootDepsInstalled()) {
   console.log("Root dependencies missing. Installing...");
   try {
-    child_process.execSync("npm ci", { stdio: "inherit" });
+    runNpmCi();
   } catch (err) {
     const msg = String(err.message || err);
     if (msg.includes("EUSAGE")) {
@@ -190,20 +191,9 @@ function pluginInstalled() {
 if (!jestInstalled() || !pluginInstalled()) {
   console.log("Dependencies missing. Installing root dependencies...");
   try {
-    require("child_process").execSync("npm ci", { stdio: "inherit" });
+    runNpmCi();
   } catch (err) {
-    const msg = String(err.message || err);
-    if (msg.includes("EUSAGE")) {
-      console.warn("npm ci failed, falling back to 'npm install'");
-      try {
-        require("child_process").execSync("npm install", { stdio: "inherit" });
-      } catch (err2) {
-        console.error("Failed to install dependencies:", err2.message);
-        process.exit(1);
-      }
-    } else {
-      console.error("Failed to install dependencies:", err.message);
-      process.exit(1);
-    }
+    console.error("Failed to install dependencies:", err.message);
+    process.exit(1);
   }
 }
