@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-if [[ "$1" == "rimraf" && -z "$RIMRAF_FAIL_DONE" ]]; then
+if [[ "$1" == "rimraf@5" && -z "$RIMRAF_FAIL_DONE" ]]; then
   echo "simulated rimraf failure" >&2
   export RIMRAF_FAIL_DONE=1
   exit 1
