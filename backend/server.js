@@ -463,11 +463,12 @@ app.post(
         !!req.file,
       );
 
+      const file = req.file ? req.file.path : undefined;
       let generatedUrl;
       try {
         generatedUrl = await generateModelPipeline({
           prompt: req.body.prompt,
-          image: req.file ? req.file.path : undefined,
+          image: file,
         });
         generatedUrl = url;
       } catch (err) {

@@ -20,6 +20,15 @@ if (!process.env.SKIP_NODE_CHECK) {
 
 const jestPath = "node_modules/.bin/jest";
 const repoRoot = path.join(__dirname, "..", "..");
+try {
+  execSync(`mise trust ${repoRoot}`, { stdio: "ignore" });
+  const miseToml = path.join(repoRoot, ".mise.toml");
+  if (fs.existsSync(miseToml)) {
+    execSync(`mise trust ${miseToml}`, { stdio: "ignore" });
+  }
+} catch {
+  // ignore errors from mise trust to avoid masking real issues
+}
 const expressPath = path.join(repoRoot, "node_modules", "express");
 const pwPath = path.join(repoRoot, "node_modules", "@playwright", "test");
 const setupFlag = path.join(repoRoot, ".setup-complete");
