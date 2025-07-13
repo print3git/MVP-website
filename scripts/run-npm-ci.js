@@ -4,25 +4,22 @@ const os = require("os");
 const path = require("path");
 
 function cleanupNpmCache() {
-
   try {
     execSync('npm cache clean --force', { stdio: 'ignore' });
   } catch {
-    // ignore cache cleanup failures
+    /* empty */
   }
   try {
     const cache = execSync('npm config get cache').toString().trim();
     fs.rmSync(path.join(cache, '_cacache'), { recursive: true, force: true });
     fs.rmSync(path.join(cache, '_cacache', 'tmp'), { recursive: true, force: true });
   } catch {
-
-    // ignore cache removal errors
+    /* empty */
   }
   try {
     fs.rmSync(path.join(os.homedir(), '.npm', '_cacache'), { recursive: true, force: true });
   } catch {
-    // ignore cache removal errors
-
+    /* empty */
   }
 }
 
