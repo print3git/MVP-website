@@ -80,6 +80,9 @@ if (!process.env.SKIP_NET_CHECKS) {
   console.log("Skipping network check due to SKIP_NET_CHECKS");
 }
 
+// Ensure required root dependencies are installed with retry logic
+require("./ensure-root-deps.js");
+
 function rootDepsInstalled() {
   try {
     const pw = fs.existsSync(path.join("node_modules", ".bin", "playwright"));
