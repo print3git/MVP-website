@@ -10,6 +10,7 @@ const jestArgs = [
   "--detectOpenHandles",
   "--forceExit",
   "--coverageReporters=text-lcov",
+  "--coverageThreshold={}",
   "--silent",
   "--runTestsByPath",
   ...process.argv.slice(2),
@@ -37,9 +38,14 @@ const lcovPath = path.join("coverage", "lcov.info");
 fs.mkdirSync(path.dirname(lcovPath), { recursive: true });
 let output = result.stdout || "";
 const start = output.indexOf("TN:");
-if (start !== -1) output = output.slice(start);
+if (start === -1) {
+  console.error("Failed to parse LCOV from jest output");
+  process.exit(result.status || 1);
+}
+output = output.slice(start);
 fs.writeFileSync(lcovPath, output);
 console.log(`LCOV written to ${lcovPath}`);
 if (result.status) {
   console.error(`Jest exited with code ${result.status}`);
+  process.exit(result.status);
 }
