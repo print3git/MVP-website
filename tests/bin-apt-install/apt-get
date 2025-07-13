@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+if [[ "$1" == "update" ]]; then
+  exit 0
+fi
+exit 1
