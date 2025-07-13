@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const { execSync } = require("child_process");
+const os = require("os");
 
 function getEnv() {
   const env = { ...process.env };
@@ -35,6 +36,35 @@ const playwrightPath = path.join(
 const networkCheck = path.join(__dirname, "network-check.js");
 const requiredPaths = [pluginPath, expressPath, playwrightPath];
 
+function cleanupNpmCache() {
+  try {
+    execSync("npm cache clean --force", { stdio: "ignore" });
+  } catch {
+    /* ignore */
+  }
+  try {
+    const cacheDir = execSync("npm config get cache", { stdio: "pipe" })
+      .toString()
+      .trim();
+    const homeCache = path.join(os.homedir(), ".npm", "_cacache");
+    for (const dir of [
+      path.join(cacheDir, "_cacache"),
+      homeCache,
+      path.join(cacheDir, "_cacache", "tmp"),
+      path.join(homeCache, "tmp"),
+    ]) {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  } catch {
+    /* ignore */
+  }
+  try {
+    execSync("npm cache verify", { stdio: "ignore" });
+  } catch {
+    /* ignore */
+  }
+}
+
 function runNetworkCheck() {
   try {
     execSync(`node ${networkCheck}`, { stdio: "inherit", env: getEnv() });
@@ -62,6 +92,7 @@ if (!requiredPaths.every((p) => fs.existsSync(p))) {
   runNetworkCheck();
   if (!canReachRegistry()) process.exit(1);
   console.log("Dependencies missing. Installing root dependencies...");
+  cleanupNpmCache();
   try {
     execSync("npm ping", { stdio: "ignore", env: getEnv() });
   } catch {
@@ -81,6 +112,22 @@ if (!requiredPaths.every((p) => fs.existsSync(p))) {
         execSync("npm install", { stdio: "inherit", env: getEnv() });
         return true;
       }
+      if (/TAR_ENTRY_ERROR|ENOENT|ENOTEMPTY|tarball .*corrupted/.test(msg)) {
+        console.warn(
+          "npm ci encountered tar or filesystem errors. Cleaning cache and retrying...",
+        );
+        cleanupNpmCache();
+        try {
+          fs.rmSync("node_modules", { recursive: true, force: true });
+          fs.rmSync(path.join("backend", "node_modules"), {
+            recursive: true,
+            force: true,
+          });
+        } catch {
+          /* ignore */
+        }
+        return false;
+      }
       if (/ECONNRESET|ENOTFOUND|network|ETIMEDOUT/i.test(msg)) {
         return false;
       }
@@ -91,9 +138,7 @@ if (!requiredPaths.every((p) => fs.existsSync(p))) {
 
   for (let attempt = 1; attempt <= 3; attempt++) {
     if (install()) break;
-    console.warn(
-      `npm ci failed due to network issue, retrying (${attempt}/3)...`,
-    );
+    console.warn(`npm ci failed, retrying (${attempt}/3)...`);
     runNetworkCheck();
     if (attempt === 3) {
       console.error("Failed to install dependencies after multiple attempts.");
