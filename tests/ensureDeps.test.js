@@ -1,5 +1,5 @@
-const fs = require("fs");
-const child_process = require("child_process");
+let fs;
+let child_process;
 
 jest.mock("fs");
 jest.mock("child_process");
@@ -7,6 +7,8 @@ jest.mock("child_process");
 describe("ensure-deps", () => {
   beforeEach(() => {
     jest.resetModules();
+    fs = require("fs");
+    child_process = require("child_process");
     fs.existsSync.mockReset();
     child_process.execSync.mockReset();
   });
@@ -64,5 +66,26 @@ describe("ensure-deps", () => {
     });
     expect(() => require("../backend/scripts/ensure-deps")).toThrow("exit");
     expect(exitSpy).toHaveBeenCalledWith(1);
+  });
+
+  test("installs root deps when playwright missing", () => {
+    fs.existsSync.mockImplementation((p) => {
+      if (p.includes(".setup-complete")) return true;
+      if (p.includes("node_modules/express")) return true;
+      if (p.includes("@playwright/test")) return false;
+      return true;
+    });
+    const execMock = jest.fn();
+    child_process.execSync.mockImplementation(execMock);
+    require("../backend/scripts/ensure-deps");
+    expect(execMock).toHaveBeenCalledWith(
+      expect.stringContaining("network-check.js"),
+      expect.any(Object),
+    );
+    expect(execMock).toHaveBeenCalledWith("npm ping", { stdio: "ignore" });
+    expect(execMock).toHaveBeenCalledWith("npm ci", {
+      stdio: "inherit",
+      cwd: expect.any(String),
+    });
   });
 });

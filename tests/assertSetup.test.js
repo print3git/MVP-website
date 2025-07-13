@@ -53,6 +53,7 @@ describe("assert-setup script", () => {
     );
   });
 
+
   test("skips network check when SKIP_NET_CHECKS is set", () => {
     setEnv();
     process.env.SKIP_NET_CHECKS = "1";
