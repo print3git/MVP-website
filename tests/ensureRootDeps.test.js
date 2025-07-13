@@ -8,11 +8,14 @@ describe("ensure-root-deps", () => {
   beforeEach(() => {
     fs.existsSync.mockReset();
     child_process.execSync.mockReset();
+    process.exit = jest.fn();
   });
 
   test("checks network then installs", () => {
     fs.existsSync.mockReturnValue(false);
-    require("../scripts/ensure-root-deps.js");
+    jest.isolateModules(() => {
+      require("../scripts/ensure-root-deps.js");
+    });
     const calls = child_process.execSync.mock.calls.map((c) => c[0]);
     expect(calls).toContain("npm ci");
   });
@@ -21,11 +24,18 @@ describe("ensure-root-deps", () => {
     fs.existsSync.mockReturnValue(false);
     child_process.execSync
       .mockImplementationOnce(() => {})
+      .mockImplementationOnce(() => {})
       .mockImplementationOnce(() => {
         throw new Error("ECONNRESET");
       })
       .mockImplementation(() => {});
-    expect(() => require("../scripts/ensure-root-deps.js")).not.toThrow();
+    expect(() =>
+      jest.isolateModules(() => {
+        require("../scripts/ensure-root-deps.js");
+      }),
+    ).not.toThrow();
+    expect(process.exit).not.toHaveBeenCalled();
+    expect(child_process.execSync.mock.calls.length).toBeGreaterThan(1);
   });
 
   test("unsets npm proxy variables", () => {
@@ -33,7 +43,9 @@ describe("ensure-root-deps", () => {
     process.env.npm_config_http_proxy = "http://proxy";
     process.env.npm_config_https_proxy = "http://proxy";
     child_process.execSync.mockImplementation(() => {});
-    require("../scripts/ensure-root-deps.js");
+    jest.isolateModules(() => {
+      require("../scripts/ensure-root-deps.js");
+    });
     const ciCall = child_process.execSync.mock.calls.find(
       (c) => c[0] === "npm ci",
     );
