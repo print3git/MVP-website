@@ -104,6 +104,24 @@ if (!rootDepsInstalled()) {
         console.error("Failed to install dependencies:", err2.message);
         process.exit(1);
       }
+    } else if (/(TAR_ENTRY_ERROR|ENOENT|ENOTEMPTY)/.test(msg)) {
+      console.warn("npm ci encountered tar errors. Retrying after cleanup...");
+      try {
+        child_process.execSync(
+          "npx --yes rimraf node_modules backend/node_modules",
+          { stdio: "inherit" },
+        );
+      } catch {
+        child_process.execSync("rm -rf node_modules backend/node_modules", {
+          stdio: "inherit",
+        });
+      }
+      try {
+        child_process.execSync("npm ci", { stdio: "inherit" });
+      } catch (err2) {
+        console.error("Failed to reinstall dependencies:", err2.message);
+        process.exit(1);
+      }
     } else {
       console.error("Failed to install dependencies:", err.message);
       process.exit(1);
