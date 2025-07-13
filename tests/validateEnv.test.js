@@ -118,8 +118,9 @@ describe("validate-env script", () => {
       SKIP_NET_CHECKS: "1",
     };
     const output = run(env);
-    expect(output).toContain("Database connection check failed");
-    expect(output).toContain("✅ environment OK");
+
+    expect(output).toMatch(/Database connection check failed/);
+    expect(output).toMatch(/environment OK/);
   });
 
   test("falls back to SKIP_PW_DEPS when apt check fails", () => {
