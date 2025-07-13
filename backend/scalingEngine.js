@@ -1,6 +1,7 @@
 require("dotenv").config();
 const axios = require("axios");
 const db = require("./db");
+const logger = require("../src/logger");
 
 const API_URL = process.env.REDDIT_ADS_API_URL || "";
 const API_TOKEN = process.env.REDDIT_ADS_API_TOKEN || "";
@@ -17,7 +18,7 @@ async function fetchCampaignPerformance() {
     });
     return res.data || [];
   } catch (err) {
-    console.error("Failed to fetch campaign performance", err.message);
+    logger.error("Failed to fetch campaign performance", err.message);
     return [];
   }
 }
@@ -43,7 +44,7 @@ async function adjustBudgets(performance) {
           headers: { Authorization: `Bearer ${API_TOKEN}` },
         });
       } catch (err) {
-        console.error("Failed to pause campaign", err.message);
+        logger.error("Failed to pause campaign", err.message);
       }
     } else if (cac > PROFIT_PER_SALE) {
       action = "decrease";
@@ -55,7 +56,7 @@ async function adjustBudgets(performance) {
           { headers: { Authorization: `Bearer ${API_TOKEN}` } },
         );
       } catch (err) {
-        console.error("Failed to decrease budget", err.message);
+        logger.error("Failed to decrease budget", err.message);
       }
     } else if (cac < PROFIT_PER_SALE * 0.8) {
       action = "increase";
@@ -67,7 +68,7 @@ async function adjustBudgets(performance) {
           { headers: { Authorization: `Bearer ${API_TOKEN}` } },
         );
       } catch (err) {
-        console.error("Failed to increase budget", err.message);
+        logger.error("Failed to increase budget", err.message);
       }
     }
     if (action) {
@@ -83,7 +84,7 @@ async function runScalingEngine() {
 
 if (require.main === module) {
   runScalingEngine().catch((err) => {
-    console.error(err);
+    logger.error(err);
     process.exit(1);
   });
 }

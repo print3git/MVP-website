@@ -4,6 +4,7 @@ import { pipeline } from "stream/promises";
 import path from "path";
 import { uploadFile } from "./uploadS3";
 import { capture } from "./logger";
+import logger from "../../src/logger";
 
 /**
  * Generate an image from text using Stability AI and upload to S3.
@@ -27,7 +28,7 @@ export async function textToImage(prompt: string): Promise<string> {
         },
       );
     } catch (err: any) {
-      console.error(
+      logger.error(
         JSON.stringify({
           step: "textToImage-fetch",
           error: err.message,
