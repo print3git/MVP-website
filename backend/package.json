@@ -97,6 +97,6 @@
     "babel-jest": "^30.0.4"
   },
   "engines": {
-    "node": ">=20"
+    "node": "20.x"
   }
 }
