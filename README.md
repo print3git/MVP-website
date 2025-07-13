@@ -338,6 +338,10 @@ Install dependencies and Playwright browsers:
 npm run setup
 ```
 
+If `npm run ci` fails with messages like `TAR_ENTRY_ERROR` or missing files in
+`node_modules`, rerun `npm run setup`. The setup script cleans the npm cache and
+reinstalls packages to recover from corrupted installs.
+
 If the browsers are missing, the CI scripts will automatically invoke this
 command for you. Running it manually first speeds up subsequent test runs.
 
