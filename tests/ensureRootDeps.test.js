@@ -1,11 +1,13 @@
-const fs = require("fs");
-const child_process = require("child_process");
-
-jest.mock("fs");
-jest.mock("child_process");
+let fs;
+let child_process;
 
 describe("ensure-root-deps", () => {
   beforeEach(() => {
+    jest.resetModules();
+    jest.mock("fs");
+    jest.mock("child_process");
+    fs = require("fs");
+    child_process = require("child_process");
     fs.existsSync.mockReset();
     child_process.execSync.mockReset();
   });
@@ -20,10 +22,13 @@ describe("ensure-root-deps", () => {
   test("retries on network failure", () => {
     fs.existsSync.mockReturnValue(false);
     child_process.execSync
+      .mockImplementationOnce(() => {}) // network-check
+      .mockImplementationOnce(() => {}) // npm ping
+      .mockImplementationOnce(() => {}) // npm ping before install
       .mockImplementationOnce(() => {
-        throw new Error("ECONNRESET");
+        throw new Error("ECONNRESET"); // npm ci fails
       })
-      .mockImplementation(() => {});
+      .mockImplementation(() => {}); // subsequent retries succeed
     require("../scripts/ensure-root-deps.js");
     expect(child_process.execSync.mock.calls.length).toBeGreaterThanOrEqual(5);
   });
