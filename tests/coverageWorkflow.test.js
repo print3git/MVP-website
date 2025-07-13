@@ -1,8 +1,9 @@
 const fs = require("fs");
+const path = require("path");
 const YAML = require("yaml");
 
 describe("coverage workflow", () => {
-  test("installs root & backend deps and uses npx coveralls", () => {
+  test("runs setup then posts coverage", () => {
     const file = path.join(
       __dirname,
       "..",
@@ -12,13 +13,9 @@ describe("coverage workflow", () => {
     );
     const yml = YAML.parse(fs.readFileSync(file, "utf8"));
     const steps = yml.jobs.coverage.steps.map((s) => s.run || "");
-    const hasRootCi = steps.some((cmd) => cmd.trim() === "npm ci");
-    const hasBackendCi = steps.some((cmd) =>
-      cmd.includes("npm ci --prefix backend"),
-    );
+    const hasSetup = steps.some((cmd) => cmd.includes("npm run setup"));
     const hasCoveralls = steps.some((cmd) => cmd.includes("npx coveralls"));
-    expect(hasRootCi).toBe(true);
-    expect(hasBackendCi).toBe(true);
+    expect(hasSetup).toBe(true);
     expect(hasCoveralls).toBe(true);
   });
 });
