@@ -24,13 +24,17 @@ describe("assert-setup script", () => {
     setEnv();
     fs.existsSync.mockReturnValue(false);
     fs.readdirSync.mockReturnValue([]);
-    child_process.execSync.mockImplementation(() => {});
+    child_process.execSync.mockImplementation((cmd) => {
+      if (cmd.includes("validate-env.sh")) {
+        process.env.HF_TOKEN = "set";
+      }
+    });
 
     expect(() => require("../scripts/assert-setup.js")).not.toThrow();
-    expect(child_process.execSync).toHaveBeenCalledWith(
-      "CI=1 npm run setup",
-      { stdio: "inherit", env: expect.any(Object) },
-    );
+    expect(child_process.execSync).toHaveBeenCalledWith("CI=1 npm run setup", {
+      stdio: "inherit",
+      env: expect.any(Object),
+    });
   });
 
   test("skips setup when browsers installed", () => {
@@ -49,7 +53,11 @@ describe("assert-setup script", () => {
     fs.existsSync.mockReturnValue(true);
     fs.readdirSync.mockReturnValue(["chromium"]);
 
-    child_process.execSync.mockImplementation(() => {});
+    child_process.execSync.mockImplementation((cmd) => {
+      if (cmd.includes("validate-env.sh")) {
+        process.env.HF_TOKEN = "set";
+      }
+    });
 
     expect(() => require("../scripts/assert-setup.js")).not.toThrow();
     expect(child_process.execSync).toHaveBeenCalledWith(
@@ -57,7 +65,6 @@ describe("assert-setup script", () => {
       { stdio: "inherit" },
     );
   });
-
 
   test("skips network check when SKIP_NET_CHECKS is set", () => {
     setEnv();
@@ -75,5 +82,23 @@ describe("assert-setup script", () => {
       expect.any(Object),
     );
     delete process.env.SKIP_NET_CHECKS;
+  });
+
+  test("runs setup when root deps missing", () => {
+    setEnv();
+    fs.existsSync.mockImplementation((p) => {
+      if (p.includes("node_modules/.bin/playwright")) return false;
+      if (p.includes("node_modules/.bin/commitlint")) return false;
+      return true;
+    });
+    fs.readdirSync.mockReturnValue(["chromium"]);
+    child_process.execSync.mockImplementation(() => {});
+    process.env.SKIP_PW_DEPS = "1";
+    expect(() => require("../scripts/assert-setup.js")).not.toThrow();
+    expect(child_process.execSync).toHaveBeenCalledWith("CI=1 npm run setup", {
+      stdio: "inherit",
+      env: expect.any(Object),
+    });
+    delete process.env.SKIP_PW_DEPS;
   });
 });

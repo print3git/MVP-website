@@ -91,41 +91,17 @@ function rootDepsInstalled() {
 }
 
 if (!rootDepsInstalled()) {
-  console.log("Root dependencies missing. Installing...");
+  console.log(
+    "Root dependencies missing. Running 'npm run setup' to install them",
+  );
   try {
-    child_process.execSync("npm ci", { stdio: "inherit" });
+    const env = { ...process.env };
+    delete env.npm_config_http_proxy;
+    delete env.npm_config_https_proxy;
+    child_process.execSync("CI=1 npm run setup", { stdio: "inherit", env });
   } catch (err) {
-    const msg = String(err.message || err);
-    if (msg.includes("EUSAGE")) {
-      console.warn("npm ci failed, falling back to 'npm install'");
-      try {
-        child_process.execSync("npm install", { stdio: "inherit" });
-      } catch (err2) {
-        console.error("Failed to install dependencies:", err2.message);
-        process.exit(1);
-      }
-    } else if (/(TAR_ENTRY_ERROR|ENOENT|ENOTEMPTY)/.test(msg)) {
-      console.warn("npm ci encountered tar errors. Retrying after cleanup...");
-      try {
-        child_process.execSync(
-          "npx --yes rimraf node_modules backend/node_modules",
-          { stdio: "inherit" },
-        );
-      } catch {
-        child_process.execSync("rm -rf node_modules backend/node_modules", {
-          stdio: "inherit",
-        });
-      }
-      try {
-        child_process.execSync("npm ci", { stdio: "inherit" });
-      } catch (err2) {
-        console.error("Failed to reinstall dependencies:", err2.message);
-        process.exit(1);
-      }
-    } else {
-      console.error("Failed to install dependencies:", err.message);
-      process.exit(1);
-    }
+    console.error("Failed to run setup:", err.message);
+    process.exit(1);
   }
 }
 
