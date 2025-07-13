@@ -41,11 +41,24 @@ if (!hostDepsInstalled()) {
   try {
     execSync("CI=1 npx playwright install --with-deps", { stdio: "inherit" });
   } catch (err) {
-    console.error(
-      "Failed to install Playwright host dependencies:",
-      err.message,
-    );
-    process.exit(1);
+    const msg = String(err.message || "");
+    console.error("Failed to install Playwright host dependencies:", msg);
+    if (/code:\s*100/.test(msg)) {
+      console.error(
+        "apt-get failure detected. Retrying without system dependencies...",
+      );
+      try {
+        execSync("CI=1 npx playwright install", { stdio: "inherit" });
+        console.error(
+          "Set SKIP_PW_DEPS=1 to skip Playwright dependencies in restricted environments.",
+        );
+      } catch (err2) {
+        console.error("Fallback install failed:", err2.message);
+        process.exit(1);
+      }
+    } else {
+      process.exit(1);
+    }
   }
 } else {
   console.log("Playwright host dependencies already satisfied.");
