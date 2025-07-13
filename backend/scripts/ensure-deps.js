@@ -2,6 +2,22 @@ const fs = require("fs");
 const path = require("path");
 const { execSync } = require("child_process");
 
+// Fail fast when using the wrong Node version unless disabled for tests.
+if (!process.env.SKIP_NODE_CHECK) {
+  const nodeCheck = path.join(
+    __dirname,
+    "..",
+    "..",
+    "scripts",
+    "check-node-version.js",
+  );
+  try {
+    execSync(`node ${nodeCheck}`, { stdio: "inherit" });
+  } catch {
+    process.exit(1);
+  }
+}
+
 const jestPath = "node_modules/.bin/jest";
 const repoRoot = path.join(__dirname, "..", "..");
 const expressPath = path.join(repoRoot, "node_modules", "express");

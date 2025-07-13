@@ -6,6 +6,7 @@ describe("ensure-deps SKIP_NET_CHECKS", () => {
     jest.resetModules();
     jest.spyOn(child_process, "execSync").mockImplementation(() => {});
     jest.spyOn(fs, "existsSync").mockReturnValue(false);
+    process.env.SKIP_NODE_CHECK = "1";
   });
 
   test("skips network check when SKIP_NET_CHECKS is set", () => {
