@@ -3,14 +3,13 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 
-/** Simulate the CDN returning HTTP 400 but with exit status 0. */
 describe("network-check CDN 400", () => {
-  test("succeeds when CDN returns HTTP 400", () => {
+  test("treats HTTP 400 from CDN as success", () => {
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "curl-"));
     const fakeCurl = path.join(tmp, "curl");
     fs.writeFileSync(
       fakeCurl,
-      '#!/bin/sh\nif echo "$@" | grep -q cdn.playwright.dev; then echo "HTTP/1.1 400 Bad Request"; exit 0; fi\nexec /usr/bin/curl "$@"',
+      '#!/bin/sh\nif echo "$@" | grep -q cdn.playwright.dev; then echo \'curl: (22) The requested URL returned error: 400\' >&2; exit 22; fi\nexec /usr/bin/curl "$@"',
     );
     fs.chmodSync(fakeCurl, 0o755);
     const out = execFileSync(

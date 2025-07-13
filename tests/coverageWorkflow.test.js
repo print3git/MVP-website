@@ -3,7 +3,7 @@ const path = require("path");
 const YAML = require("yaml");
 
 describe("coverage workflow", () => {
-  test("runs setup and posts lcov to coveralls", () => {
+  test("runs setup, coverage and uploads to coveralls", () => {
     const file = path.join(
       __dirname,
       "..",

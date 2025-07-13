@@ -48,6 +48,7 @@ function canReachRegistry() {
 function runSetup() {
   console.log("Setup flag missing. Running 'npm run setup'...");
   const env = { ...process.env };
+
   if (env.SKIP_NET_CHECKS && !env.SKIP_PW_DEPS) {
     env.SKIP_PW_DEPS = "1";
     env.PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD =
