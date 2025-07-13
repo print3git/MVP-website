@@ -1,8 +1,10 @@
 jest.mock("fs");
 jest.mock("child_process");
+jest.mock("../scripts/ensure-root-deps.js", () => jest.fn());
 
 const fs = require("fs");
 const child_process = require("child_process");
+const ensureRootDeps = require("../scripts/ensure-root-deps.js");
 
 describe("assert-setup script", () => {
   beforeEach(() => {
@@ -24,8 +26,13 @@ describe("assert-setup script", () => {
     setEnv();
     fs.existsSync.mockReturnValue(false);
     fs.readdirSync.mockReturnValue([]);
+    child_process.execSync.mockImplementation(() => {});
 
     expect(() => require("../scripts/assert-setup.js")).not.toThrow();
+    expect(child_process.execSync).toHaveBeenCalledWith(
+      "CI=1 npm run setup",
+      { stdio: "inherit", env: expect.any(Object) },
+    );
   });
 
   test("skips setup when browsers installed", () => {
@@ -53,21 +60,34 @@ describe("assert-setup script", () => {
     );
   });
 
-  test("fails when host deps missing and SKIP_PW_DEPS is set", () => {
+
+  test("skips network check when SKIP_NET_CHECKS is set", () => {
     setEnv();
-    process.env.SKIP_PW_DEPS = "1";
+    process.env.SKIP_NET_CHECKS = "1";
     fs.existsSync.mockReturnValue(true);
     fs.readdirSync.mockReturnValue(["chromium"]);
-    child_process.execSync
-      .mockImplementationOnce(() => {})
-      .mockImplementationOnce(() => {
-        throw new Error("missing deps");
-      });
-    const exitSpy = jest.spyOn(process, "exit").mockImplementation(() => {
-      throw new Error("exit");
+    child_process.execSync.mockImplementation(() => {});
+    expect(() => require("../scripts/assert-setup.js")).not.toThrow();
+    expect(child_process.execSync).toHaveBeenCalledWith(
+      "SKIP_NET_CHECKS=1 bash scripts/validate-env.sh >/dev/null",
+      { stdio: "inherit" },
+    );
+    expect(child_process.execSync).not.toHaveBeenCalledWith(
+      "node scripts/network-check.js",
+      expect.any(Object),
+    );
+    delete process.env.SKIP_NET_CHECKS;
+  });
+
+  test("invokes ensure-root-deps", () => {
+    setEnv();
+    fs.existsSync.mockReturnValue(true);
+    fs.readdirSync.mockReturnValue(["chromium"]);
+
+    jest.isolateModules(() => {
+      require("../scripts/assert-setup.js");
     });
-    expect(() => require("../scripts/assert-setup.js")).toThrow("exit");
-    expect(exitSpy).toHaveBeenCalledWith(1);
-    delete process.env.SKIP_PW_DEPS;
+
+    expect(ensureRootDeps).toHaveBeenCalled();
   });
 });

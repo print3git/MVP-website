@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+if [[ "$1" == "ci" && -z "$TARBALL_WARN_DONE" ]]; then
+  echo "npm WARN tarball tarball data for foo@https://registry.npmjs.org/foo/-/foo-1.0.0.tgz (sha512-deadbeef) seems to be corrupted. Trying again." >&2
+  export TARBALL_WARN_DONE=1
+  exit 1
+fi
+exec "$REAL_NPM" "$@"

@@ -359,6 +359,14 @@ To run Jest directly from the repository root, use:
 npm run jest -- --runInBand --silent
 ```
 
+If you encounter environment issues running backend tests, use the helper script
+below. It sets Node 20, validates the environment and saves output to
+`/tmp/test.log`:
+
+```bash
+./scripts/test-backend.sh
+```
+
 This script automatically runs Jest in `backend/`, so passing `--prefix` is unnecessary.
 
 ### Pre-commit Hook
@@ -369,6 +377,19 @@ with ESLint, and Jest runs against related tests.
 
 Avoid calling `npx playwright test` directly. Missing browsers can cause
 `"Playwright Test did not expect test() to be called here"` errors.
+
+### Coverage Reports
+
+Run coverage after installing dependencies:
+
+```bash
+npm run setup
+npm run coverage -- --reporter=text-lcov | npx coveralls
+```
+
+Using `npx coveralls` ensures the CLI runs even if it's not installed globally.
+Running coverage without installing dependencies or omitting `npx` may lead to
+`coveralls: command not found` or `jest: not found` errors.
 
 ## Printer Service
 

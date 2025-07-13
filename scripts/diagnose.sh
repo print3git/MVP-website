@@ -29,7 +29,7 @@ set +e
 node scripts/test-full-pipeline.js
 PIPELINE_STATUS=$?
 
-npx jest tests/**/*.js tests/**/*.ts --runInBand
+node scripts/run-jest.js tests/**/*.js tests/**/*.ts --runInBand
 TEST_STATUS=$?
 set -e
 

@@ -1,5 +1,5 @@
 /** @jest-environment node */
-const { chromium } = require("playwright");
+const { chromium } = require("playwright-core");
 const { startDevServer } = require("../../../scripts/dev-server");
 
 test("model-viewer falls back to local copy when CDN fails", async () => {

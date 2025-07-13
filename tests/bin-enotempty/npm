@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+if [[ "$1" == "ci" && -z "$ENOTEMPTY_ERROR_DONE" ]]; then
+  echo "npm ERR! code ENOTEMPTY" >&2
+  echo "npm ERR! syscall rmdir" >&2
+  echo "npm ERR! path /fake/node_modules/lodash-es" >&2
+  echo "npm ERR! errno -39" >&2
+  echo "npm ERR! ENOTEMPTY: directory not empty, rmdir '/fake/node_modules/lodash-es'" >&2
+  export ENOTEMPTY_ERROR_DONE=1
+  exit 1
+fi
+exec "$REAL_NPM" "$@"
