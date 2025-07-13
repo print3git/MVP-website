@@ -12,7 +12,13 @@ function run(env) {
     env: { SKIP_NET_CHECKS: "1", ...env },
     encoding: "utf8",
   });
-  return (result.stdout || "") + (result.stderr || "");
+  const output = (result.stdout || "") + (result.stderr || "");
+  if (result.status !== 0) {
+    const error = new Error(output);
+    error.code = result.status;
+    throw error;
+  }
+  return output;
 }
 
 describe("validate-env script", () => {
@@ -109,7 +115,9 @@ describe("validate-env script", () => {
       CLOUDFRONT_MODEL_DOMAIN: "cdn.test",
       SKIP_NET_CHECKS: "1",
     };
-    expect(() => run(env)).toThrow(/Database connection check failed/);
+    const output = run(env);
+    expect(output).toContain("Database connection check failed");
+    expect(output).toContain("✅ environment OK");
   });
 
   test("falls back to SKIP_PW_DEPS when apt check fails", () => {
