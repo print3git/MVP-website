@@ -23,7 +23,7 @@ test("no test imports playwright package directly", () => {
     const absolute = path.join(root, dir);
     if (!fs.existsSync(absolute)) continue;
     for (const file of collectFiles(absolute)) {
-      if (file.endsWith("noPlaywrightImport.test.js")) continue;
+      if (file.endsWith("noPlaywrightImport.test.ts")) continue;
       const content = fs.readFileSync(file, "utf8");
       if (
         content.includes("require('playwright')") ||
