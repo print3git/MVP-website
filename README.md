@@ -307,6 +307,7 @@ column of the `jobs` table.
 ## Contributing
 
 We welcome pull requests! Please fork the repo and create a topic branch. Run
+See [CONTRIBUTING.md](CONTRIBUTING.md) for our branch and commit conventions.
 `npm run setup` in the repository root to install all dependencies, then ensure `npm test` runs
 clean before submitting.
 Run `npm run test-ci` for the same tests using a single process, which matches the CI configuration.
@@ -522,6 +523,7 @@ This fetches the missing libraries via `apt` so the browsers can start correctly
 ⚠️ **Note:** this project uses OpenAI Codex to generate PRs;
 binary files (images, compiled objects, etc.) will cause errors.
 Please remove or exclude any binary assets before opening a PR.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for details on our workflow.
 
 ## Performance
 
