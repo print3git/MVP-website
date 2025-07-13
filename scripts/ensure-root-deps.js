@@ -14,6 +14,10 @@ const pluginPath = path.join(
 const networkCheck = path.join(__dirname, "network-check.js");
 
 function runNetworkCheck() {
+  if (process.env.SKIP_NET_CHECKS) {
+    console.log("Skipping network check due to SKIP_NET_CHECKS");
+    return;
+  }
   try {
     execSync(`node ${networkCheck}`, { stdio: "inherit" });
   } catch {
@@ -38,7 +42,7 @@ function canReachRegistry() {
 
 if (!fs.existsSync(pluginPath)) {
   runNetworkCheck();
-  if (!canReachRegistry()) process.exit(1);
+  if (!process.env.SKIP_NET_CHECKS && !canReachRegistry()) process.exit(1);
   console.log("Dependencies missing. Installing root dependencies...");
   try {
     execSync("npm ping", { stdio: "ignore" });
