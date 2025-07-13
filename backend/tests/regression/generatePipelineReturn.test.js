@@ -1,4 +1,8 @@
 const request = require("supertest");
+process.env.STRIPE_WEBHOOK_SECRET = "whsec";
+jest.mock("../../src/pipeline/generateModel", () => ({
+  generateModel: jest.fn(),
+}));
 const app = require("../../server");
 const { generateModel } = require("../../src/pipeline/generateModel");
 
