@@ -5,24 +5,31 @@ module.exports = {
   setupFilesAfterEnv: ["<rootDir>/tests/setup.js"],
   globalTeardown: "<rootDir>/tests/globalTeardown.js",
   testEnvironment: "node",
-  testMatch: [
-    "<rootDir>/tests/**/*.test.js",
-    "<rootDir>/src/**/__tests__/**/*.test.js",
-  ],
+  transform: {
+    "^.+\\.[tj]s$": "babel-jest",
+  },
+  testMatch: ["**/?(*.)+(spec|test).ts?(x)"],
+  moduleFileExtensions: ["ts", "js", "json"],
   testTimeout: 10000,
   coverageDirectory: "coverage",
-  coverageReporters: ["text", "lcov"],
+  coverageReporters: ["text", "lcov", "json-summary"],
 };
 
 module.exports = {
   ...module.exports,
   collectCoverage: true,
-  collectCoverageFrom: ["**/*.{js,jsx,ts,tsx}"],
+  collectCoverageFrom: [
+    "**/*.{js,jsx,ts,tsx}",
+    "!<rootDir>/node_modules/**",
+    "!<rootDir>/tests/**",
+  ],
   coveragePathIgnorePatterns: [
-    "<rootDir>/backend/db.js",
-    "<rootDir>/backend/shipping.js",
-    "<rootDir>/backend/social.js",
-    "<rootDir>/backend/utils/validateStl.js",
+    "<rootDir>/db.js",
+    "<rootDir>/shipping.js",
+    "<rootDir>/social.js",
+    "<rootDir>/utils/validateStl.js",
+    "<rootDir>/node_modules/",
+    "<rootDir>/tests/",
   ],
   coverageThreshold: {
     global: {

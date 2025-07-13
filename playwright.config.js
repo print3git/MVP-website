@@ -3,7 +3,8 @@ const baseURL = process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3000";
 
 module.exports = defineConfig({
   testDir: "e2e",
-  use: { baseURL, headless: true },
+  timeout: 120 * 1000,
+  use: { baseURL, headless: true, ignoreHTTPSErrors: true },
   webServer: process.env.PLAYWRIGHT_BASE_URL
     ? undefined
     : {

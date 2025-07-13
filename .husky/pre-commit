@@ -2,4 +2,4 @@
 . "$(dirname -- "$0")/_/husky.sh"
 
 npm audit --audit-level=high
-npx lint-staged
+bash -c "source scripts/check-env.sh && npx lint-staged"

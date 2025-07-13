@@ -20,11 +20,14 @@ if (!secretKey) {
 const stripe = new Stripe(secretKey);
 
 const router = express.Router();
+(router as any).orders = orders;
 
-router.post('/api/checkout', async (req, res) => {
-  const { slug, email } = req.body as Order;
-  if (!slug || !email) return res.status(400).json({ error: 'missing fields' });
+router.post('/api/checkout', async (req, res, next) => {
   try {
+    const { slug, email } = req.body as Order;
+    if (!slug || !email) {
+      return res.status(400).json({ error: 'missing fields' });
+    }
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
       line_items: [
@@ -43,29 +46,40 @@ router.post('/api/checkout', async (req, res) => {
     });
     orders.set(session.id, { slug, email, paid: false });
     res.json({ checkoutUrl: session.url });
-  } catch (_err) {
-    res.status(500).json({ error: 'Failed to create session' });
+  } catch (err) {
+    next(err);
   }
 });
 
-router.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
-  const sig = req.headers['stripe-signature'] as string;
-  let event: Stripe.Event;
-  try {
-    event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET || '');
-  } catch (_err) {
-    return res.status(400).send('Webhook Error');
-  }
-  if (event.type === 'checkout.session.completed') {
-    const session = event.data.object as Stripe.Checkout.Session;
-    const order = orders.get(session.id);
-    if (order && !order.paid) {
-      order.paid = true;
-      const link = `https://huggingface.co/spaces/print2/Sparc3D/resolve/main/output/${order.slug}.glb`;
-      await sendMail(order.email, 'Your model is ready', link);
+router.post(
+  '/api/stripe/webhook',
+  express.raw({ type: 'application/json' }),
+  async (req, res, next) => {
+    try {
+      const sig = req.headers['stripe-signature'] as string;
+      const event = stripe.webhooks.constructEvent(
+        req.body,
+        sig,
+        process.env.STRIPE_WEBHOOK_SECRET || '',
+      );
+      if (event.type === 'checkout.session.completed') {
+        const session = event.data.object as Stripe.Checkout.Session;
+        const order = orders.get(session.id);
+        if (order && !order.paid) {
+          order.paid = true;
+          const link = `https://huggingface.co/spaces/print2/Sparc3D/resolve/main/output/${order.slug}.glb`;
+          await sendMail(order.email, 'Your model is ready', link);
+        }
+      }
+      res.sendStatus(200);
+    } catch (err) {
+      // signature errors should return 400
+      if (err instanceof Error && err.message.includes('Webhook Error')) {
+        return res.sendStatus(400);
+      }
+      next(err);
     }
-  }
-  res.json({ received: true });
-});
+  },
+);
 
 export default router;

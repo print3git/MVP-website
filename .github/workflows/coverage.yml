@@ -1,0 +1,15 @@
+name: Coverage
+
+on: [push, pull_request]
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.2.2
+      - uses: actions/setup-node@v4.4.0
+        with:
+          node-version: "20"
+      - run: SKIP_PW_DEPS=1 npm run setup
+      - run: npm run coverage
+      - run: cat backend/coverage/lcov.info | npx coveralls

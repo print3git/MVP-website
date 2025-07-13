@@ -2,7 +2,9 @@
 try {
   require.resolve("@eslint/js");
 } catch {
-  console.error("Dependencies not installed. Run 'npm run setup' at the repository root.");
+  console.error(
+    "Dependencies not installed. Run 'npm run setup' at the repository root.",
+  );
   process.exit(1);
 }
 
@@ -58,6 +60,10 @@ module.exports = [
   },
   {
     files: ["scripts/**/*"],
+    rules: { "jsdoc/require-jsdoc": "off" },
+  },
+  {
+    files: ["tests/**/*"],
     rules: { "jsdoc/require-jsdoc": "off" },
   },
 ];

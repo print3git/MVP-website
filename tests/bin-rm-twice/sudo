@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+count=${RM_FAIL_COUNT:-0}
+if [[ "$1" == "rm" && $count -lt 2 ]]; then
+  echo "rm: cannot remove '$3': Directory not empty" >&2
+  count=$((count + 1))
+  export RM_FAIL_COUNT=$count
+  exit 1
+fi
+exec "$@"

@@ -32,6 +32,8 @@ async function generateGlb({ prompt, imageURL }) {
         headers: { Authorization: `Bearer ${token}` },
         responseType: "arraybuffer",
         validateStatus: () => true,
+        // Disable proxy usage so tests are unaffected by environment settings
+        proxy: false,
       },
     );
     if (res.status >= 400) {

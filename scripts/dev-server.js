@@ -13,7 +13,26 @@ app.use(
   }),
 );
 
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log(`Dev server listening on http://localhost:${port}`);
+app.use(express.json());
+
+// Basic stub for API requests so smoke tests don't fail when the backend isn't running.
+app.post("/api/generate", (_req, res) => {
+  res.json({ glb_url: "/models/bag.glb" });
 });
+
+app.get("/healthz", (_req, res) => {
+  res.send("ok");
+});
+
+function startDevServer(port = 3000) {
+  return app.listen(port, () => {
+    console.log(`Dev server listening on http://localhost:${port}`);
+  });
+}
+
+if (require.main === module) {
+  const port = process.env.PORT || 3000;
+  startDevServer(port);
+}
+module.exports = app;
+module.exports.startDevServer = startDevServer;

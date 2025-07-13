@@ -128,29 +128,45 @@ function ensureModelViewerLoaded() {
   ) {
     return Promise.resolve();
   }
+
   const cdnUrl =
     "https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js";
   const localUrl = "js/model-viewer.min.js";
-  return new Promise((resolve) => {
-    const script = document.createElement("script");
-    script.type = "module";
-    script.src = cdnUrl;
-    script.onload = resolve;
-    script.onerror = () => {
-      script.remove();
-      const fallback = document.createElement("script");
-      fallback.type = "module";
-      fallback.src = localUrl;
-      fallback.onload = resolve;
-      fallback.onerror = resolve;
-      document.head.appendChild(fallback);
-    };
-    document.head.appendChild(script);
-    setTimeout(() => {
-      if (!window.customElements?.get("model-viewer")) {
-        script.onerror();
+
+  function loadScript(src, done) {
+    const s = document.createElement("script");
+    s.type = "module";
+    s.src = src;
+    s.onload = done;
+    s.onerror = done;
+    document.head.appendChild(s);
+  }
+
+  return new Promise((resolve, reject) => {
+    const finalize = () => {
+      if (window.customElements?.get("model-viewer")) {
+        resolve();
+      } else {
+        reject(new Error("model-viewer failed to load"));
       }
-    }, 3000);
+    };
+
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 3000);
+
+    fetch(cdnUrl, {
+      method: "HEAD",
+      mode: "no-cors",
+      signal: controller.signal,
+    })
+      .then(() => {
+        clearTimeout(timer);
+        loadScript(cdnUrl, finalize);
+      })
+      .catch(() => {
+        clearTimeout(timer);
+        loadScript(localUrl, finalize);
+      });
   });
 }
 
@@ -472,6 +488,9 @@ const hideAll = () => {
   if (typeof refs.viewer.pause === "function") {
     refs.viewer.pause();
   }
+  if (globalThis.document) {
+    delete document.body.dataset.viewerReady;
+  }
 };
 const showLoader = (withProgress = true) => {
   // Keep the viewer visible while showing the loader so the fallback model
@@ -494,6 +513,10 @@ const showModel = () => {
   refs.viewer.style.pointerEvents = "auto";
   if (typeof refs.viewer.play === "function") {
     refs.viewer.play();
+  }
+
+  if (globalThis.document) {
+    document.body.dataset.viewerReady = "true";
   }
 
   stopProgress();

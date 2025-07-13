@@ -1,0 +1,61 @@
+name: Full Pipeline Smoke Test
+
+on:
+  push:
+    branches:
+      - dev
+      - 00000production
+  workflow_dispatch:
+
+jobs:
+  smoke_test:
+    runs-on: ubuntu-latest
+    env:
+      STRIPE_TEST_KEY: ${{ secrets.STRIPE_TEST_KEY }}
+      DB_URL: ${{ secrets.DB_URL }}
+      STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+      STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+      HF_API_KEY: ${{ secrets.HF_API_KEY }}
+      CLOUDFRONT_MODEL_DOMAIN: ${{ secrets.CLOUDFRONT_MODEL_DOMAIN }}
+      SPARC3D_ENDPOINT: ${{ secrets.SPARC3D_ENDPOINT }}
+      SPARC3D_TOKEN: ${{ secrets.SPARC3D_TOKEN }}
+      STABILITY_KEY: ${{ secrets.STABILITY_KEY }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      S3_BUCKET: ${{ secrets.S3_BUCKET }}
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Run smoke tests
+        run: pnpm run smoke
+
+      - name: Start backend
+        run: pnpm dev &
+        shell: bash
+
+      - name: Wait for backend
+        run: npx wait-on http://localhost:3000
+
+      - name: Test generate endpoint
+        run: pnpm run test:generate
+      - name: Test Stripe webhook
+        run: pnpm run test:webhook
+
+      - name: Stop backend
+        run: pkill -f "node backend/server.js" || true
+
+      - name: Run diagnostics
+        run: pnpm diagnose
