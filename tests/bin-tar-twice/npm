@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+if [[ "$1" == "ci" ]]; then
+  count=${TAR_ERROR_COUNT:-0}
+  if [[ $count -lt 2 ]]; then
+    echo "npm WARN tar TAR_ENTRY_ERROR ENOENT: no such file or directory, open '/fake/file.js'" >&2
+    export TAR_ERROR_COUNT=$((count+1))
+    exit 1
+  fi
+fi
+exec "$REAL_NPM" "$@"
