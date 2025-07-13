@@ -143,9 +143,12 @@ function ensureModelViewerLoaded() {
   }
 
   return new Promise((resolve, reject) => {
-    const finalize = () => {
+    const finalize = (attemptedLocal) => {
       if (window.customElements?.get("model-viewer")) {
         resolve();
+      } else if (!attemptedLocal) {
+        window.modelViewerSource = "local";
+        loadScript(localUrl, () => finalize(true));
       } else {
         reject(new Error("model-viewer failed to load"));
       }
@@ -162,12 +165,12 @@ function ensureModelViewerLoaded() {
       .then(() => {
         clearTimeout(timer);
         window.modelViewerSource = "cdn";
-        loadScript(cdnUrl, finalize);
+        loadScript(cdnUrl, () => finalize(false));
       })
       .catch(() => {
         clearTimeout(timer);
         window.modelViewerSource = "local";
-        loadScript(localUrl, finalize);
+        loadScript(localUrl, () => finalize(true));
       });
   });
 }
