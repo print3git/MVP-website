@@ -10,6 +10,8 @@ const summary = path.join(
   "coverage-summary.json",
 );
 const backup = summary + ".bak";
+const nycrc = path.join(__dirname, "..", ".nycrc");
+const nycBackup = nycrc + ".bak";
 
 describe("check-coverage script", () => {
   beforeAll(() => {
@@ -33,19 +35,19 @@ describe("check-coverage script", () => {
     }
   });
 
-  test("fails when coverage below thresholds", () => {
-    const originalConfig = fs.readFileSync(".nycrc", "utf8");
-    const badSummary = {
+  test("fails when coverage below threshold", () => {
+    const data = {
       total: {
-        branches: { pct: 40 },
-        functions: { pct: 40 },
-        lines: { pct: 40 },
-        statements: { pct: 40 },
+        branches: { pct: 0 },
+        functions: { pct: 0 },
+        lines: { pct: 0 },
+        statements: { pct: 0 },
       },
     };
-    fs.writeFileSync(summary, JSON.stringify(badSummary));
+    fs.writeFileSync(summary, JSON.stringify(data));
+    if (fs.existsSync(nycrc)) fs.renameSync(nycrc, nycBackup);
     fs.writeFileSync(
-      ".nycrc",
+      nycrc,
       JSON.stringify({
         "check-coverage": true,
         branches: 80,

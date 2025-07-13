@@ -21,6 +21,7 @@ module.exports = {
   collectCoverageFrom: [
     "**/*.{js,jsx,ts,tsx}",
     "!<rootDir>/node_modules/**",
+    "!<rootDir>/coverage/**",
     "!<rootDir>/tests/**",
   ],
   coveragePathIgnorePatterns: [
@@ -30,6 +31,7 @@ module.exports = {
     "<rootDir>/utils/validateStl.js",
     "<rootDir>/node_modules/",
     "<rootDir>/tests/",
+    "<rootDir>/coverage/",
   ],
   coverageThreshold: {
     global: {
