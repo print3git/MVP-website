@@ -5,6 +5,7 @@ const { execSync } = require("child_process");
 const jestPath = "node_modules/.bin/jest";
 const repoRoot = path.join(__dirname, "..", "..");
 const expressPath = path.join(repoRoot, "node_modules", "express");
+const pwPath = path.join(repoRoot, "node_modules", "@playwright", "test");
 const setupFlag = path.join(repoRoot, ".setup-complete");
 
 const networkCheck = path.join(
@@ -58,6 +59,18 @@ if (!fs.existsSync(expressPath)) {
   runNetworkCheck();
   if (!canReachRegistry()) process.exit(1);
   console.log("Express not found. Installing root dependencies...");
+  try {
+    execSync("npm ci", { stdio: "inherit", cwd: repoRoot });
+  } catch (err) {
+    console.error("Failed to install root dependencies:", err.message);
+    process.exit(1);
+  }
+}
+
+if (!fs.existsSync(pwPath)) {
+  runNetworkCheck();
+  if (!canReachRegistry()) process.exit(1);
+  console.log("@playwright/test not found. Installing root dependencies...");
   try {
     execSync("npm ci", { stdio: "inherit", cwd: repoRoot });
   } catch (err) {
