@@ -2,4 +2,5 @@
 . "$(dirname -- "$0")/_/husky.sh"
 
 npm audit --audit-level=high
+npm run sanitize-coverage
 bash -c "source scripts/check-env.sh && npx lint-staged"
