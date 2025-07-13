@@ -5,7 +5,7 @@ const fs = require("fs");
 const root = path.resolve(__dirname, "..", "..");
 
 function run(env, clean = true) {
-  const e = { ...process.env, SKIP_NET_CHECKS: "1", ...env };
+  const e = { ...process.env, SKIP_NET_CHECKS: "1", SKIP_DB_CHECK: "1", ...env };
   if (clean) {
     delete e.npm_config_http_proxy;
     delete e.npm_config_https_proxy;

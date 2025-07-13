@@ -66,6 +66,10 @@ function cleanupNpmCache() {
 }
 
 function runNetworkCheck() {
+  if (process.env.SKIP_NET_CHECKS) {
+    console.log("Skipping network check");
+    return;
+  }
   try {
     execSync(`node ${networkCheck}`, { stdio: "inherit", env: getEnv() });
   } catch {
