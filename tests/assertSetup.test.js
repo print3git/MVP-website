@@ -58,21 +58,22 @@ describe("assert-setup script", () => {
     );
   });
 
-  test("fails when host deps missing and SKIP_PW_DEPS is set", () => {
+
+  test("skips network check when SKIP_NET_CHECKS is set", () => {
     setEnv();
-    process.env.SKIP_PW_DEPS = "1";
+    process.env.SKIP_NET_CHECKS = "1";
     fs.existsSync.mockReturnValue(true);
     fs.readdirSync.mockReturnValue(["chromium"]);
-    child_process.execSync
-      .mockImplementationOnce(() => {})
-      .mockImplementationOnce(() => {
-        throw new Error("missing deps");
-      });
-    const exitSpy = jest.spyOn(process, "exit").mockImplementation(() => {
-      throw new Error("exit");
-    });
-    expect(() => require("../scripts/assert-setup.js")).toThrow("exit");
-    expect(exitSpy).toHaveBeenCalledWith(1);
-    delete process.env.SKIP_PW_DEPS;
+    child_process.execSync.mockImplementation(() => {});
+    expect(() => require("../scripts/assert-setup.js")).not.toThrow();
+    expect(child_process.execSync).toHaveBeenCalledWith(
+      "SKIP_NET_CHECKS=1 bash scripts/validate-env.sh >/dev/null",
+      { stdio: "inherit" },
+    );
+    expect(child_process.execSync).not.toHaveBeenCalledWith(
+      "node scripts/network-check.js",
+      expect.any(Object),
+    );
+    delete process.env.SKIP_NET_CHECKS;
   });
 });
