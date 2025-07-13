@@ -97,6 +97,11 @@ test('generate flow', async ({ page }) => {
   await page.waitForSelector('#gen-prompt', { state: 'visible', timeout: 30000 });
   await page.fill('#gen-prompt', 'test');
   await page.click('#gen-submit');
+  // Wait for the viewer to signal readiness before checking the canvas.
+  // This prevents flaky timeouts when external scripts load slowly.
+  await page.waitForSelector('body[data-viewer-ready="true"]', {
+    timeout: 60000,
+  });
   // Wait longer for the model viewer to load on slow networks
   await page.waitForSelector('canvas', { state: 'visible', timeout: 60000 });
   await expect(page.locator('canvas')).toBeVisible();
