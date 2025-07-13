@@ -11,6 +11,7 @@ describe("ensure-deps", () => {
     fs.existsSync.mockReset();
     jest.spyOn(child_process, "execSync").mockReset();
     delete process.env.SKIP_NET_CHECKS;
+    process.env.SKIP_NODE_CHECK = "1";
   });
 
   test("checks network then installs", () => {
