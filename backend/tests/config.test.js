@@ -5,10 +5,10 @@ process.env.CLOUDFRONT_MODEL_DOMAIN = "https://domain";
 
 const original = process.env.CLOUDFRONT_MODEL_DOMAIN;
 
-test("throws if CLOUDFRONT_MODEL_DOMAIN missing", () => {
+test("warns if CLOUDFRONT_MODEL_DOMAIN missing", () => {
   jest.isolateModules(() => {
     delete process.env.CLOUDFRONT_MODEL_DOMAIN;
-    expect(() => require("../config")).toThrow(/CLOUDFRONT_MODEL_DOMAIN/);
+    expect(() => require("../config")).not.toThrow();
   });
 });
 

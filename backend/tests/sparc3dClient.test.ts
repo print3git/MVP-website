@@ -1,3 +1,4 @@
+
 import nock from "nock";
 import { generateGlb } from "../src/lib/sparc3dClient";
 
@@ -29,6 +30,7 @@ describe("generateGlb", () => {
   });
 
   test("sends prompt and imageURL", async () => {
+
     const endpoint = process.env.SPARC3D_ENDPOINT as string;
     const token = process.env.SPARC3D_TOKEN as string;
     const url = new URL(endpoint);
@@ -44,6 +46,7 @@ describe("generateGlb", () => {
   });
 
   test("throws on http error", async () => {
+
     const endpoint = process.env.SPARC3D_ENDPOINT as string;
     const url = new URL(endpoint);
 

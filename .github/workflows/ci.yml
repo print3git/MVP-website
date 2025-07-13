@@ -160,3 +160,17 @@ jobs:
       - run: npm run a11y
 
       # ← you can add additional steps here, like your tests
+
+  smoke-fallback:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - run: npm install --no-audit --no-fund
+      - name: Run smoke tests with fallback env
+        env:
+          STRIPE_TEST_KEY: dummy
+        run: npm run smoke

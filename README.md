@@ -3,6 +3,7 @@
 ## 🤖 Codex Integration
 
 Before you run any Codex-driven prompts, always sync your code and Hugging Face Space:
+
 ```bash
 bash scripts/sync-space.sh
 ```
@@ -25,16 +26,27 @@ Run `docker compose up` to start the API and Postgres services.
 ## Local Setup
 
 1. Copy `.env.example` to `.env` in the repository root and update the values:
-
    - `DB_URL` – connection string for your PostgreSQL database.
 
-  - `STRIPE_TEST_KEY` – test secret key for Stripe.
-  - `STRIPE_LIVE_KEY` – live secret key for Stripe.
-  - `STRIPE_PUBLISHABLE_KEY` – publishable key for Stripe.js on the frontend.
-  - `STRIPE_WEBHOOK_SECRET` – signing secret for Stripe webhooks.
-  - `HUNYUAN_API_KEY` – key for the Sparc3D API.
+- `STRIPE_TEST_KEY` – test secret key for Stripe.
+- `STRIPE_LIVE_KEY` – live secret key for Stripe.
+- `STRIPE_PUBLISHABLE_KEY` – publishable key for Stripe.js on the frontend.
+- `STRIPE_WEBHOOK_SECRET` – signing secret for Stripe webhooks.
+- `HUNYUAN_API_KEY` – key for the Sparc3D API.
+- `HF_TOKEN` – Hugging Face access token used by scripts like `setup_space.sh`.
+- `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` – credentials for S3 uploads.
 
 The server uses `STRIPE_LIVE_KEY` when `NODE_ENV=production`; otherwise `STRIPE_TEST_KEY` is used.
+
+- If `STRIPE_TEST_KEY` isn't set, `npm run setup` generates a temporary dummy key
+  so local installs don't fail.
+- The repository uses `mise` for toolchain management. The included `.mise.toml` enables
+  automatic Node version detection via `.nvmrc`. If you don't have `mise` installed,
+  run `bash scripts/install-mise.sh` before continuing. After cloning, run `mise trust`
+  if you see warnings about untrusted config files. The setup script also configures
+  `mise settings add idiomatic_version_file_enable_tools node` to remove the
+  `deprecated [idiomatic_version_file_enable_tools]` message. If the warning
+  persists, run that command manually.
 - `SENDGRID_API_KEY` – API key for sending email via SendGrid.
 - `SENTRY_DSN` – connection string for sending errors to Sentry.
 - `EMAIL_FROM` – address used for the "from" field in outgoing mail.
@@ -49,22 +61,38 @@ The server uses `STRIPE_LIVE_KEY` when `NODE_ENV=production`; otherwise `STRIPE_
    npm run setup
    ```
 
-
    This script runs `npm ci` in the root and `backend/`, then downloads the browsers
    required for the end-to-end tests. Set `SKIP_PW_DEPS=1` to skip the
    Playwright dependency installation when the browsers are already available.
+   If the dependencies are missing, the script installs them even when
+   `SKIP_PW_DEPS` is set so new environments don't fail.
    It also installs the Husky git hooks used for pre-commit checks. If the hooks
    are missing, run `npx husky install` manually.
-Ensure your environment can reach `https://registry.npmjs.org` and `https://cdn.playwright.dev`. The setup script downloads packages and browsers from these domains, so network restrictions may cause it to fail.
+   If `npm ci` fails with an `EUSAGE` error complaining about missing lock file entries,
+   run `npm install` in the affected directory and re-run this setup step.
+   Ensure your environment can reach `https://registry.npmjs.org`,
+   `https://cdn.playwright.dev`, and `http://archive.ubuntu.com`. The setup
+   script downloads packages, browsers, and system libraries from these domains,
+   so network restrictions may cause it to fail.
 
-3. Initialize the database:
+3. Verify your environment and test pipeline:
+
+   ```bash
+   npm run diagnose
+   ```
+
+   This starts the dev server, runs a sample generation through `/api/generate`,
+   and executes the Jest suite. Use it if setup succeeds but subsequent commands
+   fail.
+
+4. Initialize the database:
 
    ```bash
    cd ..
    npm run init-db
    ```
 
-4. Create an admin user (optional):
+5. Create an admin user (optional):
 
    Set `ADMIN_USERNAME` and `ADMIN_PASSWORD` in your `.env` file or as environment
    variables, then run:
@@ -73,36 +101,36 @@ Ensure your environment can reach `https://registry.npmjs.org` and `https://cdn.
    npm run create-admin  # inside backend/
    ```
 
-5. Configure the admin token used by protected endpoints:
+6. Configure the admin token used by protected endpoints:
 
    Add `ADMIN_TOKEN=yoursecret` to `.env`. You can authenticate either by sending
    this token in the `x-admin-token` header or by logging in with the admin
    account and including the returned JWT in the `Authorization` header.
 
-6. Start the servers in separate terminals:
+7. Start the servers in separate terminals:
 
    ```bash
    npm start            # inside backend/
    cd dalle_server && npm start  # inside backend/dalle_server/
    ```
 
-7. (Optional) Run the purchase reminder job periodically:
+8. (Optional) Run the purchase reminder job periodically:
 
    ```bash
    npm run send-reminders  # inside backend/
    ```
 
-8. (Optional) Send discount offers to abandoned checkouts:
+9. (Optional) Send discount offers to abandoned checkouts:
 
    ```bash
    npm run send-abandoned-offers  # inside backend/
    ```
 
-9. (Optional) Clean up expired password reset tokens periodically:
+10. (Optional) Clean up expired password reset tokens periodically:
 
-   ```bash
-   npm run cleanup-tokens  # inside backend/
-   ```
+```bash
+npm run cleanup-tokens  # inside backend/
+```
 
 ## Development Container
 
@@ -279,7 +307,7 @@ column of the `jobs` table.
 ## Contributing
 
 We welcome pull requests! Please fork the repo and create a topic branch. Run
-`npm ci` inside `backend/` to install dependencies, then ensure `npm test` runs
+`npm run setup` in the repository root to install all dependencies, then ensure `npm test` runs
 clean before submitting.
 Run `npm run test-ci` for the same tests using a single process, which matches the CI configuration.
 Run `npm run format` in `backend/` to apply Prettier formatting before committing.
@@ -291,7 +319,7 @@ We sometimes rely on automated agents (such as the Codex agent) to make small
 changes. Agents must follow the steps in [AGENTS.md](AGENTS.md) before opening a
 pull request:
 
-1. Install dependencies with `npm ci` inside `backend/`.
+1. Install dependencies with `npm run setup` in the repository root.
 2. Run `npm run format` in `backend/`.
 3. Run `npm test` in `backend/` and include the results in the PR description.
 
@@ -310,6 +338,10 @@ Install dependencies and Playwright browsers:
 npm run setup
 ```
 
+If `npm run ci` fails with messages like `TAR_ENTRY_ERROR` or missing files in
+`node_modules`, rerun `npm run setup`. The setup script cleans the npm cache and
+reinstalls packages to recover from corrupted installs.
+
 If the browsers are missing, the CI scripts will automatically invoke this
 command for you. Running it manually first speeds up subsequent test runs.
 
@@ -325,6 +357,22 @@ For a quick end-to-end sanity check, run:
 npm run smoke
 ```
 
+To run Jest directly from the repository root, use:
+
+```bash
+npm run jest -- --runInBand --silent
+```
+
+If you encounter environment issues running backend tests, use the helper script
+below. It sets Node 20, validates the environment and saves output to
+`/tmp/test.log`:
+
+```bash
+./scripts/test-backend.sh
+```
+
+This script automatically runs Jest in `backend/`, so passing `--prefix` is unnecessary.
+
 ### Pre-commit Hook
 
 Husky installs a pre-commit hook that runs lint-staged. Staged `*.js`, `*.ts`,
@@ -333,6 +381,23 @@ with ESLint, and Jest runs against related tests.
 
 Avoid calling `npx playwright test` directly. Missing browsers can cause
 `"Playwright Test did not expect test() to be called here"` errors.
+
+### Coverage Reports
+
+Run coverage after installing dependencies:
+
+```bash
+npm run setup
+npm run coverage
+
+cat backend/coverage/lcov.info | npx coveralls
+```
+
+Using `npx coveralls` ensures the CLI runs even if it's not installed globally.
+By piping the generated `lcov.info` file instead of test output we avoid
+`Failed to parse string` errors from Coveralls when console logs appear.
+Running coverage without installing dependencies or omitting `npx` may lead to
+`coveralls: command not found` or `jest: not found` errors.
 
 ## Printer Service
 
@@ -457,3 +522,15 @@ This fetches the missing libraries via `apt` so the browsers can start correctly
 ⚠️ **Note:** this project uses OpenAI Codex to generate PRs;
 binary files (images, compiled objects, etc.) will cause errors.
 Please remove or exclude any binary assets before opening a PR.
+
+## Performance
+
+### Performance Testing
+
+We include a simple load-test script:
+
+```bash
+npm run perf-events
+
+This will fire 1,000 requests at /v2/events with 50 concurrent connections; adjust parameters in scripts/perf-events.js.
+```

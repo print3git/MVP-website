@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+if [[ "$*" == *"_cacache"* && -z "$CACACHE_FAIL_DONE" ]]; then
+  echo "rm: cannot remove '$2': Directory not empty" >&2
+  export CACACHE_FAIL_DONE=1
+  exit 1
+fi
+exec "$REAL_RM" "$@"

@@ -54,4 +54,16 @@ describe("generateGlb", () => {
       (0, sparc3dClient_1.generateGlb)({ prompt: "x" }),
     ).rejects.toThrow("bad");
   });
+
+  test("ignores proxy environment variables", async () => {
+    process.env.http_proxy = "http://proxy:9999";
+    process.env.https_proxy = "http://proxy:9999";
+    const data = Buffer.from("abc");
+    (0, nock_1.default)("https://api.example.com")
+      .post("/generate", { prompt: "p2" })
+      .matchHeader("Authorization", `Bearer ${token}`)
+      .reply(200, data, { "Content-Type": "model/gltf-binary" });
+    const buf = await (0, sparc3dClient_1.generateGlb)({ prompt: "p2" });
+    expect(buf).toEqual(data);
+  });
 });

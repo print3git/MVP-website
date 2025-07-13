@@ -30,6 +30,13 @@ console.warn = (...args) => {
   ) {
     return;
   }
+  if (
+    args[0] &&
+    typeof args[0] === "string" &&
+    args[0].includes("non-retryable streaming request")
+  ) {
+    return;
+  }
   return originalConsoleWarn(...args);
 };
 
@@ -41,4 +48,33 @@ if (!process.env.SPARC3D_ENDPOINT) {
 }
 if (!process.env.SPARC3D_TOKEN) {
   process.env.SPARC3D_TOKEN = "token";
+}
+
+// Provide dummy AWS credentials so tests don't need real ones
+if (!process.env.AWS_ACCESS_KEY_ID) {
+  process.env.AWS_ACCESS_KEY_ID = "test";
+}
+if (!process.env.AWS_SECRET_ACCESS_KEY) {
+  process.env.AWS_SECRET_ACCESS_KEY = "test";
+}
+if (!process.env.DB_URL) {
+  process.env.DB_URL = "postgres://user:pass@localhost/db";
+}
+if (!process.env.STRIPE_SECRET_KEY) {
+  process.env.STRIPE_SECRET_KEY = "sk_test";
+}
+if (!process.env.STRIPE_PUBLISHABLE_KEY) {
+  process.env.STRIPE_PUBLISHABLE_KEY = "pk_test";
+}
+
+// Ensure any proxy environment variables do not interfere with HTTP mocking
+for (const key of [
+  "http_proxy",
+  "https_proxy",
+  "HTTP_PROXY",
+  "HTTPS_PROXY",
+  "npm_config_http_proxy",
+  "npm_config_https_proxy",
+]) {
+  delete process.env[key];
 }

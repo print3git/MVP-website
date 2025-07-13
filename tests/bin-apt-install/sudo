@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+SCRIPT_DIR="$(dirname "$0")"
+if [[ "$1" == "apt-get" ]]; then
+  shift
+  "$SCRIPT_DIR/apt-get" "$@"
+else
+  command sudo "$@"
+fi

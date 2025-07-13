@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+if [[ "$1" == "ci" && -z "$EUSAGE_DONE" ]]; then
+  echo "npm ERR! code EUSAGE" >&2
+  echo "npm ERR! This command requires additional dependency resolution" >&2
+  export EUSAGE_DONE=1
+  exit 1
+fi
+exec "$REAL_NPM" "$@"

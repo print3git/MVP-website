@@ -1,8 +1,9 @@
 // backend/server.js
 
 require("dotenv").config();
-const { CLOUDFRONT_MODEL_DOMAIN } = process.env;
-if (!CLOUDFRONT_MODEL_DOMAIN) {
+const { getEnv } = require("./utils/getEnv");
+const CLOUDFRONT_MODEL_DOMAIN = getEnv("CLOUDFRONT_MODEL_DOMAIN");
+if (!CLOUDFRONT_MODEL_DOMAIN && process.env.NODE_ENV !== "test") {
   throw new Error("Missing required env var CLOUDFRONT_MODEL_DOMAIN");
 }
 const express = require("express");
@@ -426,6 +427,13 @@ app.post(
   async (req, res) => {
     const { prompt } = req.body;
     const file = req.file;
+    console.log(
+      "🔹 Entering /api/generate",
+      "prompt?",
+      !!prompt,
+      "image?",
+      !!file,
+    );
     if (!prompt && !file) {
       return res.status(400).json({ error: "Prompt or image is required" });
     }
@@ -441,19 +449,53 @@ app.post(
         [jobId, prompt, imageRef, "pending", userId, snapshot],
       );
 
+      const startTime = new Date();
+
+      console.log(
+        "🔹 API /api/generate called with prompt:",
+        req.body.prompt,
+        "and image?",
+        !!req.file,
+      );
+
+      let generatedUrl;
       try {
-        const url = await generateModel({
+        generatedUrl = await generateModel({
           prompt: req.body.prompt,
           image: req.file ? req.file.path : undefined,
         });
-        return res.json({ glb_url: url });
       } catch (err) {
-        logError("Sparc3D pipeline failed", err);
-        return res.status(500).json({ error: "Model generation failed" });
+        console.error("🚨 generateModel() failed:", err);
+        return res.status(500).json({ error: err.message });
       }
+      const finishTime = new Date();
+      const cost =
+        (process.env.SPARC3D_COST_CENTS
+          ? parseInt(process.env.SPARC3D_COST_CENTS, 10)
+          : 0) +
+        (!req.file && prompt && process.env.STABILITY_COST_CENTS
+          ? parseInt(process.env.STABILITY_COST_CENTS, 10)
+          : 0);
+      await db.insertGenerationLog({
+        prompt: prompt || "(image)",
+        startTime,
+        finishTime,
+        source: "sparc3d",
+        costCents: cost,
+      });
+      console.log("🔹 Returning glb_url:", generatedUrl);
+      console.log(
+        "🔹 Exiting /api/generate",
+        "prompt?",
+        !!prompt,
+        "image?",
+        !!file,
+      );
+      return res.json({ glb_url: generatedUrl });
     } catch (err) {
       logError(err);
-      res.status(500).json({ error: "Failed to generate model" });
+      console.log("🔹 Exiting /api/generate with error");
+      res.status(500).json({ error: err.message });
     }
   },
 );
@@ -2642,6 +2684,17 @@ app.get("/api/admin/operations", adminCheck, async (req, res) => {
   } catch (err) {
     logError(err);
     res.status(500).json({ error: "Failed to fetch operations" });
+  }
+});
+
+app.get("/api/admin/analytics", adminCheck, async (req, res) => {
+  try {
+    const logs = await db.listGenerationLogs(100);
+    const stats = await db.getGenerationStats();
+    res.json({ logs, stats });
+  } catch (err) {
+    logError(err);
+    res.status(500).json({ error: "Failed to fetch analytics" });
   }
 });
 

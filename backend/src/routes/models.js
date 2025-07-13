@@ -20,18 +20,22 @@ const createModelSchema = z.object({
   prompt: z.string().min(1, "prompt is required"),
   fileKey: z.string().regex(/^[A-Za-z0-9._-]+$/, "invalid fileKey"),
 });
-router.post("/api/models", validate(createModelSchema), async (req, res) => {
-  const { prompt, fileKey } = req.body;
-  const url = `https://${process.env.CLOUDFRONT_DOMAIN}/${fileKey}`;
-  try {
-    const result = await pool.query(
-      "INSERT INTO models (prompt, url) VALUES ($1, $2) RETURNING *",
-      [prompt, url],
-    );
-    res.status(201).json(result.rows[0]);
-  } catch (_err) {
-    res.status(500).json({ error: "Failed to insert model" });
-  }
-});
+router.post(
+  "/api/models",
+  validate(createModelSchema),
+  async (req, res, next) => {
+    try {
+      const { prompt, fileKey } = req.body;
+      const url = `https://${process.env.CLOUDFRONT_DOMAIN}/${fileKey}`;
+      const result = await pool.query(
+        "INSERT INTO models (prompt, url) VALUES ($1, $2) RETURNING *",
+        [prompt, url],
+      );
+      res.status(201).json(result.rows[0]);
+    } catch (err) {
+      next(err);
+    }
+  },
+);
 
 module.exports = router;

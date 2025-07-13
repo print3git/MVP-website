@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# simulate sudo when apt-get is missing
+if [[ "$1" == "apt-get" ]]; then
+  echo "sudo: apt-get: command not found" >&2
+  exit 127
+else
+  command sudo "$@"
+fi
