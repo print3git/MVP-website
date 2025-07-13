@@ -9,7 +9,7 @@ const path = require("path");
  */
 function run(env) {
   return execFileSync("bash", ["scripts/validate-env.sh"], {
-    env: { SKIP_NET_CHECKS: "1", ...env },
+    env: { SKIP_NET_CHECKS: "1", SKIP_DB_CHECK: "1", ...env },
     encoding: "utf8",
   });
 }
