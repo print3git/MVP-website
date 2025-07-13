@@ -6,7 +6,14 @@ set -e
 
 cleanup_npm_cache() {
   npm cache clean --force >/dev/null 2>&1 || true
-  rm -rf "$(npm config get cache)/_cacache" "$HOME/.npm/_cacache" 2>/dev/null || true
+  for dir in "$(npm config get cache)/_cacache" "$HOME/.npm/_cacache"; do
+    if [ -d "$dir" ]; then
+      for i in {1..5}; do
+        rm -rf "$dir" 2>/dev/null && break
+        sleep 1
+      done
+    fi
+  done
   rm -rf "$(npm config get cache)/_cacache/tmp" "$HOME/.npm/_cacache/tmp" 2>/dev/null || true
   npm cache verify >/dev/null 2>&1 || true
 }
