@@ -164,7 +164,15 @@ function saveGeneratedAds() {
 const app = express();
 app.use(morgan("dev"));
 app.use(compression());
-app.use(cors());
+const allowedOrigins = (process.env.CORS_ORIGINS || "")
+  .split(",")
+  .map((o) => o.trim())
+  .filter(Boolean);
+app.use(
+  cors({
+    origin: allowedOrigins.length ? allowedOrigins : true,
+  }),
+);
 app.use(bodyParser.json());
 const serverSource = fs.readFileSync(__filename, "utf8");
 const swaggerSpec = swaggerJsdoc({
@@ -466,6 +474,7 @@ app.post(
           prompt: req.body.prompt,
           image: req.file ? req.file.path : undefined,
         });
+        generatedUrl = url;
       } catch (err) {
         console.error("🚨 generateModel() failed:", err);
         return res.status(500).json({ error: err.message });
