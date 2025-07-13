@@ -3,6 +3,10 @@ const { spawnSync } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 
+// Ensure the active Node version matches the project's requirement so the
+// coverage run doesn't silently use a wrong version when mise wasn't activated.
+require("./check-node-version.js");
+
 const extraArgs = process.argv.slice(2);
 const jestArgs = [
   "--ci",
