@@ -5,8 +5,7 @@ const app = require("../backend/server");
 
 const itMaybe = process.env.RUN_PIPELINE_TESTS ? test : test.skip;
 
-const FALLBACK_GLB =
-  "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
+const FALLBACK_GLB = "models/bag.glb";
 
 describe("full pipeline", () => {
   itMaybe("health endpoint", async () => {
