@@ -26,7 +26,7 @@
     "coverage": "npm run coverage --prefix backend",
     "typecheck": "tsc --noEmit",
     "i18n:lint": "node scripts/i18n-lint.js",
-    "ci": "node scripts/assert-setup.js && npm run format && npm run lint && npm run typecheck && npm run i18n:lint && npm run test:ci && npm run test:a11y",
+    "ci": "node scripts/assert-setup.js && npm run format:check && npm run lint && npm run typecheck && npm run i18n:lint && npm run test:ci && npm run test:a11y",
     "test:ci": "cross-env JEST_CI=true npm run test-ci --prefix backend",
     "test:update-threshold": "node scripts/update-coverage-threshold.js",
     "test:stability": "node scripts/test-stability.js",

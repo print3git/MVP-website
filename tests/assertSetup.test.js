@@ -29,10 +29,10 @@ describe("assert-setup script", () => {
     child_process.execSync.mockImplementation(() => {});
 
     expect(() => require("../scripts/assert-setup.js")).not.toThrow();
-    expect(child_process.execSync).toHaveBeenCalledWith(
-      "CI=1 npm run setup",
-      { stdio: "inherit", env: expect.any(Object) },
-    );
+    expect(child_process.execSync).toHaveBeenCalledWith("CI=1 npm run setup", {
+      stdio: "inherit",
+      env: expect.any(Object),
+    });
   });
 
   test("skips setup when browsers installed", () => {
@@ -59,7 +59,6 @@ describe("assert-setup script", () => {
       { stdio: "inherit" },
     );
   });
-
 
   test("skips network check when SKIP_NET_CHECKS is set", () => {
     setEnv();
