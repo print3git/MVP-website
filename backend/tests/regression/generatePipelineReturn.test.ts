@@ -1,6 +1,15 @@
+jest.mock("../../src/pipeline/generateModel", () => ({
+  generateModel: jest.fn(),
+}));
+jest.mock("../../db", () => ({
+  query: jest.fn(),
+  insertGenerationLog: jest.fn(),
+  insertModel: jest.fn(),
+}));
 const request = require("supertest");
-const app = require("../../server");
 const { generateModel } = require("../../src/pipeline/generateModel");
+process.env.STRIPE_WEBHOOK_SECRET = "test";
+const app = require("../../server");
 
 describe("/api/generate regression", () => {
   beforeEach(() => {
