@@ -24,8 +24,13 @@ describe("assert-setup script", () => {
     setEnv();
     fs.existsSync.mockReturnValue(false);
     fs.readdirSync.mockReturnValue([]);
+    child_process.execSync.mockImplementation(() => {});
 
     expect(() => require("../scripts/assert-setup.js")).not.toThrow();
+    expect(child_process.execSync).toHaveBeenCalledWith(
+      "CI=1 npm run setup",
+      { stdio: "inherit", env: expect.any(Object) },
+    );
   });
 
   test("skips setup when browsers installed", () => {
