@@ -12,7 +12,9 @@ banner() {
 }
 
 banner "Running environment validation"
-bash scripts/validate-env.sh
+set +u
+source scripts/validate-env.sh
+set -u
 
 banner "Starting dev server"
 pnpm dev &
