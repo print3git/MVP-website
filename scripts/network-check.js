@@ -55,6 +55,14 @@ for (const { url, name } of targets) {
   if (error) {
     console.error(`Unable to reach ${name}: ${url}`);
     if (error) console.error(error);
+    if (name === "Playwright CDN") {
+      console.error(
+        "Set SKIP_PW_DEPS=1 to skip Playwright CDN checks when browsers are already installed.",
+      );
+    }
+    console.error(
+      "Set SKIP_NET_CHECKS=1 to bypass all network checks (not recommended).",
+    );
     process.exit(1);
   }
 }

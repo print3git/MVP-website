@@ -1,5 +1,6 @@
 const fs = require("fs");
 const YAML = require("yaml");
+/* global path */
 
 describe("coverage workflow", () => {
   test("installs root & backend deps and uses npx coveralls", () => {

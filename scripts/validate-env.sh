@@ -57,7 +57,8 @@ fi
 
 
 if [[ -z "${SKIP_NET_CHECKS:-}" ]]; then
-  if ! node scripts/network-check.js >/dev/null 2>&1; then
+  if ! output=$(node scripts/network-check.js 2>&1); then
+    echo "$output" >&2
     echo "Network check failed. Ensure access to the npm registry and Playwright CDN." >&2
     exit 1
   fi

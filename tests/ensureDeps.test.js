@@ -117,6 +117,7 @@ describe("ensure-deps", () => {
     expect(setupCalls.length).toBe(2);
     expect(setupCalls[0].env.SKIP_PW_DEPS).toBe("1");
     expect(setupCalls[1].env).not.toHaveProperty("SKIP_PW_DEPS");
+    expect(execMock).toHaveBeenCalled();
 
     delete process.env.SKIP_PW_DEPS;
   });
