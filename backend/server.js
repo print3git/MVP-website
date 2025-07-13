@@ -460,12 +460,12 @@ app.post(
         !!req.file,
       );
 
-      let generatedUrl;
-      try {
-        const url = await generateModelPipeline({
-          prompt: req.body.prompt,
-          image: req.file ? req.file.path : undefined,
-        });
+        let generatedUrl;
+        try {
+          generatedUrl = await generateModelPipeline({
+            prompt: req.body.prompt,
+            image: req.file ? req.file.path : undefined,
+          });
       } catch (err) {
         console.error("🚨 generateModel() failed:", err);
         return res.status(500).json({ error: err.message });
