@@ -378,6 +378,19 @@ with ESLint, and Jest runs against related tests.
 Avoid calling `npx playwright test` directly. Missing browsers can cause
 `"Playwright Test did not expect test() to be called here"` errors.
 
+### Coverage Reports
+
+Run coverage after installing dependencies:
+
+```bash
+npm run setup
+npm run coverage -- --reporter=text-lcov | npx coveralls
+```
+
+Using `npx coveralls` ensures the CLI runs even if it's not installed globally.
+Running coverage without installing dependencies or omitting `npx` may lead to
+`coveralls: command not found` or `jest: not found` errors.
+
 ## Printer Service
 
 The print worker posts completed jobs to an external printer API. See
