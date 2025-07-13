@@ -1,23 +1,15 @@
 const fs = require("fs");
-const path = require("path");
 const YAML = require("yaml");
 
-describe("coverage workflow", () => {
-  test("installs backend deps and uses npx coveralls", () => {
-    const file = path.join(
-      __dirname,
-      "..",
-      ".github",
-      "workflows",
-      "coverage.yml",
-    );
-    const yml = YAML.parse(fs.readFileSync(file, "utf8"));
-    const steps = yml.jobs.coverage.steps.map((s) => s.run || "");
-    const hasBackendCi = steps.some((cmd) =>
-      cmd.includes("npm ci --prefix backend"),
-    );
-    const hasCoveralls = steps.some((cmd) => cmd.includes("npx coveralls"));
-    expect(hasBackendCi).toBe(true);
-    expect(hasCoveralls).toBe(true);
-  });
+test("coverage workflow uses setup script", () => {
+  const content = fs.readFileSync(".github/workflows/coverage.yml", "utf8");
+  const workflow = YAML.parse(content);
+  const steps = workflow.jobs.coverage.steps || [];
+  const hasSetup = steps.some((s) => s.run && s.run.includes("npm run setup"));
+  expect(hasSetup).toBe(true);
+});
+
+test("coveralls listed in devDependencies", () => {
+  const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
+  expect(pkg.devDependencies && pkg.devDependencies.coveralls).toBeDefined();
 });
