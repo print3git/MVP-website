@@ -58,6 +58,8 @@ describe("generateGlb", () => {
   test("ignores proxy environment variables", async () => {
     process.env.http_proxy = "http://proxy:9999";
     process.env.https_proxy = "http://proxy:9999";
+    process.env.SPARC3D_ENDPOINT = "https://api.example.com/generate";
+    const token = process.env.SPARC3D_TOKEN;
     const data = Buffer.from("abc");
     (0, nock_1.default)("https://api.example.com")
       .post("/generate", { prompt: "p2" })

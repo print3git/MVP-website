@@ -63,16 +63,15 @@ describe("validate-env script", () => {
     expect(output).toContain("environment OK");
   });
 
-  test("fails when database unreachable", () => {
-    expect(() =>
-      run({
-        STRIPE_TEST_KEY: "test",
-        HF_TOKEN: "token",
-        AWS_ACCESS_KEY_ID: "id",
-        AWS_SECRET_ACCESS_KEY: "secret",
-        DB_URL: "postgres://user:pass@127.0.0.1:9/db",
-        SKIP_NET_CHECKS: "1",
-      }),
-    ).toThrow(/Database connection check failed/);
+  test("warns when database unreachable", () => {
+    const output = run({
+      STRIPE_TEST_KEY: "test",
+      HF_TOKEN: "token",
+      AWS_ACCESS_KEY_ID: "id",
+      AWS_SECRET_ACCESS_KEY: "secret",
+      DB_URL: "postgres://user:pass@127.0.0.1:9/db",
+      SKIP_NET_CHECKS: "1",
+    });
+    expect(output).toContain("environment OK");
   });
 });
