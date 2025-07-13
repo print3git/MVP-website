@@ -2,6 +2,13 @@ const fs = require("fs");
 const path = require("path");
 const { execSync } = require("child_process");
 
+function getEnv() {
+  const env = { ...process.env };
+  delete env.npm_config_http_proxy;
+  delete env.npm_config_https_proxy;
+  return env;
+}
+
 const pluginPath = path.join(
   __dirname,
   "..",
@@ -15,7 +22,7 @@ const networkCheck = path.join(__dirname, "network-check.js");
 
 function runNetworkCheck() {
   try {
-    execSync(`node ${networkCheck}`, { stdio: "inherit" });
+    execSync(`node ${networkCheck}`, { stdio: "inherit", env: getEnv() });
   } catch {
     console.error(
       "Network check failed. Ensure access to the npm registry and Playwright CDN.",
@@ -26,7 +33,7 @@ function runNetworkCheck() {
 
 function canReachRegistry() {
   try {
-    execSync("npm ping", { stdio: "ignore" });
+    execSync("npm ping", { stdio: "ignore", env: getEnv() });
     return true;
   } catch {
     console.error(
@@ -41,7 +48,7 @@ if (!fs.existsSync(pluginPath)) {
   if (!canReachRegistry()) process.exit(1);
   console.log("Dependencies missing. Installing root dependencies...");
   try {
-    execSync("npm ping", { stdio: "ignore" });
+    execSync("npm ping", { stdio: "ignore", env: getEnv() });
   } catch {
     console.error(
       "Unable to reach the npm registry. Check network connectivity or proxy settings.",
@@ -50,13 +57,13 @@ if (!fs.existsSync(pluginPath)) {
   }
   const install = () => {
     try {
-      execSync("npm ci", { stdio: "inherit" });
+      execSync("npm ci", { stdio: "inherit", env: getEnv() });
       return true;
     } catch (err) {
       const msg = String(err.message || err);
       if (msg.includes("EUSAGE")) {
         console.warn("npm ci failed, falling back to 'npm install'");
-        execSync("npm install", { stdio: "inherit" });
+        execSync("npm install", { stdio: "inherit", env: getEnv() });
         return true;
       }
       if (/ECONNRESET|ENOTFOUND|network|ETIMEDOUT/i.test(msg)) {
