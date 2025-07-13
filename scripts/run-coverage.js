@@ -3,6 +3,8 @@ const { spawnSync } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 
+const repoRoot = path.join(__dirname, "..");
+
 // Ensure the active Node version matches the project's requirement so the
 // coverage run doesn't silently use a wrong version when mise wasn't activated.
 require("./check-node-version.js");
@@ -41,7 +43,7 @@ const result = spawnSync(jestBin, jestArgs, {
   },
 });
 
-const lcovPath = path.join("coverage", "lcov.info");
+const lcovPath = path.join(repoRoot, "coverage", "lcov.info");
 fs.mkdirSync(path.dirname(lcovPath), { recursive: true });
 let output = result.stdout || "";
 const start = output.indexOf("TN:");
@@ -57,7 +59,12 @@ if (result.status) {
   process.exit(result.status);
 }
 
-const summaryPath = path.join("backend", "coverage", "coverage-summary.json");
+const summaryPath = path.join(
+  repoRoot,
+  "backend",
+  "coverage",
+  "coverage-summary.json",
+);
 if (!fs.existsSync(summaryPath)) {
   console.error(`Missing coverage summary: ${summaryPath}`);
   process.exit(1);
