@@ -1,4 +1,4 @@
-const { chromium } = require("playwright");
+const { chromium } = require("playwright-core");
 
 async function check(url) {
   const browser = await chromium.launch();
