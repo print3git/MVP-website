@@ -1,16 +1,16 @@
-require('dotenv').config();
-const express = require('express');
+require("dotenv").config();
+const express = require("express");
 
 // Simple 1x1 placeholder image encoded as a data URI
 const PLACEHOLDER_IMAGE =
-  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAEElEQVR4nGNg+M9QzwAEYBxVSvzdgAAAAABJRU5ErkJggg==';
+  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAEElEQVR4nGNg+M9QzwAEYBxVSvzdgAAAAABJRU5ErkJggg==";
 
 const app = express();
 app.use(express.json());
 
-app.post('/generate', (req, res) => {
+app.post("/generate", (req, res) => {
   const { prompt } = req.body || {};
-  if (!prompt) return res.status(400).json({ error: 'prompt required' });
+  if (!prompt) return res.status(400).json({ error: "prompt required" });
   res.json({ image: PLACEHOLDER_IMAGE });
 });
 

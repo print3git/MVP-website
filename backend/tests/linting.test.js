@@ -1,9 +1,9 @@
-const { execSync } = require('child_process');
+const { execSync } = require("child_process");
 
-describe('linting', () => {
-  test('repository has no ESLint warnings', () => {
+describe("linting", () => {
+  test("repository has no ESLint warnings", () => {
     expect(() => {
-      execSync('npm run lint --silent', { stdio: 'pipe' });
+      execSync("npm run lint --silent", { stdio: "pipe" });
     }).not.toThrow();
   });
 });

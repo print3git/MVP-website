@@ -57,7 +57,7 @@ async function getTrackingStatus(carrier, trackingNumber) {
     const data = await res.json();
     return data.status || null;
   } catch (err) {
-    console.error('Tracking status failed', err.message);
+    console.error("Tracking status failed", err.message);
     return null;
   }
 }
