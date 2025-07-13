@@ -23,4 +23,12 @@ describe("node version", () => {
       .trim();
     expect(version.replace(/^v/, "")).toMatch(/^20/);
   });
+
+  test(".tool-versions pins Node 20", () => {
+    const tv = fs
+      .readFileSync(path.join(__dirname, "..", ".tool-versions"), "utf8")
+      .trim();
+    const match = tv.match(/node\s+(\d+)/);
+    expect(match && match[1]).toBe("20");
+  });
 });

@@ -1,4 +1,4 @@
-import React, { useState } from 'https://esm.sh/react@18';
+import React, { useState } from "https://esm.sh/react@18";
 
 export default function useGenerateModel() {
   const [loading, setLoading] = useState(false);
@@ -16,10 +16,10 @@ export default function useGenerateModel() {
         body: JSON.stringify({ prompt }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Request failed');
+      if (!res.ok) throw new Error(data.error || "Request failed");
       setModelUrl(data.glb_url);
     } catch (err) {
-      setError(err.message || 'Error generating model');
+      setError(err.message || "Error generating model");
     } finally {
       setLoading(false);
     }

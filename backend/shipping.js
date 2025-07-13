@@ -1,6 +1,7 @@
 const SHIPPING_API_URL = process.env.SHIPPING_API_URL;
 const SHIPPING_API_KEY = process.env.SHIPPING_API_KEY;
 const TRACKING_BASE_URL = process.env.TRACKING_BASE_URL || "";
+const logger = require("../src/logger");
 
 async function getShippingEstimate(destination, model) {
   const weight = model.weight || 1;
@@ -30,7 +31,7 @@ async function getShippingEstimate(destination, model) {
 
     throw new Error("Invalid response");
   } catch (err) {
-    console.error("Shipping API failed, using placeholder", err.message);
+    logger.error("Shipping API failed, using placeholder", err.message);
     const cost = 5 + weight * 2; // simple placeholder cost calculation
     const etaDays = 7; // placeholder ETA
     return { cost, etaDays };
@@ -57,7 +58,7 @@ async function getTrackingStatus(carrier, trackingNumber) {
     const data = await res.json();
     return data.status || null;
   } catch (err) {
-    console.error("Tracking status failed", err.message);
+    logger.error("Tracking status failed", err.message);
     return null;
   }
 }

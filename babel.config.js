@@ -1,3 +1,3 @@
 module.exports = {
-  plugins: ['@babel/plugin-syntax-typescript'],
+  plugins: ["@babel/plugin-syntax-typescript"],
 };
