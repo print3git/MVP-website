@@ -1,42 +1,46 @@
 function getToken() {
-  return localStorage.getItem('adminToken') || localStorage.getItem('token') || '';
+  return (
+    localStorage.getItem("adminToken") || localStorage.getItem("token") || ""
+  );
 }
 
 function setToken(token) {
-  localStorage.setItem('adminToken', token);
+  localStorage.setItem("adminToken", token);
 }
 
-import { API_BASE, authHeaders } from './api.js';
+import { API_BASE, authHeaders } from "./api.js";
 
 async function load() {
-  const container = document.getElementById('sale');
-  container.textContent = 'Loading...';
+  const container = document.getElementById("sale");
+  container.textContent = "Loading...";
   let sale = null;
   try {
-    const resp = await fetch(`${API_BASE}/flash-sale`, { headers: authHeaders() });
+    const resp = await fetch(`${API_BASE}/flash-sale`, {
+      headers: authHeaders(),
+    });
     if (resp.ok) {
       sale = await resp.json();
     }
   } catch {}
-  container.innerHTML = '';
+  container.innerHTML = "";
   if (sale) {
-    const div = document.createElement('div');
-    div.className = 'space-y-2';
+    const div = document.createElement("div");
+    div.className = "space-y-2";
     div.innerHTML = `
       <p>Active sale: ${sale.discount_percent}% off ${sale.product_type}</p>
       <button id="end" class="bg-red-500 px-3 py-1 rounded">End Sale</button>`;
     container.appendChild(div);
-    div.querySelector('#end').addEventListener('click', async () => {
+    div.querySelector("#end").addEventListener("click", async () => {
       const resp = await fetch(`${API_BASE}/admin/flash-sale/${sale.id}`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: authHeaders(),
       });
       if (resp.ok) load();
-      else alert('Failed');
+      else alert("Failed");
     });
   } else {
-    const div = document.createElement('div');
-    div.className = 'space-y-2';
+    const div = document.createElement("div");
+    div.className = "space-y-2";
     div.innerHTML = `
       <label class="block text-sm">Product Type
         <input id="prod" class="w-full mt-1 p-2 rounded bg-[#1A1A1D] border border-white/10">
@@ -49,31 +53,31 @@ async function load() {
       </label>
       <button id="start" class="bg-[#30D5C8] text-[#1A1A1D] px-3 py-1 rounded">Start Sale</button>`;
     container.appendChild(div);
-    div.querySelector('#start').addEventListener('click', async () => {
+    div.querySelector("#start").addEventListener("click", async () => {
       const now = Date.now();
       const body = {
-        product_type: div.querySelector('#prod').value,
-        discount_percent: parseInt(div.querySelector('#disc').value, 10),
+        product_type: div.querySelector("#prod").value,
+        discount_percent: parseInt(div.querySelector("#disc").value, 10),
         start_time: new Date(now).toISOString(),
         end_time: new Date(
-          now + parseInt(div.querySelector('#mins').value, 10) * 60000
+          now + parseInt(div.querySelector("#mins").value, 10) * 60000,
         ).toISOString(),
       };
       const resp = await fetch(`${API_BASE}/admin/flash-sale`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...authHeaders() },
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...authHeaders() },
         body: JSON.stringify(body),
       });
       if (resp.ok) load();
-      else alert('Failed');
+      else alert("Failed");
     });
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  const tokenInput = document.getElementById('token');
-  tokenInput.value = localStorage.getItem('adminToken') || '';
-  document.getElementById('set-token').addEventListener('click', () => {
+document.addEventListener("DOMContentLoaded", () => {
+  const tokenInput = document.getElementById("token");
+  tokenInput.value = localStorage.getItem("adminToken") || "";
+  document.getElementById("set-token").addEventListener("click", () => {
     setToken(tokenInput.value.trim());
     load();
   });

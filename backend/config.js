@@ -8,7 +8,6 @@ const optionalGlb = [
   "SPARC3D_TOKEN",
 ];
 
-
 const missing = required.filter((key) => !getEnv(key));
 if (missing.length) {
   console.warn(`Missing required env vars: ${missing.join(", ")}`);

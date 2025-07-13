@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-import autocannon from 'autocannon';
+import autocannon from "autocannon";
 
-const url = process.env.BASE_URL || 'http://localhost:3000/v2/events';
+const url = process.env.BASE_URL || "http://localhost:3000/v2/events";
 const instance = autocannon({
   url,
   connections: 50,
@@ -13,5 +13,4 @@ autocannon.track(instance, {
   renderProgressBar: true,
 });
 
-instance.on('done', () => process.exit(0));
-
+instance.on("done", () => process.exit(0));
