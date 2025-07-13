@@ -1,7 +1,7 @@
-const { execSync } = require('child_process');
-const fs = require('fs');
-const os = require('os');
-const path = require('path');
+const { execSync } = require("child_process");
+const fs = require("fs");
+const os = require("os");
+const path = require("path");
 
 function cleanupNpmCache() {
   try {
@@ -23,22 +23,27 @@ function cleanupNpmCache() {
   }
 }
 
-function runNpmCi(dir = '.') {
-  const options = { stdio: 'inherit' };
-  if (dir !== '.') options.cwd = dir;
+function runNpmCi(dir = ".") {
+  const options = { stdio: "inherit" };
+  if (dir !== ".") options.cwd = dir;
   try {
-    execSync('npm ci --no-audit --no-fund', options);
+    execSync("npm ci --no-audit --no-fund", options);
   } catch (err) {
-    const output = String(err.stderr || err.stdout || err.message || '');
-    if (output.includes('EUSAGE')) {
+    const output = String(err.stderr || err.stdout || err.message || "");
+    if (output.includes("EUSAGE")) {
       console.warn(`npm ci failed in ${dir}, falling back to 'npm install'`);
-      execSync('npm install --no-audit --no-fund', options);
-      execSync('npm ci --no-audit --no-fund', options);
+      execSync("npm install --no-audit --no-fund", options);
+      execSync("npm ci --no-audit --no-fund", options);
     } else if (/TAR_ENTRY_ERROR|ENOENT/.test(output)) {
-      console.warn(`npm ci encountered tar errors in ${dir}. Cleaning cache and retrying...`);
+      console.warn(
+        `npm ci encountered tar errors in ${dir}. Cleaning cache and retrying...`,
+      );
       cleanupNpmCache();
-      fs.rmSync(path.join(dir, 'node_modules'), { recursive: true, force: true });
-      execSync('npm ci --no-audit --no-fund', options);
+      fs.rmSync(path.join(dir, "node_modules"), {
+        recursive: true,
+        force: true,
+      });
+      execSync("npm ci --no-audit --no-fund", options);
     } else {
       throw err;
     }
