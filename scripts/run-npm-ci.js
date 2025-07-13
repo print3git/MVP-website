@@ -5,19 +5,25 @@ const path = require("path");
 
 function cleanupNpmCache() {
   try {
-    execSync('npm cache clean --force', { stdio: 'ignore' });
+    execSync("npm cache clean --force", { stdio: "ignore" });
   } catch {
     /* ignore */
   }
   try {
-    const cache = execSync('npm config get cache').toString().trim();
-    fs.rmSync(path.join(cache, '_cacache'), { recursive: true, force: true });
-    fs.rmSync(path.join(cache, '_cacache', 'tmp'), { recursive: true, force: true });
+    const cache = execSync("npm config get cache").toString().trim();
+    fs.rmSync(path.join(cache, "_cacache"), { recursive: true, force: true });
+    fs.rmSync(path.join(cache, "_cacache", "tmp"), {
+      recursive: true,
+      force: true,
+    });
   } catch {
     /* ignore */
   }
   try {
-    fs.rmSync(path.join(os.homedir(), '.npm', '_cacache'), { recursive: true, force: true });
+    fs.rmSync(path.join(os.homedir(), ".npm", "_cacache"), {
+      recursive: true,
+      force: true,
+    });
   } catch {
     /* ignore */
   }
@@ -34,7 +40,7 @@ function runNpmCi(dir = ".") {
       console.warn(`npm ci failed in ${dir}, falling back to 'npm install'`);
       execSync("npm install --no-audit --no-fund", options);
       execSync("npm ci --no-audit --no-fund", options);
-    } else if (/TAR_ENTRY_ERROR|ENOENT/.test(output)) {
+    } else if (/TAR_ENTRY_ERROR|ENOENT|tarball .*corrupted/.test(output)) {
       console.warn(
         `npm ci encountered tar errors in ${dir}. Cleaning cache and retrying...`,
       );
