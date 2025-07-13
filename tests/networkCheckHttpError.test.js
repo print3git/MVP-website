@@ -1,25 +1,23 @@
 const { execFileSync } = require("child_process");
-const http = require("http");
+const fs = require("fs");
+const os = require("os");
 const path = require("path");
 
 describe("network-check HTTP errors", () => {
-  test("fails on non-2xx status", (done) => {
-    const server = http.createServer((req, res) => {
-      res.statusCode = 404;
-      res.end();
-    });
-    server.listen(0, () => {
-      const { port } = server.address();
-      expect(() => {
-        execFileSync("node", [path.join("scripts", "network-check.js")], {
-          env: {
-            ...process.env,
-            NETWORK_CHECK_URL: `http://127.0.0.1:${port}`,
-          },
-          encoding: "utf8",
-        });
-      }).toThrow(/Unable to reach/);
-      server.close(done);
-    });
+  test("ignores non-2xx status", () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "curl-"));
+    const fakeCurl = path.join(tmp, "curl");
+    fs.writeFileSync(fakeCurl, "#!/bin/sh\nexit 22");
+    fs.chmodSync(fakeCurl, 0o755);
+    expect(() => {
+      execFileSync("node", [path.join("scripts", "network-check.js")], {
+        env: {
+          ...process.env,
+          PATH: `${tmp}:${process.env.PATH}`,
+          NETWORK_CHECK_URL: "http://localhost",
+        },
+        encoding: "utf8",
+      });
+    }).not.toThrow();
   });
 });

@@ -40,11 +40,15 @@ if (process.env.NETWORK_CHECK_URL) {
 
 function check(url) {
   try {
-    execSync(`curl -fsSL --max-time 10 -o /dev/null ${url}`, {
+    execSync(`curl -sSL --max-time 10 -o /dev/null ${url}`, {
       stdio: "pipe",
     });
     return null;
   } catch (err) {
+    if (err.status === 22) {
+      // HTTP error (e.g. 404). The host is reachable so treat as success.
+      return null;
+    }
     const stderr = err.stderr ? err.stderr.toString().trim() : err.message;
     return stderr.split("\n").slice(-1)[0];
   }
