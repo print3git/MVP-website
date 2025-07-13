@@ -55,6 +55,9 @@ for (const { url, name } of targets) {
   if (error) {
     console.error(`Unable to reach ${name}: ${url}`);
     if (error) console.error(error);
+    if (name === "Playwright CDN" && /error:\s*[45][0-9]{2}/i.test(error)) {
+      console.error("Set SKIP_PW_DEPS=1 to skip Playwright dependencies.");
+    }
     process.exit(1);
   }
 }
