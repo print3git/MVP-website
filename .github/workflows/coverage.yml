@@ -12,4 +12,5 @@ jobs:
           node-version: "20"
       - run: npm ci
       - run: npm ci --prefix backend
-      - run: npm run coverage -- --reporter=text-lcov | npx coveralls
+      - run: npm run setup
+      - run: npm run coverage-lcov | npx coveralls

@@ -6,6 +6,7 @@
     "test": "jest",
     "test-ci": "jest --ci --coverage --collectCoverageFrom=\"**/*.{js,jsx,ts,tsx}\" --maxWorkers=2 --forceExit",
     "coverage": "jest --ci --coverage --maxWorkers=2 --detectOpenHandles --forceExit && npx coverage-badges-cli --source coverage/coverage-summary.json --output coverage/badge.svg",
+    "coverage-lcov": "jest --ci --coverage --maxWorkers=2 --detectOpenHandles --forceExit --coverageReporters=text-lcov",
     "start": "node server.js",
     "init-db": "node scripts/init-db.js",
     "migrate": "node scripts/run-migrations.js",
