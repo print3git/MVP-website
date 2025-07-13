@@ -5,6 +5,15 @@ const path = require("path");
 
 if (!process.env.SKIP_ROOT_DEPS_CHECK) {
   require("./ensure-root-deps.js");
+} else {
+  try {
+    require.resolve("@babel/plugin-syntax-typescript");
+  } catch {
+    console.error(
+      "Missing root dependencies. Run 'npm run setup' before running tests.",
+    );
+    process.exit(1);
+  }
 }
 
 function runJest(args) {
