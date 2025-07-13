@@ -40,10 +40,17 @@ if (process.env.NETWORK_CHECK_URL) {
 
 function check(url) {
   try {
-    execSync(`curl -fsSL --max-time 10 -o /dev/null ${url}`, {
-      stdio: "pipe",
-    });
-    return null;
+    const code = execSync(
+      `curl -sSL --max-time 10 -o /dev/null -w "%{http_code}" ${url}`,
+      { stdio: "pipe" },
+    )
+      .toString()
+      .trim();
+    const status = parseInt(code, 10);
+    if (!Number.isNaN(status) && status < 500) {
+      return null;
+    }
+    return `HTTP ${code}`;
   } catch (err) {
     const stderr = err.stderr ? err.stderr.toString().trim() : err.message;
     return stderr.split("\n").slice(-1)[0];

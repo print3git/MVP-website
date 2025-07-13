@@ -16,4 +16,12 @@ describe("check-node-version script", () => {
       expect(output).toMatch(/mise use -g node@25/);
     }
   });
+
+  test("succeeds when current version is higher", () => {
+    execFileSync("node", [path.join("scripts", "check-node-version.js")], {
+      env: { ...process.env, REQUIRED_NODE_MAJOR: "18" },
+      encoding: "utf8",
+      stdio: "pipe",
+    });
+  });
 });
