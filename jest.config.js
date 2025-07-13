@@ -1,4 +1,5 @@
 module.exports = {
+  setupFiles: ["<rootDir>/backend/tests/setupGlobals.js"],
   coverageThreshold: {
     global: {
       branches: 55,

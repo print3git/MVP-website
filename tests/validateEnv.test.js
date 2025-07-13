@@ -15,10 +15,10 @@ function run(env) {
     encoding: "utf8",
   });
   const output = (result.stdout || "") + (result.stderr || "");
-  if (result.status) {
-    const err = new Error(output);
-    err.code = result.status;
-    throw err;
+  if (result.status !== 0) {
+    const error = new Error(output);
+    error.code = result.status;
+    throw error;
   }
   return output;
 }
@@ -118,7 +118,8 @@ describe("validate-env script", () => {
       SKIP_NET_CHECKS: "1",
     };
     const output = run(env);
-    expect(output).toMatch(/Database connection check failed/);
+    expect(output).toContain("Database connection check failed");
+    expect(output).toContain("✅ environment OK");
   });
 
   test("falls back to SKIP_PW_DEPS when apt check fails", () => {
