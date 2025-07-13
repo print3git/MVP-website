@@ -38,6 +38,12 @@ fi
 : "${DB_URL:?DB_URL must be set}"
 : "${STRIPE_SECRET_KEY:?STRIPE_SECRET_KEY must be set}"
 : "${CLOUDFRONT_MODEL_DOMAIN:?CLOUDFRONT_MODEL_DOMAIN must be set}"
+required_node_major="${REQUIRED_NODE_MAJOR:-20}"
+current_major=$(node -v | sed -E "s/^v([0-9]+).*/\1/")
+if [ "$current_major" -lt "$required_node_major" ]; then
+  echo "Node $required_node_major or newer is required. Current version: $current_major" >&2
+  exit 1
+fi
 
 # Fail fast if npm-specific proxy variables are set. Other proxy variables may be required
 if [[ -n "${npm_config_http_proxy:-}" || -n "${npm_config_https_proxy:-}" ]]; then
