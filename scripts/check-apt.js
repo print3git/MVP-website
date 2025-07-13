@@ -22,20 +22,39 @@ if (!commandExists("sudo")) {
 }
 
 for (let i = 1; i <= 3; i++) {
-  const result = spawnSync("sudo", ["apt-get", "update"], { encoding: "utf8" });
-  if (result.status === 0) {
-    console.log("✅ apt update succeeded");
-    process.exit(0);
+  const update = spawnSync("sudo", ["apt-get", "update"], { encoding: "utf8" });
+  if (update.status === 0) {
+    const install = spawnSync(
+      "sudo",
+      [
+        "apt-get",
+        "-y",
+        "--no-install-recommends",
+        "--dry-run",
+        "install",
+        "ca-certificates",
+      ],
+      { encoding: "utf8" },
+    );
+    if (install.status === 0) {
+      console.log("✅ apt update and install check succeeded");
+      process.exit(0);
+    }
+    process.stderr.write(install.stderr || "");
+    process.stdout.write(install.stdout || "");
+    console.error(
+      "apt-get install check failed. Set SKIP_PW_DEPS=1 to skip Playwright dependencies.",
+    );
+    process.exit(install.status || 1);
   }
   if (i < 3) {
     console.error(`apt-get update failed, retrying (${i}/3)...`);
   } else {
-    process.stderr.write(result.stderr || "");
-    process.stdout.write(result.stdout || "");
+    process.stderr.write(update.stderr || "");
+    process.stdout.write(update.stdout || "");
     console.error(
-      "apt-get update failed after multiple attempts. " +
-        "Repositories may be unreachable. Set SKIP_PW_DEPS=1 to skip.",
+      "apt-get update failed after multiple attempts. Repositories may be unreachable. Set SKIP_PW_DEPS=1 to skip.",
     );
-    process.exit(result.status || 1);
+    process.exit(update.status || 1);
   }
 }
