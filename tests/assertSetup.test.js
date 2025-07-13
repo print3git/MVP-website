@@ -1,8 +1,10 @@
 jest.mock("fs");
 jest.mock("child_process");
+jest.mock("../scripts/ensure-root-deps.js", () => jest.fn());
 
 const fs = require("fs");
 const child_process = require("child_process");
+const ensureRootDeps = require("../scripts/ensure-root-deps.js");
 
 describe("assert-setup script", () => {
   beforeEach(() => {
@@ -75,5 +77,17 @@ describe("assert-setup script", () => {
       expect.any(Object),
     );
     delete process.env.SKIP_NET_CHECKS;
+  });
+
+  test("invokes ensure-root-deps", () => {
+    setEnv();
+    fs.existsSync.mockReturnValue(true);
+    fs.readdirSync.mockReturnValue(["chromium"]);
+
+    jest.isolateModules(() => {
+      require("../scripts/assert-setup.js");
+    });
+
+    expect(ensureRootDeps).toHaveBeenCalled();
   });
 });

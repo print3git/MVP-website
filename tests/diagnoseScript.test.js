@@ -15,5 +15,6 @@ describe("diagnose script", () => {
     expect(content).toMatch(/validate-env\.sh/);
     expect(content).toMatch(/test-full-pipeline\.js/);
     expect(content).toMatch(/DIAGNOSTICS PASSED/);
+    expect(content).toMatch(/run-jest\.js/);
   });
 });
