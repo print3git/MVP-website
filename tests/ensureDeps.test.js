@@ -10,6 +10,7 @@ describe("ensure-deps", () => {
     child_process = require("child_process");
     fs.existsSync.mockReset();
     jest.spyOn(child_process, "execSync").mockReset();
+    delete process.env.SKIP_NET_CHECKS;
   });
 
   test("checks network then installs", () => {

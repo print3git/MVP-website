@@ -48,6 +48,11 @@ function canReachRegistry() {
 function runSetup() {
   console.log("Setup flag missing. Running 'npm run setup'...");
   const env = { ...process.env };
+  if (env.SKIP_NET_CHECKS && !env.SKIP_PW_DEPS) {
+    env.SKIP_PW_DEPS = "1";
+    env.PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD =
+      env.PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD || "1";
+  }
   if (!env.SKIP_PW_DEPS) {
     try {
       execSync(`node ${aptCheck}`, { stdio: "inherit" });
