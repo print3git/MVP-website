@@ -5,14 +5,17 @@ const path = require("path");
 /**
  * Run the validate-env script with the provided environment variables.
  * @param {Record<string, string>} env environment variables
- * @returns {string} script output
- */
+ * @returns {{output: string, status: number}} result object
+*/
 function run(env) {
   const result = spawnSync("bash", ["scripts/validate-env.sh"], {
     env: { SKIP_NET_CHECKS: "1", ...env },
     encoding: "utf8",
   });
-  return (result.stdout || "") + (result.stderr || "");
+  return {
+    output: (result.stdout || "") + (result.stderr || ""),
+    status: result.status,
+  };
 }
 
 describe("validate-env script", () => {
@@ -34,7 +37,8 @@ describe("validate-env script", () => {
       SKIP_NET_CHECKS: "1",
       SKIP_DB_CHECK: "1",
     };
-    const output = run(env);
+    const { output, status } = run(env);
+    expect(status).toBe(0);
     expect(output).toContain("✅ environment OK");
     expect(output).not.toMatch(/mise WARN/);
   });
@@ -51,7 +55,8 @@ describe("validate-env script", () => {
       CLOUDFRONT_MODEL_DOMAIN: "cdn.test",
       SKIP_DB_CHECK: "1",
     };
-    const output = run(env);
+    const { output, status } = run(env);
+    expect(status).toBe(0);
     expect(output).toContain("✅ environment OK");
   });
 
@@ -65,7 +70,8 @@ describe("validate-env script", () => {
       CLOUDFRONT_MODEL_DOMAIN: "cdn.test",
       DB_URL: "",
     };
-    expect(() => run(env)).toThrow();
+    const { status } = run(env);
+    expect(status).not.toBe(0);
   });
 
   test("fails when proxy variables set", () => {
@@ -79,7 +85,9 @@ describe("validate-env script", () => {
       npm_config_http_proxy: "http://proxy",
       SKIP_NET_CHECKS: "1",
     };
-    expect(() => run(env)).toThrow();
+    const { status, output } = run(env);
+    expect(status).not.toBe(0);
+    expect(output).toMatch(/npm proxy variables must be unset/);
   });
 
   test("fails when network unreachable", () => {
@@ -95,10 +103,12 @@ describe("validate-env script", () => {
       CLOUDFRONT_MODEL_DOMAIN: "cdn.test",
       SKIP_NET_CHECKS: "",
     };
-    expect(() => run(env)).toThrow(/Network check failed/);
+    const { status, output } = run(env);
+    expect(status).not.toBe(0);
+    expect(output).toMatch(/Network check failed/);
   });
 
-  test("fails when database unreachable", () => {
+  test("falls back when database unreachable", () => {
     const env = {
       ...process.env,
       HF_TOKEN: "test",
@@ -109,7 +119,10 @@ describe("validate-env script", () => {
       CLOUDFRONT_MODEL_DOMAIN: "cdn.test",
       SKIP_NET_CHECKS: "1",
     };
-    expect(() => run(env)).toThrow(/Database connection check failed/);
+    const { output, status } = run(env);
+    expect(status).toBe(0);
+    expect(output).toMatch(/Database connection check failed/);
+    expect(output).toMatch(/environment OK/);
   });
 
   test("falls back to SKIP_PW_DEPS when apt check fails", () => {
@@ -124,7 +137,8 @@ describe("validate-env script", () => {
       PATH: path.join(__dirname, "bin-apt") + ":" + process.env.PATH,
       SKIP_DB_CHECK: "1",
     };
-    const output = run(env);
+    const { output, status } = run(env);
+    expect(status).toBe(0);
     expect(output).toContain("APT repository check failed");
     expect(output).toContain("✅ environment OK");
   });
