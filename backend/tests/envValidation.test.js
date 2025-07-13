@@ -95,17 +95,17 @@ describe("validate-env script", () => {
   });
 
   test("fails when database unreachable", () => {
-    expect(() =>
-      execSync(`bash ${script}`, {
-        env: {
-          ...process.env,
-          ...baseEnv,
-          DB_URL: "postgres://user:pass@127.0.0.1:9/db",
-          SKIP_NET_CHECKS: "1",
-          SKIP_DB_CHECK: "",
-        },
-        stdio: "pipe",
-      }),
-    ).toThrow(/Database connection check failed/);
+    const output = execSync(`bash ${script}`, {
+      env: {
+        ...process.env,
+        ...baseEnv,
+        DB_URL: "postgres://user:pass@127.0.0.1:9/db",
+        SKIP_NET_CHECKS: "1",
+        SKIP_DB_CHECK: "",
+      },
+      stdio: "pipe",
+    }).toString();
+    expect(output).toMatch(/Database connection check failed/);
+    expect(output).toMatch(/environment OK/);
   });
 });

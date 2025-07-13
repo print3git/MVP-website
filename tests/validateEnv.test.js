@@ -109,7 +109,9 @@ describe("validate-env script", () => {
       CLOUDFRONT_MODEL_DOMAIN: "cdn.test",
       SKIP_NET_CHECKS: "1",
     };
-    expect(() => run(env)).toThrow(/Database connection check failed/);
+    const output = run(env);
+    expect(output).toMatch(/Database connection check failed/);
+    expect(output).toMatch(/environment OK/);
   });
 
   test("falls back to SKIP_PW_DEPS when apt check fails", () => {
