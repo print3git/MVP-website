@@ -16,6 +16,12 @@ if (!process.env.SKIP_ROOT_DEPS_CHECK) {
   }
 }
 
+// Ensure Playwright browsers and host dependencies are present so running tests
+// via this helper works in clean environments.
+if (!process.env.SKIP_ASSERT_SETUP) {
+  require("./assert-setup.js");
+}
+
 function runJest(args) {
   const repoRoot = path.resolve(__dirname, "..");
   const backendDir = path.join(repoRoot, "backend");
