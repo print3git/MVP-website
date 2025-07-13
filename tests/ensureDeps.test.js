@@ -102,6 +102,7 @@ describe("ensure-deps", () => {
     process.env.SKIP_PW_DEPS = "1";
     fs.existsSync.mockReturnValue(false);
     const calls = [];
+    // eslint-disable-next-line no-unused-vars
     const execMock = jest
       .spyOn(child_process, "execSync")
       .mockImplementation((cmd, opts) => {
