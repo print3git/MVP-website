@@ -40,7 +40,9 @@ if (process.env.NETWORK_CHECK_URL) {
 
 function check(url) {
   try {
-    execSync(`curl -fsSL --max-time 10 -o /dev/null ${url}`, {
+    // Use HEAD requests without `-f` so HTTP errors (e.g. 400) still
+    // indicate connectivity instead of failing the check.
+    execSync(`curl -sSIL --max-time 10 -o /dev/null ${url}`, {
       stdio: "pipe",
     });
     return null;
