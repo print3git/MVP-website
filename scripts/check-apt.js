@@ -1,8 +1,23 @@
 #!/usr/bin/env node
 const { spawnSync } = require("child_process");
 
+function commandExists(cmd) {
+  const res = spawnSync("which", [cmd], { encoding: "utf8" });
+  return res.status === 0;
+}
+
 if (process.env.SKIP_PW_DEPS) {
   console.log("Skipping apt check due to SKIP_PW_DEPS");
+  process.exit(0);
+}
+
+if (!commandExists("apt-get")) {
+  console.log("apt-get not found, skipping apt check");
+  process.exit(0);
+}
+
+if (!commandExists("sudo")) {
+  console.log("sudo not found, skipping apt check");
   process.exit(0);
 }
 
