@@ -15,6 +15,7 @@ const jestArgs = [
   "--detectOpenHandles",
   "--forceExit",
   "--coverageReporters=text-lcov",
+  "--coverageReporters=json-summary",
   "--coverageThreshold={}",
   "--silent",
   "--config",
