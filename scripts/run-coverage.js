@@ -2,6 +2,7 @@
 const { spawnSync } = require("child_process");
 const fs = require("fs");
 const path = require("path");
+const extractLcov = require("./extract-lcov");
 
 const jestArgs = [
   "--ci",
@@ -37,12 +38,12 @@ const result = spawnSync(jestBin, jestArgs, {
 const lcovPath = path.join("coverage", "lcov.info");
 fs.mkdirSync(path.dirname(lcovPath), { recursive: true });
 let output = result.stdout || "";
-const start = output.indexOf("TN:");
-if (start === -1) {
-  console.error("Failed to parse LCOV from jest output");
+try {
+  output = extractLcov(output);
+} catch (err) {
+  console.error(err.message);
   process.exit(result.status || 1);
 }
-output = output.slice(start);
 fs.writeFileSync(lcovPath, output);
 console.log(`LCOV written to ${lcovPath}`);
 if (result.status) {
