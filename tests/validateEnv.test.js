@@ -1,6 +1,8 @@
 /** @file Tests for validate-env script */
 const { spawnSync } = require("child_process");
 const path = require("path");
+const fs = require("fs");
+const os = require("os");
 
 /**
  * Run the validate-env script with the provided environment variables.
@@ -12,7 +14,13 @@ function run(env) {
     env: { SKIP_NET_CHECKS: "1", ...env },
     encoding: "utf8",
   });
-  return (result.stdout || "") + (result.stderr || "");
+  const output = (result.stdout || "") + (result.stderr || "");
+  if (result.status !== 0) {
+    const error = new Error(output);
+    error.code = result.status;
+    throw error;
+  }
+  return output;
 }
 
 describe("validate-env script", () => {
@@ -110,6 +118,7 @@ describe("validate-env script", () => {
       SKIP_NET_CHECKS: "1",
     };
     const output = run(env);
+
     expect(output).toMatch(/Database connection check failed/);
     expect(output).toMatch(/environment OK/);
   });
@@ -128,6 +137,30 @@ describe("validate-env script", () => {
     };
     const output = run(env);
     expect(output).toContain("APT repository check failed");
+    expect(output).toContain("✅ environment OK");
+  });
+
+  test("falls back to SKIP_PW_DEPS when CDN unreachable", () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "curl-"));
+    const fakeCurl = path.join(tmp, "curl");
+    fs.writeFileSync(
+      fakeCurl,
+      '#!/usr/bin/env bash\nif echo "$@" | grep -q cdn.playwright.dev; then echo "curl: (6) Could not resolve host" >&2; exit 6; fi\nexec /usr/bin/curl "$@"',
+    );
+    fs.chmodSync(fakeCurl, 0o755);
+    const env = {
+      ...process.env,
+      HF_TOKEN: "test",
+      AWS_ACCESS_KEY_ID: "id",
+      AWS_SECRET_ACCESS_KEY: "secret",
+      DB_URL: "postgres://user:pass@localhost/db",
+      STRIPE_SECRET_KEY: "sk_test",
+      CLOUDFRONT_MODEL_DOMAIN: "cdn.test",
+      PATH: `${tmp}:${process.env.PATH}`,
+      SKIP_NET_CHECKS: "",
+    };
+    const output = run(env);
+    expect(output).toContain("Network check failed for Playwright CDN");
     expect(output).toContain("✅ environment OK");
   });
 });

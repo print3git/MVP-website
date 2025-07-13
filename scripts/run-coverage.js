@@ -3,6 +3,7 @@ const { spawnSync } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 
+const extraArgs = process.argv.slice(2);
 const jestArgs = [
   "--ci",
   "--coverage",
@@ -12,8 +13,9 @@ const jestArgs = [
   "--coverageReporters=text-lcov",
   "--coverageThreshold={}",
   "--silent",
-  "--runTestsByPath",
-  ...process.argv.slice(2),
+  "--config",
+  path.join(__dirname, "..", "backend", "jest.config.js"),
+  ...(extraArgs.length ? ["--runTestsByPath", ...extraArgs] : []),
 ];
 
 const jestBin = path.join(

@@ -9,6 +9,8 @@ const nock_1 = __importDefault(require("nock"));
 const sparc3dClient_1 = require("../src/lib/sparc3dClient");
 describe("generateGlb", () => {
   beforeEach(() => {
+    process.env.SPARC3D_ENDPOINT = "https://api.example.com/generate";
+    process.env.SPARC3D_TOKEN = "token";
     delete process.env.http_proxy;
     delete process.env.https_proxy;
     delete process.env.HTTP_PROXY;
