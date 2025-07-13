@@ -6,7 +6,7 @@ describe("run-coverage script", () => {
   test("generates lcov report", () => {
     execFileSync(
       "node",
-      ["scripts/run-coverage.js", "backend/tests/analytics.test.js"],
+      ["scripts/run-coverage.js", "backend/tests/apiGenerateRoute.test.ts"],
       {
         env: {
           ...process.env,
@@ -17,8 +17,10 @@ describe("run-coverage script", () => {
         encoding: "utf8",
       },
     );
-    const file = path.join("coverage", "lcov.info");
-    expect(fs.existsSync(file)).toBe(true);
+    const lcov = path.join("backend", "coverage", "lcov.info");
+    const summary = path.join("backend", "coverage", "coverage-summary.json");
+    expect(fs.existsSync(lcov)).toBe(true);
+    expect(fs.existsSync(summary)).toBe(true);
   });
 
   test("fails when coverage cannot be parsed", () => {

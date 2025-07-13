@@ -14,6 +14,7 @@ const jestArgs = [
   "--maxWorkers=2",
   "--detectOpenHandles",
   "--forceExit",
+  "--coverageReporters=json-summary",
   "--coverageReporters=text-lcov",
   "--coverageThreshold={}",
   "--silent",
@@ -40,7 +41,7 @@ const result = spawnSync(jestBin, jestArgs, {
   },
 });
 
-const lcovPath = path.join("coverage", "lcov.info");
+const lcovPath = path.join("backend", "coverage", "lcov.info");
 fs.mkdirSync(path.dirname(lcovPath), { recursive: true });
 let output = result.stdout || "";
 const start = output.indexOf("TN:");

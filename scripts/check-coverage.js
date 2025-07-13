@@ -1,9 +1,14 @@
 const fs = require("fs");
 
 const config = JSON.parse(fs.readFileSync(".nycrc", "utf8"));
-const summary = JSON.parse(
-  fs.readFileSync("backend/coverage/coverage-summary.json", "utf8"),
-);
+const summaryPath = "backend/coverage/coverage-summary.json";
+if (!fs.existsSync(summaryPath)) {
+  console.error(
+    `Coverage summary not found at ${summaryPath}. Run "npm run coverage" first.`,
+  );
+  process.exit(1);
+}
+const summary = JSON.parse(fs.readFileSync(summaryPath, "utf8"));
 
 const metrics = ["branches", "functions", "lines", "statements"];
 let failed = false;
