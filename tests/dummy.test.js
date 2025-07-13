@@ -1,3 +1,5 @@
+const getEnv = require("../backend/utils/getEnv");
+
 test("dummy", () => {
-  expect(true).toBe(true);
+  expect(getEnv).toBeDefined();
 });
