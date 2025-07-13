@@ -85,3 +85,24 @@ if (!fs.existsSync(jestPath)) {
     process.exit(1);
   }
 }
+
+function sharpWorks() {
+  try {
+    require("sharp");
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+if (!sharpWorks()) {
+  runNetworkCheck();
+  if (!canReachRegistry()) process.exit(1);
+  console.log("Sharp failed to load. Rebuilding...");
+  try {
+    execSync("npm rebuild sharp", { stdio: "inherit" });
+  } catch (err) {
+    console.error("Failed to rebuild sharp:", err.message);
+    process.exit(1);
+  }
+}

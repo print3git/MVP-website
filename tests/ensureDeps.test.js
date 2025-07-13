@@ -67,4 +67,18 @@ describe("ensure-deps", () => {
     expect(() => require("../backend/scripts/ensure-deps")).toThrow("exit");
     expect(exitSpy).toHaveBeenCalledWith(1);
   });
+
+  test("rebuilds sharp when require fails", () => {
+    fs.existsSync.mockReturnValue(true);
+    jest.resetModules();
+    jest.doMock(
+      "sharp",
+      () => {
+        throw new Error("load fail");
+      },
+      { virtual: true },
+    );
+    child_process.execSync.mockReturnValue();
+    expect(() => require("../backend/scripts/ensure-deps")).not.toThrow();
+  });
 });
