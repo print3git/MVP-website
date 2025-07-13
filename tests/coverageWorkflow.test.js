@@ -13,6 +13,7 @@ describe("coverage workflow", () => {
     );
     const yml = YAML.parse(fs.readFileSync(file, "utf8"));
     const steps = yml.jobs.coverage.steps.map((s) => s.run || "");
+    const hasSetup = steps.some((cmd) => cmd.includes("npm run setup"));
     const hasCoverage = steps.some((cmd) =>
       cmd.trim().startsWith("npm run coverage"),
     );
