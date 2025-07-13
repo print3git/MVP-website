@@ -1,12 +1,13 @@
 "use strict";
-const { getEnv } = require("./utils/getEnv");
 
+const { getEnv } = require("./src/lib/getEnv");
 const required = ["DB_URL", "STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET"];
 const optionalGlb = [
   "CLOUDFRONT_MODEL_DOMAIN",
   "SPARC3D_ENDPOINT",
   "SPARC3D_TOKEN",
 ];
+
 
 const missing = required.filter((key) => !getEnv(key));
 if (missing.length) {
@@ -31,6 +32,7 @@ module.exports = {
   printerApiUrl: getEnv("PRINTER_API_URL", {
     default: "http://localhost:5000/print",
   }),
+
   cloudfrontModelDomain: getEnv("CLOUDFRONT_MODEL_DOMAIN"),
   sparc3dEndpoint: getEnv("SPARC3D_ENDPOINT"),
   sparc3dToken: getEnv("SPARC3D_TOKEN"),

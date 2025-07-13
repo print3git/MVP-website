@@ -70,7 +70,10 @@ The server uses `STRIPE_LIVE_KEY` when `NODE_ENV=production`; otherwise `STRIPE_
    are missing, run `npx husky install` manually.
    If `npm ci` fails with an `EUSAGE` error complaining about missing lock file entries,
    run `npm install` in the affected directory and re-run this setup step.
-   Ensure your environment can reach `https://registry.npmjs.org` and `https://cdn.playwright.dev`. The setup script downloads packages and browsers from these domains, so network restrictions may cause it to fail.
+   Ensure your environment can reach `https://registry.npmjs.org`,
+   `https://cdn.playwright.dev`, and `http://archive.ubuntu.com`. The setup
+   script downloads packages, browsers, and system libraries from these domains,
+   so network restrictions may cause it to fail.
 
 3. Verify your environment and test pipeline:
 
@@ -356,6 +359,14 @@ To run Jest directly from the repository root, use:
 npm run jest -- --runInBand --silent
 ```
 
+If you encounter environment issues running backend tests, use the helper script
+below. It sets Node 20, validates the environment and saves output to
+`/tmp/test.log`:
+
+```bash
+./scripts/test-backend.sh
+```
+
 This script automatically runs Jest in `backend/`, so passing `--prefix` is unnecessary.
 
 ### Pre-commit Hook
@@ -490,3 +501,15 @@ This fetches the missing libraries via `apt` so the browsers can start correctly
 ⚠️ **Note:** this project uses OpenAI Codex to generate PRs;
 binary files (images, compiled objects, etc.) will cause errors.
 Please remove or exclude any binary assets before opening a PR.
+
+## Performance
+
+### Performance Testing
+
+We include a simple load-test script:
+
+```bash
+npm run perf-events
+
+This will fire 1,000 requests at /v2/events with 50 concurrent connections; adjust parameters in scripts/perf-events.js.
+```

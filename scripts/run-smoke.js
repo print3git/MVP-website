@@ -1,6 +1,29 @@
 #!/usr/bin/env node
 const { execSync } = require("child_process");
+const fs = require("fs");
+const path = require("path");
+
 const env = { ...process.env };
+
+function loadEnvFile(file) {
+  if (!fs.existsSync(file)) return;
+  const content = fs.readFileSync(file, "utf8");
+  for (const line of content.split(/\r?\n/)) {
+    const m = line.match(/^\s*([A-Za-z0-9_]+)\s*=\s*(.*)\s*$/);
+    if (m) {
+      const [, key, val] = m;
+      if (!env[key]) {
+        env[key] = val.replace(/^['"]|['"]$/g, "");
+      }
+    }
+  }
+}
+
+if (fs.existsSync(path.join(process.cwd(), ".env"))) {
+  loadEnvFile(path.join(process.cwd(), ".env"));
+} else if (fs.existsSync(path.join(process.cwd(), ".env.example"))) {
+  loadEnvFile(path.join(process.cwd(), ".env.example"));
+}
 
 function ensureDefault(key, value) {
   if (!env[key]) {

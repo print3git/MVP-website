@@ -26,13 +26,15 @@ describe("smoke script", () => {
     expect(setupIdx).toBeGreaterThan(validateIdx);
   });
 
-  test("run-smoke.js sets fallback env vars", () => {
+  test("run-smoke.js loads env file values", () => {
     jest.isolateModules(() => {
       const { env } = require("../scripts/run-smoke.js");
-      expect(env.AWS_ACCESS_KEY_ID).toBe("dummy");
-      expect(env.AWS_SECRET_ACCESS_KEY).toBe("dummy");
-      expect(env.DB_URL).toBe("postgres://user:pass@localhost/db");
-      expect(env.STRIPE_SECRET_KEY).toBe("sk_test_dummy");
+      expect(env.AWS_ACCESS_KEY_ID).toBe("your-aws-access-key-id");
+      expect(env.AWS_SECRET_ACCESS_KEY).toBe("your-aws-secret-access-key");
+      expect(env.DB_URL).toBe(
+        "postgres://user:password@localhost:5432/your_database",
+      );
+      expect(env.STRIPE_SECRET_KEY).toBe("sk_test_...");
     });
   });
 });

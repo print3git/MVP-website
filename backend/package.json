@@ -11,8 +11,8 @@
     "migrate": "node scripts/run-migrations.js",
     "seed": "node scripts/seed-db.js",
     "create-admin": "node scripts/create-admin.js",
-    "preformat": "node ../scripts/assert-setup.js",
-    "format": "node -e \"const path=require('path');process.chdir('..');require(path.join(process.cwd(),'scripts/assert-setup.js'))\" && prettier --write \"**/*.{js,jsx,json,md}\"",
+    "preformat": "node ../scripts/ensure-root-deps.js",
+    "format": "node -e \"const path=require('path');process.chdir('..');require(path.join(process.cwd(),'scripts/ensure-root-deps.js'))\" && prettier --write \"**/*.{js,jsx,json,md}\"",
     "send-reminders": "node scripts/send-purchase-reminders.js",
     "send-abandoned-offers": "node scripts/send-abandoned-offers.js",
     "send-followups": "node scripts/send-post-purchase-followups.js",
@@ -34,7 +34,8 @@
     "notify-clearing": "node scripts/notify-manual-clearing.js",
     "send-ops-report": "node scripts/send-ops-report.js",
     "flag-overdue-printers": "node scripts/flag-overdue-procurement-orders.js",
-    "pretest": "node scripts/ensure-deps.js"
+    "pretest": "node scripts/ensure-deps.js",
+    "format:check": "prettier --check \"**/*.{js,jsx,json,md}\""
   },
   "keywords": [],
   "author": "",
@@ -97,6 +98,6 @@
     "babel-jest": "^30.0.4"
   },
   "engines": {
-    "node": ">=20"
+    "node": "20.x"
   }
 }
