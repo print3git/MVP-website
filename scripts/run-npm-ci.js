@@ -7,7 +7,8 @@ function cleanupNpmCache() {
   try {
     execSync("npm cache clean --force", { stdio: "ignore" });
   } catch {
-    // ignore failures cleaning npm cache
+
+    /* ignore cleanup errors */
   }
   try {
     const cache = execSync("npm config get cache").toString().trim();
@@ -17,7 +18,7 @@ function cleanupNpmCache() {
       force: true,
     });
   } catch {
-    // ignore cache lookup failures
+    /* ignore cache removal errors */
   }
   try {
     fs.rmSync(path.join(os.homedir(), ".npm", "_cacache"), {
@@ -25,7 +26,7 @@ function cleanupNpmCache() {
       force: true,
     });
   } catch {
-    // ignore home cache removal failures
+    /* ignore cache cleanup errors */
   }
 }
 
