@@ -32,3 +32,4 @@ infra/.terraform/
 infra/*.tfstate*
 infra/AWSCLIV2.pkg
 infra/awscliv2.zip
+test-results/
