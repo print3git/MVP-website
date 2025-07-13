@@ -22,6 +22,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const db = require("./db");
 const modelsRouter = require("./routes/models");
+const healthzRouter = require("./routes/healthz");
 const axios = require("axios");
 const fs = require("fs");
 const {
@@ -187,6 +188,7 @@ app.get("/api-docs", (req, res) => {
   res.type("yaml").send(YAML.stringify(swaggerSpec));
 });
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use(healthzRouter);
 app.use("/api/models", modelsRouter);
 const staticOptions = {
   setHeaders(res, filePath) {
@@ -462,7 +464,7 @@ app.post(
 
       let generatedUrl;
       try {
-        const url = await generateModelPipeline({
+        generatedUrl = await generateModelPipeline({
           prompt: req.body.prompt,
           image: req.file ? req.file.path : undefined,
         });
