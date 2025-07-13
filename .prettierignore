@@ -22,3 +22,4 @@ coverage/**
 # (optional) you can list more generated folders here, e.g. build, dist
 # ----------------------------------------------------------
 package-lock.json
+js/model-viewer.min.js
