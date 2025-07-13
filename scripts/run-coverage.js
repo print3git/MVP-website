@@ -52,6 +52,17 @@ if (start === -1) {
 output = output.slice(start);
 fs.writeFileSync(lcovPath, output);
 console.log(`LCOV written to ${lcovPath}`);
+const summaryPath = path.join(
+  __dirname,
+  "..",
+  "backend",
+  "coverage",
+  "coverage-summary.json",
+);
+if (!fs.existsSync(summaryPath)) {
+  console.error(`Missing coverage summary: ${summaryPath}`);
+  process.exit(1);
+}
 if (result.status) {
   console.error(`Jest exited with code ${result.status}`);
   process.exit(result.status);
