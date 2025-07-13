@@ -83,4 +83,8 @@ describe("environment", () => {
   test("express installed", () => {
     expect(() => require("express")).not.toThrow();
   });
+
+  test("@playwright/test installed", () => {
+    expect(() => require("@playwright/test")).not.toThrow();
+  });
 });
