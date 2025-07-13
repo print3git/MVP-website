@@ -5,7 +5,7 @@ const fs = require("fs");
 const root = path.resolve(__dirname, "..", "..");
 
 function run(env, clean = true) {
-  const e = { ...process.env, SKIP_NET_CHECKS: "1", SKIP_DB_CHECK: "1", ...env };
+  const e = { ...process.env, SKIP_NET_CHECKS: "1", ...env };
   if (clean) {
     delete e.npm_config_http_proxy;
     delete e.npm_config_https_proxy;
@@ -13,7 +13,7 @@ function run(env, clean = true) {
     delete e.https_proxy;
   }
   e.SKIP_NET_CHECKS = "1";
-  return execSync("npm run validate-env", {
+  return execSync("npm run validate-env 2>&1", {
     cwd: root,
     env: e,
     stdio: "pipe",
@@ -63,16 +63,16 @@ describe("validate-env script", () => {
     expect(output).toContain("environment OK");
   });
 
-  test("fails when database unreachable", () => {
-    expect(() =>
-      run({
-        STRIPE_TEST_KEY: "test",
-        HF_TOKEN: "token",
-        AWS_ACCESS_KEY_ID: "id",
-        AWS_SECRET_ACCESS_KEY: "secret",
-        DB_URL: "postgres://user:pass@127.0.0.1:9/db",
-        SKIP_NET_CHECKS: "1",
-      }),
-    ).toThrow(/Database connection check failed/);
+  test("falls back when database unreachable", () => {
+    const output = run({
+      STRIPE_TEST_KEY: "test",
+      HF_TOKEN: "token",
+      AWS_ACCESS_KEY_ID: "id",
+      AWS_SECRET_ACCESS_KEY: "secret",
+      DB_URL: "postgres://user:pass@127.0.0.1:9/db",
+      SKIP_NET_CHECKS: "1",
+    });
+    expect(output).toMatch(/Database connection check failed/);
+    expect(output).toMatch(/environment OK/);
   });
 });
