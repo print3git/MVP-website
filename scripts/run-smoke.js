@@ -67,7 +67,7 @@ function main() {
       ? `-t ${process.env.WAIT_ON_TIMEOUT} `
       : "";
     run(
-      `npx -y concurrently -k -s first "npm run serve" "wait-on ${waitArgs}http://localhost:3000 && npx playwright test e2e/smoke.test.js"`,
+      `npx -y concurrently -k -s first "npm run serve" "npx -y wait-on ${waitArgs}http://localhost:3000 && npx playwright test e2e/smoke.test.js"`,
     );
   } catch (err) {
     dumpDiagnostics(err);
