@@ -51,7 +51,8 @@
     "diagnose": "bash scripts/diagnose.sh",
     "test:generate": "node scripts/test-generate.js",
     "test:webhook": "node scripts/test-webhook.js",
-    "commitlint": "commitlint --from=HEAD~1"
+    "commitlint": "commitlint --from=HEAD~1",
+    "lint:md": "markdownlint-cli2 \"**/*.md\""
   },
   "keywords": [],
   "author": "",
@@ -99,7 +100,8 @@
     "tslib": "^2.8.1",
     "typescript": "^5.8.3",
     "wait-on": "^8.0.3",
-    "yaml": "^2.8.0"
+    "yaml": "^2.8.0",
+    "markdownlint-cli2": "^0.10.0"
   },
   "lint-staged": {
     "*.{js,ts,json}": "prettier --write",
