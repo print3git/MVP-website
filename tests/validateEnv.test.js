@@ -145,7 +145,7 @@ describe("validate-env script", () => {
     const fakeCurl = path.join(tmp, "curl");
     fs.writeFileSync(
       fakeCurl,
-      '#!/usr/bin/env bash\nif echo "$@" | grep -q cdn.playwright.dev; then echo "curl: (6) Could not resolve host" >&2; exit 6; fi\nexec /usr/bin/curl "$@"',
+      '#!/usr/bin/env bash\nif echo "$@" | grep -q cdn.playwright.dev; then echo "curl: (6) Could not resolve host" >&2; exit 6; fi\nexit 0',
     );
     fs.chmodSync(fakeCurl, 0o755);
     const env = {

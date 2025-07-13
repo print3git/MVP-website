@@ -73,6 +73,7 @@ describe("validate-env script", () => {
       SKIP_NET_CHECKS: "1",
     });
     expect(output).toMatch(/Database connection check failed/);
+    expect(output).toMatch(/Falling back to SKIP_DB_CHECK=1/);
     expect(output).toMatch(/environment OK/);
   });
 });
