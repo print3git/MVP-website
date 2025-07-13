@@ -399,6 +399,25 @@ By piping the generated `lcov.info` file instead of test output we avoid
 Running coverage without installing dependencies or omitting `npx` may lead to
 `coveralls: command not found` or `jest: not found` errors.
 
+#### Troubleshooting
+
+If Coveralls fails with an `lcovParse` error, the `lcov.info` report may contain
+ANSI color codes. Strip them before uploading:
+
+```bash
+npx strip-ansi backend/coverage/lcov.info > cleaned.info
+cat cleaned.info | npx coveralls
+```
+
+Verify the file includes `SF:` entries to confirm it's valid:
+
+```bash
+grep '^SF:' backend/coverage/lcov.info | head
+```
+
+Missing `SF:` lines usually mean the report was truncated. Re-run `npm run coverage`
+to regenerate the file.
+
 ## Printer Service
 
 The print worker posts completed jobs to an external printer API. See
