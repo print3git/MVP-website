@@ -35,6 +35,7 @@ ensureDefault("AWS_ACCESS_KEY_ID", "dummy");
 ensureDefault("AWS_SECRET_ACCESS_KEY", "dummy");
 ensureDefault("DB_URL", "postgres://user:pass@localhost/db");
 ensureDefault("STRIPE_SECRET_KEY", "sk_test_dummy");
+ensureDefault("SKIP_DB_CHECK", "1");
 
 let lastCommand = "";
 
