@@ -25,5 +25,10 @@ describe("/api/generate regression", () => {
       .send({ prompt: "regression" });
     expect(res.status).toBe(200);
     expect(res.body.glb_url).toBe("/models/regression.glb");
+    expect(generateModel).toHaveBeenCalledWith({
+      prompt: "regression",
+      image: undefined,
+    });
+    expect(generateModel).toHaveBeenCalledTimes(1);
   });
 });
