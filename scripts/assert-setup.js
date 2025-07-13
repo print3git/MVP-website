@@ -93,9 +93,12 @@ function rootDepsInstalled() {
 if (!rootDepsInstalled()) {
   console.log("Root dependencies missing. Installing...");
   try {
-    child_process.execSync("npm ci", { stdio: "inherit" });
+    child_process.execSync("npm ci", { stdio: "pipe" });
   } catch (err) {
-    const msg = String(err.message || err);
+    const msg =
+      (err.stderr ? err.stderr.toString() : "") +
+      (err.stdout ? err.stdout.toString() : "") +
+      String(err.message || err);
     if (msg.includes("EUSAGE")) {
       console.warn("npm ci failed, falling back to 'npm install'");
       try {
@@ -104,7 +107,9 @@ if (!rootDepsInstalled()) {
         console.error("Failed to install dependencies:", err2.message);
         process.exit(1);
       }
-    } else if (/(TAR_ENTRY_ERROR|ENOENT|ENOTEMPTY)/.test(msg)) {
+    } else if (
+      /(TAR_ENTRY_ERROR|ENOENT|ENOTEMPTY|tarball .*corrupted)/.test(msg)
+    ) {
       console.warn("npm ci encountered tar errors. Retrying after cleanup...");
       try {
         child_process.execSync(
@@ -117,7 +122,7 @@ if (!rootDepsInstalled()) {
         });
       }
       try {
-        child_process.execSync("npm ci", { stdio: "inherit" });
+        child_process.execSync("npm ci", { stdio: "pipe" });
       } catch (err2) {
         console.error("Failed to reinstall dependencies:", err2.message);
         process.exit(1);
