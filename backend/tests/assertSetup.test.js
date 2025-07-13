@@ -6,7 +6,7 @@ const { spawnSync } = require("child_process");
 const script = path.join(__dirname, "..", "scripts", "assert-setup.js");
 const stub = path.join(__dirname, "stubExecSync.js");
 
-function runAssertSetup(nodeVersion) {
+function runAssertSetup(nodeVersion, extraEnv = {}) {
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "pw-"));
   const browserDir = path.join(tmpDir, "chromium");
   fs.mkdirSync(browserDir, { recursive: true });
@@ -14,6 +14,7 @@ function runAssertSetup(nodeVersion) {
     ...process.env,
     NODE_OPTIONS: `--require ${stub}`,
     PLAYWRIGHT_BROWSERS_PATH: tmpDir,
+    ...extraEnv,
   };
   const flag = path.join(__dirname, "..", ".setup-complete");
   fs.writeFileSync(flag, "");
@@ -23,7 +24,7 @@ function runAssertSetup(nodeVersion) {
     encoding: "utf8",
   });
   fs.unlinkSync(flag);
-  return result;
+  return { result, tmpDir };
 }
 
 describe("assert-setup script", () => {
@@ -34,7 +35,16 @@ describe("assert-setup script", () => {
   });
 
   test("succeeds on Node >=20", () => {
-    const res = runAssertSetup("20.0.0");
-    expect(res.status).toBe(0);
+    const { result } = runAssertSetup("20.0.0");
+    expect(result.status).toBe(0);
+  });
+
+  test("passes SKIP_DB_CHECK to validate-env", () => {
+    const logFile = path.join(os.tmpdir(), `log-${Date.now()}`);
+    const { result } = runAssertSetup("20.0.0", { EXEC_LOG_FILE: logFile });
+    expect(result.status).toBe(0);
+    const logs = fs.readFileSync(logFile, "utf8");
+    expect(logs).toMatch(/SKIP_DB_CHECK=1/);
+    fs.unlinkSync(logFile);
   });
 });

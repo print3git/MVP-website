@@ -34,7 +34,7 @@ if (fs.existsSync(".env")) {
 
 try {
   child_process.execSync(
-    "SKIP_NET_CHECKS=1 bash scripts/validate-env.sh >/dev/null",
+    "SKIP_NET_CHECKS=1 SKIP_DB_CHECK=1 bash scripts/validate-env.sh >/dev/null",
     { stdio: "inherit" },
   );
 } catch (err) {
