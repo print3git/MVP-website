@@ -1,5 +1,9 @@
 # MVP Website
 
+[![CI](https://github.com/OWNER/REPO/actions/workflows/ci.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/mvp-website.svg)](https://www.npmjs.com/package/mvp-website)
+[![Coverage Status](https://coveralls.io/repos/github/OWNER/REPO/badge.svg?branch=main)](https://coveralls.io/github/OWNER/REPO?branch=main)
+
 ## 🤖 Codex Integration
 
 Before you run any Codex-driven prompts, always sync your code and Hugging Face Space:
