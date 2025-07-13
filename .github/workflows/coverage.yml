@@ -12,6 +12,8 @@ jobs:
           node-version: "20"
       - run: SKIP_PW_DEPS=1 npm run setup
       - run: npm run coverage
+      - name: Check coverage thresholds
+        run: node scripts/check-coverage.js
       - name: Validate LCOV report
         run: |
           if grep -qE '^TN:|^SF:' backend/coverage/lcov.info; then
