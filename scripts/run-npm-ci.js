@@ -7,19 +7,19 @@ function cleanupNpmCache() {
   try {
     execSync('npm cache clean --force', { stdio: 'ignore' });
   } catch {
-    /* empty */
+    /* ignore */
   }
   try {
     const cache = execSync('npm config get cache').toString().trim();
     fs.rmSync(path.join(cache, '_cacache'), { recursive: true, force: true });
     fs.rmSync(path.join(cache, '_cacache', 'tmp'), { recursive: true, force: true });
   } catch {
-    /* empty */
+    /* ignore */
   }
   try {
     fs.rmSync(path.join(os.homedir(), '.npm', '_cacache'), { recursive: true, force: true });
   } catch {
-    /* empty */
+    /* ignore */
   }
 }
 
