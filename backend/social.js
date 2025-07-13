@@ -1,3 +1,5 @@
+const logger = require("../src/logger");
+
 async function verifyTag(url, tag = "#print2") {
   try {
     const res = await fetch(url);
@@ -5,7 +7,7 @@ async function verifyTag(url, tag = "#print2") {
     const text = await res.text();
     return text.includes(tag);
   } catch (err) {
-    console.error("Failed to verify tag", err);
+    logger.error("Failed to verify tag", err);
     return false;
   }
 }

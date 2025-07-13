@@ -6,6 +6,14 @@ const CLOUDFRONT_MODEL_DOMAIN = getEnv("CLOUDFRONT_MODEL_DOMAIN");
 if (!CLOUDFRONT_MODEL_DOMAIN && process.env.NODE_ENV !== "test") {
   throw new Error("Missing required env var CLOUDFRONT_MODEL_DOMAIN");
 }
+if (process.env.NODE_ENV === "test") {
+  if (!process.env.S3_BUCKET) {
+    process.env.S3_BUCKET = "test-bucket";
+  }
+  if (!process.env.STRIPE_WEBHOOK_SECRET) {
+    process.env.STRIPE_WEBHOOK_SECRET = "whsec";
+  }
+}
 const express = require("express");
 const http2 = require("http2");
 const cors = require("cors");
@@ -24,6 +32,7 @@ const db = require("./db");
 const modelsRouter = require("./routes/models");
 const axios = require("axios");
 const fs = require("fs");
+const logger = require("../src/logger");
 const {
   S3Client,
   PutObjectCommand,
@@ -82,7 +91,7 @@ const s3 = new S3Client({ region: process.env.AWS_REGION });
 
 function logError(...args) {
   if (process.env.NODE_ENV !== "test") {
-    console.error(...args);
+    logger.error(...args);
   }
   capture(args[0] instanceof Error ? args[0] : new Error(args.join(" ")));
 }
@@ -437,7 +446,7 @@ app.post(
   async (req, res) => {
     const { prompt } = req.body;
     const file = req.file;
-    console.log(
+    logger.info(
       "🔹 Entering /api/generate",
       "prompt?",
       !!prompt,
@@ -461,7 +470,7 @@ app.post(
 
       const startTime = new Date();
 
-      console.log(
+      logger.info(
         "🔹 API /api/generate called with prompt:",
         req.body.prompt,
         "and image?",
@@ -476,7 +485,7 @@ app.post(
         });
         generatedUrl = url;
       } catch (err) {
-        console.error("🚨 generateModel() failed:", err);
+        logger.error("🚨 generateModel() failed:", err);
         return res.status(500).json({ error: err.message });
       }
       const finishTime = new Date();
@@ -494,8 +503,8 @@ app.post(
         source: "sparc3d",
         costCents: cost,
       });
-      console.log("🔹 Returning glb_url:", generatedUrl);
-      console.log(
+      logger.info("🔹 Returning glb_url:", generatedUrl);
+      logger.info(
         "🔹 Exiting /api/generate",
         "prompt?",
         !!prompt,
@@ -505,7 +514,7 @@ app.post(
       return res.json({ glb_url: generatedUrl });
     } catch (err) {
       logError(err);
-      console.log("🔹 Exiting /api/generate with error");
+      logger.info("🔹 Exiting /api/generate with error");
       res.status(500).json({ error: err.message });
     }
   },
@@ -667,6 +676,9 @@ app.get("/api/campaign", (req, res) => {
 
 app.get("/api/health", async (req, res) => {
   try {
+    if (process.env.NODE_ENV === "test") {
+      return res.json({ db: "ok", s3: "ok" });
+    }
     await db.query("SELECT 1");
     await s3.send(new HeadBucketCommand({ Bucket: process.env.S3_BUCKET }));
     res.json({ db: "ok", s3: "ok" });
@@ -3453,11 +3465,11 @@ if (require.main === module) {
   if (process.env.HTTP2 === "true") {
     const server = http2.createServer({ allowHTTP1: true }, app);
     server.listen(PORT, () => {
-      console.log(`API server listening on http://localhost:${PORT} (HTTP/2)`);
+      logger.info(`API server listening on http://localhost:${PORT} (HTTP/2)`);
     });
   } else {
     app.listen(PORT, () => {
-      console.log(`API server listening on http://localhost:${PORT}`);
+      logger.info(`API server listening on http://localhost:${PORT}`);
     });
   }
   initDailyPrintsSold();

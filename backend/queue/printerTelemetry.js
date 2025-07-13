@@ -1,6 +1,7 @@
 require("dotenv").config();
 const { Client } = require("pg");
 const { getPrinterInfo } = require("../printers/octoprint");
+const logger = require("../../src/logger");
 
 const OCTOPRINT_API_KEY = process.env.OCTOPRINT_API_KEY || "";
 const POLL_INTERVAL_MS = parseInt(
@@ -76,7 +77,7 @@ async function run(interval = POLL_INTERVAL_MS) {
   await client.connect();
   setInterval(() => {
     pollPrinters(client).catch((err) =>
-      console.error("Telemetry worker error", err),
+      logger.error("Telemetry worker error", err),
     );
   }, interval);
 }
