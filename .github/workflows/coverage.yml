@@ -11,5 +11,6 @@ jobs:
         with:
           node-version: "20"
       - run: SKIP_PW_DEPS=1 npm run setup
-      - run: SKIP_NET_CHECKS=1 SKIP_DB_CHECK=1 npm run coverage
-      - run: npx coveralls < coverage/lcov.info
+      - run: |
+          npm run coverage
+          cat backend/coverage/lcov.info | npx coveralls
