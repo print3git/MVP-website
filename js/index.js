@@ -128,36 +128,45 @@ function ensureModelViewerLoaded() {
   ) {
     return Promise.resolve();
   }
+
   const cdnUrl =
     "https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js";
   const localUrl = "js/model-viewer.min.js";
+
+  function loadScript(src, done) {
+    const s = document.createElement("script");
+    s.type = "module";
+    s.src = src;
+    s.onload = done;
+    s.onerror = done;
+    document.head.appendChild(s);
+  }
+
   return new Promise((resolve, reject) => {
-    const script = document.createElement("script");
-    script.type = "module";
-    script.src = cdnUrl;
-    const done = () => {
+    const finalize = () => {
       if (window.customElements?.get("model-viewer")) {
         resolve();
       } else {
         reject(new Error("model-viewer failed to load"));
       }
     };
-    script.onload = done;
-    script.onerror = () => {
-      script.remove();
-      const fallback = document.createElement("script");
-      fallback.type = "module";
-      fallback.src = localUrl;
-      fallback.onload = done;
-      fallback.onerror = done;
-      document.head.appendChild(fallback);
-    };
-    document.head.appendChild(script);
-    setTimeout(() => {
-      if (!window.customElements?.get("model-viewer")) {
-        script.onerror();
-      }
-    }, 3000);
+
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 3000);
+
+    fetch(cdnUrl, {
+      method: "HEAD",
+      mode: "no-cors",
+      signal: controller.signal,
+    })
+      .then(() => {
+        clearTimeout(timer);
+        loadScript(cdnUrl, finalize);
+      })
+      .catch(() => {
+        clearTimeout(timer);
+        loadScript(localUrl, finalize);
+      });
   });
 }
 
