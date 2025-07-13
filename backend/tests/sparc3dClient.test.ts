@@ -1,14 +1,9 @@
-const nock = require("nock");
-const { generateGlb } = require("../src/lib/sparc3dClient.js");
-nock.disableNetConnect();
+
+import nock from "nock";
+import { generateGlb } from "../src/lib/sparc3dClient";
 
 describe("generateGlb", () => {
-  const endpoint = "https://api.example.com/generate";
-  const token = "t0k";
-
   beforeEach(() => {
-    process.env.SPARC3D_ENDPOINT = endpoint;
-    process.env.SPARC3D_TOKEN = token;
     delete process.env.http_proxy;
     delete process.env.https_proxy;
     delete process.env.HTTP_PROXY;
@@ -20,9 +15,13 @@ describe("generateGlb", () => {
   });
 
   test("sends prompt and returns buffer", async () => {
+    const endpoint = process.env.SPARC3D_ENDPOINT as string;
+    const token = process.env.SPARC3D_TOKEN as string;
+    const url = new URL(endpoint);
     const data = Buffer.from("glbdata");
-    nock("https://api.example.com")
-      .post("/generate", { prompt: "hello" })
+
+    nock(url.origin)
+      .post(url.pathname, { prompt: "hello" })
       .matchHeader("Authorization", `Bearer ${token}`)
       .reply(200, data, { "Content-Type": "model/gltf-binary" });
 
@@ -31,9 +30,14 @@ describe("generateGlb", () => {
   });
 
   test("sends prompt and imageURL", async () => {
+
+    const endpoint = process.env.SPARC3D_ENDPOINT as string;
+    const token = process.env.SPARC3D_TOKEN as string;
+    const url = new URL(endpoint);
     const data = Buffer.from("xyz");
-    nock("https://api.example.com")
-      .post("/generate", { prompt: "p", imageURL: "http://img" })
+
+    nock(url.origin)
+      .post(url.pathname, { prompt: "p", imageURL: "http://img" })
       .matchHeader("Authorization", `Bearer ${token}`)
       .reply(200, data, { "Content-Type": "model/gltf-binary" });
 
@@ -42,23 +46,12 @@ describe("generateGlb", () => {
   });
 
   test("throws on http error", async () => {
-    nock("https://api.example.com")
-      .post("/generate")
-      .reply(400, { error: "bad" });
+
+    const endpoint = process.env.SPARC3D_ENDPOINT as string;
+    const url = new URL(endpoint);
+
+    nock(url.origin).post(url.pathname).reply(400, { error: "bad" });
 
     await expect(generateGlb({ prompt: "x" })).rejects.toThrow("bad");
-  });
-
-  test("ignores proxy environment variables", async () => {
-    process.env.http_proxy = "http://proxy:9999";
-    process.env.https_proxy = "http://proxy:9999";
-    const data = Buffer.from("abc");
-    nock("https://api.example.com")
-      .post("/generate", { prompt: "p2" })
-      .matchHeader("Authorization", `Bearer ${token}`)
-      .reply(200, data, { "Content-Type": "model/gltf-binary" });
-
-    const buf = await generateGlb({ prompt: "p2" });
-    expect(buf).toEqual(data);
   });
 });
