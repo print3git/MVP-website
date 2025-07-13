@@ -57,8 +57,16 @@ function runSetup() {
   try {
     execSync("npm run setup", { stdio: "inherit", cwd: repoRoot, env });
   } catch (err) {
-    console.error("Failed to run setup:", err.message);
-    process.exit(1);
+    if (env.SKIP_PW_DEPS) {
+      console.warn(
+        "Setup failed with SKIP_PW_DEPS, retrying without it to install browsers",
+      );
+      delete env.SKIP_PW_DEPS;
+      execSync("npm run setup", { stdio: "inherit", cwd: repoRoot, env });
+    } else {
+      console.error("Failed to run setup:", err.message);
+      process.exit(1);
+    }
   }
 }
 
