@@ -63,9 +63,19 @@ fi
 
 
 if [[ -z "${SKIP_NET_CHECKS:-}" ]]; then
-  if ! node scripts/network-check.js >/dev/null 2>&1; then
-    echo "Network check failed. Ensure access to the npm registry and Playwright CDN." >&2
-    exit 1
+  network_output=$(node scripts/network-check.js 2>&1) || net_status=$?
+  if [[ -n "$net_status" ]]; then
+    echo "$network_output" >&2
+    if echo "$network_output" | grep -q "Set SKIP_PW_DEPS=1"; then
+      echo "Network check failed for Playwright CDN, setting SKIP_PW_DEPS=1." >&2
+      export SKIP_PW_DEPS=1
+    elif echo "$network_output" | grep -q "Playwright CDN"; then
+      echo "Network check failed for Playwright CDN, setting SKIP_PW_DEPS=1." >&2
+      export SKIP_PW_DEPS=1
+    else
+      echo "Network check failed. Ensure access to the npm registry and Playwright CDN." >&2
+      exit 1
+    fi
   fi
 fi
 
