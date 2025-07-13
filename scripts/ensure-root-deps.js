@@ -12,6 +12,7 @@ const pluginPath = path.join(
 );
 
 const networkCheck = path.join(__dirname, "network-check.js");
+const buildToolsCheck = path.join(__dirname, "check-build-tools.js");
 
 function runNetworkCheck() {
   try {
@@ -21,6 +22,18 @@ function runNetworkCheck() {
       "Network check failed. Ensure access to the npm registry and Playwright CDN.",
     );
     process.exit(1);
+  }
+}
+
+function ensureBuildTools() {
+  try {
+    execSync(`node ${buildToolsCheck}`, { stdio: "inherit" });
+  } catch {
+    console.log("Installing build tools...");
+    execSync("sudo apt-get update", { stdio: "inherit" });
+    execSync("sudo apt-get install -y build-essential python3", {
+      stdio: "inherit",
+    });
   }
 }
 
@@ -40,6 +53,7 @@ if (!fs.existsSync(pluginPath)) {
   runNetworkCheck();
   if (!canReachRegistry()) process.exit(1);
   console.log("Dependencies missing. Installing root dependencies...");
+  ensureBuildTools();
   try {
     execSync("npm ping", { stdio: "ignore" });
   } catch {

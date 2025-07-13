@@ -83,6 +83,12 @@ if [ -z "$SKIP_PW_DEPS" ]; then
   fi
 fi
 
+# Install build tools if missing
+if ! node scripts/check-build-tools.js >/dev/null 2>&1; then
+  echo "Installing required build tools..."
+  sudo apt-get install -y build-essential python3
+fi
+
 run_ci() {
   local dir="$1"
   local extra=""

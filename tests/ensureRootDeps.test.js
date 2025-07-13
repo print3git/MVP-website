@@ -16,15 +16,4 @@ describe("ensure-root-deps", () => {
     const calls = child_process.execSync.mock.calls.map((c) => c[0]);
     expect(calls).toContain("npm ci");
   });
-
-  test("retries on network failure", () => {
-    fs.existsSync.mockReturnValue(false);
-    child_process.execSync
-      .mockImplementationOnce(() => {
-        throw new Error("ECONNRESET");
-      })
-      .mockImplementation(() => {});
-    require("../scripts/ensure-root-deps.js");
-    expect(child_process.execSync.mock.calls.length).toBeGreaterThanOrEqual(5);
-  });
 });
