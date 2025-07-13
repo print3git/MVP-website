@@ -17,8 +17,23 @@ const pluginPath = path.join(
   "plugin-syntax-typescript",
   "package.json",
 );
+const expressPath = path.join(
+  __dirname,
+  "..",
+  "node_modules",
+  "express",
+  "package.json",
+);
+const playwrightPath = path.join(
+  __dirname,
+  "..",
+  "node_modules",
+  "playwright",
+  "package.json",
+);
 
 const networkCheck = path.join(__dirname, "network-check.js");
+const requiredPaths = [pluginPath, expressPath, playwrightPath];
 
 function runNetworkCheck() {
   try {
@@ -43,7 +58,7 @@ function canReachRegistry() {
   }
 }
 
-if (!fs.existsSync(pluginPath)) {
+if (!requiredPaths.every((p) => fs.existsSync(p))) {
   runNetworkCheck();
   if (!canReachRegistry()) process.exit(1);
   console.log("Dependencies missing. Installing root dependencies...");
