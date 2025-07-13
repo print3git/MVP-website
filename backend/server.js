@@ -14,6 +14,8 @@ const multer = require("multer");
 const path = require("path");
 const morgan = require("morgan");
 const compression = require("compression");
+const httpContext = require("express-http-context");
+const requestId = require("./middleware/requestId");
 const swaggerJsdoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 const YAML = require("yaml");
@@ -73,7 +75,7 @@ const {
 const validateStl = require("./utils/validateStl");
 const syncMailingList = require("./scripts/sync-mailing-list");
 const runScalingEngine = require("./scalingEngine");
-const { capture } = require("./src/lib/logger");
+const { capture, log } = require("./src/lib/logger");
 
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || "admin";
 
@@ -81,8 +83,9 @@ const AUTH_SECRET = process.env.AUTH_SECRET || "secret";
 const s3 = new S3Client({ region: process.env.AWS_REGION });
 
 function logError(...args) {
+  const id = httpContext.get("requestId");
   if (process.env.NODE_ENV !== "test") {
-    console.error(...args);
+    console.error(id ? `[${id}]` : "", ...args);
   }
   capture(args[0] instanceof Error ? args[0] : new Error(args.join(" ")));
 }
@@ -162,6 +165,8 @@ function saveGeneratedAds() {
 }
 
 const app = express();
+app.use(httpContext.middleware);
+app.use(requestId);
 app.use(morgan("dev"));
 app.use(compression());
 app.use(cors());
@@ -429,13 +434,7 @@ app.post(
   async (req, res) => {
     const { prompt } = req.body;
     const file = req.file;
-    console.log(
-      "🔹 Entering /api/generate",
-      "prompt?",
-      !!prompt,
-      "image?",
-      !!file,
-    );
+    log("🔹 Entering /api/generate", "prompt?", !!prompt, "image?", !!file);
     if (!prompt && !file) {
       return res.status(400).json({ error: "Prompt or image is required" });
     }
@@ -453,7 +452,7 @@ app.post(
 
       const startTime = new Date();
 
-      console.log(
+      log(
         "🔹 API /api/generate called with prompt:",
         req.body.prompt,
         "and image?",
@@ -462,12 +461,12 @@ app.post(
 
       let generatedUrl;
       try {
-        const url = await generateModelPipeline({
+        generatedUrl = await generateModelPipeline({
           prompt: req.body.prompt,
           image: req.file ? req.file.path : undefined,
         });
       } catch (err) {
-        console.error("🚨 generateModel() failed:", err);
+        logError("🚨 generateModel() failed:", err);
         return res.status(500).json({ error: err.message });
       }
       const finishTime = new Date();
@@ -485,18 +484,12 @@ app.post(
         source: "sparc3d",
         costCents: cost,
       });
-      console.log("🔹 Returning glb_url:", generatedUrl);
-      console.log(
-        "🔹 Exiting /api/generate",
-        "prompt?",
-        !!prompt,
-        "image?",
-        !!file,
-      );
+      log("🔹 Returning glb_url:", generatedUrl);
+      log("🔹 Exiting /api/generate", "prompt?", !!prompt, "image?", !!file);
       return res.json({ glb_url: generatedUrl });
     } catch (err) {
       logError(err);
-      console.log("🔹 Exiting /api/generate with error");
+      log("🔹 Exiting /api/generate with error");
       res.status(500).json({ error: err.message });
     }
   },
@@ -3444,11 +3437,11 @@ if (require.main === module) {
   if (process.env.HTTP2 === "true") {
     const server = http2.createServer({ allowHTTP1: true }, app);
     server.listen(PORT, () => {
-      console.log(`API server listening on http://localhost:${PORT} (HTTP/2)`);
+      log(`API server listening on http://localhost:${PORT} (HTTP/2)`);
     });
   } else {
     app.listen(PORT, () => {
-      console.log(`API server listening on http://localhost:${PORT}`);
+      log(`API server listening on http://localhost:${PORT}`);
     });
   }
   initDailyPrintsSold();
