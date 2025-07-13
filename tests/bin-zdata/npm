@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+if [[ "$1" == "ci" && -z "$ZDATA_ERROR_DONE" ]]; then
+  echo "npm ERR! code Z_BUF_ERROR" >&2
+  echo "npm ERR! errno Z_BUF_ERROR" >&2
+  echo "npm ERR! invalid tar file" >&2
+  export ZDATA_ERROR_DONE=1
+  exit 1
+fi
+exec "$REAL_NPM" "$@"
