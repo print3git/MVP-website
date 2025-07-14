@@ -3,6 +3,7 @@ const path = require("path");
 const { spawnSync } = require("child_process");
 
 const repoRoot = path.join(__dirname, "..", "..");
+const script = path.join(repoRoot, "scripts", "run-coverage.js");
 
 const env = {
   ...process.env,

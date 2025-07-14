@@ -11,6 +11,7 @@ const summary = path.join(
 );
 const backup = summary + ".bak";
 const nycrc = path.join(__dirname, "..", ".nycrc");
+const nycBackup = nycrc + ".bak";
 let originalConfig = fs.existsSync(nycrc)
   ? fs.readFileSync(nycrc, "utf8")
   : undefined;
@@ -43,8 +44,8 @@ describe("check-coverage script", () => {
   });
 
   test("fails when coverage below threshold", () => {
-    const originalConfig = fs.existsSync(".nycrc")
-      ? fs.readFileSync(".nycrc", "utf8")
+    const origConfig = fs.existsSync(nycrc)
+      ? fs.readFileSync(nycrc, "utf8")
       : "";
     const data = {
       total: {
@@ -55,9 +56,6 @@ describe("check-coverage script", () => {
       },
     };
     fs.writeFileSync(summary, JSON.stringify(data));
-    const originalConfig = fs.existsSync(nycrc)
-      ? fs.readFileSync(nycrc, "utf8")
-      : "";
     if (fs.existsSync(nycrc)) fs.renameSync(nycrc, nycBackup);
     fs.writeFileSync(
       nycrc,
@@ -80,10 +78,10 @@ describe("check-coverage script", () => {
       expect(output).toMatch(/does not meet threshold/);
     } finally {
       fs.unlinkSync(summary);
-      if (originalConfig !== undefined) {
-        fs.writeFileSync(".nycrc", originalConfig);
-      } else {
-        fs.unlinkSync(".nycrc");
+      if (origConfig) {
+        fs.writeFileSync(nycrc, origConfig);
+      } else if (fs.existsSync(nycrc)) {
+        fs.unlinkSync(nycrc);
       }
     }
   });
