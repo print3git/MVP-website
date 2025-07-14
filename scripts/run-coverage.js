@@ -55,8 +55,7 @@ output = output.slice(start);
 fs.writeFileSync(lcovPath, output);
 console.log(`LCOV written to ${lcovPath}`);
 const summaryPath = path.join(
-  __dirname,
-  "..",
+  repoRoot,
   "backend",
   "coverage",
   "coverage-summary.json",
@@ -70,13 +69,4 @@ if (result.status) {
   process.exit(result.status);
 }
 
-const summaryPath = path.join(
-  repoRoot,
-  "backend",
-  "coverage",
-  "coverage-summary.json",
-);
-if (!fs.existsSync(summaryPath)) {
-  console.error(`Missing coverage summary: ${summaryPath}`);
-  process.exit(1);
-}
+console.log("Coverage run complete.");
