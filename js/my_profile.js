@@ -52,15 +52,6 @@ async function loadPrintOfWeek() {
   }
 }
 
-function startOfWeek(d = new Date()) {
-  const date = new Date(
-    Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()),
-  );
-  const day = date.getUTCDay();
-  const diff = date.getUTCDate() - day;
-  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), diff));
-}
-
 function showCountdown() {
   const el = document.getElementById("next-free-print");
   if (!el) return;
