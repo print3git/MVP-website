@@ -31,11 +31,7 @@ describe("run-coverage script", () => {
   test("works when invoked from backend directory", () => {
     const result = spawnSync(
       process.execPath,
-      [
-        "../scripts/run-coverage.js",
-        "--runTestsByPath",
-        "backend/tests/coverage/lcovParse.test.ts",
-      ],
+      [script, "--runTestsByPath", "backend/tests/coverage/lcovParse.test.ts"],
       { cwd: path.join(repoRoot, "backend"), env, encoding: "utf8" },
     );
     expect(result.status).toBe(0);
