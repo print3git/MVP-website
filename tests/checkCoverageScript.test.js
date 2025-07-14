@@ -14,7 +14,7 @@ const nycrc = path.join(__dirname, "..", ".nycrc");
 const nycBackup = nycrc + ".bak";
 let originalConfig = fs.existsSync(nycrc)
   ? fs.readFileSync(nycrc, "utf8")
-  : undefined;
+  : "";
 
 describe("check-coverage script", () => {
   beforeAll(() => {
@@ -52,6 +52,7 @@ describe("check-coverage script", () => {
         statements: { pct: 0 },
       },
     };
+    const originalConfig = fs.readFileSync(".nycrc", "utf8");
     fs.writeFileSync(summary, JSON.stringify(data));
     const prevConfig = fs.existsSync(nycrc)
       ? fs.readFileSync(nycrc, "utf8")
@@ -81,13 +82,15 @@ describe("check-coverage script", () => {
       if (prevConfig !== undefined) {
         fs.writeFileSync(".nycrc", prevConfig);
       } else {
-        fs.unlinkSync(".nycrc");
+        fs.unlinkSync(nycrc);
       }
     }
   });
 
   test("passes when coverage meets thresholds", () => {
-    const origConfig = fs.readFileSync(".nycrc", "utf8");
+    const originalConfig = fs.existsSync(nycrc)
+      ? fs.readFileSync(nycrc, "utf8")
+      : "";
     const goodSummary = {
       total: {
         branches: { pct: 90 },
@@ -96,6 +99,7 @@ describe("check-coverage script", () => {
         statements: { pct: 90 },
       },
     };
+    fs.mkdirSync(path.dirname(summary), { recursive: true });
     fs.writeFileSync(summary, JSON.stringify(goodSummary));
     fs.writeFileSync(
       ".nycrc",
