@@ -11,6 +11,7 @@ const summary = path.join(
 );
 const backup = summary + ".bak";
 const nycrc = path.join(__dirname, "..", ".nycrc");
+const nycBackup = nycrc + ".bak";
 let originalConfig = fs.existsSync(nycrc)
   ? fs.readFileSync(nycrc, "utf8")
   : undefined;
@@ -43,9 +44,6 @@ describe("check-coverage script", () => {
   });
 
   test("fails when coverage below threshold", () => {
-    const originalConfig = fs.existsSync(".nycrc")
-      ? fs.readFileSync(".nycrc", "utf8")
-      : "";
     const data = {
       total: {
         branches: { pct: 0 },
