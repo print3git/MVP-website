@@ -12,7 +12,7 @@ describe("diagnose script", () => {
       path.join(__dirname, "..", "scripts", "diagnose.sh"),
       "utf8",
     );
-    expect(content).toMatch(/validate-env\.sh/);
+    expect(content).toMatch(/source scripts\/validate-env\.sh/);
     expect(content).toMatch(/test-full-pipeline\.js/);
     expect(content).toMatch(/DIAGNOSTICS PASSED/);
     expect(content).toMatch(/run-jest\.js/);
