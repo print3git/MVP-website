@@ -14,7 +14,7 @@ test("runs network check before installing", () => {
   require("../scripts/check-host-deps.js");
   expect(child_process.execSync).toHaveBeenNthCalledWith(
     1,
-    "node scripts/network-check.js",
+    expect.stringContaining("network-check.js"),
     { stdio: "ignore" },
   );
   expect(child_process.execSync).toHaveBeenNthCalledWith(
@@ -61,7 +61,7 @@ test("fails when SKIP_PW_DEPS is set and deps are missing", () => {
   expect(exitSpy).toHaveBeenCalledWith(1);
   expect(child_process.execSync).toHaveBeenNthCalledWith(
     1,
-    "node scripts/network-check.js",
+    expect.stringContaining("network-check.js"),
     { stdio: "ignore" },
   );
   expect(child_process.execSync).toHaveBeenNthCalledWith(
@@ -89,7 +89,7 @@ test("fails when SKIP_PW_DEPS is set and warning is printed", () => {
   expect(() => require("../scripts/check-host-deps.js")).toThrow("exit");
   expect(child_process.execSync).toHaveBeenNthCalledWith(
     1,
-    "node scripts/network-check.js",
+    expect.stringContaining("network-check.js"),
     { stdio: "ignore" },
   );
   expect(child_process.execSync).toHaveBeenNthCalledWith(
@@ -110,7 +110,7 @@ test("skips install when deps satisfied even if SKIP_PW_DEPS is set", () => {
   require("../scripts/check-host-deps.js");
   expect(child_process.execSync).toHaveBeenNthCalledWith(
     1,
-    "node scripts/network-check.js",
+    expect.stringContaining("network-check.js"),
     { stdio: "ignore" },
   );
   expect(child_process.execSync).toHaveBeenNthCalledWith(

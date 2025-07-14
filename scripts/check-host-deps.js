@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 const { execSync } = require("child_process");
+const path = require("path");
 
 function checkNetwork() {
   if (process.env.SKIP_NET_CHECKS) {
     return;
   }
   try {
-    execSync("node scripts/network-check.js", { stdio: "ignore" });
+    const networkCheck = path.join(__dirname, "network-check.js");
+    execSync(`node ${networkCheck}`, { stdio: "ignore" });
   } catch {
     console.error(
       "Network check failed. Ensure access to the npm registry and Playwright CDN.",
