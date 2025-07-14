@@ -6,10 +6,16 @@ function checkNetwork() {
     return;
   }
   try {
-    execSync("node scripts/network-check.js", { stdio: "ignore" });
-  } catch {
+    const script = require("path").join(__dirname, "network-check.js");
+    execSync(`node ${script}`, {
+      stdio: "pipe",
+      encoding: "utf8",
+    });
+  } catch (err) {
+    if (err.stdout) process.stdout.write(err.stdout);
+    if (err.stderr) process.stderr.write(err.stderr);
     console.error(
-      "Network check failed. Ensure access to the npm registry and Playwright CDN.",
+      "Network check failed. Ensure access to the npm registry and Playwright CDN. Set SKIP_PW_DEPS=1 to skip Playwright dependencies.",
     );
     process.exit(1);
   }
