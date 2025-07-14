@@ -87,7 +87,7 @@ describe("check-coverage script", () => {
   });
 
   test("passes when coverage meets thresholds", () => {
-    const originalConfig = fs.readFileSync(".nycrc", "utf8");
+    const origConfig = fs.readFileSync(".nycrc", "utf8");
     const goodSummary = {
       total: {
         branches: { pct: 90 },
@@ -114,6 +114,6 @@ describe("check-coverage script", () => {
     );
     expect(output).toMatch(/Coverage thresholds met/);
     fs.unlinkSync(summary);
-    fs.writeFileSync(".nycrc", originalConfig);
+    fs.writeFileSync(".nycrc", origConfig);
   });
 });

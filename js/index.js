@@ -876,7 +876,14 @@ refs.submitBtn.addEventListener("click", async () => {
 });
 
 async function init() {
-  await ensureModelViewerLoaded();
+  try {
+    await ensureModelViewerLoaded();
+  } catch (err) {
+    console.error('Failed to load model-viewer', err);
+    if (globalThis.document) {
+      document.body.dataset.viewerReady = 'error';
+    }
+  }
   if (window.customElements?.whenDefined) {
     try {
       await customElements.whenDefined("model-viewer");
