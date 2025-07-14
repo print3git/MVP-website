@@ -45,7 +45,11 @@ describe("check-coverage script", () => {
       },
     };
     fs.writeFileSync(summary, JSON.stringify(data));
-    if (fs.existsSync(nycrc)) fs.renameSync(nycrc, nycBackup);
+    let originalConfig = "";
+    if (fs.existsSync(nycrc)) {
+      originalConfig = fs.readFileSync(nycrc, "utf8");
+      fs.renameSync(nycrc, nycBackup);
+    }
     fs.writeFileSync(
       nycrc,
       JSON.stringify({
@@ -67,7 +71,11 @@ describe("check-coverage script", () => {
       expect(output).toMatch(/does not meet threshold/);
     } finally {
       fs.unlinkSync(summary);
-      fs.writeFileSync(".nycrc", originalConfig);
+      if (originalConfig) {
+        fs.writeFileSync(".nycrc", originalConfig);
+      } else if (fs.existsSync(nycBackup)) {
+        fs.renameSync(nycBackup, nycrc);
+      }
     }
   });
 
