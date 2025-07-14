@@ -45,6 +45,9 @@ describe("check-coverage script", () => {
       },
     };
     fs.writeFileSync(summary, JSON.stringify(data));
+    const originalConfig = fs.existsSync(nycrc)
+      ? fs.readFileSync(nycrc, "utf8")
+      : null;
     if (fs.existsSync(nycrc)) fs.renameSync(nycrc, nycBackup);
     fs.writeFileSync(
       nycrc,
