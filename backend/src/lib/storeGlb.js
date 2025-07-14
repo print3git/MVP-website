@@ -17,7 +17,6 @@ async function storeGlb(data, attempts = 3) {
     credentials: { accessKeyId, secretAccessKey },
   });
   const key = `models/${Date.now()}-${Math.random().toString(36).slice(2)}.glb`;
-  let lastError;
   for (let i = 0; i < attempts; i++) {
     try {
       await client.send(
@@ -29,10 +28,8 @@ async function storeGlb(data, attempts = 3) {
           ACL: "public-read",
         }),
       );
-      lastError = undefined;
       break;
     } catch (err) {
-      lastError = err;
       const isNetworkError =
         (err == null ? void 0 : err.name) === "NetworkingError" ||
         /network/i.test((err == null ? void 0 : err.message) || "");
