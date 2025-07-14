@@ -54,6 +54,7 @@ describe("check-coverage script", () => {
         statements: { pct: 0 },
       },
     };
+    const originalConfig = fs.readFileSync(".nycrc", "utf8");
     fs.writeFileSync(summary, JSON.stringify(data));
     const originalConfig = fs.existsSync(nycrc)
       ? fs.readFileSync(nycrc, "utf8")
