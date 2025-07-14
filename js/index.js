@@ -151,7 +151,7 @@ function ensureModelViewerLoaded() {
       document.head.appendChild(fallback);
     };
     document.head.appendChild(s);
-  }
+  });
 
   return new Promise((resolve, reject) => {
     const finalize = (attemptedLocal) => {
