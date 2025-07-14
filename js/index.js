@@ -132,24 +132,12 @@ function ensureModelViewerLoaded() {
     "https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js";
   const localUrl = "js/model-viewer.min.js";
 
-  return new Promise((resolve) => {
+  function loadScript(src, done) {
     const s = document.createElement("script");
     s.type = "module";
-    s.src = cdnUrl;
-    s.onload = () => {
-      window.modelViewerSource = "cdn";
-      resolve();
-    };
-    s.onerror = () => {
-      s.remove();
-      window.modelViewerSource = "local";
-      const fallback = document.createElement("script");
-      fallback.type = "module";
-      fallback.src = localUrl;
-      fallback.onload = resolve;
-      fallback.onerror = resolve;
-      document.head.appendChild(fallback);
-    };
+    s.src = src;
+    s.onload = done;
+    s.onerror = done;
     document.head.appendChild(s);
   });
 
@@ -888,7 +876,14 @@ refs.submitBtn.addEventListener("click", async () => {
 });
 
 async function init() {
-  await ensureModelViewerLoaded();
+  try {
+    await ensureModelViewerLoaded();
+  } catch (err) {
+    console.error('Failed to load model-viewer', err);
+    if (globalThis.document) {
+      document.body.dataset.viewerReady = 'error';
+    }
+  }
   if (window.customElements?.whenDefined) {
     try {
       await customElements.whenDefined("model-viewer");

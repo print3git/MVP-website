@@ -62,6 +62,13 @@
   },
   "type": "commonjs",
   "prettier": {},
+  "nyc": {
+    "reporter": [
+      "lcov",
+      "text",
+      "json-summary"
+    ]
+  },
   "devDependencies": {
     "@axe-core/cli": "^4.10.2",
     "@axe-core/playwright": "^4.10.2",

@@ -55,8 +55,7 @@ output = output.slice(start);
 fs.writeFileSync(lcovPath, output);
 console.log(`LCOV written to ${lcovPath}`);
 const summaryPath = path.join(
-  __dirname,
-  "..",
+  repoRoot,
   "backend",
   "coverage",
   "coverage-summary.json",
