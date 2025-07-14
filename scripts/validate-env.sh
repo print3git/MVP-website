@@ -50,6 +50,10 @@ fi
 if [[ -n "${S3_BUCKET:-}" && -z "${S3_BUCKET_NAME:-}" ]]; then
   export S3_BUCKET_NAME="$S3_BUCKET"
 fi
+if [[ -z "${CLOUDFRONT_MODEL_DOMAIN:-}" ]]; then
+  echo "Using dummy CLOUDFRONT_MODEL_DOMAIN" >&2
+  export CLOUDFRONT_MODEL_DOMAIN="cdn.test"
+fi
 : "${AWS_ACCESS_KEY_ID:?AWS_ACCESS_KEY_ID must be set}"
 : "${AWS_SECRET_ACCESS_KEY:?AWS_SECRET_ACCESS_KEY must be set}"
 : "${DB_URL:?DB_URL must be set}"
