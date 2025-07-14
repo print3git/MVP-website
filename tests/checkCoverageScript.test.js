@@ -12,6 +12,9 @@ const summary = path.join(
 const backup = summary + ".bak";
 const nycrc = path.join(__dirname, "..", ".nycrc");
 const nycBackup = nycrc + ".bak";
+const originalConfig = fs.existsSync(nycrc)
+  ? fs.readFileSync(nycrc, "utf8")
+  : "";
 
 describe("check-coverage script", () => {
   beforeAll(() => {
@@ -20,6 +23,11 @@ describe("check-coverage script", () => {
 
   afterAll(() => {
     if (fs.existsSync(backup)) fs.renameSync(backup, summary);
+    if (originalConfig !== undefined) {
+      fs.writeFileSync(nycrc, originalConfig);
+    } else if (fs.existsSync(nycrc)) {
+      fs.unlinkSync(nycrc);
+    }
   });
 
   test("fails gracefully when summary missing", () => {
@@ -36,7 +44,9 @@ describe("check-coverage script", () => {
   });
 
   test("fails when coverage below threshold", () => {
-    const originalConfig = fs.readFileSync(".nycrc", "utf8");
+    const originalConfig = fs.existsSync(".nycrc")
+      ? fs.readFileSync(".nycrc", "utf8")
+      : "";
     const data = {
       total: {
         branches: { pct: 0 },
@@ -47,6 +57,9 @@ describe("check-coverage script", () => {
     };
     fs.mkdirSync(path.dirname(summary), { recursive: true });
     fs.writeFileSync(summary, JSON.stringify(data));
+    const originalConfig = fs.existsSync(nycrc)
+      ? fs.readFileSync(nycrc, "utf8")
+      : "";
     if (fs.existsSync(nycrc)) fs.renameSync(nycrc, nycBackup);
     fs.writeFileSync(
       nycrc,
@@ -69,12 +82,18 @@ describe("check-coverage script", () => {
       expect(output).toMatch(/does not meet threshold/);
     } finally {
       fs.unlinkSync(summary);
-      fs.writeFileSync(".nycrc", originalConfig);
+      if (fs.existsSync(nycBackup)) {
+        fs.renameSync(nycBackup, nycrc);
+      } else {
+        fs.unlinkSync(nycrc);
+      }
     }
   });
 
   test("passes when coverage meets thresholds", () => {
-    const originalConfig = fs.readFileSync(".nycrc", "utf8");
+    const originalConfig = fs.existsSync(nycrc)
+      ? fs.readFileSync(nycrc, "utf8")
+      : "";
     const goodSummary = {
       total: {
         branches: { pct: 90 },
@@ -102,6 +121,6 @@ describe("check-coverage script", () => {
     );
     expect(output).toMatch(/Coverage thresholds met/);
     fs.unlinkSync(summary);
-    fs.writeFileSync(".nycrc", originalConfig);
+    fs.writeFileSync(".nycrc", origConfig);
   });
 });
