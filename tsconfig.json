@@ -4,6 +4,8 @@
     "allowJs": true,
     "checkJs": true,
     "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
     "noEmit": true,
     "lib": ["ESNext", "DOM"],
     "skipLibCheck": true
