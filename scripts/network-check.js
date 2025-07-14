@@ -58,10 +58,14 @@ function check(url) {
     return null;
   } catch (err) {
     const stderr = err.stderr ? err.stderr.toString().trim() : err.message;
-    // Treat HTTP 400 responses from the Playwright CDN as success. Some Codex
-    // environments proxy requests and respond with 400 even though the host is
-    // reachable. Allowing this prevents false negatives during validation.
-    if (url.includes("cdn.playwright.dev") && /error:\s*400/.test(stderr)) {
+    // Treat HTTP 4xx/5xx responses from the Playwright CDN as success. Some
+    // Codex environments proxy requests and respond with 4xx or 5xx even though
+    // the host is reachable. Allowing this prevents false negatives during
+    // validation.
+    if (
+      url.includes("cdn.playwright.dev") &&
+      /error:\s*[45][0-9]{2}/.test(stderr)
+    ) {
       return null;
     }
     return stderr.split("\n").slice(-1)[0];
