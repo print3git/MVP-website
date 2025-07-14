@@ -36,6 +36,7 @@ function initEnv(baseEnv = process.env) {
   ensureDefault("AWS_SECRET_ACCESS_KEY", "dummy");
   ensureDefault("DB_URL", "postgres://user:pass@localhost/db");
   ensureDefault("STRIPE_SECRET_KEY", "sk_test_dummy");
+  ensureDefault("STRIPE_TEST_KEY", `sk_test_dummy_${Date.now()}`);
   ensureDefault("SKIP_DB_CHECK", "1");
 
   const required = [
@@ -47,7 +48,7 @@ function initEnv(baseEnv = process.env) {
     "STRIPE_SECRET_KEY",
   ];
   for (const key of required) {
-    if (!baseEnv[key]) {
+    if (!env[key]) {
       console.warn(`Missing env var ${key}`);
     }
   }
