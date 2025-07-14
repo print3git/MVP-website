@@ -41,7 +41,11 @@ const targets = [
 // Allow tests to override the first target URL so failure scenarios can be
 // simulated without manipulating the real network environment.
 if (process.env.NETWORK_CHECK_URL) {
-  targets[0] = { url: process.env.NETWORK_CHECK_URL, name: "test url" };
+  targets[0] = {
+    url: process.env.NETWORK_CHECK_URL,
+    name: "test url",
+    required: true,
+  };
 }
 
 function check(url) {

@@ -38,6 +38,7 @@ test("run-smoke supplies default env vars", () => {
       expect(env.AWS_SECRET_ACCESS_KEY).toBe("dummy");
       expect(env.DB_URL).toBe("postgres://user:pass@localhost/db");
       expect(env.STRIPE_SECRET_KEY).toBe("sk_test_dummy");
+      expect(env.STRIPE_TEST_KEY).toMatch(/^sk_test_dummy/);
       expect(env.SKIP_DB_CHECK).toBe("1");
     });
   });

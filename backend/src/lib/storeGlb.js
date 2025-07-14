@@ -1,6 +1,6 @@
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 
-async function storeGlb(data) {
+async function storeGlb(data, attempts = 3) {
   if (data.length < 12 || data.toString("utf8", 0, 4) !== "glTF") {
     throw new Error("Invalid GLB");
   }
@@ -17,15 +17,30 @@ async function storeGlb(data) {
     credentials: { accessKeyId, secretAccessKey },
   });
   const key = `models/${Date.now()}-${Math.random().toString(36).slice(2)}.glb`;
-  await client.send(
-    new PutObjectCommand({
-      Bucket: bucket,
-      Key: key,
-      Body: data,
-      ContentType: "model/gltf-binary",
-      ACL: "public-read",
-    }),
-  );
+  let lastError;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      await client.send(
+        new PutObjectCommand({
+          Bucket: bucket,
+          Key: key,
+          Body: data,
+          ContentType: "model/gltf-binary",
+          ACL: "public-read",
+        }),
+      );
+      lastError = undefined;
+      break;
+    } catch (err) {
+      lastError = err;
+      const isNetworkError =
+        (err == null ? void 0 : err.name) === "NetworkingError" ||
+        /network/i.test((err == null ? void 0 : err.message) || "");
+      if (!isNetworkError || i === attempts - 1) {
+        throw err;
+      }
+    }
+  }
   return `https://${bucket}.s3.${region}.amazonaws.com/${key}`;
 }
 

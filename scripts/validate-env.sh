@@ -16,7 +16,7 @@ load_env_file() {
   local file="$1"
   while IFS='=' read -r key value; do
     [[ "$key" =~ ^\s*# || -z "$key" ]] && continue
-    if [ -z "${!key:-}" ]; then
+    if [[ ! -v $key ]]; then
       export "$key"="$value"
     fi
   done < "$file"
@@ -28,13 +28,27 @@ elif [ -f .env.example ]; then
   load_env_file .env.example
 fi
 
+# Disable HTTP/2 for local testing to avoid client errors
+export HTTP2=false
+
 if [[ -z "${STRIPE_TEST_KEY:-}" && -z "${STRIPE_LIVE_KEY:-}" ]]; then
   echo "Using dummy STRIPE_TEST_KEY" >&2
   export STRIPE_TEST_KEY="sk_test_dummy_$(date +%s)"
 fi
 if [[ -z "${HF_TOKEN:-}" && -z "${HF_API_KEY:-}" ]]; then
-  echo "Using dummy HF_TOKEN" >&2
+  echo "Using dummy HF_TOKEN and HF_API_KEY" >&2
   export HF_TOKEN="hf_dummy_$(date +%s)"
+  export HF_API_KEY="$HF_TOKEN"
+elif [[ -z "${HF_API_KEY:-}" ]]; then
+  export HF_API_KEY="$HF_TOKEN"
+fi
+# Ensure HF_API_KEY mirrors HF_TOKEN when only one is provided
+if [[ -n "${HF_TOKEN:-}" && -z "${HF_API_KEY:-}" ]]; then
+  export HF_API_KEY="$HF_TOKEN"
+fi
+# Map legacy S3_BUCKET to S3_BUCKET_NAME if needed
+if [[ -n "${S3_BUCKET:-}" && -z "${S3_BUCKET_NAME:-}" ]]; then
+  export S3_BUCKET_NAME="$S3_BUCKET"
 fi
 if [[ -z "${CLOUDFRONT_MODEL_DOMAIN:-}" ]]; then
   echo "Using dummy CLOUDFRONT_MODEL_DOMAIN" >&2
@@ -67,8 +81,9 @@ fi
 
 
 if [[ -z "${SKIP_NET_CHECKS:-}" ]]; then
-  network_output=$(node scripts/network-check.js 2>&1) || net_status=$?
-  if [[ -n "$net_status" ]]; then
+  network_output=$(node scripts/network-check.js 2>&1)
+  net_status=$?
+  if [[ $net_status -ne 0 ]]; then
     echo "$network_output" >&2
     if echo "$network_output" | grep -q "Set SKIP_PW_DEPS=1"; then
       echo "Network check failed for Playwright CDN, setting SKIP_PW_DEPS=1." >&2

@@ -85,7 +85,7 @@ describe("check-coverage script", () => {
   });
 
   test("passes when coverage meets thresholds", () => {
-    const originalConfig = fs.existsSync(nycrc)
+    const origConfig = fs.existsSync(nycrc)
       ? fs.readFileSync(nycrc, "utf8")
       : "";
     const goodSummary = {
