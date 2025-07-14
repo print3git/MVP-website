@@ -44,8 +44,12 @@ describe("check-coverage script", () => {
         statements: { pct: 0 },
       },
     };
+    fs.mkdirSync(path.dirname(summary), { recursive: true });
     fs.writeFileSync(summary, JSON.stringify(data));
-    if (fs.existsSync(nycrc)) fs.renameSync(nycrc, nycBackup);
+    const hadConfig = fs.existsSync(nycrc);
+    if (hadConfig) {
+      fs.renameSync(nycrc, nycBackup);
+    }
     fs.writeFileSync(
       nycrc,
       JSON.stringify({
@@ -67,7 +71,11 @@ describe("check-coverage script", () => {
       expect(output).toMatch(/does not meet threshold/);
     } finally {
       fs.unlinkSync(summary);
-      fs.writeFileSync(".nycrc", originalConfig);
+      if (hadConfig) {
+        fs.renameSync(nycBackup, nycrc);
+      } else {
+        fs.unlinkSync(nycrc);
+      }
     }
   });
 
@@ -81,6 +89,7 @@ describe("check-coverage script", () => {
         statements: { pct: 90 },
       },
     };
+    fs.mkdirSync(path.dirname(summary), { recursive: true });
     fs.writeFileSync(summary, JSON.stringify(goodSummary));
     fs.writeFileSync(
       ".nycrc",
