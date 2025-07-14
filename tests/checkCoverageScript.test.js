@@ -85,9 +85,6 @@ describe("check-coverage script", () => {
   });
 
   test("passes when coverage meets thresholds", () => {
-    const origConfig = fs.existsSync(nycrc)
-      ? fs.readFileSync(nycrc, "utf8")
-      : "";
     const goodSummary = {
       total: {
         branches: { pct: 90 },

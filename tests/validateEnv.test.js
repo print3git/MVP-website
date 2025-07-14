@@ -23,23 +23,6 @@ function run(env) {
   return output;
 }
 
-function runAndGetHFAPIKey(env) {
-  const result = spawnSync(
-    "bash",
-    [
-      "-c",
-      'source scripts/validate-env.sh >/dev/null && echo -n "$HF_API_KEY"',
-    ],
-    { env: { SKIP_NET_CHECKS: "1", ...env }, encoding: "utf8" },
-  );
-  if (result.status !== 0) {
-    const error = new Error(result.stdout + result.stderr);
-    error.code = result.status;
-    throw error;
-  }
-  return result.stdout;
-}
-
 describe("validate-env script", () => {
   test("sets dummy Stripe key when missing", () => {
     const env = {
@@ -80,7 +63,6 @@ describe("validate-env script", () => {
     expect(output).toContain("Using dummy HF_TOKEN and HF_API_KEY");
     expect(output).toContain("✅ environment OK");
   });
-
 
   test("injects dummy CLOUDFRONT_MODEL_DOMAIN when missing", () => {
     const env = {
