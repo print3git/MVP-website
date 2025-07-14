@@ -12,9 +12,7 @@ const summary = path.join(
 const backup = summary + ".bak";
 const nycrc = path.join(__dirname, "..", ".nycrc");
 const nycBackup = nycrc + ".bak";
-let originalConfig = fs.existsSync(nycrc)
-  ? fs.readFileSync(nycrc, "utf8")
-  : "";
+let originalConfig = fs.existsSync(nycrc) ? fs.readFileSync(nycrc, "utf8") : "";
 
 describe("check-coverage script", () => {
   beforeAll(() => {
@@ -52,7 +50,6 @@ describe("check-coverage script", () => {
         statements: { pct: 0 },
       },
     };
-    const originalConfig = fs.readFileSync(".nycrc", "utf8");
     fs.writeFileSync(summary, JSON.stringify(data));
     const prevConfig = fs.existsSync(nycrc)
       ? fs.readFileSync(nycrc, "utf8")
@@ -118,6 +115,6 @@ describe("check-coverage script", () => {
     );
     expect(output).toMatch(/Coverage thresholds met/);
     fs.unlinkSync(summary);
-    fs.writeFileSync(".nycrc", origConfig);
+    fs.writeFileSync(".nycrc", originalConfig);
   });
 });

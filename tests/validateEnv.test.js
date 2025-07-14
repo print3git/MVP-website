@@ -63,6 +63,29 @@ describe("validate-env script", () => {
     expect(output).toContain("✅ environment OK");
   });
 
+  test("injects dummy CLOUDFRONT_MODEL_DOMAIN when missing", () => {
+    const env = {
+      ...process.env,
+      HF_TOKEN: "token",
+      AWS_ACCESS_KEY_ID: "id",
+      AWS_SECRET_ACCESS_KEY: "secret",
+      DB_URL: "postgres://user:pass@localhost/db",
+      STRIPE_SECRET_KEY: "sk_test",
+      CLOUDFRONT_MODEL_DOMAIN: "",
+      SKIP_DB_CHECK: "1",
+    };
+    const example = path.resolve(__dirname, "..", ".env.example");
+    const backup = `${example}.bak`;
+    fs.renameSync(example, backup);
+    try {
+      const output = run(env);
+      expect(output).toContain("Using dummy CLOUDFRONT_MODEL_DOMAIN");
+      expect(output).toContain("✅ environment OK");
+    } finally {
+      fs.renameSync(backup, example);
+    }
+  });
+
   test.skip("fails when DB_URL is missing", () => {
     const env = {
       ...process.env,

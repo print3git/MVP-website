@@ -36,6 +36,10 @@ if [[ -z "${HF_TOKEN:-}" && -z "${HF_API_KEY:-}" ]]; then
   echo "Using dummy HF_TOKEN" >&2
   export HF_TOKEN="hf_dummy_$(date +%s)"
 fi
+if [[ -z "${CLOUDFRONT_MODEL_DOMAIN:-}" ]]; then
+  echo "Using dummy CLOUDFRONT_MODEL_DOMAIN" >&2
+  export CLOUDFRONT_MODEL_DOMAIN="cdn.test"
+fi
 : "${AWS_ACCESS_KEY_ID:?AWS_ACCESS_KEY_ID must be set}"
 : "${AWS_SECRET_ACCESS_KEY:?AWS_SECRET_ACCESS_KEY must be set}"
 : "${DB_URL:?DB_URL must be set}"
