@@ -55,8 +55,7 @@ output = output.slice(start);
 fs.writeFileSync(lcovPath, output);
 console.log(`LCOV written to ${lcovPath}`);
 const summaryPath = path.join(
-  __dirname,
-  "..",
+  repoRoot,
   "backend",
   "coverage",
   "coverage-summary.json",
@@ -69,14 +68,9 @@ if (result.status) {
   console.error(`Jest exited with code ${result.status}`);
   process.exit(result.status);
 }
-
-const summaryPath = path.join(
-  repoRoot,
-  "backend",
-  "coverage",
-  "coverage-summary.json",
-);
-if (!fs.existsSync(summaryPath)) {
-  console.error(`Missing coverage summary: ${summaryPath}`);
+try {
+  JSON.parse(fs.readFileSync(summaryPath, "utf8"));
+} catch (err) {
+  console.error(`Failed to read ${summaryPath}: ${err.message}`);
   process.exit(1);
 }

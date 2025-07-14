@@ -12,6 +12,7 @@ const summary = path.join(
 const backup = summary + ".bak";
 const nycrc = path.join(__dirname, "..", ".nycrc");
 const nycBackup = nycrc + ".bak";
+let originalConfig = "";
 
 describe("check-coverage script", () => {
   beforeAll(() => {
@@ -20,6 +21,10 @@ describe("check-coverage script", () => {
 
   afterAll(() => {
     if (fs.existsSync(backup)) fs.renameSync(backup, summary);
+  });
+
+  beforeEach(() => {
+    originalConfig = fs.existsSync(nycrc) ? fs.readFileSync(nycrc, "utf8") : "";
   });
 
   test("fails gracefully when summary missing", () => {
