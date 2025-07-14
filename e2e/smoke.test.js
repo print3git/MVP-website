@@ -69,9 +69,18 @@ test('model generator page', async ({ page }) => {
   await page.waitForFunction(() => window.customElements.get('model-viewer'));
   // Allow extra time for the viewer to load when the CDN script fails and the
   // page falls back to the local copy. Bail out if the viewer fails entirely.
-  await page.waitForFunction(() => document.body.dataset.viewerReady, {
-    timeout: 120000,
-  });
+  try {
+    await page.waitForFunction(() => document.body.dataset.viewerReady, {
+      timeout: 120000,
+    });
+  } catch (err) {
+    if (err.name === 'TimeoutError') {
+      await page.screenshot({
+        path: `test-results/failure-${Date.now()}.png`,
+      });
+    }
+    throw err;
+  }
   const ready = await page.evaluate(() => document.body.dataset.viewerReady);
   test.skip(ready !== 'true', 'model viewer failed to load');
   await expect(page.locator('#viewer')).toBeVisible();
@@ -103,9 +112,18 @@ test('generate flow', async ({ page }) => {
   await page.click('#gen-submit');
   // Wait for the viewer to signal readiness before checking the canvas.
   // This prevents flaky timeouts when external scripts load slowly.
-  await page.waitForFunction(() => document.body.dataset.viewerReady, {
-    timeout: 120000,
-  });
+  try {
+    await page.waitForFunction(() => document.body.dataset.viewerReady, {
+      timeout: 120000,
+    });
+  } catch (err) {
+    if (err.name === 'TimeoutError') {
+      await page.screenshot({
+        path: `test-results/failure-${Date.now()}.png`,
+      });
+    }
+    throw err;
+  }
   const ready2 = await page.evaluate(() => document.body.dataset.viewerReady);
   test.skip(ready2 !== 'true', 'model viewer failed to load');
   // Wait longer for the model viewer to load on slow networks
