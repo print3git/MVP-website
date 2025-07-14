@@ -2,7 +2,7 @@
 const { execSync } = require("child_process");
 
 function checkNetwork() {
-  if (process.env.SKIP_NET_CHECKS) {
+  if (process.env.SKIP_NET_CHECKS || process.env.SKIP_PW_DEPS) {
     return;
   }
   try {
