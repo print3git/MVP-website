@@ -37,9 +37,12 @@ function hostDepsInstalled() {
 checkNetwork();
 
 if (!hostDepsInstalled()) {
-  if (process.env.SKIP_PW_DEPS) {
+  const skipPwDeps =
+    process.env.SKIP_PW_DEPS ||
+    process.env.PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS;
+  if (skipPwDeps) {
     console.error(
-      "Playwright host dependencies are missing. Run 'npx playwright install --with-deps' or remove SKIP_PW_DEPS.",
+      "Playwright host dependencies are missing. Run 'npx playwright install --with-deps' or unset SKIP_PW_DEPS/PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS.",
     );
     process.exit(1);
   }

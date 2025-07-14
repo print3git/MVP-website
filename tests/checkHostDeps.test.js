@@ -75,6 +75,31 @@ test("fails when SKIP_PW_DEPS is set and deps are missing", () => {
   delete process.env.SKIP_PW_DEPS;
 });
 
+test("fails when PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS is set and deps are missing", () => {
+  process.env.PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS = "1";
+  child_process.execSync
+    .mockReturnValueOnce("network ok")
+    .mockReturnValueOnce("Host system is missing dependencies")
+    .mockReturnValueOnce("");
+  const exitSpy = jest.spyOn(process, "exit").mockImplementation(() => {
+    throw new Error("exit");
+  });
+  expect(() => require("../scripts/check-host-deps.js")).toThrow("exit");
+  expect(exitSpy).toHaveBeenCalledWith(1);
+  expect(child_process.execSync).toHaveBeenNthCalledWith(
+    1,
+    expect.stringContaining("network-check.js"),
+    { stdio: "pipe", encoding: "utf8" },
+  );
+  expect(child_process.execSync).toHaveBeenNthCalledWith(
+    2,
+    "npx playwright install --with-deps --dry-run 2>&1",
+    { encoding: "utf8" },
+  );
+  expect(child_process.execSync).toHaveBeenCalledTimes(2);
+  delete process.env.PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS;
+});
+
 test("fails when SKIP_PW_DEPS is set and warning is printed", () => {
   process.env.SKIP_PW_DEPS = "1";
   child_process.execSync
