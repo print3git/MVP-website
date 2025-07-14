@@ -19,6 +19,14 @@ cleanup_npm_cache() {
 }
 
 trap cleanup_npm_cache EXIT
+
+handle_sigint() {
+  echo "Setup interrupted by SIGINT. Please run 'npm run setup' again." >&2
+  rm -f .setup-complete
+  exit 130
+}
+trap handle_sigint SIGINT
+
 cleanup_npm_cache
 
 unset npm_config_http_proxy npm_config_https_proxy
