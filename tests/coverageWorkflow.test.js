@@ -22,6 +22,9 @@ describe("coverage workflow", () => {
       cmd.trim().startsWith("npm run coverage"),
     );
     const hasCoveralls = steps.some((cmd) => cmd.includes("npx coveralls"));
+    const hasSummaryCheck = steps.some((cmd) =>
+      cmd.includes("coverageSummaryExists.test.js"),
+    );
     const usesCat = steps.some((cmd) =>
       cmd.includes("cat backend/coverage/lcov.info"),
     );
@@ -29,5 +32,6 @@ describe("coverage workflow", () => {
     expect(hasCoverage).toBe(true);
     expect(hasCoveralls).toBe(true);
     expect(usesCat).toBe(true);
+    expect(hasSummaryCheck).toBe(true);
   });
 });

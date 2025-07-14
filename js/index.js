@@ -139,7 +139,7 @@ function ensureModelViewerLoaded() {
     s.onload = done;
     s.onerror = done;
     document.head.appendChild(s);
-  }
+  });
 
   return new Promise((resolve, reject) => {
     const finalize = (attemptedLocal) => {
