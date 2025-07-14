@@ -9,7 +9,20 @@ const repoRoot = path.join(__dirname, "..");
 // coverage run doesn't silently use a wrong version when mise wasn't activated.
 require("./check-node-version.js");
 
-const extraArgs = process.argv.slice(2);
+const args = process.argv.slice(2);
+let dryRun = false;
+let coverageDir = path.join(repoRoot, "backend", "coverage");
+const testArgs = [];
+for (let i = 0; i < args.length; i++) {
+  if (args[i] === "--dry-run") {
+    dryRun = true;
+  } else if (args[i] === "--coverage-dir") {
+    coverageDir = path.resolve(args[++i]);
+  } else {
+    testArgs.push(args[i]);
+  }
+}
+
 const jestArgs = [
   "--ci",
   "--coverage",
@@ -22,61 +35,51 @@ const jestArgs = [
   "--silent",
   "--config",
   path.join(__dirname, "..", "backend", "jest.config.js"),
-  ...(extraArgs.length ? ["--runTestsByPath", ...extraArgs] : []),
+  ...(testArgs.length ? ["--runTestsByPath", ...testArgs] : []),
 ];
 
-const jestBin = path.join(
-  __dirname,
-  "..",
-  "backend",
-  "node_modules",
-  ".bin",
-  "jest",
-);
-const result = spawnSync(jestBin, jestArgs, {
-  encoding: "utf8",
-  stdio: ["inherit", "pipe", "inherit"],
-  cwd: path.join(__dirname, ".."),
-  env: {
-    ...process.env,
-    NODE_PATH: path.join(__dirname, "..", "node_modules"),
-  },
-});
+let result = { stdout: "", status: 0 };
+if (!dryRun) {
+  const jestBin = path.join(
+    __dirname,
+    "..",
+    "backend",
+    "node_modules",
+    ".bin",
+    "jest",
+  );
+  result = spawnSync(jestBin, jestArgs, {
+    encoding: "utf8",
+    stdio: ["inherit", "pipe", "inherit"],
+    cwd: path.join(__dirname, ".."),
+    env: {
+      ...process.env,
+      NODE_PATH: path.join(__dirname, "..", "node_modules"),
+    },
+  });
 
-const lcovPath = path.join(repoRoot, "coverage", "lcov.info");
-fs.mkdirSync(path.dirname(lcovPath), { recursive: true });
-let output = result.stdout || "";
-const start = output.indexOf("TN:");
-if (start === -1) {
-  console.error("Failed to parse LCOV from jest output");
-  process.exit(result.status || 1);
+  const lcovPath = path.join(repoRoot, "coverage", "lcov.info");
+  fs.mkdirSync(path.dirname(lcovPath), { recursive: true });
+  let output = result.stdout || "";
+  const start = output.indexOf("TN:");
+  if (start === -1) {
+    console.error("Failed to parse LCOV from jest output");
+    process.exit(result.status || 1);
+  }
+  output = output.slice(start);
+  fs.writeFileSync(lcovPath, output);
+  console.log(`LCOV written to ${lcovPath}`);
+  if (result.status) {
+    console.error(`Jest exited with code ${result.status}`);
+    process.exit(result.status);
+  }
 }
-output = output.slice(start);
-fs.writeFileSync(lcovPath, output);
-console.log(`LCOV written to ${lcovPath}`);
-const summaryPath = path.join(
-  __dirname,
-  "..",
-  "backend",
-  "coverage",
-  "coverage-summary.json",
-);
+
+const summaryPath = path.join(coverageDir, "coverage-summary.json");
 if (!fs.existsSync(summaryPath)) {
   console.error(`Missing coverage summary: ${summaryPath}`);
   process.exit(1);
 }
-if (result.status) {
-  console.error(`Jest exited with code ${result.status}`);
-  process.exit(result.status);
-}
-
-const summaryPath = path.join(
-  repoRoot,
-  "backend",
-  "coverage",
-  "coverage-summary.json",
-);
-if (!fs.existsSync(summaryPath)) {
-  console.error(`Missing coverage summary: ${summaryPath}`);
-  process.exit(1);
+if (dryRun) {
+  console.log(`Using coverage from ${coverageDir}`);
 }
