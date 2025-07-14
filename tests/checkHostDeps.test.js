@@ -12,9 +12,15 @@ test("runs network check before installing", () => {
     .mockReturnValueOnce("network ok")
     .mockReturnValueOnce("deps ok");
   require("../scripts/check-host-deps.js");
+  const networkCheck = require("path").join(
+    __dirname,
+    "..",
+    "scripts",
+    "network-check.js",
+  );
   expect(child_process.execSync).toHaveBeenNthCalledWith(
     1,
-    "node scripts/network-check.js",
+    `node ${networkCheck}`,
     { stdio: "ignore" },
   );
   expect(child_process.execSync).toHaveBeenNthCalledWith(
@@ -59,9 +65,15 @@ test("fails when SKIP_PW_DEPS is set and deps are missing", () => {
   });
   expect(() => require("../scripts/check-host-deps.js")).toThrow("exit");
   expect(exitSpy).toHaveBeenCalledWith(1);
+  const networkCheck = require("path").join(
+    __dirname,
+    "..",
+    "scripts",
+    "network-check.js",
+  );
   expect(child_process.execSync).toHaveBeenNthCalledWith(
     1,
-    "node scripts/network-check.js",
+    `node ${networkCheck}`,
     { stdio: "ignore" },
   );
   expect(child_process.execSync).toHaveBeenNthCalledWith(
@@ -87,9 +99,15 @@ test("fails when SKIP_PW_DEPS is set and warning is printed", () => {
     throw new Error("exit");
   });
   expect(() => require("../scripts/check-host-deps.js")).toThrow("exit");
+  const networkCheck = require("path").join(
+    __dirname,
+    "..",
+    "scripts",
+    "network-check.js",
+  );
   expect(child_process.execSync).toHaveBeenNthCalledWith(
     1,
-    "node scripts/network-check.js",
+    `node ${networkCheck}`,
     { stdio: "ignore" },
   );
   expect(child_process.execSync).toHaveBeenNthCalledWith(
@@ -108,9 +126,15 @@ test("skips install when deps satisfied even if SKIP_PW_DEPS is set", () => {
     .mockReturnValueOnce("network ok")
     .mockReturnValueOnce("deps ok");
   require("../scripts/check-host-deps.js");
+  const networkCheck = require("path").join(
+    __dirname,
+    "..",
+    "scripts",
+    "network-check.js",
+  );
   expect(child_process.execSync).toHaveBeenNthCalledWith(
     1,
-    "node scripts/network-check.js",
+    `node ${networkCheck}`,
     { stdio: "ignore" },
   );
   expect(child_process.execSync).toHaveBeenNthCalledWith(
