@@ -115,6 +115,6 @@ describe("check-coverage script", () => {
     );
     expect(output).toMatch(/Coverage thresholds met/);
     fs.unlinkSync(summary);
-    fs.writeFileSync(".nycrc", origConfig);
+    fs.writeFileSync(".nycrc", originalConfig);
   });
 });
