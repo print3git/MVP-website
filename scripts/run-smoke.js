@@ -3,39 +3,59 @@ const { execSync } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 
-const env = { ...process.env };
+function initEnv(baseEnv = process.env) {
+  const env = { ...baseEnv };
 
-function loadEnvFile(file) {
-  if (!fs.existsSync(file)) return;
-  const content = fs.readFileSync(file, "utf8");
-  for (const line of content.split(/\r?\n/)) {
-    const m = line.match(/^\s*([A-Za-z0-9_]+)\s*=\s*(.*)\s*$/);
-    if (m) {
-      const [, key, val] = m;
-      if (!env[key]) {
-        env[key] = val.replace(/^['"]|['"]$/g, "");
+  function loadEnvFile(file) {
+    if (!fs.existsSync(file)) return;
+    const content = fs.readFileSync(file, "utf8");
+    for (const line of content.split(/\r?\n/)) {
+      const m = line.match(/^\s*([A-Za-z0-9_]+)\s*=\s*(.*)\s*$/);
+      if (m) {
+        const [, key, val] = m;
+        if (!env[key]) {
+          env[key] = val.replace(/^['"]|['"]$/g, "");
+        }
       }
     }
   }
-}
 
-if (fs.existsSync(path.join(process.cwd(), ".env"))) {
-  loadEnvFile(path.join(process.cwd(), ".env"));
-} else if (fs.existsSync(path.join(process.cwd(), ".env.example"))) {
-  loadEnvFile(path.join(process.cwd(), ".env.example"));
-}
-
-function ensureDefault(key, value) {
-  if (!env[key]) {
-    env[key] = value;
+  if (fs.existsSync(path.join(process.cwd(), ".env"))) {
+    loadEnvFile(path.join(process.cwd(), ".env"));
+  } else if (fs.existsSync(path.join(process.cwd(), ".env.example"))) {
+    loadEnvFile(path.join(process.cwd(), ".env.example"));
   }
+
+  function ensureDefault(key, value) {
+    if (!env[key]) {
+      env[key] = value;
+    }
+  }
+
+  ensureDefault("AWS_ACCESS_KEY_ID", "dummy");
+  ensureDefault("AWS_SECRET_ACCESS_KEY", "dummy");
+  ensureDefault("DB_URL", "postgres://user:pass@localhost/db");
+  ensureDefault("STRIPE_SECRET_KEY", "sk_test_dummy");
+  ensureDefault("SKIP_DB_CHECK", "1");
+
+  const required = [
+    "STRIPE_TEST_KEY",
+    "CLOUDFRONT_MODEL_DOMAIN",
+    "AWS_ACCESS_KEY_ID",
+    "AWS_SECRET_ACCESS_KEY",
+    "DB_URL",
+    "STRIPE_SECRET_KEY",
+  ];
+  for (const key of required) {
+    if (!baseEnv[key]) {
+      console.warn(`Missing env var ${key}`);
+    }
+  }
+
+  return env;
 }
 
-ensureDefault("AWS_ACCESS_KEY_ID", "dummy");
-ensureDefault("AWS_SECRET_ACCESS_KEY", "dummy");
-ensureDefault("DB_URL", "postgres://user:pass@localhost/db");
-ensureDefault("STRIPE_SECRET_KEY", "sk_test_dummy");
-ensureDefault("SKIP_DB_CHECK", "1");
+const env = initEnv(process.env);
 
 let lastCommand = "";
 
@@ -82,4 +102,4 @@ if (require.main === module) {
   main();
 }
 
-module.exports = { main, env, run };
+module.exports = { main, env, run, initEnv };
