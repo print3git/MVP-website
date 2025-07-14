@@ -12,7 +12,7 @@ load_env_file() {
   local file="$1"
   while IFS='=' read -r key value; do
     [[ "$key" =~ ^\s*# || -z "$key" ]] && continue
-    if [ -z "${!key:-}" ]; then
+    if [[ ! -v $key ]]; then
       export "$key"="$value"
     fi
   done < "$file"
@@ -29,8 +29,11 @@ if [[ -z "${STRIPE_TEST_KEY:-}" && -z "${STRIPE_LIVE_KEY:-}" ]]; then
   export STRIPE_TEST_KEY="sk_test_dummy_$(date +%s)"
 fi
 if [[ -z "${HF_TOKEN:-}" && -z "${HF_API_KEY:-}" ]]; then
-  echo "Using dummy HF_TOKEN" >&2
+  echo "Using dummy HF_TOKEN and HF_API_KEY" >&2
   export HF_TOKEN="hf_dummy_$(date +%s)"
+  export HF_API_KEY="$HF_TOKEN"
+elif [[ -z "${HF_API_KEY:-}" ]]; then
+  export HF_API_KEY="$HF_TOKEN"
 fi
 
 : "${AWS_ACCESS_KEY_ID:?AWS_ACCESS_KEY_ID must be set}"
