@@ -154,3 +154,12 @@ if (!fs.existsSync(jestPath)) {
     process.exit(1);
   }
 }
+
+// Verify Playwright host dependencies so tests don't fail with missing library errors
+try {
+  const hostDeps = path.join(repoRoot, "scripts", "check-host-deps.js");
+  execSync(`node ${hostDeps}`, { stdio: "inherit" });
+} catch (err) {
+  console.error("Failed to verify Playwright host dependencies:", err.message);
+  process.exit(1);
+}
