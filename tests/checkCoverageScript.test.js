@@ -44,8 +44,8 @@ describe("check-coverage script", () => {
   });
 
   test("fails when coverage below threshold", () => {
-    const originalConfig = fs.existsSync(".nycrc")
-      ? fs.readFileSync(".nycrc", "utf8")
+    const origConfig = fs.existsSync(nycrc)
+      ? fs.readFileSync(nycrc, "utf8")
       : "";
     const data = {
       total: {
@@ -55,11 +55,7 @@ describe("check-coverage script", () => {
         statements: { pct: 0 },
       },
     };
-    const originalConfig = fs.readFileSync(".nycrc", "utf8");
     fs.writeFileSync(summary, JSON.stringify(data));
-    const originalConfig = fs.existsSync(nycrc)
-      ? fs.readFileSync(nycrc, "utf8")
-      : "";
     if (fs.existsSync(nycrc)) fs.renameSync(nycrc, nycBackup);
     fs.writeFileSync(
       nycrc,
@@ -85,13 +81,13 @@ describe("check-coverage script", () => {
       if (fs.existsSync(nycBackup)) {
         fs.renameSync(nycBackup, nycrc);
       } else {
-        fs.unlinkSync(nycrc);
+        fs.writeFileSync(nycrc, origConfig);
       }
     }
   });
 
   test("passes when coverage meets thresholds", () => {
-    const originalConfig = fs.existsSync(nycrc)
+    const origConfig = fs.existsSync(nycrc)
       ? fs.readFileSync(nycrc, "utf8")
       : "";
     const goodSummary = {
@@ -105,7 +101,7 @@ describe("check-coverage script", () => {
     fs.mkdirSync(path.dirname(summary), { recursive: true });
     fs.writeFileSync(summary, JSON.stringify(goodSummary));
     fs.writeFileSync(
-      ".nycrc",
+      nycrc,
       JSON.stringify({
         "check-coverage": true,
         branches: 80,
@@ -117,10 +113,12 @@ describe("check-coverage script", () => {
     const output = execFileSync(
       "node",
       [path.join("scripts", "check-coverage.js")],
-      { encoding: "utf8" },
+      {
+        encoding: "utf8",
+      },
     );
     expect(output).toMatch(/Coverage thresholds met/);
     fs.unlinkSync(summary);
-    fs.writeFileSync(".nycrc", origConfig);
+    fs.writeFileSync(nycrc, origConfig);
   });
 });
