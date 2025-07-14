@@ -54,6 +54,7 @@ describe("check-coverage script", () => {
         statements: { pct: 0 },
       },
     };
+    fs.mkdirSync(path.dirname(summary), { recursive: true });
     fs.writeFileSync(summary, JSON.stringify(data));
     const originalConfig = fs.existsSync(nycrc)
       ? fs.readFileSync(nycrc, "utf8")
@@ -89,7 +90,9 @@ describe("check-coverage script", () => {
   });
 
   test("passes when coverage meets thresholds", () => {
-    const origConfig = fs.readFileSync(".nycrc", "utf8");
+    const originalConfig = fs.existsSync(nycrc)
+      ? fs.readFileSync(nycrc, "utf8")
+      : "";
     const goodSummary = {
       total: {
         branches: { pct: 90 },
@@ -98,6 +101,7 @@ describe("check-coverage script", () => {
         statements: { pct: 90 },
       },
     };
+    fs.mkdirSync(path.dirname(summary), { recursive: true });
     fs.writeFileSync(summary, JSON.stringify(goodSummary));
     fs.writeFileSync(
       ".nycrc",
