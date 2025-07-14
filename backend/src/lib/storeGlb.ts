@@ -5,7 +5,10 @@ import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
  * @param data Buffer containing .glb bytes
  * @returns {Promise<string>} public URL of uploaded model
  */
-export async function storeGlb(data: Buffer): Promise<string> {
+export async function storeGlb(
+  data: Buffer,
+  attempts = 3,
+): Promise<string> {
   if (data.length < 12 || data.toString("utf8", 0, 4) !== "glTF") {
     throw new Error("Invalid GLB");
   }
@@ -22,14 +25,28 @@ export async function storeGlb(data: Buffer): Promise<string> {
     credentials: { accessKeyId, secretAccessKey },
   });
   const key = `models/${Date.now()}-${Math.random().toString(36).slice(2)}.glb`;
-  await client.send(
-    new PutObjectCommand({
-      Bucket: bucket,
-      Key: key,
-      Body: data,
-      ContentType: "model/gltf-binary",
-      ACL: "public-read",
-    }),
-  );
+  let lastError: any;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      await client.send(
+        new PutObjectCommand({
+          Bucket: bucket,
+          Key: key,
+          Body: data,
+          ContentType: "model/gltf-binary",
+          ACL: "public-read",
+        }),
+      );
+      lastError = undefined;
+      break;
+    } catch (err: any) {
+      lastError = err;
+      const isNetworkError =
+        err?.name === "NetworkingError" || /network/i.test(err?.message || "");
+      if (!isNetworkError || i === attempts - 1) {
+        throw err;
+      }
+    }
+  }
   return `https://${bucket}.s3.${region}.amazonaws.com/${key}`;
 }

@@ -50,6 +50,7 @@ describe("check-coverage script", () => {
         statements: { pct: 0 },
       },
     };
+
     const prevConfig = fs.existsSync(nycrc)
       ? fs.readFileSync(nycrc, "utf8")
       : "";
@@ -115,6 +116,6 @@ describe("check-coverage script", () => {
     );
     expect(output).toMatch(/Coverage thresholds met/);
     fs.unlinkSync(summary);
-    fs.writeFileSync(".nycrc", origConfig);
+    fs.writeFileSync(".nycrc", originalConfig);
   });
 });
