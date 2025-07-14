@@ -25,3 +25,14 @@ Thank you for helping improve this project! Please follow these steps to keep ou
 - All new code should include appropriate tests.
 - CI runs `npm run ci` and `npm test`; please ensure these succeed locally.
 - If Playwright dependencies are already installed you can set `SKIP_PW_DEPS=1` when running setup or CI to skip the lengthy install step.
+
+## How to run tests / lint / coverage / smoke
+
+Run the following commands from the repository root:
+
+```bash
+npm run lint      # check code style
+npm test          # execute unit tests
+npm run coverage  # generate coverage report
+SKIP_PW_DEPS=1 npm run smoke  # run the Playwright smoke test
+```

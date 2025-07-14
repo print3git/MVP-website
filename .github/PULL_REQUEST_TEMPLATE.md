@@ -1,9 +1,17 @@
 ## Summary
 
--
+<!-- one-sentence summary of your changes -->
 
-## Testing
+## Related Issue
 
-- [ ] `npm run format`
-- [ ] `npm test`
-- [ ] `npm run ci`
+<!-- link to the issue, if any -->
+
+## Testing Instructions
+
+<!-- how to run the tests for this change -->
+
+### Checklist
+
+- [ ] linted
+- [ ] tested
+- [ ] coverage ≥80%
