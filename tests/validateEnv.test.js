@@ -23,6 +23,23 @@ function run(env) {
   return output;
 }
 
+function runAndGetHFAPIKey(env) {
+  const result = spawnSync(
+    "bash",
+    [
+      "-c",
+      'source scripts/validate-env.sh >/dev/null && echo -n "$HF_API_KEY"',
+    ],
+    { env: { SKIP_NET_CHECKS: "1", ...env }, encoding: "utf8" },
+  );
+  if (result.status !== 0) {
+    const error = new Error(result.stdout + result.stderr);
+    error.code = result.status;
+    throw error;
+  }
+  return result.stdout;
+}
+
 describe("validate-env script", () => {
   test("sets dummy Stripe key when missing", () => {
     const env = {
@@ -60,7 +77,24 @@ describe("validate-env script", () => {
       SKIP_DB_CHECK: "1",
     };
     const output = run(env);
+    expect(output).toContain("Using dummy HF_TOKEN and HF_API_KEY");
     expect(output).toContain("✅ environment OK");
+  });
+
+  test("exports HF_API_KEY when absent", () => {
+    const env = {
+      ...process.env,
+      HF_TOKEN: "",
+      HF_API_KEY: "",
+      AWS_ACCESS_KEY_ID: "id",
+      AWS_SECRET_ACCESS_KEY: "secret",
+      DB_URL: "postgres://user:pass@localhost/db",
+      STRIPE_SECRET_KEY: "sk_test_dummy",
+      CLOUDFRONT_MODEL_DOMAIN: "cdn.test",
+      SKIP_DB_CHECK: "1",
+    };
+    const key = runAndGetHFAPIKey(env);
+    expect(key).toMatch(/^hf_dummy_/);
   });
 
   test.skip("fails when DB_URL is missing", () => {
