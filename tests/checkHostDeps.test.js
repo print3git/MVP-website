@@ -14,8 +14,8 @@ test("runs network check before installing", () => {
   require("../scripts/check-host-deps.js");
   expect(child_process.execSync).toHaveBeenNthCalledWith(
     1,
-    "node scripts/network-check.js",
-    { stdio: "ignore" },
+    expect.stringContaining("network-check.js"),
+    { stdio: "pipe", encoding: "utf8" },
   );
   expect(child_process.execSync).toHaveBeenNthCalledWith(
     2,
@@ -61,8 +61,8 @@ test("fails when SKIP_PW_DEPS is set and deps are missing", () => {
   expect(exitSpy).toHaveBeenCalledWith(1);
   expect(child_process.execSync).toHaveBeenNthCalledWith(
     1,
-    "node scripts/network-check.js",
-    { stdio: "ignore" },
+    expect.stringContaining("network-check.js"),
+    { stdio: "pipe", encoding: "utf8" },
   );
   expect(child_process.execSync).toHaveBeenNthCalledWith(
     2,
@@ -89,8 +89,8 @@ test("fails when SKIP_PW_DEPS is set and warning is printed", () => {
   expect(() => require("../scripts/check-host-deps.js")).toThrow("exit");
   expect(child_process.execSync).toHaveBeenNthCalledWith(
     1,
-    "node scripts/network-check.js",
-    { stdio: "ignore" },
+    expect.stringContaining("network-check.js"),
+    { stdio: "pipe", encoding: "utf8" },
   );
   expect(child_process.execSync).toHaveBeenNthCalledWith(
     2,
@@ -110,8 +110,8 @@ test("skips install when deps satisfied even if SKIP_PW_DEPS is set", () => {
   require("../scripts/check-host-deps.js");
   expect(child_process.execSync).toHaveBeenNthCalledWith(
     1,
-    "node scripts/network-check.js",
-    { stdio: "ignore" },
+    expect.stringContaining("network-check.js"),
+    { stdio: "pipe", encoding: "utf8" },
   );
   expect(child_process.execSync).toHaveBeenNthCalledWith(
     2,
@@ -144,4 +144,29 @@ test("retries without deps when apt-get fails", () => {
     "CI=1 npx playwright install",
     { stdio: "inherit" },
   );
+});
+
+test("prints network check output on failure", () => {
+  const err = new Error("net fail");
+  err.stdout = "out";
+  err.stderr = "curl: (7) bad";
+  child_process.execSync.mockImplementationOnce(() => {
+    throw err;
+  });
+  const outSpy = jest
+    .spyOn(process.stdout, "write")
+    .mockImplementation(() => {});
+  const errSpy = jest
+    .spyOn(process.stderr, "write")
+    .mockImplementation(() => {});
+  const exitSpy = jest.spyOn(process, "exit").mockImplementation(() => {
+    throw new Error("exit");
+  });
+  expect(() => require("../scripts/check-host-deps.js")).toThrow("exit");
+  expect(outSpy).toHaveBeenCalledWith("out");
+  expect(errSpy).toHaveBeenCalledWith("curl: (7) bad");
+  expect(exitSpy).toHaveBeenCalledWith(1);
+  outSpy.mockRestore();
+  errSpy.mockRestore();
+  exitSpy.mockRestore();
 });
