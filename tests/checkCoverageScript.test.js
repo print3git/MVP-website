@@ -43,6 +43,7 @@ describe("check-coverage script", () => {
   });
 
   test("fails when coverage below threshold", () => {
+    const originalConfig = fs.readFileSync(".nycrc", "utf8");
     const data = {
       total: {
         branches: { pct: 0 },
