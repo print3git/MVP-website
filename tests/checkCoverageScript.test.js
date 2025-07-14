@@ -67,7 +67,11 @@ describe("check-coverage script", () => {
       expect(output).toMatch(/does not meet threshold/);
     } finally {
       fs.unlinkSync(summary);
-      fs.writeFileSync(".nycrc", originalConfig);
+      if (fs.existsSync(nycBackup)) {
+        fs.renameSync(nycBackup, nycrc);
+      } else {
+        fs.unlinkSync(nycrc);
+      }
     }
   });
 
