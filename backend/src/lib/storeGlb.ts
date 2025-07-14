@@ -5,7 +5,14 @@ import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
  * @param data Buffer containing .glb bytes
  * @returns {Promise<string>} public URL of uploaded model
  */
-export async function storeGlb(data: Buffer): Promise<string> {
+export async function storeGlb(
+  data: Buffer,
+  fileName = "model.glb",
+  maxRetries = 2,
+): Promise<string> {
+  if (!fileName.endsWith(".glb")) {
+    throw new Error("Unsupported file extension");
+  }
   if (data.length < 12 || data.toString("utf8", 0, 4) !== "glTF") {
     throw new Error("Invalid GLB");
   }
@@ -22,14 +29,25 @@ export async function storeGlb(data: Buffer): Promise<string> {
     credentials: { accessKeyId, secretAccessKey },
   });
   const key = `models/${Date.now()}-${Math.random().toString(36).slice(2)}.glb`;
-  await client.send(
-    new PutObjectCommand({
-      Bucket: bucket,
-      Key: key,
-      Body: data,
-      ContentType: "model/gltf-binary",
-      ACL: "public-read",
-    }),
-  );
+  const command = new PutObjectCommand({
+    Bucket: bucket,
+    Key: key,
+    Body: data,
+    ContentType: "model/gltf-binary",
+    ACL: "public-read",
+  });
+
+  let attempt = 0;
+  while (true) {
+    try {
+      await client.send(command);
+      break;
+    } catch (err) {
+      if (attempt >= maxRetries) {
+        throw err;
+      }
+      attempt += 1;
+    }
+  }
   return `https://${bucket}.s3.${region}.amazonaws.com/${key}`;
 }
