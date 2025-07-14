@@ -30,6 +30,7 @@ const jwt = require("jsonwebtoken");
 const db = require("./db");
 const modelsRouter = require("./routes/models");
 const healthzRouter = require("./routes/healthz");
+const usersRouter = require("./routes/users");
 const axios = require("axios");
 const fs = require("fs");
 const logger = require("../src/logger");
@@ -191,6 +192,7 @@ app.get("/api-docs", (req, res) => {
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(healthzRouter);
 app.use("/api/models", modelsRouter);
+app.use("/api/users", usersRouter);
 const staticOptions = {
   setHeaders(res, filePath) {
     if (/\.(?:glb|hdr|js|css|png|jpe?g|gif|svg)$/i.test(filePath)) {
