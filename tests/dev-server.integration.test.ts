@@ -1,10 +1,15 @@
 let startDevServer = null;
+let hasExpress = true;
 try {
   require.resolve("express");
   ({ startDevServer } = require("../scripts/dev-server"));
 } catch {
-  // Express is not installed; skip integration test
+  hasExpress = false;
 }
+
+test("express dependency installed", () => {
+  expect(hasExpress).toBe(true);
+});
 
 jest.setTimeout(10000);
 
