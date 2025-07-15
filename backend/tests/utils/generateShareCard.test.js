@@ -1,3 +1,10 @@
+jest.mock("jimp", () => {
+  const mockJimp = jest.fn();
+  mockJimp.loadFont = jest.fn();
+  mockJimp.FONT_SANS_32_BLACK = "FONT_SANS_32_BLACK";
+  return mockJimp;
+});
+
 const Jimp = require("jimp");
 const fs = require("fs");
 const path = require("path");

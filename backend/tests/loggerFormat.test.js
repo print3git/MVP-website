@@ -24,6 +24,7 @@ describe("logger JSON format", () => {
     logger = require(path.join(__dirname, "..", "..", "src", "logger.js"));
     memory = new MemoryTransport();
     logger.add(memory);
+    jest.spyOn(console, "error").mockImplementation(() => {});
   });
 
   afterEach(() => {
