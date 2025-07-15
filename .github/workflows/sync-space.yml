@@ -40,7 +40,7 @@ jobs:
 
 
       - name: Run backend tests
-        run: npm test --prefix backend
+        run: npm run coverage --prefix backend
 
       - name: Run smoke tests
         run: npm run smoke
