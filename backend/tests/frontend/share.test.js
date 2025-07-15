@@ -14,7 +14,8 @@ describe("shareOn", () => {
     dom.window.navigator.share = undefined;
     const src = fs
       .readFileSync(path.join(__dirname, "../../../js/share.js"), "utf8")
-      .replace(/export \{[^}]+\};?/, "");
+      .replace(/export \{[^}]+\};?/, "")
+      .replace(/import\s+\{[^}]+\}\s+from\s+['"]\.\/analytics.js['"];?\n?/, "");
     dom.window.eval(src);
     return dom.window.shareOn;
   }

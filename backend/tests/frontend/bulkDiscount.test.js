@@ -16,10 +16,9 @@ function load() {
   });
   global.window = dom.window;
   global.document = dom.window.document;
-  let script = fs.readFileSync(
-    path.join(__dirname, "../../../js/payment.js"),
-    "utf8",
-  );
+  let script = fs
+    .readFileSync(path.join(__dirname, "../../../js/payment.js"), "utf8")
+    .replace(/import\s+\{[^}]+\}\s+from\s+['"]\.\/analytics.js['"];?\n?/, "");
   script += "\nwindow._computeBulkDiscount = computeBulkDiscount;";
   dom.window.eval(script);
   return dom;

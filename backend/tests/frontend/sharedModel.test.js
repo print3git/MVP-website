@@ -12,11 +12,13 @@ function setup(url) {
   global.document = dom.window.document;
   const shareSrc = fs
     .readFileSync(path.join(__dirname, "../../../js/share.js"), "utf8")
-    .replace(/export \{[^}]+\};?/, "");
+    .replace(/export \{[^}]+\};?/, "")
+    .replace(/import\s+\{[^}]+\}\s+from\s+['"]\.\/analytics.js['"];?\n?/, "");
   dom.window.eval(shareSrc);
   let script = fs
     .readFileSync(path.join(__dirname, "../../../js/sharedModel.js"), "utf8")
-    .replace(/import { shareOn } from ['"]\.\/share.js['"];?/, "");
+    .replace(/import { shareOn } from ['"]\.\/share.js['"];?/, "")
+    .replace(/import\s+\{[^}]+\}\s+from\s+['"]\.\/analytics.js['"];?\n?/, "");
   dom.window.eval(script);
   return dom;
 }
