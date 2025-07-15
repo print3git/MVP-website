@@ -77,6 +77,9 @@ describe("validate-env script", () => {
     };
     const example = path.resolve(__dirname, "..", ".env.example");
     const backup = `${example}.bak`;
+    if (!fs.existsSync(example)) {
+      fs.writeFileSync(example, "# test\n");
+    }
     fs.renameSync(example, backup);
     try {
       const output = run(env);

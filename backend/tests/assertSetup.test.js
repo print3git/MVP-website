@@ -3,6 +3,11 @@ const os = require("os");
 const path = require("path");
 const { spawnSync } = require("child_process");
 
+
+process.env.HF_TOKEN = process.env.HF_TOKEN || "token";
+process.env.AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID || "key";
+process.env.AWS_SECRET_ACCESS_KEY =
+  process.env.AWS_SECRET_ACCESS_KEY || "secret";
 const script = path.join(__dirname, "..", "..", "scripts", "assert-setup.js");
 const stub = path.join(__dirname, "stubExecSync.js");
 
@@ -29,9 +34,9 @@ function runAssertSetup(nodeVersion, extraEnv = {}) {
 
 describe("assert-setup script", () => {
   test("fails on Node <20", () => {
-    const res = runAssertSetup("18.0.0");
-    expect(res.result.status).not.toBe(0);
-    expect(res.result.stderr).toContain("Node 20 or newer is required");
+    const { result } = runAssertSetup("18.0.0");
+    expect(result.status).not.toBe(0);
+    expect(result.stderr).toContain("Node 20 or newer is required");
   });
 
   test("succeeds on Node >=20", () => {

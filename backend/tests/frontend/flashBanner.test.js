@@ -26,9 +26,13 @@ function setupDom() {
   dom.window.setInterval = setInterval;
   dom.window.clearInterval = clearInterval;
   dom.window.Date = Date;
-  const script = fs
+  let script = fs
     .readFileSync(path.join(__dirname, "../../../js/payment.js"), "utf8")
-    .replace(/^import[^\n]*\n/gm, "");
+    .replace(/import \{[^}]+\} from ['"]\.\/analytics.js['"];?/, "")
+    .replace(
+      /if \(document\.readyState === "loading"\)[^}]+}\s*else \{[^}]+}\s*/,
+      "",
+    );
   dom.window.eval(script);
   return dom;
 }
