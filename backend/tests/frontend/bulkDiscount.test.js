@@ -1,4 +1,8 @@
 /** @jest-environment node */
+/**
+ * Calculate bulk discount in cents.
+ * @param {Array<{qty:number, material:string}>} items order items.
+ */
 function computeBulkDiscount(items) {
   const TWO_PRINT_DISCOUNT = 700;
   const THIRD_PRINT_DISCOUNT = global.window.location.pathname.endsWith(

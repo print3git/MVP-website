@@ -1,4 +1,4 @@
-function hasOrderedBefore(userId) {
+function hasOrderedBefore(_userId) {
   // placeholder DB call
   return true;
 }

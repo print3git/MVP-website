@@ -1,7 +1,7 @@
 const express = require("express");
 /**
- *
- * @param app
+ * Attach a fake authenticated user to requests for tests.
+ * @param {import('express').Application} app Express app to modify.
  */
 function setupAuth(app = express.application) {
   app.use((req, res, next) => {

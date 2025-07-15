@@ -16,21 +16,20 @@ const env = {
 };
 
 describe("npm run coverage", () => {
-  afterAll(() => {
-    fs.rmSync(path.join(repoRoot, "coverage"), { recursive: true, force: true });
-    fs.rmSync(path.join(repoRoot, "backend", "coverage"), {
-      recursive: true,
-      force: true,
-    });
-  });
-
   test("produces parsable summary", () => {
     execSync(
       "npm run coverage --silent -- backend/tests/coverage/lcovParse.test.ts",
       { cwd: repoRoot, env },
     );
-    const summaryPath = path.join(repoRoot, "backend", "coverage", "coverage-summary.json");
+    const summaryPath = path.join(
+      repoRoot,
+      "backend",
+      "coverage",
+      "coverage-summary.json",
+    );
     expect(fs.existsSync(summaryPath)).toBe(true);
-    expect(() => JSON.parse(fs.readFileSync(summaryPath, "utf8"))).not.toThrow();
+    expect(() =>
+      JSON.parse(fs.readFileSync(summaryPath, "utf8")),
+    ).not.toThrow();
   });
 });

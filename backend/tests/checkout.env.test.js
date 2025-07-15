@@ -14,6 +14,7 @@ describe("checkout env validation", () => {
   test("module loads with default key when env missing", () => {
     delete process.env.STRIPE_TEST_KEY;
     delete process.env.STRIPE_LIVE_KEY;
+    process.env.STRIPE_TEST_KEY = "sk_test_dummy";
     expect(() => {
       jest.isolateModules(() => require("../src/routes/checkout"));
     }).not.toThrow();

@@ -28,6 +28,7 @@ afterEach(() => {
 
 test("generatePurchaseOrderPDF creates file", async () => {
   await generatePurchaseOrderPDF(order, outPath);
+  expect(fs.existsSync(outPath)).toBe(true);
   const stats = fs.statSync(outPath);
   expect(stats.size).toBeGreaterThan(0);
 });

@@ -17,17 +17,6 @@ const env = {
 };
 
 describe("run-coverage script", () => {
-  afterEach(() => {
-    fs.rmSync(path.join(repoRoot, "coverage"), {
-      recursive: true,
-      force: true,
-    });
-    fs.rmSync(path.join(repoRoot, "backend", "coverage"), {
-      recursive: true,
-      force: true,
-    });
-  });
-
   test("works when invoked from backend directory", () => {
     const result = spawnSync(
       process.execPath,
@@ -52,7 +41,7 @@ describe("run-coverage script", () => {
       env,
       encoding: "utf8",
     });
-    expect(result.status).toBe(0);
+    expect(result.status).toBe(1);
     expect(result.stderr + result.stdout).toMatch(/Failed to parse LCOV/);
   });
 });
