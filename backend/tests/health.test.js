@@ -37,3 +37,20 @@ test("GET /api/health returns ok", async () => {
   expect(res.body).toEqual({ db: "ok", s3: "ok" });
   expect(db.query).toHaveBeenCalledWith("SELECT 1");
 });
+
+test("GET /api/health returns 500 on db error", async () => {
+  db.query.mockRejectedValueOnce(new Error("fail"));
+  const res = await request(app).get("/api/health");
+  expect(res.status).toBe(500);
+  expect(res.body.error).toBe("unhealthy");
+});
+
+test("GET /api/health returns 500 on s3 error", async () => {
+  db.query.mockResolvedValueOnce({ rows: [] });
+  const { S3Client } = require("@aws-sdk/client-s3");
+  const send = S3Client.mock.results[0].value.send;
+  send.mockRejectedValueOnce(new Error("s3fail"));
+  const res = await request(app).get("/api/health");
+  expect(res.status).toBe(500);
+  expect(res.body.error).toBe("unhealthy");
+});
