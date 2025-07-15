@@ -1,18 +1,13 @@
 const Sentry = require("@sentry/node");
-
-// In test environments, wrap captureException with a jest spy so tests can
-// assert on calls even when they don't manually mock the function.
-if (
-  process.env.NODE_ENV === "test" &&
-  typeof jest !== "undefined" &&
-  !jest.isMockFunction(Sentry.captureException)
-) {
-  const original = Sentry.captureException.bind(Sentry);
-  Sentry.captureException = jest.fn(original);
-}
+let initialized = false;
 
 function capture(error) {
-  if (process.env.SENTRY_DSN) {
+  const dsn = process.env.SENTRY_DSN;
+  if (dsn) {
+    if (!initialized) {
+      Sentry.init({ dsn });
+      initialized = true;
+    }
     Sentry.captureException(error);
   }
 }

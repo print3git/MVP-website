@@ -95,6 +95,9 @@ describe("validate-env script", () => {
     delete env.DB_URL;
     const example = path.resolve(__dirname, "..", "..", ".env.example");
     const backup = `${example}.bak`;
+    if (!fs.existsSync(example)) {
+      fs.writeFileSync(example, "");
+    }
     fs.renameSync(example, backup);
     let threw = false;
     try {
