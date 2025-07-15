@@ -28,7 +28,7 @@ describe("assert-setup script", () => {
     fs.readdirSync.mockReturnValue([]);
     child_process.execSync.mockImplementation(() => {});
 
-    expect(() => require("../scripts/assert-setup.js")).not.toThrow();
+    expect(() => require("../../scripts/assert-setup.js")).not.toThrow();
     expect(child_process.execSync).toHaveBeenCalledWith("CI=1 npm run setup", {
       stdio: "inherit",
       env: expect.any(Object),
@@ -40,7 +40,7 @@ describe("assert-setup script", () => {
     fs.existsSync.mockReturnValue(true);
     fs.readdirSync.mockReturnValue(["chromium"]);
 
-    expect(() => require("../scripts/assert-setup.js")).not.toThrow();
+    expect(() => require("../../scripts/assert-setup.js")).not.toThrow();
   });
 
   test("invokes validate-env when HF_TOKEN missing", () => {
@@ -53,7 +53,7 @@ describe("assert-setup script", () => {
 
     child_process.execSync.mockImplementation(() => {});
 
-    expect(() => require("../scripts/assert-setup.js")).not.toThrow();
+    expect(() => require("../../scripts/assert-setup.js")).not.toThrow();
     expect(child_process.execSync).toHaveBeenCalledWith(
       "SKIP_NET_CHECKS=1 bash scripts/validate-env.sh >/dev/null",
       { stdio: "inherit" },
@@ -66,7 +66,7 @@ describe("assert-setup script", () => {
     fs.existsSync.mockReturnValue(true);
     fs.readdirSync.mockReturnValue(["chromium"]);
     child_process.execSync.mockImplementation(() => {});
-    expect(() => require("../scripts/assert-setup.js")).not.toThrow();
+    expect(() => require("../../scripts/assert-setup.js")).not.toThrow();
     expect(child_process.execSync).toHaveBeenCalledWith(
       "SKIP_NET_CHECKS=1 bash scripts/validate-env.sh >/dev/null",
       { stdio: "inherit" },
@@ -84,7 +84,7 @@ describe("assert-setup script", () => {
     fs.readdirSync.mockReturnValue(["chromium"]);
 
     jest.isolateModules(() => {
-      require("../scripts/assert-setup.js");
+      require("../../scripts/assert-setup.js");
     });
 
     expect(ensureRootDeps).toHaveBeenCalled();
@@ -97,7 +97,7 @@ describe("assert-setup script", () => {
     child_process.execSync.mockImplementation(() => {});
 
     jest.isolateModules(() => {
-      require("../scripts/assert-setup.js");
+      require("../../scripts/assert-setup.js");
     });
 
     expect(child_process.execSync).toHaveBeenCalledWith(
