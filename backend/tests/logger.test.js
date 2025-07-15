@@ -1,6 +1,7 @@
 const Sentry = require("@sentry/node");
 const { capture } = require("../src/lib/logger");
-const logger = require("../../src/logger");
+const logger = require("../src/logger");
+const { transports } = require("winston");
 
 describe("capture", () => {
   afterEach(() => {
@@ -57,4 +58,12 @@ describe("logger", () => {
     expect(outputs).toContain("warn msg");
     expect(outputs).toContain("error msg");
   });
+});
+
+test("logger is silent in test env", () => {
+  const consoleTransport = logger.transports.find(
+    (t) => t instanceof transports.Console,
+  );
+  expect(logger.level).toBe("error");
+  expect(consoleTransport.silent).toBe(true);
 });

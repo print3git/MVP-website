@@ -40,7 +40,9 @@ function runNpmCi(dir = ".") {
       console.warn(`npm ci failed in ${dir}, falling back to 'npm install'`);
       execSync("npm install --no-audit --no-fund", options);
       execSync("npm ci --no-audit --no-fund", options);
-    } else if (/TAR_ENTRY_ERROR|ENOENT/.test(output)) {
+    } else if (
+      /TAR_ENTRY_ERROR|ENOENT|ENOTEMPTY|tarball .*corrupted/.test(output)
+    ) {
       console.warn(
         `npm ci encountered tar errors in ${dir}. Cleaning cache and retrying...`,
       );

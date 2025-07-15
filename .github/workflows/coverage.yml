@@ -17,13 +17,7 @@ jobs:
       - name: Check coverage thresholds
         run: node scripts/check-coverage.js
       - name: Validate LCOV report
-        run: |
-          if grep -qE '^TN:|^SF:' coverage/lcov.info; then
-            echo '✅ lcov.info is valid'
-          else
-            echo '❌ lcov.info malformed or missing'
-            exit 1
-          fi
+        run: node scripts/run-jest.js backend/__tests__/lcovExists.test.js
       - name: Verify coverage summary
         run: node scripts/run-jest.js backend/__tests__/coverageSummaryExists.test.js
       - run: cat coverage/lcov.info | npx coveralls
