@@ -15,6 +15,18 @@ require("./check-node-version.js");
 require("./assert-setup.js");
 
 const extraArgs = process.argv.slice(2);
+if (extraArgs.includes("--help") || extraArgs.includes("-h")) {
+  const jestBin = path.join(
+    __dirname,
+    "..",
+    "backend",
+    "node_modules",
+    ".bin",
+    "jest",
+  );
+  const result = spawnSync(jestBin, extraArgs, { stdio: "inherit" });
+  process.exit(result.status || 0);
+}
 const jestArgs = [
   "--ci",
   "--coverage",
