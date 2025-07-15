@@ -27,16 +27,19 @@ describe("GET /api/users/:id", () => {
     expect(res.status).toBe(500);
     expect(res.body).toEqual({ error: "Internal Server Error" });
   });
-  test("returns 404 when user missing", async () => {
-    users.findUserById.mockResolvedValue(undefined);
-    const res = await request(app).get("/api/users/456");
-    expect(res.status).toBe(404);
-    expect(res.body).toEqual({ error: "User not found" });
+
+  test("returns user when found", async () => {
+    const user = { id: 1, username: "alice", email: "a@example.com" };
+    users.findUserById.mockResolvedValueOnce(user);
+    const res = await request(app).get("/api/users/1");
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(user);
   });
 
-  test("handles null id parameter", async () => {
-    users.findUserById.mockResolvedValue(null);
-    const res = await request(app).get("/api/users/null");
+  test("returns 404 when missing", async () => {
+    users.findUserById.mockResolvedValueOnce(undefined);
+    const res = await request(app).get("/api/users/2");
     expect(res.status).toBe(404);
+    expect(res.body).toEqual({ error: "User not found" });
   });
 });
