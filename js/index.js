@@ -1,5 +1,6 @@
 "use strict";
 import { shareOn } from "./share.js";
+import { track } from "./analytics.js";
 
 const API_BASE = (window.API_ORIGIN || "") + "/api";
 const TZ = "America/New_York";
@@ -39,16 +40,12 @@ const LOW_POLY_GLB = FALLBACK_GLB_LOW;
       localStorage.setItem("adSessionId", sessionId);
     }
     const subreddit = localStorage.getItem("adSubreddit");
-    fetch(`${API_BASE}/track/page`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        sessionId,
-        subreddit,
-        utmSource: localStorage.getItem("utm_source") || undefined,
-        utmMedium: localStorage.getItem("utm_medium") || undefined,
-        utmCampaign: localStorage.getItem("utm_campaign") || undefined,
-      }),
+    track("page", {
+      sessionId,
+      subreddit,
+      utmSource: localStorage.getItem("utm_source") || undefined,
+      utmMedium: localStorage.getItem("utm_medium") || undefined,
+      utmCampaign: localStorage.getItem("utm_campaign") || undefined,
     }).catch(() => {});
   } catch {
     /* ignore */
@@ -85,11 +82,7 @@ const LOW_POLY_GLB = FALLBACK_GLB_LOW;
         localStorage.setItem("adSessionId", sessionId);
       }
       localStorage.setItem("adSubreddit", sr);
-      fetch(`${API_BASE}/track/ad-click`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ subreddit: sr, sessionId }),
-      }).catch(() => {});
+      track("ad-click", { subreddit: sr, sessionId }).catch(() => {});
     }
   } catch {
     /* ignore errors */
@@ -1090,10 +1083,10 @@ async function init() {
     const sessionId = localStorage.getItem("adSessionId");
     const subreddit = localStorage.getItem("adSubreddit");
     if (sessionId && subreddit && item.jobId) {
-      fetch(`${API_BASE}/track/cart`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionId, modelId: item.jobId, subreddit }),
+      track("cart", {
+        sessionId,
+        modelId: item.jobId,
+        subreddit,
       }).catch(() => {});
     }
     // Animation and sound handled in basket.js
