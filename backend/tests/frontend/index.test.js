@@ -23,11 +23,12 @@ describe("index validatePrompt", () => {
     global.document = dom.window.document;
     const shareSrc = fs
       .readFileSync(path.join(__dirname, "../../../js/share.js"), "utf8")
+      .replace(/^import[^\n]*\n/gm, "")
       .replace(/export \{[^}]+\};?/, "");
     dom.window.eval(shareSrc);
     let script = fs
       .readFileSync(path.join(__dirname, "../../../js/index.js"), "utf8")
-      .replace(/import { shareOn } from ['"]\.\/share.js['"];?/, "")
+      .replace(/^import[^\n]*\n/gm, "")
 
       .replace(/window\.addEventListener\(['"]DOMContentLoaded['"][\s\S]+$/, "")
       .replace(/let savedProfile = null;\n?/, "");

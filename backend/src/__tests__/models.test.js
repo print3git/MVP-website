@@ -46,3 +46,22 @@ test("POST /api/models returns 500 on db error", async () => {
   expect(res.status).toBe(500);
   expect(res.body.error).toBe("Internal Server Error");
 });
+
+test("POST /api/models rejects invalid fileKey", async () => {
+  const res = await request(app)
+    .post("/api/models")
+    .send({ prompt: "p", fileKey: "../bad" });
+  expect(res.status).toBe(400);
+});
+
+test("POST /api/models accepts hyphen and underscore", async () => {
+  const rows = [
+    { id: 2, prompt: "p", url: "https://cdn.example.com/my-file_1.glb" },
+  ];
+  mPool.query.mockResolvedValueOnce({ rows });
+  const res = await request(app)
+    .post("/api/models")
+    .send({ prompt: "p", fileKey: "my-file_1.glb" });
+  expect(res.status).toBe(201);
+  expect(res.body).toEqual(rows[0]);
+});

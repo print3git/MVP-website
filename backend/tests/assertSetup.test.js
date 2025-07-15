@@ -3,11 +3,11 @@ const os = require("os");
 const path = require("path");
 const { spawnSync } = require("child_process");
 
+
 process.env.HF_TOKEN = process.env.HF_TOKEN || "token";
 process.env.AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID || "key";
 process.env.AWS_SECRET_ACCESS_KEY =
   process.env.AWS_SECRET_ACCESS_KEY || "secret";
-
 const script = path.join(__dirname, "..", "..", "scripts", "assert-setup.js");
 const stub = path.join(__dirname, "stubExecSync.js");
 

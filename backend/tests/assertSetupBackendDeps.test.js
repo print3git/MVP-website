@@ -46,4 +46,13 @@ describe("assert-setup backend deps", () => {
       if (fs.existsSync(backup)) fs.renameSync(backup, nodeModules);
     }
   });
+
+  test("exits non-zero when ensure-deps fails", () => {
+    const { result } = runAssertSetup({
+      SKIP_NET_CHECKS: "1",
+      SKIP_PW_DEPS: "1",
+      FAIL_ENSURE_DEPS: "1",
+    });
+    expect(result.status).not.toBe(0);
+  });
 });
