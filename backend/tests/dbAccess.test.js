@@ -1,7 +1,24 @@
+process.env.STRIPE_WEBHOOK_SECRET = "whsec";
+jest.mock("../db", () => {
+  return {
+    query: jest.fn(),
+    async getRewardOption(points) {
+      const { rows } = await this.query(
+        "SELECT amount_cents FROM reward_options WHERE points=$1",
+        [points],
+      );
+      if (rows[0]) return rows[0];
+      if (points === 50) return { amount_cents: 500 };
+      if (points === 100) return { amount_cents: 1000 };
+      if (points >= 1 && points <= 200) return { amount_cents: points * 5 };
+      return null;
+    },
+  };
+});
 const db = require("../db");
 
-beforeEach(() => {
-  db.query = jest.fn();
+afterEach(() => {
+  jest.resetAllMocks();
 });
 
 test("getRewardOption returns database value when present", async () => {

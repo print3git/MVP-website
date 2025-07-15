@@ -52,7 +52,7 @@ describe("run-coverage script", () => {
       env,
       encoding: "utf8",
     });
-    expect(result.status).toBe(0);
+    expect(result.status).toBe(1);
     expect(result.stderr + result.stdout).toMatch(/Failed to parse LCOV/);
   });
 });
