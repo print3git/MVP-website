@@ -56,6 +56,9 @@ function runJest(args) {
   if (hasFileArgs && !jestArgs.includes("--runTestsByPath")) {
     jestArgs.unshift("--runTestsByPath");
   }
+  if (!jestArgs.includes("--runInBand")) {
+    jestArgs.push("--runInBand");
+  }
 
   const fileArgs = jestArgs.filter(
     (arg) => arg !== "--runTestsByPath" && !arg.startsWith("-"),
