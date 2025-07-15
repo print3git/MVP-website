@@ -55,3 +55,20 @@ test("overflows to secondary hub when queue high", async () => {
   const hub = await selectHub(mClient, { state: "CA" });
   expect(hub.id).toBe(2);
 });
+
+test("returns null when no hubs", async () => {
+  mClient.query.mockResolvedValueOnce({ rows: [] });
+  const hub = await selectHub(mClient, {});
+  expect(hub).toBeNull();
+});
+
+test("skips offline printers when calculating queue", async () => {
+  mClient.query
+    .mockResolvedValueOnce({ rows: [{ id: 1, location: "CA" }] })
+    .mockResolvedValueOnce({ rows: [{ id: 10, hub_id: 1 }] })
+    .mockResolvedValueOnce({
+      rows: [{ printer_id: 10, status: "busy", queue_length: 5, error: null }],
+    });
+  const hub = await selectHub(mClient, { state: "CA" });
+  expect(hub.id).toBe(1);
+});

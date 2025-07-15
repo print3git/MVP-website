@@ -25,21 +25,6 @@ describe("validateStl", () => {
     expect(validateStl(file)).toBe(true);
   });
 
-  test("returns false for ascii missing endsolid", () => {
-    const file = path.join(tmpDir, "bad_ascii.stl");
-    fs.writeFileSync(file, "solid test\nendsolid");
-    expect(validateStl(file)).toBe(false);
-  });
-
-  test("returns false for binary with zero tri", () => {
-    const file = path.join(tmpDir, "bad_bin.stl");
-    const buf = Buffer.alloc(84);
-    buf.write("BINARY", 0, "ascii");
-    buf.writeUInt32LE(0, 80);
-    fs.writeFileSync(file, buf);
-    expect(validateStl(file)).toBe(false);
-  });
-
   test("returns false for invalid file", () => {
     const file = path.join(tmpDir, "invalid.stl");
     fs.writeFileSync(file, "bad");

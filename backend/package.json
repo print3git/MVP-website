@@ -12,7 +12,7 @@
     "seed": "node scripts/seed-db.js",
     "create-admin": "node scripts/create-admin.js",
     "preformat": "node ../scripts/ensure-root-deps.js",
-    "format": "node -e \"const path=require('path');process.chdir('..');require(path.join(process.cwd(),'scripts/ensure-root-deps.js'))\" && prettier --write \"**/*.{js,jsx,json,md}\"",
+    "format": "node -e \"const path=require('path');process.chdir('..');require(path.join(process.cwd(),'scripts/ensure-root-deps.js'))\" && prettier --log-level warn --write \"**/*.{js,jsx,json,md}\"",
     "send-reminders": "node scripts/send-purchase-reminders.js",
     "send-abandoned-offers": "node scripts/send-abandoned-offers.js",
     "send-followups": "node scripts/send-post-purchase-followups.js",
@@ -35,7 +35,7 @@
     "send-ops-report": "node scripts/send-ops-report.js",
     "flag-overdue-printers": "node scripts/flag-overdue-procurement-orders.js",
     "pretest": "node scripts/ensure-deps.js",
-    "format:check": "prettier --check \"**/*.{js,jsx,json,md}\""
+    "format:check": "prettier --log-level warn --check \"**/*.{js,jsx,json,md}\""
   },
   "keywords": [],
   "author": "",

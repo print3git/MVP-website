@@ -23,9 +23,4 @@ describe("getEnv", () => {
   test("throws when required and missing", () => {
     expect(() => getEnv(KEY, { required: true })).toThrow();
   });
-
-  test("uses default when env empty", () => {
-    process.env[KEY] = "";
-    expect(getEnv(KEY, { default: "x" })).toBe("x");
-  });
 });

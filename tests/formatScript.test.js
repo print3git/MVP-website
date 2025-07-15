@@ -11,4 +11,11 @@ describe("format scripts", () => {
       "node ../scripts/ensure-root-deps.js",
     );
   });
+
+  test("format scripts run with minimal output", () => {
+    expect(rootPkg.scripts.format).toContain("--log-level warn");
+    expect(rootPkg.scripts["format:check"]).toContain("--log-level warn");
+    expect(backendPkg.scripts.format).toContain("--log-level warn");
+    expect(backendPkg.scripts["format:check"]).toContain("--log-level warn");
+  });
 });

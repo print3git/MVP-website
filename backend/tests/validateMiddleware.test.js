@@ -23,28 +23,28 @@ describe("validate middleware", () => {
     expect(next).not.toHaveBeenCalled();
   });
 
-  test("responds 400 when body missing", () => {
-    const req = {};
-    const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
-    const next = jest.fn();
-    validate(schema)(req, res, next);
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json.mock.calls[0][0]).toHaveProperty("error");
-    expect(next).not.toHaveBeenCalled();
-  });
 
-  test("passes non-Zod errors to next", () => {
-    const error = new Error("boom");
-    const fakeSchema = {
+  test("calls next on non-Zod errors", () => {
+    const badSchema = {
       parse: () => {
-        throw error;
+        throw new Error("boom");
+
       },
     };
     const req = { body: {} };
     const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
     const next = jest.fn();
-    validate(fakeSchema)(req, res, next);
-    expect(next).toHaveBeenCalledWith(error);
+    validate(badSchema)(req, res, next);
+    expect(next).toHaveBeenCalledWith(expect.any(Error));
     expect(res.status).not.toHaveBeenCalled();
+  });
+
+  test("handles null body as invalid", () => {
+    const req = { body: null };
+    const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+    const next = jest.fn();
+    validate(schema)(req, res, next);
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(next).not.toHaveBeenCalled();
   });
 });

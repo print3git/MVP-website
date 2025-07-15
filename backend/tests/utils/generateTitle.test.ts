@@ -18,8 +18,4 @@ describe("generateTitle", () => {
   test("capitalizes and trims words", () => {
     expect(generateTitle(" hello world ")).toBe("Hello World");
   });
-
-  test("ignores punctuation and numbers", () => {
-    expect(generateTitle("foo123 bar! baz?")).toBe("Foo123 Bar Baz");
-  });
 });

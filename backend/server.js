@@ -307,6 +307,9 @@ app.post("/api/dalle", async (req, res) => {
  * Placeholder endpoint that returns a fake model id
  */
 app.post("/api/generate-model", (req, res) => {
+  console.warn(
+    "[DEPRECATED] /api/generate-model is deprecated; use /api/generate instead",
+  );
   const { prompt } = req.body || {};
   if (!prompt) return res.status(400).json({ error: "Prompt required" });
   res.json({ success: true, modelId: "placeholder-id" });
