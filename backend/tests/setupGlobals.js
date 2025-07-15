@@ -60,6 +60,12 @@ if (!process.env.AWS_SECRET_ACCESS_KEY) {
 if (!process.env.DB_URL) {
   process.env.DB_URL = "postgres://user:pass@localhost/db";
 }
+if (!process.env.STRIPE_TEST_KEY) {
+  process.env.STRIPE_TEST_KEY = "sk_test";
+}
+if (!process.env.STRIPE_LIVE_KEY) {
+  process.env.STRIPE_LIVE_KEY = "sk_live";
+}
 if (!process.env.STRIPE_SECRET_KEY) {
   process.env.STRIPE_SECRET_KEY = "sk_test";
 }
