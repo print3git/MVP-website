@@ -235,4 +235,19 @@ describe("validate-env script", () => {
     expect(result.stdout.trim()).toBe("tok bucket");
     expect(result.status).toBe(0);
   });
+
+  test("fails when PLAYWRIGHT_BASE_URL unreachable", () => {
+    const env = {
+      ...process.env,
+      HF_TOKEN: "test",
+      AWS_ACCESS_KEY_ID: "id",
+      AWS_SECRET_ACCESS_KEY: "secret",
+      DB_URL: "postgres://user:pass@localhost/db",
+      STRIPE_SECRET_KEY: "sk_test",
+      PLAYWRIGHT_BASE_URL: "http://127.0.0.1:9",
+      SKIP_NET_CHECKS: "1",
+      SKIP_DB_CHECK: "1",
+    };
+    expect(() => run(env)).toThrow(/PLAYWRIGHT_BASE_URL unreachable/);
+  });
 });
