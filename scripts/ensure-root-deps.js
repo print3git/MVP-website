@@ -12,6 +12,17 @@ if (currentMajor < requiredMajor) {
   process.exit(1);
 }
 
+try {
+  const repoRoot = path.join(__dirname, "..");
+  execSync(`mise trust ${repoRoot}`, { stdio: "ignore" });
+  const miseToml = path.join(repoRoot, ".mise.toml");
+  if (fs.existsSync(miseToml)) {
+    execSync(`mise trust ${miseToml}`, { stdio: "ignore" });
+  }
+} catch {
+  // ignore errors from mise trust to avoid masking real issues
+}
+
 function getEnv() {
   const env = { ...process.env };
   delete env.npm_config_http_proxy;
