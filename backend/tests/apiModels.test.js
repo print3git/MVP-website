@@ -61,6 +61,22 @@ test("POST /api/models requires fields", async () => {
   expect(res.status).toBe(400);
 });
 
+test("POST /api/models rejects invalid fileKey", async () => {
+  const res = await request(app)
+    .post("/api/models")
+    .send({ prompt: "a", fileKey: "../bad" });
+  expect(res.status).toBe(400);
+});
+
+test("POST /api/models accepts hyphen and underscore", async () => {
+  const body = { prompt: "a", fileKey: "my-file_1.glb" };
+  const url = `https://${process.env.CLOUDFRONT_MODEL_DOMAIN}/${body.fileKey}`;
+  db.query.mockResolvedValueOnce({ rows: [{ id: 3, ...body, url }] });
+  const res = await request(app).post("/api/models").send(body);
+  expect(res.status).toBe(201);
+  expect(res.body.url).toBe(url);
+});
+
 test("POST /api/models/:id/public toggles visibility", async () => {
   const jwt = require("jsonwebtoken");
   const token = jwt.sign({ id: "u1" }, "secret");
