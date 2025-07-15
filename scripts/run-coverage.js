@@ -71,23 +71,33 @@ if (start === -1) {
 }
 output = output.slice(start);
 fs.writeFileSync(lcovPath, output);
+
+const backendLcov = path.join(repoRoot, "backend", "coverage", "lcov.info");
+fs.mkdirSync(path.dirname(backendLcov), { recursive: true });
+fs.writeFileSync(backendLcov, output);
 console.log(`LCOV written to ${lcovPath}`);
-// Generate a repo root summary for CI badges and coverage checks.
-const nyc = spawnSync(
-  "npx",
-  ["-y", "nyc", "report", "--reporter=json-summary", "--report-dir=coverage"],
-  { cwd: repoRoot, stdio: "inherit" },
+// Copy coverage summary produced by Jest to the repo root for CI checks.
+const backendSummary = path.join(
+  repoRoot,
+  "backend",
+  "coverage",
+  "coverage-summary.json",
 );
-if (nyc.status) {
-  console.error(`nyc report failed with code ${nyc.status}`);
-  process.exit(nyc.status);
-}
-const summaryPath = path.join(repoRoot, "coverage", "coverage-summary.json");
-if (!fs.existsSync(summaryPath)) {
-  console.error(`Missing coverage summary: ${summaryPath}`);
+if (!fs.existsSync(backendSummary)) {
+  console.error(`Missing coverage summary: ${backendSummary}`);
   process.exit(1);
 }
+const summaryPath = path.join(repoRoot, "coverage", "coverage-summary.json");
+fs.mkdirSync(path.dirname(summaryPath), { recursive: true });
+fs.copyFileSync(backendSummary, summaryPath);
 if (result.status) {
   console.error(`Jest exited with code ${result.status}`);
   process.exit(result.status);
+}
+const validContent = fs.readFileSync(lcovPath, "utf8");
+if (/^(TN|SF):/m.test(validContent)) {
+  console.log("\u2705 lcov.info written successfully");
+} else {
+  console.error("Generated lcov.info is invalid");
+  process.exit(1);
 }
