@@ -2,6 +2,7 @@
 const fs = require("fs");
 const path = require("path");
 const { JSDOM } = require("jsdom");
+const { loadScript } = require("../helpers");
 
 describe("shareOn", () => {
   function load() {
@@ -12,9 +13,7 @@ describe("shareOn", () => {
     global.window = dom.window;
     global.document = dom.window.document;
     dom.window.navigator.share = undefined;
-    const src = fs
-      .readFileSync(path.join(__dirname, "../../../js/share.js"), "utf8")
-      .replace(/export \{[^}]+\};?/, "");
+    const src = loadScript("js/share.js").replace(/export \{[^}]+\};?/, "");
     dom.window.eval(src);
     return dom.window.shareOn;
   }

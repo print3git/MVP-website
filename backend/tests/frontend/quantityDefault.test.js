@@ -1,6 +1,7 @@
 /** @jest-environment node */
 const fs = require("fs");
 const path = require("path");
+const { loadScript } = require("../helpers");
 const { JSDOM } = require("jsdom");
 
 function loadDom() {
@@ -19,10 +20,7 @@ function loadDom() {
   });
   global.window = dom.window;
   global.document = dom.window.document;
-  const script = fs.readFileSync(
-    path.join(__dirname, "../../../js/payment.js"),
-    "utf8",
-  );
+  let script = loadScript("js/payment.js");
   dom.window.eval(script);
   return dom;
 }

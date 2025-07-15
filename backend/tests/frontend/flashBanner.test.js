@@ -3,6 +3,7 @@ jest.useFakeTimers();
 
 const fs = require("fs");
 const path = require("path");
+const { loadScript } = require("../helpers");
 const { JSDOM } = require("jsdom");
 
 function setupDom() {
@@ -26,10 +27,7 @@ function setupDom() {
   dom.window.setInterval = setInterval;
   dom.window.clearInterval = clearInterval;
   dom.window.Date = Date;
-  const script = fs.readFileSync(
-    path.join(__dirname, "../../../js/payment.js"),
-    "utf8",
-  );
+  let script = loadScript("js/payment.js");
   dom.window.eval(script);
   return dom;
 }
