@@ -17,7 +17,7 @@ jobs:
       - name: Check coverage thresholds
         run: node scripts/check-coverage.js
       - name: Validate LCOV report
-        run: node scripts/run-jest.js backend/__tests__/lcovExists.test.js
+        run: CHECK_LCOV=1 node scripts/run-jest.js backend/__tests__/lcovExists.test.js
       - name: Verify coverage summary
         run: node scripts/run-jest.js backend/__tests__/coverageSummaryExists.test.js
       - run: cat coverage/lcov.info | npx coveralls
