@@ -1,22 +1,22 @@
-const { storeGlb } = require('../src/lib/storeGlb.ts');
-const aws = require('@aws-sdk/client-s3');
+const { storeGlb } = require("../src/lib/storeGlb.ts");
+const aws = require("@aws-sdk/client-s3");
 
-jest.mock('@aws-sdk/client-s3', () => ({
+jest.mock("@aws-sdk/client-s3", () => ({
   S3Client: jest.fn(),
   PutObjectCommand: jest.fn(),
 }));
 
-describe('storeGlb edge cases', () => {
+describe("storeGlb edge cases", () => {
   const validData = Buffer.alloc(12);
-  validData.write('glTF', 0);
+  validData.write("glTF", 0);
   validData.writeUInt32LE(2, 4);
   validData.writeUInt32LE(12, 8);
 
   beforeEach(() => {
-    process.env.AWS_REGION = 'us-east-1';
-    process.env.S3_BUCKET = 'bucket';
-    process.env.AWS_ACCESS_KEY_ID = 'id';
-    process.env.AWS_SECRET_ACCESS_KEY = 'secret';
+    process.env.AWS_REGION = "us-east-1";
+    process.env.S3_BUCKET = "bucket";
+    process.env.AWS_ACCESS_KEY_ID = "id";
+    process.env.AWS_SECRET_ACCESS_KEY = "secret";
   });
 
   afterEach(() => {
@@ -24,41 +24,64 @@ describe('storeGlb edge cases', () => {
     delete process.env.S3_BUCKET;
   });
 
-  test('throws when bucket env missing', async () => {
+  test("throws when bucket env missing", async () => {
     delete process.env.S3_BUCKET;
-    await expect(storeGlb(validData)).rejects.toThrow('S3_BUCKET is not set');
+    await expect(storeGlb(validData)).rejects.toThrow("S3_BUCKET is not set");
   });
 
-  test('retries upload on network error', async () => {
+  test("retries upload on network error", async () => {
     const send = jest
       .fn()
-      .mockRejectedValueOnce(Object.assign(new Error('network'), { name: 'NetworkingError' }))
+      .mockRejectedValueOnce(
+        Object.assign(new Error("network"), { name: "NetworkingError" }),
+      )
       .mockResolvedValue({});
     aws.S3Client.mockImplementation(() => ({ send }));
 
     const url = await storeGlb(validData, 2);
 
     expect(send).toHaveBeenCalledTimes(2);
-    expect(url).toMatch(/^https:\/\/bucket\.s3\.us-east-1\.amazonaws\.com\/models\//);
+    expect(url).toMatch(
+      /^https:\/\/bucket\.s3\.us-east-1\.amazonaws\.com\/models\//,
+    );
   });
 
-  test('rejects unsupported file extension', async () => {
-    const bad = Buffer.from('xxxx');
-    await expect(storeGlb(bad)).rejects.toThrow('Invalid GLB');
+  test("throws after max retries on network error", async () => {
+    const err = Object.assign(new Error("network"), {
+      name: "NetworkingError",
+    });
+    const send = jest.fn().mockRejectedValue(err);
+    aws.S3Client.mockImplementation(() => ({ send }));
+
+    await expect(storeGlb(validData, 2)).rejects.toThrow("network");
+    expect(send).toHaveBeenCalledTimes(2);
   });
 
-  test('successful upload returns url', async () => {
+  test("does not retry on non-network errors", async () => {
+    const send = jest.fn().mockRejectedValue(new Error("fail"));
+    aws.S3Client.mockImplementation(() => ({ send }));
+
+    await expect(storeGlb(validData, 2)).rejects.toThrow("fail");
+    expect(send).toHaveBeenCalledTimes(1);
+  });
+
+  test("rejects unsupported file extension", async () => {
+    const bad = Buffer.from("xxxx");
+    await expect(storeGlb(bad)).rejects.toThrow("Invalid GLB");
+  });
+
+  test("successful upload returns url", async () => {
     const send = jest.fn().mockResolvedValue({});
     aws.S3Client.mockImplementation(() => ({ send }));
 
     const url = await storeGlb(validData);
 
     expect(aws.PutObjectCommand).toHaveBeenCalledWith({
-      Bucket: 'bucket',
+      Bucket: "bucket",
       Key: expect.stringMatching(/^models\/\d+-[a-z0-9]+\.glb$/),
       Body: validData,
-      ContentType: 'model/gltf-binary',
-      ACL: 'public-read',
+      ContentType: "model/gltf-binary",
+      ACL: "public-read",
     });
     expect(url).toMatch(
       /^https:\/\/bucket\.s3\.us-east-1\.amazonaws\.com\/models\/\d+-[a-z0-9]+\.glb$/,

@@ -39,4 +39,21 @@ describe("runNpmCi", () => {
     );
     expect(execSync.mock.calls.pop()[0]).toBe("npm ci --no-audit --no-fund");
   });
+
+  test("cleans cache on corrupted tarball", () => {
+    execSync.mockImplementationOnce(() => {
+      const err = new Error("corrupt");
+      err.stderr =
+        "npm WARN tarball tarball data for package@https://registry.npmjs.org/package/-/package-1.0.0.tgz (sha512-abc) seems to be corrupted";
+      throw err;
+    });
+    const { runNpmCi } = require("../scripts/run-npm-ci");
+    runNpmCi();
+    expect(execSync.mock.calls[0][0]).toBe("npm ci --no-audit --no-fund");
+    expect(rmSync).toHaveBeenCalledWith(
+      expect.stringContaining("node_modules"),
+      expect.any(Object),
+    );
+    expect(execSync.mock.calls.pop()[0]).toBe("npm ci --no-audit --no-fund");
+  });
 });

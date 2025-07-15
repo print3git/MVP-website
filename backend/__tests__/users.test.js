@@ -27,4 +27,16 @@ describe("GET /api/users/:id", () => {
     expect(res.status).toBe(500);
     expect(res.body).toEqual({ error: "Internal Server Error" });
   });
+  test("returns 404 when user missing", async () => {
+    users.findUserById.mockResolvedValue(undefined);
+    const res = await request(app).get("/api/users/456");
+    expect(res.status).toBe(404);
+    expect(res.body).toEqual({ error: "User not found" });
+  });
+
+  test("handles null id parameter", async () => {
+    users.findUserById.mockResolvedValue(null);
+    const res = await request(app).get("/api/users/null");
+    expect(res.status).toBe(404);
+  });
 });

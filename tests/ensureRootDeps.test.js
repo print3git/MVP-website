@@ -55,4 +55,17 @@ describe("ensure-root-deps", () => {
     delete process.env.npm_config_http_proxy;
     delete process.env.npm_config_https_proxy;
   });
+
+  test("fails when node version is too low", () => {
+    fs.existsSync.mockReturnValue(true);
+    const originalVersions = process.versions;
+    Object.defineProperty(process, "versions", {
+      value: { ...process.versions, node: "18.0.0" },
+    });
+    jest.isolateModules(() => {
+      require("../scripts/ensure-root-deps.js");
+    });
+    expect(process.exit).toHaveBeenCalledWith(1);
+    Object.defineProperty(process, "versions", { value: originalVersions });
+  });
 });

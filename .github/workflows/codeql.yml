@@ -20,6 +20,8 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
+      - name: Verify code scanning enabled
+        run: node scripts/check-code-scanning.js
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3.29.2
         with:

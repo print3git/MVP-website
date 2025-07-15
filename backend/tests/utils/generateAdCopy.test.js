@@ -41,4 +41,22 @@ describe("generateAdCopy", () => {
     const text = await generateAdCopy("baz");
     expect(text).toBe("Ad for baz");
   });
+
+  test("uses template when API response missing text", async () => {
+    process.env.LLM_API_URL = "http://api";
+    axios.post.mockResolvedValue({ data: {} });
+    Math.random = jest.fn(() => 0);
+    const text = await generateAdCopy("qux");
+    expect(text).toBe("Ad for qux");
+  });
+
+  test("handles undefined context", async () => {
+    process.env.LLM_API_URL = "http://api";
+    axios.post.mockResolvedValue({ data: { text: "Res" } });
+    const text = await generateAdCopy("sub");
+    expect(axios.post).toHaveBeenCalledWith("http://api", {
+      prompt: "Write a short advert for r/sub. Context: ",
+    });
+    expect(text).toBe("Res");
+  });
 });
