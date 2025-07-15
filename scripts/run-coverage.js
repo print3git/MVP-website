@@ -33,9 +33,7 @@ const jestArgs = [
   "--maxWorkers=2",
   "--detectOpenHandles",
   "--forceExit",
-  "--coverageReporters=text-lcov",
   "--coverageReporters=json-summary",
-  "--coverageReporters=lcov",
   "--coverageThreshold={}",
   "--silent",
   "--config",
@@ -51,9 +49,10 @@ const jestBin = path.join(
   ".bin",
   "jest",
 );
-const result = spawnSync(jestBin, jestArgs, {
+const nycBin = path.join(__dirname, "..", "node_modules", ".bin", "nyc");
+const result = spawnSync(nycBin, ["--silent", jestBin, ...jestArgs], {
   encoding: "utf8",
-  stdio: ["inherit", "pipe", "inherit"],
+  stdio: "inherit",
   cwd: path.join(__dirname, ".."),
   env: {
     ...process.env,
@@ -61,17 +60,28 @@ const result = spawnSync(jestBin, jestArgs, {
   },
 });
 
-const lcovPath = path.join(repoRoot, "coverage", "lcov.info");
-fs.mkdirSync(path.dirname(lcovPath), { recursive: true });
-let output = result.stdout || "";
-const start = output.indexOf("TN:");
-if (start === -1) {
-  console.error("Failed to parse LCOV from jest output");
-  process.exit(result.status || 1);
+const rootDir = path.join(repoRoot, "coverage");
+const backendDir = path.join(repoRoot, "backend", "coverage");
+fs.mkdirSync(rootDir, { recursive: true });
+fs.mkdirSync(backendDir, { recursive: true });
+spawnSync(nycBin, ["report", "--reporter=lcov", "--report-dir", rootDir], {
+  stdio: "inherit",
+  cwd: repoRoot,
+});
+spawnSync(nycBin, ["report", "--reporter=lcov", "--report-dir", backendDir], {
+  stdio: "inherit",
+  cwd: repoRoot,
+});
+const lcovPath = path.join(rootDir, "lcov.info");
+if (!fs.existsSync(lcovPath)) {
+  console.error(`Missing lcov report: ${lcovPath}`);
+  process.exit(1);
 }
-output = output.slice(start);
-fs.writeFileSync(lcovPath, output);
-console.log(`LCOV written to ${lcovPath}`);
+const lcovData = fs.readFileSync(lcovPath, "utf8");
+if (!/TN:/.test(lcovData) || !/SF:/.test(lcovData)) {
+  console.error("Invalid lcov report generated");
+  process.exit(1);
+}
 const summaryPath = path.join(
   repoRoot,
   "backend",
