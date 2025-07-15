@@ -15,7 +15,11 @@ app.use((err, req, res, _next) => {
     url: req.originalUrl,
     body: req.body,
   };
-  logger.error("Error handling request", context, err);
+  try {
+    logger.error("Error handling request", context, err);
+  } catch (_logErr) {
+    // ignore logging failures
+  }
   capture(err);
   res.status(500).json({ error: "Internal Server Error" });
 });
