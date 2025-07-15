@@ -109,7 +109,8 @@ function runSetup() {
   }
   try {
     execSync("npm run setup", { stdio: "inherit", cwd: repoRoot, env });
-  } catch (_err) {
+
+  } catch {
     if (env.SKIP_PW_DEPS) {
       console.warn(
         "Setup failed with SKIP_PW_DEPS, retrying without it to install browsers",
