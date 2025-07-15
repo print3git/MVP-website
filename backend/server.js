@@ -35,11 +35,7 @@ const ApiError = require("./src/errors/ApiError");
 const axios = require("axios");
 const fs = require("fs");
 const logger = require("../src/logger");
-const {
-  S3Client,
-  PutObjectCommand,
-  HeadBucketCommand,
-} = require("@aws-sdk/client-s3");
+const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const config = require("./config");
 const prohibitedCountries = ["CU", "IR", "KP", "RU", "SY"];
 const stripe = require("stripe")(config.stripeKey);
@@ -668,21 +664,11 @@ app.get("/api/campaign", (req, res) => {
 
 app.get("/api/health", async (req, res) => {
   try {
-    if (process.env.NODE_ENV === "test") {
-      return res.json({ db: "ok", s3: "ok" });
-    }
     await db.query("SELECT 1");
+    res.json({ ok: true });
   } catch (err) {
     logError("Health check failed", err);
-    return res.status(500).json({ error: "DB error" });
-  }
-
-  try {
-    await s3.send(new HeadBucketCommand({ Bucket: process.env.S3_BUCKET }));
-    res.json({ db: "ok", s3: "ok" });
-  } catch (err) {
-    logError("Health check failed", err);
-    res.status(500).json({ error: "unhealthy" });
+    res.status(500).send(err.message);
   }
 });
 
