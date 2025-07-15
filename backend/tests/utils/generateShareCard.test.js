@@ -17,12 +17,12 @@ describe("generateShareCard", () => {
   const tmpDir = fs.mkdtempSync(path.join(__dirname, "sharecard-"));
   const outPath = path.join(tmpDir, "card.png");
 
-  const mImage = { print: jest.fn().mockReturnThis(), writeAsync: jest.fn() };
+  const mImage = Jimp.__image;
 
   beforeEach(() => {
-    Jimp.mockClear();
+    jest.clearAllMocks();
     Jimp.loadFont.mockResolvedValue("FONT");
-    Jimp.mockResolvedValue(mImage);
+    Jimp.mockImplementation(() => mImage);
     mImage.print.mockClear();
     mImage.writeAsync.mockClear();
   });

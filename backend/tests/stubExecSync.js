@@ -23,4 +23,12 @@ child_process.execSync = function (cmd, opts = {}) {
   return Buffer.from("");
 };
 
+if (process.env.FAKE_NODE_MODULES_MISSING) {
+  const origExists = fs.existsSync;
+  fs.existsSync = (p) => {
+    if (p.includes("node_modules")) return false;
+    return origExists(p);
+  };
+}
+
 module.exports = { logFile };
