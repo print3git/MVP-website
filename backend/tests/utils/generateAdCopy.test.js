@@ -37,9 +37,20 @@ describe("generateAdCopy", () => {
     process.env.LLM_API_URL = "http://api";
     axios.post.mockRejectedValue(new Error("fail"));
     Math.random = jest.fn(() => 0);
-    console.error.mockImplementation(() => {});
+    jest.spyOn(console, "error").mockImplementation(() => {});
     const text = await generateAdCopy("baz");
     expect(text).toBe("Ad for baz");
+  });
+
+  test("falls back to template on 5xx response", async () => {
+    process.env.LLM_API_URL = "http://api";
+    const error = new Error("boom");
+    error.response = { status: 503 };
+    axios.post.mockRejectedValue(error);
+    Math.random = jest.fn(() => 0);
+    jest.spyOn(console, "error").mockImplementation(() => {});
+    const text = await generateAdCopy("oops");
+    expect(text).toBe("Ad for oops");
   });
 
   test("uses template when API response missing text", async () => {
