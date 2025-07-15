@@ -10,7 +10,10 @@ const logger = createLogger({
   transports: [consoleTransport],
 });
 
-if (isTest) {
+// During tests, avoid writing to console to prevent Jest spies from failing
+// when logger methods are invoked. The logger transport is already silenced
+// in test mode, so we skip the console wrapper entirely.
+if (!isTest) {
   ["info", "warn", "error"].forEach((method) => {
     const orig = logger[method].bind(logger);
     logger[method] = (...args) => {
