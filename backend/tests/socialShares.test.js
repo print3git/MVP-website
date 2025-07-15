@@ -26,7 +26,7 @@ beforeEach(() => {
 
 test("POST /api/social-shares stores submission", async () => {
   db.insertSocialShare.mockResolvedValue({ id: 1, verified: false });
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .post("/api/social-shares")
     .set("authorization", `Bearer ${token}`)
