@@ -1,6 +1,7 @@
 process.env.DB_ENDPOINT = "postgres://user:pass@localhost/db";
 process.env.DB_PASSWORD = "pass";
 process.env.CLOUDFRONT_DOMAIN = "cdn.example.com";
+process.env.STRIPE_TEST_KEY = "sk_test_dummy";
 
 jest.mock("pg");
 const { Pool } = require("pg");
@@ -44,4 +45,23 @@ test("POST /api/models returns 500 on db error", async () => {
     .send({ prompt: "p", fileKey: "file.glb" });
   expect(res.status).toBe(500);
   expect(res.body.error).toBe("Internal Server Error");
+});
+
+test("POST /api/models rejects invalid fileKey", async () => {
+  const res = await request(app)
+    .post("/api/models")
+    .send({ prompt: "p", fileKey: "../bad" });
+  expect(res.status).toBe(400);
+});
+
+test("POST /api/models accepts hyphen and underscore", async () => {
+  const rows = [
+    { id: 2, prompt: "p", url: "https://cdn.example.com/my-file_1.glb" },
+  ];
+  mPool.query.mockResolvedValueOnce({ rows });
+  const res = await request(app)
+    .post("/api/models")
+    .send({ prompt: "p", fileKey: "my-file_1.glb" });
+  expect(res.status).toBe(201);
+  expect(res.body).toEqual(rows[0]);
 });

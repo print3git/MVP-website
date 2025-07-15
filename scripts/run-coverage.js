@@ -9,6 +9,11 @@ const repoRoot = path.join(__dirname, "..");
 // coverage run doesn't silently use a wrong version when mise wasn't activated.
 require("./check-node-version.js");
 
+// Validate environment variables and dependencies just like the test and CI
+// scripts do. This prevents confusing failures when `npm run coverage` is run
+// without first executing the setup script.
+require("./assert-setup.js");
+
 const extraArgs = process.argv.slice(2);
 const jestArgs = [
   "--ci",

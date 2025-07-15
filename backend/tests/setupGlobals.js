@@ -63,8 +63,14 @@ if (!process.env.DB_URL) {
 if (!process.env.STRIPE_SECRET_KEY) {
   process.env.STRIPE_SECRET_KEY = "sk_test";
 }
+if (!process.env.STRIPE_TEST_KEY) {
+  process.env.STRIPE_TEST_KEY = process.env.STRIPE_SECRET_KEY;
+}
 if (!process.env.STRIPE_PUBLISHABLE_KEY) {
   process.env.STRIPE_PUBLISHABLE_KEY = "pk_test";
+}
+if (!process.env.STRIPE_WEBHOOK_SECRET) {
+  process.env.STRIPE_WEBHOOK_SECRET = "whsec";
 }
 
 // Ensure any proxy environment variables do not interfere with HTTP mocking

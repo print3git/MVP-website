@@ -11,4 +11,5 @@ function capture(error) {
     Sentry.captureException(error);
   }
 }
+
 module.exports = { capture };
