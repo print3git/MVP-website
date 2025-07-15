@@ -395,7 +395,7 @@ Run coverage after installing dependencies:
 npm run setup
 npm run coverage
 
-cat backend/coverage/lcov.info | npx coveralls
+cat coverage/lcov.info | npx coveralls
 ```
 
 Using `npx coveralls` ensures the CLI runs even if it's not installed globally.
@@ -410,14 +410,14 @@ If Coveralls fails with an `lcovParse` error, the `lcov.info` report may contain
 ANSI color codes. Strip them before uploading:
 
 ```bash
-npx strip-ansi backend/coverage/lcov.info > cleaned.info
+npx strip-ansi coverage/lcov.info > cleaned.info
 cat cleaned.info | npx coveralls
 ```
 
 Verify the file includes `SF:` entries to confirm it's valid:
 
 ```bash
-grep '^SF:' backend/coverage/lcov.info | head
+grep '^SF:' coverage/lcov.info | head
 ```
 
 Missing `SF:` lines usually mean the report was truncated. Re-run `npm run coverage`
