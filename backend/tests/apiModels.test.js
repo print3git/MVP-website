@@ -79,7 +79,7 @@ test("POST /api/models accepts hyphen and underscore", async () => {
 
 test("POST /api/models/:id/public toggles visibility", async () => {
   const jwt = require("jsonwebtoken");
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   db.query.mockResolvedValueOnce({ rows: [{ is_public: true }] });
   const res = await request(app)
     .post("/api/models/5/public")
@@ -95,7 +95,7 @@ test("POST /api/models/:id/public toggles visibility", async () => {
 
 test("DELETE /api/models/:id removes model", async () => {
   const jwt = require("jsonwebtoken");
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   db.query.mockResolvedValueOnce({ rows: [{ job_id: "5" }] });
   db.query.mockResolvedValueOnce({});
   db.query.mockResolvedValueOnce({});

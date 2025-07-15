@@ -17,7 +17,7 @@ const app = require("../server");
 
 test("POST /api/referral-post returns code when verified", async () => {
   verifyTag.mockResolvedValue(true);
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .post("/api/referral-post")
     .set("authorization", `Bearer ${token}`)
@@ -29,7 +29,7 @@ test("POST /api/referral-post returns code when verified", async () => {
 
 test("POST /api/referral-post rejects invalid tag", async () => {
   verifyTag.mockResolvedValue(false);
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .post("/api/referral-post")
     .set("authorization", `Bearer ${token}`)

@@ -32,7 +32,7 @@ test("GET /api/achievements requires auth", async () => {
 
 test("GET /api/achievements returns list", async () => {
   db.getAchievements.mockResolvedValue([{ name: "First Print" }]);
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .get("/api/achievements")
     .set("authorization", `Bearer ${token}`);

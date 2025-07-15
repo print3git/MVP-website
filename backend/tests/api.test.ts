@@ -202,7 +202,7 @@ test("create-order applies first-order discount", async () => {
     .mockResolvedValueOnce({ rows: [{ count: "0" }] })
     .mockResolvedValueOnce({})
     .mockResolvedValueOnce({});
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   await request(app)
     .post("/api/create-order")
     .set("authorization", `Bearer ${token}`)
@@ -419,7 +419,7 @@ test("POST /api/generate accepts image upload", async () => {
 test("POST /api/community submits model", async () => {
   db.query.mockResolvedValueOnce({ rows: [{ generated_title: "Auto" }] });
   db.query.mockResolvedValueOnce({});
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .post("/api/community")
     .set("authorization", `Bearer ${token}`)
@@ -437,7 +437,7 @@ test("POST /api/community uses BLIP caption for title", async () => {
   generateCaption.mockResolvedValueOnce(caption);
   db.query.mockResolvedValueOnce({ rows: [{ generated_title: caption }] });
   db.query.mockResolvedValueOnce({});
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .post("/api/community")
     .set("authorization", `Bearer ${token}`)
@@ -451,7 +451,7 @@ test("POST /api/community uses BLIP caption for title", async () => {
 });
 
 test("POST /api/community requires jobId", async () => {
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .post("/api/community")
     .set("authorization", `Bearer ${token}`)
@@ -499,7 +499,7 @@ test("GET /api/community/recent pagination and category", async () => {
 
 test("GET /api/community/mine returns creations", async () => {
   db.getUserCreations.mockResolvedValueOnce([]);
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   await request(app)
     .get("/api/community/mine")
     .set("authorization", `Bearer ${token}`);
@@ -515,7 +515,7 @@ test("POST /api/community/:id/comment requires auth", async () => {
 
 test("POST /api/community/:id/comment", async () => {
   db.insertCommunityComment.mockResolvedValueOnce({ id: "c1", text: "hi" });
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .post("/api/community/5/comment")
     .set("authorization", `Bearer ${token}`)
@@ -621,7 +621,7 @@ test("/api/generate falls back on server failure", async () => {
 
 test("/api/generate saves authenticated user id", async () => {
   generateModel.mockResolvedValueOnce("/m.glb");
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   await request(app)
     .post("/api/generate")
     .set("authorization", `Bearer ${token}`)
@@ -676,7 +676,7 @@ test("GET /api/users/:username/profile 404 when missing", async () => {
 });
 
 test("GET /api/profile returns profile", async () => {
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   db.query.mockResolvedValueOnce({
     rows: [
       {
@@ -696,7 +696,7 @@ test("GET /api/profile returns profile", async () => {
 });
 
 test("POST /api/profile saves details", async () => {
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   db.query.mockResolvedValueOnce({});
   const res = await request(app)
     .post("/api/profile")
@@ -718,7 +718,7 @@ test("POST /api/create-order saves user id", async () => {
     .mockResolvedValueOnce({ rows: [{ job_id: "1", user_id: "u1" }] })
     .mockResolvedValueOnce({ rows: [{ id: "o1" }] })
     .mockResolvedValueOnce({});
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   await request(app)
     .post("/api/create-order")
     .set("authorization", `Bearer ${token}`)
@@ -770,7 +770,7 @@ test("create-order inserts commission for marketplace sale", async () => {
     .mockResolvedValueOnce({ rows: [{ count: "1" }] })
     .mockResolvedValueOnce({});
   db.insertCommission.mockResolvedValueOnce({});
-  const token = jwt.sign({ id: "buyer" }, "secret");
+  const token = jwt.sign({ id: "buyer" }, process.env.AUTH_SECRET || "secret");
   await request(app)
     .post("/api/create-order")
     .set("authorization", `Bearer ${token}`)
@@ -793,7 +793,7 @@ test("create-order using credit deducts balance", async () => {
     total_credits: 2,
     used_credits: 1,
   });
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .post("/api/create-order")
     .set("authorization", `Bearer ${token}`)
@@ -810,7 +810,7 @@ test("create-order using credit rejects odd quantity", async () => {
     total_credits: 2,
     used_credits: 0,
   });
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .post("/api/create-order")
     .set("authorization", `Bearer ${token}`)
@@ -822,7 +822,7 @@ test("GET /api/my/orders returns orders", async () => {
   db.query.mockResolvedValueOnce({
     rows: [{ session_id: "s1", snapshot: "img", prompt: "p" }],
   });
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .get("/api/my/orders")
     .set("authorization", `Bearer ${token}`);
@@ -935,7 +935,7 @@ test("POST /api/generate-model requires prompt", async () => {
 });
 
 test("GET /api/dashboard returns aggregated info", async () => {
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   db.query
     .mockResolvedValueOnce({
       rows: [{ id: "u1", username: "alice", email: "a@e.com" }],

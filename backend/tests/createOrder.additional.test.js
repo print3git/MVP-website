@@ -36,7 +36,7 @@ describe("create-order extras", () => {
       .mockResolvedValueOnce({ rows: [{ count: "2" }] })
       .mockResolvedValueOnce({})
       .mockResolvedValueOnce({});
-    const token = jwt.sign({ id: "u1" }, "secret");
+    const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
     await request(app)
       .post("/api/create-order")
       .set("authorization", `Bearer ${token}`)

@@ -53,7 +53,7 @@ beforeEach(() => {
 
 test("GET /api/my/models returns models", async () => {
   db.query.mockResolvedValueOnce({ rows: [{ job_id: "j1" }] });
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .get("/api/my/models")
     .set("authorization", `Bearer ${token}`);
@@ -65,7 +65,7 @@ test("GET /api/my/models includes snapshot", async () => {
   db.query.mockResolvedValueOnce({
     rows: [{ job_id: "j1", snapshot: "snap.png" }],
   });
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .get("/api/my/models")
     .set("authorization", `Bearer ${token}`);
@@ -80,7 +80,7 @@ test("GET /api/my/models requires auth", async () => {
 
 test("GET /api/my/models ordered by date", async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   await request(app)
     .get("/api/my/models")
     .set("authorization", `Bearer ${token}`);
@@ -92,7 +92,7 @@ test("GET /api/my/models ordered by date", async () => {
 
 test("GET /api/my/models supports pagination", async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   await request(app)
     .get("/api/my/models?limit=5&offset=2")
     .set("authorization", `Bearer ${token}`);
@@ -108,7 +108,7 @@ test("GET /api/my/models returns models sorted by date", async () => {
     { job_id: "j1", created_at: "2024-01-01" },
   ];
   db.query.mockResolvedValueOnce({ rows });
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .get("/api/my/models")
     .set("authorization", `Bearer ${token}`);
@@ -118,7 +118,7 @@ test("GET /api/my/models returns models sorted by date", async () => {
 
 test("GET /api/profile returns profile", async () => {
   db.query.mockResolvedValueOnce({ rows: [{ display_name: "A" }] });
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .get("/api/profile")
     .set("authorization", `Bearer ${token}`);
@@ -128,7 +128,7 @@ test("GET /api/profile returns profile", async () => {
 
 test("GET /api/profile 404 when missing", async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .get("/api/profile")
     .set("authorization", `Bearer ${token}`);
@@ -191,7 +191,7 @@ test("POST /api/models/:id/like adds like", async () => {
     .mockResolvedValueOnce({ rows: [] })
     .mockResolvedValueOnce({})
     .mockResolvedValueOnce({ rows: [{ count: "1" }] });
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .post("/api/models/j1/like")
     .set("authorization", `Bearer ${token}`)
@@ -205,7 +205,7 @@ test("POST /api/models/:id/like removes like", async () => {
     .mockResolvedValueOnce({ rows: [{}] })
     .mockResolvedValueOnce({})
     .mockResolvedValueOnce({ rows: [{ count: "0" }] });
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .post("/api/models/j1/like")
     .set("authorization", `Bearer ${token}`)
@@ -222,7 +222,7 @@ test("POST /api/models/:id/like requires auth", async () => {
 test("POST /api/models/:id/public updates flag", async () => {
   db.query.mockResolvedValueOnce({ rows: [{ is_public: true }] });
 
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .post("/api/models/j1/public")
     .set("authorization", `Bearer ${token}`)
@@ -236,7 +236,7 @@ test("POST /api/models/:id/public updates flag", async () => {
 });
 
 test("POST /api/models/:id/public requires boolean", async () => {
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .post("/api/models/j1/public")
     .set("authorization", `Bearer ${token}`)
@@ -249,7 +249,7 @@ test("DELETE /api/models/:id deletes model", async () => {
     .mockResolvedValueOnce({ rows: [{ job_id: "j1" }] })
     .mockResolvedValueOnce({})
     .mockResolvedValueOnce({});
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .delete("/api/models/j1")
     .set("authorization", `Bearer ${token}`);
@@ -260,7 +260,7 @@ test("DELETE /api/models/:id deletes model", async () => {
 
 test("DELETE /api/models/:id 404 when missing", async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .delete("/api/models/bad")
     .set("authorization", `Bearer ${token}`);
@@ -269,7 +269,7 @@ test("DELETE /api/models/:id 404 when missing", async () => {
 
 test("DELETE /api/community/:id deletes creation", async () => {
   db.query.mockResolvedValueOnce({ rows: [{ id: "c1" }] });
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .delete("/api/community/c1")
     .set("authorization", `Bearer ${token}`);
@@ -280,7 +280,7 @@ test("DELETE /api/community/:id deletes creation", async () => {
 
 test("DELETE /api/community/:id 404 when missing", async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .delete("/api/community/bad")
     .set("authorization", `Bearer ${token}`);
@@ -317,7 +317,7 @@ test("GET /api/community/model/:id returns model", async () => {
 
 test("GET /api/community/mine returns creations", async () => {
   db.getUserCreations.mockResolvedValueOnce([]);
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .get("/api/community/mine")
     .set("authorization", `Bearer ${token}`);
@@ -327,7 +327,7 @@ test("GET /api/community/mine returns creations", async () => {
 
 test("POST /api/community/:id/comment adds comment", async () => {
   db.insertCommunityComment.mockResolvedValueOnce({ id: "x", text: "t" });
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .post("/api/community/c1/comment")
     .set("authorization", `Bearer ${token}`)
@@ -431,7 +431,7 @@ test("POST /api/competitions/:id/comments requires auth", async () => {
 
 test("POST /api/competitions/:id/comments", async () => {
   db.query.mockResolvedValueOnce({ rows: [{ id: "c1", text: "hello" }] });
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .post("/api/competitions/5/comments")
     .set("authorization", `Bearer ${token}`)
@@ -446,7 +446,7 @@ test("POST /api/competitions/:id/comments", async () => {
 
 test("POST /api/competitions/:id/enter", async () => {
   db.query.mockResolvedValueOnce({});
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .post("/api/competitions/5/enter")
     .set("authorization", `Bearer ${token}`)
@@ -471,7 +471,7 @@ test("POST /api/competitions/:id/enter rejects unauthenticated user", async () =
 
 test("POST /api/competitions/:id/enter prevents duplicate", async () => {
   db.query.mockResolvedValueOnce({});
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   await request(app)
     .post("/api/competitions/5/enter")
     .set("authorization", `Bearer ${token}`)
@@ -484,7 +484,7 @@ test("POST /api/competitions/:id/enter prevents duplicate", async () => {
 
 test("POST /api/competitions/:id/enter allows repeat submission without error", async () => {
   db.query.mockResolvedValue({});
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const first = await request(app)
     .post("/api/competitions/5/enter")
     .set("authorization", `Bearer ${token}`)
@@ -506,7 +506,7 @@ test("POST /api/competitions/:id/discount returns code", async () => {
   db.query
     .mockResolvedValueOnce({ rows: [{}] })
     .mockResolvedValueOnce({ rows: [{ code: "X1" }] });
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .post("/api/competitions/5/discount")
     .set("authorization", `Bearer ${token}`)
@@ -521,7 +521,7 @@ test("POST /api/competitions/:id/discount returns code", async () => {
 
 test("POST /api/competitions/:id/discount requires entry", async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .post("/api/competitions/5/discount")
     .set("authorization", `Bearer ${token}`)
@@ -533,7 +533,7 @@ test("POST /api/competitions/:id/vote stores vote", async () => {
   db.query
     .mockResolvedValueOnce({})
     .mockResolvedValueOnce({ rows: [{ count: "1" }] });
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .post("/api/competitions/5/vote")
     .set("authorization", `Bearer ${token}`)
@@ -543,7 +543,7 @@ test("POST /api/competitions/:id/vote stores vote", async () => {
 });
 
 test("POST /api/competitions/:id/vote requires modelId", async () => {
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .post("/api/competitions/5/vote")
     .set("authorization", `Bearer ${token}`)
@@ -685,7 +685,7 @@ test("GET /api/init-data returns slots, stats, and profile", async () => {
   const { _setDailyPrintsSold } = require("../utils/dailyPrints");
   _setDailyPrintsSold(10);
   db.query.mockResolvedValueOnce({ rows: [{ display_name: "A" }] });
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .get("/api/init-data")
     .set("authorization", `Bearer ${token}`);
@@ -701,7 +701,7 @@ test("GET /api/payment-init bundles payment data", async () => {
     .mockResolvedValueOnce({
       rows: [{ display_name: "B", shipping_info: { name: "J" } }],
     });
-  const token = jwt.sign({ id: "u2" }, "secret");
+  const token = jwt.sign({ id: "u2" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .get("/api/payment-init")
     .set("authorization", `Bearer ${token}`);

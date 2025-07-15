@@ -37,7 +37,7 @@ test("POST /api/payouts requires auth", async () => {
 
 test("POST /api/payouts 400 without account", async () => {
   db.query.mockResolvedValueOnce({ rows: [{ stripe_account_id: null }] });
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .post("/api/payouts")
     .set("authorization", `Bearer ${token}`);
@@ -52,7 +52,7 @@ test("POST /api/payouts transfers funds", async () => {
     })
     .mockResolvedValueOnce({});
   stripeMock.transfers.create.mockResolvedValue({ id: "tr_1" });
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .post("/api/payouts")
     .set("authorization", `Bearer ${token}`);
@@ -77,7 +77,7 @@ test("POST /api/stripe/connect creates link", async () => {
     .mockResolvedValueOnce({});
   stripeMock.accounts.create.mockResolvedValue({ id: "acct_2" });
   stripeMock.accountLinks.create.mockResolvedValue({ url: "https://connect" });
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .post("/api/stripe/connect")
     .set("authorization", `Bearer ${token}`)

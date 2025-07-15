@@ -45,7 +45,7 @@ beforeEach(() => {
 });
 
 test("GET /api/subscription returns subscription", async () => {
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .get("/api/subscription")
     .set("authorization", `Bearer ${token}`);
@@ -54,7 +54,7 @@ test("GET /api/subscription returns subscription", async () => {
 });
 
 test("POST /api/subscription creates record", async () => {
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .post("/api/subscription")
     .set("authorization", `Bearer ${token}`)
@@ -64,7 +64,7 @@ test("POST /api/subscription creates record", async () => {
 });
 
 test("GET /api/subscription/credits returns remaining", async () => {
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .get("/api/subscription/credits")
     .set("authorization", `Bearer ${token}`);
@@ -73,7 +73,7 @@ test("GET /api/subscription/credits returns remaining", async () => {
 });
 
 test("GET /api/subscription/summary returns subscription and credits", async () => {
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .get("/api/subscription/summary")
     .set("authorization", `Bearer ${token}`);
@@ -85,7 +85,7 @@ test("GET /api/subscription/summary returns subscription and credits", async () 
 test("POST /api/subscription/portal returns url", async () => {
   db.getSubscription.mockResolvedValueOnce({ stripe_customer_id: "cus_1" });
   stripeMock.billingPortal.sessions.create.mockResolvedValueOnce({ url: "u" });
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .post("/api/subscription/portal")
     .set("authorization", `Bearer ${token}`);
@@ -96,7 +96,7 @@ test("POST /api/subscription/portal returns url", async () => {
 
 test("POST /api/subscription/portal 404 without customer", async () => {
   db.getSubscription.mockResolvedValueOnce(null);
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .post("/api/subscription/portal")
     .set("authorization", `Bearer ${token}`);

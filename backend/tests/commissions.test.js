@@ -30,7 +30,7 @@ test("GET /api/commissions returns totals", async () => {
       { id: "c2", commission_cents: 50, status: "paid" },
     ],
   });
-  const token = jwt.sign({ id: "seller" }, "secret");
+  const token = jwt.sign({ id: "seller" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .get("/api/commissions")
     .set("authorization", `Bearer ${token}`);

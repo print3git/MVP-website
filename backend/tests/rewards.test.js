@@ -31,7 +31,7 @@ beforeEach(() => {
 
 test("GET /api/referral-link returns code", async () => {
   db.getOrCreateReferralLink.mockResolvedValue("abc123");
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .get("/api/referral-link")
     .set("authorization", `Bearer ${token}`);
@@ -42,7 +42,7 @@ test("GET /api/referral-link returns code", async () => {
 
 test("GET /api/rewards returns points", async () => {
   db.getRewardPoints.mockResolvedValue(42);
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .get("/api/rewards")
     .set("authorization", `Bearer ${token}`);
@@ -54,7 +54,7 @@ test("GET /api/rewards returns points", async () => {
 test("POST /api/rewards/redeem returns code", async () => {
   db.getRewardPoints.mockResolvedValue(150);
   db.getRewardOption.mockResolvedValue({ amount_cents: 500 });
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .post("/api/rewards/redeem")
     .set("authorization", `Bearer ${token}`)
@@ -104,7 +104,7 @@ test("POST /api/referral-signup grants codes", async () => {
 test("GET /api/orders/:id/referral-link returns code", async () => {
   db.query.mockResolvedValueOnce({ rows: [{ user_id: "u1" }] });
   db.getOrCreateOrderReferralLink.mockResolvedValue("orderabc");
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .get("/api/orders/o1/referral-link")
     .set("authorization", `Bearer ${token}`);
@@ -116,7 +116,7 @@ test("GET /api/orders/:id/referral-link returns code", async () => {
 test("GET /api/orders/:id/referral-qr returns png", async () => {
   db.query.mockResolvedValueOnce({ rows: [{ user_id: "u1" }] });
   db.getOrCreateOrderReferralLink.mockResolvedValue("orderabc");
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .get("/api/orders/o1/referral-qr")
     .set("authorization", `Bearer ${token}`);
