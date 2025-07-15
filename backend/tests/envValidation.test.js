@@ -78,6 +78,18 @@ describe("validate-env script", () => {
     ).not.toThrow();
   });
 
+  test("uses repo root env file when run from backend directory", () => {
+    const env = { ...process.env, ...baseEnv };
+    delete env.DB_URL;
+    expect(() =>
+      execSync(`bash ${script}`, {
+        env,
+        stdio: "pipe",
+        cwd: path.join(__dirname, ".."),
+      }),
+    ).not.toThrow();
+  });
+
   test("fails when DB_URL missing and example file absent", () => {
     const env = { ...process.env, ...baseEnv };
     delete env.DB_URL;
