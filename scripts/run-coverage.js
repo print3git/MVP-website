@@ -51,15 +51,27 @@ const jestBin = path.join(
   ".bin",
   "jest",
 );
-const result = spawnSync(jestBin, jestArgs, {
-  encoding: "utf8",
-  stdio: ["inherit", "pipe", "inherit"],
-  cwd: path.join(__dirname, ".."),
-  env: {
-    ...process.env,
-    NODE_PATH: path.join(__dirname, "..", "node_modules"),
+const nycBin = path.join(__dirname, "..", "node_modules", ".bin", "nyc");
+const result = spawnSync(
+  nycBin,
+  [
+    "--cwd",
+    path.join("backend"),
+    "--report-dir",
+    path.join("backend", "coverage"),
+    jestBin,
+    ...jestArgs,
+  ],
+  {
+    encoding: "utf8",
+    stdio: ["inherit", "pipe", "inherit"],
+    cwd: path.join(__dirname, ".."),
+    env: {
+      ...process.env,
+      NODE_PATH: path.join(__dirname, "..", "node_modules"),
+    },
   },
-});
+);
 
 const lcovPath = path.join(repoRoot, "coverage", "lcov.info");
 fs.mkdirSync(path.dirname(lcovPath), { recursive: true });
@@ -75,6 +87,8 @@ fs.writeFileSync(lcovPath, output);
 const backendLcov = path.join(repoRoot, "backend", "coverage", "lcov.info");
 fs.mkdirSync(path.dirname(backendLcov), { recursive: true });
 fs.writeFileSync(backendLcov, output);
+// Also copy to repo root for CI checks
+fs.writeFileSync(path.join(repoRoot, "lcov.info"), output);
 console.log(`LCOV written to ${lcovPath}`);
 // Copy coverage summary produced by Jest to the repo root for CI checks.
 const backendSummary = path.join(
