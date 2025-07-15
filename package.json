@@ -34,7 +34,7 @@
     "pretest": "node scripts/check-repo-root.js && node scripts/assert-setup.js",
     "jest": "node scripts/run-jest.js",
     "test:structure": "jest --runTestsByPath tests/projectStructure.test.js",
-    "test": "bash scripts/test-backend.sh",
+    "test": "node scripts/run-jest.js",
     "coverage": "npm run coverage --prefix backend",
     "typecheck": "tsc --noEmit",
     "i18n:lint": "node scripts/i18n-lint.js",

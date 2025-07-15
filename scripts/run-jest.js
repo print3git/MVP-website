@@ -57,10 +57,21 @@ function runJest(args) {
     jestArgs.unshift("--runTestsByPath");
   }
 
-  const runFromRoot = jestArgs.some((arg) => {
+  const fileArgs = jestArgs.filter(
+    (arg) => arg !== "--runTestsByPath" && !arg.startsWith("-"),
+  );
+  const runFromRoot = fileArgs.some((arg) => {
     const abs = path.resolve(repoRoot, arg);
     return !abs.startsWith(backendDir);
   });
+
+  if (!runFromRoot) {
+    jestArgs = jestArgs.map((arg) => {
+      if (arg === "--runTestsByPath" || arg.startsWith("-")) return arg;
+      const abs = path.resolve(repoRoot, arg);
+      return path.relative(backendDir, abs);
+    });
+  }
 
   const cmdArgs = jestArgs.join(" ");
   const env = { ...process.env };
