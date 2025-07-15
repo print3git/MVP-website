@@ -25,8 +25,13 @@ function setup() {
     .readFileSync(path.join(__dirname, "../../../js/index.js"), "utf8")
     .replace(/^import[^\n]*\n/gm, "")
     .replace(/window\.addEventListener\(['"]DOMContentLoaded['"][\s\S]+$/, "")
-    .replace(/let savedProfile = null;\n?/, "");
-  script += "\nwindow._showModel = showModel;\nwindow._hideAll = hideAll;";
+    .replace(/let savedProfile = null;\n?/, "")
+    .replace(
+      /await ensureModelViewerLoaded\(\)/,
+      "await window.ensureModelViewerLoaded()",
+    );
+  script +=
+    "\nwindow._showModel = showModel;\nwindow._hideAll = hideAll;\nwindow.ensureModelViewerLoaded = ensureModelViewerLoaded;";
   dom.window.eval(script);
   return dom;
 }

@@ -9,7 +9,13 @@ const mPool = { query: jest.fn() };
 Pool.mockImplementation(() => mPool);
 
 const request = require("supertest");
-const app = require("../app");
+let app;
+
+beforeEach(() => {
+  jest.isolateModules(() => {
+    app = require("../app");
+  });
+});
 
 afterEach(() => {
   jest.clearAllMocks();

@@ -876,8 +876,12 @@ async function init() {
     if (globalThis.document) {
       document.body.dataset.viewerReady = "error";
     }
+    return;
   }
-  if (window.customElements?.whenDefined) {
+  if (
+    window.customElements?.whenDefined &&
+    window.customElements.get?.("model-viewer")
+  ) {
     try {
       await customElements.whenDefined("model-viewer");
     } catch {}

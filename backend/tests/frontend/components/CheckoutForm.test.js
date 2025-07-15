@@ -18,6 +18,7 @@ const src = fs.readFileSync(
   "utf8",
 );
 const { code } = babel.transformSync(src, {
+  filename: "CheckoutForm.js",
   presets: [["@babel/preset-react", { runtime: "automatic" }]],
   plugins: [
     ["@babel/plugin-syntax-typescript", { isTSX: true }],
