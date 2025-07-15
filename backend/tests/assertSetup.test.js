@@ -3,7 +3,7 @@ const os = require("os");
 const path = require("path");
 const { spawnSync } = require("child_process");
 
-const script = path.join(__dirname, "..", "scripts", "assert-setup.js");
+const script = path.join(__dirname, "..", "..", "scripts", "assert-setup.js");
 const stub = path.join(__dirname, "stubExecSync.js");
 
 function runAssertSetup(nodeVersion, extraEnv = {}) {
@@ -24,7 +24,7 @@ function runAssertSetup(nodeVersion, extraEnv = {}) {
     encoding: "utf8",
   });
   fs.unlinkSync(flag);
-  return { result, tmpDir };
+  return { tmpDir, result, ...result };
 }
 
 describe("assert-setup script", () => {

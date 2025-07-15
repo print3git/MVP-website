@@ -1,11 +1,18 @@
 const Sentry = require("@sentry/node");
-const dsn = process.env.SENTRY_DSN;
-if (dsn) {
-  Sentry.init({ dsn });
+let initialized = false;
+function ensureInit() {
+  const dsn = process.env.SENTRY_DSN;
+  if (dsn && !initialized) {
+    Sentry.init({ dsn });
+    initialized = true;
+  }
+  return Boolean(dsn);
 }
+
 function capture(error) {
-  if (dsn) {
+  if (ensureInit()) {
     Sentry.captureException(error);
   }
 }
+
 module.exports = { capture };
