@@ -60,3 +60,12 @@ test("POST /api/models requires fields", async () => {
   const res = await request(app).post("/api/models").send({});
   expect(res.status).toBe(400);
 });
+
+test("POST /api/models handles db error", async () => {
+  db.query.mockRejectedValueOnce(new Error("fail"));
+  const res = await request(app)
+    .post("/api/models")
+    .send({ prompt: "bad", fileKey: "bad.glb" });
+  expect(res.status).toBe(500);
+  expect(res.body).toEqual({ error: "Internal Server Error" });
+});
