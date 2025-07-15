@@ -3,6 +3,14 @@ const { execSync } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 
+function freePort(port) {
+  try {
+    execSync(`npx -y kill-port ${port}`, { stdio: "inherit" });
+  } catch (err) {
+    console.warn(`kill-port ${port} failed`, err.message);
+  }
+}
+
 function initEnv(baseEnv = process.env) {
   const env = { ...baseEnv };
 
@@ -91,6 +99,7 @@ function main() {
   try {
     run("npm run validate-env");
     run("npm run setup");
+    freePort(3000);
     if (!process.env.SKIP_PW_DEPS) {
       run("npx -y playwright install --with-deps");
     }
@@ -113,4 +122,4 @@ if (require.main === module) {
   main();
 }
 
-module.exports = { main, env, run, initEnv };
+module.exports = { main, env, run, initEnv, freePort };
