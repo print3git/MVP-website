@@ -4,6 +4,10 @@ set -e
 # Ensure mise activates the configured Node version so npm commands work even
 # when the shell hasn't sourced mise's hook. This prevents "node: command not
 # found" errors in fresh environments.
+if ! command -v mise >/dev/null 2>&1; then
+  "$(dirname "$0")/install-mise.sh" >/dev/null
+  export PATH="$HOME/.local/bin:$PATH"
+fi
 eval "$(mise activate bash)"
 
 # Silence mise warnings about untrusted config files
