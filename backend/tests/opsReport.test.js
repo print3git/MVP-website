@@ -10,6 +10,13 @@ Client.mockImplementation(() => mClient);
 jest.mock("../mail", () => ({ sendMailWithAttachment: jest.fn() }));
 const { sendMailWithAttachment } = require("../mail");
 
+jest.mock("pdfkit", () =>
+  jest.fn().mockImplementation(() => ({
+    text: jest.fn(),
+    end: jest.fn(),
+    pipe: jest.fn(),
+  })),
+);
 const fs = require("fs");
 const run = require("../scripts/send-ops-report");
 

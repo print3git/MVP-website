@@ -24,6 +24,7 @@ const app = require("../server");
 
 beforeEach(() => {
   db.query.mockClear();
+  if (console.error.mockRestore) console.error.mockRestore();
 });
 
 afterAll(() => {
