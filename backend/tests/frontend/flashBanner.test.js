@@ -10,10 +10,12 @@ function setupDom() {
     .readFileSync(path.join(__dirname, "../../../payment.html"), "utf8")
     .replace(/<script[^>]+src="https?:\/\/[^"]+"[^>]*><\/script>/g, "")
     .replace(/<link[^>]+href="https?:\/\/[^"]+[^>]*>/g, "")
+    .replace(/<script[^>]+src="js\/modelViewerTouchFix.js"[^>]*><\/script>/, "")
     .replace(
-      /<script[^>]+src="js\/modelViewerTouchFix.js"[^>]*><\/script>/,
+      /<script[^>]+src="js\/(?:wizard|payment|exitDiscount|basket|saveList|trackingPixel)\.js"[^>]*><\/script>/g,
       "",
-    );
+    )
+    .replace(/<script type="module"[^>]*><\/script>/g, "");
   const dom = new JSDOM(html, {
     runScripts: "dangerously",
     resources: "usable",
@@ -26,10 +28,9 @@ function setupDom() {
   dom.window.setInterval = setInterval;
   dom.window.clearInterval = clearInterval;
   dom.window.Date = Date;
-  const script = fs.readFileSync(
-    path.join(__dirname, "../../../js/payment.js"),
-    "utf8",
-  );
+  const script = fs
+    .readFileSync(path.join(__dirname, "../../../js/payment.js"), "utf8")
+    .replace(/import[^;]+;\n/, "");
   dom.window.eval(script);
   return dom;
 }
