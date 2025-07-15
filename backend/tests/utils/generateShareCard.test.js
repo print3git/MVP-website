@@ -1,15 +1,7 @@
-jest.mock("jimp", () => {
-  const mockJimp = jest.fn();
-  mockJimp.loadFont = jest.fn();
-  mockJimp.FONT_SANS_32_BLACK = "FONT_SANS_32_BLACK";
-  return mockJimp;
-});
-
+jest.mock("jimp");
 const Jimp = require("jimp");
 const fs = require("fs");
 const path = require("path");
-
-jest.mock("jimp");
 
 const generateShareCard = require("../../utils/generateShareCard");
 
