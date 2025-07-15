@@ -33,4 +33,20 @@ describe("codeql workflow", () => {
     );
     expect(hasCheck).toBe(true);
   });
+
+  test("uses run-npm-ci.js for installs", () => {
+    const file = path.join(
+      __dirname,
+      "..",
+      ".github",
+      "workflows",
+      "codeql.yml",
+    );
+    const yml = YAML.parse(fs.readFileSync(file, "utf8"));
+    const steps = yml.jobs.analyze.steps.map((s) => s.run || "");
+    const hasScript = steps.some((cmd) =>
+      cmd.trim().startsWith("node scripts/run-npm-ci.js"),
+    );
+    expect(hasScript).toBe(true);
+  });
 });
