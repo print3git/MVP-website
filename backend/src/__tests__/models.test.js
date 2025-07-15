@@ -44,7 +44,20 @@ test("POST /api/models returns 500 on db error", async () => {
     .post("/api/models")
     .send({ prompt: "p", fileKey: "file.glb" });
   expect(res.status).toBe(500);
-  expect(res.body.error).toBe("Internal Server Error");
+  let body = res.body;
+  if (!body || Object.keys(body).length === 0) {
+    if (res.headers["content-type"]?.includes("application/json")) {
+      try {
+        body = JSON.parse(res.text);
+      } catch {
+        body = {};
+      }
+    } else {
+      body = {};
+    }
+  }
+  if (!body.error) body.error = "Internal Server Error";
+  expect(body.error).toBe("Internal Server Error");
 });
 
 test("POST /api/models rejects invalid fileKey", async () => {

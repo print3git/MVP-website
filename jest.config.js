@@ -1,5 +1,6 @@
 module.exports = {
   setupFiles: ["<rootDir>/backend/tests/setupGlobals.js"],
+  setupFilesAfterEnv: ["<rootDir>/test/setupAuthMiddleware.js"],
   coverageThreshold: {
     global: {
       branches: 55,
