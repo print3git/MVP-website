@@ -17,21 +17,23 @@ module.exports = [
   {
     ignores: [
       "node_modules",
-      "img",
-      "uploads",
-      "models",
-      "js",
+      "img/**",
+      "uploads/**",
+      "models/**",
+      "js/**",
       "*.html",
       "service-worker.js",
-      "admin",
-      "docs",
-      "e2e",
-      "backend",
+      "admin/**",
+      "docs/**",
+      "e2e/**",
+      "backend/**",
       "scripts/ci_watchdog.ts",
       "scripts/ci_watchdog.js",
-      "upload",
-      "src",
+      "upload/**",
+      "src/**",
     ],
+  },
+  {
     settings: {
       jsdoc: {
         tagNamePreference: {
@@ -61,7 +63,20 @@ module.exports = [
   jsdoc.configs["flat/recommended"],
   {
     files: ["**/*.{js,jsx,ts,tsx}"],
-    ignores: ["backend/**/*", "backend/scripts/**/*"],
+    ignores: [
+      "backend/**/*",
+      "backend/scripts/**/*",
+      "img/**",
+      "uploads/**",
+      "models/**",
+      "js/**",
+      "admin/**",
+      "docs/**",
+      "e2e/**",
+      "backend/**",
+      "upload/**",
+      "src/**",
+    ],
     rules: { "jsdoc/require-jsdoc": "error" },
   },
   {
