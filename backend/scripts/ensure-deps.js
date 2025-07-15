@@ -32,6 +32,9 @@ try {
 const expressPath = path.join(repoRoot, "node_modules", "express");
 const pwPath = path.join(repoRoot, "node_modules", "@playwright", "test");
 const setupFlag = path.join(repoRoot, ".setup-complete");
+const { runNpmCi } = require(
+  path.join(__dirname, "..", "..", "scripts", "run-npm-ci.js"),
+);
 
 const networkCheck = path.join(
   __dirname,
@@ -51,6 +54,21 @@ function runNetworkCheck() {
   try {
     execSync(`node ${networkCheck}`, { stdio: "inherit" });
   } catch {
+    if (!process.env.SKIP_PW_DEPS) {
+      console.warn(
+        "Network check failed. Retrying with SKIP_PW_DEPS=1 in case the Playwright CDN is blocked.",
+      );
+      process.env.SKIP_PW_DEPS = "1";
+      try {
+        execSync(`node ${networkCheck}`, {
+          stdio: "inherit",
+          env: { ...process.env, SKIP_PW_DEPS: "1" },
+        });
+        return;
+      } catch {
+        // fall through to error below
+      }
+    }
     console.error(
       "Network check failed. Ensure access to the npm registry and Playwright CDN.",
     );
@@ -91,6 +109,7 @@ function runSetup() {
   }
   try {
     execSync("npm run setup", { stdio: "inherit", cwd: repoRoot, env });
+
   } catch {
     if (env.SKIP_PW_DEPS) {
       console.warn(
@@ -121,7 +140,7 @@ if (!fs.existsSync(expressPath)) {
   if (!canReachRegistry()) process.exit(1);
   console.log("Express not found. Installing root dependencies...");
   try {
-    execSync("npm ci", { stdio: "inherit", cwd: repoRoot });
+    runNpmCi(repoRoot);
   } catch (err) {
     console.error("Failed to install root dependencies:", err.message);
     process.exit(1);
@@ -133,7 +152,7 @@ if (!fs.existsSync(pwPath)) {
   if (!canReachRegistry()) process.exit(1);
   console.log("@playwright/test not found. Installing root dependencies...");
   try {
-    execSync("npm ci", { stdio: "inherit", cwd: repoRoot });
+    runNpmCi(repoRoot);
   } catch (err) {
     console.error("Failed to install root dependencies:", err.message);
     process.exit(1);
@@ -153,7 +172,7 @@ if (!fs.existsSync(jestPath)) {
     process.exit(1);
   }
   try {
-    execSync("npm ci", { stdio: "inherit" });
+    runNpmCi();
   } catch (err) {
     console.error("Failed to install dependencies:", err.message);
     process.exit(1);
@@ -164,7 +183,7 @@ if (!fs.existsSync(jestPath)) {
 try {
   const hostDeps = path.join(repoRoot, "scripts", "check-host-deps.js");
   execSync(`node ${hostDeps}`, { stdio: "inherit" });
-} catch (err) {
-  console.error("Failed to verify Playwright host dependencies:", err.message);
+} catch (_err) {
+  console.error("Failed to verify Playwright host dependencies:", _err.message);
   process.exit(1);
 }
