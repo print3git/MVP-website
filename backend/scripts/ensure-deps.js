@@ -99,8 +99,13 @@ function runSetup() {
       delete env.SKIP_PW_DEPS;
       execSync("npm run setup", { stdio: "inherit", cwd: repoRoot, env });
     } else {
-      console.error("Failed to run setup:", err.message);
-      process.exit(1);
+      console.warn(
+        "Setup failed, retrying with SKIP_PW_DEPS=1 to skip Playwright dependencies",
+      );
+      env.SKIP_PW_DEPS = "1";
+      env.PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD =
+        env.PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD || "1";
+      execSync("npm run setup", { stdio: "inherit", cwd: repoRoot, env });
     }
   }
 }

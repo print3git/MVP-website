@@ -38,6 +38,7 @@ function initEnv(baseEnv = process.env) {
   ensureDefault("STRIPE_SECRET_KEY", "sk_test_dummy");
   ensureDefault("STRIPE_TEST_KEY", `sk_test_dummy_${Date.now()}`);
   ensureDefault("SKIP_DB_CHECK", "1");
+  ensureDefault("CLOUDFRONT_MODEL_DOMAIN", "cdn.test");
 
   const required = [
     "STRIPE_TEST_KEY",
@@ -57,6 +58,15 @@ function initEnv(baseEnv = process.env) {
 }
 
 const env = initEnv(process.env);
+
+// Skip Playwright dependency installation when the setup flag exists.
+// This prevents repeated apt-get runs in CI environments.
+if (
+  !env.SKIP_PW_DEPS &&
+  fs.existsSync(path.join(process.cwd(), ".setup-complete"))
+) {
+  env.SKIP_PW_DEPS = "1";
+}
 
 let lastCommand = "";
 

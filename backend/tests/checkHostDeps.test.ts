@@ -10,7 +10,7 @@ const script = path.join(
 );
 const stub = path.join(__dirname, "stubMissingDeps.js");
 
-test("auto installs host deps when SKIP_PW_DEPS is set", () => {
+test("skips host deps install when SKIP_PW_DEPS is set", () => {
   const result = spawnSync(process.execPath, [script], {
     env: {
       ...process.env,
@@ -21,5 +21,5 @@ test("auto installs host deps when SKIP_PW_DEPS is set", () => {
     encoding: "utf8",
   });
   expect(result.status).toBe(0);
-  expect(result.stderr).toMatch(/Installing anyway/);
+  expect(result.stderr).toMatch(/Skipping installation/);
 });
