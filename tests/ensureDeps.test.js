@@ -125,4 +125,29 @@ describe("ensure-deps", () => {
     delete process.env.SKIP_PW_DEPS;
     execMock.mockRestore();
   });
+
+  test("retries network check with SKIP_PW_DEPS when it fails", () => {
+    fs.existsSync.mockReturnValue(false);
+    let first = true;
+    const execMock = jest
+      .spyOn(child_process, "execSync")
+      .mockImplementation((cmd, opts) => {
+        if (cmd.includes("network-check.js")) {
+          if (first) {
+            first = false;
+            throw new Error("net fail");
+          }
+          expect(opts.env.SKIP_PW_DEPS).toBe("1");
+        }
+      });
+
+    require("../backend/scripts/ensure-deps");
+
+    const netCalls = execMock.mock.calls.filter(([c]) =>
+      c.includes("network-check.js"),
+    );
+    expect(netCalls.length).toBe(2);
+
+    execMock.mockRestore();
+  });
 });
