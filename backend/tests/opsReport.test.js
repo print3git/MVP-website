@@ -31,9 +31,16 @@ describe("send ops report", () => {
     mClient.end.mockClear();
     mClient.query.mockClear();
     sendMailWithAttachment.mockClear();
+    global.__finish = undefined;
   });
 
   test("emails report and archives file", async () => {
+    jest.spyOn(fs, "createWriteStream").mockReturnValue({
+      on: (event, cb) => {
+        if (event === "finish") global.__finish = cb;
+        return this;
+      },
+    });
     mClient.query
       .mockResolvedValueOnce({ rows: [{ id: 1, name: "Hub", printers: "2" }] })
       .mockResolvedValueOnce({ rows: [{ status: "paid", count: "5" }] })
