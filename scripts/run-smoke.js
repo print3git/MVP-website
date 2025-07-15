@@ -98,6 +98,7 @@ function dumpDiagnostics(err) {
 function main() {
   try {
     run("npm run validate-env");
+    freePort(process.env.PORT || 3000);
     if (!process.env.SKIP_SETUP && !fs.existsSync(".setup-complete")) {
       run("npm run setup");
     } else {
