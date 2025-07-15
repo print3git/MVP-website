@@ -1,45 +1,62 @@
 const Sentry = require("@sentry/node");
-const { capture } = require("../src/lib/logger");
-const logger = require("../src/logger");
+let capture;
+let logger;
 const { transports } = require("winston");
 
 describe("capture", () => {
   afterEach(() => {
     delete process.env.SENTRY_DSN;
     jest.restoreAllMocks();
+    jest.resetModules();
   });
 
   test("does not throw without DSN", () => {
+    jest.resetModules();
+    const S = require("@sentry/node");
+    capture = require("../src/lib/logger").capture;
+    const spy = jest.spyOn(S, "captureException").mockImplementation(() => {});
     expect(() => capture(new Error("boom"))).not.toThrow();
-    expect(Sentry.captureException).not.toHaveBeenCalled();
+    expect(spy).not.toHaveBeenCalled();
   });
 
   test("forwards errors to Sentry when DSN is set", () => {
-    process.env.SENTRY_DSN = "abc";
-    const spy = jest
-      .spyOn(Sentry, "captureException")
-      .mockImplementation(() => {});
+    process.env.SENTRY_DSN = "https://public@o0.ingest.sentry.io/0";
+    jest.resetModules();
+    const S = require("@sentry/node");
+    const sentryInitSpy = jest.spyOn(S, "init").mockImplementation(() => {});
+    capture = require("../src/lib/logger").capture;
+    const spy = jest.spyOn(S, "captureException").mockImplementation(() => {});
     const err = new Error("boom");
     capture(err);
     expect(spy).toHaveBeenCalledWith(err);
+    sentryInitSpy.mockRestore();
   });
 });
 
 describe("logger", () => {
-  let logSpy;
-  let warnSpy;
-  let errSpy;
+  let transportSpy;
+  let messages;
 
   beforeEach(() => {
-    if (console.log.mockRestore) console.log.mockRestore();
-    if (console.warn.mockRestore) console.warn.mockRestore();
-    if (console.error.mockRestore) console.error.mockRestore();
-    logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
-    warnSpy = jest.spyOn(console, "warn").mockImplementation(() => {});
-    errSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+    process.env.NODE_ENV = "test";
+    jest.resetModules();
+    logger = require("../../src/logger.js");
+    messages = [];
+    const consoleTransport = logger.transports.find(
+      (t) => t instanceof transports.Console,
+    );
+    expect(consoleTransport).toBeDefined();
+    transportSpy = jest
+      .spyOn(consoleTransport, "log")
+      .mockImplementation((info, next) => {
+        messages.push(info.message);
+        if (next) next();
+      });
   });
 
   afterEach(() => {
+    delete process.env.NODE_ENV;
+    transportSpy.mockRestore();
     jest.restoreAllMocks();
   });
 
@@ -48,22 +65,20 @@ describe("logger", () => {
     logger.warn("warn msg");
     logger.error("error msg");
 
-    const outputs = [
-      ...logSpy.mock.calls.flat(),
-      ...warnSpy.mock.calls.flat(),
-      ...errSpy.mock.calls.flat(),
-    ].join(" ");
-
-    expect(outputs).toContain("info msg");
-    expect(outputs).toContain("warn msg");
-    expect(outputs).toContain("error msg");
+    expect(messages.join(" ")).toContain("info msg");
+    expect(messages.join(" ")).toContain("warn msg");
+    expect(messages.join(" ")).toContain("error msg");
   });
 });
 
 test("logger is silent in test env", () => {
+  process.env.NODE_ENV = "test";
+  jest.resetModules();
+  logger = require("../../src/logger.js");
   const consoleTransport = logger.transports.find(
     (t) => t instanceof transports.Console,
   );
   expect(logger.level).toBe("error");
   expect(consoleTransport.silent).toBe(true);
+  delete process.env.NODE_ENV;
 });

@@ -23,7 +23,8 @@ describe("index validatePrompt", () => {
     global.document = dom.window.document;
     const shareSrc = fs
       .readFileSync(path.join(__dirname, "../../../js/share.js"), "utf8")
-      .replace(/export \{[^}]+\};?/, "");
+      .replace(/export \{[^}]+\};?/, "")
+      .replace(/import\s+\{[^}]+\}\s+from\s+['"]\.\/analytics.js['"];?/, "");
     dom.window.eval(shareSrc);
     let script = fs
       .readFileSync(path.join(__dirname, "../../../js/index.js"), "utf8")

@@ -93,7 +93,7 @@ describe("validate-env script", () => {
   test("fails when DB_URL missing and example file absent", () => {
     const env = { ...process.env, ...baseEnv };
     delete env.DB_URL;
-    const example = path.resolve(process.cwd(), ".env.example");
+    const example = path.resolve(__dirname, "../../.env.example");
     const backup = `${example}.bak`;
     fs.renameSync(example, backup);
     let threw = false;
@@ -107,7 +107,7 @@ describe("validate-env script", () => {
   });
 
   test("fails when database unreachable", () => {
-    const output = execSync(`bash ${script}`, {
+    const output = execSync(`bash ${script} 2>&1`, {
       env: {
         ...process.env,
         ...baseEnv,
