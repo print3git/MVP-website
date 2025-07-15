@@ -208,7 +208,9 @@ test("create-order applies first-order discount", async () => {
     .set("authorization", `Bearer ${token}`)
     .send({ jobId: "1", price: 100, qty: 1, productType: "single" });
   const createCall = stripeMock.checkout.sessions.create.mock.calls.pop()[0];
-  expect(createCall.line_items[0].price_data.unit_amount).toBe(90);
+  expect(createCall.line_items[0].price_data.unit_amount).toBe(
+    Math.floor(100 * 0.9),
+  );
   const orderInsert = db.query.mock.calls.find((c) =>
     c[0].includes("INSERT INTO orders"),
   );

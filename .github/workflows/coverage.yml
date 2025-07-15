@@ -13,7 +13,7 @@ jobs:
       - run: SKIP_PW_DEPS=1 npm run setup
       - run: npm run coverage
       - name: Validate coverage-summary.json
-        run: node -e "JSON.parse(require('fs').readFileSync('backend/coverage/coverage-summary.json','utf-8')); console.log('✅ JSON ok')"
+        run: node -e "JSON.parse(require('fs').readFileSync('coverage/coverage-summary.json','utf-8')); console.log('✅ JSON ok')"
       - name: Check coverage thresholds
         run: node scripts/check-coverage.js
       - name: Validate LCOV report

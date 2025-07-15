@@ -82,12 +82,20 @@ if (!/TN:/.test(lcovData) || !/SF:/.test(lcovData)) {
   console.error("Invalid lcov report generated");
   process.exit(1);
 }
-const summaryPath = path.join(
-  repoRoot,
-  "backend",
-  "coverage",
-  "coverage-summary.json",
+output = output.slice(start);
+fs.writeFileSync(lcovPath, output);
+console.log(`LCOV written to ${lcovPath}`);
+// Generate a repo root summary for CI badges and coverage checks.
+const nyc = spawnSync(
+  "npx",
+  ["-y", "nyc", "report", "--reporter=json-summary", "--report-dir=coverage"],
+  { cwd: repoRoot, stdio: "inherit" },
 );
+if (nyc.status) {
+  console.error(`nyc report failed with code ${nyc.status}`);
+  process.exit(nyc.status);
+}
+const summaryPath = path.join(repoRoot, "coverage", "coverage-summary.json");
 if (!fs.existsSync(summaryPath)) {
   console.error(`Missing coverage summary: ${summaryPath}`);
   process.exit(1);
