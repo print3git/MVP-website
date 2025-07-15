@@ -3,7 +3,7 @@ const { spawnSync } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 
-const repoRoot = path.join(__dirname, "..");
+const repoRoot = path.resolve(__dirname, "..");
 
 // Ensure the active Node version matches the project's requirement so the
 // coverage run doesn't silently use a wrong version when mise wasn't activated.
