@@ -15,6 +15,11 @@ child_process.execSync = function (cmd, opts = {}) {
   if (cmd.includes("playwright install")) {
     return Buffer.from("Playwright host dependencies already satisfied.");
   }
+  if (process.env.FAIL_ENSURE_DEPS && cmd.includes("ensure-deps.js")) {
+    const err = new Error("ensure-deps failed");
+    err.status = 1;
+    throw err;
+  }
   return Buffer.from("");
 };
 
