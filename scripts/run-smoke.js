@@ -38,6 +38,7 @@ function initEnv(baseEnv = process.env) {
   ensureDefault("STRIPE_SECRET_KEY", "sk_test_dummy");
   ensureDefault("STRIPE_TEST_KEY", `sk_test_dummy_${Date.now()}`);
   ensureDefault("SKIP_DB_CHECK", "1");
+  ensureDefault("CLOUDFRONT_MODEL_DOMAIN", "cdn.test");
 
   const required = [
     "STRIPE_TEST_KEY",

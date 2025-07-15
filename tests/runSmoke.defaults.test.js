@@ -40,6 +40,7 @@ test("run-smoke supplies default env vars", () => {
       expect(env.STRIPE_SECRET_KEY).toBe("sk_test_dummy");
       expect(env.STRIPE_TEST_KEY).toMatch(/^sk_test_dummy/);
       expect(env.SKIP_DB_CHECK).toBe("1");
+      expect(env.CLOUDFRONT_MODEL_DOMAIN).toBe("cdn.test");
     });
   });
 });

@@ -49,4 +49,5 @@ module.exports = {
   initDailyPrintsSold,
   getDailyPrintsSold,
   _setDailyPrintsSold,
+  _computeDailyPrintsSold: computeDailyPrintsSold,
 };
