@@ -1,9 +1,9 @@
 /** @jest-environment jsdom */
 const React = require("react");
 const { render } = require("@testing-library/react");
-const fs = require("fs");
-const path = require("path");
-const babel = require("@babel/core");
+
+const CheckoutForm =
+  require("../../../../src/components/CheckoutForm.js").default;
 jest.mock("react-places-autocomplete", () => {
   const React = require("react");
   return {
@@ -12,22 +12,6 @@ jest.mock("react-places-autocomplete", () => {
     geocodeByAddress: jest.fn(),
   };
 });
-
-const src = fs.readFileSync(
-  path.join(__dirname, "../../../../src/components/CheckoutForm.js"),
-  "utf8",
-);
-const { code } = babel.transformSync(src, {
-  presets: [["@babel/preset-react", { runtime: "automatic" }]],
-  plugins: [
-    ["@babel/plugin-syntax-typescript", { isTSX: true }],
-    "@babel/plugin-transform-modules-commonjs",
-  ],
-});
-const moduleObj = { exports: {} };
-const func = new Function("require", "module", "exports", code);
-func(require, moduleObj, moduleObj.exports);
-const CheckoutForm = moduleObj.exports.default;
 
 describe("CheckoutForm", () => {
   test("renders consistently", () => {

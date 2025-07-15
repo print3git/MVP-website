@@ -18,10 +18,12 @@ describe("logger JSON format", () => {
 
   beforeEach(() => {
     jest.resetModules();
+    jest.restoreAllMocks();
     process.env.NODE_ENV = "development";
     logger = require(path.join(__dirname, "..", "..", "src", "logger.js"));
     memory = new MemoryTransport();
     logger.add(memory);
+    jest.spyOn(console, "error").mockImplementation(() => {});
   });
 
   afterEach(() => {
