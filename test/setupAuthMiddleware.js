@@ -1,7 +1,7 @@
 const express = require("express");
 /**
- *
- * @param app
+ * Setup auth middleware by adding a dummy user to each request.
+ * @param {import("express").Application} app Express app to attach middleware to. Defaults to `express.application`.
  */
 function setupAuth(app = express.application) {
   app.use((req, res, next) => {

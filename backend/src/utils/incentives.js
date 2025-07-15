@@ -1,11 +1,11 @@
-function hasOrderedBefore(userId) {
+function hasOrderedBefore(_userId) {
   // placeholder DB call
   return true;
 }
 
-function firstOrderPrice(userId, basePrice) {
+function firstOrderPrice(_userId, basePrice) {
   // pretend you’ve wired up a `hasOrderedBefore` DB call
-  return hasOrderedBefore(userId) ? basePrice : Math.round(basePrice * 0.9);
+  return hasOrderedBefore(_userId) ? basePrice : Math.round(basePrice * 0.9);
 }
 
 function referralPrintPrice(referralCount, basePrice) {

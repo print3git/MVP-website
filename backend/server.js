@@ -31,6 +31,7 @@ const db = require("./db");
 const modelsRouter = require("./routes/models");
 const healthzRouter = require("./routes/healthz");
 const usersRouter = require("./routes/users");
+const ApiError = require("./src/errors/ApiError");
 const axios = require("axios");
 const fs = require("fs");
 const logger = require("../src/logger");
@@ -2716,7 +2717,7 @@ app.get("/api/admin/analytics", adminCheck, async (req, res) => {
  * POST /api/create-order
  * Create a Stripe Checkout session
  */
-app.post("/api/create-order", authOptional, async (req, res) => {
+app.post("/api/create-order", authOptional, async (req, res, next) => {
   const {
     jobId,
     price,
@@ -2734,7 +2735,7 @@ app.post("/api/create-order", authOptional, async (req, res) => {
       [jobId],
     );
     if (job.rows.length === 0) {
-      return res.status(404).json({ error: "Not found" });
+      throw new ApiError(404, "Job not found");
     }
 
     let totalDiscount = discount || 0;
@@ -2942,7 +2943,7 @@ app.post("/api/create-order", authOptional, async (req, res) => {
     res.json({ checkoutUrl: session.url });
   } catch (err) {
     logError(err);
-    res.status(500).json({ error: "Failed to create order" });
+    next(err);
   }
 });
 
@@ -3484,7 +3485,10 @@ if (require.main === module) {
 
 app.use((err, _req, res, _next) => {
   capture(err);
-  res.status(500).json({ error: "Internal Server Error" });
+  const status = err instanceof ApiError ? err.status : 500;
+  const message =
+    err instanceof ApiError ? err.message : "Internal Server Error";
+  res.status(status).json({ error: message });
 });
 
 module.exports = app;
