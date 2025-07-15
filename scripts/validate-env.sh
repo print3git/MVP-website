@@ -4,7 +4,9 @@ set -e
 # Ensure mise activates the configured Node version so npm commands work even
 # when the shell hasn't sourced mise's hook. This prevents "node: command not
 # found" errors in fresh environments.
-eval "$(mise activate bash)"
+if command -v mise >/dev/null 2>&1; then
+  eval "$(mise activate bash)"
+fi
 
 # Silence mise warnings about untrusted config files
 mise trust . >/dev/null 2>&1 || true
