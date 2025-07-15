@@ -98,8 +98,16 @@ function dumpDiagnostics(err) {
 function main() {
   try {
     run("npm run validate-env");
-    run("npm run setup");
-    freePort(3000);
+    if (!process.env.SKIP_SETUP && !fs.existsSync(".setup-complete")) {
+      run("npm run setup");
+    } else {
+      console.log("Skipping setup step");
+      try {
+        execSync('pkill -f "node scripts/dev-server.js"', { stdio: "ignore" });
+      } catch {
+        // ignore if no server is running
+      }
+    }
     if (!process.env.SKIP_PW_DEPS) {
       run("npx -y playwright install --with-deps");
     }
