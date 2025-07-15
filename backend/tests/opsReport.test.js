@@ -11,11 +11,17 @@ jest.mock("../mail", () => ({ sendMailWithAttachment: jest.fn() }));
 const { sendMailWithAttachment } = require("../mail");
 
 jest.mock("pdfkit", () =>
-  jest.fn().mockImplementation(() => ({
-    text: jest.fn(),
-    end: jest.fn(),
-    pipe: jest.fn(),
-  })),
+  jest.fn().mockImplementation(() => {
+    return {
+      text: jest.fn().mockReturnThis(),
+      fontSize: jest.fn().mockReturnThis(),
+      moveDown: jest.fn().mockReturnThis(),
+      pipe: jest.fn(),
+      end: jest.fn(() => {
+        if (global.__finish) global.__finish();
+      }),
+    };
+  }),
 );
 const fs = require("fs");
 const run = require("../scripts/send-ops-report");
@@ -26,9 +32,16 @@ describe("send ops report", () => {
     mClient.end.mockClear();
     mClient.query.mockClear();
     sendMailWithAttachment.mockClear();
+    global.__finish = undefined;
   });
 
   test("emails report and archives file", async () => {
+    jest.spyOn(fs, "createWriteStream").mockReturnValue({
+      on: (event, cb) => {
+        if (event === "finish") global.__finish = cb;
+        return this;
+      },
+    });
     mClient.query
       .mockResolvedValueOnce({ rows: [{ id: 1, name: "Hub", printers: "2" }] })
       .mockResolvedValueOnce({ rows: [{ status: "paid", count: "5" }] })
