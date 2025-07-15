@@ -60,3 +60,41 @@ test("POST /api/models requires fields", async () => {
   const res = await request(app).post("/api/models").send({});
   expect(res.status).toBe(400);
 });
+
+test("POST /api/models/:id/public toggles visibility", async () => {
+  const jwt = require("jsonwebtoken");
+  const token = jwt.sign({ id: "u1" }, "secret");
+  db.query.mockResolvedValueOnce({ rows: [{ is_public: true }] });
+  const res = await request(app)
+    .post("/api/models/5/public")
+    .set("authorization", `Bearer ${token}`)
+    .send({ isPublic: true });
+  expect(res.status).toBe(200);
+  expect(res.body).toEqual({ is_public: true });
+  expect(db.query).toHaveBeenCalledWith(
+    "UPDATE jobs SET is_public=$1 WHERE job_id=$2 AND user_id=$3 RETURNING is_public",
+    [true, "5", "u1"],
+  );
+});
+
+test("DELETE /api/models/:id removes model", async () => {
+  const jwt = require("jsonwebtoken");
+  const token = jwt.sign({ id: "u1" }, "secret");
+  db.query.mockResolvedValueOnce({ rows: [{ job_id: "5" }] });
+  db.query.mockResolvedValueOnce({});
+  db.query.mockResolvedValueOnce({});
+  const res = await request(app)
+    .delete("/api/models/5")
+    .set("authorization", `Bearer ${token}`);
+  expect(res.status).toBe(204);
+  expect(db.query).toHaveBeenCalledWith(
+    "DELETE FROM jobs WHERE job_id=$1 AND user_id=$2 RETURNING job_id",
+    ["5", "u1"],
+  );
+  expect(db.query).toHaveBeenCalledWith("DELETE FROM likes WHERE model_id=$1", [
+    "5",
+  ]);
+  expect(db.query).toHaveBeenCalledWith("DELETE FROM shares WHERE job_id=$1", [
+    "5",
+  ]);
+});
