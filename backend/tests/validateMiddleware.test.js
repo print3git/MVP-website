@@ -23,10 +23,12 @@ describe("validate middleware", () => {
     expect(next).not.toHaveBeenCalled();
   });
 
+
   test("calls next on non-Zod errors", () => {
     const badSchema = {
       parse: () => {
         throw new Error("boom");
+
       },
     };
     const req = { body: {} };
