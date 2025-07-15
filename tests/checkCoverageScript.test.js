@@ -2,13 +2,7 @@ const { execFileSync } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 
-const summary = path.join(
-  __dirname,
-  "..",
-  "backend",
-  "coverage",
-  "coverage-summary.json",
-);
+const summary = path.join(__dirname, "..", "coverage", "coverage-summary.json");
 const backup = summary + ".bak";
 const nycrc = path.join(__dirname, "..", ".nycrc");
 const nycBackup = nycrc + ".bak";
