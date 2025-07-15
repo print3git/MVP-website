@@ -7,6 +7,7 @@
       "text",
       "json-summary"
     ],
+    "report-dir": "coverage",
     "check-coverage": false,
     "branches": 0,
     "functions": 0,

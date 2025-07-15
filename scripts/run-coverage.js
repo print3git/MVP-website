@@ -89,7 +89,8 @@ if (!fs.existsSync(backendSummary)) {
 }
 const summaryPath = path.join(repoRoot, "coverage", "coverage-summary.json");
 fs.mkdirSync(path.dirname(summaryPath), { recursive: true });
-fs.copyFileSync(backendSummary, summaryPath);
+const summaryData = fs.readFileSync(backendSummary);
+fs.writeFileSync(summaryPath, summaryData);
 if (result.status) {
   console.error(`Jest exited with code ${result.status}`);
   process.exit(result.status);
