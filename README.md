@@ -530,7 +530,7 @@ The `npm run setup` script now performs this cleanup before and after installing
 dependencies, so new clones shouldn't hit this error. If you still encounter it,
 re-run `npm run setup` to ensure the cache directory is cleared.
 
-### TAR\_ENTRY\_ERROR or ENOENT during `npm ci`
+### TAR_ENTRY_ERROR or ENOENT during `npm ci`
 
 If `npm run format` exits with errors like `TAR_ENTRY_ERROR` or `ENOENT`, the
 package cache may be corrupted. Running `npm run setup` in the repository root
