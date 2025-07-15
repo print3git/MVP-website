@@ -2,9 +2,17 @@ const fs = require("fs");
 
 const config = JSON.parse(fs.readFileSync(".nycrc", "utf8"));
 
-const summaryPath = "backend/coverage/coverage-summary.json";
-if (!fs.existsSync(summaryPath)) {
-  console.error(`Missing coverage summary: ${summaryPath}`);
+const possiblePaths = [
+  "backend/coverage/coverage-summary.json",
+  "coverage/coverage-summary.json",
+];
+const summaryPath = possiblePaths.find((p) => fs.existsSync(p));
+if (!summaryPath) {
+  console.error(
+    `Missing coverage summary: ${possiblePaths.join(
+      " or ",
+    )}\nRun 'npm run coverage' first to generate it.`,
+  );
   process.exit(1);
 }
 const summary = JSON.parse(fs.readFileSync(summaryPath, "utf8"));
