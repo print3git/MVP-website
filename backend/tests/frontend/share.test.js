@@ -12,19 +12,10 @@ describe("shareOn", () => {
     global.window = dom.window;
     global.document = dom.window.document;
     dom.window.navigator.share = undefined;
-    let src = fs.readFileSync(
-      path.join(__dirname, "../../../js/share.js"),
-      "utf8",
-    );
-    src = src
-      // strip the ESM export so the code can run in the JSDOM context
-      .replace(/export \{[^}]+\};?/, "")
-      // replace the analytics import with a stubbed function to avoid
-      // "import" syntax errors under Node's CommonJS environment
-      .replace(
-        /import\s+\{[^}]+\}\s+from\s+"\.\/analytics.js";?/,
-        "const track = () => {};",
-      );
+    const src = fs
+      .readFileSync(path.join(__dirname, "../../../js/share.js"), "utf8")
+      .replace(/^import[^\n]*\n/gm, "")
+      .replace(/export \{[^}]+\};?/, "");
     dom.window.eval(src);
     return dom.window.shareOn;
   }
