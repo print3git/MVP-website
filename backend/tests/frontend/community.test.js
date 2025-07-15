@@ -13,7 +13,7 @@ function setup() {
   // Read and sanitize the script
   let script = fs
     .readFileSync(path.join(__dirname, "../../../js/community.js"), "utf8")
-    .replace(/import[^;]+;\n/, "")
+    .replace(/import[^;]+;\n/g, "")
     .replace(/export \{[^}]+\};?/, "");
 
   // Attach helpers to window BEFORE eval
