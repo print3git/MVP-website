@@ -2,6 +2,7 @@
 const fs = require("fs");
 const path = require("path");
 const { JSDOM } = require("jsdom");
+const loadScript = require("../utils/loadScript.js");
 
 function loadDom() {
   const html = fs
@@ -19,10 +20,7 @@ function loadDom() {
   });
   global.window = dom.window;
   global.document = dom.window.document;
-  const script = fs.readFileSync(
-    path.join(__dirname, "../../../js/payment.js"),
-    "utf8",
-  );
+  const script = loadScript("js/payment.js");
   dom.window.eval(script);
   return dom;
 }

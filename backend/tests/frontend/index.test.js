@@ -2,6 +2,7 @@
 const fs = require("fs");
 const path = require("path");
 const { JSDOM } = require("jsdom");
+const loadScript = require("../utils/loadScript.js");
 
 let html = fs.readFileSync(path.join(__dirname, "../../../index.html"), "utf8");
 html = html
@@ -21,12 +22,9 @@ describe("index validatePrompt", () => {
     });
     global.window = dom.window;
     global.document = dom.window.document;
-    const shareSrc = fs
-      .readFileSync(path.join(__dirname, "../../../js/share.js"), "utf8")
-      .replace(/export \{[^}]+\};?/, "");
+    const shareSrc = loadScript("js/share.js");
     dom.window.eval(shareSrc);
-    let script = fs
-      .readFileSync(path.join(__dirname, "../../../js/index.js"), "utf8")
+    let script = loadScript("js/index.js")
       .replace(/import { shareOn } from ['"]\.\/share.js['"];?/, "")
 
       .replace(/window\.addEventListener\(['"]DOMContentLoaded['"][\s\S]+$/, "")

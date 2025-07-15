@@ -2,6 +2,7 @@
 const fs = require("fs");
 const path = require("path");
 const { JSDOM } = require("jsdom");
+const loadScript = require("../utils/loadScript.js");
 
 function setup(url) {
   const dom = new JSDOM('<div id="viewer"></div><div id="error"></div>', {
@@ -10,13 +11,12 @@ function setup(url) {
   });
   global.window = dom.window;
   global.document = dom.window.document;
-  const shareSrc = fs
-    .readFileSync(path.join(__dirname, "../../../js/share.js"), "utf8")
-    .replace(/export \{[^}]+\};?/, "");
+  const shareSrc = loadScript("js/share.js");
   dom.window.eval(shareSrc);
-  let script = fs
-    .readFileSync(path.join(__dirname, "../../../js/sharedModel.js"), "utf8")
-    .replace(/import { shareOn } from ['"]\.\/share.js['"];?/, "");
+  let script = loadScript("js/sharedModel.js").replace(
+    /import { shareOn } from ['"]\.\/share.js['"];?/,
+    "",
+  );
   dom.window.eval(script);
   return dom;
 }
