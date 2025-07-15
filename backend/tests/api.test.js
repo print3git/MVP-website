@@ -199,7 +199,7 @@ test("create-order quantity discount", async () => {
 test("create-order applies first-order discount", async () => {
   db.query
     .mockResolvedValueOnce({ rows: [{ job_id: "1", user_id: "u1" }] })
-    .mockResolvedValueOnce({ rows: [] })
+    .mockResolvedValueOnce({ rows: [{ count: "0" }] })
     .mockResolvedValueOnce({})
     .mockResolvedValueOnce({});
   const token = jwt.sign({ id: "u1" }, "secret");
@@ -222,8 +222,6 @@ test("create-order grants free print after three referrals", async () => {
     .mockResolvedValueOnce({ rows: [{ code: "REF123" }] })
     .mockResolvedValueOnce({})
     .mockResolvedValueOnce({ rows: [{ count: "3" }] })
-    .mockResolvedValueOnce({ rows: [] })
-    .mockResolvedValueOnce({ rows: [{ code: "FREE1" }] })
     .mockResolvedValueOnce({});
   db.getUserIdForReferral.mockResolvedValue("u2");
 
@@ -235,11 +233,12 @@ test("create-order grants free print after three referrals", async () => {
   });
 
   expect(res.status).toBe(200);
+  const createCall = stripeMock.checkout.sessions.create.mock.calls.pop()[0];
+  expect(createCall.line_items[0].price_data.unit_amount).toBe(0);
   const incentiveCalls = db.query.mock.calls.filter((c) =>
     c[0].includes("INSERT INTO incentives"),
   );
-  expect(incentiveCalls).toHaveLength(2);
-  expect(incentiveCalls[1][1][1]).toMatch(/^free_/);
+  expect(incentiveCalls).toHaveLength(1);
   expect(db.insertReferredOrder).toHaveBeenCalled();
   expect(db.getUserIdForReferral).toHaveBeenCalledWith("REFCODE");
 });
@@ -766,7 +765,7 @@ test("POST /api/create-order saves UTM params", async () => {
 test("create-order inserts commission for marketplace sale", async () => {
   db.query
     .mockResolvedValueOnce({ rows: [{ job_id: "1", user_id: "seller" }] })
-    .mockResolvedValueOnce({ rows: [1] })
+    .mockResolvedValueOnce({ rows: [{ count: "1" }] })
     .mockResolvedValueOnce({});
   db.insertCommission.mockResolvedValueOnce({});
   const token = jwt.sign({ id: "buyer" }, "secret");

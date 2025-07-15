@@ -16,6 +16,17 @@ if (!process.env.SKIP_ROOT_DEPS_CHECK) {
   }
 }
 
+try {
+  require.resolve("nodemailer", {
+    paths: [path.join(__dirname, "..", "backend")],
+  });
+} catch {
+  console.error(
+    "Missing backend dependencies. Run 'npm run setup' before running tests.",
+  );
+  process.exit(1);
+}
+
 function verifyFiles(args) {
   const repoRoot = path.resolve(__dirname, "..");
   let checking = false;

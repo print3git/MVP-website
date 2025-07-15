@@ -580,7 +580,7 @@ app.get("/api/status/:jobId", async (req, res) => {
       req.params.jobId,
     ]);
     if (rows.length === 0) {
-      return res.status(404).json({ error: "Job not found" });
+      return res.status(404).json({ error: "Not found" });
     }
     const job = rows[0];
     res.json({
@@ -2734,7 +2734,7 @@ app.post("/api/create-order", authOptional, async (req, res) => {
       [jobId],
     );
     if (job.rows.length === 0) {
-      return res.status(404).json({ error: "Job not found" });
+      return res.status(404).json({ error: "Not found" });
     }
 
     let totalDiscount = discount || 0;
@@ -2784,6 +2784,8 @@ app.post("/api/create-order", authOptional, async (req, res) => {
         );
         const referralCount = parseInt(counts[0].count, 10) || 0;
         if (referralCount >= 3) {
+          totalDiscount = Math.round((price || 0) * (qty || 1));
+        } else {
           const { rows: existing } = await db.query(
             "SELECT 1 FROM incentives WHERE user_id=$1 AND type LIKE 'free_%' LIMIT 1",
             [referrerId],
@@ -2850,11 +2852,12 @@ app.post("/api/create-order", authOptional, async (req, res) => {
     }
 
     if (req.user) {
-      const { rows: paid } = await db.query(
-        "SELECT 1 FROM orders WHERE user_id=$1 AND status=$2 LIMIT 1",
-        [req.user.id, "paid"],
+      const { rows: counts } = await db.query(
+        "SELECT COUNT(*) FROM orders WHERE user_id=$1",
+        [req.user.id],
       );
-      if (paid.length === 0) {
+      const orderCount = parseInt(counts[0].count, 10) || 0;
+      if (orderCount === 0) {
         const firstDisc = Math.round((price || 0) * (qty || 1) * 0.1);
         totalDiscount += firstDisc;
         await db.query("INSERT INTO incentives(user_id, type) VALUES($1,$2)", [

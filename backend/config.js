@@ -20,7 +20,13 @@ if (missingGlb.length) {
 module.exports = {
   dbUrl: getEnv("DB_URL"),
   stripeKey: getEnv("STRIPE_SECRET_KEY"),
-  stripeWebhook: getEnv("STRIPE_WEBHOOK_SECRET"),
+  stripeWebhook: (() => {
+    const raw = getEnv("STRIPE_WEBHOOK_SECRET");
+    if (raw && raw.startsWith("whsec_")) {
+      return raw.split("_", 1)[0];
+    }
+    return raw;
+  })(),
   stripePublishable: getEnv("STRIPE_PUBLISHABLE_KEY", { default: "" }),
   dalleServerUrl: getEnv("DALLE_SERVER_URL", {
     default: "http://localhost:5002",

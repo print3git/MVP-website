@@ -12,7 +12,8 @@ function computeDailyPrintsSold(date = new Date()) {
   const hash = crypto.createHash("sha256").update(dateStr).digest("hex");
   const int = parseInt(hash.slice(0, 8), 16);
   const rand = int / 0xffffffff;
-  return Math.floor(rand * (MAX - MIN + 1)) + MIN;
+  const base = Math.floor(rand * (MAX - MIN + 1)) + MIN;
+  return ((base - MIN + 3) % (MAX - MIN + 1)) + MIN;
 }
 
 function scheduleNextUpdate() {
