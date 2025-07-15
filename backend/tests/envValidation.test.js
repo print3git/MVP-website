@@ -91,7 +91,7 @@ describe("validate-env script", () => {
   });
 
   test("fails when DB_URL missing and example file absent", () => {
-    const env = { ...process.env, ...baseEnv };
+    const env = { ...process.env, ...baseEnv, SKIP_DB_CHECK: "" };
     delete env.DB_URL;
     const example = path.resolve(__dirname, "..", "..", ".env.example");
     const backup = `${example}.bak`;
