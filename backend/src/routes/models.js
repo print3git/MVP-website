@@ -20,6 +20,9 @@ const createModelSchema = z.object({
   prompt: z.string().min(1, "prompt is required"),
   fileKey: z.string().regex(/^[A-Za-z0-9._-]+$/, "invalid fileKey"),
 });
+
+// expose schema for testing
+router.createModelSchema = createModelSchema;
 router.post(
   "/api/models",
   validate(createModelSchema),
