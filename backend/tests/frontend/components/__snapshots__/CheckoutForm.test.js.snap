@@ -1,0 +1,41 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`CheckoutForm renders consistently 1`] = `
+<div>
+  <form>
+    <div>
+      <div />
+      <a
+        href="#"
+      >
+        Can't find your address? Enter it manually
+      </a>
+    </div>
+    <input
+      name="street"
+      type="hidden"
+      value=""
+    />
+    <input
+      name="city"
+      type="hidden"
+      value=""
+    />
+    <input
+      name="zip"
+      type="hidden"
+      value=""
+    />
+    <input
+      name="country"
+      type="hidden"
+      value=""
+    />
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
+</div>
+`;
