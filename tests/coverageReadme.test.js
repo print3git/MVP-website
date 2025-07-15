@@ -7,6 +7,6 @@ describe("README coverage instructions", () => {
       path.join(__dirname, "..", "README.md"),
       "utf8",
     );
-    expect(readme).toContain("cat backend/coverage/lcov.info | npx coveralls");
+    expect(readme).toContain("cat coverage/lcov.info | npx coveralls");
   });
 });

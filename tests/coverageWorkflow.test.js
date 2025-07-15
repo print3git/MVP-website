@@ -25,9 +25,7 @@ describe("coverage workflow", () => {
     const hasSummaryCheck = steps.some((cmd) =>
       cmd.includes("coverageSummaryExists.test.js"),
     );
-    const usesCat = steps.some((cmd) =>
-      cmd.includes("cat backend/coverage/lcov.info"),
-    );
+    const usesCat = steps.some((cmd) => cmd.includes("cat coverage/lcov.info"));
     expect(hasSetup).toBe(true);
     expect(hasCoverage).toBe(true);
     expect(hasCoveralls).toBe(true);
