@@ -54,6 +54,7 @@
     "serve": "npm run build && node scripts/dev-server.js",
     "smoke": "node scripts/run-smoke.js",
     "build": "echo 'no build step'",
+    "postinstall": "npm run build",
     "load": "artillery run tests/load/models.yml",
     "visual-test": "percy exec -- npm run e2e",
     "test:a11y": "node scripts/assert-setup.js && bash scripts/install-playwright.sh chromium && playwright test e2e/a11y.test.js",
@@ -120,6 +121,7 @@
     "tslib": "^2.8.1",
     "typescript": "^5.8.3",
     "wait-on": "^8.0.3",
+    "jest": "^29.x",
     "yaml": "^2.8.0"
   },
   "husky": {
