@@ -21,6 +21,9 @@ mise settings add idiomatic_version_file_enable_tools node --yes >/dev/null 2>&1
 if [ -f .mise.toml ]; then
   mise trust .mise.toml >/dev/null 2>&1 || true
 fi
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+repo_root="$(cd "$script_dir/.." && pwd)"
 load_env_file() {
   local file="$1"
   while IFS='=' read -r key value; do
@@ -31,10 +34,10 @@ load_env_file() {
   done < "$file"
 }
 
-if [ -f .env ]; then
-  load_env_file .env
-elif [ -f .env.example ]; then
-  load_env_file .env.example
+if [ -f "$repo_root/.env" ]; then
+  load_env_file "$repo_root/.env"
+elif [ -f "$repo_root/.env.example" ]; then
+  load_env_file "$repo_root/.env.example"
 fi
 
 # Disable HTTP/2 for local testing to avoid client errors
