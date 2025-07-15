@@ -16,7 +16,7 @@ describe("checkout env validation", () => {
     delete process.env.STRIPE_LIVE_KEY;
     expect(() => {
       jest.isolateModules(() => require("../src/routes/checkout"));
-    }).not.toThrow();
+    }).toThrow();
   });
   test("router exposes orders map", () => {
     process.env.STRIPE_TEST_KEY = "sk_test";

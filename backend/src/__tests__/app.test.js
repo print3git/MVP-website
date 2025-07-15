@@ -1,6 +1,7 @@
 process.env.DB_ENDPOINT = "postgres://user:pass@localhost/db";
 process.env.DB_PASSWORD = "pass";
 process.env.CLOUDFRONT_DOMAIN = "cloud.test";
+process.env.STRIPE_TEST_KEY = "sk_test";
 
 jest.mock("pg");
 const { Pool } = require("pg");

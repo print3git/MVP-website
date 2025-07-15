@@ -23,7 +23,8 @@ function loadDom() {
     path.join(__dirname, "../../../js/payment.js"),
     "utf8",
   );
-  dom.window.eval(script);
+  const cleaned = script.replace(/^\s*import[^;]+;\n?/gm, "");
+  dom.window.eval(cleaned);
   return dom;
 }
 

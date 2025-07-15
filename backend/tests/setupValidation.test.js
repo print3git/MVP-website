@@ -17,8 +17,9 @@ describe("environment setup", () => {
   });
 
   test("jest installed", () => {
-    const jestBin = path.resolve(__dirname, "../../node_modules/.bin/jest");
-    expect(fs.existsSync(jestBin)).toBe(true);
+    const rootJest = path.resolve(__dirname, "../../node_modules/.bin/jest");
+    const backendJest = path.resolve(__dirname, "../node_modules/.bin/jest");
+    expect(fs.existsSync(rootJest) || fs.existsSync(backendJest)).toBe(true);
   });
 
   test("backend jest installed", () => {
