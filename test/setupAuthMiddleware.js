@@ -1,7 +1,7 @@
 const express = require("express");
 /**
- *
- * @param app
+ * Attach fake authentication middleware to an Express app.
+ * @param {express.Application} app Express application instance.
  */
 function setupAuth(app = express.application) {
   app.use((req, res, next) => {
