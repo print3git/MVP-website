@@ -47,12 +47,12 @@ describe("run-coverage script", () => {
       ),
     ).toBe(true);
   });
-  test("prints error when showing help", () => {
+  test("shows Jest help output", () => {
     const result = spawnSync(process.execPath, [script, "--help"], {
       env,
       encoding: "utf8",
     });
     expect(result.status).toBe(0);
-    expect(result.stderr + result.stdout).toMatch(/Failed to parse LCOV/);
+    expect(result.stderr + result.stdout).toMatch(/Usage: jest/);
   });
 });

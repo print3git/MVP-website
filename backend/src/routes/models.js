@@ -23,22 +23,18 @@ const createModelSchema = z.object({
 
 // expose schema for testing
 router.createModelSchema = createModelSchema;
-router.post(
-  "/api/models",
-  validate(createModelSchema),
-  async (req, res, next) => {
-    try {
-      const { prompt, fileKey } = req.body;
-      const url = `https://${process.env.CLOUDFRONT_DOMAIN}/${fileKey}`;
-      const result = await pool.query(
-        "INSERT INTO models (prompt, url) VALUES ($1, $2) RETURNING *",
-        [prompt, url],
-      );
-      res.status(201).json(result.rows[0]);
-    } catch (err) {
-      res.status(500).json({ error: "Internal Server Error" });
-    }
-  },
-);
+router.post("/api/models", validate(createModelSchema), async (req, res) => {
+  try {
+    const { prompt, fileKey } = req.body;
+    const url = `https://${process.env.CLOUDFRONT_DOMAIN}/${fileKey}`;
+    const result = await pool.query(
+      "INSERT INTO models (prompt, url) VALUES ($1, $2) RETURNING *",
+      [prompt, url],
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (_err) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 module.exports = router;
