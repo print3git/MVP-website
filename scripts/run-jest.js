@@ -79,7 +79,11 @@ function runJest(args) {
   const cmdArgs = jestArgs.join(" ");
   const env = { ...process.env };
   if (runFromRoot) {
-    env.NODE_PATH = [path.join(repoRoot, "node_modules"), env.NODE_PATH || ""]
+    env.NODE_PATH = [
+      path.join(repoRoot, "node_modules"),
+      path.join(backendDir, "node_modules"),
+      env.NODE_PATH || "",
+    ]
       .filter(Boolean)
       .join(path.delimiter);
   }
