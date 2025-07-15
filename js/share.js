@@ -1,4 +1,5 @@
 const API_BASE = (window.API_ORIGIN || "") + "/api";
+import { track } from "./analytics.js";
 
 async function captureSnapshot(glbUrl) {
   if (!glbUrl) return null;
@@ -60,11 +61,7 @@ async function shareOn(
         typeof localStorage !== "undefined"
           ? localStorage.getItem("shareId")
           : null;
-      await fetch(`${API_BASE}/track/share`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ shareId, network }),
-      });
+      await track("share", { shareId, network });
     } catch (err) {
       console.error("Failed to track share", err);
     }
