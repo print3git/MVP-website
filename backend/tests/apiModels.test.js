@@ -60,3 +60,22 @@ test("POST /api/models requires fields", async () => {
   const res = await request(app).post("/api/models").send({});
   expect(res.status).toBe(400);
 });
+
+test("POST /api/models returns 500 on db failure", async () => {
+  const body = { prompt: "oops", fileKey: "oops.glb" };
+  db.query.mockRejectedValueOnce(new Error("fail"));
+  const res = await request(app).post("/api/models").send(body);
+  expect(res.status).toBe(500);
+  expect(res.body).toEqual({ error: "Internal Server Error" });
+});
+
+test("POST /api/models validates fileKey", async () => {
+  const body = { prompt: "bad", fileKey: "bad key" };
+  const res = await request(app).post("/api/models").send(body);
+  expect(res.status).toBe(400);
+});
+
+test("POST /api/models rejects null payload", async () => {
+  const res = await request(app).post("/api/models").send(null);
+  expect(res.status).toBe(400);
+});
