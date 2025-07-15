@@ -59,6 +59,15 @@ function initEnv(baseEnv = process.env) {
 
 const env = initEnv(process.env);
 
+// Skip Playwright dependency installation when the setup flag exists.
+// This prevents repeated apt-get runs in CI environments.
+if (
+  !env.SKIP_PW_DEPS &&
+  fs.existsSync(path.join(process.cwd(), ".setup-complete"))
+) {
+  env.SKIP_PW_DEPS = "1";
+}
+
 let lastCommand = "";
 
 function run(cmd) {
