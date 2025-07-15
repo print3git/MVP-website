@@ -1,7 +1,7 @@
 const express = require("express");
 /**
- *
- * @param app
+ * Configure authentication middleware for an Express app used in tests.
+ * @param {import('express').Application} app Express application instance
  */
 function setupAuth(app = express.application) {
   app.use((req, res, next) => {

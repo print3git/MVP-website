@@ -26,7 +26,7 @@ router.createModelSchema = createModelSchema;
 router.post(
   "/api/models",
   validate(createModelSchema),
-  async (req, res, next) => {
+  async (req, res, _next) => {
     try {
       const { prompt, fileKey } = req.body;
       const url = `https://${process.env.CLOUDFRONT_DOMAIN}/${fileKey}`;
@@ -35,7 +35,7 @@ router.post(
         [prompt, url],
       );
       res.status(201).json(result.rows[0]);
-    } catch (err) {
+    } catch (_err) {
       res.status(500).json({ error: "Internal Server Error" });
     }
   },

@@ -1,4 +1,9 @@
 /** @jest-environment node */
+/**
+ * Calculate the bulk discount amount for a list of cart items.
+ *
+ * @param {Array<{qty?: number|string}>} items list of cart items
+ */
 function computeBulkDiscount(items) {
   const TWO_PRINT_DISCOUNT = 700;
   const THIRD_PRINT_DISCOUNT = global.window.location.pathname.endsWith(
