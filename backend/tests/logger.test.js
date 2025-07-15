@@ -1,9 +1,12 @@
 const Sentry = require("@sentry/node");
 const { capture } = require("../src/lib/logger");
-const logger = require("../src/logger");
+const logger = require("../src/logger").default;
 const { transports } = require("winston");
 
 describe("capture", () => {
+  beforeEach(() => {
+    jest.spyOn(Sentry, "captureException").mockImplementation(() => {});
+  });
   afterEach(() => {
     delete process.env.SENTRY_DSN;
     jest.restoreAllMocks();
@@ -16,9 +19,7 @@ describe("capture", () => {
 
   test("forwards errors to Sentry when DSN is set", () => {
     process.env.SENTRY_DSN = "abc";
-    const spy = jest
-      .spyOn(Sentry, "captureException")
-      .mockImplementation(() => {});
+    const spy = Sentry.captureException;
     const err = new Error("boom");
     capture(err);
     expect(spy).toHaveBeenCalledWith(err);

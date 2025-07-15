@@ -93,6 +93,8 @@ describe("validate-env script", () => {
   test("fails when DB_URL missing and example file absent", () => {
     const env = { ...process.env, ...baseEnv };
     delete env.DB_URL;
+    const prevDbUrl = process.env.DB_URL;
+    delete process.env.DB_URL;
     const example = path.resolve(process.cwd(), ".env.example");
     const backup = `${example}.bak`;
     fs.renameSync(example, backup);
@@ -103,6 +105,7 @@ describe("validate-env script", () => {
       threw = true;
     }
     fs.renameSync(backup, example);
+    if (prevDbUrl) process.env.DB_URL = prevDbUrl;
     expect(threw).toBe(true);
   });
 
