@@ -32,6 +32,9 @@ try {
 const expressPath = path.join(repoRoot, "node_modules", "express");
 const pwPath = path.join(repoRoot, "node_modules", "@playwright", "test");
 const setupFlag = path.join(repoRoot, ".setup-complete");
+const { runNpmCi } = require(
+  path.join(__dirname, "..", "..", "scripts", "run-npm-ci.js"),
+);
 
 const networkCheck = path.join(
   __dirname,
@@ -136,9 +139,9 @@ if (!fs.existsSync(expressPath)) {
   if (!canReachRegistry()) process.exit(1);
   console.log("Express not found. Installing root dependencies...");
   try {
-    execSync("npm ci", { stdio: "inherit", cwd: repoRoot });
-  } catch (_err) {
-    console.error("Failed to install root dependencies:", _err.message);
+    runNpmCi(repoRoot);
+  } catch (err) {
+    console.error("Failed to install root dependencies:", err.message);
     process.exit(1);
   }
 }
@@ -148,9 +151,9 @@ if (!fs.existsSync(pwPath)) {
   if (!canReachRegistry()) process.exit(1);
   console.log("@playwright/test not found. Installing root dependencies...");
   try {
-    execSync("npm ci", { stdio: "inherit", cwd: repoRoot });
-  } catch (_err) {
-    console.error("Failed to install root dependencies:", _err.message);
+    runNpmCi(repoRoot);
+  } catch (err) {
+    console.error("Failed to install root dependencies:", err.message);
     process.exit(1);
   }
 }
@@ -168,9 +171,9 @@ if (!fs.existsSync(jestPath)) {
     process.exit(1);
   }
   try {
-    execSync("npm ci", { stdio: "inherit" });
-  } catch (_err) {
-    console.error("Failed to install dependencies:", _err.message);
+    runNpmCi();
+  } catch (err) {
+    console.error("Failed to install dependencies:", err.message);
     process.exit(1);
   }
 }

@@ -150,4 +150,16 @@ describe("ensure-deps", () => {
 
     execMock.mockRestore();
   });
+
+  test("uses runNpmCi helper when installing dependencies", () => {
+    jest.resetModules();
+    fs.existsSync.mockReturnValue(false);
+    jest.mock("../scripts/run-npm-ci", () => ({
+      runNpmCi: jest.fn(),
+    }));
+    const { runNpmCi } = require("../scripts/run-npm-ci");
+    require("../backend/scripts/ensure-deps");
+    expect(runNpmCi).toHaveBeenCalled();
+    jest.unmock("../scripts/run-npm-ci");
+  });
 });
