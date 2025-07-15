@@ -3,6 +3,14 @@ const { execSync } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 
+function freePort(port) {
+  try {
+    execSync(`npx -y kill-port ${port}`, { stdio: "inherit" });
+  } catch (err) {
+    console.warn(`kill-port ${port} failed`, err.message);
+  }
+}
+
 function initEnv(baseEnv = process.env) {
   const env = { ...baseEnv };
 
@@ -90,7 +98,16 @@ function dumpDiagnostics(err) {
 function main() {
   try {
     run("npm run validate-env");
-    run("npm run setup");
+    if (!process.env.SKIP_SETUP && !fs.existsSync(".setup-complete")) {
+      run("npm run setup");
+    } else {
+      console.log("Skipping setup step");
+      try {
+        execSync('pkill -f "node scripts/dev-server.js"', { stdio: "ignore" });
+      } catch {
+        // ignore if no server is running
+      }
+    }
     if (!process.env.SKIP_PW_DEPS) {
       run("npx -y playwright install --with-deps");
     }
@@ -113,4 +130,4 @@ if (require.main === module) {
   main();
 }
 
-module.exports = { main, env, run, initEnv };
+module.exports = { main, env, run, initEnv, freePort };
