@@ -29,21 +29,18 @@ function runAssertSetup(extraEnv = {}) {
 describe("assert-setup backend deps", () => {
   test("installs backend dependencies when missing", () => {
     const logFile = path.join(os.tmpdir(), `log-${Date.now()}`);
-    const nodeModules = path.join(__dirname, "..", "node_modules");
-    const backup = nodeModules + ".bak";
-    if (fs.existsSync(nodeModules)) fs.renameSync(nodeModules, backup);
+    const { result } = runAssertSetup({
+      EXEC_LOG_FILE: logFile,
+      SKIP_NET_CHECKS: "1",
+      SKIP_PW_DEPS: "1",
+      FAKE_NODE_MODULES_MISSING: "1",
+    });
     try {
-      const { result } = runAssertSetup({
-        EXEC_LOG_FILE: logFile,
-        SKIP_NET_CHECKS: "1",
-        SKIP_PW_DEPS: "1",
-      });
       expect(result.status).toBe(0);
       const logs = fs.readFileSync(logFile, "utf8");
       expect(logs).toMatch(/ensure-deps\.js/);
     } finally {
       fs.unlinkSync(logFile);
-      if (fs.existsSync(backup)) fs.renameSync(backup, nodeModules);
     }
   });
 
