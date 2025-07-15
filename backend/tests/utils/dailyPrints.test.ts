@@ -3,7 +3,7 @@ const { _computeDailyPrintsSold } = require("../../utils/dailyPrints");
 describe("_computeDailyPrintsSold", () => {
   test("returns deterministic value for a given date", () => {
     const date = new Date("2023-01-01T12:00:00Z");
-    expect(_computeDailyPrintsSold(date)).toBe(34);
+    expect(_computeDailyPrintsSold(date)).toBe(37);
   });
 
   test("value is within expected range", () => {

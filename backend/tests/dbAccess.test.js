@@ -11,10 +11,17 @@ test("getRewardOption returns database value when present", async () => {
     "SELECT amount_cents FROM reward_options WHERE points=$1",
     [50],
   );
-  expect(result).toEqual({ amount_cents: 250 });
+  expect(result).toBe(250);
 });
 
 test("getRewardOption propagates query error", async () => {
   db.query.mockRejectedValueOnce(new Error("fail"));
   await expect(db.getRewardOption(20)).rejects.toThrow("fail");
+});
+
+test("getRewardOption throws when no result", async () => {
+  db.query.mockResolvedValueOnce({ rows: [] });
+  await expect(db.getRewardOption(999)).rejects.toThrow(
+    "No reward option found for points: 999",
+  );
 });

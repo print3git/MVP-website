@@ -469,15 +469,15 @@ async function getRewardOptions() {
 }
 
 async function getRewardOption(points) {
-  const { rows } = await query(
+  const { rows } = await module.exports.query(
     "SELECT amount_cents FROM reward_options WHERE points=$1",
     [points],
   );
-  if (rows[0]) return rows[0];
-  if (points === 50) return { amount_cents: 500 };
-  if (points === 100) return { amount_cents: 1000 };
-  if (points >= 1 && points <= 200) return { amount_cents: points * 5 };
-  return null;
+  if (rows[0]) return rows[0].amount_cents;
+  if (points === 50) return 500;
+  if (points === 100) return 1000;
+  if (points >= 1 && points <= 200) return points * 5;
+  throw new Error(`No reward option found for points: ${points}`);
 }
 
 async function insertAdSpend(subreddit, date, spendCents) {
