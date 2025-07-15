@@ -174,8 +174,21 @@ if (!fs.existsSync(jestPath)) {
   try {
     runNpmCi();
   } catch (err) {
-    console.error("Failed to install dependencies:", err.message);
-    process.exit(1);
+    console.warn(
+      "npm ci failed, retrying after cleaning node_modules:",
+      err.message,
+    );
+    try {
+      fs.rmSync("node_modules", { recursive: true, force: true });
+    } catch (_err) {
+      // ignore errors removing node_modules
+    }
+    try {
+      execSync("npm ci", { stdio: "inherit" });
+    } catch (err2) {
+      console.error("Failed to install dependencies:", err2.message);
+      process.exit(1);
+    }
   }
 }
 

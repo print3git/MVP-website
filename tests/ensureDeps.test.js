@@ -77,6 +77,27 @@ describe("ensure-deps", () => {
     expect(exitSpy).toHaveBeenCalledWith(1);
   });
 
+  test("retries npm ci after cleaning node_modules", () => {
+    fs.existsSync.mockReturnValue(false);
+    const execMock = jest
+      .spyOn(child_process, "execSync")
+      .mockImplementation((cmd, opts) => {
+        if (cmd === "npm ci" && !opts.cwd && !execMock.calledOnce) {
+          execMock.calledOnce = true;
+          throw new Error("tar fail");
+        }
+      });
+    fs.rmSync = jest.fn();
+    require("../backend/scripts/ensure-deps");
+    expect(fs.rmSync).toHaveBeenCalledWith("node_modules", {
+      recursive: true,
+      force: true,
+    });
+    const ciCalls = execMock.mock.calls.filter(([c]) => c === "npm ci");
+    expect(ciCalls.length).toBe(2);
+    execMock.mockRestore();
+  });
+
   test("falls back to SKIP_PW_DEPS when apt check fails", () => {
     fs.existsSync.mockReturnValue(false);
     const execMock = jest
