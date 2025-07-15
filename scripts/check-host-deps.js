@@ -34,38 +34,40 @@ function hostDepsInstalled() {
   }
 }
 
+if (hostDepsInstalled()) {
+  console.log("Playwright host dependencies already satisfied.");
+  process.exit(0);
+}
+
+if (process.env.SKIP_PW_DEPS) {
+  console.warn(
+    "SKIP_PW_DEPS is set but Playwright host dependencies are missing. Skipping installation...",
+  );
+  process.exit(0);
+}
+
 checkNetwork();
 
-if (!hostDepsInstalled()) {
-  if (process.env.SKIP_PW_DEPS) {
-    console.warn(
-      "SKIP_PW_DEPS is set but Playwright host dependencies are missing. Installing anyway...",
+console.log("Playwright host dependencies missing. Installing...");
+try {
+  execSync("CI=1 npx playwright install --with-deps", { stdio: "inherit" });
+} catch (err) {
+  const msg = String(err.message || "");
+  console.error("Failed to install Playwright host dependencies:", msg);
+  if (/code:\s*100/.test(msg)) {
+    console.error(
+      "apt-get failure detected. Retrying without system dependencies...",
     );
-  } else {
-    console.log("Playwright host dependencies missing. Installing...");
-  }
-  try {
-    execSync("CI=1 npx playwright install --with-deps", { stdio: "inherit" });
-  } catch (err) {
-    const msg = String(err.message || "");
-    console.error("Failed to install Playwright host dependencies:", msg);
-    if (/code:\s*100/.test(msg)) {
+    try {
+      execSync("CI=1 npx playwright install", { stdio: "inherit" });
       console.error(
-        "apt-get failure detected. Retrying without system dependencies...",
+        "Set SKIP_PW_DEPS=1 to skip Playwright dependencies in restricted environments.",
       );
-      try {
-        execSync("CI=1 npx playwright install", { stdio: "inherit" });
-        console.error(
-          "Set SKIP_PW_DEPS=1 to skip Playwright dependencies in restricted environments.",
-        );
-      } catch (err2) {
-        console.error("Fallback install failed:", err2.message);
-        process.exit(1);
-      }
-    } else {
+    } catch (err2) {
+      console.error("Fallback install failed:", err2.message);
       process.exit(1);
     }
+  } else {
+    process.exit(1);
   }
-} else {
-  console.log("Playwright host dependencies already satisfied.");
 }
