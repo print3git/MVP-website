@@ -26,10 +26,9 @@ function setupDom() {
   dom.window.setInterval = setInterval;
   dom.window.clearInterval = clearInterval;
   dom.window.Date = Date;
-  const script = fs.readFileSync(
-    path.join(__dirname, "../../../js/payment.js"),
-    "utf8",
-  );
+  const script = fs
+    .readFileSync(path.join(__dirname, "../../../js/payment.js"), "utf8")
+    .replace(/import { track } from ['"]\.\/analytics.js['"];?/, "");
   dom.window.eval(script);
   return dom;
 }

@@ -12,7 +12,8 @@ function setup(url) {
   global.document = dom.window.document;
   const shareSrc = fs
     .readFileSync(path.join(__dirname, "../../../js/share.js"), "utf8")
-    .replace(/export \{[^}]+\};?/, "");
+    .replace(/export \{[^}]+\};?/, "")
+    .replace(/import { track } from ['"]\.\/analytics.js['"];?/, "");
   dom.window.eval(shareSrc);
   let script = fs
     .readFileSync(path.join(__dirname, "../../../js/sharedModel.js"), "utf8")
