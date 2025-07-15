@@ -60,7 +60,31 @@ describe("validate-env script", () => {
       SKIP_DB_CHECK: "1",
     };
     const output = run(env);
+    expect(output).toContain("Using dummy HF_TOKEN and HF_API_KEY");
     expect(output).toContain("✅ environment OK");
+  });
+
+  test("injects dummy CLOUDFRONT_MODEL_DOMAIN when missing", () => {
+    const env = {
+      ...process.env,
+      HF_TOKEN: "token",
+      AWS_ACCESS_KEY_ID: "id",
+      AWS_SECRET_ACCESS_KEY: "secret",
+      DB_URL: "postgres://user:pass@localhost/db",
+      STRIPE_SECRET_KEY: "sk_test",
+      CLOUDFRONT_MODEL_DOMAIN: "",
+      SKIP_DB_CHECK: "1",
+    };
+    const example = path.resolve(__dirname, "..", ".env.example");
+    const backup = `${example}.bak`;
+    fs.renameSync(example, backup);
+    try {
+      const output = run(env);
+      expect(output).toContain("Using dummy CLOUDFRONT_MODEL_DOMAIN");
+      expect(output).toContain("✅ environment OK");
+    } finally {
+      fs.renameSync(backup, example);
+    }
   });
 
   test.skip("fails when DB_URL is missing", () => {
@@ -145,7 +169,7 @@ describe("validate-env script", () => {
     const fakeCurl = path.join(tmp, "curl");
     fs.writeFileSync(
       fakeCurl,
-      '#!/usr/bin/env bash\nif echo "$@" | grep -q cdn.playwright.dev; then echo "curl: (6) Could not resolve host" >&2; exit 6; fi\nexec /usr/bin/curl "$@"',
+      '#!/usr/bin/env bash\nif echo "$@" | grep -q cdn.playwright.dev; then echo "curl: (6) Could not resolve host" >&2; exit 6; fi\nexit 0',
     );
     fs.chmodSync(fakeCurl, 0o755);
     const env = {
@@ -162,5 +186,53 @@ describe("validate-env script", () => {
     const output = run(env);
     expect(output).toContain("Network check failed for Playwright CDN");
     expect(output).toContain("✅ environment OK");
+  });
+
+  test("succeeds when sourced under strict mode", () => {
+    const env = {
+      ...process.env,
+      HF_TOKEN: "test",
+      AWS_ACCESS_KEY_ID: "id",
+      AWS_SECRET_ACCESS_KEY: "secret",
+      DB_URL: "postgres://user:pass@localhost/db",
+      STRIPE_SECRET_KEY: "sk_test",
+      CLOUDFRONT_MODEL_DOMAIN: "cdn.test",
+      S3_BUCKET: "bucket",
+      SKIP_NET_CHECKS: "1",
+      SKIP_DB_CHECK: "1",
+    };
+    const result = spawnSync(
+      "bash",
+      ["-euo", "pipefail", "-c", "source scripts/validate-env.sh >/dev/null"],
+      { env, encoding: "utf8" },
+    );
+    expect(result.status).toBe(0);
+  });
+
+  test("maps legacy env vars", () => {
+    const env = {
+      ...process.env,
+      HF_TOKEN: "tok",
+      AWS_ACCESS_KEY_ID: "id",
+      AWS_SECRET_ACCESS_KEY: "secret",
+      DB_URL: "postgres://user:pass@localhost/db",
+      STRIPE_SECRET_KEY: "sk_test",
+      CLOUDFRONT_MODEL_DOMAIN: "cdn.test",
+      S3_BUCKET: "bucket",
+      SKIP_NET_CHECKS: "1",
+      SKIP_DB_CHECK: "1",
+    };
+    const result = spawnSync(
+      "bash",
+      [
+        "-euo",
+        "pipefail",
+        "-c",
+        "source scripts/validate-env.sh >/dev/null; echo $HF_API_KEY $S3_BUCKET_NAME",
+      ],
+      { env, encoding: "utf8" },
+    );
+    expect(result.stdout.trim()).toBe("tok bucket");
+    expect(result.status).toBe(0);
   });
 });

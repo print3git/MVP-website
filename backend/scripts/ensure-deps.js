@@ -2,8 +2,33 @@ const fs = require("fs");
 const path = require("path");
 const { execSync } = require("child_process");
 
+// Fail fast when using the wrong Node version unless disabled for tests.
+if (!process.env.SKIP_NODE_CHECK) {
+  const nodeCheck = path.join(
+    __dirname,
+    "..",
+    "..",
+    "scripts",
+    "check-node-version.js",
+  );
+  try {
+    execSync(`node ${nodeCheck}`, { stdio: "inherit" });
+  } catch {
+    process.exit(1);
+  }
+}
+
 const jestPath = "node_modules/.bin/jest";
 const repoRoot = path.join(__dirname, "..", "..");
+try {
+  execSync(`mise trust ${repoRoot}`, { stdio: "ignore" });
+  const miseToml = path.join(repoRoot, ".mise.toml");
+  if (fs.existsSync(miseToml)) {
+    execSync(`mise trust ${miseToml}`, { stdio: "ignore" });
+  }
+} catch {
+  // ignore errors from mise trust to avoid masking real issues
+}
 const expressPath = path.join(repoRoot, "node_modules", "express");
 const pwPath = path.join(repoRoot, "node_modules", "@playwright", "test");
 const setupFlag = path.join(repoRoot, ".setup-complete");
@@ -74,8 +99,13 @@ function runSetup() {
       delete env.SKIP_PW_DEPS;
       execSync("npm run setup", { stdio: "inherit", cwd: repoRoot, env });
     } else {
-      console.error("Failed to run setup:", err.message);
-      process.exit(1);
+      console.warn(
+        "Setup failed, retrying with SKIP_PW_DEPS=1 to skip Playwright dependencies",
+      );
+      env.SKIP_PW_DEPS = "1";
+      env.PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD =
+        env.PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD || "1";
+      execSync("npm run setup", { stdio: "inherit", cwd: repoRoot, env });
     }
   }
 }
@@ -128,4 +158,13 @@ if (!fs.existsSync(jestPath)) {
     console.error("Failed to install dependencies:", err.message);
     process.exit(1);
   }
+}
+
+// Verify Playwright host dependencies so tests don't fail with missing library errors
+try {
+  const hostDeps = path.join(repoRoot, "scripts", "check-host-deps.js");
+  execSync(`node ${hostDeps}`, { stdio: "inherit" });
+} catch (err) {
+  console.error("Failed to verify Playwright host dependencies:", err.message);
+  process.exit(1);
 }

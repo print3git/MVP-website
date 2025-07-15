@@ -19,7 +19,7 @@ for (const url of pages) {
     await page.goto(url);
     const results = await new AxeBuilder({ page }).analyze();
     const violations = results.violations.filter((v) =>
-      ["critical", "serious"].includes(v.impact)
+      ["critical", "serious"].includes(v.impact),
     );
     const ids = violations.map((v) => v.id).sort();
 

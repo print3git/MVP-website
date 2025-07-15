@@ -1,6 +1,18 @@
 {
   "name": "mvp-website",
   "version": "1.0.0",
+  "nyc": {
+    "reporter": [
+      "lcov",
+      "text",
+      "json-summary"
+    ],
+    "check-coverage": true,
+    "branches": 80,
+    "functions": 80,
+    "lines": 80,
+    "statements": 80
+  },
   "description": "This repository contains the early MVP code for print2's website and backend.",
   "main": "index.js",
   "directories": {
@@ -26,7 +38,7 @@
     "coverage": "npm run coverage --prefix backend",
     "typecheck": "tsc --noEmit",
     "i18n:lint": "node scripts/i18n-lint.js",
-    "ci": "node scripts/assert-setup.js && npm run format && npm run lint && npm run typecheck && npm run i18n:lint && npm run test:ci && npm run test:a11y",
+    "ci": "node scripts/assert-setup.js && npm run format:check && npm run lint && npm run typecheck && npm run i18n:lint && npm run test:ci && npm run test:a11y",
     "test:ci": "cross-env JEST_CI=true npm run test-ci --prefix backend",
     "test:update-threshold": "node scripts/update-coverage-threshold.js",
     "test:stability": "node scripts/test-stability.js",
@@ -51,7 +63,8 @@
     "diagnose": "bash scripts/diagnose.sh",
     "test:generate": "node scripts/test-generate.js",
     "test:webhook": "node scripts/test-webhook.js",
-    "commitlint": "commitlint --from=HEAD~1"
+    "commitlint": "commitlint --from=HEAD~1",
+    "lint:md": "markdownlint-cli2 \"**/*.md\""
   },
   "keywords": [],
   "author": "",
@@ -99,17 +112,30 @@
     "tslib": "^2.8.1",
     "typescript": "^5.8.3",
     "wait-on": "^8.0.3",
-    "yaml": "^2.8.0"
+    "yaml": "^2.8.0",
+    "markdownlint-cli2": "^0.10.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   },
   "lint-staged": {
-    "*.{js,ts,json}": "prettier --write",
-    "backend/**/*.js": "eslint --fix",
-    "*.{js,ts}": "cross-env SKIP_ROOT_DEPS_CHECK=1 node scripts/run-jest.js --bail --findRelatedTests"
+    "*.js": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.ts": [
+      "eslint --fix",
+      "prettier --write"
+    ]
   },
   "dependencies": {
     "axios": "^1.10.0",
     "react": "^18.3.1",
     "react-dom": "^18.2.0",
-    "react-places-autocomplete": "^7.3.0"
+    "react-places-autocomplete": "^7.3.0",
+    "winston": "^3.17.0",
+    "winston-format": "^1.0.1"
   }
 }

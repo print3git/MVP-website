@@ -12,7 +12,8 @@ banner() {
 }
 
 banner "Running environment validation"
-bash scripts/validate-env.sh
+# Source validate-env so exported variables persist in this script
+source scripts/validate-env.sh
 
 banner "Starting dev server"
 pnpm dev &

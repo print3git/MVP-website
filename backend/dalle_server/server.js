@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+const logger = require("../../src/logger");
 
 // Simple 1x1 placeholder image encoded as a data URI
 const PLACEHOLDER_IMAGE =
@@ -18,7 +19,7 @@ const PORT = process.env.DALLE_PORT || 5002;
 
 if (require.main === module) {
   app.listen(PORT, () => {
-    console.log(`DALL-E mock server running on http://localhost:${PORT}`);
+    logger.info(`DALL-E mock server running on http://localhost:${PORT}`);
   });
 }
 

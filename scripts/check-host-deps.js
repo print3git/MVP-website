@@ -6,10 +6,16 @@ function checkNetwork() {
     return;
   }
   try {
-    execSync("node scripts/network-check.js", { stdio: "ignore" });
-  } catch {
+    const script = require("path").join(__dirname, "network-check.js");
+    execSync(`node ${script}`, {
+      stdio: "pipe",
+      encoding: "utf8",
+    });
+  } catch (err) {
+    if (err.stdout) process.stdout.write(err.stdout);
+    if (err.stderr) process.stderr.write(err.stderr);
     console.error(
-      "Network check failed. Ensure access to the npm registry and Playwright CDN.",
+      "Network check failed. Ensure access to the npm registry and Playwright CDN. Set SKIP_PW_DEPS=1 to skip Playwright dependencies.",
     );
     process.exit(1);
   }
@@ -32,12 +38,12 @@ checkNetwork();
 
 if (!hostDepsInstalled()) {
   if (process.env.SKIP_PW_DEPS) {
-    console.error(
-      "Playwright host dependencies are missing. Run 'npx playwright install --with-deps' or remove SKIP_PW_DEPS.",
+    console.warn(
+      "SKIP_PW_DEPS is set but Playwright host dependencies are missing. Installing anyway...",
     );
-    process.exit(1);
+  } else {
+    console.log("Playwright host dependencies missing. Installing...");
   }
-  console.log("Playwright host dependencies missing. Installing...");
   try {
     execSync("CI=1 npx playwright install --with-deps", { stdio: "inherit" });
   } catch (err) {

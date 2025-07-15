@@ -4,8 +4,7 @@ import { shareOn } from "./share.js";
 const API_BASE = (window.API_ORIGIN || "") + "/api";
 const TZ = "America/New_York";
 // Local fallback model used when generation fails or the viewer hasn't loaded a model yet.
-const FALLBACK_GLB_LOW =
-  "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
+const FALLBACK_GLB_LOW = "models/bag.glb";
 const FALLBACK_GLB_HIGH = FALLBACK_GLB_LOW;
 const FALLBACK_GLB = FALLBACK_GLB_LOW;
 const LOW_POLY_GLB = FALLBACK_GLB_LOW;
@@ -143,9 +142,12 @@ function ensureModelViewerLoaded() {
   }
 
   return new Promise((resolve, reject) => {
-    const finalize = () => {
+    const finalize = (attemptedLocal) => {
       if (window.customElements?.get("model-viewer")) {
         resolve();
+      } else if (!attemptedLocal) {
+        window.modelViewerSource = "local";
+        loadScript(localUrl, () => finalize(true));
       } else {
         reject(new Error("model-viewer failed to load"));
       }
@@ -161,11 +163,13 @@ function ensureModelViewerLoaded() {
     })
       .then(() => {
         clearTimeout(timer);
-        loadScript(cdnUrl, finalize);
+        window.modelViewerSource = "cdn";
+        loadScript(cdnUrl, () => finalize(false));
       })
       .catch(() => {
         clearTimeout(timer);
-        loadScript(localUrl, finalize);
+        window.modelViewerSource = "local";
+        loadScript(localUrl, () => finalize(true));
       });
   });
 }
@@ -872,7 +876,14 @@ refs.submitBtn.addEventListener("click", async () => {
 });
 
 async function init() {
-  await ensureModelViewerLoaded();
+  try {
+    await ensureModelViewerLoaded();
+  } catch (err) {
+    console.error("Failed to load model-viewer", err);
+    if (globalThis.document) {
+      document.body.dataset.viewerReady = "error";
+    }
+  }
   if (window.customElements?.whenDefined) {
     try {
       await customElements.whenDefined("model-viewer");

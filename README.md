@@ -1,5 +1,9 @@
 # MVP Website
 
+[![CI](https://github.com/OWNER/REPO/actions/workflows/ci.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/mvp-website.svg)](https://www.npmjs.com/package/mvp-website)
+[![Coverage Status](https://coveralls.io/repos/github/OWNER/REPO/badge.svg?branch=main)](https://coveralls.io/github/OWNER/REPO?branch=main)
+
 ## 🤖 Codex Integration
 
 Before you run any Codex-driven prompts, always sync your code and Hugging Face Space:
@@ -307,6 +311,7 @@ column of the `jobs` table.
 ## Contributing
 
 We welcome pull requests! Please fork the repo and create a topic branch. Run
+See [CONTRIBUTING.md](CONTRIBUTING.md) for our branch and commit conventions.
 `npm run setup` in the repository root to install all dependencies, then ensure `npm test` runs
 clean before submitting.
 Run `npm run test-ci` for the same tests using a single process, which matches the CI configuration.
@@ -398,6 +403,25 @@ By piping the generated `lcov.info` file instead of test output we avoid
 `Failed to parse string` errors from Coveralls when console logs appear.
 Running coverage without installing dependencies or omitting `npx` may lead to
 `coveralls: command not found` or `jest: not found` errors.
+
+#### Troubleshooting
+
+If Coveralls fails with an `lcovParse` error, the `lcov.info` report may contain
+ANSI color codes. Strip them before uploading:
+
+```bash
+npx strip-ansi backend/coverage/lcov.info > cleaned.info
+cat cleaned.info | npx coveralls
+```
+
+Verify the file includes `SF:` entries to confirm it's valid:
+
+```bash
+grep '^SF:' backend/coverage/lcov.info | head
+```
+
+Missing `SF:` lines usually mean the report was truncated. Re-run `npm run coverage`
+to regenerate the file.
 
 ## Printer Service
 
@@ -522,6 +546,7 @@ This fetches the missing libraries via `apt` so the browsers can start correctly
 ⚠️ **Note:** this project uses OpenAI Codex to generate PRs;
 binary files (images, compiled objects, etc.) will cause errors.
 Please remove or exclude any binary assets before opening a PR.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for details on our workflow.
 
 ## Performance
 

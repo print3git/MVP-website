@@ -3,7 +3,10 @@
     "target": "ES2022",
     "module": "CommonJS",
     "esModuleInterop": true,
-    "types": ["node"]
+    "types": ["node"],
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true
   },
   "files": ["ci_watchdog.ts"]
 }

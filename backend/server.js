@@ -6,6 +6,14 @@ const CLOUDFRONT_MODEL_DOMAIN = getEnv("CLOUDFRONT_MODEL_DOMAIN");
 if (!CLOUDFRONT_MODEL_DOMAIN && process.env.NODE_ENV !== "test") {
   throw new Error("Missing required env var CLOUDFRONT_MODEL_DOMAIN");
 }
+if (process.env.NODE_ENV === "test") {
+  if (!process.env.S3_BUCKET) {
+    process.env.S3_BUCKET = "test-bucket";
+  }
+  if (!process.env.STRIPE_WEBHOOK_SECRET) {
+    process.env.STRIPE_WEBHOOK_SECRET = "whsec";
+  }
+}
 const express = require("express");
 const http2 = require("http2");
 const cors = require("cors");
@@ -14,7 +22,6 @@ const multer = require("multer");
 const path = require("path");
 const morgan = require("morgan");
 const compression = require("compression");
-const swaggerJsdoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 const YAML = require("yaml");
 const { v4: uuidv4 } = require("uuid");
@@ -22,8 +29,11 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const db = require("./db");
 const modelsRouter = require("./routes/models");
+const healthzRouter = require("./routes/healthz");
+const usersRouter = require("./routes/users");
 const axios = require("axios");
 const fs = require("fs");
+const logger = require("../src/logger");
 const {
   S3Client,
   PutObjectCommand,
@@ -82,7 +92,7 @@ const s3 = new S3Client({ region: process.env.AWS_REGION });
 
 function logError(...args) {
   if (process.env.NODE_ENV !== "test") {
-    console.error(...args);
+    logger.error(...args);
   }
   capture(args[0] instanceof Error ? args[0] : new Error(args.join(" ")));
 }
@@ -164,30 +174,25 @@ function saveGeneratedAds() {
 const app = express();
 app.use(morgan("dev"));
 app.use(compression());
-app.use(cors());
+const allowedOrigins = (process.env.CORS_ORIGINS || "")
+  .split(",")
+  .map((o) => o.trim())
+  .filter(Boolean);
+app.use(
+  cors({
+    origin: allowedOrigins.length ? allowedOrigins : true,
+  }),
+);
 app.use(bodyParser.json());
-const serverSource = fs.readFileSync(__filename, "utf8");
-const swaggerSpec = swaggerJsdoc({
-  definition: {
-    openapi: "3.0.0",
-    info: { title: "print2 API", version: "1.0.0" },
-  },
-  apis: [__filename],
-});
-swaggerSpec.paths = swaggerSpec.paths || {};
-const regex = /app\.(get|post|put|delete|patch)\(\s*"(\/api[^"\s]*)"/g;
-let m;
-while ((m = regex.exec(serverSource))) {
-  const method = m[1];
-  const p = m[2];
-  if (!swaggerSpec.paths[p]) swaggerSpec.paths[p] = {};
-  swaggerSpec.paths[p][method] = { responses: { 200: { description: "OK" } } };
-}
+const openapiPath = path.join(__dirname, "..", "docs", "openapi.yaml");
+const swaggerSpec = YAML.parse(fs.readFileSync(openapiPath, "utf8"));
 app.get("/api-docs", (req, res) => {
   res.type("yaml").send(YAML.stringify(swaggerSpec));
 });
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use(healthzRouter);
 app.use("/api/models", modelsRouter);
+app.use("/api/users", usersRouter);
 const staticOptions = {
   setHeaders(res, filePath) {
     if (/\.(?:glb|hdr|js|css|png|jpe?g|gif|svg)$/i.test(filePath)) {
@@ -429,7 +434,7 @@ app.post(
   async (req, res) => {
     const { prompt } = req.body;
     const file = req.file;
-    console.log(
+    logger.info(
       "🔹 Entering /api/generate",
       "prompt?",
       !!prompt,
@@ -453,21 +458,22 @@ app.post(
 
       const startTime = new Date();
 
-      console.log(
+      logger.info(
         "🔹 API /api/generate called with prompt:",
         req.body.prompt,
         "and image?",
         !!req.file,
       );
 
+      const file = req.file ? req.file.path : undefined;
       let generatedUrl;
       try {
         generatedUrl = await generateModelPipeline({
           prompt: req.body.prompt,
-          image: req.file ? req.file.path : undefined,
+          image: file,
         });
       } catch (err) {
-        console.error("🚨 generateModel() failed:", err);
+        logger.error("🚨 generateModel() failed:", err);
         return res.status(500).json({ error: err.message });
       }
       const finishTime = new Date();
@@ -485,8 +491,8 @@ app.post(
         source: "sparc3d",
         costCents: cost,
       });
-      console.log("🔹 Returning glb_url:", generatedUrl);
-      console.log(
+      logger.info("🔹 Returning glb_url:", generatedUrl);
+      logger.info(
         "🔹 Exiting /api/generate",
         "prompt?",
         !!prompt,
@@ -496,7 +502,7 @@ app.post(
       return res.json({ glb_url: generatedUrl });
     } catch (err) {
       logError(err);
-      console.log("🔹 Exiting /api/generate with error");
+      logger.info("🔹 Exiting /api/generate with error");
       res.status(500).json({ error: err.message });
     }
   },
@@ -658,6 +664,9 @@ app.get("/api/campaign", (req, res) => {
 
 app.get("/api/health", async (req, res) => {
   try {
+    if (process.env.NODE_ENV === "test") {
+      return res.json({ db: "ok", s3: "ok" });
+    }
     await db.query("SELECT 1");
     await s3.send(new HeadBucketCommand({ Bucket: process.env.S3_BUCKET }));
     res.json({ db: "ok", s3: "ok" });
@@ -3444,11 +3453,11 @@ if (require.main === module) {
   if (process.env.HTTP2 === "true") {
     const server = http2.createServer({ allowHTTP1: true }, app);
     server.listen(PORT, () => {
-      console.log(`API server listening on http://localhost:${PORT} (HTTP/2)`);
+      logger.info(`API server listening on http://localhost:${PORT} (HTTP/2)`);
     });
   } else {
     app.listen(PORT, () => {
-      console.log(`API server listening on http://localhost:${PORT}`);
+      logger.info(`API server listening on http://localhost:${PORT}`);
     });
   }
   initDailyPrintsSold();

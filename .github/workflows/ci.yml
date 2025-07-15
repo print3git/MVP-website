@@ -5,6 +5,7 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
   audit:
@@ -43,6 +44,11 @@ jobs:
           npm config delete https-proxy
         env:
           NPM_CONFIG_LEGACY_PEER_DEPS: true
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('backend/package-lock.json') }}
       - run: npm install --no-audit --no-fund
       - name: Cache Playwright browsers
         uses: actions/cache@v4
@@ -75,6 +81,14 @@ jobs:
 
       - name: Run coverage
         run: npm run coverage
+
+      - name: Sanitize coverage for Coveralls
+        run: |
+          sed -r 's/\x1B\[[0-9;]*[JKmsu]//g' backend/coverage/lcov.info \
+            > backend/coverage/lcov.sanitized.info
+
+      - name: Upload to Coveralls
+        run: cat backend/coverage/lcov.sanitized.info | npx coveralls
 
       - name: Check bundle size
         run: npm run bundle:size

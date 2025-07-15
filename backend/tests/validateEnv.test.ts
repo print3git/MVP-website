@@ -1,4 +1,4 @@
-const { execSync } = require("child_process");
+const { execSync, spawnSync } = require("child_process");
 const path = require("path");
 const fs = require("fs");
 
@@ -18,6 +18,22 @@ function run(env, clean = true) {
     env: e,
     stdio: "pipe",
   }).toString();
+}
+
+function runGetHFAPIKey(env) {
+  const e = { ...process.env, SKIP_NET_CHECKS: "1", ...env };
+  delete e.npm_config_http_proxy;
+  delete e.npm_config_https_proxy;
+  delete e.http_proxy;
+  delete e.https_proxy;
+  return spawnSync(
+    "bash",
+    [
+      "-c",
+      'source scripts/validate-env.sh >/dev/null && echo -n "$HF_API_KEY"',
+    ],
+    { cwd: root, env: e, encoding: "utf8" },
+  ).stdout;
 }
 
 describe("validate-env script", () => {
@@ -60,7 +76,22 @@ describe("validate-env script", () => {
       AWS_SECRET_ACCESS_KEY: "secret",
       SKIP_DB_CHECK: "1",
     });
+    expect(output).toContain("Using dummy HF_TOKEN and HF_API_KEY");
     expect(output).toContain("environment OK");
+  });
+
+  test("exports HF_API_KEY when absent", () => {
+    const key = runGetHFAPIKey({
+      STRIPE_TEST_KEY: "test",
+      HF_TOKEN: "",
+      HF_API_KEY: "",
+      AWS_ACCESS_KEY_ID: "id",
+      AWS_SECRET_ACCESS_KEY: "secret",
+      DB_URL: "postgres://user:pass@localhost/db",
+      STRIPE_SECRET_KEY: "sk_test_dummy",
+      SKIP_DB_CHECK: "1",
+    });
+    expect(key).toMatch(/^hf_dummy_/);
   });
 
   test("falls back when database unreachable", () => {
@@ -73,6 +104,7 @@ describe("validate-env script", () => {
       SKIP_NET_CHECKS: "1",
     });
     expect(output).toMatch(/Database connection check failed/);
+    expect(output).toMatch(/Falling back to SKIP_DB_CHECK=1/);
     expect(output).toMatch(/environment OK/);
   });
 });

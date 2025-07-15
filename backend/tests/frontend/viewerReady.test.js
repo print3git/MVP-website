@@ -37,3 +37,10 @@ test("showModel toggles viewerReady dataset", () => {
   dom.window._showModel();
   expect(dom.window.document.body.dataset.viewerReady).toBe("true");
 });
+
+test("init marks viewerReady error when model viewer fails", async () => {
+  const dom = setup();
+  dom.window.ensureModelViewerLoaded = () => Promise.reject(new Error("fail"));
+  await dom.window.initIndexPage().catch(() => {});
+  expect(dom.window.document.body.dataset.viewerReady).toBe("error");
+});

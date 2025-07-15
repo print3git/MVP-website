@@ -4,7 +4,10 @@
 /*.html @web-team
 
 # Backend code
-/backend/ @backend-team
+/backend/* @your-org/backend-team
+
+# Frontend source code
+/frontend/* @your-org/frontend-team
 
 
 # GitHub workflows

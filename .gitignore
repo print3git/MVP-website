@@ -8,6 +8,7 @@ uploads/
 reports/
 backend/coverage/
 coverage/
+!backend/tests/coverage/
 # ignore compiled and binary files
 *.exe
 *.dll

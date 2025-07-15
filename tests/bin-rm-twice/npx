@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 count=${RIMRAF_FAIL_COUNT:-0}
-if [[ "$1" == "rimraf" && $count -lt 2 ]]; then
+if [[ "$1" == "rimraf@5" && $count -lt 2 ]]; then
   echo "simulated rimraf failure" >&2
   count=$((count + 1))
   export RIMRAF_FAIL_COUNT=$count

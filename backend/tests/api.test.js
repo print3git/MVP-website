@@ -119,6 +119,13 @@ test("POST /api/generate returns glb url", async () => {
   expect(res.body.glb_url).toBe("/models/test.glb");
 });
 
+test("POST /api/generate returns string url", async () => {
+  generateModel.mockResolvedValue("/models/test.glb");
+  const res = await request(app).post("/api/generate").send({ prompt: "test" });
+  expect(res.status).toBe(200);
+  expect(typeof res.body.glb_url).toBe("string");
+});
+
 test("GET /api/status returns job", async () => {
   db.query.mockResolvedValueOnce({
     rows: [

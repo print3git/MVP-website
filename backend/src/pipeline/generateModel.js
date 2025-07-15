@@ -3,9 +3,10 @@ const { imageToText } = require("../lib/imageToText");
 const { prepareImage } = require("../lib/prepareImage");
 const { generateGlb } = require("../lib/sparc3dClient");
 const { storeGlb } = require("../lib/storeGlb");
+const logger = require("../../../src/logger");
 
 async function generateModel({ prompt, image } = {}) {
-  console.log(
+  logger.info(
     "🔸 generateModel called with prompt:",
     prompt,
     "image?",
@@ -25,10 +26,10 @@ async function generateModel({ prompt, image } = {}) {
     }
     const glbData = await generateGlb({ prompt, imageURL });
     const url = await storeGlb(glbData);
-    console.log("🔸 generateModel returning:", url);
+    logger.info("🔸 generateModel returning:", url);
     return url;
   } catch (err) {
-    console.error("🚨 generateModel failed:", err);
+    logger.error("🚨 generateModel failed:", err);
     throw err;
   } finally {
     console.timeEnd("pipeline");

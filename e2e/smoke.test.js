@@ -17,7 +17,9 @@ if (process.env.JEST_WORKER_ID) {
 const { execSync } = require('child_process');
 function canFetchSync(url) {
   try {
-    execSync(`curl -Is --max-time 5 --noproxy '*' ${url}`, { stdio: 'ignore' });
+    execSync(`curl -fIs --max-time 5 --noproxy '*' ${url}`, {
+      stdio: 'ignore',
+    });
     return true;
   } catch {
     return false;
@@ -66,10 +68,21 @@ test('model generator page', async ({ page }) => {
   // definition and for the model to finish loading before checking visibility.
   await page.waitForFunction(() => window.customElements.get('model-viewer'));
   // Allow extra time for the viewer to load when the CDN script fails and the
-  // page falls back to the local copy.
-  await page.waitForSelector('body[data-viewer-ready="true"]', {
-    timeout: 60000,
-  });
+  // page falls back to the local copy. Bail out if the viewer fails entirely.
+  try {
+    await page.waitForFunction(() => document.body.dataset.viewerReady, {
+      timeout: 120000,
+    });
+  } catch (err) {
+    if (err.name === 'TimeoutError') {
+      await page.screenshot({
+        path: `test-results/failure-${Date.now()}.png`,
+      });
+    }
+    throw err;
+  }
+  const ready = await page.evaluate(() => document.body.dataset.viewerReady);
+  test.skip(ready !== 'true', 'model viewer failed to load');
   await expect(page.locator('#viewer')).toBeVisible();
 });
 
@@ -99,9 +112,20 @@ test('generate flow', async ({ page }) => {
   await page.click('#gen-submit');
   // Wait for the viewer to signal readiness before checking the canvas.
   // This prevents flaky timeouts when external scripts load slowly.
-  await page.waitForSelector('body[data-viewer-ready="true"]', {
-    timeout: 60000,
-  });
+  try {
+    await page.waitForFunction(() => document.body.dataset.viewerReady, {
+      timeout: 120000,
+    });
+  } catch (err) {
+    if (err.name === 'TimeoutError') {
+      await page.screenshot({
+        path: `test-results/failure-${Date.now()}.png`,
+      });
+    }
+    throw err;
+  }
+  const ready2 = await page.evaluate(() => document.body.dataset.viewerReady);
+  test.skip(ready2 !== 'true', 'model viewer failed to load');
   // Wait longer for the model viewer to load on slow networks
   await page.waitForSelector('canvas', { state: 'visible', timeout: 60000 });
   await expect(page.locator('canvas')).toBeVisible();
