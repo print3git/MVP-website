@@ -2878,7 +2878,10 @@ app.post("/api/create-order", authOptional, async (req, res, next) => {
       totalDiscount += Math.round((price || 0) * 0.1);
     }
 
-    const total = (price || 0) * (qty || 1) - totalDiscount;
+    const orderTotal = Math.round((price || 0) * (qty || 1));
+    if (totalDiscount > orderTotal) totalDiscount = orderTotal;
+
+    const total = orderTotal - totalDiscount;
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       line_items: [
