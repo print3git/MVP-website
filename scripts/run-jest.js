@@ -40,12 +40,18 @@ function runJest(args) {
   const backendDir = path.join(repoRoot, "backend");
   const jestBin = path.join(backendDir, "node_modules", ".bin", "jest");
 
-  const runFromRoot = args.some((arg) => {
+  const hasFileArgs = args.some((arg) => !arg.startsWith("-"));
+  let jestArgs = [...args];
+  if (hasFileArgs && !jestArgs.includes("--runTestsByPath")) {
+    jestArgs.unshift("--runTestsByPath");
+  }
+
+  const runFromRoot = jestArgs.some((arg) => {
     const abs = path.resolve(repoRoot, arg);
     return !abs.startsWith(backendDir);
   });
 
-  const cmdArgs = args.join(" ");
+  const cmdArgs = jestArgs.join(" ");
   const env = { ...process.env };
   if (runFromRoot) {
     env.NODE_PATH = [path.join(repoRoot, "node_modules"), env.NODE_PATH || ""]
