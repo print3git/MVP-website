@@ -3,6 +3,15 @@ const path = require("path");
 const { execSync } = require("child_process");
 const os = require("os");
 
+const requiredMajor = parseInt(process.env.REQUIRED_NODE_MAJOR || "20", 10);
+const currentMajor = parseInt(process.versions.node.split(".")[0], 10);
+if (currentMajor < requiredMajor) {
+  console.error(
+    `Node ${requiredMajor} or newer is required. Current version: ${process.versions.node}`,
+  );
+  process.exit(1);
+}
+
 function getEnv() {
   const env = { ...process.env };
   delete env.npm_config_http_proxy;
