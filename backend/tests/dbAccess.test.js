@@ -1,13 +1,18 @@
+jest.mock("pg", () => {
+  return { Pool: jest.fn(() => ({ query: jest.fn() })) };
+});
 const db = require("../db");
+const { Pool } = require("pg");
+const mockPool = Pool.mock.results[0].value;
 
 beforeEach(() => {
-  db.query = jest.fn();
+  mockPool.query.mockReset();
 });
 
 test("getRewardOption returns database value when present", async () => {
-  db.query.mockResolvedValueOnce({ rows: [{ amount_cents: 250 }] });
+  mockPool.query.mockResolvedValueOnce({ rows: [{ amount_cents: 250 }] });
   const result = await db.getRewardOption(50);
-  expect(db.query).toHaveBeenCalledWith(
+  expect(mockPool.query).toHaveBeenCalledWith(
     "SELECT amount_cents FROM reward_options WHERE points=$1",
     [50],
   );
@@ -15,6 +20,6 @@ test("getRewardOption returns database value when present", async () => {
 });
 
 test("getRewardOption propagates query error", async () => {
-  db.query.mockRejectedValueOnce(new Error("fail"));
+  mockPool.query.mockRejectedValueOnce(new Error("fail"));
   await expect(db.getRewardOption(20)).rejects.toThrow("fail");
 });

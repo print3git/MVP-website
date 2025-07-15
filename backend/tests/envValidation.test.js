@@ -94,20 +94,24 @@ describe("validate-env script", () => {
     const env = { ...process.env, ...baseEnv };
     delete env.DB_URL;
     const example = path.resolve(process.cwd(), ".env.example");
+    const rootExample = path.resolve(process.cwd(), "..", ".env.example");
     const backup = `${example}.bak`;
+    const rootBackup = `${rootExample}.bak`;
     fs.renameSync(example, backup);
+    fs.renameSync(rootExample, rootBackup);
     let threw = false;
     try {
       execSync(`bash ${script}`, { env, stdio: "pipe" });
     } catch (_err) {
       threw = true;
     }
+    fs.renameSync(rootBackup, rootExample);
     fs.renameSync(backup, example);
     expect(threw).toBe(true);
   });
 
   test("fails when database unreachable", () => {
-    const output = execSync(`bash ${script}`, {
+    const output = execSync(`bash ${script} 2>&1`, {
       env: {
         ...process.env,
         ...baseEnv,
