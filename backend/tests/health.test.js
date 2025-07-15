@@ -3,6 +3,8 @@ process.env.STRIPE_WEBHOOK_SECRET = "whsec";
 process.env.DB_URL = "postgres://user:pass@localhost/db";
 process.env.AWS_REGION = "us-east-1";
 process.env.S3_BUCKET = "bucket";
+const originalNodeEnv = process.env.NODE_ENV;
+process.env.NODE_ENV = "production";
 
 jest.mock("../db", () => ({
   query: jest.fn(),
@@ -22,6 +24,10 @@ const app = require("../server");
 
 beforeEach(() => {
   db.query.mockClear();
+});
+
+afterAll(() => {
+  process.env.NODE_ENV = originalNodeEnv;
 });
 
 test("GET /api/health returns ok", async () => {
