@@ -7,20 +7,20 @@ beforeEach(() => {
   child_process.execSync.mockReset();
 });
 
-test("runs network check before installing", () => {
+test("runs dry-run check before network check", () => {
   child_process.execSync
-    .mockReturnValueOnce("network ok")
-    .mockReturnValueOnce("deps ok");
+    .mockReturnValueOnce("deps ok")
+    .mockReturnValueOnce("network ok");
   require("../scripts/check-host-deps.js");
   expect(child_process.execSync).toHaveBeenNthCalledWith(
     1,
-    expect.stringContaining("network-check.js"),
-    { stdio: "pipe", encoding: "utf8" },
+    "npx playwright install --with-deps --dry-run 2>&1",
+    { encoding: "utf8" },
   );
   expect(child_process.execSync).toHaveBeenNthCalledWith(
     2,
-    "npx playwright install --with-deps --dry-run 2>&1",
-    { encoding: "utf8" },
+    expect.stringContaining("network-check.js"),
+    { stdio: "pipe", encoding: "utf8" },
   );
 });
 
@@ -48,77 +48,43 @@ test("skips network check when SKIP_NET_CHECKS is set", () => {
   delete process.env.SKIP_NET_CHECKS;
 });
 
-test("installs deps when SKIP_PW_DEPS is set but missing", () => {
+test("skips install when SKIP_PW_DEPS is set but missing", () => {
   process.env.SKIP_PW_DEPS = "1";
-  child_process.execSync
-    .mockReturnValueOnce("network ok")
-    .mockReturnValueOnce("Host system is missing dependencies")
-    .mockReturnValueOnce("");
+  child_process.execSync.mockReturnValueOnce(
+    "Host system is missing dependencies",
+  );
   require("../scripts/check-host-deps.js");
-  expect(child_process.execSync).toHaveBeenNthCalledWith(
-    3,
-    "CI=1 npx playwright install --with-deps",
-    { stdio: "inherit" },
-  );
-  expect(child_process.execSync).toHaveBeenNthCalledWith(
-    1,
-    expect.stringContaining("network-check.js"),
-    { stdio: "pipe", encoding: "utf8" },
-  );
-  expect(child_process.execSync).toHaveBeenNthCalledWith(
-    2,
+  expect(child_process.execSync).toHaveBeenCalledTimes(1);
+  expect(child_process.execSync).toHaveBeenCalledWith(
     "npx playwright install --with-deps --dry-run 2>&1",
     { encoding: "utf8" },
   );
-  expect(child_process.execSync).toHaveBeenCalledTimes(3);
   delete process.env.SKIP_PW_DEPS;
 });
 
-test("installs deps when warning printed with SKIP_PW_DEPS", () => {
+test("skips install when warning printed with SKIP_PW_DEPS", () => {
   process.env.SKIP_PW_DEPS = "1";
-  child_process.execSync
-    .mockReturnValueOnce("network ok")
-    .mockReturnValueOnce(
-      "Playwright Host validation warning: Host system is missing dependencies",
-    )
-    .mockReturnValueOnce("");
-  require("../scripts/check-host-deps.js");
-  expect(child_process.execSync).toHaveBeenNthCalledWith(
-    1,
-    expect.stringContaining("network-check.js"),
-    { stdio: "pipe", encoding: "utf8" },
+  child_process.execSync.mockReturnValueOnce(
+    "Playwright Host validation warning: Host system is missing dependencies",
   );
-  expect(child_process.execSync).toHaveBeenNthCalledWith(
-    2,
+  require("../scripts/check-host-deps.js");
+  expect(child_process.execSync).toHaveBeenCalledTimes(1);
+  expect(child_process.execSync).toHaveBeenCalledWith(
     "npx playwright install --with-deps --dry-run 2>&1",
     { encoding: "utf8" },
   );
-  expect(child_process.execSync).toHaveBeenNthCalledWith(
-    3,
-    "CI=1 npx playwright install --with-deps",
-    { stdio: "inherit" },
-  );
-  expect(child_process.execSync).toHaveBeenCalledTimes(3);
   delete process.env.SKIP_PW_DEPS;
 });
 
 test("skips install when deps satisfied even if SKIP_PW_DEPS is set", () => {
   process.env.SKIP_PW_DEPS = "1";
-  child_process.execSync
-    .mockReturnValueOnce("network ok")
-    .mockReturnValueOnce("deps ok");
+  child_process.execSync.mockReturnValueOnce("deps ok");
   require("../scripts/check-host-deps.js");
-  expect(child_process.execSync).toHaveBeenNthCalledWith(
-    1,
-    expect.stringContaining("network-check.js"),
-    { stdio: "pipe", encoding: "utf8" },
-  );
-  expect(child_process.execSync).toHaveBeenNthCalledWith(
-    2,
+  expect(child_process.execSync).toHaveBeenCalledTimes(1);
+  expect(child_process.execSync).toHaveBeenCalledWith(
     "npx playwright install --with-deps --dry-run 2>&1",
     { encoding: "utf8" },
   );
-  expect(child_process.execSync).toHaveBeenCalledTimes(2);
   delete process.env.SKIP_PW_DEPS;
 });
 
