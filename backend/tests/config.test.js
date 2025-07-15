@@ -19,3 +19,27 @@ test("loads when CLOUDFRONT_MODEL_DOMAIN restored", () => {
     expect(cfg.cloudfrontModelDomain).toBe(original);
   });
 });
+
+test("warns when required vars missing", () => {
+  const warn = jest.spyOn(console, "warn").mockImplementation(() => {});
+  jest.isolateModules(() => {
+    delete process.env.DB_URL;
+    delete process.env.STRIPE_SECRET_KEY;
+    delete process.env.STRIPE_WEBHOOK_SECRET;
+    require("../config");
+  });
+  expect(warn).toHaveBeenCalledWith(
+    expect.stringContaining("Missing required env vars"),
+  );
+  warn.mockRestore();
+});
+
+test("returns malformed DB_URL without throwing", () => {
+  jest.isolateModules(() => {
+    process.env.DB_URL = "not a url";
+    process.env.STRIPE_SECRET_KEY = "key";
+    process.env.STRIPE_WEBHOOK_SECRET = "wh";
+    const cfg = require("../config");
+    expect(cfg.dbUrl).toBe("not a url");
+  });
+});
