@@ -1,15 +1,10 @@
-const { ESLint } = require("eslint");
+const { execSync } = require("child_process");
 
-test("no unused vars in tests", async () => {
-  const eslint = new ESLint({
-    useEslintrc: true,
-    overrideConfig: {
-      rules: { "no-unused-vars": ["error", { argsIgnorePattern: "^_" }] },
-    },
-  });
-  const results = await eslint.lintFiles(["tests/**/*.js"]);
-  const unused = results.flatMap((r) =>
-    r.messages.filter((m) => m.ruleId === "no-unused-vars"),
-  );
-  expect(unused).toEqual([]);
+test("backend tests have no unused vars", () => {
+  expect(() => {
+    execSync(
+      'npx eslint --config backend/eslint.config.js "backend/tests/**/*.js" --rule "no-unused-vars:error" --max-warnings=0',
+      { stdio: "pipe" },
+    );
+  }).not.toThrow();
 });
