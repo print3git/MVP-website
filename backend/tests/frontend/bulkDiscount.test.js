@@ -20,6 +20,8 @@ function load() {
     path.join(__dirname, "../../../js/payment.js"),
     "utf8",
   );
+  // Strip ES module import for JSDOM evaluation
+  script = script.replace(/^import\s+[^;]+;\n?/m, "");
   script += "\nwindow._computeBulkDiscount = computeBulkDiscount;";
   dom.window.eval(script);
   return dom;
