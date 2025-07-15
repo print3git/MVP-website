@@ -12,15 +12,14 @@ const { sendMailWithAttachment } = require("../mail");
 
 jest.mock("pdfkit", () =>
   jest.fn().mockImplementation(() => {
-    return {
+    const doc = {
       text: jest.fn().mockReturnThis(),
       fontSize: jest.fn().mockReturnThis(),
       moveDown: jest.fn().mockReturnThis(),
+      end: jest.fn(),
       pipe: jest.fn(),
-      end: jest.fn(() => {
-        if (global.__finish) global.__finish();
-      }),
     };
+    return doc;
   }),
 );
 const fs = require("fs");
@@ -47,6 +46,15 @@ describe("send ops report", () => {
       .mockResolvedValueOnce({ rows: [{ status: "paid", count: "5" }] })
       .mockResolvedValueOnce({ rows: [{ id: 1, errors: "4" }] });
     const copy = jest.spyOn(fs, "copyFileSync").mockImplementation(() => {});
+    jest.spyOn(fs, "createWriteStream").mockImplementation(() => ({
+      on: (evt, cb) => {
+        if (evt === "finish") cb();
+      },
+      once: () => {},
+      emit: () => {},
+      end: () => {},
+      write: () => {},
+    }));
     await run();
     expect(mClient.connect).toHaveBeenCalled();
     expect(sendMailWithAttachment).toHaveBeenCalled();

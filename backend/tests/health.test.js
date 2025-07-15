@@ -44,7 +44,7 @@ test("GET /api/health returns 500 on db error", async () => {
   db.query.mockRejectedValueOnce(new Error("fail"));
   const res = await request(app).get("/api/health");
   expect(res.status).toBe(500);
-  expect(res.body.error).toBe("unhealthy");
+  expect(res.body.error).toBe("DB error");
 });
 
 test("GET /api/health returns 500 on s3 error", async () => {

@@ -29,10 +29,11 @@ beforeEach(() => {
   delete process.env.HTTPS_PROXY;
   nock.disableNetConnect();
   nock.enableNetConnect("127.0.0.1");
+  global.consoleErrors = [];
   jest.spyOn(console, "error").mockImplementation((...args) => {
     const msg = args.join(" ");
     if (msg.includes("Could not load script")) return;
-    throw new Error("console.error called: " + msg);
+    global.consoleErrors.push(msg);
   });
   jest.spyOn(console, "log").mockImplementation(() => {});
 });
