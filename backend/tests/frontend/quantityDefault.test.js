@@ -19,10 +19,9 @@ function loadDom() {
   });
   global.window = dom.window;
   global.document = dom.window.document;
-  const script = fs.readFileSync(
-    path.join(__dirname, "../../../js/payment.js"),
-    "utf8",
-  );
+  const script = fs
+    .readFileSync(path.join(__dirname, "../../../js/payment.js"), "utf8")
+    .replace(/import[^;]+;\n/, "");
   dom.window.eval(script);
   return dom;
 }

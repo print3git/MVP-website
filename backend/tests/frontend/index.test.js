@@ -28,6 +28,7 @@ describe("index validatePrompt", () => {
     let script = fs
       .readFileSync(path.join(__dirname, "../../../js/index.js"), "utf8")
       .replace(/import { shareOn } from ['"]\.\/share.js['"];?/, "")
+      .replace(/import { track } from ['"]\.\/analytics.js['"];?/, "")
 
       .replace(/window\.addEventListener\(['"]DOMContentLoaded['"][\s\S]+$/, "")
       .replace(/let savedProfile = null;\n?/, "");
