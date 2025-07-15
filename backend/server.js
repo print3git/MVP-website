@@ -2853,8 +2853,8 @@ app.post("/api/create-order", authOptional, async (req, res, next) => {
         [req.user.id],
       );
       const orderCount = parseInt(counts[0].count, 10) || 0;
-      if (orderCount === 0) {
-        const firstDisc = Math.round((price || 0) * (qty || 1) * 0.1);
+      if (orderCount === 0 && (qty || 1) === 1) {
+        const firstDisc = Math.round((price || 0) * 0.1);
         totalDiscount += firstDisc;
         await db.query("INSERT INTO incentives(user_id, type) VALUES($1,$2)", [
           req.user.id,
