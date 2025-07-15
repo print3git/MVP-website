@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+if [[ "$1" == "ci" && -z "$RENAME_ERROR_DONE" ]]; then
+  echo "npm ERR! code ENOENT" >&2
+  echo "npm ERR! syscall rename" >&2
+  echo "npm ERR! path /fake/tmp.tgz" >&2
+  echo "npm ERR! dest /fake/cache/tmp.tgz" >&2
+  echo "npm ERR! errno -2" >&2
+  echo "npm ERR! enoent ENOENT: no such file or directory, rename '/fake/tmp.tgz' -> '/fake/cache/tmp.tgz'" >&2
+  export RENAME_ERROR_DONE=1
+  exit 1
+fi
+exec "$REAL_NPM" "$@"
