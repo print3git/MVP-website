@@ -89,4 +89,20 @@ describe("assert-setup script", () => {
 
     expect(ensureRootDeps).toHaveBeenCalled();
   });
+
+  test("checks Playwright host dependencies", () => {
+    setEnv();
+    fs.existsSync.mockReturnValue(true);
+    fs.readdirSync.mockReturnValue(["chromium"]);
+    child_process.execSync.mockImplementation(() => {});
+
+    jest.isolateModules(() => {
+      require("../scripts/assert-setup.js");
+    });
+
+    expect(child_process.execSync).toHaveBeenCalledWith(
+      "node scripts/check-host-deps.js",
+      { stdio: "inherit" },
+    );
+  });
 });
