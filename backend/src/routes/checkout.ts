@@ -13,8 +13,11 @@ export const orders = new Map<string, Order>();
 
 const secretKey =
   process.env.NODE_ENV === "production"
-    ? process.env.STRIPE_LIVE_KEY
-    : process.env.STRIPE_TEST_KEY || "sk_test";
+    ? process.env.STRIPE_LIVE_KEY || process.env.STRIPE_SECRET_KEY
+    : process.env.STRIPE_TEST_KEY || process.env.STRIPE_SECRET_KEY;
+if (!secretKey) {
+  throw new Error("Stripe key not configured");
+}
 const stripe = new Stripe(secretKey);
 
 const router = express.Router();
