@@ -47,10 +47,11 @@ describe("slot count", () => {
     dom.window.fetch = jest.fn(() =>
       Promise.resolve({ ok: true, json: () => ({ slots: 5 }) }),
     );
-    const scriptSrc = fs.readFileSync(
+    let scriptSrc = fs.readFileSync(
       path.join(__dirname, "../../../js/payment.js"),
       "utf8",
     );
+    scriptSrc = scriptSrc.replace(/import .*analytics.js.*;?/, "");
     dom.window.eval(scriptSrc);
     await new Promise((r) => setTimeout(r, 50));
     expect(dom.window.document.getElementById("slot-count").textContent).toBe(
@@ -73,10 +74,11 @@ describe("slot count", () => {
     dom.window.fetch = jest.fn(() =>
       Promise.resolve({ ok: true, json: () => ({ slots: 6 }) }),
     );
-    const scriptSrc = fs.readFileSync(
+    let scriptSrc = fs.readFileSync(
       path.join(__dirname, "../../../js/payment.js"),
       "utf8",
     );
+    scriptSrc = scriptSrc.replace(/import .*analytics.js.*;?/, "");
     dom.window.eval(scriptSrc);
     dom.window.localStorage.setItem("slotCycle", cycleKey());
     dom.window.localStorage.setItem("slotPurchases", "2");

@@ -4,6 +4,9 @@ set -e
 # Ensure mise is available for toolchain management
 "$(dirname "$0")/install-mise.sh" >/dev/null
 
+# Ensure the correct Node version is active
+mise use -g node@20 >/dev/null 2>&1 || true
+
 cleanup_npm_cache() {
   npm cache clean --force >/dev/null 2>&1 || true
   for dir in "$(npm config get cache)/_cacache" "$HOME/.npm/_cacache"; do
@@ -42,6 +45,11 @@ fi
 # Persist trust so new shells don't emit warnings
 if ! grep -q "mise trust $(pwd)" ~/.bashrc 2>/dev/null; then
   echo "mise trust $(pwd) >/dev/null 2>&1 || true" >> ~/.bashrc
+fi
+
+# Persist Node version so new shells activate it automatically
+if ! grep -q "mise use -g node@20" ~/.bashrc 2>/dev/null; then
+  echo "mise use -g node@20 >/dev/null 2>&1 || true" >> ~/.bashrc
 fi
 
 # Persist the setting so new shells don't emit warnings

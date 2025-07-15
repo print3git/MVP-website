@@ -1,4 +1,4 @@
-const { execSync } = require("child_process");
+const { execSync, spawnSync } = require("child_process");
 const path = require("path");
 const fs = require("fs");
 
@@ -93,7 +93,7 @@ describe("validate-env script", () => {
   test("fails when DB_URL missing and example file absent", () => {
     const env = { ...process.env, ...baseEnv };
     delete env.DB_URL;
-    const example = path.resolve(process.cwd(), ".env.example");
+    const example = path.resolve(__dirname, "..", "..", ".env.example");
     const backup = `${example}.bak`;
     fs.renameSync(example, backup);
     let threw = false;
@@ -107,7 +107,7 @@ describe("validate-env script", () => {
   });
 
   test("fails when database unreachable", () => {
-    const output = execSync(`bash ${script}`, {
+    const result = spawnSync("bash", [script], {
       env: {
         ...process.env,
         ...baseEnv,
@@ -115,8 +115,9 @@ describe("validate-env script", () => {
         SKIP_NET_CHECKS: "1",
         SKIP_DB_CHECK: "",
       },
-      stdio: "pipe",
-    }).toString();
+      encoding: "utf8",
+    });
+    const output = (result.stdout || "") + (result.stderr || "");
     expect(output).toMatch(/Database connection check failed/);
     expect(output).toMatch(/environment OK/);
   });
