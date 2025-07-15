@@ -1,10 +1,27 @@
-import React, { useState, Suspense } from "https://esm.sh/react@18";
+import React, { useState, Suspense, useEffect } from "https://esm.sh/react@18";
 import { Canvas } from "https://esm.sh/@react-three/fiber@8";
 import { Gltf } from "https://esm.sh/@react-three/drei@9";
 
 export default function ModelViewer({ url }) {
   const [error, setError] = useState(false);
   const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    if (error) {
+      document.body.dataset.viewerReady = "error";
+    } else if (loaded) {
+      document.body.dataset.viewerReady = "true";
+    } else {
+      delete document.body.dataset.viewerReady;
+    }
+  }, [loaded, error]);
+
+  useEffect(
+    () => () => {
+      delete document.body.dataset.viewerReady;
+    },
+    [],
+  );
 
   return React.createElement(
     "div",
