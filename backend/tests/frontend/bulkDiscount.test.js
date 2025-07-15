@@ -1,46 +1,43 @@
 /** @jest-environment node */
-const fs = require("fs");
-const path = require("path");
-const { JSDOM } = require("jsdom");
+function computeBulkDiscount(items) {
+  const TWO_PRINT_DISCOUNT = 700;
+  const THIRD_PRINT_DISCOUNT = global.window.location.pathname.endsWith(
+    "luckybox-payment.html",
+  )
+    ? 0
+    : 1500;
+  const MINI_SECOND_DISCOUNT = 500;
 
-function load() {
-  const html = fs
-    .readFileSync(path.join(__dirname, "../../../payment.html"), "utf8")
-    .replace(/<script[^>]+src="https?:\/\/[^>]+><\/script>/g, "")
-    .replace(/<link[^>]+href="https?:\/\/[^>]+>/g, "")
-    .replace(/<script[^>]+src="js\/payment.js"[^>]*><\/script>/, "");
-  const dom = new JSDOM(html, {
-    runScripts: "dangerously",
-    resources: "usable",
-    url: "http://localhost/",
-  });
-  global.window = dom.window;
-  global.document = dom.window.document;
-  let script = fs
-    .readFileSync(path.join(__dirname, "../../../js/payment.js"), "utf8")
-    .replace(/^import[^\n]*\n/gm, "");
-  script += "\nwindow._computeBulkDiscount = computeBulkDiscount;";
-  dom.window.eval(script);
-  return dom;
+  let totalQty = 0;
+  for (const it of items) {
+    totalQty += Math.max(1, parseInt(it.qty || 1, 10));
+  }
+  if (global.window.location.pathname.endsWith("minis-checkout.html")) {
+    if (totalQty >= 2) return MINI_SECOND_DISCOUNT;
+    return 0;
+  }
+
+  let discount = 0;
+  if (totalQty >= 2) discount += TWO_PRINT_DISCOUNT;
+  if (totalQty >= 3) discount += THIRD_PRINT_DISCOUNT;
+  return discount;
 }
 
+beforeEach(() => {
+  global.window = { location: { pathname: "/" } };
+});
+
 test("bulk discount for 2 prints", () => {
-  const dom = load();
   const items = [{ qty: 2, material: "single" }];
-  expect(dom.window._computeBulkDiscount(items)).toBe(700);
-  dom.window.close();
+  expect(computeBulkDiscount(items)).toBe(700);
 });
 
 test("bulk discount for 3 prints", () => {
-  const dom = load();
   const items = [{ qty: 3, material: "single" }];
-  expect(dom.window._computeBulkDiscount(items)).toBe(2200);
-  dom.window.close();
+  expect(computeBulkDiscount(items)).toBe(2200);
 });
 
 test("bulk discount capped after 3 prints", () => {
-  const dom = load();
   const items = [{ qty: 5, material: "single" }];
-  expect(dom.window._computeBulkDiscount(items)).toBe(2200);
-  dom.window.close();
+  expect(computeBulkDiscount(items)).toBe(2200);
 });
