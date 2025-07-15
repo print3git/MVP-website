@@ -51,6 +51,21 @@ function runNetworkCheck() {
   try {
     execSync(`node ${networkCheck}`, { stdio: "inherit" });
   } catch {
+    if (!process.env.SKIP_PW_DEPS) {
+      console.warn(
+        "Network check failed. Retrying with SKIP_PW_DEPS=1 in case the Playwright CDN is blocked.",
+      );
+      process.env.SKIP_PW_DEPS = "1";
+      try {
+        execSync(`node ${networkCheck}`, {
+          stdio: "inherit",
+          env: { ...process.env, SKIP_PW_DEPS: "1" },
+        });
+        return;
+      } catch {
+        // fall through to error below
+      }
+    }
     console.error(
       "Network check failed. Ensure access to the npm registry and Playwright CDN.",
     );

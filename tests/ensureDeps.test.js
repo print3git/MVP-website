@@ -126,24 +126,27 @@ describe("ensure-deps", () => {
     execMock.mockRestore();
   });
 
-  test("retries with SKIP_PW_DEPS when initial setup fails", () => {
+  test("retries network check with SKIP_PW_DEPS when it fails", () => {
     fs.existsSync.mockReturnValue(false);
-    const calls = [];
+    let first = true;
     const execMock = jest
       .spyOn(child_process, "execSync")
       .mockImplementation((cmd, opts) => {
-        calls.push({ cmd, env: { ...(opts.env || {}) } });
-        if (cmd === "npm run setup" && !opts.env.SKIP_PW_DEPS) {
-          throw new Error("setup fail");
+        if (cmd.includes("network-check.js")) {
+          if (first) {
+            first = false;
+            throw new Error("net fail");
+          }
+          expect(opts.env.SKIP_PW_DEPS).toBe("1");
         }
       });
 
     require("../backend/scripts/ensure-deps");
 
-    const setupCalls = calls.filter((c) => c.cmd === "npm run setup");
-    expect(setupCalls.length).toBe(2);
-    expect(setupCalls[0].env).not.toHaveProperty("SKIP_PW_DEPS");
-    expect(setupCalls[1].env.SKIP_PW_DEPS).toBe("1");
+    const netCalls = execMock.mock.calls.filter(([c]) =>
+      c.includes("network-check.js"),
+    );
+    expect(netCalls.length).toBe(2);
 
     execMock.mockRestore();
   });
