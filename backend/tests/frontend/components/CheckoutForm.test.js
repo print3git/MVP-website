@@ -18,13 +18,12 @@ const src = fs.readFileSync(
   "utf8",
 );
 const { code } = babel.transformSync(src, {
-  filename: "component.js",
+  filename: "CheckoutForm.tsx",
   presets: [["@babel/preset-react", { runtime: "automatic" }]],
   plugins: [
     ["@babel/plugin-syntax-typescript", { isTSX: true }],
     "@babel/plugin-transform-modules-commonjs",
   ],
-  filename: "CheckoutForm.js",
 });
 const Module = require("module");
 const m = new Module("CheckoutForm.js");

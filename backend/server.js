@@ -672,6 +672,12 @@ app.get("/api/health", async (req, res) => {
       return res.json({ db: "ok", s3: "ok" });
     }
     await db.query("SELECT 1");
+  } catch (err) {
+    logError("Health check failed", err);
+    return res.status(500).json({ error: "DB error" });
+  }
+
+  try {
     await s3.send(new HeadBucketCommand({ Bucket: process.env.S3_BUCKET }));
     res.json({ db: "ok", s3: "ok" });
   } catch (err) {
