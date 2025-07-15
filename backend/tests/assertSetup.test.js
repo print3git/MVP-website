@@ -29,9 +29,9 @@ function runAssertSetup(nodeVersion, extraEnv = {}) {
 
 describe("assert-setup script", () => {
   test("fails on Node <20", () => {
-    const res = runAssertSetup("18.0.0");
-    expect(res.status).not.toBe(0);
-    expect(res.stderr).toContain("Node 20 or newer is required");
+    const { result } = runAssertSetup("18.0.0");
+    expect(result.status).not.toBe(0);
+    expect(result.stderr).toContain("Node 20 or newer is required");
   });
 
   test("succeeds on Node >=20", () => {

@@ -19,10 +19,11 @@ function loadDom() {
   });
   global.window = dom.window;
   global.document = dom.window.document;
-  const script = fs.readFileSync(
+  let script = fs.readFileSync(
     path.join(__dirname, "../../../js/payment.js"),
     "utf8",
   );
+  script = script.replace(/^import[^\n]+\n/g, "");
   dom.window.eval(script);
   return dom;
 }

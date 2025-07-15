@@ -26,10 +26,11 @@ function setupDom() {
   dom.window.setInterval = setInterval;
   dom.window.clearInterval = clearInterval;
   dom.window.Date = Date;
-  const script = fs.readFileSync(
+  let script = fs.readFileSync(
     path.join(__dirname, "../../../js/payment.js"),
     "utf8",
   );
+  script = script.replace(/^import .*$/m, "");
   dom.window.eval(script);
   return dom;
 }

@@ -1,6 +1,6 @@
 const Sentry = require("@sentry/node");
 const { capture } = require("../src/lib/logger");
-const logger = require("../src/logger");
+const logger = require("../../src/logger.js");
 const { transports } = require("winston");
 
 describe("capture", () => {
@@ -10,8 +10,11 @@ describe("capture", () => {
   });
 
   test("does not throw without DSN", () => {
+    const spy = jest
+      .spyOn(Sentry, "captureException")
+      .mockImplementation(() => {});
     expect(() => capture(new Error("boom"))).not.toThrow();
-    expect(Sentry.captureException).not.toHaveBeenCalled();
+    expect(spy).not.toHaveBeenCalled();
   });
 
   test("forwards errors to Sentry when DSN is set", () => {
