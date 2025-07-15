@@ -1,6 +1,10 @@
+jest.mock("@sentry/node", () => ({
+  captureException: jest.fn(),
+  init: jest.fn(),
+}));
 const Sentry = require("@sentry/node");
 const { capture } = require("../src/lib/logger");
-const logger = require("../src/logger");
+const logger = require("../src/logger").default || require("../src/logger");
 const { transports } = require("winston");
 
 describe("capture", () => {
@@ -15,13 +19,16 @@ describe("capture", () => {
   });
 
   test("forwards errors to Sentry when DSN is set", () => {
-    process.env.SENTRY_DSN = "abc";
-    const spy = jest
-      .spyOn(Sentry, "captureException")
-      .mockImplementation(() => {});
+    process.env.SENTRY_DSN = "http://public@localhost:123/1";
+    jest.resetModules();
+    jest.mock("@sentry/node", () => ({
+      captureException: jest.fn(),
+      init: jest.fn(),
+    }));
+    const { capture: captureWithDsn } = require("../src/lib/logger");
     const err = new Error("boom");
-    capture(err);
-    expect(spy).toHaveBeenCalledWith(err);
+    captureWithDsn(err);
+    expect(Sentry.captureException).toHaveBeenCalledWith(err);
   });
 });
 
@@ -41,12 +48,17 @@ describe("logger", () => {
 
   afterEach(() => {
     jest.restoreAllMocks();
+    delete process.env.LOG_LEVEL;
+    jest.resetModules();
   });
 
   test("logs info, warn and error", () => {
-    logger.info("info msg");
-    logger.warn("warn msg");
-    logger.error("error msg");
+    process.env.LOG_LEVEL = "info";
+    jest.resetModules();
+    const log = require("../src/logger").default || require("../src/logger");
+    log.info("info msg");
+    log.warn("warn msg");
+    log.error("error msg");
 
     const outputs = [
       ...logSpy.mock.calls.flat(),
@@ -61,9 +73,10 @@ describe("logger", () => {
 });
 
 test("logger is silent in test env", () => {
-  const consoleTransport = logger.transports.find(
+  const log = require("../src/logger").default || require("../src/logger");
+  const consoleTransport = log.transports.find(
     (t) => t instanceof transports.Console,
   );
-  expect(logger.level).toBe("error");
+  expect(log.level).toBe("error");
   expect(consoleTransport.silent).toBe(true);
 });
