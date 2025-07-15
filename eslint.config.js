@@ -32,6 +32,13 @@ module.exports = [
       "upload",
       "src",
     ],
+    settings: {
+      jsdoc: {
+        tagNamePreference: {
+          "jest-environment": false,
+        },
+      },
+    },
   },
   {
     languageOptions: {
