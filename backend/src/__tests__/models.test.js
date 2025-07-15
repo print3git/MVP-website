@@ -39,6 +39,7 @@ test("POST /api/models returns 400 when data missing", async () => {
 });
 
 test("POST /api/models returns 500 on db error", async () => {
+  jest.spyOn(console, "error").mockImplementation(() => {});
   mPool.query.mockRejectedValueOnce(new Error("fail"));
   const res = await request(app)
     .post("/api/models")

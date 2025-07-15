@@ -1,8 +1,14 @@
+let mockJimp;
+let mImage;
+jest.mock("jimp", () => {
+  mockJimp = jest.fn();
+  mockJimp.loadFont = jest.fn();
+  mockJimp.FONT_SANS_32_BLACK = "FONT_SANS_32_BLACK";
+  return mockJimp;
+});
 const Jimp = require("jimp");
 const fs = require("fs");
 const path = require("path");
-
-jest.mock("jimp");
 
 const generateShareCard = require("../../utils/generateShareCard");
 
@@ -10,12 +16,11 @@ describe("generateShareCard", () => {
   const tmpDir = fs.mkdtempSync(path.join(__dirname, "sharecard-"));
   const outPath = path.join(tmpDir, "card.png");
 
-  const mImage = { print: jest.fn().mockReturnThis(), writeAsync: jest.fn() };
-
   beforeEach(() => {
+    mImage = { print: jest.fn().mockReturnThis(), writeAsync: jest.fn() };
     Jimp.mockClear();
     Jimp.loadFont.mockResolvedValue("FONT");
-    Jimp.mockResolvedValue(mImage);
+    Jimp.mockImplementation(() => mImage);
     mImage.print.mockClear();
     mImage.writeAsync.mockClear();
   });

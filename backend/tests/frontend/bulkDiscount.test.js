@@ -20,6 +20,10 @@ function load() {
     path.join(__dirname, "../../../js/payment.js"),
     "utf8",
   );
+  script = script.replace(
+    /import\s+\{[^}]+\}\s+from ['"]\.\/analytics.js['"];?/,
+    "",
+  );
   script += "\nwindow._computeBulkDiscount = computeBulkDiscount;";
   dom.window.eval(script);
   return dom;
