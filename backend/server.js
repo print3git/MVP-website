@@ -2850,11 +2850,12 @@ app.post("/api/create-order", authOptional, async (req, res) => {
     }
 
     if (req.user) {
-      const { rows: paid } = await db.query(
-        "SELECT 1 FROM orders WHERE user_id=$1 AND status=$2 LIMIT 1",
-        [req.user.id, "paid"],
+      const { rows: counts } = await db.query(
+        "SELECT COUNT(*) FROM orders WHERE user_id=$1",
+        [req.user.id],
       );
-      if (paid.length === 0) {
+      const orderCount = parseInt(counts[0].count, 10) || 0;
+      if (orderCount === 0) {
         const firstDisc = Math.round((price || 0) * (qty || 1) * 0.1);
         totalDiscount += firstDisc;
         await db.query("INSERT INTO incentives(user_id, type) VALUES($1,$2)", [

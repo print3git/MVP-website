@@ -199,7 +199,7 @@ test("create-order quantity discount", async () => {
 test("create-order applies first-order discount", async () => {
   db.query
     .mockResolvedValueOnce({ rows: [{ job_id: "1", user_id: "u1" }] })
-    .mockResolvedValueOnce({ rows: [] })
+    .mockResolvedValueOnce({ rows: [{ count: "0" }] })
     .mockResolvedValueOnce({})
     .mockResolvedValueOnce({});
   const token = jwt.sign({ id: "u1" }, "secret");
@@ -766,7 +766,7 @@ test("POST /api/create-order saves UTM params", async () => {
 test("create-order inserts commission for marketplace sale", async () => {
   db.query
     .mockResolvedValueOnce({ rows: [{ job_id: "1", user_id: "seller" }] })
-    .mockResolvedValueOnce({ rows: [1] })
+    .mockResolvedValueOnce({ rows: [{ count: "1" }] })
     .mockResolvedValueOnce({});
   db.insertCommission.mockResolvedValueOnce({});
   const token = jwt.sign({ id: "buyer" }, "secret");
