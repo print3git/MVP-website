@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 set -e
 
+# Ensure mise is available for toolchain management
+if ! command -v mise >/dev/null 2>&1; then
+  "$(dirname "$0")/install-mise.sh" >/dev/null
+fi
+
 # Ensure mise activates the configured Node version so npm commands work even
 # when the shell hasn't sourced mise's hook. This prevents "node: command not
 # found" errors in fresh environments.
@@ -109,10 +114,18 @@ if [[ -z "${SKIP_PW_DEPS:-}" ]]; then
   fi
 fi
 
+
 if [[ -z "${SKIP_DB_CHECK:-}" ]]; then
   if ! node scripts/check-db.js >/dev/null 2>&1; then
     echo "Database connection check failed. Falling back to SKIP_DB_CHECK=1." >&2
     export SKIP_DB_CHECK=1
+  fi
+fi
+
+if [[ -n "${PLAYWRIGHT_BASE_URL:-}" ]]; then
+  if ! curl -fsI --max-time 5 "$PLAYWRIGHT_BASE_URL" >/dev/null; then
+    echo "PLAYWRIGHT_BASE_URL unreachable: $PLAYWRIGHT_BASE_URL" >&2
+    exit 1
   fi
 fi
 

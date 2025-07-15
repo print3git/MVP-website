@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+cat <<'SCRIPT'
+#!/usr/bin/env bash
+mkdir -p "$HOME/.local/bin"
+cat <<'EOS' > "$HOME/.local/bin/mise"
+#!/usr/bin/env bash
+echo "mise version stub"
+EOS
+chmod +x "$HOME/.local/bin/mise"
+echo "mise installed"
+SCRIPT
