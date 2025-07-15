@@ -39,6 +39,9 @@ describe("run-coverage script", () => {
       true,
     );
     expect(
+      fs.existsSync(path.join(repoRoot, "backend", "coverage", "lcov.info")),
+    ).toBe(true);
+    expect(
       fs.existsSync(
         path.join(repoRoot, "backend", "coverage", "coverage-summary.json"),
       ),

@@ -18,6 +18,7 @@ const jestArgs = [
   "--forceExit",
   "--coverageReporters=text-lcov",
   "--coverageReporters=json-summary",
+  "--coverageReporters=lcov",
   "--coverageThreshold={}",
   "--silent",
   "--config",

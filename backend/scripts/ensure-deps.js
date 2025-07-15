@@ -182,7 +182,7 @@ if (!fs.existsSync(jestPath)) {
 try {
   const hostDeps = path.join(repoRoot, "scripts", "check-host-deps.js");
   execSync(`node ${hostDeps}`, { stdio: "inherit" });
-} catch (err) {
-  console.error("Failed to verify Playwright host dependencies:", err.message);
+} catch (_err) {
+  console.error("Failed to verify Playwright host dependencies:", _err.message);
   process.exit(1);
 }
