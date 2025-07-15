@@ -1,6 +1,7 @@
 const Sentry = require("@sentry/node");
 let logger;
 const { capture } = require("../src/lib/logger");
+// winston's transports are not needed in these tests
 
 describe("capture", () => {
   afterEach(() => {
@@ -33,9 +34,6 @@ describe("logger", () => {
     if (console.log.mockRestore) console.log.mockRestore();
     if (console.warn.mockRestore) console.warn.mockRestore();
     if (console.error.mockRestore) console.error.mockRestore();
-    jest.spyOn(console, "log").mockImplementation(() => {});
-    jest.spyOn(console, "warn").mockImplementation(() => {});
-    jest.spyOn(console, "error").mockImplementation(() => {});
     writeSpy = jest
       .spyOn(console._stdout, "write")
       .mockImplementation(() => true);
