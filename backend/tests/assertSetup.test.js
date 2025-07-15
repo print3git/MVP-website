@@ -3,7 +3,7 @@ const os = require("os");
 const path = require("path");
 const { spawnSync } = require("child_process");
 
-const script = path.join(__dirname, "..", "scripts", "assert-setup.js");
+const script = path.join(__dirname, "..", "..", "scripts", "assert-setup.js");
 const stub = path.join(__dirname, "stubExecSync.js");
 
 function runAssertSetup(nodeVersion, extraEnv = {}) {
@@ -12,6 +12,10 @@ function runAssertSetup(nodeVersion, extraEnv = {}) {
   fs.mkdirSync(browserDir, { recursive: true });
   const env = {
     ...process.env,
+    HF_TOKEN: "t",
+    AWS_ACCESS_KEY_ID: "id",
+    AWS_SECRET_ACCESS_KEY: "secret",
+    STRIPE_SECRET_KEY: "sk",
     NODE_OPTIONS: `--require ${stub}`,
     PLAYWRIGHT_BROWSERS_PATH: tmpDir,
     ...extraEnv,
@@ -29,9 +33,9 @@ function runAssertSetup(nodeVersion, extraEnv = {}) {
 
 describe("assert-setup script", () => {
   test("fails on Node <20", () => {
-    const res = runAssertSetup("18.0.0");
-    expect(res.status).not.toBe(0);
-    expect(res.stderr).toContain("Node 20 or newer is required");
+    const { result } = runAssertSetup("18.0.0");
+    expect(result.status).not.toBe(0);
+    expect(result.stderr).toContain("Node 20 or newer is required");
   });
 
   test("succeeds on Node >=20", () => {

@@ -1,21 +1,30 @@
 const Sentry = require("@sentry/node");
-const { capture } = require("../src/lib/logger");
-const logger = require("../src/logger");
+let capture;
+let logger;
+beforeAll(() => {
+  capture = require("../src/lib/logger").capture;
+  logger = require("../src/logger").default;
+});
 const { transports } = require("winston");
 
 describe("capture", () => {
   afterEach(() => {
     delete process.env.SENTRY_DSN;
     jest.restoreAllMocks();
+    jest.resetModules();
   });
 
   test("does not throw without DSN", () => {
+    jest.spyOn(Sentry, "captureException").mockImplementation(() => {});
     expect(() => capture(new Error("boom"))).not.toThrow();
     expect(Sentry.captureException).not.toHaveBeenCalled();
   });
 
   test("forwards errors to Sentry when DSN is set", () => {
-    process.env.SENTRY_DSN = "abc";
+    process.env.SENTRY_DSN = "https://example@example.com/1";
+    jest.resetModules();
+    const { capture } = require("../src/lib/logger");
+    logger = require("../src/logger").default;
     const spy = jest
       .spyOn(Sentry, "captureException")
       .mockImplementation(() => {});
