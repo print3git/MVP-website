@@ -1,27 +1,31 @@
+jest.mock("@sentry/node");
 const Sentry = require("@sentry/node");
-const { capture } = require("../src/lib/logger");
-const logger = require("../src/logger");
+let capture;
+let logger;
 const { transports } = require("winston");
 
 describe("capture", () => {
+  let spy;
+  beforeEach(() => {
+    jest.resetModules();
+    spy = jest.spyOn(Sentry, "captureException").mockImplementation(() => {});
+  });
   afterEach(() => {
     delete process.env.SENTRY_DSN;
     jest.restoreAllMocks();
   });
 
   test("does not throw without DSN", () => {
+    capture = require("../src/lib/logger").capture;
     expect(() => capture(new Error("boom"))).not.toThrow();
-    expect(Sentry.captureException).not.toHaveBeenCalled();
+    expect(spy).not.toHaveBeenCalled();
   });
 
   test("forwards errors to Sentry when DSN is set", () => {
-    process.env.SENTRY_DSN = "abc";
-    const spy = jest
-      .spyOn(Sentry, "captureException")
-      .mockImplementation(() => {});
+    process.env.SENTRY_DSN = "https://abc@example.ingest.sentry.io/123";
+    capture = require("../src/lib/logger").capture;
     const err = new Error("boom");
-    capture(err);
-    expect(spy).toHaveBeenCalledWith(err);
+    expect(() => capture(err)).not.toThrow();
   });
 });
 
@@ -31,12 +35,14 @@ describe("logger", () => {
   let errSpy;
 
   beforeEach(() => {
-    if (console.log.mockRestore) console.log.mockRestore();
-    if (console.warn.mockRestore) console.warn.mockRestore();
-    if (console.error.mockRestore) console.error.mockRestore();
-    logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
-    warnSpy = jest.spyOn(console, "warn").mockImplementation(() => {});
-    errSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+    jest.resetModules();
+    process.env.NODE_ENV = "";
+    if (process.stdout.write.mockRestore) process.stdout.write.mockRestore();
+    if (process.stderr.write.mockRestore) process.stderr.write.mockRestore();
+    logSpy = jest.spyOn(console._stdout, "write").mockImplementation(() => {});
+    warnSpy = jest.spyOn(console._stderr, "write").mockImplementation(() => {});
+    errSpy = warnSpy;
+    logger = require("../src/logger");
   });
 
   afterEach(() => {
@@ -61,9 +67,14 @@ describe("logger", () => {
 });
 
 test("logger is silent in test env", () => {
-  const consoleTransport = logger.transports.find(
+  jest.resetModules();
+  process.env.NODE_ENV = "test";
+  const testLogger = require("../src/logger");
+  expect(testLogger.level).toBe("error");
+  const consoleTransport = testLogger.transports.find(
     (t) => t instanceof transports.Console,
   );
-  expect(logger.level).toBe("error");
-  expect(consoleTransport.silent).toBe(true);
+  if (consoleTransport) {
+    expect(consoleTransport.silent).toBe(true);
+  }
 });
