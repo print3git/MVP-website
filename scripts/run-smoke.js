@@ -3,6 +3,14 @@ const { execSync } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 
+function freePort(port) {
+  try {
+    execSync(`npx -y kill-port ${port}`, { stdio: "inherit" });
+  } catch (err) {
+    console.warn(`kill-port ${port} failed`, err.message);
+  }
+}
+
 function initEnv(baseEnv = process.env) {
   const env = { ...baseEnv };
 
@@ -122,4 +130,4 @@ if (require.main === module) {
   main();
 }
 
-module.exports = { main, env, run, initEnv };
+module.exports = { main, env, run, initEnv, freePort };
