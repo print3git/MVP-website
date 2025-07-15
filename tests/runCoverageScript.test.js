@@ -24,7 +24,7 @@ describe("run-coverage script", () => {
       },
     );
     const lcov = path.join("coverage", "lcov.info");
-    const summary = path.join("backend", "coverage", "coverage-summary.json");
+    const summary = path.join("coverage", "coverage-summary.json");
     expect(fs.existsSync(lcov)).toBe(true);
     expect(fs.existsSync(summary)).toBe(true);
     const logs = fs.readFileSync(logFile, "utf8");
