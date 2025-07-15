@@ -31,6 +31,29 @@ describe("validateStl", () => {
     expect(validateStl(file)).toBe(false);
   });
 
+  test("fails when ASCII STL missing end marker", () => {
+    const file = path.join(tmpDir, "no_end.stl");
+    const ascii = "solid test";
+    fs.writeFileSync(file, ascii);
+    expect(validateStl(file)).toBe(false);
+  });
+
+  test("fails for binary STL with zero triangles", () => {
+    const file = path.join(tmpDir, "zero_tris.stl");
+    const buf = Buffer.alloc(84);
+    buf.write("BIN", 0, "ascii");
+    buf.writeUInt32LE(0, 80);
+    fs.writeFileSync(file, buf);
+    expect(validateStl(file)).toBe(false);
+  });
+
+  test("fails when binary file too short", () => {
+    const file = path.join(tmpDir, "short.stl");
+    const buf = Buffer.alloc(10);
+    fs.writeFileSync(file, buf);
+    expect(validateStl(file)).toBe(false);
+  });
+
   test("returns false when file missing", () => {
     const file = path.join(tmpDir, "missing.stl");
     expect(validateStl(file)).toBe(false);

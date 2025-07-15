@@ -15,6 +15,9 @@ const createModelSchema = z.object({
   fileKey: z.string().regex(/^[A-Za-z0-9._-]+$/, "invalid fileKey"),
 });
 
+// expose schema for testing
+router.createModelSchema = createModelSchema;
+
 router.post("/", validate(createModelSchema), async (req, res, next) => {
   try {
     const { prompt, fileKey } = req.body;
