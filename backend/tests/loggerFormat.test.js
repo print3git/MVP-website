@@ -18,6 +18,8 @@ describe("logger JSON format", () => {
 
   beforeEach(() => {
     jest.resetModules();
+    if (console.log.mockRestore) console.log.mockRestore();
+    if (console.error.mockRestore) console.error.mockRestore();
     process.env.NODE_ENV = "development";
     logger = require(path.join(__dirname, "..", "..", "src", "logger.js"));
     memory = new MemoryTransport();
@@ -26,6 +28,7 @@ describe("logger JSON format", () => {
 
   afterEach(() => {
     logger.remove(memory);
+    jest.restoreAllMocks();
   });
 
   test("startup log includes timestamp, level and code", () => {
