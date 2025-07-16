@@ -11,7 +11,7 @@ function runJest(args = []) {
     "backend",
     "node_modules",
     ".bin",
-    "jest"
+    "jest",
   );
 
   // always run inside the backend folder
@@ -27,11 +27,7 @@ function runJest(args = []) {
     child_process.spawnSync(jestBin, args, options);
   } else {
     // fallback to `npm test`
-    child_process.spawnSync(
-      "npm",
-      ["test", "--prefix", "backend"],
-      options
-    );
+    child_process.spawnSync("npm", ["test", "--prefix", "backend"], options);
   }
 }
 
