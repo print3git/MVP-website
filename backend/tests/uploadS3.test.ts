@@ -41,5 +41,8 @@ describe("uploadFile env validation", () => {
     await expect(uploadFile("/tmp/../etc/passwd", "image/png")).rejects.toThrow(
       "file not found",
     );
+    await expect(uploadFile("/tmpstuff/evil.png", "image/png")).rejects.toThrow(
+      "file not found",
+    );
   });
 });

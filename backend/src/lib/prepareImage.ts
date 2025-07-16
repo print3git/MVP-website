@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { uploadFile } from "./uploadS3";
+import { resolveLocalFile } from "./fileUtils";
 
 /**
  * Ensure an image is available via HTTP and return the URL.
@@ -24,16 +25,11 @@ export async function prepareImage(image: string): Promise<string> {
     await fs.promises.writeFile(filePath, Buffer.from(base64, "base64"));
     cleanup = true;
   } else {
-    const normalized = path.normalize(filePath);
-    const resolved = path.resolve(normalized);
-    const uploadsDir = path.resolve("uploads");
-    if (!resolved.startsWith("/tmp") && !resolved.startsWith(uploadsDir)) {
-      throw new Error("image file not found");
-    }
-    if (!fs.existsSync(resolved)) {
-      throw new Error("image file not found");
-    }
-    filePath = resolved;
+    filePath = resolveLocalFile(
+      filePath,
+      ["/tmp", "uploads"],
+      "image file not found",
+    );
   }
 
   try {

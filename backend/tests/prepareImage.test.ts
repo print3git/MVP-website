@@ -60,5 +60,11 @@ describe("prepareImage", () => {
     await expect(prepareImage("uploads/../secret.png")).rejects.toThrow(
       "image file not found",
     );
+    await expect(prepareImage("/tmpstuff/evil.png")).rejects.toThrow(
+      "image file not found",
+    );
+    await expect(prepareImage("uploadsbad/evil.png")).rejects.toThrow(
+      "image file not found",
+    );
   });
 });
