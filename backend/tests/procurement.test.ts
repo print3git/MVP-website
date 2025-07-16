@@ -19,7 +19,9 @@ const order = {
   ],
 };
 
-const outPath = path.join(__dirname, "test_po.pdf");
+// Use a unique output path to avoid conflicts when both the JS and TS
+// versions of this test run in parallel.
+const outPath = path.join(__dirname, "test_po_ts.pdf");
 
 afterEach(() => {
   if (fs.existsSync(outPath)) fs.unlinkSync(outPath);
