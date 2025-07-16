@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const { spawnSync } = require("child_process");
+const { spawnSync, execSync } = require("child_process");
 const os = require("os");
 
 const requiredMajor = parseInt(process.env.REQUIRED_NODE_MAJOR || "20", 10);
@@ -124,33 +124,36 @@ function canReachRegistry() {
 }
 
 if (!requiredPaths.every((p) => fs.existsSync(p))) {
-  runNetworkCheck();
-  if (!canReachRegistry()) process.exit(1);
+  if (!process.env.SKIP_NET_CHECKS) {
+    runNetworkCheck();
+  }
+  if (!process.env.SKIP_NET_CHECKS && !canReachRegistry()) process.exit(1);
   console.log("Dependencies missing. Installing root dependencies...");
   cleanupNpmCache();
-  try {
-    const ping = spawnSync("npm", ["ping"], { stdio: "ignore", env: getEnv() });
-    if (ping.status !== 0) throw new Error();
-  } catch {
-    console.error(
-      "Unable to reach the npm registry. Check network connectivity or proxy settings.",
-    );
-    process.exit(1);
+  if (!process.env.SKIP_NET_CHECKS) {
+    try {
+      const ping = spawnSync("npm", ["ping"], {
+        stdio: "ignore",
+        env: getEnv(),
+      });
+      if (ping.status !== 0) throw new Error();
+    } catch {
+      console.error(
+        "Unable to reach the npm registry. Check network connectivity or proxy settings.",
+      );
+      process.exit(1);
+    }
   }
   const install = () => {
     try {
-      const r = spawnSync("npm", ["ci"], { stdio: "inherit", env: getEnv() });
-      if (r.status === 0) return true;
-      throw new Error("npm ci failed");
+      execSync("npm ci", { stdio: "inherit", env: getEnv() });
+      return true;
     } catch (err) {
       const msg = String(err.message || err);
       if (msg.includes("EUSAGE")) {
         console.warn("npm ci failed, falling back to 'npm install'");
-        const res = spawnSync("npm", ["install"], {
-          stdio: "inherit",
-          env: getEnv(),
-        });
-        return res.status === 0;
+        execSync("npm install", { stdio: "inherit", env: getEnv() });
+        return true;
       }
       if (/TAR_ENTRY_ERROR|ENOENT|ENOTEMPTY|tarball .*corrupted/.test(msg)) {
         console.warn(
@@ -179,7 +182,9 @@ if (!requiredPaths.every((p) => fs.existsSync(p))) {
   for (let attempt = 1; attempt <= 3; attempt++) {
     if (install()) break;
     console.warn(`npm ci failed, retrying (${attempt}/3)...`);
-    runNetworkCheck();
+    if (!process.env.SKIP_NET_CHECKS) {
+      runNetworkCheck();
+    }
     if (attempt === 3) {
       console.error("Failed to install dependencies after multiple attempts.");
       process.exit(1);

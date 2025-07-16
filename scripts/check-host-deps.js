@@ -55,15 +55,15 @@ function hostDepsInstalled() {
   }
 }
 
-if (hostDepsInstalled()) {
-  console.log("Playwright host dependencies already satisfied.");
-  process.exit(0);
-}
-
 if (process.env.SKIP_PW_DEPS) {
   console.warn(
     "SKIP_PW_DEPS is set but Playwright host dependencies are missing. Skipping installation...",
   );
+  process.exit(0);
+}
+
+if (hostDepsInstalled()) {
+  console.log("Playwright host dependencies already satisfied.");
   process.exit(0);
 }
 

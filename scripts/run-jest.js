@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 const fs = require("fs");
-const { spawnSync } = require("child_process");
+const { execSync } = require("child_process");
 const path = require("path");
 
-if (!process.env.SKIP_ROOT_DEPS_CHECK) {
+if (!process.env.SKIP_ROOT_DEPS_CHECK && !process.env.JEST_WORKER_ID) {
   require("./ensure-root-deps.js");
 } else {
   try {
@@ -93,15 +93,9 @@ function runJest(args) {
   };
 
   if (fs.existsSync(jestBin)) {
-    const r = spawnSync(jestBin, jestArgs, options);
-    if (r.status !== 0) process.exit(r.status || 1);
+    execSync(`${jestBin} ${jestArgs.join(" ")}`, options);
   } else {
-    const r = spawnSync(
-      "npm",
-      ["test", "--prefix", "backend", "--", ...jestArgs],
-      options,
-    );
-    if (r.status !== 0) process.exit(r.status || 1);
+    execSync(`npm test --prefix backend -- ${jestArgs.join(" ")}`, options);
   }
 }
 
