@@ -44,6 +44,7 @@ describe("run-coverage missing deps", () => {
     const result = runCoverage({
       EXEC_LOG_FILE: logFile,
       FAKE_NODE_MODULES_MISSING: "1",
+      REQUIRED_NODE_MAJOR: process.versions.node.split(".")[0],
     });
     try {
       expect(result.status).toBe(0);
