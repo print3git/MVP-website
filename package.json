@@ -52,6 +52,8 @@
     "validate-env": "bash scripts/validate-env.sh",
     "setup": "bash scripts/setup.sh",
     "e2e": "playwright test",
+    "test:e2e": "playwright test",
+    "test:unit": "npm test --prefix backend",
     "serve": "npm run build && node scripts/dev-server.js",
     "smoke": "node scripts/run-smoke.js",
     "build": "echo 'no build step'",

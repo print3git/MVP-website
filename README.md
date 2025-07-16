@@ -362,6 +362,18 @@ For a quick end-to-end sanity check, run:
 npm run smoke
 ```
 
+Run the backend unit tests alone:
+
+```bash
+npm run test:unit
+```
+
+Run the Playwright end-to-end suite:
+
+```bash
+npm run test:e2e
+```
+
 To run Jest directly from the repository root, use:
 
 ```bash
