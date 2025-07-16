@@ -1,5 +1,6 @@
 const fs = require("fs");
 const child_process = require("child_process");
+const origSpawnSync = child_process.spawnSync;
 const path = require("path");
 
 let logFile = process.env.EXEC_LOG_FILE;
@@ -25,6 +26,30 @@ child_process.execSync = function (cmd, opts = {}) {
     throw err;
   }
   return Buffer.from("");
+};
+
+child_process.spawnSync = function (cmd, args = [], opts = {}) {
+  const cwd = opts.cwd || process.cwd();
+  const prefix = `[cwd:${cwd}] ${cmd} ${Array.isArray(args) ? args.join(" ") : ""}`;
+  if (logFile) {
+    try {
+      fs.appendFileSync(logFile, prefix + "\n");
+    } catch (_err) {
+      // ignore logging errors
+    }
+  }
+  const full = `${cmd} ${Array.isArray(args) ? args.join(" ") : ""}`;
+  if (full.includes("playwright install")) {
+    return {
+      status: 0,
+      stdout: "Playwright host dependencies already satisfied.",
+      stderr: "",
+    };
+  }
+  if (cmd.includes("npm")) {
+    return { status: 0, stdout: "", stderr: "" };
+  }
+  return origSpawnSync(cmd, args, opts);
 };
 
 if (process.env.FAKE_NODE_MODULES_MISSING) {
