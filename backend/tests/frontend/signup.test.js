@@ -3,13 +3,23 @@ const fs = require("fs");
 const path = require("path");
 const { JSDOM } = require("jsdom");
 
-let html = fs.readFileSync(
-  path.join(__dirname, "../../../signup.html"),
-  "utf8",
-);
-html = html
-  .replace(/<script[^>]+tailwind[^>]*><\/script>/, "")
-  .replace(/<link[^>]+font-awesome[^>]+>/, "");
+function loadHtml(rel, extra = []) {
+  const raw = fs.readFileSync(path.join(__dirname, rel), "utf8");
+  const dom = new JSDOM(raw);
+  const { document } = dom.window;
+  document
+    .querySelectorAll('script[src^="http"], link[href^="http"]')
+    .forEach((el) => el.remove());
+  for (const sel of extra) {
+    document.querySelectorAll(sel).forEach((el) => el.remove());
+  }
+  return dom.serialize();
+}
+
+let html = loadHtml("../../../signup.html", [
+  'script[src*="tailwind"]',
+  'link[href*="font-awesome"]',
+]);
 
 describe("signup form", () => {
   test("shows error on failed signup", async () => {
