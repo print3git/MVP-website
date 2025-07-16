@@ -9,7 +9,7 @@ jobs:
       - uses: actions/checkout@v4.2.2
       - uses: actions/setup-node@v4.4.0
         with:
-          node-version: 25
+          node-version: 20
       - run: SKIP_PW_DEPS=1 npm run setup
       - run: SKIP_PW_DEPS=1 npm run coverage
       - name: Validate coverage-summary.json
