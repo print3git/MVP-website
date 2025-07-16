@@ -86,6 +86,7 @@
     "@babel/plugin-syntax-typescript": "^7.24.1",
     "@babel/plugin-transform-modules-commonjs": "^7.27.1",
     "@babel/plugin-transform-react-jsx": "^7.27.1",
+    "@babel/preset-env": "^7.28.0",
     "@babel/preset-react": "^7.27.1",
     "@babel/register": "^7.27.1",
     "@commitlint/cli": "^19.2.1",
