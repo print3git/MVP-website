@@ -365,6 +365,7 @@ For a quick end-to-end sanity check, run:
 ```bash
 npm run smoke
 ```
+If port 3000 is in use, stop the other process before running this.
 
 Run the backend unit tests alone:
 
