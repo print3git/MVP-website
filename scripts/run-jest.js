@@ -89,7 +89,15 @@ function runJest(args) {
   const options = {
     stdio: "inherit",
     cwd: runFromRoot ? repoRoot : backendDir,
-    env,
+    env: {
+      ...env,
+      NODE_OPTIONS: [
+        env.NODE_OPTIONS,
+        `--require ${path.join(__dirname, "jest-disable-deletion.js")}`,
+      ]
+        .filter(Boolean)
+        .join(" "),
+    },
   };
 
   if (fs.existsSync(jestBin)) {
