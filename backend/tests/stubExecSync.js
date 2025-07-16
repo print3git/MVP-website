@@ -6,16 +6,18 @@ let logFile = process.env.EXEC_LOG_FILE;
 if (logFile && !/^[\w./-]+$/.test(logFile)) {
   throw new Error("invalid log file path");
 }
+function logCommand(cmd, cwd) {
+  if (!logFile) return;
+  try {
+    fs.appendFileSync(logFile, `[cwd:${cwd}] ` + cmd + "\n");
+  } catch {
+    /* ignore */
+  }
+}
+
 child_process.execSync = function (cmd, opts = {}) {
   const cwd = opts.cwd || process.cwd();
-  const prefix = `[cwd:${cwd}] `;
-  if (logFile) {
-    try {
-      fs.appendFileSync(logFile, prefix + cmd + "\n");
-    } catch (_err) {
-      // ignore logging errors
-    }
-  }
+  logCommand(cmd, cwd);
   if (cmd.includes("playwright install")) {
     return Buffer.from("Playwright host dependencies already satisfied.");
   }
@@ -25,6 +27,16 @@ child_process.execSync = function (cmd, opts = {}) {
     throw err;
   }
   return Buffer.from("");
+};
+
+child_process.spawnSync = function (cmd, args = [], opts = {}) {
+  const cwd = (opts && opts.cwd) || process.cwd();
+  const fullCmd = [cmd, ...(args || [])].join(" ");
+  logCommand(fullCmd, cwd);
+  if (/jest/.test(fullCmd)) {
+    return { status: 0, stdout: "TN:\nend_of_record\n", stderr: "" };
+  }
+  return { status: 0, stdout: "", stderr: "" };
 };
 
 if (process.env.FAKE_NODE_MODULES_MISSING) {

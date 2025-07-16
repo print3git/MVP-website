@@ -3,7 +3,7 @@ const fs = require("fs");
 const { spawnSync } = require("child_process");
 const path = require("path");
 
-if (!process.env.SKIP_ROOT_DEPS_CHECK) {
+if (!process.env.SKIP_ROOT_DEPS_CHECK && process.env.NODE_ENV !== "test") {
   require("./ensure-root-deps.js");
 } else {
   try {
