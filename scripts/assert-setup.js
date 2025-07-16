@@ -68,6 +68,15 @@ for (const name of requiredEnv) {
   }
 }
 
+// When Playwright dependencies are already installed, callers often set
+// SKIP_PW_DEPS=1 to skip the heavy download step. In restricted environments
+// the network checks may also fail even though all dependencies are present.
+// Automatically skip network checks in that scenario unless the caller
+// explicitly overrides SKIP_NET_CHECKS.
+if (process.env.SKIP_PW_DEPS && !process.env.SKIP_NET_CHECKS) {
+  process.env.SKIP_NET_CHECKS = "1";
+}
+
 if (!process.env.SKIP_NET_CHECKS) {
   try {
     require("child_process").execSync("node scripts/network-check.js", {
