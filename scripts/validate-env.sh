@@ -93,6 +93,13 @@ if [[ -n "${npm_config_http_proxy:-}" || -n "${npm_config_https_proxy:-}" ]]; th
 fi
 
 
+if [[ -z "${SKIP_PW_DEPS:-}" ]]; then
+  if ! node scripts/check-apt.js >/dev/null 2>&1; then
+    echo "APT repository check failed. Falling back to SKIP_PW_DEPS=1." >&2
+    export SKIP_PW_DEPS=1
+  fi
+fi
+
 if [[ -z "${SKIP_NET_CHECKS:-}" ]]; then
   network_output=$(node scripts/network-check.js 2>&1)
   net_status=$?
@@ -108,13 +115,6 @@ if [[ -z "${SKIP_NET_CHECKS:-}" ]]; then
       echo "Network check failed. Ensure access to the npm registry and Playwright CDN." >&2
       exit 1
     fi
-  fi
-fi
-
-if [[ -z "${SKIP_PW_DEPS:-}" ]]; then
-  if ! node scripts/check-apt.js >/dev/null 2>&1; then
-    echo "APT repository check failed. Falling back to SKIP_PW_DEPS=1." >&2
-    export SKIP_PW_DEPS=1
   fi
 fi
 

@@ -5,6 +5,10 @@ describe("linting", () => {
     const result = spawnSync("npm", ["run", "lint", "--silent"], {
       encoding: "utf8",
     });
+    if (result.status !== 0) {
+      // Print ESLint output to aid debugging
+      console.error(result.stdout + result.stderr);
+    }
     if (result.error) throw result.error;
     expect(result.status).toBe(0);
   });
