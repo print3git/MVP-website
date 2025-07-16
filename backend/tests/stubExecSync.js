@@ -23,20 +23,7 @@ child_process.execSync = function (cmd, opts = {}) {
     throw err;
   }
   if (cmd.includes("ensure-deps.js")) {
-    const repoRoot = path.join(__dirname, "..", "..");
-    const jestBin = path.join(
-      repoRoot,
-      "backend",
-      "node_modules",
-      ".bin",
-      "jest",
-    );
-    try {
-      fs.mkdirSync(path.dirname(jestBin), { recursive: true });
-      fs.writeFileSync(jestBin, "#!/usr/bin/env node\n", { mode: 0o755 });
-    } catch {
-      // ignore errors creating stub jest binary
-    }
+    // skip actual dependency installation
   }
   return Buffer.from("");
 };
@@ -44,6 +31,20 @@ child_process.execSync = function (cmd, opts = {}) {
 child_process.spawnSync = function (cmd, args, opts = {}) {
   if (cmd.includes("jest")) {
     const stdout = "TN:\nSF:dummy\nend_of_record\n";
+    const repoRoot = path.join(__dirname, "..", "..");
+    const summary = path.join(
+      repoRoot,
+      "backend",
+      "coverage",
+      "coverage-summary.json",
+    );
+    try {
+      fs.mkdirSync(path.dirname(summary), { recursive: true });
+      fs.writeFileSync(
+        summary,
+        JSON.stringify({ total: { lines: { pct: 100 } } }),
+      );
+    } catch {}
     return {
       status: 0,
       stdout,
