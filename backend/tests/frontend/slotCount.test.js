@@ -3,14 +3,20 @@ const fs = require("fs");
 const path = require("path");
 const { JSDOM } = require("jsdom");
 
-let html = fs.readFileSync(
-  path.join(__dirname, "../../../payment.html"),
-  "utf8",
-);
-html = html
-  .replace(/<script[^>]+src="https?:\/\/[^>]+><\/script>/g, "")
-  .replace(/<link[^>]+href="https?:\/\/[^>]+>/g, "")
-  .replace(/<script[^>]+src="js\/[^>]+><\/script>/g, "");
+function loadHtml(rel, extra = []) {
+  const raw = fs.readFileSync(path.join(__dirname, rel), "utf8");
+  const dom = new JSDOM(raw);
+  const { document } = dom.window;
+  document
+    .querySelectorAll('script[src^="http"], link[href^="http"]')
+    .forEach((el) => el.remove());
+  for (const sel of extra) {
+    document.querySelectorAll(sel).forEach((el) => el.remove());
+  }
+  return dom.serialize();
+}
+
+let html = loadHtml("../../../payment.html", ['script[src^="js/"]']);
 
 function cycleKey() {
   const tz = "America/New_York";

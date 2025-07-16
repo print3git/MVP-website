@@ -3,15 +3,23 @@ const fs = require("fs");
 const path = require("path");
 const { JSDOM } = require("jsdom");
 
+function loadHtml(rel, extra = []) {
+  const raw = fs.readFileSync(path.join(__dirname, rel), "utf8");
+  const dom = new JSDOM(raw);
+  const { document } = dom.window;
+  document
+    .querySelectorAll('script[src^="http"], link[href^="http"]')
+    .forEach((el) => el.remove());
+  for (const sel of extra) {
+    document.querySelectorAll(sel).forEach((el) => el.remove());
+  }
+  return dom.serialize();
+}
+
 function loadDom() {
-  const html = fs
-    .readFileSync(path.join(__dirname, "../../../payment.html"), "utf8")
-    .replace(/<script[^>]+src="https?:\/\/[^>]+><\/script>/g, "")
-    .replace(/<link[^>]+href="https?:\/\/[^>]+>/g, "")
-    .replace(
-      /<script[^>]+src="js\/modelViewerTouchFix.js"[^>]*><\/script>/,
-      "",
-    );
+  const html = loadHtml("../../../payment.html", [
+    'script[src$="modelViewerTouchFix.js"]',
+  ]);
   const dom = new JSDOM(html, {
     runScripts: "dangerously",
     resources: "usable",
