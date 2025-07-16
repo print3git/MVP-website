@@ -3,9 +3,9 @@ const { execSync } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 
-function freePort(port) {
+function freePort(port, envVars = process.env) {
   try {
-    execSync(`npx -y kill-port ${port}`, { stdio: "inherit" });
+    execSync(`npx -y kill-port ${port}`, { stdio: "inherit", env: envVars });
   } catch (err) {
     console.warn(`kill-port ${port} failed`, err.message);
   }
@@ -13,6 +13,8 @@ function freePort(port) {
 
 function initEnv(baseEnv = process.env) {
   const env = { ...baseEnv };
+  delete env.npm_config_http_proxy;
+  delete env.npm_config_https_proxy;
 
   function loadEnvFile(file) {
     if (!fs.existsSync(file)) return;
@@ -98,7 +100,7 @@ function dumpDiagnostics(err) {
 function main() {
   try {
     run("npm run validate-env");
-    freePort(process.env.PORT || 3000);
+    freePort(process.env.PORT || 3000, env);
     if (!process.env.SKIP_SETUP && !fs.existsSync(".setup-complete")) {
       run("npm run setup");
     } else {
