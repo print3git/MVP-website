@@ -68,6 +68,7 @@
     "test:generate": "node scripts/test-generate.js",
     "test:webhook": "node scripts/test-webhook.js",
     "check:code-scanning": "node scripts/check-code-scanning.js",
+    "codeql": "node scripts/check-code-scanning.js",
     "commitlint": "commitlint --from=HEAD~1",
     "lint:md": "markdownlint-cli2 \"**/*.md\""
   },
