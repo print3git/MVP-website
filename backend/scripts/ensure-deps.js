@@ -109,7 +109,6 @@ function runSetup() {
   }
   try {
     execSync("npm run setup", { stdio: "inherit", cwd: repoRoot, env });
-
   } catch {
     if (env.SKIP_PW_DEPS) {
       console.warn(
