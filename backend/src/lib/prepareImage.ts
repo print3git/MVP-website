@@ -1,6 +1,6 @@
-import fs from 'fs';
-import path from 'path';
-import { uploadFile } from './uploadS3';
+import fs from "fs";
+import path from "path";
+import { uploadFile } from "./uploadS3";
 
 /**
  * Ensure an image is available via HTTP and return the URL.
@@ -15,17 +15,28 @@ export async function prepareImage(image: string): Promise<string> {
   let filePath = image;
   let cleanup = false;
 
-  if (image.startsWith('data:')) {
-    const [, base64] = image.split(',', 2);
-    filePath = path.join('/tmp', `${Date.now()}-${Math.random().toString(36).slice(2)}.png`);
-    await fs.promises.writeFile(filePath, Buffer.from(base64, 'base64'));
+  if (image.startsWith("data:")) {
+    const [, base64] = image.split(",", 2);
+    filePath = path.join(
+      "/tmp",
+      `${Date.now()}-${Math.random().toString(36).slice(2)}.png`,
+    );
+    await fs.promises.writeFile(filePath, Buffer.from(base64, "base64"));
     cleanup = true;
-  } else if (!fs.existsSync(image)) {
-    throw new Error('image file not found');
+  } else {
+    const resolved = path.resolve(filePath);
+    const uploadsDir = path.resolve("uploads");
+    if (!fs.existsSync(resolved)) {
+      throw new Error("image file not found");
+    }
+    if (!resolved.startsWith("/tmp") && !resolved.startsWith(uploadsDir)) {
+      throw new Error("image file not found");
+    }
+    filePath = resolved;
   }
 
   try {
-    return await uploadFile(filePath, 'image/png');
+    return await uploadFile(filePath, "image/png");
   } finally {
     if (cleanup) fs.unlink(filePath, () => {});
   }

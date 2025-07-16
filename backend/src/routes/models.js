@@ -3,8 +3,14 @@ const { S3Client } = require("@aws-sdk/client-s3");
 const { Pool } = require("pg");
 const validate = require("../../middleware/validate");
 const { z } = require("zod");
+const rateLimit = require("express-rate-limit");
 
 const router = express.Router();
+const modelsLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 10,
+  skip: () => process.env.NODE_ENV === "test",
+});
 
 const pool = new Pool({
   connectionString: process.env.DB_ENDPOINT,
@@ -25,6 +31,7 @@ const createModelSchema = z.object({
 router.createModelSchema = createModelSchema;
 router.post(
   "/api/models",
+  modelsLimiter,
   validate(createModelSchema),
   async (req, res, _next) => {
     try {
