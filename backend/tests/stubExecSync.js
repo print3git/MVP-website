@@ -27,6 +27,34 @@ child_process.execSync = function (cmd, opts = {}) {
   return Buffer.from("");
 };
 
+child_process.spawnSync = function (cmd, args, _opts = {}) {
+  const fullCmd = Array.isArray(args) ? [cmd, ...args].join(" ") : cmd;
+  if (/jest/.test(fullCmd)) {
+    const repoRoot = path.join(__dirname, "..", "..");
+    const covDir = path.join(repoRoot, "coverage");
+    const backendDir = path.join(repoRoot, "backend", "coverage");
+    fs.mkdirSync(covDir, { recursive: true });
+    fs.mkdirSync(backendDir, { recursive: true });
+    fs.writeFileSync(
+      path.join(backendDir, "coverage-summary.json"),
+      JSON.stringify({ total: { lines: { pct: 100 } } }),
+    );
+    return {
+      status: 0,
+      stdout: "TN:\nSF:file.js\nend_of_record\n",
+      stderr: "",
+    };
+  }
+  if (fullCmd.includes("playwright install")) {
+    return {
+      status: 0,
+      stdout: "Playwright host dependencies already satisfied.",
+      stderr: "",
+    };
+  }
+  return { status: 0, stdout: "", stderr: "" };
+};
+
 if (process.env.FAKE_NODE_MODULES_MISSING) {
   const origExists = fs.existsSync;
   fs.existsSync = (p) => {
