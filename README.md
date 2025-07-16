@@ -328,6 +328,9 @@ pull request:
 1. Install dependencies with `npm run setup` in the repository root.
 2. Run `npm run format` in `backend/`.
 3. Run `npm test` in `backend/` and include the results in the PR description.
+   If tests fail because Playwright or other dependencies are missing (for
+   example `assertSetupBackendDeps.test.js` fails), rerun `npm run setup` in the
+   repository root to install them before running tests again.
 
 4. Check your diff with `git status --short` to verify no unrelated files were
    modified.
