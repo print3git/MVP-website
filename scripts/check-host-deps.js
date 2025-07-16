@@ -11,9 +11,23 @@ function checkNetwork() {
       stdio: "pipe",
       encoding: "utf8",
     });
+    return true;
   } catch (err) {
+    const output = `${err.stdout || ""}${err.stderr || ""}`;
     if (err.stdout) process.stdout.write(err.stdout);
     if (err.stderr) process.stderr.write(err.stderr);
+    if (process.env.SKIP_PW_DEPS) {
+      console.warn(
+        "Network check failed. Skipping Playwright host dependencies because SKIP_PW_DEPS=1 is set.",
+      );
+      return false;
+    }
+    if (/Playwright CDN/.test(output)) {
+      console.error(
+        "Playwright CDN unreachable. Set SKIP_PW_DEPS=1 to skip Playwright dependencies.",
+      );
+      return false;
+    }
     console.error(
       "Network check failed. Ensure access to the npm registry and Playwright CDN. Set SKIP_PW_DEPS=1 to skip Playwright dependencies.",
     );
@@ -46,7 +60,12 @@ if (process.env.SKIP_PW_DEPS) {
   process.exit(0);
 }
 
-checkNetwork();
+if (checkNetwork() === false) {
+  // When the network check fails and SKIP_PW_DEPS is set, skip Playwright
+  // dependency installation instead of exiting with an error. This mirrors the
+  // behavior of the validate-env script.
+  process.exit(0);
+}
 
 console.log("Playwright host dependencies missing. Installing...");
 try {
