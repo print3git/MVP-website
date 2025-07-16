@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 const fs = require("fs");
-const { execSync } = require("child_process");
+const { spawnSync } = require("child_process");
 const path = require("path");
 
 if (!process.env.SKIP_ROOT_DEPS_CHECK) {
@@ -76,7 +76,6 @@ function runJest(args) {
     });
   }
 
-  const cmdArgs = jestArgs.join(" ");
   const env = { ...process.env };
   if (runFromRoot) {
     env.NODE_PATH = [
@@ -94,9 +93,15 @@ function runJest(args) {
   };
 
   if (fs.existsSync(jestBin)) {
-    execSync(`${jestBin} ${cmdArgs}`, options);
+    const r = spawnSync(jestBin, jestArgs, options);
+    if (r.status !== 0) process.exit(r.status || 1);
   } else {
-    execSync(`npm test --prefix backend -- ${cmdArgs}`, options);
+    const r = spawnSync(
+      "npm",
+      ["test", "--prefix", "backend", "--", ...jestArgs],
+      options,
+    );
+    if (r.status !== 0) process.exit(r.status || 1);
   }
 }
 

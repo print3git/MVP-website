@@ -1,7 +1,11 @@
 const fs = require("fs");
 const child_process = require("child_process");
+const path = require("path");
 
 let logFile = process.env.EXEC_LOG_FILE;
+if (logFile && !/^[\w./-]+$/.test(logFile)) {
+  throw new Error("invalid log file path");
+}
 child_process.execSync = function (cmd, opts = {}) {
   const cwd = opts.cwd || process.cwd();
   const prefix = `[cwd:${cwd}] `;
@@ -26,8 +30,9 @@ child_process.execSync = function (cmd, opts = {}) {
 if (process.env.FAKE_NODE_MODULES_MISSING) {
   const origExists = fs.existsSync;
   fs.existsSync = (p) => {
-    if (p.includes("node_modules")) return false;
-    return origExists(p);
+    const abs = path.resolve(p);
+    if (abs.includes("node_modules")) return false;
+    return origExists(abs);
   };
 }
 

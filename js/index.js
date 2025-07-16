@@ -1134,7 +1134,13 @@ async function init() {
         prints = await computeDailyPrintsSold();
       }
     }
-    el.innerHTML = `<i class="fas fa-fire mr-1"></i> ${prints} prints sold<br>in last 24 hrs`;
+    el.textContent = "";
+    const icon = document.createElement("i");
+    icon.className = "fas fa-fire mr-1";
+    el.appendChild(icon);
+    el.appendChild(document.createTextNode(` ${prints} prints sold`));
+    el.appendChild(document.createElement("br"));
+    el.appendChild(document.createTextNode("in last 24 hrs"));
   }
 
   setInterval(updateStats, 3600000);

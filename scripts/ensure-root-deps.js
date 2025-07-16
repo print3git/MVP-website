@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const { execSync } = require("child_process");
+const { spawnSync } = require("child_process");
 const os = require("os");
 
 const requiredMajor = parseInt(process.env.REQUIRED_NODE_MAJOR || "20", 10);
@@ -14,10 +14,10 @@ if (currentMajor < requiredMajor) {
 
 try {
   const repoRoot = path.join(__dirname, "..");
-  execSync(`mise trust ${repoRoot}`, { stdio: "ignore" });
+  spawnSync("mise", ["trust", repoRoot], { stdio: "ignore" });
   const miseToml = path.join(repoRoot, ".mise.toml");
   if (fs.existsSync(miseToml)) {
-    execSync(`mise trust ${miseToml}`, { stdio: "ignore" });
+    spawnSync("mise", ["trust", miseToml], { stdio: "ignore" });
   }
 } catch {
   // ignore errors from mise trust to avoid masking real issues
@@ -58,14 +58,17 @@ const requiredPaths = [pluginPath, expressPath, playwrightPath];
 
 function cleanupNpmCache() {
   try {
-    execSync("npm cache clean --force", { stdio: "ignore" });
+    spawnSync("npm", ["cache", "clean", "--force"], { stdio: "ignore" });
   } catch {
     /* ignore */
   }
   try {
-    const cacheDir = execSync("npm config get cache", { stdio: "pipe" })
-      .toString()
-      .trim();
+    const res = spawnSync("npm", ["config", "get", "cache"], {
+      stdio: "pipe",
+      encoding: "utf8",
+      env: getEnv(),
+    });
+    const cacheDir = String(res.stdout || "").trim();
     const homeCache = path.join(os.homedir(), ".npm", "_cacache");
     for (const dir of [
       path.join(cacheDir, "_cacache"),
@@ -79,7 +82,7 @@ function cleanupNpmCache() {
     /* ignore */
   }
   try {
-    execSync("npm cache verify", { stdio: "ignore" });
+    spawnSync("npm", ["cache", "verify"], { stdio: "ignore" });
   } catch {
     /* ignore */
   }
@@ -87,7 +90,11 @@ function cleanupNpmCache() {
 
 function runNetworkCheck() {
   try {
-    execSync(`node ${networkCheck}`, { stdio: "inherit", env: getEnv() });
+    const r = spawnSync(process.execPath, [networkCheck], {
+      stdio: "inherit",
+      env: getEnv(),
+    });
+    if (r.status !== 0) throw new Error("network check failed");
   } catch {
     console.error(
       "Network check failed. Ensure access to the npm registry and Playwright CDN.",
@@ -98,7 +105,8 @@ function runNetworkCheck() {
 
 function canReachRegistry() {
   try {
-    execSync("npm ping", { stdio: "ignore", env: getEnv() });
+    const r = spawnSync("npm", ["ping"], { stdio: "ignore", env: getEnv() });
+    if (r.status !== 0) throw new Error("ping failed");
     return true;
   } catch {
     console.error(
@@ -114,7 +122,8 @@ if (!requiredPaths.every((p) => fs.existsSync(p))) {
   console.log("Dependencies missing. Installing root dependencies...");
   cleanupNpmCache();
   try {
-    execSync("npm ping", { stdio: "ignore", env: getEnv() });
+    const ping = spawnSync("npm", ["ping"], { stdio: "ignore", env: getEnv() });
+    if (ping.status !== 0) throw new Error();
   } catch {
     console.error(
       "Unable to reach the npm registry. Check network connectivity or proxy settings.",
@@ -123,14 +132,18 @@ if (!requiredPaths.every((p) => fs.existsSync(p))) {
   }
   const install = () => {
     try {
-      execSync("npm ci", { stdio: "inherit", env: getEnv() });
-      return true;
+      const r = spawnSync("npm", ["ci"], { stdio: "inherit", env: getEnv() });
+      if (r.status === 0) return true;
+      throw new Error("npm ci failed");
     } catch (err) {
       const msg = String(err.message || err);
       if (msg.includes("EUSAGE")) {
         console.warn("npm ci failed, falling back to 'npm install'");
-        execSync("npm install", { stdio: "inherit", env: getEnv() });
-        return true;
+        const res = spawnSync("npm", ["install"], {
+          stdio: "inherit",
+          env: getEnv(),
+        });
+        return res.status === 0;
       }
       if (/TAR_ENTRY_ERROR|ENOENT|ENOTEMPTY|tarball .*corrupted/.test(msg)) {
         console.warn(

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const { execSync } = require("child_process");
+const { spawnSync } = require("child_process");
 
 function checkNetwork() {
   if (process.env.SKIP_NET_CHECKS) {
@@ -7,10 +7,11 @@ function checkNetwork() {
   }
   try {
     const script = require("path").join(__dirname, "network-check.js");
-    execSync(`node ${script}`, {
+    const res = spawnSync(process.execPath, [script], {
       stdio: "pipe",
       encoding: "utf8",
     });
+    if (res.status !== 0) throw new Error(res.stderr || res.stdout);
   } catch (err) {
     if (err.stdout) process.stdout.write(err.stdout);
     if (err.stderr) process.stderr.write(err.stderr);
@@ -23,11 +24,17 @@ function checkNetwork() {
 
 function hostDepsInstalled() {
   try {
-    const out = execSync("npx playwright install --with-deps --dry-run 2>&1", {
-      encoding: "utf8",
-    });
-    return !/(Missing libraries|Host system is missing dependencies)/i.test(
-      out,
+    const res = spawnSync(
+      "npx",
+      ["playwright", "install", "--with-deps", "--dry-run"],
+      {
+        encoding: "utf8",
+      },
+    );
+    const out = `${res.stdout || ""}${res.stderr || ""}`;
+    return (
+      res.status === 0 &&
+      !/(Missing libraries|Host system is missing dependencies)/i.test(out)
     );
   } catch {
     return false;
@@ -50,7 +57,11 @@ checkNetwork();
 
 console.log("Playwright host dependencies missing. Installing...");
 try {
-  execSync("CI=1 npx playwright install --with-deps", { stdio: "inherit" });
+  const res = spawnSync("npx", ["playwright", "install", "--with-deps"], {
+    stdio: "inherit",
+    env: { ...process.env, CI: "1" },
+  });
+  if (res.status !== 0) throw new Error("install failed");
 } catch (err) {
   const msg = String(err.message || "");
   console.error("Failed to install Playwright host dependencies:", msg);
@@ -59,7 +70,11 @@ try {
       "apt-get failure detected. Retrying without system dependencies...",
     );
     try {
-      execSync("CI=1 npx playwright install", { stdio: "inherit" });
+      const r = spawnSync("npx", ["playwright", "install"], {
+        stdio: "inherit",
+        env: { ...process.env, CI: "1" },
+      });
+      if (r.status !== 0) throw new Error("fallback failed");
       console.error(
         "Set SKIP_PW_DEPS=1 to skip Playwright dependencies in restricted environments.",
       );
