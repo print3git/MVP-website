@@ -4,6 +4,7 @@ const requiredVars = [
   "AWS_SECRET_ACCESS_KEY",
   "DB_URL",
   "STRIPE_SECRET_KEY",
+  "STRIPE_WEBHOOK_SECRET",
   "CLOUDFRONT_MODEL_DOMAIN",
 ];
 
