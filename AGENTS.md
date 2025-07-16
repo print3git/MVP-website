@@ -7,7 +7,7 @@ These guidelines apply to all automated agents (e.g. the Codex agent) working on
 1. **Go to the repository root** – run `cd "$(git rev-parse --show-toplevel)"` after opening a shell to ensure paths resolve correctly.
 2. **Trust mise config** – execute `mise trust` in the repository root to prevent repeated `"config files not trusted"` warnings.
 3. **Unset proxy variables** – before running any `npm` commands, **and whenever you start a new shell session**, execute `unset npm_config_http_proxy npm_config_https_proxy` to silence `http-proxy` warnings.
-4. **Ensure Node 20** – run `mise use -g node@20` (or `mise install`) so the required Node version is active before running setup.
+4. **Ensure Node 20** – run `mise use -g node@20` (or `mise install`) and then `eval \"$(mise activate bash)\"` so the required Node version is active before running setup.
 5. **Validate the environment** – run `npm run validate-env` to ensure required variables are set and proxy vars remain unset.
 6. **Check network access** – ensure the environment can reach both
    `https://registry.npmjs.org` and `https://cdn.playwright.dev`. The setup
