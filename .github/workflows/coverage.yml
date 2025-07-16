@@ -21,3 +21,5 @@ jobs:
       - name: Verify coverage summary
         run: node scripts/run-jest.js backend/__tests__/coverageSummaryExists.test.js
       - run: cat coverage/lcov.info | npx coveralls
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
