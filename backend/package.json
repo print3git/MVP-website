@@ -5,6 +5,7 @@
   "scripts": {
     "test": "jest",
     "test-ci": "jest --ci --coverage --maxWorkers=2 --forceExit",
+    "test:unit": "npm test",
     "coverage": "node ../scripts/run-coverage.js",
     "start": "node server.js",
     "init-db": "node scripts/init-db.js",
