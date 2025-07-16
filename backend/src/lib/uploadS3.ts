@@ -1,6 +1,7 @@
 import fs from "fs";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import path from "path";
+import { resolveLocalFile } from "./fileUtils";
 
 /**
  * Upload a file to S3 and return its public CloudFront URL
@@ -12,16 +13,7 @@ export async function uploadFile(
   filePath: string,
   contentType: string,
 ): Promise<string> {
-  const normalized = path.normalize(filePath);
-  const resolved = path.resolve(normalized);
-  const uploadsDir = path.resolve("uploads");
-  if (!resolved.startsWith("/tmp") && !resolved.startsWith(uploadsDir)) {
-    throw new Error("file not found");
-  }
-  if (!fs.existsSync(resolved)) {
-    throw new Error("file not found");
-  }
-  filePath = resolved;
+  filePath = resolveLocalFile(filePath, ["/tmp", "uploads"], "file not found");
   const region = process.env.AWS_REGION;
   const bucket = process.env.S3_BUCKET;
   const domain =
