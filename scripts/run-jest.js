@@ -86,23 +86,35 @@ function runJest(args) {
       .filter(Boolean)
       .join(path.delimiter);
   }
+  const captureOutput =
+    jestArgs.includes("--help") ||
+    jestArgs.includes("-h") ||
+    jestArgs.includes("--version") ||
+    process.env.JEST_CAPTURE_OUTPUT;
+
   const options = {
-    stdio: "inherit",
+    stdio: captureOutput ? ["inherit", "pipe", "inherit"] : "inherit",
     cwd: runFromRoot ? repoRoot : backendDir,
     env,
+    encoding: captureOutput ? "utf8" : undefined,
   };
 
+  let result;
   if (fs.existsSync(jestBin)) {
-    const r = spawnSync(jestBin, jestArgs, options);
-    if (r.status !== 0) process.exit(r.status || 1);
+    result = spawnSync(jestBin, jestArgs, options);
   } else {
-    const r = spawnSync(
+    result = spawnSync(
       "npm",
       ["test", "--prefix", "backend", "--", ...jestArgs],
       options,
     );
-    if (r.status !== 0) process.exit(r.status || 1);
   }
+
+  if (captureOutput && result.stdout) {
+    process.stdout.write(result.stdout);
+  }
+
+  if (result.status !== 0) process.exit(result.status || 1);
 }
 
 if (require.main === module) {
