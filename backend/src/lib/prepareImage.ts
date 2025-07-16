@@ -24,12 +24,13 @@ export async function prepareImage(image: string): Promise<string> {
     await fs.promises.writeFile(filePath, Buffer.from(base64, "base64"));
     cleanup = true;
   } else {
-    const resolved = path.resolve(filePath);
+    const normalized = path.normalize(filePath);
+    const resolved = path.resolve(normalized);
     const uploadsDir = path.resolve("uploads");
-    if (!fs.existsSync(resolved)) {
+    if (!resolved.startsWith("/tmp") && !resolved.startsWith(uploadsDir)) {
       throw new Error("image file not found");
     }
-    if (!resolved.startsWith("/tmp") && !resolved.startsWith(uploadsDir)) {
+    if (!fs.existsSync(resolved)) {
       throw new Error("image file not found");
     }
     filePath = resolved;
