@@ -65,6 +65,7 @@
     "net:check": "node scripts/network-check.js",
     "netlify:deploy": "scripts/netlify-preflight.sh && netlify deploy",
     "diagnose": "bash scripts/diagnose.sh",
+    "codeql": "node scripts/check-code-scanning.js",
     "test:generate": "node scripts/test-generate.js",
     "test:webhook": "node scripts/test-webhook.js",
     "codeql": "node scripts/check-code-scanning.js",

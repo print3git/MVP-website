@@ -64,7 +64,14 @@ test("falls back to local script when CDN script fails", async () => {
   );
   global.document.head.appendChild = (el) => {
     loaded.push(el.src);
-    if (el.src.includes("cdn.jsdelivr.net")) {
+    const host = (() => {
+      try {
+        return new URL(el.src).hostname;
+      } catch {
+        return "";
+      }
+    })();
+    if (host === "cdn.jsdelivr.net") {
       setImmediate(() => el.onerror && el.onerror());
     } else {
       global.window.customElements.define("model-viewer", class {});

@@ -146,8 +146,15 @@ function updateFlashSaleBanner() {
     flashBanner.hidden = true;
     return;
   }
-  flashBanner.innerHTML = `Flash sale! <span id="flash-timer">5:00</span> left - ${flashSale.discount_percent}% off`;
-  const timerEl = flashBanner.querySelector("#flash-timer");
+  flashBanner.textContent = "Flash sale! ";
+  const timerSpan = document.createElement("span");
+  timerSpan.id = "flash-timer";
+  timerSpan.textContent = "5:00";
+  flashBanner.appendChild(timerSpan);
+  flashBanner.appendChild(
+    document.createTextNode(` left - ${flashSale.discount_percent}% off`),
+  );
+  const timerEl = timerSpan;
   const update = () => {
     const diff = end - Date.now();
     if (diff <= 0 || selectedMaterialValue() !== flashSale.product_type) {
@@ -839,12 +846,28 @@ async function initPaymentPage() {
     const showGiftTwo =
       !path.endsWith("minis-checkout.html") &&
       !path.endsWith("luckybox-payment.html");
-    bulkMsg.innerHTML =
-      '<span class="text-gray-400">Popular: keep one, gift one – </span>' +
-      `<span class="text-white">save ${amount}</span>` +
-      (showGiftTwo
-        ? '<br><span class="invisible">Popular: keep one, </span><span class="text-gray-400">gift two – </span><span class="text-white">save £22.00</span>'
-        : "");
+    bulkMsg.textContent = "";
+    const span1 = document.createElement("span");
+    span1.className = "text-gray-400";
+    span1.textContent = "Popular: keep one, gift one – ";
+    const span2 = document.createElement("span");
+    span2.className = "text-white";
+    span2.textContent = `save ${amount}`;
+    bulkMsg.appendChild(span1);
+    bulkMsg.appendChild(span2);
+    if (showGiftTwo) {
+      bulkMsg.appendChild(document.createElement("br"));
+      const invis = document.createElement("span");
+      invis.className = "invisible";
+      invis.textContent = "Popular: keep one, ";
+      const gray = document.createElement("span");
+      gray.className = "text-gray-400";
+      gray.textContent = "gift two – ";
+      const white = document.createElement("span");
+      white.className = "text-white";
+      white.textContent = "save £22.00";
+      bulkMsg.append(invis, gray, white);
+    }
     bulkMsg.classList.remove("hidden");
   }
 
@@ -1617,15 +1640,18 @@ async function initPaymentPage() {
               etchInput && !etchInput.disabled ? etchInput.value.trim() : "",
           },
         ];
-    summaryEl.innerHTML =
-      "<div class='flex flex-wrap justify-center gap-2'>" +
-      items
-        .map((it) => {
-          const src = it.snapshot || it.modelUrl || "";
-          return `<img src='${src}' alt='print' class='w-12 h-12 object-cover rounded' />`;
-        })
-        .join("") +
-      "</div>";
+    summaryEl.textContent = "";
+    const wrap = document.createElement("div");
+    wrap.className = "flex flex-wrap justify-center gap-2";
+    items.forEach((it) => {
+      const src = it.snapshot || it.modelUrl || "";
+      const img = document.createElement("img");
+      img.src = src;
+      img.alt = "print";
+      img.className = "w-12 h-12 object-cover rounded";
+      wrap.appendChild(img);
+    });
+    summaryEl.appendChild(wrap);
   }
 
   payBtn?.addEventListener("mouseenter", () => {

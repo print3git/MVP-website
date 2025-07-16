@@ -18,10 +18,8 @@ export async function prepareImage(image: string): Promise<string> {
 
   if (image.startsWith("data:")) {
     const [, base64] = image.split(",", 2);
-    filePath = path.join(
-      "/tmp",
-      `${Date.now()}-${Math.random().toString(36).slice(2)}.png`,
-    );
+    const name = `${Date.now()}-${Math.random().toString(36).slice(2)}.png`;
+    filePath = path.join("/tmp", name);
     await fs.promises.writeFile(filePath, Buffer.from(base64, "base64"));
     cleanup = true;
   } else {
