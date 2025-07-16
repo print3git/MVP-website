@@ -4,6 +4,11 @@ set -e
 # Ensure mise is available for toolchain management
 "$(dirname "$0")/install-mise.sh" >/dev/null
 
+# Activate the configured Node version so npm commands use Node 20 even when the
+# shell hasn't sourced mise's hook. This prevents "Node 20 is required" errors
+# from the preinstall script when the global Node version is different.
+eval "$(mise activate bash)"
+
 cleanup_npm_cache() {
   npm cache clean --force >/dev/null 2>&1 || true
   for dir in "$(npm config get cache)/_cacache" "$HOME/.npm/_cacache"; do

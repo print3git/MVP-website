@@ -20,4 +20,12 @@ describe("setup script", () => {
     );
     expect(content).toMatch(/check-host-deps\.js/);
   });
+
+  test("setup.sh activates mise for node", () => {
+    const content = fs.readFileSync(
+      path.join(__dirname, "..", "scripts", "setup.sh"),
+      "utf8",
+    );
+    expect(content).toMatch(/mise activate bash/);
+  });
 });
