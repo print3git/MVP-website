@@ -1,5 +1,15 @@
 import fs from "fs";
 import path from "path";
+
+function safeJoin(base: string, userPath: string) {
+  const target = path.normalize(
+    path.isAbsolute(userPath) ? userPath : path.join(base, userPath),
+  );
+  if (!target.startsWith(path.normalize(base + path.sep))) {
+    throw new Error("Invalid path");
+  }
+  return target;
+}
 import { uploadFile } from "./uploadS3";
 import { resolveLocalFile } from "./fileUtils";
 
@@ -19,7 +29,7 @@ export async function prepareImage(image: string): Promise<string> {
   if (image.startsWith("data:")) {
     const [, base64] = image.split(",", 2);
     const name = `${Date.now()}-${Math.random().toString(36).slice(2)}.png`;
-    filePath = path.join("/tmp", name);
+    filePath = safeJoin("/tmp", name);
     await fs.promises.writeFile(filePath, Buffer.from(base64, "base64"));
     cleanup = true;
   } else {
