@@ -68,7 +68,6 @@
     "codeql": "node scripts/check-code-scanning.js",
     "test:generate": "node scripts/test-generate.js",
     "test:webhook": "node scripts/test-webhook.js",
-    "codeql": "node scripts/check-code-scanning.js",
     "check:code-scanning": "node scripts/check-code-scanning.js",
     "commitlint": "commitlint --from=HEAD~1",
     "lint:md": "markdownlint-cli2 \"**/*.md\""
@@ -106,7 +105,7 @@
     "concurrently": "^9.2.0",
     "coveralls": "^3.1.1",
     "cross-env": "^7.0.3",
-    "eslint": "^9.29.0",
+    "eslint": "^9.31.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-jsdoc": "^51.1.1",
     "eslint-plugin-node": "^11.1.0",
@@ -115,6 +114,7 @@
     "http-server": "^14.1.1",
     "husky": "^9.1.7",
     "i18next-parser": "^9.3.0",
+    "jest": "^29.x",
     "kill-port": "^2.0.1",
     "lint-staged": "^16.1.2",
     "lockfile-diff": "^0.1.0",
@@ -126,7 +126,6 @@
     "tslib": "^2.8.1",
     "typescript": "^5.8.3",
     "wait-on": "^8.0.3",
-    "jest": "^29.x",
     "yaml": "^2.8.0"
   },
   "husky": {
