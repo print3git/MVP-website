@@ -1,4 +1,4 @@
-const { execSync, spawnSync } = require("child_process");
+const { spawnSync } = require("child_process");
 const path = require("path");
 const fs = require("fs");
 
@@ -20,74 +20,68 @@ describe("validate-env script", () => {
   };
 
   test("passes with STRIPE_TEST_KEY set", () => {
-    expect(() =>
-      execSync(`bash ${script}`, {
-        env: { ...process.env, ...baseEnv, STRIPE_TEST_KEY: "sk_test" },
-        stdio: "pipe",
-      }),
-    ).not.toThrow();
+    const { status } = spawnSync("bash", [script], {
+      env: { ...process.env, ...baseEnv, STRIPE_TEST_KEY: "sk_test" },
+      stdio: "pipe",
+    });
+    expect(status).toBe(0);
   });
 
   test("passes with STRIPE_LIVE_KEY set", () => {
-    expect(() =>
-      execSync(`bash ${script}`, {
-        env: {
-          ...process.env,
-          ...baseEnv,
-          STRIPE_LIVE_KEY: "sk_live",
-          STRIPE_TEST_KEY: "",
-        },
-        stdio: "pipe",
-      }),
-    ).not.toThrow();
+    const { status } = spawnSync("bash", [script], {
+      env: {
+        ...process.env,
+        ...baseEnv,
+        STRIPE_LIVE_KEY: "sk_live",
+        STRIPE_TEST_KEY: "",
+      },
+      stdio: "pipe",
+    });
+    expect(status).toBe(0);
   });
 
   test("uses dummy stripe key when none provided", () => {
-    expect(() =>
-      execSync(`bash ${script}`, {
-        env: {
-          ...process.env,
-          ...baseEnv,
-          STRIPE_TEST_KEY: "",
-          STRIPE_LIVE_KEY: "",
-        },
-        stdio: "pipe",
-      }),
-    ).not.toThrow();
+    const { status } = spawnSync("bash", [script], {
+      env: {
+        ...process.env,
+        ...baseEnv,
+        STRIPE_TEST_KEY: "",
+        STRIPE_LIVE_KEY: "",
+      },
+      stdio: "pipe",
+    });
+    expect(status).toBe(0);
   });
 
   test("fails when npm proxy vars are set", () => {
-    expect(() =>
-      execSync(`bash ${script}`, {
-        env: {
-          ...process.env,
-          ...baseEnv,
-          STRIPE_TEST_KEY: "sk_test",
-          npm_config_http_proxy: "http://proxy",
-        },
-        stdio: "pipe",
-      }),
-    ).toThrow();
+    const { status } = spawnSync("bash", [script], {
+      env: {
+        ...process.env,
+        ...baseEnv,
+        STRIPE_TEST_KEY: "sk_test",
+        npm_config_http_proxy: "http://proxy",
+      },
+      stdio: "pipe",
+    });
+    expect(status).not.toBe(0);
   });
 
   test("falls back to .env.example when DB_URL missing", () => {
     const env = { ...process.env, ...baseEnv };
     delete env.DB_URL;
-    expect(() =>
-      execSync(`bash ${script}`, { env, stdio: "pipe" }),
-    ).not.toThrow();
+    const { status } = spawnSync("bash", [script], { env, stdio: "pipe" });
+    expect(status).toBe(0);
   });
 
   test("uses repo root env file when run from backend directory", () => {
     const env = { ...process.env, ...baseEnv };
     delete env.DB_URL;
-    expect(() =>
-      execSync(`bash ${script}`, {
-        env,
-        stdio: "pipe",
-        cwd: path.join(__dirname, ".."),
-      }),
-    ).not.toThrow();
+    const { status } = spawnSync("bash", [script], {
+      env,
+      stdio: "pipe",
+      cwd: path.join(__dirname, ".."),
+    });
+    expect(status).toBe(0);
   });
 
   test("fails when DB_URL missing and example file absent", () => {
@@ -99,14 +93,9 @@ describe("validate-env script", () => {
       fs.writeFileSync(example, "");
     }
     fs.renameSync(example, backup);
-    let threw = false;
-    try {
-      execSync(`bash ${script}`, { env, stdio: "pipe" });
-    } catch (_err) {
-      threw = true;
-    }
+    const { status } = spawnSync("bash", [script], { env, stdio: "pipe" });
     fs.renameSync(backup, example);
-    expect(threw).toBe(true);
+    expect(status).not.toBe(0);
   });
 
   test("fails when database unreachable", () => {
