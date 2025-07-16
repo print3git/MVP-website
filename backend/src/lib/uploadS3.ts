@@ -3,6 +3,16 @@ import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import path from "path";
 import { resolveLocalFile } from "./fileUtils";
 
+function safeJoin(base: string, userPath: string) {
+  const target = path.normalize(
+    path.isAbsolute(userPath) ? userPath : path.join(base, userPath),
+  );
+  if (!target.startsWith(path.normalize(base + path.sep))) {
+    throw new Error("Invalid path");
+  }
+  return target;
+}
+
 /**
  * Upload a file to S3 and return its public CloudFront URL
  * @param {string} filePath local path of file to upload
@@ -26,7 +36,7 @@ export async function uploadFile(
   if (!domain) throw new Error("CLOUDFRONT_DOMAIN is not set");
   if (!accessKey || !secretKey) throw new Error("AWS credentials are not set");
   const client = new S3Client({ region });
-  const key = `images/${Date.now()}-${path.basename(filePath)}`;
+  const key = safeJoin("images", `${Date.now()}-${path.basename(filePath)}`);
   await client.send(
     new PutObjectCommand({
       Bucket: bucket,

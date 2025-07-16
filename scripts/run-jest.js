@@ -51,18 +51,12 @@ function runJest(args) {
   const backendDir = path.join(repoRoot, "backend");
   const jestBin = path.join(backendDir, "node_modules", ".bin", "jest");
 
-  const hasFileArgs = args.some((arg) => !arg.startsWith("-"));
   let jestArgs = [...args];
-  if (hasFileArgs && !jestArgs.includes("--runTestsByPath")) {
-    jestArgs.unshift("--runTestsByPath");
-  }
   if (!jestArgs.includes("--runInBand")) {
     jestArgs.push("--runInBand");
   }
 
-  const fileArgs = jestArgs.filter(
-    (arg) => arg !== "--runTestsByPath" && !arg.startsWith("-"),
-  );
+  const fileArgs = jestArgs.filter((arg) => !arg.startsWith("-"));
   const runFromRoot = fileArgs.some((arg) => {
     const abs = path.resolve(repoRoot, arg);
     return !abs.startsWith(backendDir);
@@ -70,7 +64,7 @@ function runJest(args) {
 
   if (!runFromRoot) {
     jestArgs = jestArgs.map((arg) => {
-      if (arg === "--runTestsByPath" || arg.startsWith("-")) return arg;
+      if (arg.startsWith("-")) return arg;
       const abs = path.resolve(repoRoot, arg);
       return path.relative(backendDir, abs);
     });
@@ -86,17 +80,10 @@ function runJest(args) {
       .filter(Boolean)
       .join(path.delimiter);
   }
-  const captureOutput =
-    jestArgs.includes("--help") ||
-    jestArgs.includes("-h") ||
-    jestArgs.includes("--version") ||
-    process.env.JEST_CAPTURE_OUTPUT;
-
   const options = {
-    stdio: captureOutput ? ["inherit", "pipe", "inherit"] : "inherit",
+    stdio: "inherit",
     cwd: runFromRoot ? repoRoot : backendDir,
     env,
-    encoding: captureOutput ? "utf8" : undefined,
   };
 
   let result;
@@ -105,13 +92,9 @@ function runJest(args) {
   } else {
     result = spawnSync(
       "npm",
-      ["test", "--prefix", "backend", "--", ...jestArgs],
+      ["test", "--prefix", "backend", ...jestArgs],
       options,
     );
-  }
-
-  if (captureOutput && result.stdout) {
-    process.stdout.write(result.stdout);
   }
 
   if (result.status !== 0) process.exit(result.status || 1);
