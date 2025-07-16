@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const { execSync } = require("child_process");
+const { execSync, execFileSync } = require("child_process");
 
 // Fail fast when using the wrong Node version unless disabled for tests.
 if (!process.env.SKIP_NODE_CHECK) {
@@ -12,7 +12,7 @@ if (!process.env.SKIP_NODE_CHECK) {
     "check-node-version.js",
   );
   try {
-    execSync(`node ${nodeCheck}`, { stdio: "inherit" });
+    execFileSync("node", [nodeCheck], { stdio: "inherit" });
   } catch {
     process.exit(1);
   }
@@ -21,10 +21,10 @@ if (!process.env.SKIP_NODE_CHECK) {
 const jestPath = "node_modules/.bin/jest";
 const repoRoot = path.join(__dirname, "..", "..");
 try {
-  execSync(`mise trust ${repoRoot}`, { stdio: "ignore" });
+  execFileSync("mise", ["trust", repoRoot], { stdio: "ignore" });
   const miseToml = path.join(repoRoot, ".mise.toml");
   if (fs.existsSync(miseToml)) {
-    execSync(`mise trust ${miseToml}`, { stdio: "ignore" });
+    execFileSync("mise", ["trust", miseToml], { stdio: "ignore" });
   }
 } catch {
   // ignore errors from mise trust to avoid masking real issues
@@ -52,7 +52,7 @@ function runNetworkCheck() {
     return;
   }
   try {
-    execSync(`node ${networkCheck}`, { stdio: "inherit" });
+    execFileSync("node", [networkCheck], { stdio: "inherit" });
   } catch {
     if (!process.env.SKIP_PW_DEPS) {
       console.warn(
@@ -60,7 +60,7 @@ function runNetworkCheck() {
       );
       process.env.SKIP_PW_DEPS = "1";
       try {
-        execSync(`node ${networkCheck}`, {
+        execFileSync("node", [networkCheck], {
           stdio: "inherit",
           env: { ...process.env, SKIP_PW_DEPS: "1" },
         });
@@ -99,7 +99,7 @@ function runSetup() {
   }
   if (!env.SKIP_PW_DEPS) {
     try {
-      execSync(`node ${aptCheck}`, { stdio: "inherit" });
+      execFileSync("node", [aptCheck], { stdio: "inherit" });
     } catch {
       console.warn(
         "APT repositories unreachable. Falling back to SKIP_PW_DEPS=1",
@@ -109,7 +109,6 @@ function runSetup() {
   }
   try {
     execSync("npm run setup", { stdio: "inherit", cwd: repoRoot, env });
-
   } catch {
     if (env.SKIP_PW_DEPS) {
       console.warn(
@@ -195,7 +194,7 @@ if (!fs.existsSync(jestPath)) {
 // Verify Playwright host dependencies so tests don't fail with missing library errors
 try {
   const hostDeps = path.join(repoRoot, "scripts", "check-host-deps.js");
-  execSync(`node ${hostDeps}`, { stdio: "inherit" });
+  execFileSync("node", [hostDeps], { stdio: "inherit" });
 } catch (_err) {
   console.error("Failed to verify Playwright host dependencies:", _err.message);
   process.exit(1);

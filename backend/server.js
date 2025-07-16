@@ -22,6 +22,7 @@ const multer = require("multer");
 const path = require("path");
 const morgan = require("morgan");
 const compression = require("compression");
+const rateLimit = require("express-rate-limit");
 const swaggerUi = require("swagger-ui-express");
 const YAML = require("yaml");
 const { v4: uuidv4 } = require("uuid");
@@ -167,6 +168,16 @@ function saveGeneratedAds() {
 }
 
 const app = express();
+const analyticsLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 20,
+  skip: () => process.env.NODE_ENV === "test",
+});
+const createOrderLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 5,
+  skip: () => process.env.NODE_ENV === "test",
+});
 app.use(morgan("dev"));
 app.use(compression());
 const allowedOrigins = (process.env.CORS_ORIGINS || "")
@@ -2697,142 +2708,217 @@ app.get("/api/admin/operations", adminCheck, async (req, res) => {
   }
 });
 
-app.get("/api/admin/analytics", adminCheck, async (req, res) => {
-  try {
-    const logs = await db.listGenerationLogs(100);
-    const stats = await db.getGenerationStats();
-    res.json({ logs, stats });
-  } catch (err) {
-    logError(err);
-    res.status(500).json({ error: "Failed to fetch analytics" });
-  }
-});
+app.get(
+  "/api/admin/analytics",
+  analyticsLimiter,
+  adminCheck,
+  async (req, res) => {
+    try {
+      const logs = await db.listGenerationLogs(100);
+      const stats = await db.getGenerationStats();
+      res.json({ logs, stats });
+    } catch (err) {
+      logError(err);
+      res.status(500).json({ error: "Failed to fetch analytics" });
+    }
+  },
+);
 
 /**
  * POST /api/create-order
  * Create a Stripe Checkout session
  */
-app.post("/api/create-order", authOptional, async (req, res, next) => {
-  const {
-    jobId,
-    price,
-    shippingInfo,
-    qty,
-    discount,
-    discountCodes,
-    referral,
-    etchName,
-    useCredit,
-  } = req.body;
-  try {
-    const job = await db.query(
-      "SELECT job_id, user_id, model_url FROM jobs WHERE job_id=$1",
-      [jobId],
-    );
-    if (job.rows.length === 0) {
-      throw new ApiError(404, "Job not found");
-    }
-
-    let totalDiscount = discount || 0;
-    const discountCodeIds = [];
-    let referrerId = null;
-    if (referral) {
-      referrerId = await db.getUserIdForReferral(referral);
-    }
-
-    const codes = Array.isArray(discountCodes)
-      ? discountCodes
-      : discountCodes
-        ? [discountCodes]
-        : [];
-    for (const code of codes) {
-      const row = await getValidDiscountCode(code);
-      if (!row) {
-        return res.status(400).json({ error: "Invalid discount code" });
+app.post(
+  "/api/create-order",
+  createOrderLimiter,
+  authOptional,
+  async (req, res, next) => {
+    const {
+      jobId,
+      price,
+      shippingInfo,
+      qty,
+      discount,
+      discountCodes,
+      referral,
+      etchName,
+      useCredit,
+    } = req.body;
+    try {
+      const job = await db.query(
+        "SELECT job_id, user_id, model_url FROM jobs WHERE job_id=$1",
+        [jobId],
+      );
+      if (job.rows.length === 0) {
+        throw new ApiError(404, "Job not found");
       }
-      totalDiscount += row.amount_cents;
-      discountCodeIds.push(row.id);
-    }
 
-    if (
-      shippingInfo &&
-      shippingInfo.country &&
-      prohibitedCountries.includes(String(shippingInfo.country).toUpperCase())
-    ) {
-      return res
-        .status(400)
-        .json({ error: "Shipping destination not allowed" });
-    }
+      let totalDiscount = discount || 0;
+      const discountCodeIds = [];
+      let referrerId = null;
+      if (referral) {
+        referrerId = await db.getUserIdForReferral(referral);
+      }
 
-    if (referrerId && (!req.user || referrerId !== req.user.id)) {
-      const refDisc = Math.round((price || 0) * (qty || 1) * 0.1);
-      totalDiscount += refDisc;
-      try {
-        const code = await createTimedCode(refDisc, 720);
-        await db.query("INSERT INTO incentives(user_id, type) VALUES($1,$2)", [
-          referrerId,
-          `referral_${code}`,
-        ]);
-
-        const { rows: counts } = await db.query(
-          "SELECT COUNT(*) FROM incentives WHERE user_id=$1 AND type LIKE 'referral_%'",
-          [referrerId],
-        );
-        const referralCount = parseInt(counts[0].count, 10) || 0;
-        if (referralCount >= 3) {
-          totalDiscount = Math.round((price || 0) * (qty || 1));
-        } else {
-          const { rows: existing } = await db.query(
-            "SELECT 1 FROM incentives WHERE user_id=$1 AND type LIKE 'free_%' LIMIT 1",
-            [referrerId],
-          );
-          if (existing.length === 0) {
-            const freeCode = await createTimedCode(
-              Math.round((price || 0) * (qty || 1)),
-              720,
-            );
-            await db.query(
-              "INSERT INTO incentives(user_id, type) VALUES($1,$2)",
-              [referrerId, `free_${freeCode}`],
-            );
-          }
+      const codes = Array.isArray(discountCodes)
+        ? discountCodes
+        : discountCodes
+          ? [discountCodes]
+          : [];
+      for (const code of codes) {
+        const row = await getValidDiscountCode(code);
+        if (!row) {
+          return res.status(400).json({ error: "Invalid discount code" });
         }
-      } catch (err) {
-        logError(err);
+        totalDiscount += row.amount_cents;
+        discountCodeIds.push(row.id);
       }
-    }
 
-    if (useCredit) {
-      if (!req.user) {
-        return res.status(401).json({ error: "Unauthorized" });
-      }
-      const sub = await db.getSubscription(req.user.id);
-      if (!sub || sub.status !== "active") {
-        return res.status(400).json({ error: "No active subscription" });
-      }
-      if ((qty || 1) % 2 !== 0) {
+      if (
+        shippingInfo &&
+        shippingInfo.country &&
+        prohibitedCountries.includes(String(shippingInfo.country).toUpperCase())
+      ) {
         return res
           .status(400)
-          .json({ error: "Credits must be redeemed in pairs" });
+          .json({ error: "Shipping destination not allowed" });
       }
-      await db.ensureCurrentWeekCredits(req.user.id, 2);
-      const credits = await db.getCurrentWeekCredits(req.user.id);
-      if (credits.total_credits - credits.used_credits <= 0) {
-        return res.status(400).json({ error: "No credits remaining" });
+
+      if (referrerId && (!req.user || referrerId !== req.user.id)) {
+        const refDisc = Math.round((price || 0) * (qty || 1) * 0.1);
+        totalDiscount += refDisc;
+        try {
+          const code = await createTimedCode(refDisc, 720);
+          await db.query(
+            "INSERT INTO incentives(user_id, type) VALUES($1,$2)",
+            [referrerId, `referral_${code}`],
+          );
+
+          const { rows: counts } = await db.query(
+            "SELECT COUNT(*) FROM incentives WHERE user_id=$1 AND type LIKE 'referral_%'",
+            [referrerId],
+          );
+          const referralCount = parseInt(counts[0].count, 10) || 0;
+          if (referralCount >= 3) {
+            totalDiscount = Math.round((price || 0) * (qty || 1));
+          } else {
+            const { rows: existing } = await db.query(
+              "SELECT 1 FROM incentives WHERE user_id=$1 AND type LIKE 'free_%' LIMIT 1",
+              [referrerId],
+            );
+            if (existing.length === 0) {
+              const freeCode = await createTimedCode(
+                Math.round((price || 0) * (qty || 1)),
+                720,
+              );
+              await db.query(
+                "INSERT INTO incentives(user_id, type) VALUES($1,$2)",
+                [referrerId, `free_${freeCode}`],
+              );
+            }
+          }
+        } catch (err) {
+          logError(err);
+        }
       }
-      await db.incrementCreditsUsed(req.user.id, 1);
-      const sessionId = uuidv4();
+
+      if (useCredit) {
+        if (!req.user) {
+          return res.status(401).json({ error: "Unauthorized" });
+        }
+        const sub = await db.getSubscription(req.user.id);
+        if (!sub || sub.status !== "active") {
+          return res.status(400).json({ error: "No active subscription" });
+        }
+        if ((qty || 1) % 2 !== 0) {
+          return res
+            .status(400)
+            .json({ error: "Credits must be redeemed in pairs" });
+        }
+        await db.ensureCurrentWeekCredits(req.user.id, 2);
+        const credits = await db.getCurrentWeekCredits(req.user.id);
+        if (credits.total_credits - credits.used_credits <= 0) {
+          return res.status(400).json({ error: "No credits remaining" });
+        }
+        await db.incrementCreditsUsed(req.user.id, 1);
+        const sessionId = uuidv4();
+        await db.query(
+          "INSERT INTO orders(session_id, job_id, user_id, price_cents, status, shipping_info, quantity, discount_cents, etch_name, product_type, utm_source, utm_medium, utm_campaign, subreddit, is_gift) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)",
+          [
+            sessionId,
+            jobId,
+            req.user.id,
+            0,
+            "paid",
+            shippingInfo || {},
+            qty || 1,
+            0,
+            etchName || null,
+            req.body.productType || null,
+            req.body.utmSource || null,
+            req.body.utmMedium || null,
+            req.body.utmCampaign || null,
+            req.body.adSubreddit || null,
+            false,
+          ],
+        );
+        enqueuePrint(jobId);
+        processQueue();
+        return res.json({ success: true });
+      }
+
+      if (req.user) {
+        const { rows: counts } = await db.query(
+          "SELECT COUNT(*) FROM orders WHERE user_id=$1",
+          [req.user.id],
+        );
+        const orderCount = parseInt(counts[0].count, 10) || 0;
+        if (orderCount === 0 && (qty || 1) === 1) {
+          const firstDisc = Math.round((price || 0) * 0.1);
+          totalDiscount += firstDisc;
+          await db.query(
+            "INSERT INTO incentives(user_id, type) VALUES($1,$2)",
+            [req.user.id, "first_order"],
+          );
+        }
+      }
+
+      if ((qty || 1) >= 2) {
+        totalDiscount += Math.round((price || 0) * 0.1);
+      }
+
+      const orderTotal = Math.round((price || 0) * (qty || 1));
+      if (totalDiscount > orderTotal) totalDiscount = orderTotal;
+
+      const total = orderTotal - totalDiscount;
+      const session = await stripe.checkout.sessions.create({
+        mode: "payment",
+        line_items: [
+          {
+            price_data: {
+              currency: "usd",
+              product_data: { name: "3D Model" },
+              unit_amount: total,
+            },
+            quantity: 1,
+          },
+        ],
+        success_url: `${req.headers.origin}/payment.html?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${req.headers.origin}/payment.html?cancel=1`,
+        metadata: { jobId, isGift: "false" },
+      });
+
       await db.query(
         "INSERT INTO orders(session_id, job_id, user_id, price_cents, status, shipping_info, quantity, discount_cents, etch_name, product_type, utm_source, utm_medium, utm_campaign, subreddit, is_gift) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)",
         [
-          sessionId,
+          session.id,
           jobId,
-          req.user.id,
-          0,
-          "paid",
+          req.user ? req.user.id : null,
+          total,
+          "pending",
           shippingInfo || {},
           qty || 1,
-          0,
+          totalDiscount,
           etchName || null,
           req.body.productType || null,
           req.body.utmSource || null,
@@ -2842,108 +2928,43 @@ app.post("/api/create-order", authOptional, async (req, res, next) => {
           false,
         ],
       );
-      enqueuePrint(jobId);
-      processQueue();
-      return res.json({ success: true });
-    }
+      if (referrerId && (!req.user || referrerId !== req.user.id)) {
+        await db.insertReferredOrder(session.id, referrerId);
+      }
 
-    if (req.user) {
-      const { rows: counts } = await db.query(
-        "SELECT COUNT(*) FROM orders WHERE user_id=$1",
-        [req.user.id],
-      );
-      const orderCount = parseInt(counts[0].count, 10) || 0;
-      if (orderCount === 0 && (qty || 1) === 1) {
-        const firstDisc = Math.round((price || 0) * 0.1);
-        totalDiscount += firstDisc;
-        await db.query("INSERT INTO incentives(user_id, type) VALUES($1,$2)", [
+      if (
+        req.user &&
+        job.rows[0].user_id &&
+        job.rows[0].user_id !== req.user.id
+      ) {
+        let royalty = 10;
+        try {
+          const sub = await db.getSubmissionByFilePath(job.rows[0].model_url);
+          if (sub) royalty = sub.royalty_percent || 10;
+        } catch (_err) {
+          /* ignore lookup errors */
+        }
+        const commission = Math.round(total * (royalty / 100));
+        await db.insertCommission(
+          session.id,
+          jobId,
+          job.rows[0].user_id,
           req.user.id,
-          "first_order",
-        ]);
+          commission,
+        );
       }
-    }
 
-    if ((qty || 1) >= 2) {
-      totalDiscount += Math.round((price || 0) * 0.1);
-    }
-
-    const orderTotal = Math.round((price || 0) * (qty || 1));
-    if (totalDiscount > orderTotal) totalDiscount = orderTotal;
-
-    const total = orderTotal - totalDiscount;
-    const session = await stripe.checkout.sessions.create({
-      mode: "payment",
-      line_items: [
-        {
-          price_data: {
-            currency: "usd",
-            product_data: { name: "3D Model" },
-            unit_amount: total,
-          },
-          quantity: 1,
-        },
-      ],
-      success_url: `${req.headers.origin}/payment.html?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${req.headers.origin}/payment.html?cancel=1`,
-      metadata: { jobId, isGift: "false" },
-    });
-
-    await db.query(
-      "INSERT INTO orders(session_id, job_id, user_id, price_cents, status, shipping_info, quantity, discount_cents, etch_name, product_type, utm_source, utm_medium, utm_campaign, subreddit, is_gift) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)",
-      [
-        session.id,
-        jobId,
-        req.user ? req.user.id : null,
-        total,
-        "pending",
-        shippingInfo || {},
-        qty || 1,
-        totalDiscount,
-        etchName || null,
-        req.body.productType || null,
-        req.body.utmSource || null,
-        req.body.utmMedium || null,
-        req.body.utmCampaign || null,
-        req.body.adSubreddit || null,
-        false,
-      ],
-    );
-    if (referrerId && (!req.user || referrerId !== req.user.id)) {
-      await db.insertReferredOrder(session.id, referrerId);
-    }
-
-    if (
-      req.user &&
-      job.rows[0].user_id &&
-      job.rows[0].user_id !== req.user.id
-    ) {
-      let royalty = 10;
-      try {
-        const sub = await db.getSubmissionByFilePath(job.rows[0].model_url);
-        if (sub) royalty = sub.royalty_percent || 10;
-      } catch (_err) {
-        /* ignore lookup errors */
+      for (const id of discountCodeIds) {
+        await incrementDiscountUsage(id);
       }
-      const commission = Math.round(total * (royalty / 100));
-      await db.insertCommission(
-        session.id,
-        jobId,
-        job.rows[0].user_id,
-        req.user.id,
-        commission,
-      );
-    }
 
-    for (const id of discountCodeIds) {
-      await incrementDiscountUsage(id);
+      res.json({ checkoutUrl: session.url });
+    } catch (err) {
+      logError(err);
+      next(err);
     }
-
-    res.json({ checkoutUrl: session.url });
-  } catch (err) {
-    logError(err);
-    next(err);
-  }
-});
+  },
+);
 
 /**
  * POST /api/gifts
