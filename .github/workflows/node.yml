@@ -12,7 +12,7 @@ jobs:
     timeout-minutes: 20
     strategy:
       matrix:
-        node-version: 25
+        node-version: 20
 
     steps:
       - uses: actions/checkout@v4

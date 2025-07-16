@@ -25,7 +25,7 @@ jobs:
       # Setup Node.js 20.x (>=16 required)
       - uses: actions/setup-node@v4
         with:
-          node-version: 25
+          node-version: 20
 
       # Install dependencies without auditing and without funding messages
       - run: npm install --no-audit --no-fund
