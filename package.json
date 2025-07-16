@@ -67,6 +67,7 @@
     "diagnose": "bash scripts/diagnose.sh",
     "test:generate": "node scripts/test-generate.js",
     "test:webhook": "node scripts/test-webhook.js",
+    "codeql": "node scripts/check-code-scanning.js",
     "check:code-scanning": "node scripts/check-code-scanning.js",
     "codeql": "node scripts/check-code-scanning.js",
     "commitlint": "commitlint --from=HEAD~1",
