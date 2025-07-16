@@ -36,7 +36,9 @@ const LOW_POLY_GLB = FALLBACK_GLB_LOW;
       sessionId =
         typeof crypto?.randomUUID === "function"
           ? crypto.randomUUID()
-          : Math.random().toString(36).slice(2);
+          : Array.from(crypto.getRandomValues(new Uint8Array(16)))
+              .map((b) => b.toString(16).padStart(2, "0"))
+              .join("");
       localStorage.setItem("adSessionId", sessionId);
     }
     const subreddit = localStorage.getItem("adSubreddit");
@@ -78,7 +80,9 @@ const LOW_POLY_GLB = FALLBACK_GLB_LOW;
         sessionId =
           typeof crypto?.randomUUID === "function"
             ? crypto.randomUUID()
-            : Math.random().toString(36).slice(2);
+            : Array.from(crypto.getRandomValues(new Uint8Array(16)))
+                .map((b) => b.toString(16).padStart(2, "0"))
+                .join("");
         localStorage.setItem("adSessionId", sessionId);
       }
       localStorage.setItem("adSubreddit", sr);
@@ -685,7 +689,9 @@ function renderThumbnails(arr) {
 
     const btn = document.createElement("button");
     btn.type = "button";
-    btn.innerHTML = '<i class="fas fa-times"></i>';
+    const icon = document.createElement("i");
+    icon.className = "fas fa-times";
+    btn.appendChild(icon);
     // Position the remove button fully inside the preview box so it
     // isn't clipped when the container has overflow-hidden.
     // Keep the remove button inside the rounded corner so it isn't
@@ -844,10 +850,17 @@ refs.submitBtn.addEventListener("click", async () => {
     showModel();
     if (window.addAutoItem) {
       let snapshot = refs.previewImg?.src;
+      const host = (() => {
+        try {
+          return snapshot ? new URL(snapshot).hostname : "";
+        } catch {
+          return "";
+        }
+      })();
       if (
         !snapshot ||
         snapshot.includes("placehold.co") ||
-        snapshot.includes("images.unsplash.com")
+        host === "images.unsplash.com"
       ) {
         snapshot = await captureModelSnapshot(url);
       }
@@ -1061,10 +1074,17 @@ async function init() {
   refs.addBasketBtn?.addEventListener("click", async () => {
     if (!window.addToBasket || !refs.viewer?.src) return;
     let snapshot = refs.previewImg?.src;
+    const host = (() => {
+      try {
+        return snapshot ? new URL(snapshot).hostname : "";
+      } catch {
+        return "";
+      }
+    })();
     if (
       !snapshot ||
       snapshot.includes("placehold.co") ||
-      snapshot.includes("images.unsplash.com")
+      host === "images.unsplash.com"
     ) {
       snapshot = await captureModelSnapshot(refs.viewer.src);
     }
