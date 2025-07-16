@@ -5,3 +5,15 @@ child_process.execSync = function (cmd) {
   }
   return Buffer.from("");
 };
+
+child_process.spawnSync = function (cmd, args = []) {
+  const joined = [cmd, ...(args || [])].join(" ");
+  if (joined.includes("playwright install --with-deps --dry-run")) {
+    return {
+      status: 0,
+      stdout: "Host system is missing dependencies",
+      stderr: "",
+    };
+  }
+  return { status: 0, stdout: "", stderr: "" };
+};
