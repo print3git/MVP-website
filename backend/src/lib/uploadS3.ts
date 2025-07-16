@@ -12,12 +12,13 @@ export async function uploadFile(
   filePath: string,
   contentType: string,
 ): Promise<string> {
-  const resolved = path.resolve(filePath);
+  const normalized = path.normalize(filePath);
+  const resolved = path.resolve(normalized);
   const uploadsDir = path.resolve("uploads");
-  if (!fs.existsSync(resolved)) {
+  if (!resolved.startsWith("/tmp") && !resolved.startsWith(uploadsDir)) {
     throw new Error("file not found");
   }
-  if (!resolved.startsWith("/tmp") && !resolved.startsWith(uploadsDir)) {
+  if (!fs.existsSync(resolved)) {
     throw new Error("file not found");
   }
   filePath = resolved;

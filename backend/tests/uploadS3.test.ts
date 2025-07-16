@@ -33,4 +33,13 @@ describe("uploadFile env validation", () => {
       "AWS credentials",
     );
   });
+
+  test("rejects paths outside allowed dirs", async () => {
+    await expect(uploadFile("/etc/passwd", "image/png")).rejects.toThrow(
+      "file not found",
+    );
+    await expect(uploadFile("/tmp/../etc/passwd", "image/png")).rejects.toThrow(
+      "file not found",
+    );
+  });
 });

@@ -49,4 +49,16 @@ describe("prepareImage", () => {
       "image file not found",
     );
   });
+
+  test("rejects paths outside allowed dirs", async () => {
+    await expect(prepareImage("/etc/passwd")).rejects.toThrow(
+      "image file not found",
+    );
+    await expect(prepareImage("/tmp/../etc/passwd")).rejects.toThrow(
+      "image file not found",
+    );
+    await expect(prepareImage("uploads/../secret.png")).rejects.toThrow(
+      "image file not found",
+    );
+  });
 });
