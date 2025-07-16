@@ -51,6 +51,7 @@ The server uses `STRIPE_LIVE_KEY` when `NODE_ENV=production`; otherwise `STRIPE_
   `mise settings add idiomatic_version_file_enable_tools node` to remove the
   `deprecated [idiomatic_version_file_enable_tools]` message. If the warning
   persists, run that command manually.
+  Run `mise env node@25` to activate Node 25 for local commands.
 - `SENDGRID_API_KEY` – API key for sending email via SendGrid.
 - `SENTRY_DSN` – connection string for sending errors to Sentry.
 - `EMAIL_FROM` – address used for the "from" field in outgoing mail.
