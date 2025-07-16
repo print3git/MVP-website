@@ -34,7 +34,6 @@ export async function uploadFile(
   if (!accessKey || !secretKey) throw new Error("AWS credentials are not set");
   const client = new S3Client({ region });
   const key = `images/${Date.now()}-${path.basename(filePath)}`;
-  const body = fs.readFileSync(filePath);
   await client.send(
     new PutObjectCommand({
       Bucket: bucket,
