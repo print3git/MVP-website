@@ -1,4 +1,5 @@
 const fs = require("fs");
+const path = require("path");
 const child_process = require("child_process");
 
 jest.mock("fs");
@@ -18,6 +19,10 @@ describe("ensure-root-deps", () => {
     });
     const calls = child_process.execSync.mock.calls.map((c) => c[0]);
     expect(calls).toContain("npm ci");
+    const winstonCheck = fs.existsSync.mock.calls.find((c) =>
+      String(c[0]).includes(path.join("node_modules", "winston")),
+    );
+    expect(winstonCheck).toBeTruthy();
   });
 
   test("retries on network failure", () => {

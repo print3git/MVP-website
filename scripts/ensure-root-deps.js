@@ -52,9 +52,16 @@ const playwrightPath = path.join(
   "playwright",
   "package.json",
 );
+const winstonPath = path.join(
+  __dirname,
+  "..",
+  "node_modules",
+  "winston",
+  "package.json",
+);
 
 const networkCheck = path.join(__dirname, "network-check.js");
-const requiredPaths = [pluginPath, expressPath, playwrightPath];
+const requiredPaths = [pluginPath, expressPath, playwrightPath, winstonPath];
 
 function cleanupNpmCache() {
   try {
