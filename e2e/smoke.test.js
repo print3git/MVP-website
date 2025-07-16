@@ -106,6 +106,10 @@ test('generate flow', async ({ page }) => {
     test.skip(true, 'modelviewer.dev unreachable');
   }
 
+  if (!process.env.SPARC3D_TOKEN || !process.env.STABILITY_KEY) {
+    test.skip(true, 'generation keys not set');
+  }
+
   await page.goto('/generate.html');
   // The form is rendered via React after scripts load, so wait for the prompt
   // field before interacting with it. Give the page up to 30s to load the
