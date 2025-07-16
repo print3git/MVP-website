@@ -17,9 +17,12 @@ if (process.env.JEST_WORKER_ID) {
 const { execSync } = require('child_process');
 function canFetchSync(url) {
   try {
-    execSync(`curl -fIs --max-time 5 --noproxy '*' ${url}`, {
-      stdio: 'ignore',
-    });
+    execSync(
+      `curl -fsSL --max-time 10 --noproxy '*' ${url} -o /dev/null`,
+      {
+        stdio: 'ignore',
+      },
+    );
     return true;
   } catch {
     return false;
