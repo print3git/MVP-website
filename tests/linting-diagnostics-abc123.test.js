@@ -1,10 +1,15 @@
-const { execSync } = require("child_process");
+const { execFileSync } = require("child_process");
 const fs = require("fs");
+const path = require("path");
+const PNPM_BIN = path.join(__dirname, "..", "node_modules", ".bin", "pnpm");
 
 describe("linting diagnostics", () => {
   test("root: pnpm exec eslint . exits with code 0", () => {
     try {
-      execSync("pnpm exec eslint .", { stdio: "pipe", encoding: "utf8" });
+      execFileSync(PNPM_BIN, ["exec", "eslint", "."], {
+        stdio: "pipe",
+        encoding: "utf8",
+      });
     } catch (err) {
       console.error("\nroot eslint stdout:\n" + err.stdout);
       console.error("\nroot eslint stderr:\n" + err.stderr);
@@ -14,7 +19,7 @@ describe("linting diagnostics", () => {
 
   test("backend: pnpm exec eslint . exits with code 0", () => {
     try {
-      execSync("pnpm exec eslint .", {
+      execFileSync(PNPM_BIN, ["exec", "eslint", "."], {
         cwd: "backend",
         stdio: "pipe",
         encoding: "utf8",
@@ -27,7 +32,7 @@ describe("linting diagnostics", () => {
   });
 
   test("no ESLint warnings", () => {
-    const out = execSync("pnpm exec eslint . -f json", {
+    const out = execFileSync(PNPM_BIN, ["exec", "eslint", ".", "-f", "json"], {
       encoding: "utf8",
     });
     const results = JSON.parse(out);
@@ -46,7 +51,7 @@ describe("linting diagnostics", () => {
   });
 
   test("no ESLint errors", () => {
-    const out = execSync("pnpm exec eslint . -f json", {
+    const out = execFileSync(PNPM_BIN, ["exec", "eslint", ".", "-f", "json"], {
       encoding: "utf8",
     });
     const results = JSON.parse(out);
@@ -63,14 +68,18 @@ describe("linting diagnostics", () => {
   });
 
   test("config resolves from root", () => {
-    execSync("pnpm exec eslint . --print-config tests/linting.test.js", {
-      stdio: "pipe",
-      encoding: "utf8",
-    });
+    execFileSync(
+      PNPM_BIN,
+      ["exec", "eslint", ".", "--print-config", "tests/linting.test.js"],
+      {
+        stdio: "pipe",
+        encoding: "utf8",
+      },
+    );
   });
 
   test("config resolves from backend", () => {
-    execSync("pnpm exec eslint server.js --print-config", {
+    execFileSync(PNPM_BIN, ["exec", "eslint", "server.js", "--print-config"], {
       cwd: "backend",
       stdio: "pipe",
       encoding: "utf8",
@@ -78,26 +87,46 @@ describe("linting diagnostics", () => {
   });
 
   test("root vs backend yield same results", () => {
-    const root = execSync("pnpm exec eslint backend/server.js -f json", {
-      encoding: "utf8",
-    });
-    const back = execSync("pnpm exec eslint server.js -f json", {
-      cwd: "backend",
-      encoding: "utf8",
-    });
+    const root = execFileSync(
+      PNPM_BIN,
+      ["exec", "eslint", "backend/server.js", "-f", "json"],
+      {
+        encoding: "utf8",
+      },
+    );
+    const back = execFileSync(
+      PNPM_BIN,
+      ["exec", "eslint", "server.js", "-f", "json"],
+      {
+        cwd: "backend",
+        encoding: "utf8",
+      },
+    );
     expect(root).toBe(back);
   });
 
   test("eslint writes to output file", () => {
     const logPath = "/tmp/eslint.log";
-    execSync(`pnpm exec eslint . -f json -o ${logPath}`);
+    execFileSync(PNPM_BIN, [
+      "exec",
+      "eslint",
+      ".",
+      "-f",
+      "json",
+      "-o",
+      logPath,
+    ]);
     const stat = fs.statSync(logPath);
     expect(stat.size).toBeGreaterThan(0);
   });
 
   test("CI flag does not change output", () => {
-    const normal = execSync("pnpm exec eslint . -f json", { encoding: "utf8" });
-    const ci = execSync("pnpm exec eslint . -f json", {
+    const normal = execFileSync(
+      PNPM_BIN,
+      ["exec", "eslint", ".", "-f", "json"],
+      { encoding: "utf8" },
+    );
+    const ci = execFileSync(PNPM_BIN, ["exec", "eslint", ".", "-f", "json"], {
       encoding: "utf8",
       env: { ...process.env, CI: "1" },
     });

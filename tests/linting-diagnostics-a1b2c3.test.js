@@ -4,9 +4,10 @@ const { spawnSync } = require("child_process");
 
 const repoRoot = path.join(__dirname, "..");
 const backendDir = path.join(repoRoot, "backend");
+const PNPM_BIN = path.join(repoRoot, "node_modules", ".bin", "pnpm");
 
 function runEslint(cwd, env = {}) {
-  return spawnSync("pnpm", ["exec", "eslint", ".", "-f", "json"], {
+  return spawnSync(PNPM_BIN, ["exec", "eslint", ".", "-f", "json"], {
     cwd,
     env: { ...process.env, ...env },
     encoding: "utf8",
@@ -56,7 +57,7 @@ describe("linting diagnostics", () => {
   test("writes log file when redirected", () => {
     const tmp = path.join(repoRoot, "eslint-log.txt");
     fs.unlinkSync(tmp, { force: true });
-    const res = spawnSync("pnpm", ["exec", "eslint", "."], {
+    const res = spawnSync(PNPM_BIN, ["exec", "eslint", "."], {
       cwd: repoRoot,
       env: process.env,
       encoding: "utf8",
