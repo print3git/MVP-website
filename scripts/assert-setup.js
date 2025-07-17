@@ -57,6 +57,7 @@ if (currentMajor < requiredMajor) {
   console.error(
     `Node ${requiredMajor} or newer is required. Current version: ${process.versions.node}`,
   );
+  console.error(`Run 'mise env node@${requiredMajor}' and retry.`);
   process.exit(1);
 }
 
