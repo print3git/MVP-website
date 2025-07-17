@@ -66,9 +66,13 @@ if [[ -z "${CLOUDFRONT_MODEL_DOMAIN:-}" ]]; then
   echo "Using dummy CLOUDFRONT_MODEL_DOMAIN" >&2
   export CLOUDFRONT_MODEL_DOMAIN="cdn.test"
 fi
+echo "Checking AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-<unset>}" >&2
 : "${AWS_ACCESS_KEY_ID:?AWS_ACCESS_KEY_ID must be set}"
+echo "Checking AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-<unset>}" >&2
 : "${AWS_SECRET_ACCESS_KEY:?AWS_SECRET_ACCESS_KEY must be set}"
+echo "Checking DB_URL: ${DB_URL:-<unset>}" >&2
 : "${DB_URL:?DB_URL must be set}"
+echo "Checking STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-<unset>}" >&2
 : "${STRIPE_SECRET_KEY:?STRIPE_SECRET_KEY must be set}"
 
 placeholder_db="postgres://user:password@localhost:5432/your_database"
