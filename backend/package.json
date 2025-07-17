@@ -26,7 +26,7 @@
     "cleanup-tokens": "node scripts/cleanup-password-resets.js",
     "measure-load": "node scripts/measure-load.js",
     "generate-referral-qr": "node scripts/generate-referral-qr.js",
-    "lint": "eslint . --max-warnings=0",
+    "lint": "eslint . --max-warnings=0 --no-warn-ignored",
     "scaling-engine": "node scalingEngine.js",
     "import-ad-spend": "node scripts/import-ad-spend.js",
     "check-inventory": "node scripts/check-inventory.js",

@@ -28,7 +28,7 @@
     "preformat:check": "cross-env SKIP_NET_CHECKS=1 SKIP_PW_DEPS=1 node scripts/assert-setup.js",
     "format": "prettier --log-level warn --write \"**/*.{js,jsx,json,md,html}\"",
     "format:check": "prettier --log-level warn --check \"**/*.{js,jsx,json,md,html}\"",
-    "lint": "npm run check-conflicts && eslint . --max-warnings=0 && npm run lint --prefix backend",
+    "lint": "npm run check-conflicts && eslint . --max-warnings=0 --no-warn-ignored && npm run lint --prefix backend",
     "lint:fix": "eslint . --fix",
     "lint:debug": "node scripts/run-jest.js backend/tests/linting.test.js",
     "check-conflicts": "! grep -R --include=*.js --include=*.jsx --include=*.ts --include=*.tsx '^(<{7}|={7}|>{7})' .",

@@ -2,14 +2,30 @@ const { execSync } = require("child_process");
 
 test("repository passes ESLint with no warnings", () => {
   try {
-    // run lint (remove --silent so we get full output)
-    execSync("npm run lint", { stdio: "pipe", encoding: "utf-8" });
+    // run ESLint in JSON format so we can show the offending file and rule
+    execSync("npx eslint . -f json --max-warnings=0", {
+      stdio: "pipe",
+      encoding: "utf-8",
+    });
   } catch (error) {
-    // print both stdout and stderr from ESLint
     console.error("\n⛔ ESLint found problems:\n");
-    if (error.stdout) console.error(error.stdout);
+    if (error.stdout) {
+      try {
+        const results = JSON.parse(error.stdout);
+        const lines = results
+          .flatMap((r) =>
+            r.messages.map(
+              (m) => `${r.filePath}:${m.line}:${m.column} ${m.ruleId}`,
+            ),
+          )
+          .slice(0, 10)
+          .join("\n");
+        console.error(lines + "\n");
+      } catch {
+        console.error(error.stdout);
+      }
+    }
     if (error.stderr) console.error(error.stderr);
-    // re‑throw to fail the test
     throw error;
   }
 });
