@@ -30,6 +30,7 @@
     "format:check": "prettier --log-level warn --check \"**/*.{js,jsx,json,md,html}\"",
     "lint": "npm run check-conflicts && eslint . --max-warnings=0 && npm run lint --prefix backend",
     "lint:fix": "eslint . --fix",
+    "lint:debug": "node scripts/run-jest.js backend/tests/linting.test.js",
     "check-conflicts": "! grep -R --include=*.js --include=*.jsx --include=*.ts --include=*.tsx '^(<{7}|={7}|>{7})' .",
     "check-root": "node scripts/check-repo-root.js",
     "pretest": "node scripts/check-repo-root.js && node scripts/assert-setup.js",
