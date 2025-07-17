@@ -185,4 +185,6 @@ jobs:
       - name: Run smoke tests with fallback env
         env:
           STRIPE_TEST_KEY: dummy
-        run: npm run smoke
+        run: |
+          npm run setup
+          npm run smoke
