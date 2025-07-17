@@ -1,6 +1,4 @@
-/**
- * @jest-environment jsdom
- */
+// jsdom environment not required for lint checks
 /* global localStorage */
 const { authHeaders } = require("../js/api.js");
 const { getBasket } = require("../js/basket.js");
