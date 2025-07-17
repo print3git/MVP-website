@@ -92,8 +92,18 @@ const summaryData = fs.readFileSync(backendSummary);
 fs.writeFileSync(summaryPath, summaryData);
 if (result.status) {
   if (result.stdout) {
-    console.error("\n\u26d4 Jest output:\n");
-    console.error(result.stdout);
+    const lines = result.stdout.trim().split("\n");
+    const snippet = lines.slice(-50).join("\n");
+    console.error("\n\u26d4 Jest output (last 50 lines):\n");
+    console.error(snippet);
+    try {
+      const failLog = path.join(repoRoot, "coverage", "failed.log");
+      fs.mkdirSync(path.dirname(failLog), { recursive: true });
+      fs.writeFileSync(failLog, result.stdout);
+      console.error(`Full output written to ${failLog}`);
+    } catch {
+      // ignore errors writing the log
+    }
   }
   console.error(`Jest exited with code ${result.status}`);
   process.exit(result.status);
