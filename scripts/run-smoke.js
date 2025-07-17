@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const { execSync } = require("child_process");
+const { execSync, spawnSync } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 
@@ -69,6 +69,11 @@ function initEnv(baseEnv = process.env) {
 
 const env = initEnv(process.env);
 
+console.log("DB_URL:", env.DB_URL);
+console.log("CLOUDFRONT_MODEL_DOMAIN:", env.CLOUDFRONT_MODEL_DOMAIN);
+console.log("STRIPE_SECRET_KEY:", env.STRIPE_SECRET_KEY);
+console.log("SKIP_PW_DEPS:", env.SKIP_PW_DEPS);
+
 // Skip Playwright dependency installation when the setup flag exists.
 // This prevents repeated apt-get runs in CI environments.
 if (
@@ -82,12 +87,22 @@ let lastCommand = "";
 
 function run(cmd) {
   lastCommand = cmd;
-  execSync(cmd, { stdio: "inherit", env });
+  console.log(`Running: ${cmd}`);
+  const result = spawnSync(cmd, { stdio: "inherit", shell: true, env });
+  console.log(`Exit code for '${cmd}':`, result.status);
+  if (result.status !== 0) {
+    const err = new Error(`Command failed: ${cmd}`);
+    err.status = result.status;
+    throw err;
+  }
 }
 
 function dumpDiagnostics(err) {
   console.error("Smoke test failed:");
   console.error(err.stack || err.message);
+  if (typeof err.status !== "undefined") {
+    console.error("Exit code:", err.status);
+  }
   console.error("Environment keys:", Object.keys(env).join(", "));
   if (lastCommand) {
     console.error("Command:", lastCommand);
@@ -117,8 +132,11 @@ function main() {
     const waitArgs = process.env.WAIT_ON_TIMEOUT
       ? `-t ${process.env.WAIT_ON_TIMEOUT} `
       : "";
+    console.log("WAIT_ON_TIMEOUT:", process.env.WAIT_ON_TIMEOUT || "default");
+    const serve = "npm run serve | tee serve.log";
+    const test = `npx -y wait-on ${waitArgs}http://localhost:3000 && npx playwright test --reporter=list --trace on e2e/smoke.test.js | tee pw.log`;
     run(
-      `npx -y concurrently -k -s first "npm run serve" "npx -y wait-on ${waitArgs}http://localhost:3000 && npx playwright test e2e/smoke.test.js"`,
+      `npx -y concurrently -k -s first --verbose -n serve,pw "${serve}" "${test}"`,
     );
   } catch (err) {
     dumpDiagnostics(err);

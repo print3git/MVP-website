@@ -6,12 +6,11 @@ const { main } = require("../../scripts/run-smoke");
 
 /** Simulate failure when the smoke script runs the wait-on step. */
 test("run-smoke reports diagnostics when wait-on fails", () => {
-  child_process.execSync.mockImplementation((cmd) => {
+  child_process.spawnSync.mockImplementation((cmd) => {
     if (cmd.includes("wait-on")) {
-      const err = new Error("wait-on failed");
-      err.status = 1;
-      throw err;
+      return { status: 1, stderr: "wait-on failed" };
     }
+    return { status: 0 };
   });
   const errSpy = jest.spyOn(console, "error").mockImplementation(() => {});
   const exitSpy = jest.spyOn(process, "exit").mockImplementation(() => {
