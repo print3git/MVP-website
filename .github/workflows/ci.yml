@@ -156,6 +156,10 @@ jobs:
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '0'
         run: npm run e2e
 
+      - name: Wait for frontend readiness
+        if: ${{ !secrets.PERCY_TOKEN }}
+        run: node scripts/run-jest.js e2e/wait-for-backend-a3f9X2.test.js
+
       - name: Run accessibility tests
         env:
           PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
