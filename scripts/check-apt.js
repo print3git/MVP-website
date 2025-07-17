@@ -47,10 +47,12 @@ if (!aptUtilsInstalled()) {
 }
 
 for (let i = 1; i <= 3; i++) {
-  const update = spawnSync("sudo", ["apt-get", "update"], {
+  const spawnOpts = {
     encoding: "utf8",
     env: { ...process.env, DEBIAN_FRONTEND: "noninteractive" },
-  });
+    timeout: 15000,
+  };
+  const update = spawnSync("sudo", ["apt-get", "update"], spawnOpts);
   if (update.status === 0) {
     const install = spawnSync(
       "sudo",
@@ -62,10 +64,7 @@ for (let i = 1; i <= 3; i++) {
         "install",
         "ca-certificates",
       ],
-      {
-        encoding: "utf8",
-        env: { ...process.env, DEBIAN_FRONTEND: "noninteractive" },
-      },
+      spawnOpts,
     );
     if (install.status === 0) {
       console.log("✅ apt update and install check succeeded");

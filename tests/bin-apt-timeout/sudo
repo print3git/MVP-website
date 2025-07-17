@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+if [[ "$1" == "apt-get" ]]; then
+  shift
+  apt-get "$@"
+else
+  command sudo "$@"
+fi
