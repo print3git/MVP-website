@@ -5,9 +5,9 @@ const os = require("os");
 
 const requiredMajor = parseInt(process.env.REQUIRED_NODE_MAJOR || "20", 10);
 const currentMajor = parseInt(process.versions.node.split(".")[0], 10);
-if (currentMajor < requiredMajor) {
+if (currentMajor !== requiredMajor) {
   console.error(
-    `Node ${requiredMajor} or newer is required. Current version: ${process.versions.node}`,
+    `Node ${requiredMajor} is required. Current version: ${process.versions.node}`,
   );
   process.exit(1);
 }
