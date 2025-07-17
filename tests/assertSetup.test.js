@@ -105,4 +105,24 @@ describe("assert-setup script", () => {
       { stdio: "inherit" },
     );
   });
+
+  test("exits when network check fails", () => {
+    setEnv();
+    fs.existsSync.mockReturnValue(true);
+    fs.readdirSync.mockReturnValue(["chromium"]);
+    child_process.execSync.mockImplementation((cmd) => {
+      if (cmd === "node scripts/network-check.js") {
+        throw new Error("net fail");
+      }
+    });
+    const exitSpy = jest.spyOn(process, "exit").mockImplementation(() => {
+      throw new Error("exit");
+    });
+    expect(() => require("../scripts/assert-setup.js")).toThrow("exit");
+    expect(exitSpy).toHaveBeenCalledWith(1);
+    expect(child_process.execSync).toHaveBeenCalledWith(
+      "node scripts/network-check.js",
+      { stdio: "inherit" },
+    );
+  });
 });
