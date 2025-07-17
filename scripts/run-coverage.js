@@ -37,7 +37,10 @@ const jestArgs = [
   "--coverageReporters=json-summary",
   "--coverageReporters=lcov",
   "--coverageThreshold={}",
-  "--silent",
+  // Run Jest silently by default so coverage runs aren't noisy, but allow
+  // verbose output when COVERAGE_VERBOSE is set. This helps debug failures
+  // like ESLint warnings that would otherwise be hidden.
+  ...(process.env.COVERAGE_VERBOSE ? [] : ["--silent"]),
   "--config",
   path.join(__dirname, "..", "backend", "jest.config.js"),
   ...(extraArgs.length ? ["--runTestsByPath", ...extraArgs] : []),
