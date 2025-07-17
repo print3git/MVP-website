@@ -1,7 +1,15 @@
 const { execSync } = require("child_process");
 
 test("repository passes ESLint with no warnings", () => {
-  expect(() => {
-    execSync("npm run lint --silent", { stdio: "pipe" });
-  }).not.toThrow();
+  try {
+    // run lint (remove --silent so we get full output)
+    execSync("npm run lint", { stdio: "pipe", encoding: "utf-8" });
+  } catch (error) {
+    // print both stdout and stderr from ESLint
+    console.error("\n⛔ ESLint found problems:\n");
+    if (error.stdout) console.error(error.stdout);
+    if (error.stderr) console.error(error.stderr);
+    // re‑throw to fail the test
+    throw error;
+  }
 });
