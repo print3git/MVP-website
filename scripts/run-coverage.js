@@ -91,6 +91,10 @@ fs.mkdirSync(path.dirname(summaryPath), { recursive: true });
 const summaryData = fs.readFileSync(backendSummary);
 fs.writeFileSync(summaryPath, summaryData);
 if (result.status) {
+  if (result.stdout) {
+    console.error("\n\u26d4 Jest output:\n");
+    console.error(result.stdout);
+  }
   console.error(`Jest exited with code ${result.status}`);
   process.exit(result.status);
 }
