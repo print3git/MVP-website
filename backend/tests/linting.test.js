@@ -6,6 +6,7 @@ test("repository passes ESLint with no warnings", () => {
   const result = spawnSync("npm", ["run", "lint"], {
     encoding: "utf-8",
     stdio: ["ignore", "pipe", "pipe"],
+    shell: true,
   });
 
   // If ESLint found anything (exit code !== 0) or spawn failed, print it out

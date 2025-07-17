@@ -88,6 +88,10 @@ module.exports = [
     rules: { "jsdoc/require-jsdoc": "off" },
   },
   {
+    files: ["js/**/*"],
+    rules: { "jsdoc/require-jsdoc": "off" },
+  },
+  {
     files: ["tests/**/*"],
     rules: { "jsdoc/require-jsdoc": "off" },
   },
