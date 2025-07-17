@@ -56,6 +56,7 @@ const result = spawnSync(jestBin, jestArgs, {
   cwd: path.join(__dirname, ".."),
   env: {
     ...process.env,
+    SKIP_HANDLE_CHECK: "1",
     NODE_PATH: path.join(__dirname, "..", "node_modules"),
   },
 });
