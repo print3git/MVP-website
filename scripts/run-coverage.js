@@ -52,7 +52,7 @@ const jestBin = path.join(
 );
 const result = spawnSync(jestBin, jestArgs, {
   encoding: "utf8",
-  stdio: ["inherit", "pipe", "inherit"],
+  stdio: ["inherit", "pipe", "pipe"],
   cwd: path.join(__dirname, ".."),
   env: {
     ...process.env,
@@ -62,7 +62,7 @@ const result = spawnSync(jestBin, jestArgs, {
 
 const lcovPath = path.join(repoRoot, "coverage", "lcov.info");
 fs.mkdirSync(path.dirname(lcovPath), { recursive: true });
-let output = result.stdout || "";
+let output = (result.stdout || "") + (result.stderr || "");
 const start = output.indexOf("TN:");
 if (start === -1) {
   console.error("Failed to parse LCOV from jest output");
@@ -91,15 +91,16 @@ fs.mkdirSync(path.dirname(summaryPath), { recursive: true });
 const summaryData = fs.readFileSync(backendSummary);
 fs.writeFileSync(summaryPath, summaryData);
 if (result.status) {
-  if (result.stdout) {
-    const lines = result.stdout.trim().split("\n");
+  const combined = (result.stdout || "") + (result.stderr || "");
+  if (combined) {
+    const lines = combined.trim().split("\n");
     const snippet = lines.slice(-50).join("\n");
     console.error("\n\u26d4 Jest output (last 50 lines):\n");
     console.error(snippet);
     try {
       const failLog = path.join(repoRoot, "coverage", "failed.log");
       fs.mkdirSync(path.dirname(failLog), { recursive: true });
-      fs.writeFileSync(failLog, result.stdout);
+      fs.writeFileSync(failLog, combined);
       console.error(`Full output written to ${failLog}`);
     } catch {
       // ignore errors writing the log
