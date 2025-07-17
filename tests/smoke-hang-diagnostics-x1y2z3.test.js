@@ -25,8 +25,11 @@ function waitForPort(port, timeout = 10000) {
   });
 }
 
-function startServer(port) {
+function startServer(port, useHttps = false) {
   const env = { ...process.env, PORT: String(port), SKIP_PW_DEPS: "1" };
+  if (useHttps) {
+    env.USE_HTTPS = "1";
+  }
   const proc = spawn("npm", ["run", "serve"], { env, stdio: "ignore" });
   return { proc, port };
 }
@@ -73,6 +76,14 @@ test("static asset loads", async () => {
   const { proc, port } = startServer(3300);
   await waitForPort(port);
   const res = await fetch(`http://localhost:${port}/js/ModelViewer.js`);
+  expect(res.status).toBe(200);
+  proc.kill("SIGTERM");
+});
+
+test("static index.js loads over https", async () => {
+  const { proc, port } = startServer(3301, true);
+  await waitForPort(port);
+  const res = await fetch(`https://localhost:${port}/js/index.js`);
   expect(res.status).toBe(200);
   proc.kill("SIGTERM");
 });
