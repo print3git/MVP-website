@@ -80,7 +80,7 @@ jobs:
         run: npm run ci
 
       - name: Run coverage
-        run: npm run coverage
+        run: SKIP_PW_DEPS=1 npm run coverage
 
       - name: Sanitize coverage for Coveralls
         run: |
