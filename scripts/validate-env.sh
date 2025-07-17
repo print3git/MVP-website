@@ -79,9 +79,14 @@ fi
 required_node_major="${REQUIRED_NODE_MAJOR:-20}"
 current_major=$(node -v | sed -E "s/^v([0-9]+).*/\1/")
 if [ "$current_major" -ne "$required_node_major" ]; then
-  echo "Node $required_node_major is required. Current version: $current_major" >&2
-  echo "Run 'mise env node@$required_node_major' and retry." >&2
-  exit 1
+  echo "Installing Node $required_node_major via mise" >&2
+  mise use -g node@$required_node_major >/dev/null 2>&1 || true
+  eval "$(mise activate bash)"
+  current_major=$(node -v | sed -E "s/^v([0-9]+).*/\1/")
+  if [ "$current_major" -ne "$required_node_major" ]; then
+    echo "Node $required_node_major is required. Current version: $current_major" >&2
+    exit 1
+  fi
 fi
 
 
