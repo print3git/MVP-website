@@ -365,6 +365,7 @@ For a quick end-to-end sanity check, run:
 ```bash
 npm run smoke
 ```
+
 If port 3000 is in use, stop the other process before running this.
 
 Run the backend unit tests alone:
@@ -565,12 +566,14 @@ CI=1 npx playwright install --with-deps
 This fetches the missing libraries via `apt` so the browsers can start correctly.
 
 ### Linting test output missing
+
 If `npm run coverage --prefix backend` fails with only LCOV data shown, run:
+
 ```bash
 npm run lint:debug
 ```
-to execute the linting test directly and view ESLint errors.
 
+to execute the linting test directly and view ESLint errors.
 
 ## Contributing
 
