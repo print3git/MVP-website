@@ -1,0 +1,4801 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`AdminDashboard snapshots snapshot 0 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 1 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 2 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 3 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 4 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 5 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 6 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 7 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 8 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 9 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 10 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 11 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 12 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 13 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 14 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 15 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 16 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 17 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 18 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 19 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 20 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 21 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 22 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 23 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 24 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 25 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 26 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 27 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 28 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 29 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 30 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 31 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 32 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 33 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 34 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 35 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 36 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 37 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 38 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 39 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 40 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 41 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 42 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 43 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 44 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 45 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 46 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 47 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 48 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 49 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 50 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 51 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 52 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 53 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 54 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 55 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 56 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 57 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 58 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 59 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 60 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 61 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 62 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 63 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 64 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 65 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 66 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 67 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 68 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 69 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 70 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 71 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 72 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 73 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 74 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 75 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 76 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 77 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 78 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 79 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 80 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 81 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 82 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 83 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 84 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 85 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 86 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 87 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 88 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 89 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 90 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 91 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 92 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 93 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 94 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 95 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 96 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 97 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 98 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 99 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 100 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 101 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 102 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 103 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 104 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 105 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 106 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 107 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 108 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 109 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 110 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 111 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 112 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 113 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 114 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 115 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 116 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 117 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 118 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 119 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 120 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 121 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 122 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 123 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 124 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 125 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 126 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 127 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 128 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 129 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 130 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 131 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 132 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 133 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 134 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 135 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 136 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 137 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 138 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 139 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 140 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 141 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 142 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 143 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 144 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 145 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 146 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 147 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 148 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 149 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 150 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 151 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 152 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 153 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 154 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 155 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 156 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 157 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 158 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 159 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 160 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 161 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 162 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 163 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 164 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 165 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 166 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 167 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 168 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 169 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 170 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 171 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 172 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 173 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 174 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 175 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 176 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 177 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 178 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 179 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 180 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 181 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 182 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 183 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 184 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 185 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 186 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 187 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 188 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 189 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 190 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 191 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 192 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 193 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 194 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 195 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 196 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 197 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 198 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AdminDashboard snapshots snapshot 199 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="dashboard"
+  >
+    <div
+      aria-label="users"
+    >
+      1
+    </div>
+    <div
+      aria-label="orders"
+    >
+      2
+    </div>
+    <div
+      aria-label="revenue"
+    >
+      3
+    </div>
+  </div>
+</DocumentFragment>
+`;
