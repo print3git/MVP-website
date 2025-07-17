@@ -57,6 +57,8 @@ describe("test-full-pipeline script", () => {
       DB_URL: "postgres://user:password@localhost:5432/your_database",
     };
     const output = execFileSync("node", [script], { encoding: "utf8", env });
-    expect(output).toMatch(/Skipping \/api\/generate test due to SKIP_DB_CHECK/);
+    expect(output).toMatch(
+      /Skipping \/api\/generate test due to SKIP_DB_CHECK/,
+    );
   });
 });
