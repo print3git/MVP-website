@@ -13,20 +13,6 @@ function aptUtilsInstalled() {
   return res.status === 0 && /install ok installed/.test(res.stdout);
 }
 
-function installAptUtils() {
-  console.log("Installing apt-utils package...");
-  const res = spawnSync("sudo", ["apt-get", "-y", "install", "apt-utils"], {
-    encoding: "utf8",
-    env: { ...process.env, DEBIAN_FRONTEND: "noninteractive" },
-  });
-  if (res.status !== 0) {
-    process.stderr.write(res.stderr || "");
-    process.stdout.write(res.stdout || "");
-    console.error("Failed to install apt-utils package.");
-    process.exit(res.status || 1);
-  }
-}
-
 if (process.env.SKIP_PW_DEPS) {
   console.log("Skipping apt check due to SKIP_PW_DEPS");
   process.exit(0);
@@ -43,7 +29,10 @@ if (!commandExists("sudo")) {
 }
 
 if (!aptUtilsInstalled()) {
-  installAptUtils();
+  console.error(
+    "apt-utils package is missing. Set SKIP_PW_DEPS=1 to skip Playwright dependencies.",
+  );
+  process.exit(1);
 }
 
 for (let i = 1; i <= 3; i++) {
