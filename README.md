@@ -564,6 +564,14 @@ CI=1 npx playwright install --with-deps
 
 This fetches the missing libraries via `apt` so the browsers can start correctly.
 
+### Linting test output missing
+If `npm run coverage --prefix backend` fails with only LCOV data shown, run:
+```bash
+npm run lint:debug
+```
+to execute the linting test directly and view ESLint errors.
+
+
 ## Contributing
 
 ⚠️ **Note:** this project uses OpenAI Codex to generate PRs;
