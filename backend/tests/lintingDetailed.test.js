@@ -4,7 +4,8 @@ const path = require("path");
 const backendDir = path.join(__dirname, "..");
 
 test("detailed backend ESLint report", () => {
-  const output = execSync(`npx eslint ${backendDir} -f json`, {
+  const output = execSync(`npx eslint -f json .`, {
+    cwd: backendDir,
     encoding: "utf8",
   });
   const results = JSON.parse(output);
