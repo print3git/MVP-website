@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "title": "Hello",
+    "body": "First post",
+    "timestamp": 100,
+    "user": { "username": "alice", "avatar": "/a.png" },
+    "votes": 1
+  },
+  {
+    "id": 2,
+    "title": "World",
+    "body": "Second post",
+    "timestamp": 200,
+    "user": { "username": "bob", "avatar": "/b.png" },
+    "votes": 0
+  }
+]
