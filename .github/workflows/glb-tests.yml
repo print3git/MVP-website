@@ -58,4 +58,4 @@ jobs:
         env:
           PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
         run: |
-          npx -y concurrently -k -s first "npm run serve" "npx wait-on http://localhost:3000 && npx playwright test e2e/*.test.js"
+          npx -y concurrently -k -s first "npm run serve" "npx wait-on http://localhost:3000 --timeout 300000 && npx playwright test e2e/*.test.js"
