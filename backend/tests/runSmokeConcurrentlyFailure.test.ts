@@ -5,12 +5,11 @@ const { main } = require("../../scripts/run-smoke");
 
 /** Simulate failure when the concurrently step fails. */
 test("run-smoke reports diagnostics when concurrently step fails", () => {
-  child_process.execSync.mockImplementation((cmd) => {
+  child_process.spawnSync.mockImplementation((cmd) => {
     if (cmd.includes("concurrently")) {
-      const err = new Error("concurrently failed");
-      err.status = 1;
-      throw err;
+      return { status: 1, stderr: "concurrently failed" };
     }
+    return { status: 0 };
   });
   const errSpy = jest.spyOn(console, "error").mockImplementation(() => {});
   const exitSpy = jest.spyOn(process, "exit").mockImplementation(() => {

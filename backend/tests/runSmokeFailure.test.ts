@@ -6,13 +6,11 @@ const { main } = require("../../scripts/run-smoke");
 
 describe("run-smoke failure handling", () => {
   beforeEach(() => {
-    child_process.execSync.mockReset();
+    child_process.spawnSync.mockReset();
   });
 
   test("exits with message when setup fails", () => {
-    child_process.execSync.mockImplementation(() => {
-      throw Object.assign(new Error("setup failed"), { status: 1 });
-    });
+    child_process.spawnSync.mockImplementation(() => ({ status: 1 }));
     const exitSpy = jest.spyOn(process, "exit").mockImplementation(() => {
       throw new Error("exit");
     });

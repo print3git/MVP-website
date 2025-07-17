@@ -30,9 +30,12 @@ function startDevServer(port = 3000) {
       console.log(`Dev server listening on http://localhost:${port}`);
     })
     .on("error", (err) => {
-      console.error("Dev server failed", err.message);
+      console.error("Dev server failed", err.stack || err.message);
       process.exit(1);
     });
+  server.on("close", () => {
+    console.log("Dev server closed");
+  });
   return server;
 }
 

@@ -5,12 +5,11 @@ const { main } = require("../../scripts/run-smoke");
 
 /** Simulate failure when validate-env script fails. */
 test("run-smoke reports diagnostics when validate-env fails", () => {
-  child_process.execSync.mockImplementation((cmd) => {
+  child_process.spawnSync.mockImplementation((cmd) => {
     if (cmd.includes("validate-env")) {
-      const err = new Error("validate-env failed");
-      err.status = 1;
-      throw err;
+      return { status: 1, stderr: "validate-env failed" };
     }
+    return { status: 0 };
   });
   const errSpy = jest.spyOn(console, "error").mockImplementation(() => {});
   const exitSpy = jest.spyOn(process, "exit").mockImplementation(() => {
