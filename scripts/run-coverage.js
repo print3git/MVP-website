@@ -37,7 +37,6 @@ const jestArgs = [
   "--coverageReporters=json-summary",
   "--coverageReporters=lcov",
   "--coverageThreshold={}",
-  "--silent",
   "--config",
   path.join(__dirname, "..", "backend", "jest.config.js"),
   ...(extraArgs.length ? ["--runTestsByPath", ...extraArgs] : []),
