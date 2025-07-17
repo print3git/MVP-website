@@ -149,6 +149,9 @@ jobs:
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '0'
         run: npx percy exec -- npm run e2e
 
+      - name: Verify frontend readiness
+        run: node e2e/wait-for-backend-a3f9X2.test.js
+
       - name: Run smoke tests
         if: ${{ !secrets.PERCY_TOKEN }}
         env:
