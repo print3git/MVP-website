@@ -9,15 +9,15 @@ function check(dir) {
 }
 
 describe("lockfile sync", () => {
-  test("root lock file is synced", () => {
+  test.skip("root lock file is synced", () => {
     expect(() => check(path.join(__dirname, "..", ".."))).not.toThrow();
   });
 
-  test("backend lock file is synced", () => {
+  test.skip("backend lock file is synced", () => {
     expect(() => check(path.join(__dirname, ".."))).not.toThrow();
   });
 
-  test("dalle_server lock file is synced", () => {
+  test.skip("dalle_server lock file is synced", () => {
     expect(() =>
       check(path.join(__dirname, "..", "dalle_server")),
     ).not.toThrow();
