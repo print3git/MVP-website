@@ -1,0 +1,9 @@
+[
+  {
+    "id": 1,
+    "body": "Nice",
+    "user": { "username": "alice" },
+    "timestamp": 150
+  },
+  { "id": 2, "body": "Cool", "user": { "username": "bob" }, "timestamp": 160 }
+]
