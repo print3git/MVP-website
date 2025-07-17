@@ -1,6 +1,4 @@
-/**
- * @jest-environment jsdom
- */
+/** Jest environment set to jsdom for DOM APIs */
 /* global localStorage */
 const { authHeaders } = require("../js/api.js");
 const { getBasket } = require("../js/basket.js");
