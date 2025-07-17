@@ -28,6 +28,28 @@ child_process.execSync = function (cmd, opts = {}) {
   return Buffer.from("");
 };
 
+child_process.execFileSync = function (cmd, args = [], opts = {}) {
+  const cwd = opts.cwd || process.cwd();
+  const prefix = `[cwd:${cwd}] ${cmd} ${Array.isArray(args) ? args.join(" ") : ""}`;
+  if (logFile) {
+    try {
+      fs.appendFileSync(logFile, prefix + "\n");
+    } catch (_err) {
+      // ignore logging errors
+    }
+  }
+  const full = `${cmd} ${Array.isArray(args) ? args.join(" ") : ""}`;
+  if (full.includes("playwright install")) {
+    return Buffer.from("Playwright host dependencies already satisfied.");
+  }
+  if (process.env.FAIL_ENSURE_DEPS && full.includes("ensure-deps.js")) {
+    const err = new Error("ensure-deps failed");
+    err.status = 1;
+    throw err;
+  }
+  return Buffer.from("");
+};
+
 child_process.spawnSync = function (cmd, args = [], opts = {}) {
   const cwd = opts.cwd || process.cwd();
   const prefix = `[cwd:${cwd}] ${cmd} ${Array.isArray(args) ? args.join(" ") : ""}`;

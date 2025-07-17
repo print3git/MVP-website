@@ -217,15 +217,15 @@ try {
   const ensureEnv = { ...process.env };
   if (process.env.EXEC_LOG_FILE)
     ensureEnv.EXEC_LOG_FILE = process.env.EXEC_LOG_FILE;
-  let cmd = "node";
+  const args = [];
   const match =
     process.env.NODE_OPTIONS &&
     process.env.NODE_OPTIONS.match(/--require\s+(\S+)/);
   if (match) {
-    cmd += ` -r ${match[1]}`;
+    args.push("-r", match[1]);
   }
-  cmd += " scripts/ensure-deps.js";
-  child_process.execSync(cmd, {
+  args.push("scripts/ensure-deps.js");
+  child_process.execFileSync("node", args, {
     stdio: "inherit",
     cwd: path.join(repoRoot, "backend"),
     env: ensureEnv,
