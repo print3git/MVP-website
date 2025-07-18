@@ -9,7 +9,8 @@
     "checkJs": false,
     "verbatimModuleSyntax": false,
     "esModuleInterop": true,
-    "noEmit": true
+    "noEmit": true,
+    "types": ["node"]
   },
   "include": ["src/**/*", "tests/**/*"],
   "exclude": ["coverage", "node_modules"]
