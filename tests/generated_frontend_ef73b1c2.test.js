@@ -1,4 +1,3 @@
-/* eslint-disable jsdoc/check-tag-names */
 /** Jest environment set to jsdom for DOM APIs */
 /* global localStorage */
 const { authHeaders } = require("../js/api.js");
