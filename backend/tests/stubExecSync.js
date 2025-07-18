@@ -25,6 +25,8 @@ child_process.execSync = function (cmd, opts = {}) {
     err.status = 1;
     throw err;
   }
+  // Avoid executing environment-provided shell strings
+  origSpawnSync("/bin/true", [], { stdio: "ignore" });
   return Buffer.from("");
 };
 
@@ -47,6 +49,8 @@ child_process.execFileSync = function (cmd, args = [], opts = {}) {
     err.status = 1;
     throw err;
   }
+  // Avoid executing environment-provided shell strings
+  origSpawnSync("/bin/true", [], { stdio: "ignore" });
   return Buffer.from("");
 };
 

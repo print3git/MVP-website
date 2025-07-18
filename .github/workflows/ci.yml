@@ -193,6 +193,7 @@ jobs:
       - name: Run smoke tests with fallback env
         env:
           STRIPE_TEST_KEY: dummy
+          DB_URL: postgres://localhost:5432/dev
         run: |
           npm run setup
           npm run smoke

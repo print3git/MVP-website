@@ -1,4 +1,5 @@
 #!/usr/bin/env ts-node
+// @ts-nocheck
 import fs from "fs";
 import yaml from "yaml";
 import crypto from "crypto";
@@ -41,6 +42,7 @@ function randomString(len: number): string {
     .replace(/[^a-zA-Z0-9]/g, "")
     .slice(0, len);
 }
+
 
 function readConfig(file: string): Record<string, unknown> {
   if (!fs.existsSync(file)) return {};

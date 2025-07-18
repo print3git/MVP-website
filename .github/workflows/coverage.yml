@@ -11,6 +11,8 @@ jobs:
         with:
           node-version: 20
       - run: SKIP_PW_DEPS=1 npm run setup
+        env:
+          DB_URL: postgres://localhost:5432/dev
       - run: SKIP_PW_DEPS=1 npm run coverage
       - name: Coverage summary
         run: |
