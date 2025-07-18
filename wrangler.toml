@@ -1,0 +1,4 @@
+name = "mvp-website"
+compatibility_date = "2025-07-01"
+[site]
+bucket = "."

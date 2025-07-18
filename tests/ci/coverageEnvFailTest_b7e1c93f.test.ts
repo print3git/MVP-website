@@ -1,6 +1,4 @@
-/**
- * @ciOnly
- */
+// CI-only test
 import { execFileSync } from "child_process";
 
 test("run-coverage fails with env error", () => {
