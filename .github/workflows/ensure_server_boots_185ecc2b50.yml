@@ -1,0 +1,63 @@
+name: Ensure Server Boots
+
+on:
+  workflow_dispatch:
+  pull_request:
+
+jobs:
+  boot_check:
+    runs-on: ubuntu-latest
+    env:
+      STRIPE_TEST_KEY: ${{ secrets.STRIPE_TEST_KEY }}
+      DB_URL: ${{ secrets.DB_URL }}
+      STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+      STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+      HF_API_KEY: ${{ secrets.HF_API_KEY }}
+      CLOUDFRONT_MODEL_DOMAIN: ${{ secrets.CLOUDFRONT_MODEL_DOMAIN }}
+      SPARC3D_ENDPOINT: ${{ secrets.SPARC3D_ENDPOINT }}
+      SPARC3D_TOKEN: ${{ secrets.SPARC3D_TOKEN }}
+      STABILITY_KEY: ${{ secrets.STABILITY_KEY }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      S3_BUCKET: ${{ secrets.S3_BUCKET }}
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm run setup
+
+      - name: Start server
+        run: |
+          npm run dev 2>&1 | tee /tmp/server.log &
+          echo $! > /tmp/server.pid
+        shell: bash
+
+      - name: Wait for server
+        run: |
+          npx wait-on http://localhost:3000 --timeout 300000 || {
+            echo "Server failed to start";
+            cat /tmp/server.log;
+            exit 1;
+          }
+        shell: bash
+
+      - name: Run backend tests
+        run: npm test --prefix backend
+
+      - name: Stop server
+        if: always()
+        run: |
+          if [ -f /tmp/server.pid ]; then
+            kill $(cat /tmp/server.pid) || true
+          fi
+          sleep 5
+          cat /tmp/server.log || true
+        shell: bash
