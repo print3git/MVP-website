@@ -71,14 +71,22 @@ if [[ -z "${CLOUDFRONT_MODEL_DOMAIN:-}" ]]; then
   echo "Using dummy CLOUDFRONT_MODEL_DOMAIN" >&2
   export CLOUDFRONT_MODEL_DOMAIN="cdn.test"
 fi
-echo "Checking AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-<unset>}" >&2
-: "${AWS_ACCESS_KEY_ID:?AWS_ACCESS_KEY_ID must be set}"
-echo "Checking AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-<unset>}" >&2
-: "${AWS_SECRET_ACCESS_KEY:?AWS_SECRET_ACCESS_KEY must be set}"
-echo "Checking DB_URL: ${DB_URL:-<unset>}" >&2
-: "${DB_URL:?DB_URL must be set}"
-echo "Checking STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-<unset>}" >&2
-: "${STRIPE_SECRET_KEY:?STRIPE_SECRET_KEY must be set}"
+
+required_vars=(AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY DB_URL STRIPE_SECRET_KEY)
+missing=()
+for var in "${required_vars[@]}"; do
+  echo "Checking $var: ${!var:-<unset>}" >&2
+  if [[ -z "${!var:-}" ]]; then
+    missing+=("$var")
+  fi
+done
+
+if [ ${#missing[@]} -gt 0 ]; then
+  echo "Missing required environment variables:" >&2
+  printf '  - %s\n' "${missing[@]}" >&2
+  echo "Please set them in your environment or .env file." >&2
+  exit 1
+fi
 
 placeholder_db="postgres://user:password@localhost:5432/your_database"
 if [[ -z "${SKIP_DB_CHECK:-}" && "${DB_URL}" == "$placeholder_db" ]]; then
