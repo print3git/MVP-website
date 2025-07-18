@@ -14,7 +14,7 @@ describe("static asset validation", () => {
     const hasBundle = bundlePatterns.some((pattern) => {
       const files = fs
         .readdirSync(buildDir)
-        .filter((f) => new RegExp(pattern.replace("*", ".*")).test(f));
+        .filter((f) => new RegExp(pattern.replace(/\*/g, ".*")).test(f));
       return files.length > 0;
     });
     expect(hasBundle).toBe(true);
