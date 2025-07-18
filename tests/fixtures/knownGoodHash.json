@@ -1,0 +1,5 @@
+{
+  "scripts/setup.sh": "723be7243a4939a57910ac213e4e4cbe083be40c081b671b638fa2ef6db53e2e",
+  "scripts/generate-glb-tests.js": "a8e826647b943100212df5e2bd0a7e29a6fc5e4c6601d37c1c3b4836533e2748",
+  ".env.example": "abbf320ef9fa4b666ee00c093e400f7d22f31d017a213bbb48f678965d90cde0"
+}
