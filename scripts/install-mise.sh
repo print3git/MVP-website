@@ -2,7 +2,8 @@
 set -euo pipefail
 
 if ! command -v mise >/dev/null 2>&1; then
-  curl -fsSL https://mise.run | bash
+  curl -fsSL https://mise.jdx.dev/install.sh -o /tmp/install-mise.sh
+  bash /tmp/install-mise.sh
   # mise installer adds ~/.local/bin to PATH but it may not be active yet
   export PATH="$HOME/.local/bin:$PATH"
   echo "mise installed"
