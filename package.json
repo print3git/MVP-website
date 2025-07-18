@@ -61,7 +61,7 @@
     "smoke": "node scripts/run-smoke.js",
     "predeploy": "node scripts/check-missing-links.js",
     "build": "echo 'no build step'",
-    "postbuild": "npx ts-node --transpile-only scripts/check-broken-symlinks-9ac8f74db5e1c32.ts",
+    "postbuild": "npx ts-node --transpile-only scripts/check-broken-symlinks-9ac8f74db5e1c32.ts && npx ts-node --transpile-only scripts/cloudflare_symlink_check_e4dd1b9.ts",
     "postinstall": "npm run build",
     "load": "artillery run tests/load/models.yml",
     "visual-test": "percy exec -- npm run e2e",
