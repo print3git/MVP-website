@@ -89,9 +89,8 @@ test("eslint writes log file", () => {
   console.log("log exists", exists);
   if (!exists) {
     console.warn(`eslint log missing at ${log}`);
-  } else {
-    expect(fs.statSync(log).size).toBeGreaterThan(0);
   }
+  expect(exists).toBe(true);
 });
 
 test("CI flag does not change exit code", () => {
