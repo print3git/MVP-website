@@ -1,6 +1,4 @@
-/**
- * @ciOnly
- */
+/** @ciOnly */ // eslint-disable-line jsdoc/check-tag-names
 import { execFileSync } from "child_process";
 
 test("run-coverage fails with env error", () => {
