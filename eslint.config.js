@@ -92,6 +92,16 @@ module.exports = [
     rules: { "jsdoc/require-jsdoc": "off" },
   },
   {
+    files: ["scripts/**/*.ts"],
+    languageOptions: {
+      parser: require("@typescript-eslint/parser"),
+      parserOptions: { ecmaVersion: "latest", sourceType: "module" },
+    },
+    plugins: {
+      "@typescript-eslint": require("@typescript-eslint/eslint-plugin"),
+    },
+  },
+  {
     files: ["js/**/*"],
     rules: { "jsdoc/require-jsdoc": "off" },
   },
