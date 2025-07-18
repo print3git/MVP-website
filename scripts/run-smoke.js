@@ -85,6 +85,31 @@ if (
 
 let lastCommand = "";
 
+function runValidateEnv() {
+  lastCommand = "npm run validate-env";
+  const result = spawnSync(lastCommand, {
+    shell: true,
+    env,
+    encoding: "utf8",
+  });
+  if (result.stdout) process.stdout.write(result.stdout);
+  if (result.stderr) process.stderr.write(result.stderr);
+  if (result.status !== 0) {
+    const output = `${result.stdout || ""}${result.stderr || ""}`;
+    const missing = [];
+    for (const line of output.split(/\r?\n/)) {
+      const m = line.match(/([A-Z_]+).*must be set/);
+      if (m) missing.push(m[1]);
+    }
+    if (missing.length) {
+      console.error("Missing required env vars:", missing.join(", "));
+    }
+    const err = new Error(`Command failed: ${lastCommand}`);
+    err.status = result.status;
+    throw err;
+  }
+}
+
 function run(cmd) {
   lastCommand = cmd;
   console.log(`Running: ${cmd}`);
@@ -114,7 +139,7 @@ function dumpDiagnostics(err) {
 
 function main() {
   try {
-    run("npm run validate-env");
+    runValidateEnv();
     if (!process.env.SKIP_SETUP && !fs.existsSync(".setup-complete")) {
       run("npm run setup");
     } else {
@@ -135,9 +160,14 @@ function main() {
     console.log("WAIT_ON_TIMEOUT:", process.env.WAIT_ON_TIMEOUT || "default");
     const serve = "npm run serve | tee serve.log";
     const test = `npx -y wait-on ${waitArgs}http://localhost:3000 && npx playwright test --reporter=list --trace on e2e/smoke.test.js | tee pw.log`;
-    run(
-      `npx -y concurrently -k -s first --verbose -n serve,pw "${serve}" "${test}"`,
-    );
+    const cmd = `npx -y concurrently -k -s first --verbose -n serve,pw "${serve}" "${test}"`;
+    try {
+      run(cmd);
+    } catch (_err) {
+      console.warn("Server failed to start, retrying once...");
+      freePort(process.env.PORT || 3000, env);
+      run(cmd);
+    }
   } catch (err) {
     dumpDiagnostics(err);
     process.exit(err.status ?? 1);
