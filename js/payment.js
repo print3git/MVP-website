@@ -54,6 +54,14 @@ let flashSale = null;
 let checkoutItems = [];
 let currentIndex = 0;
 
+function sanitizeUrl(url) {
+  try {
+    return new URL(url, window.location.origin).href;
+  } catch {
+    return "";
+  }
+}
+
 function computeDiscountFor(material, qty) {
   const price = PRICES[material] || PRICES.single;
   let discount = 0;
@@ -956,9 +964,10 @@ async function initPaymentPage() {
     if (viewer) {
       const tag = viewer.tagName.toLowerCase();
       if (tag === "img") {
-        if (item.snapshot) viewer.src = item.snapshot;
+        if (item.snapshot) viewer.src = sanitizeUrl(item.snapshot);
       } else {
-        viewer.src = item.modelUrl || storedModel || FALLBACK_GLB;
+        const src = sanitizeUrl(item.modelUrl);
+        viewer.src = src || storedModel || FALLBACK_GLB;
       }
     }
     if (item.jobId) localStorage.setItem("print3JobId", item.jobId);
@@ -1171,7 +1180,7 @@ async function initPaymentPage() {
   } else {
     loader.hidden = false;
     // Assign the model source only after the load/error listeners are in place
-    const storedModel = localStorage.getItem("print3Model");
+    const storedModel = sanitizeUrl(localStorage.getItem("print3Model"));
     if (viewer) viewer.src = storedModel || FALLBACK_GLB;
   }
   // Load saved basket items unless this is the Luckybox page
@@ -1644,7 +1653,7 @@ async function initPaymentPage() {
     const wrap = document.createElement("div");
     wrap.className = "flex flex-wrap justify-center gap-2";
     items.forEach((it) => {
-      const src = it.snapshot || it.modelUrl || "";
+      const src = sanitizeUrl(it.snapshot || it.modelUrl || "");
       const img = document.createElement("img");
       img.src = src;
       img.alt = "print";
