@@ -62,7 +62,7 @@
     "postinstall": "npm run build",
     "load": "artillery run tests/load/models.yml",
     "visual-test": "percy exec -- npm run e2e",
-    "test:a11y": "node scripts/assert-setup.js && bash scripts/install-playwright.sh chromium && playwright test e2e/a11y.test.js",
+    "test:a11y": "node scripts/assert-setup.js && bash scripts/install-playwright.sh chromium && playwright test e2e/a11y.test.js e2e/accessibility-yd0djkpeac4rmy8.test.js",
     "a11y": "jest --runTestsByPath tests/a11y",
     "net:check": "node scripts/network-check.js",
     "netlify:deploy": "scripts/netlify-preflight.sh && netlify deploy",
