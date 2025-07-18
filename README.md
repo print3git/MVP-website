@@ -3,6 +3,7 @@
 [![CI](https://github.com/OWNER/REPO/actions/workflows/ci.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/mvp-website.svg)](https://www.npmjs.com/package/mvp-website)
 [![Coverage Status](https://coveralls.io/repos/github/OWNER/REPO/badge.svg?branch=main)](https://coveralls.io/github/OWNER/REPO?branch=main)
+[![Frontend Coverage](https://github.com/OWNER/REPO/actions/workflows/coverage.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/coverage.yml)
 
 ## 🤖 Codex Integration
 
@@ -415,6 +416,10 @@ npm run coverage
 
 cat coverage/lcov.info | npx coveralls
 ```
+
+The `check-coverage` script writes a baseline to `tests/coverageBaseline.json`
+the first time coverage falls below the required thresholds. Commit this file
+after the initial run so future merges will fail when coverage regresses.
 
 Using `npx coveralls` ensures the CLI runs even if it's not installed globally.
 By piping the generated `lcov.info` file instead of test output we avoid
