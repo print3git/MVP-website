@@ -2,22 +2,26 @@
 import fs from "fs";
 import path from "path";
 
-const repoRoot = path.resolve(__dirname, "..");
-const argDir = process.argv[2];
-const outputDir = argDir
+const repoRoot: string = path.resolve(__dirname, "..");
+const argDir: string | undefined = process.argv[2];
+const outputDir: string = argDir
   ? path.resolve(repoRoot, argDir)
   : fs.existsSync(path.join(repoRoot, "dist"))
     ? path.join(repoRoot, "dist")
     : repoRoot;
 
-const badPaths = [];
+const badPaths: string[] = [];
 
-function walk(dir) {
-  let entries;
+function walk(dir: string): void {
+  let entries: fs.Dirent[];
   try {
     entries = fs.readdirSync(dir, { withFileTypes: true });
-  } catch (err) {
-    badPaths.push(`${dir} (${err.code || err.message})`);
+  } catch (err: unknown) {
+    const message =
+      err && err instanceof Error
+        ? (err as NodeJS.ErrnoException).code ?? err.message
+        : String(err);
+    badPaths.push(`${dir} (${message})`);
     return;
   }
 
@@ -39,8 +43,12 @@ function walk(dir) {
       } else {
         fs.accessSync(full, fs.constants.R_OK);
       }
-    } catch (err) {
-      badPaths.push(`${full} (${err.code || err.message})`);
+    } catch (err: unknown) {
+      const message =
+        err && err instanceof Error
+          ? (err as NodeJS.ErrnoException).code ?? err.message
+          : String(err);
+      badPaths.push(`${full} (${message})`);
     }
   }
 }
