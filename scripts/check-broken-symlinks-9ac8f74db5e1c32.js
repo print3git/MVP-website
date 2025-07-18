@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import fs from "fs";
-import path from "path";
+const fs = require("fs");
+const path = require("path");
 
 const repoRoot: string = path.resolve(__dirname, "..");
 const argDir: string | undefined = process.argv[2];
