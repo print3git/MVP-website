@@ -12,11 +12,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # — Uncomment & adjust these if you ever need a build step:
-      # - name: Install dependencies
-      #   run: npm ci
-      # - name: Build
-      #   run: npm run build
+      - name: Install dependencies
+        run: npm ci
+      - name: Build
+        run: npm run build
 
       - name: Publish to Cloudflare Pages
         uses: cloudflare/pages-action@v1
@@ -24,4 +23,4 @@ jobs:
           apiToken: ${{ secrets.CF_PAGES_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
           projectName: ${{ secrets.CF_PAGES_PROJECT }}
-          directory: '.'
+          directory: 'dist'

@@ -1,7 +1,5 @@
-/* eslint-disable jsdoc/check-tag-names */
 /**
  * @jest-environment jsdom
- * @eslint-env jest
  */
 /* global localStorage */
 const {

@@ -58,7 +58,7 @@
     "test:unit": "npm test --prefix backend",
     "serve": "npm run build && node scripts/dev-server.js",
     "smoke": "node scripts/run-smoke.js",
-    "build": "echo 'no build step'",
+    "build": "bash scripts/build-c02a4d5e6f7b8c9.sh",
     "postinstall": "npm run build",
     "load": "artillery run tests/load/models.yml",
     "visual-test": "percy exec -- npm run e2e",

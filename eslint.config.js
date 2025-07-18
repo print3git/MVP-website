@@ -41,7 +41,10 @@ module.exports = [
     settings: {
       jsdoc: {
         tagNamePreference: {
-          "jest-environment": false,
+          "jest-environment": "jest-environment",
+        },
+        additionalTagNames: {
+          custom: ["jest-environment"],
         },
       },
     },
@@ -97,7 +100,9 @@ module.exports = [
   },
   {
     files: ["tests/**/*"],
-    rules: { "jsdoc/require-jsdoc": "off" },
+    rules: {
+      "jsdoc/require-jsdoc": "off",
+    },
   },
   ...frontend,
 ];
