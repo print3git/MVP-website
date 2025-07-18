@@ -683,7 +683,15 @@ function renderThumbnails(arr) {
     // dimensions. This avoids oversized previews in Safari on iPad.
     wrap.className = "thumbnail-wrapper relative w-full h-full overflow-hidden";
     const img = document.createElement("img");
-    img.src = url;
+    try {
+      const parsed = new URL(url, window.location.href);
+      if (parsed.protocol === "javascript:") {
+        throw new Error("invalid url");
+      }
+      img.src = parsed.href;
+    } catch {
+      img.src = "";
+    }
     img.className = "w-full h-full rounded-md shadow-md";
     wrap.appendChild(img);
 

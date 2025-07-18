@@ -28,7 +28,7 @@ describe.skip("insecure http fetch; https unavailable", () => {
   function startServer() {
     const proc = spawn("npm", ["run", "serve"], {
       cwd: repoRoot,
-      env: { ...process.env, PORT: "3000", SKIP_PW_DEPS: "1" },
+      env: { ...process.env, PORT: "3000", SKIP_PW_DEPS: "1", USE_HTTPS: "1" },
       stdio: "ignore",
     });
     return proc;
@@ -44,7 +44,7 @@ describe.skip("insecure http fetch; https unavailable", () => {
     test("homepage responds at /", async () => {
       const proc = startServer();
       await waitPort(3000);
-      const res = await fetch("http://localhost:3000/");
+      const res = await fetch("https://localhost:3000/");
       proc.kill("SIGTERM");
       expect(res.status).toBe(200);
     });
@@ -53,7 +53,7 @@ describe.skip("insecure http fetch; https unavailable", () => {
       const proc = startServer();
       await waitPort(3000);
       const html = await (
-        await fetch("http://localhost:3000/index.html")
+        await fetch("https://localhost:3000/index.html")
       ).text();
       proc.kill("SIGTERM");
       expect(html).toMatch(/viewerReady/);
@@ -62,7 +62,7 @@ describe.skip("insecure http fetch; https unavailable", () => {
     test("static asset js/index.js loads", async () => {
       const proc = startServer();
       await waitPort(3000);
-      const res = await fetch("http://localhost:3000/js/index.js");
+      const res = await fetch("https://localhost:3000/js/index.js");
       proc.kill("SIGTERM");
       expect(res.status).toBe(200);
     });
@@ -71,7 +71,7 @@ describe.skip("insecure http fetch; https unavailable", () => {
       const proc = startServer();
       await waitPort(3000);
       const start = Date.now();
-      const res = await fetch("http://localhost:3000/healthz");
+      const res = await fetch("https://localhost:3000/healthz");
       const duration = Date.now() - start;
       proc.kill("SIGTERM");
       expect(res.status).toBe(200);
