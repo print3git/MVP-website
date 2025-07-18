@@ -47,7 +47,7 @@ let selectedPrice = PRICES.multi;
 const SINGLE_BORDER_COLOR = "#60a5fa";
 const API_BASE = (window.API_ORIGIN || "") + "/api";
 import { track } from "./analytics.js";
-// Time zone used to reset local purchase counts at 1 AM Eastern
+// Time zone used to reset local purchase counts at 1 AM Eastern
 const TZ = "America/New_York";
 let flashTimerId = null;
 let flashSale = null;

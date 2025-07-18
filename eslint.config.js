@@ -12,6 +12,7 @@ const js = require("@eslint/js");
 const prettier = require("eslint-config-prettier");
 const globals = require("globals");
 const jsdoc = require("eslint-plugin-jsdoc");
+const frontend = require("./eslint.frontend-87adf32bca1e546.cjs");
 
 module.exports = [
   {
@@ -20,8 +21,10 @@ module.exports = [
       "img/**",
       "uploads/**",
       "models/**",
-      "js/**",
-      "*.html",
+      // front-end code will be linted separately
+      // "js/**", // removed to enable frontend linting
+      // "*.html", // removed to enable frontend linting
+      "js/model-viewer.min.js",
       "service-worker.js",
       "admin/**",
       "docs/**",
@@ -31,7 +34,7 @@ module.exports = [
       "scripts/ci_watchdog.js",
       "scripts/check-gh-workflow-sync-23859.ts",
       "upload/**",
-      "src/**",
+      // "src/**", // removed to enable frontend linting
     ],
   },
   {
@@ -96,4 +99,5 @@ module.exports = [
     files: ["tests/**/*"],
     rules: { "jsdoc/require-jsdoc": "off" },
   },
+  ...frontend,
 ];
