@@ -6,7 +6,10 @@
     "types": ["node"],
     "strict": true,
     "noImplicitAny": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true
   },
-  "files": ["ci_watchdog.ts", "auto-cloudflare-config.ts"]
+  "files": ["ci_watchdog.ts", "auto-cloudflare-config.js"]
 }

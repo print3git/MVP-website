@@ -1,4 +1,5 @@
 #!/usr/bin/env ts-node
+// @ts-check
 import fs from "fs";
 import yaml from "yaml";
 import crypto from "crypto";
@@ -28,6 +29,11 @@ function detectFramework() {
   return null;
 }
 
+/**
+ * Generate a random alphanumeric string.
+ * @param {number} len
+ * @returns {string}
+ */
 function randomString(len) {
   return crypto
     .randomBytes(len)
@@ -36,6 +42,11 @@ function randomString(len) {
     .slice(0, len);
 }
 
+/**
+ * Read a YAML or JSON config file.
+ * @param {string} file
+ * @returns {any}
+ */
 function readConfig(file) {
   if (!fs.existsSync(file)) return {};
   const txt = fs.readFileSync(file, "utf8");
@@ -43,6 +54,11 @@ function readConfig(file) {
   return yaml.parse(txt);
 }
 
+/**
+ * Write a YAML or JSON config file.
+ * @param {string} file
+ * @param {any} data
+ */
 function writeConfig(file, data) {
   if (file.endsWith(".json"))
     fs.writeFileSync(file, JSON.stringify(data, null, 2));
