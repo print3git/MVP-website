@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`env stability snapshot matches baseline and required vars present 1`] = `
+{
+  "AWS_ACCESS_KEY_ID": "<set>",
+  "AWS_SECRET_ACCESS_KEY": "<set>",
+  "CLOUDFRONT_MODEL_DOMAIN": "<set>",
+  "DB_URL": "<set>",
+  "HF_TOKEN": undefined,
+  "SPARC3D_TOKEN": "<set>",
+  "STABILITY_KEY": undefined,
+  "STRIPE_SECRET_KEY": "<set>",
+  "STRIPE_WEBHOOK_SECRET": "<set>",
+}
+`;
