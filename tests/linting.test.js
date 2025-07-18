@@ -1,31 +1,34 @@
 const { execSync } = require("child_process");
+const path = require("path");
 
-test("repository passes ESLint with no warnings", () => {
-  try {
-    // run ESLint in JSON format so we can show the offending file and rule
-    execSync("npx eslint . -f json --max-warnings=0", {
-      stdio: "pipe",
-      encoding: "utf-8",
+const results = JSON.parse(
+  execSync("npx eslint . -f json", { encoding: "utf8" }),
+);
+
+describe("lint results by file", () => {
+  results.forEach((res) => {
+    const relative = path.relative(process.cwd(), res.filePath);
+    test(`${relative} has no lint errors`, () => {
+      const messages = res.messages.filter((m) => m.severity === 2);
+      expect(messages).toEqual([]);
     });
-  } catch (error) {
-    console.error("\n⛔ ESLint found problems:\n");
-    if (error.stdout) {
-      try {
-        const results = JSON.parse(error.stdout);
-        const lines = results
-          .flatMap((r) =>
-            r.messages.map(
-              (m) => `${r.filePath}:${m.line}:${m.column} ${m.ruleId}`,
-            ),
-          )
-          .slice(0, 10)
-          .join("\n");
-        console.error(lines + "\n");
-      } catch {
-        console.error(error.stdout);
-      }
-    }
-    if (error.stderr) console.error(error.stderr);
-    throw error;
-  }
+  });
+});
+
+describe("lint results by rule", () => {
+  const byRule = {};
+  results.forEach((res) => {
+    res.messages.forEach((m) => {
+      const rule = m.ruleId || "(no rule)";
+      byRule[rule] ||= [];
+      byRule[rule].push(
+        `${path.relative(process.cwd(), res.filePath)}:${m.line}`,
+      );
+    });
+  });
+  Object.keys(byRule).forEach((rule) => {
+    test(`no violations of ${rule}`, () => {
+      expect(byRule[rule]).toEqual([]);
+    });
+  });
 });

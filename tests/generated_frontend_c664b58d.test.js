@@ -1,7 +1,9 @@
+/* eslint-disable jsdoc/check-tag-names */
 /**
  * @jest-environment jsdom
- * @eslint-env jest
  */
+/* eslint-enable jsdoc/check-tag-names */
+/* eslint-env jest */
 /* global localStorage */
 const {
   addToBasket,
