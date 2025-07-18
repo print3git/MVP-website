@@ -59,6 +59,7 @@
     "test:unit": "npm test --prefix backend",
     "serve": "npm run build && node scripts/dev-server.js",
     "smoke": "node scripts/run-smoke.js",
+    "predeploy": "node scripts/check-missing-links.js",
     "build": "echo 'no build step'",
     "postbuild": "npx ts-node --transpile-only scripts/check-broken-symlinks-9ac8f74db5e1c32.ts",
     "postinstall": "npm run build",
