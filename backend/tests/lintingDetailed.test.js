@@ -9,7 +9,10 @@ test("detailed backend ESLint report", () => {
   // directory is gitignored and may not exist in fresh clones, so ensure it
   // is present before invoking ESLint.
   const coverageDir = path.join(backendDir, "coverage");
-  if (!fs.existsSync(coverageDir)) fs.mkdirSync(coverageDir);
+  if (!fs.existsSync(coverageDir)) {
+    fs.mkdirSync(coverageDir, { recursive: true });
+    fs.writeFileSync(path.join(coverageDir, ".gitkeep"), "");
+  }
   const output = execSync(`npx eslint -f json .`, {
     cwd: backendDir,
     encoding: "utf8",
