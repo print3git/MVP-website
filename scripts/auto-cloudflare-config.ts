@@ -28,6 +28,9 @@ function detectFramework() {
   return null;
 }
 
+/**
+ * @param {number} len
+ */
 function randomString(len) {
   return crypto
     .randomBytes(len)
@@ -36,6 +39,10 @@ function randomString(len) {
     .slice(0, len);
 }
 
+/**
+ * @param {string} file
+ * @returns {any}
+ */
 function readConfig(file) {
   if (!fs.existsSync(file)) return {};
   const txt = fs.readFileSync(file, "utf8");
@@ -43,6 +50,10 @@ function readConfig(file) {
   return yaml.parse(txt);
 }
 
+/**
+ * @param {string} file
+ * @param {any} data
+ */
 function writeConfig(file, data) {
   if (file.endsWith(".json"))
     fs.writeFileSync(file, JSON.stringify(data, null, 2));
