@@ -32,7 +32,7 @@ const targets = [
     required: false,
   },
   {
-    url: process.env.APT_CHECK_URL || "http://archive.ubuntu.com",
+    url: process.env.APT_CHECK_URL || "https://archive.ubuntu.com",
     name: "apt archive",
     required: !process.env.SKIP_PW_DEPS,
   },
