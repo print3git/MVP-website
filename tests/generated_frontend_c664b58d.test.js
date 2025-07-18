@@ -1,7 +1,3 @@
-/**
- * @jest-environment jsdom
- * @eslint-env jest
- */
 /* global localStorage */
 const {
   addToBasket,
