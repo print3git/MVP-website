@@ -193,7 +193,9 @@ for (const cluster of clusters) {
   content += `describe('${cluster.name}', () => {\n`;
   for (const t of cluster.tests) {
     for (let i = 0; i < repeat; i++) {
-      const testName = `${t.desc} case ${i + 1}`.replace(/'/g, "\\'");
+      const testName = `${t.desc} case ${i + 1}`
+        .replace(/\\/g, "\\\\")
+        .replace(/'/g, "\\'");
       content += `  it('${testName}', async () => {\n`;
       content += `    const buffer = Buffer.from([]); // TODO: generate ${t.type === "success" ? "valid" : "invalid"}Buffer\n`;
       if (t.type === "success") {

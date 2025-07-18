@@ -28,7 +28,9 @@ describe.skip("insecure http fetch; https unavailable", () => {
   }
 
   function startServer(env = {}) {
-    return spawn("npm", ["run", "serve"], { env: { ...process.env, ...env } });
+    return spawn("npm", ["run", "serve"], {
+      env: { ...process.env, USE_HTTPS: "1", ...env },
+    });
   }
 
   async function stop(proc) {
@@ -45,7 +47,7 @@ describe.skip("insecure http fetch; https unavailable", () => {
   test("homepage responds at root", async () => {
     const proc = startServer();
     await waitForPort(3000);
-    const res = await fetch("http://localhost:3000/");
+    const res = await fetch("https://localhost:3000/");
     await stop(proc);
     expect(res.status).toBe(200);
   });
@@ -58,7 +60,7 @@ describe.skip("insecure http fetch; https unavailable", () => {
   test("static index.js loads", async () => {
     const proc = startServer();
     await waitForPort(3000);
-    const res = await fetch("http://localhost:3000/js/index.js");
+    const res = await fetch("https://localhost:3000/js/index.js");
     await stop(proc);
     expect(res.status).toBe(200);
   });
@@ -66,10 +68,10 @@ describe.skip("insecure http fetch; https unavailable", () => {
   test("viewerReady within 10s", async () => {
     const proc = startServer();
     await waitForPort(3000);
-    const browser = await chromium.launch();
+    const browser = await chromium.launch({ ignoreHTTPSErrors: true });
     const page = await browser.newPage();
     const start = Date.now();
-    await page.goto("http://localhost:3000/");
+    await page.goto("https://localhost:3000/");
     await page.waitForFunction("document.body.dataset.viewerReady", {
       timeout: 10000,
     });
