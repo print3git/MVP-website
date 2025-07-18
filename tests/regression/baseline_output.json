@@ -1,0 +1,15 @@
+{
+  "calls": {
+    "textToImage": 1,
+    "imageToText": 0,
+    "prepareImage": 0,
+    "generateGlb": 1,
+    "storeGlb": 1
+  },
+  "glbLength": 14,
+  "maxProcessingTime": 500,
+  "tokens": {
+    "STABILITY_KEY": "stability-test-key",
+    "SPARC3D_TOKEN": "sparc-token"
+  }
+}
