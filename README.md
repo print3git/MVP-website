@@ -79,7 +79,9 @@ The server uses `STRIPE_LIVE_KEY` when `NODE_ENV=production`; otherwise `STRIPE_
    Ensure your environment can reach `https://registry.npmjs.org`,
    `https://cdn.playwright.dev`, and `http://archive.ubuntu.com`. The setup
    script downloads packages, browsers, and system libraries from these domains,
-   so network restrictions may cause it to fail.
+   so network restrictions may cause it to fail. If connectivity is blocked but
+   dependencies are already installed, set `SKIP_NET_CHECKS=1` to bypass the
+   network check.
 
 3. Verify your environment and test pipeline:
 

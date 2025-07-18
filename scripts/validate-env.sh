@@ -143,7 +143,7 @@ if [[ -z "${SKIP_NET_CHECKS:-}" ]]; then
       echo "Network check failed for Playwright CDN, setting SKIP_PW_DEPS=1." >&2
       export SKIP_PW_DEPS=1
     else
-      echo "Network check failed. Ensure access to the npm registry and Playwright CDN." >&2
+      echo "Network check failed. Ensure access to the npm registry and Playwright CDN, or set SKIP_NET_CHECKS=1 if dependencies are already installed." >&2
       exit 1
     fi
   fi

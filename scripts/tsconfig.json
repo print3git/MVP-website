@@ -8,5 +8,5 @@
     "noImplicitAny": true,
     "strictNullChecks": true
   },
-  "files": ["ci_watchdog.ts", "auto-cloudflare-config.ts"]
+  "files": ["ci_watchdog.ts"]
 }

@@ -1,7 +1,7 @@
-#!/usr/bin/env ts-node
-import fs from "fs";
-import yaml from "yaml";
-import crypto from "crypto";
+#!/usr/bin/env node
+const fs = require("fs");
+const yaml = require("yaml");
+const crypto = require("crypto");
 
 const configFile = process.argv[2] || "cloudflare-pages.config.json";
 const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
