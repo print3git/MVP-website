@@ -1,0 +1,49 @@
+name: Playwright Failure Alerts
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+  workflow_dispatch:
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - name: Install dependencies
+        run: |
+          npm ci
+          npm ci --prefix backend
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+      - name: Run Playwright tests
+        id: tests
+        run: |
+          npx playwright test '**/*.spec.ts' | tee test.log
+        continue-on-error: true
+      - name: Send webhook alert
+        if: steps.tests.outcome == 'failure'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          COMMIT_URL: ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}
+        run: |
+          NAME=$(grep -Eo '^\s*✖[^ ]+[^\n]*' test.log | head -n1 | sed 's/^\s*✖\s*//')
+          STEP="Run Playwright tests"
+          STACK=$(grep -n -A3 '^\s*✖' test.log | head -n4 | tail -n+2)
+          TEXT="*Test:* $NAME\n*Step:* $STEP\n*Commit:* $COMMIT_URL\n\n\`\`\`\n$STACK\n\`\`\`"
+          PAYLOAD=$(printf '{"text":"%s"}' "${TEXT}")
+          if [ -n "$SLACK_WEBHOOK_URL" ]; then
+            curl -X POST -H 'Content-Type: application/json' -d "$PAYLOAD" "$SLACK_WEBHOOK_URL"
+          elif [ -n "$DISCORD_WEBHOOK_URL" ]; then
+            curl -X POST -H 'Content-Type: application/json' -d "$PAYLOAD" "$DISCORD_WEBHOOK_URL"
+          fi
+      - name: Fail job when tests fail
+        if: steps.tests.outcome == 'failure'
+        run: exit 1
