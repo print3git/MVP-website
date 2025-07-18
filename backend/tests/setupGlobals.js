@@ -3,9 +3,11 @@
 global[Symbol.for("$$jest-deletion-mode")] = "off";
 
 const dotenv = require("dotenv");
+const path = require("path");
 const originalDotenvConfig = dotenv.config;
 dotenv.config = (options = {}) =>
   originalDotenvConfig({ quiet: true, ...options });
+dotenv.config({ path: path.resolve(__dirname, "../../.env.test") });
 
 const originalEmitWarning = process.emitWarning;
 process.emitWarning = (warning, ...args) => {
