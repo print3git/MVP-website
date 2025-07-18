@@ -17,7 +17,8 @@ function walk(dir) {
   try {
     entries = fs.readdirSync(dir, { withFileTypes: true });
   } catch (err) {
-    badPaths.push(`${dir} (${err.code || err.message})`);
+    const code = err.code || err.message;
+    badPaths.push(`${dir} (${code})`);
     return;
   }
 
@@ -40,7 +41,8 @@ function walk(dir) {
         fs.accessSync(full, fs.constants.R_OK);
       }
     } catch (err) {
-      badPaths.push(`${full} (${err.code || err.message})`);
+      const code = err.code || err.message;
+      badPaths.push(`${full} (${code})`);
     }
   }
 }
