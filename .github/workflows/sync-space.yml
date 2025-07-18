@@ -42,5 +42,8 @@ jobs:
       - name: Run backend tests
         run: npm run coverage --prefix backend
 
+      - name: Run sync tests
+        run: node scripts/run-jest.js tests/test-hf-sync-*.test.ts
+
       - name: Run smoke tests
         run: npm run smoke
