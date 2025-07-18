@@ -1,23 +1,29 @@
-#!/usr/bin/env node
+#!/usr/bin/env ts-node
 import fs from "fs";
 import path from "path";
 
 const repoRoot = path.resolve(__dirname, "..");
-const argDir = process.argv[2];
+const argDir: string | undefined = process.argv[2];
 const outputDir = argDir
   ? path.resolve(repoRoot, argDir)
   : fs.existsSync(path.join(repoRoot, "dist"))
     ? path.join(repoRoot, "dist")
     : repoRoot;
 
-const badPaths = [];
+const badPaths: string[] = [];
 
-function walk(dir) {
-  let entries;
+/**
+ * Recursively verify files under a directory.
+ * @param {string} dir Directory to traverse.
+ * @returns {void}
+ */
+function walk(dir: string): void {
+  let entries: fs.Dirent[];
   try {
     entries = fs.readdirSync(dir, { withFileTypes: true });
   } catch (err) {
-    badPaths.push(`${dir} (${err.code || err.message})`);
+    const e = err as NodeJS.ErrnoException;
+    badPaths.push(`${dir} (${e.code ?? e.message})`);
     return;
   }
 
@@ -40,7 +46,8 @@ function walk(dir) {
         fs.accessSync(full, fs.constants.R_OK);
       }
     } catch (err) {
-      badPaths.push(`${full} (${err.code || err.message})`);
+      const e = err as NodeJS.ErrnoException;
+      badPaths.push(`${full} (${e.code ?? e.message})`);
     }
   }
 }
@@ -50,7 +57,7 @@ walk(outputDir);
 if (badPaths.length) {
   console.error("Build output verification failed. Issues found:");
   for (const p of badPaths) console.error(" -", p);
-  process.exit(1);
+  process.exitCode = 1;
+} else {
+  console.log("No broken symlinks or permission issues detected.");
 }
-
-console.log("No broken symlinks or permission issues detected.");

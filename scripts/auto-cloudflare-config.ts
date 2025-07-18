@@ -6,7 +6,11 @@ import crypto from "crypto";
 const configFile = process.argv[2] || "cloudflare-pages.config.json";
 const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
 
-function detectFramework() {
+/**
+ * Detect a commonly used framework in the project.
+ * @returns {string | null} The framework name or null when none found.
+ */
+function detectFramework(): string | null {
   const deps = { ...pkg.dependencies, ...pkg.devDependencies };
   if (
     fs.existsSync("next.config.js") ||
@@ -28,7 +32,12 @@ function detectFramework() {
   return null;
 }
 
-function randomString(len) {
+/**
+ * Generate a random alphanumeric string.
+ * @param {number} len Length of the string.
+ * @returns {string} Random string.
+ */
+function randomString(len: number): string {
   return crypto
     .randomBytes(len)
     .toString("base64")
@@ -36,14 +45,24 @@ function randomString(len) {
     .slice(0, len);
 }
 
-function readConfig(file) {
+/**
+ * Read a JSON or YAML config file.
+ * @param {string} file Path to the config file.
+ * @returns {Record<string, unknown>} Parsed configuration.
+ */
+function readConfig(file: string): Record<string, unknown> {
   if (!fs.existsSync(file)) return {};
   const txt = fs.readFileSync(file, "utf8");
   if (file.endsWith(".json")) return JSON.parse(txt);
   return yaml.parse(txt);
 }
 
-function writeConfig(file, data) {
+/**
+ * Write configuration back to disk.
+ * @param {string} file Output file path.
+ * @param {Record<string, unknown>} data Config data to write.
+ */
+function writeConfig(file: string, data: Record<string, unknown>): void {
   if (file.endsWith(".json"))
     fs.writeFileSync(file, JSON.stringify(data, null, 2));
   else fs.writeFileSync(file, yaml.stringify(data));
