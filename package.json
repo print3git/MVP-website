@@ -43,6 +43,7 @@
     "ci": "node scripts/assert-setup.js && npm run format:check && npm run lint && npm run typecheck && npm run i18n:lint && npm run test:ci && npm run test:a11y",
     "test:ci": "cross-env JEST_CI=true npm run test-ci --prefix backend && node scripts/run-jest.js tests/ci",
     "test:update-threshold": "node scripts/update-coverage-threshold.js",
+    "update-lint-baseline": "node scripts/update-lint-baseline.js",
     "test:stability": "node scripts/test-stability.js",
     "deps:check": "npx -y lockfile-diff HEAD package-lock.json && npx -y lockfile-diff HEAD backend/package-lock.json && npx -y lockfile-diff HEAD backend/hunyuan_server/package-lock.json",
     "deps:dedupe": "npm dedupe",
