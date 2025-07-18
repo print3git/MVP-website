@@ -2,7 +2,7 @@ const { execFileSync } = require("child_process");
 const path = require("path");
 
 describe("validate-env without mise", () => {
-  test("script succeeds when mise command missing", () => {
+  test("script fails when mise missing and SKIP_NET_CHECKS set", () => {
     const env = {
       ...process.env,
       PATH: "/usr/bin:/bin",
@@ -13,9 +13,11 @@ describe("validate-env without mise", () => {
       SKIP_NET_CHECKS: "1",
       SKIP_PW_DEPS: "1",
     };
-    execFileSync("bash", [path.join("scripts", "validate-env.sh")], {
-      env,
-      stdio: "inherit",
-    });
+    expect(() =>
+      execFileSync("bash", [path.join("scripts", "validate-env.sh")], {
+        env,
+        stdio: "inherit",
+      }),
+    ).toThrow();
   });
 });

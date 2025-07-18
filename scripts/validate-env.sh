@@ -3,17 +3,20 @@ set -e
 
 # Ensure mise is available for toolchain management
 if ! command -v mise >/dev/null 2>&1; then
-  "$(dirname "$0")/install-mise.sh" >/dev/null
+  if [[ -z "${SKIP_NET_CHECKS:-}" ]]; then
+    "$(dirname "$0")/install-mise.sh" >/dev/null
+  else
+    echo "mise command not found and SKIP_NET_CHECKS set" >&2
+  fi
 fi
 
 # Ensure mise activates the configured Node version so npm commands work even
 # when the shell hasn't sourced mise's hook. This prevents "node: command not
 # found" errors in fresh environments.
-if ! command -v mise >/dev/null 2>&1; then
-  "$(dirname "$0")/install-mise.sh" >/dev/null
+if command -v mise >/dev/null 2>&1; then
   export PATH="$HOME/.local/bin:$PATH"
+  eval "$(mise activate bash)"
 fi
-eval "$(mise activate bash)"
 
 # Silence mise warnings about untrusted config files
 mise trust . >/dev/null 2>&1 || true
@@ -86,13 +89,21 @@ if [[ -z "${SKIP_DB_CHECK:-}" && "${DB_URL}" == "$placeholder_db" ]]; then
   export SKIP_DB_CHECK=1
 fi
 required_node_major="${REQUIRED_NODE_MAJOR:-20}"
-current_major=$(node -v | sed -E "s/^v([0-9]+).*/\1/")
-if [ "$current_major" -ne "$required_node_major" ]; then
+if command -v node >/dev/null 2>&1; then
+  current_major=$(node -v | sed -E "s/^v([0-9]+).*/\1/")
+else
+  current_major=""
+fi
+if [ "$current_major" != "$required_node_major" ]; then
+  if [[ -n "${SKIP_NET_CHECKS:-}" ]]; then
+    echo "Node $required_node_major required but not installed or mismatched" >&2
+    exit 1
+  fi
   echo "Installing Node $required_node_major via mise" >&2
   mise use -g node@$required_node_major >/dev/null 2>&1 || true
   eval "$(mise activate bash)"
   current_major=$(node -v | sed -E "s/^v([0-9]+).*/\1/")
-  if [ "$current_major" -ne "$required_node_major" ]; then
+  if [ "$current_major" != "$required_node_major" ]; then
     echo "Node $required_node_major is required. Current version: $current_major" >&2
     exit 1
   fi
@@ -107,7 +118,7 @@ if [[ -n "${npm_config_http_proxy:-}" || -n "${npm_config_https_proxy:-}" ]]; th
 fi
 
 
-if [[ -z "${SKIP_PW_DEPS:-}" ]]; then
+if [[ -z "${SKIP_PW_DEPS:-}" && -z "${SKIP_NET_CHECKS:-}" ]]; then
   if ! node scripts/check-apt.js >/dev/null 2>&1; then
     echo "APT repository check failed. Falling back to SKIP_PW_DEPS=1." >&2
     export SKIP_PW_DEPS=1
