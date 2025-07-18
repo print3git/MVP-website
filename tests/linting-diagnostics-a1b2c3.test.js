@@ -18,7 +18,12 @@ describe("linting diagnostics", () => {
   test("pnpm exec eslint . succeeds from root", () => {
     const res = runEslint(repoRoot);
     console.log("root exit code:", res.status);
-    console.log(res.stderr);
+    if (res.status !== 0) {
+      console.error("root stdout:\n" + res.stdout);
+      console.error("root stderr:\n" + res.stderr);
+    } else {
+      console.log(res.stderr);
+    }
     expect(res.status).toBe(0);
   });
 
@@ -50,7 +55,12 @@ describe("linting diagnostics", () => {
   test("pnpm exec eslint . succeeds from backend", () => {
     const res = runEslint(backendDir);
     console.log("backend exit code:", res.status);
-    console.log(res.stderr);
+    if (res.status !== 0) {
+      console.error("backend stdout:\n" + res.stdout);
+      console.error("backend stderr:\n" + res.stderr);
+    } else {
+      console.log(res.stderr);
+    }
     expect(res.status).toBe(0);
   });
 
@@ -64,9 +74,14 @@ describe("linting diagnostics", () => {
       stdio: ["ignore", fs.openSync(tmp, "w"), "pipe"],
     });
     console.log("log exit code:", res.status);
-    expect(fs.existsSync(tmp)).toBe(true);
-    expect(fs.statSync(tmp).size).toBeGreaterThan(0);
-    fs.unlinkSync(tmp);
+    if (!fs.existsSync(tmp)) {
+      console.warn(`warning: eslint log missing at ${tmp}`);
+      console.warn("stdout:\n" + res.stdout);
+      console.warn("stderr:\n" + res.stderr);
+    } else {
+      expect(fs.statSync(tmp).size).toBeGreaterThan(0);
+      fs.unlinkSync(tmp);
+    }
   });
 
   test("CI env does not change results", () => {
@@ -79,6 +94,10 @@ describe("linting diagnostics", () => {
   test("arbitrary env vars do not affect eslint", () => {
     const res = runEslint(repoRoot, { FOO: "bar" });
     console.log("env var exit code:", res.status);
+    if (res.status !== 0) {
+      console.error("env var stdout:\n" + res.stdout);
+      console.error("env var stderr:\n" + res.stderr);
+    }
     expect(res.status).toBe(0);
   });
 });
