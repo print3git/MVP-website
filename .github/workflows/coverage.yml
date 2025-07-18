@@ -12,6 +12,15 @@ jobs:
           node-version: 20
       - run: SKIP_PW_DEPS=1 npm run setup
       - run: SKIP_PW_DEPS=1 npm run coverage
+      - name: Coverage summary
+        run: |
+          node - <<'EOF'
+          const s = require('./coverage/coverage-summary.json');
+          console.log(`Statements: ${s.total.statements.pct}%`);
+          console.log(`Branches: ${s.total.branches.pct}%`);
+          console.log(`Functions: ${s.total.functions.pct}%`);
+          console.log(`Lines: ${s.total.lines.pct}%`);
+          EOF
       - name: Validate coverage-summary.json
         run: node -e "JSON.parse(require('fs').readFileSync('coverage/coverage-summary.json','utf-8')); console.log('✅ JSON ok')"
       - name: Check coverage thresholds
