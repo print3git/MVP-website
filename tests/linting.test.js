@@ -1,31 +1,32 @@
-const { execSync } = require("child_process");
+const { spawnSync } = require("child_process");
+
+// ensure the eslint config loads without throwing
+let eslintConfigLoaded = false;
+try {
+  require.resolve("../eslint.config.js");
+  eslintConfigLoaded = true;
+} catch (err) {
+  console.error("Failed to load eslint.config.js", err);
+}
 
 test("repository passes ESLint with no warnings", () => {
   try {
-    // run ESLint in JSON format so we can show the offending file and rule
-    execSync("npx eslint . -f json --max-warnings=0", {
-      stdio: "pipe",
-      encoding: "utf-8",
-    });
-  } catch (error) {
-    console.error("\n⛔ ESLint found problems:\n");
-    if (error.stdout) {
-      try {
-        const results = JSON.parse(error.stdout);
-        const lines = results
-          .flatMap((r) =>
-            r.messages.map(
-              (m) => `${r.filePath}:${m.line}:${m.column} ${m.ruleId}`,
-            ),
-          )
-          .slice(0, 10)
-          .join("\n");
-        console.error(lines + "\n");
-      } catch {
-        console.error(error.stdout);
-      }
+    expect(eslintConfigLoaded).toBe(true);
+    const result = spawnSync(
+      "npx",
+      ["eslint", ".", "-f", "json", "--max-warnings=0"],
+      {
+        encoding: "utf-8",
+        shell: true,
+      },
+    );
+
+    if (result.status !== 0) {
+      if (result.stderr) console.error(result.stderr);
     }
-    if (error.stderr) console.error(error.stderr);
-    throw error;
+    expect(result.status).toBe(0);
+  } catch (err) {
+    console.error(err);
+    return expect(err).toBeUndefined();
   }
 });
