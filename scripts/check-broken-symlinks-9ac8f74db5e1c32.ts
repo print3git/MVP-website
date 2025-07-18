@@ -1,23 +1,25 @@
 #!/usr/bin/env node
+/* eslint-disable */
 import fs from "fs";
 import path from "path";
 
-const repoRoot = path.resolve(__dirname, "..");
+const repoRoot: string = path.resolve(__dirname, "..");
 const argDir = process.argv[2];
-const outputDir = argDir
+const outputDir: string = argDir
   ? path.resolve(repoRoot, argDir)
   : fs.existsSync(path.join(repoRoot, "dist"))
     ? path.join(repoRoot, "dist")
     : repoRoot;
 
-const badPaths = [];
+const badPaths: string[] = [];
 
-function walk(dir) {
-  let entries;
+function walk(dir: string): void {
+  let entries: fs.Dirent[];
   try {
     entries = fs.readdirSync(dir, { withFileTypes: true });
   } catch (err) {
-    badPaths.push(`${dir} (${err.code || err.message})`);
+    const e = err as NodeJS.ErrnoException;
+    badPaths.push(`${dir} (${e.code || e.message})`);
     return;
   }
 
@@ -29,7 +31,7 @@ function walk(dir) {
         try {
           const target = fs.readlinkSync(full);
           fs.statSync(path.resolve(path.dirname(full), target));
-        } catch {
+        } catch (err) {
           badPaths.push(`broken symlink: ${full}`);
           continue;
         }
@@ -40,7 +42,8 @@ function walk(dir) {
         fs.accessSync(full, fs.constants.R_OK);
       }
     } catch (err) {
-      badPaths.push(`${full} (${err.code || err.message})`);
+      const e = err as NodeJS.ErrnoException;
+      badPaths.push(`${full} (${e.code || e.message})`);
     }
   }
 }
