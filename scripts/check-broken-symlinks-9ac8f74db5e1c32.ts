@@ -10,13 +10,12 @@ const outputDir = argDir
     ? path.join(repoRoot, "dist")
     : repoRoot;
 
-const badPaths = [];
-
-function walk(dir) {
-  let entries;
+const badPaths: string[] = [];
+function walk(dir: string): void {
+  let entries: fs.Dirent[];
   try {
     entries = fs.readdirSync(dir, { withFileTypes: true });
-  } catch (err) {
+  } catch (err: any) {
     badPaths.push(`${dir} (${err.code || err.message})`);
     return;
   }
@@ -39,7 +38,7 @@ function walk(dir) {
       } else {
         fs.accessSync(full, fs.constants.R_OK);
       }
-    } catch (err) {
+    } catch (err: any) {
       badPaths.push(`${full} (${err.code || err.message})`);
     }
   }
