@@ -1,6 +1,5 @@
-/**
- * @jest-environment jsdom
- */
+/* eslint-disable jsdoc/check-tag-names */
+/** @jest-environment jsdom */
 
 const fetchMock = require("jest-fetch-mock");
 fetchMock.enableMocks();

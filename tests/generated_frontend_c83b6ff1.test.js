@@ -1,6 +1,5 @@
-/**
- * @jest-environment jsdom
- */
+/* eslint-disable jsdoc/check-tag-names */
+/** @jest-environment jsdom */
 const React = require("react");
 const { render, screen } = require("@testing-library/react");
 
