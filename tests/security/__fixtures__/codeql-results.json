@@ -1,0 +1,32 @@
+{
+  "runs": [
+    {
+      "results": [
+        {
+          "rule": { "id": "js/sql-injection", "severity": "medium" },
+          "message": { "text": "Potential SQL injection" },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": { "uri": "src/app.js" },
+                "region": { "startLine": 42 }
+              }
+            }
+          ]
+        },
+        {
+          "rule": { "id": "js/unused-variable", "severity": "low" },
+          "message": { "text": "Unused variable" },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": { "uri": "src/util.js" },
+                "region": { "startLine": 5 }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
