@@ -1,0 +1,16 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "module": "CommonJS",
+    "target": "ES2022",
+    "rootDir": "./src",
+    "outDir": "./lib",
+    "allowJs": false,
+    "checkJs": false,
+    "verbatimModuleSyntax": false,
+    "esModuleInterop": true,
+    "noEmit": true
+  },
+  "include": ["src/**/*", "tests/**/*"],
+  "exclude": ["coverage", "node_modules"]
+}
