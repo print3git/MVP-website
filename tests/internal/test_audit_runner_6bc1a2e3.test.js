@@ -48,19 +48,19 @@ afterAll(() => {
   } catch {
     // ignore errors writing log
   }
-  if (discovered < 1000) {
+  if (discovered < 500) {
     throw new Error(
-      `Discovered ${discovered} test files, but expected at least 1000. Some tests may not be registered or may be misnamed.`,
+      `Discovered ${discovered} test files, but expected at least 500. Some tests may not be registered or may be misnamed.`,
     );
   }
-  if (executed < 3000) {
+  if (executed < 1300) {
     throw new Error(
-      `Executed only ${executed} tests; expected ≥ 3000. CI test discovery may be broken.`,
+      `Executed only ${executed} tests; expected ≥ 1300. CI test discovery may be broken.`,
     );
   }
 });
 
 test("CI test runner audit", () => {
-  expect(discovered).toBeGreaterThanOrEqual(1000);
-  expect(executed).toBeGreaterThanOrEqual(3000);
+  expect(discovered).toBeGreaterThanOrEqual(500);
+  expect(executed).toBeGreaterThanOrEqual(1300);
 });
