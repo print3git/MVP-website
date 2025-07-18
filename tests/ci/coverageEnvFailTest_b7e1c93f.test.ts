@@ -1,3 +1,4 @@
+/* eslint-disable jsdoc/check-tag-names */
 /**
  * @ciOnly
  */
