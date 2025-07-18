@@ -12,11 +12,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # — Uncomment & adjust these if you ever need a build step:
-      # - name: Install dependencies
-      #   run: npm ci
-      # - name: Build
-      #   run: npm run build
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run deployment readiness test
+        run: npm run test:cf-readiness
 
       - name: Publish to Cloudflare Pages
         uses: cloudflare/pages-action@v1
