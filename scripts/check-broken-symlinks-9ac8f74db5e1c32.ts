@@ -10,6 +10,7 @@ const outputDir = argDir
     ? path.join(repoRoot, "dist")
     : repoRoot;
 
+// @ts-nocheck
 const badPaths = [];
 
 function walk(dir) {

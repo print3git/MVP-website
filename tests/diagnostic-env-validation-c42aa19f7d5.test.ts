@@ -4,7 +4,8 @@ const path = require("path");
 
 /**
  * Make a HEAD request and return the status code.
- * @param url
+ * @param {string} url - URL to check
+ * @returns {Promise<number>} HTTP status code
  */
 function head(url) {
   return new Promise((resolve, reject) => {
