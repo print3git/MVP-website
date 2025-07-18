@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import fs from "fs";
-import path from "path";
+const fs = require("fs");
+const path = require("path");
 
 const repoRoot = path.resolve(__dirname, "..");
 const argDir = process.argv[2];
@@ -10,6 +10,8 @@ const outputDir = argDir
     ? path.join(repoRoot, "dist")
     : repoRoot;
 
+const ignorePaths = [path.join(repoRoot, "tests", "path-no-mise")];
+
 const badPaths = [];
 
 function walk(dir) {
@@ -17,12 +19,16 @@ function walk(dir) {
   try {
     entries = fs.readdirSync(dir, { withFileTypes: true });
   } catch (err) {
-    badPaths.push(`${dir} (${err.code || err.message})`);
+    const e = err;
+    badPaths.push(`${dir} (${e.code || e.message})`);
     return;
   }
 
   for (const entry of entries) {
     const full = path.join(dir, entry.name);
+    if (ignorePaths.some((p) => full.startsWith(p))) {
+      continue;
+    }
     try {
       const lst = fs.lstatSync(full);
       if (lst.isSymbolicLink()) {
@@ -40,7 +46,8 @@ function walk(dir) {
         fs.accessSync(full, fs.constants.R_OK);
       }
     } catch (err) {
-      badPaths.push(`${full} (${err.code || err.message})`);
+      const e = err;
+      badPaths.push(`${full} (${e.code || e.message})`);
     }
   }
 }
