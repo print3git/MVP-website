@@ -1,4 +1,5 @@
 #!/usr/bin/env ts-node
+
 import fs from "fs";
 import yaml from "yaml";
 import crypto from "crypto";
