@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+if [[ "$1" == "ci" || "$1" == "ping" ]]; then
+  exit 0
+fi
+exec "$REAL_NPM" "$@"
