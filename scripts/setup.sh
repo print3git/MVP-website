@@ -1,13 +1,19 @@
 #!/bin/bash
 set -e
 
-# Ensure mise is available for toolchain management
-"$(dirname "$0")/install-mise.sh" >/dev/null
+# Ensure mise is available for toolchain management. If installation fails,
+# continue without mise and skip related steps.
+SKIP_MISE_TOOLS=0
+if ! bash "$(dirname "$0")/install-mise.sh" >/tmp/mise-install.log 2>&1; then
+  echo "warning: mise installation failed, skipping mise-managed tools" >&2
+  cat /tmp/mise-install.log >&2
+  SKIP_MISE_TOOLS=1
+fi
 
-# Activate the configured Node version so npm commands use Node 20 even when the
-# shell hasn't sourced mise's hook. This prevents "Node 20 is required" errors
-# from the preinstall script when the global Node version is different.
-eval "$(mise activate bash)"
+# Activate the configured Node version so npm commands use Node 20 when possible
+if [ "$SKIP_MISE_TOOLS" -eq 0 ]; then
+  eval "$(mise activate bash)"
+fi
 
 cleanup_npm_cache() {
   npm cache clean --force >/dev/null 2>&1 || true
@@ -30,7 +36,11 @@ unset npm_config_http_proxy npm_config_https_proxy
 export npm_config_fund=false
 
 # Validate required environment variables and network access
-bash "$(dirname "$0")/check-env.sh"
+if [ "$SKIP_MISE_TOOLS" -eq 0 ]; then
+  bash "$(dirname "$0")/check-env.sh"
+else
+  echo "warning: skipping environment validation requiring mise" >&2
+fi
 
 # Persist proxy removal so new shells start clean
 if ! grep -q "unset npm_config_http_proxy" ~/.bashrc 2>/dev/null; then
@@ -38,20 +48,24 @@ if ! grep -q "unset npm_config_http_proxy" ~/.bashrc 2>/dev/null; then
 fi
 
 # Silence mise warnings about idiomatic version files
-mise trust . >/dev/null 2>&1 || true
-mise settings add idiomatic_version_file_enable_tools node --yes >/dev/null 2>&1 || true
-if [ -f .mise.toml ]; then
-  mise trust .mise.toml >/dev/null 2>&1 || true
+if [ "$SKIP_MISE_TOOLS" -eq 0 ]; then
+  mise trust . >/dev/null 2>&1 || true
+  mise settings add idiomatic_version_file_enable_tools node --yes >/dev/null 2>&1 || true
+  if [ -f .mise.toml ]; then
+    mise trust .mise.toml >/dev/null 2>&1 || true
+  fi
 fi
 
 # Persist trust so new shells don't emit warnings
-if ! grep -q "mise trust $(pwd)" ~/.bashrc 2>/dev/null; then
-  echo "mise trust $(pwd) >/dev/null 2>&1 || true" >> ~/.bashrc
-fi
+if [ "$SKIP_MISE_TOOLS" -eq 0 ]; then
+  if ! grep -q "mise trust $(pwd)" ~/.bashrc 2>/dev/null; then
+    echo "mise trust $(pwd) >/dev/null 2>&1 || true" >> ~/.bashrc
+  fi
 
-# Persist the setting so new shells don't emit warnings
-if ! grep -q "idiomatic_version_file_enable_tools" ~/.bashrc 2>/dev/null; then
-  echo "mise settings add idiomatic_version_file_enable_tools node >/dev/null 2>&1 || true" >> ~/.bashrc
+  # Persist the setting so new shells don't emit warnings
+  if ! grep -q "idiomatic_version_file_enable_tools" ~/.bashrc 2>/dev/null; then
+    echo "mise settings add idiomatic_version_file_enable_tools node >/dev/null 2>&1 || true" >> ~/.bashrc
+  fi
 fi
 
 # Abort early if the npm registry is unreachable

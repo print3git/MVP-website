@@ -40,6 +40,11 @@ elif [ -f "$repo_root/.env.example" ]; then
   load_env_file "$repo_root/.env.example"
 fi
 
+# In CI, provide safe defaults for missing critical variables
+if [[ -n "${CI:-}" ]]; then
+  bash "$script_dir/validate-env-hardend.sh"
+fi
+
 # Disable HTTP/2 for local testing to avoid client errors
 export HTTP2=false
 
