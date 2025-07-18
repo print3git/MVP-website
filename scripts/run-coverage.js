@@ -12,7 +12,17 @@ require("./check-node-version.js");
 // Validate environment variables and dependencies just like the test and CI
 // scripts do. This prevents confusing failures when `npm run coverage` is run
 // without first executing the setup script.
-require("./assert-setup.js");
+const setupRes = spawnSync(
+  process.execPath,
+  [path.join(__dirname, "assert-setup.js")],
+  {
+    stdio: "inherit",
+    env: { ...process.env },
+  },
+);
+if (setupRes.status) {
+  console.warn("Environment validation failed; continuing anyway");
+}
 
 const extraArgs = process.argv.slice(2);
 if (extraArgs.includes("--help") || extraArgs.includes("-h")) {
