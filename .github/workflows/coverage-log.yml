@@ -1,0 +1,18 @@
+name: Coverage Summary
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+jobs:
+  print-coverage:
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Print failed coverage
+        run: |
+          if [ -f coverage/failed.log ]; then
+            cat coverage/failed.log
+          else
+            echo "no failed coverage log"
+          fi

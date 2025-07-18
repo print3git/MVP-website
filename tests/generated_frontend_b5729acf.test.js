@@ -1,13 +1,9 @@
-/**
- * @jest-environment jsdom
- */
+/** */
 
 const fetchMock = require("jest-fetch-mock");
 fetchMock.enableMocks();
 
-const { track, flushAnalytics, setUserId } = require("../js/analytics.js");
-// ensure the imported function is exercised so eslint passes
-setUserId("test-user-id");
+const { track, flushAnalytics } = require("../js/analytics.js");
 
 describe("whitelisted events", () => {
   beforeEach(() => {
