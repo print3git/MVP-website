@@ -141,7 +141,7 @@ function main() {
   try {
     runValidateEnv();
     if (!process.env.SKIP_SETUP && !fs.existsSync(".setup-complete")) {
-      run("npm run setup");
+      run("bash scripts/setup-codex-9b08f7c1.sh");
     } else {
       console.log("Skipping setup step");
     }
