@@ -2,12 +2,16 @@ const nock = require("nock");
 const Stripe = require("stripe");
 
 jest.mock("stripe");
+jest.mock("@aws-sdk/client-s3", () => ({
+  S3Client: jest.fn().mockImplementation(() => ({
+    send: jest.fn().mockResolvedValue({}),
+  })),
+  PutObjectCommand: jest.fn(),
+}));
 
 const { generateGlb } = require("../../backend/src/lib/sparc3dClient.js");
 const { storeGlb } = require("../../backend/src/lib/storeGlb.js");
 const jobQueue = require("../../backend/queue/jobQueue.js");
-
-const { Client } = require("pg");
 
 /**
  * Minimal PG mock that records queries.
@@ -57,10 +61,6 @@ describe("AWS S3 storage", () => {
     process.env.S3_BUCKET = "bucket";
     process.env.AWS_ACCESS_KEY_ID = "id";
     process.env.AWS_SECRET_ACCESS_KEY = "secret";
-    aws.S3Client = jest
-      .fn()
-      .mockImplementation(() => ({ send: jest.fn().mockResolvedValue({}) }));
-    aws.PutObjectCommand = jest.fn();
   });
 
   test("uploads glb and returns url", async () => {
@@ -70,9 +70,14 @@ describe("AWS S3 storage", () => {
     buf.writeUInt32LE(12, 8);
     const url = await storeGlb(buf);
     expect(url).toMatch(
-      /^https:\/\/bucket.s3.us-east-1.amazonaws.com\/models\//,
+      /^https:\/\/bucket\.s3\.us-east-1\.amazonaws\.com\/models\//,
     );
     expect(aws.PutObjectCommand).toHaveBeenCalled();
+  });
+
+  test("regex does not match attacker domain", () => {
+    const regex = /^https:\/\/bucket\.s3\.us-east-1\.amazonaws\.com\/models\//;
+    expect("https://maliciousamazonaws.com/models/").not.toMatch(regex);
   });
 });
 
@@ -97,10 +102,12 @@ describe("Stripe charge", () => {
 });
 
 describe("Database connection", () => {
+  let Client;
   beforeEach(() => {
     jest
       .spyOn(require("pg"), "Client")
       .mockImplementation(() => new MockClient());
+    ({ Client } = require("pg"));
   });
 
   afterEach(() => {
