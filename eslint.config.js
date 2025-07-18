@@ -29,6 +29,7 @@ module.exports = [
       "backend/**",
       "scripts/ci_watchdog.ts",
       "scripts/ci_watchdog.js",
+      "scripts/check-gh-workflow-sync-23859.ts",
       "upload/**",
       "src/**",
     ],
