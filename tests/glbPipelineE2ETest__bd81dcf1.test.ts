@@ -1,9 +1,11 @@
 import axios from "axios";
 import { generateModel } from "../backend/src/pipeline/generateModel";
 
+const run = process.env.STABILITY_KEY ? describe : describe.skip;
+
 // These tests run the full production pipeline against live services using
 // credentials from process.env. They will fail if required secrets are not set.
-describe("GLB pipeline end-to-end", () => {
+run("GLB pipeline end-to-end", () => {
   jest.setTimeout(600000); // allow up to 10 minutes per test
 
   const prompts = [
