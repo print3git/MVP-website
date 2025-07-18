@@ -1,6 +1,4 @@
-/**
- * @jest-environment jsdom
- */
+// @jest-environment jsdom
 
 const fetchMock = require("jest-fetch-mock");
 fetchMock.enableMocks();

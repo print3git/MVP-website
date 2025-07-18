@@ -7,6 +7,7 @@ test("repository passes ESLint with no warnings", () => {
     encoding: "utf-8",
     stdio: ["ignore", "pipe", "pipe"],
     shell: true,
+    env: { ...process.env, NODE_V8_COVERAGE: "" },
   });
 
   // If ESLint found anything (exit code !== 0) or spawn failed, print it out

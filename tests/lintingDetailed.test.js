@@ -1,7 +1,10 @@
 const { execSync } = require("child_process");
 
 test("detailed ESLint report", () => {
-  const output = execSync("npx eslint . -f json", { encoding: "utf8" });
+  const output = execSync("npx eslint . -f json", {
+    encoding: "utf8",
+    env: { ...process.env, NODE_V8_COVERAGE: "" },
+  });
   const results = JSON.parse(output);
   const errors = results
     .flatMap((r) => r.messages.map((m) => ({ ...m, file: r.filePath })))
