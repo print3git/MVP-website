@@ -9,6 +9,7 @@ function setToken(token) {
 }
 
 import { API_BASE, authHeaders } from "./api.js";
+import { setSafeInnerHTML } from "./dom-utils-securityfix-79d3fa.ts";
 
 async function load() {
   const container = document.getElementById("sale");
@@ -26,9 +27,16 @@ async function load() {
   if (sale) {
     const div = document.createElement("div");
     div.className = "space-y-2";
-    div.innerHTML = `
-      <p>Active sale: ${sale.discount_percent}% off ${sale.product_type}</p>
-      <button id="end" class="bg-red-500 px-3 py-1 rounded">End Sale</button>`;
+    setSafeInnerHTML(
+      div,
+      [
+        "<p>Active sale: ",
+        "% off ",
+        '</p><button id="end" class="bg-red-500 px-3 py-1 rounded">End Sale</button>',
+      ],
+      sale.discount_percent,
+      sale.product_type,
+    );
     container.appendChild(div);
     div.querySelector("#end").addEventListener("click", async () => {
       const resp = await fetch(`${API_BASE}/admin/flash-sale/${sale.id}`, {
@@ -41,17 +49,9 @@ async function load() {
   } else {
     const div = document.createElement("div");
     div.className = "space-y-2";
-    div.innerHTML = `
-      <label class="block text-sm">Product Type
-        <input id="prod" class="w-full mt-1 p-2 rounded bg-[#1A1A1D] border border-white/10">
-      </label>
-      <label class="block text-sm">Discount %
-        <input id="disc" type="number" class="w-full mt-1 p-2 rounded bg-[#1A1A1D] border border-white/10">
-      </label>
-      <label class="block text-sm">Duration Minutes
-        <input id="mins" type="number" value="60" class="w-full mt-1 p-2 rounded bg-[#1A1A1D] border border-white/10">
-      </label>
-      <button id="start" class="bg-[#30D5C8] text-[#1A1A1D] px-3 py-1 rounded">Start Sale</button>`;
+    setSafeInnerHTML(div, [
+      '<label class="block text-sm">Product Type\n        <input id="prod" class="w-full mt-1 p-2 rounded bg-[#1A1A1D] border border-white/10">\n      </label>\n      <label class="block text-sm">Discount %\n        <input id="disc" type="number" class="w-full mt-1 p-2 rounded bg-[#1A1A1D] border border-white/10">\n      </label>\n      <label class="block text-sm">Duration Minutes\n        <input id="mins" type="number" value="60" class="w-full mt-1 p-2 rounded bg-[#1A1A1D] border border-white/10">\n      </label>\n      <button id="start" class="bg-[#30D5C8] text-[#1A1A1D] px-3 py-1 rounded">Start Sale</button>',
+    ]);
     container.appendChild(div);
     div.querySelector("#start").addEventListener("click", async () => {
       const now = Date.now();
