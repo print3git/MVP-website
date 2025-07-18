@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+const cleanupGlbArtifacts = require("../../scripts/cleanupGlbArtifacts.js");
 
 jest.mock("@aws-sdk/client-s3", () => ({
   S3Client: jest.fn(),
@@ -66,4 +67,8 @@ describe("glb prep helpers", () => {
       "image file not found",
     );
   });
+});
+
+afterAll(() => {
+  cleanupGlbArtifacts();
 });
