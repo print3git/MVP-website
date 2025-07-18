@@ -33,6 +33,7 @@ module.exports = [
       "scripts/ci_watchdog.ts",
       "scripts/ci_watchdog.js",
       "scripts/check-gh-workflow-sync-23859.ts",
+      "scripts/auto-cloudflare-config.ts",
       "upload/**",
       // "src/**", // removed to enable frontend linting
     ],
