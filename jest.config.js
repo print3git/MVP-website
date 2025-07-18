@@ -1,5 +1,8 @@
 module.exports = {
-  setupFiles: ["<rootDir>/backend/tests/setupGlobals.js"],
+  setupFiles: [
+    "<rootDir>/test/jest.setup.ts",
+    "<rootDir>/backend/tests/setupGlobals.js",
+  ],
   setupFilesAfterEnv: ["<rootDir>/test/setupAuthMiddleware.js"],
   coverageThreshold: {
     global: {

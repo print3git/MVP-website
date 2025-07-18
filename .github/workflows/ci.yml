@@ -73,6 +73,11 @@ jobs:
       - name: Install Husky hooks
         run: npm run prepare
 
+      - name: Prepare test env
+        run: |
+          cp .env.example .env.test
+          echo "DB_URL=postgres://user:pass@localhost/db" >> .env.test
+
       - name: Run CI
         env:
           PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
