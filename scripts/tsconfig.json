@@ -8,5 +8,5 @@
     "noImplicitAny": true,
     "strictNullChecks": true
   },
-  "files": ["ci_watchdog.ts"]
+  "files": ["ci_watchdog.ts", "report-ci-stages-b735ac.ts"]
 }

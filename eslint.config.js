@@ -29,6 +29,7 @@ module.exports = [
       "backend/**",
       "scripts/ci_watchdog.ts",
       "scripts/ci_watchdog.js",
+      "scripts/report-ci-stages-b735ac.ts",
       "upload/**",
       "src/**",
     ],
