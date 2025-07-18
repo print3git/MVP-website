@@ -40,6 +40,15 @@ elif [ -f "$repo_root/.env.example" ]; then
   load_env_file "$repo_root/.env.example"
 fi
 
+# Fail fast if critical environment variables are missing before any heavy checks
+fast_fail_vars=(DB_URL STRIPE_SECRET_KEY STRIPE_WEBHOOK_SECRET)
+for var in "${fast_fail_vars[@]}"; do
+  if [[ -z "${!var:-}" ]]; then
+    echo "❌ Missing env var: $var" >&2
+    exit 1
+  fi
+done
+
 # In CI, provide safe defaults for missing critical variables
 if [[ -n "${CI:-}" ]]; then
   bash "$script_dir/validate-env-hardend.sh"
