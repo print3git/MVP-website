@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, dev]
   pull_request:
-    branches: [main]
+    branches: [main, dev]
   workflow_dispatch:
 
 jobs:
@@ -78,6 +78,18 @@ jobs:
           PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '0'
         run: npm run ci
+
+      - name: Detect orphaned test files
+        if: >-
+          (github.event_name == 'push' && (github.ref_name == 'main' || github.ref_name == 'dev')) ||
+          (github.event_name == 'pull_request' && (github.base_ref == 'main' || github.base_ref == 'dev'))
+        run: |
+          script="scripts/internal/detect_orphaned_tests_<randomstring>.js"
+          if [ -f "$script" ]; then
+            node "$script" || { echo "::error::Orphaned tests detected"; exit 1; }
+          else
+            echo "Orphaned test detector not found; skipping"
+          fi
 
       - name: Run coverage
         run: SKIP_PW_DEPS=1 npm run coverage

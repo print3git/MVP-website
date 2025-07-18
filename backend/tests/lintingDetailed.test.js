@@ -10,7 +10,7 @@ test("detailed backend ESLint report", () => {
   // is present before invoking ESLint.
   const coverageDir = path.join(backendDir, "coverage");
   if (!fs.existsSync(coverageDir)) fs.mkdirSync(coverageDir);
-  const output = execSync(`npx eslint -f json .`, {
+  const output = execSync(`npx eslint -f json --ignore-pattern coverage "."`, {
     cwd: backendDir,
     encoding: "utf8",
   });
