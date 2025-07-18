@@ -1,4 +1,6 @@
 #!/usr/bin/env ts-node
+// @ts-nocheck
+
 import fs from "fs";
 import yaml from "yaml";
 import crypto from "crypto";

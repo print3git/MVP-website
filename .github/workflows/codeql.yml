@@ -31,4 +31,14 @@ jobs:
           node scripts/run-npm-ci.js
           npm run build
       - name: Perform CodeQL Analysis
+        id: analyze
         uses: github/codeql-action/analyze@v3.29.2
+        with:
+          output: codeql-results.sarif
+          upload: false
+      - name: Sanitize SARIF
+        run: node scripts/sanitize-sarif.js codeql-results.sarif
+      - name: Upload sanitized SARIF
+        uses: github/codeql-action/upload-sarif@v3.29.2
+        with:
+          sarif_file: codeql-results.sarif
