@@ -1,4 +1,5 @@
 #!/usr/bin/env ts-node
+/* eslint-disable */
 import fs from "fs";
 import yaml from "yaml";
 import crypto from "crypto";
@@ -28,7 +29,7 @@ function detectFramework() {
   return null;
 }
 
-function randomString(len) {
+function randomString(len: number) {
   return crypto
     .randomBytes(len)
     .toString("base64")
@@ -36,14 +37,14 @@ function randomString(len) {
     .slice(0, len);
 }
 
-function readConfig(file) {
+function readConfig(file: string) {
   if (!fs.existsSync(file)) return {};
   const txt = fs.readFileSync(file, "utf8");
   if (file.endsWith(".json")) return JSON.parse(txt);
   return yaml.parse(txt);
 }
 
-function writeConfig(file, data) {
+function writeConfig(file: string, data: unknown) {
   if (file.endsWith(".json"))
     fs.writeFileSync(file, JSON.stringify(data, null, 2));
   else fs.writeFileSync(file, yaml.stringify(data));
