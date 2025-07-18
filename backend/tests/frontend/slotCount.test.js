@@ -46,7 +46,7 @@ describe("slot count", () => {
     const dom = new JSDOM(html, {
       runScripts: "dangerously",
       resources: "usable",
-      url: "http://localhost/payment.html?session_id=1",
+      url: "https://localhost/payment.html?session_id=1",
     });
     global.window = dom.window;
     global.document = dom.window.document;
@@ -71,7 +71,7 @@ describe("slot count", () => {
     const dom = new JSDOM(html, {
       runScripts: "dangerously",
       resources: "usable",
-      url: "http://localhost/payment.html",
+      url: "https://localhost/payment.html",
     });
     global.window = dom.window;
     global.document = dom.window.document;

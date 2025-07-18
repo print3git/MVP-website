@@ -52,7 +52,7 @@ test("serve binds on port 3000", async () => {
 test("homepage responds at root path", async () => {
   const { proc, port } = startServer(3100);
   await waitForPort(port);
-  const res = await fetch(`http://localhost:${port}/`);
+  const res = await fetch(`https://localhost:${port}/`);
   expect(res.status).toBe(200);
   proc.kill("SIGTERM");
 });
@@ -62,7 +62,7 @@ test("viewerReady marker appears", async () => {
   await waitForPort(port);
   const browser = await chromium.launch();
   const page = await browser.newPage();
-  await page.goto(`http://localhost:${port}/`);
+  await page.goto(`https://localhost:${port}/`);
   await page.waitForFunction('document.body.dataset.viewerReady === "true"', {
     timeout: 30000,
   });
@@ -75,7 +75,7 @@ test("viewerReady marker appears", async () => {
 test("static asset loads", async () => {
   const { proc, port } = startServer(3300);
   await waitForPort(port);
-  const res = await fetch(`http://localhost:${port}/js/ModelViewer.js`);
+  const res = await fetch(`https://localhost:${port}/js/ModelViewer.js`);
   expect(res.status).toBe(200);
   proc.kill("SIGTERM");
 });
@@ -94,7 +94,7 @@ test("viewer readiness under 30s", async () => {
   await waitForPort(port);
   const browser = await chromium.launch();
   const page = await browser.newPage();
-  await page.goto(`http://localhost:${port}/`);
+  await page.goto(`https://localhost:${port}/`);
   await page.waitForFunction('document.body.dataset.viewerReady === "true"', {
     timeout: 30000,
   });

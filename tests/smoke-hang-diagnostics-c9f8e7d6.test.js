@@ -43,7 +43,7 @@ describe("smoke hang diagnostics", () => {
   test("homepage responds at /", async () => {
     const proc = startServer();
     await waitPort(3000);
-    const res = await fetch("http://localhost:3000/");
+    const res = await fetch("https://localhost:3000/");
     proc.kill("SIGTERM");
     expect(res.status).toBe(200);
   });
@@ -51,7 +51,9 @@ describe("smoke hang diagnostics", () => {
   test("viewerReady marker present in page", async () => {
     const proc = startServer();
     await waitPort(3000);
-    const html = await (await fetch("http://localhost:3000/index.html")).text();
+    const html = await (
+      await fetch("https://localhost:3000/index.html")
+    ).text();
     proc.kill("SIGTERM");
     expect(html).toMatch(/viewerReady/);
   });
@@ -59,7 +61,7 @@ describe("smoke hang diagnostics", () => {
   test("static asset js/index.js loads", async () => {
     const proc = startServer();
     await waitPort(3000);
-    const res = await fetch("http://localhost:3000/js/index.js");
+    const res = await fetch("https://localhost:3000/js/index.js");
     proc.kill("SIGTERM");
     expect(res.status).toBe(200);
   });
@@ -68,7 +70,7 @@ describe("smoke hang diagnostics", () => {
     const proc = startServer();
     await waitPort(3000);
     const start = Date.now();
-    const res = await fetch("http://localhost:3000/healthz");
+    const res = await fetch("https://localhost:3000/healthz");
     const duration = Date.now() - start;
     proc.kill("SIGTERM");
     expect(res.status).toBe(200);

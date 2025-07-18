@@ -1,5 +1,5 @@
 process.env.DB_URL = "postgres://user:pass@localhost/db";
-process.env.DALLE_API_URL = "http://localhost:5002/generate";
+process.env.DALLE_API_URL = "https://localhost:5002/generate";
 process.env.LLM_API_URL = "";
 process.env.STRIPE_SECRET_KEY = "test";
 process.env.STRIPE_WEBHOOK_SECRET = "whsec";

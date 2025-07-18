@@ -35,7 +35,7 @@ test("viewerReady dataset becomes true", async () => {
   await waitPort(3000);
   const browser = await chromium.launch();
   const page = await browser.newPage();
-  await page.goto("http://localhost:3000/");
+  await page.goto("https://localhost:3000/");
   await page.waitForFunction("document.body.dataset.viewerReady", {
     timeout: 60000,
   });

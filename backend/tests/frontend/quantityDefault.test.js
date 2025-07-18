@@ -23,7 +23,7 @@ function loadDom() {
   const dom = new JSDOM(html, {
     runScripts: "dangerously",
     resources: "usable",
-    url: "http://localhost/payment.html",
+    url: "https://localhost/payment.html",
   });
   global.window = dom.window;
   global.document = dom.window.document;

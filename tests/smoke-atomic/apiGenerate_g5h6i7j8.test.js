@@ -25,7 +25,7 @@ test("api /api/generate returns json", async () => {
   const env = { ...process.env, PORT: String(port) };
   const proc = spawn("npm", ["run", "serve"], { env });
   await waitForPort(port);
-  const res = await fetch(`http://localhost:${port}/api/generate`, {
+  const res = await fetch(`https://localhost:${port}/api/generate`, {
     method: "POST",
   });
   const body = await res.json();

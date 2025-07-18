@@ -9,7 +9,7 @@ let baseUrl;
 
 beforeAll((done) => {
   server = http.createServer(app).listen(0, () => {
-    baseUrl = `http://localhost:${server.address().port}`;
+    baseUrl = `https://localhost:${server.address().port}`;
     done();
   });
 });

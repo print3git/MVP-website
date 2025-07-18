@@ -23,7 +23,7 @@ function setup(url) {
 }
 
 test("loads model from API", async () => {
-  const dom = setup("http://localhost/share.html?slug=test");
+  const dom = setup("https://localhost/share.html?slug=test");
   dom.window.fetch = jest.fn(() =>
     Promise.resolve({
       ok: true,
@@ -38,7 +38,7 @@ test("loads model from API", async () => {
 });
 
 test("shows error when slug missing", () => {
-  const dom = setup("http://localhost/share.html");
+  const dom = setup("https://localhost/share.html");
   dom.window.document.dispatchEvent(new dom.window.Event("DOMContentLoaded"));
   expect(dom.window.document.getElementById("error").textContent).toBe(
     "Missing share link",

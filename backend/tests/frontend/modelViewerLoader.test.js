@@ -56,7 +56,7 @@ test("falls back to local script when CDN fails", async () => {
     {
       runScripts: "dangerously",
       resources: "usable",
-      url: "http://localhost/",
+      url: "https://localhost/",
     },
   );
   global.window = dom.window;
@@ -100,7 +100,7 @@ test("rejects when both CDN and local scripts fail", async () => {
     {
       runScripts: "dangerously",
       resources: "usable",
-      url: "http://localhost/",
+      url: "https://localhost/",
     },
   );
   global.window = dom.window;
@@ -124,7 +124,7 @@ test("falls back when HEAD request fails", async () => {
     {
       runScripts: "dangerously",
       resources: "usable",
-      url: "http://localhost/",
+      url: "https://localhost/",
     },
   );
   global.window = dom.window;

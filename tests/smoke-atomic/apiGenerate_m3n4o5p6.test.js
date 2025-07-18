@@ -31,7 +31,7 @@ describe("generate endpoint", () => {
   });
 
   test("POST /api/generate returns glb_url", async () => {
-    const res = await fetch("http://localhost:3000/api/generate", {
+    const res = await fetch("https://localhost:3000/api/generate", {
       method: "POST",
     });
     expect(res.status).toBe(200);

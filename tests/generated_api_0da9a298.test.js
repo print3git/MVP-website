@@ -64,7 +64,7 @@ CREATE TABLE password_resets (
   const app = require("../backend/server");
   const server = app.listen(0);
   await new Promise((r) => server.once("listening", r));
-  const url = `http://localhost:${server.address().port}`;
+  const url = `https://localhost:${server.address().port}`;
   return { server, pool, url };
 }
 

@@ -31,7 +31,7 @@ describe("health check", () => {
   });
 
   test("GET / responds within 5s", async () => {
-    const res = await fetch("http://localhost:3000/");
+    const res = await fetch("https://localhost:3000/");
     expect(res.status).toBe(200);
   });
 });

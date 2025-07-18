@@ -39,7 +39,7 @@ async function startServer(port = 4001) {
   return new Promise((resolve) => {
     const server = app.listen(port, () =>
       resolve({
-        url: `http://localhost:${port}`,
+        url: `https://localhost:${port}`,
         close: () => new Promise((r) => server.close(r)),
       }),
     );

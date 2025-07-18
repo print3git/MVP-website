@@ -52,7 +52,7 @@ test("falls back to local script when CDN script fails", async () => {
     {
       runScripts: "dangerously",
       resources: "usable",
-      url: "http://localhost/",
+      url: "https://localhost/",
     },
   );
   global.window = dom.window;

@@ -8,7 +8,7 @@ test("root endpoint responds with 200", async () => {
   const proc = spawn("npm", ["run", "serve"], { env: process.env });
   for (let i = 0; i < 50; i++) {
     try {
-      const res = await fetch("http://localhost:3000/");
+      const res = await fetch("https://localhost:3000/");
       if (res.status === 200) {
         proc.kill();
         return;

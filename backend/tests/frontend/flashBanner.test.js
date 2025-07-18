@@ -25,7 +25,7 @@ function setupDom() {
   const dom = new JSDOM(html, {
     runScripts: "dangerously",
     resources: "usable",
-    url: "http://localhost/",
+    url: "https://localhost/",
   });
   global.window = dom.window;
   global.document = dom.window.document;

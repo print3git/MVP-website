@@ -44,7 +44,7 @@ test("serve binds to port 3000", async () => {
 test("homepage responds at root", async () => {
   const proc = startServer();
   await waitForPort(3000);
-  const res = await fetch("http://localhost:3000/");
+  const res = await fetch("https://localhost:3000/");
   await stop(proc);
   expect(res.status).toBe(200);
 });
@@ -57,7 +57,7 @@ test("viewerReady script present", () => {
 test("static index.js loads", async () => {
   const proc = startServer();
   await waitForPort(3000);
-  const res = await fetch("http://localhost:3000/js/index.js");
+  const res = await fetch("https://localhost:3000/js/index.js");
   await stop(proc);
   expect(res.status).toBe(200);
 });
@@ -68,7 +68,7 @@ test("viewerReady within 10s", async () => {
   const browser = await chromium.launch();
   const page = await browser.newPage();
   const start = Date.now();
-  await page.goto("http://localhost:3000/");
+  await page.goto("https://localhost:3000/");
   await page.waitForFunction("document.body.dataset.viewerReady", {
     timeout: 10000,
   });

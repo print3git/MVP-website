@@ -30,7 +30,7 @@ test("api generate endpoint returns json", async () => {
     stdio: "ignore",
   });
   await waitPort(3000);
-  const res = await fetch("http://localhost:3000/api/generate", {
+  const res = await fetch("https://localhost:3000/api/generate", {
     method: "POST",
   });
   expect(res.status).toBe(200);

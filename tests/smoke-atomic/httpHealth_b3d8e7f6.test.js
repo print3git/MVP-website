@@ -30,7 +30,7 @@ test("GET / responds with 200", async () => {
     stdio: "ignore",
   });
   await waitPort(3000);
-  const res = await fetch("http://localhost:3000/");
+  const res = await fetch("https://localhost:3000/");
   expect(res.status).toBe(200);
   proc.kill("SIGTERM");
 });

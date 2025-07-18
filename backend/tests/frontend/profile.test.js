@@ -6,7 +6,7 @@ const { JSDOM } = require("jsdom");
 test("load displays models from API", async () => {
   const dom = new JSDOM('<div id="models"></div>', {
     runScripts: "dangerously",
-    url: "http://localhost/profile.html",
+    url: "https://localhost/profile.html",
   });
   global.window = dom.window;
   global.document = dom.window.document;

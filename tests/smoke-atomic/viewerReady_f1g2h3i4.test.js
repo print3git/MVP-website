@@ -26,7 +26,7 @@ test("viewerReady flag present on homepage", async ({ page }) => {
   const env = { ...process.env, PORT: String(port) };
   const proc = spawn("npm", ["run", "serve"], { env });
   await waitForPort(port);
-  await page.goto(`http://localhost:${port}/`);
+  await page.goto(`https://localhost:${port}/`);
   await page.waitForFunction('document.body.dataset.viewerReady === "true"');
   const ready = await page.evaluate("document.body.dataset.viewerReady");
   expect(ready).toBe("true");

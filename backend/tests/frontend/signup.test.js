@@ -26,7 +26,7 @@ describe("signup form", () => {
     const dom = new JSDOM(html, {
       runScripts: "dangerously",
       resources: "usable",
-      url: "http://localhost/signup.html",
+      url: "https://localhost/signup.html",
     });
     dom.window.document
       .querySelectorAll('script[src*="tailwind"]')

@@ -28,7 +28,7 @@ test.skip("viewer ready on /", async () => {
   const browser = await chromium.launch();
   const page = await browser.newPage();
   try {
-    await page.goto("http://localhost:3000/");
+    await page.goto("https://localhost:3000/");
     await page.waitForFunction(
       () => document.body.dataset.viewerReady === "true",
       { timeout: 15000 },

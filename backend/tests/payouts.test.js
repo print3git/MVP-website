@@ -81,7 +81,7 @@ test("POST /api/stripe/connect creates link", async () => {
   const res = await request(app)
     .post("/api/stripe/connect")
     .set("authorization", `Bearer ${token}`)
-    .set("origin", "http://localhost");
+    .set("origin", "https://localhost");
   expect(res.status).toBe(200);
   expect(res.body.url).toBe("https://connect");
 });
