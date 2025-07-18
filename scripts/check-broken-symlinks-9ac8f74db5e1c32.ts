@@ -10,8 +10,12 @@ const outputDir = argDir
     ? path.join(repoRoot, "dist")
     : repoRoot;
 
+/** @type {string[]} */
 const badPaths = [];
 
+/**
+ * @param {string} dir
+ */
 function walk(dir) {
   let entries;
   try {
