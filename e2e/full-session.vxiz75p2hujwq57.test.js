@@ -45,7 +45,7 @@ test("full user session home -> editor -> upload -> checkout -> success", async 
   await expect(page.locator("#viewer")).toBeVisible();
 
   // Upload image file
-  const img = path.join(__dirname, "..", "img", "boxlogo.png");
+  const img = path.join(__dirname, "..", "img", "box logo.png");
   await page.setInputFiles("#uploadInput", img);
   await expect(page.locator("#image-preview-area")).toBeVisible();
 
