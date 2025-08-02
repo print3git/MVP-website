@@ -1,4 +1,38 @@
-const KEY = "print3Basket";
+(() => {
+  try {
+    const map = {
+      print3Basket: "print2Basket",
+      print3Model: "print2Model",
+      print3JobId: "print2JobId",
+      print3Material: "print2Material",
+      print3Color: "print2Color",
+      print3EtchName: "print2EtchName",
+      print3Email: "print2Email",
+      print3ShipName: "print2ShipName",
+      print3ShipAddress: "print2ShipAddress",
+      print3ShipCity: "print2ShipCity",
+      print3ShipZip: "print2ShipZip",
+      print3DiscountCode: "print2DiscountCode",
+      print3CheckoutItems: "print2CheckoutItems",
+      print3Prompt: "print2Prompt",
+      print3Images: "print2Images",
+      print3Saved: "print2Saved",
+      print3CommunityOpen: "print2CommunityOpen",
+      print3CommunityState: "print2CommunityState",
+    };
+    for (const [oldKey, newKey] of Object.entries(map)) {
+      const val = localStorage.getItem(oldKey);
+      if (val !== null && localStorage.getItem(newKey) === null) {
+        localStorage.setItem(newKey, val);
+        localStorage.removeItem(oldKey);
+      }
+    }
+  } catch {
+    // ignore
+  }
+})();
+
+const KEY = "print2Basket";
 const API_BASE = (window.API_ORIGIN || "") + "/api";
 export function getBasket() {
   try {
@@ -96,10 +130,10 @@ export function removeFromBasket(index) {
     }).catch(() => {});
   }
   try {
-    const arr = JSON.parse(localStorage.getItem("print3CheckoutItems"));
+    const arr = JSON.parse(localStorage.getItem("print2CheckoutItems"));
     if (Array.isArray(arr) && index >= 0 && index < arr.length) {
       arr.splice(index, 1);
-      localStorage.setItem("print3CheckoutItems", JSON.stringify(arr));
+      localStorage.setItem("print2CheckoutItems", JSON.stringify(arr));
     }
   } catch {}
   updateBadge();
@@ -108,7 +142,7 @@ export function removeFromBasket(index) {
 }
 export function clearBasket() {
   saveBasket([]);
-  localStorage.removeItem("print3CheckoutItems");
+  localStorage.removeItem("print2CheckoutItems");
   const token = localStorage.getItem("token");
   if (token) {
     fetch(`${API_BASE}/cart`, {
@@ -292,18 +326,18 @@ export function setupBasketUI() {
     if (items.length === 1) {
       const item = items[0];
       if (item.modelUrl) {
-        localStorage.setItem("print3Model", item.modelUrl);
+        localStorage.setItem("print2Model", item.modelUrl);
       }
       if (item.jobId) {
-        localStorage.setItem("print3JobId", item.jobId);
+        localStorage.setItem("print2JobId", item.jobId);
       } else {
-        localStorage.removeItem("print3JobId");
+        localStorage.removeItem("print2JobId");
       }
     }
     // Save basket contents for payment page navigation
     try {
       const existing =
-        JSON.parse(localStorage.getItem("print3CheckoutItems")) || [];
+        JSON.parse(localStorage.getItem("print2CheckoutItems")) || [];
       const checkoutItems = items.map((it, idx) => {
         const prev = existing[idx] || {};
         return {
@@ -311,15 +345,15 @@ export function setupBasketUI() {
           jobId: it.jobId,
           snapshot: it.snapshot || prev.snapshot || "",
           material:
-            prev.material || localStorage.getItem("print3Material") || "multi",
+            prev.material || localStorage.getItem("print2Material") || "multi",
           color: prev.color || null,
           // Preserve personalised etch text per model for the payment page.
           etchName:
-            prev.etchName || localStorage.getItem("print3EtchName") || "",
+            prev.etchName || localStorage.getItem("print2EtchName") || "",
         };
       });
       localStorage.setItem(
-        "print3CheckoutItems",
+        "print2CheckoutItems",
         JSON.stringify(checkoutItems),
       );
     } catch {}
@@ -370,11 +404,11 @@ export function setupBasketUI() {
   viewerCheckoutBtn.addEventListener("click", () => {
     const model = viewerCheckoutBtn.dataset.model;
     const job = viewerCheckoutBtn.dataset.job;
-    if (model) localStorage.setItem("print3Model", model);
+    if (model) localStorage.setItem("print2Model", model);
     if (job) {
-      localStorage.setItem("print3JobId", job);
+      localStorage.setItem("print2JobId", job);
     } else {
-      localStorage.removeItem("print3JobId");
+      localStorage.removeItem("print2JobId");
     }
   });
   function setTier(tier) {
@@ -391,13 +425,13 @@ export function setupBasketUI() {
     }
     const material =
       tier === "bronze" ? "single" : tier === "gold" ? "premium" : "multi";
-    localStorage.setItem("print3Material", material);
+    localStorage.setItem("print2Material", material);
   }
   viewerTierToggle?.addEventListener("click", (ev) => {
     const btn = ev.target.closest("button[data-tier]");
     if (btn) setTier(btn.dataset.tier);
   });
-  const storedMat = localStorage.getItem("print3Material");
+  const storedMat = localStorage.getItem("print2Material");
   if (storedMat === "single") setTier("bronze");
   else if (storedMat === "premium") setTier("gold");
   else setTier("silver");
