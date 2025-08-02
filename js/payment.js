@@ -1044,10 +1044,10 @@ async function initPaymentPage() {
     checkoutItems.splice(idx, 1);
     saveCheckoutItems();
     try {
-      const basket = JSON.parse(localStorage.getItem("print3Basket")) || [];
+      const basket = JSON.parse(localStorage.getItem("print2Basket")) || [];
       if (idx >= 0 && idx < basket.length) {
         basket.splice(idx, 1);
-        localStorage.setItem("print3Basket", JSON.stringify(basket));
+        localStorage.setItem("print2Basket", JSON.stringify(basket));
       }
     } catch {}
     if (checkoutItems.length) {
@@ -1209,7 +1209,7 @@ async function initPaymentPage() {
   // opened directly and the stored list is stale.
   if (!window.location.pathname.endsWith("luckybox-payment.html")) {
     try {
-      const basket = JSON.parse(localStorage.getItem("print3Basket")) || [];
+      const basket = JSON.parse(localStorage.getItem("print2Basket")) || [];
       if (
         basket.length &&
         (basket.length !== checkoutItems.length ||

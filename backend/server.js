@@ -1707,7 +1707,7 @@ app.get("/shared/:slug", async (req, res) => {
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta property="og:title" content="print3 shared model" />
+    <meta property="og:title" content="print2 shared model" />
     <meta property="og:description" content="${prompt.replace(/"/g, "&quot;")}" />
     <meta property="og:image" content="${ogImage}" />
     <meta property="og:url" content="${req.protocol}://${req.get("host")}/shared/${share.slug}" />
@@ -1738,7 +1738,7 @@ app.get("/community/model/:id", async (req, res) => {
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta property="og:title" content="print3 community model" />
+    <meta property="og:title" content="print2 community model" />
     <meta property="og:description" content="${prompt.replace(/"/g, "&quot;")}" />
     <meta property="og:image" content="${ogImage}" />
     <meta property="og:url" content="${req.protocol}://${req.get("host")}/community/model/${req.params.id}" />
@@ -1769,7 +1769,7 @@ app.get("/item/:id", async (req, res) => {
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta property="og:title" content="print3 model" />
+    <meta property="og:title" content="print2 model" />
     <meta property="og:description" content="${prompt.replace(/"/g, "&quot;")}" />
     <meta property="og:image" content="${ogImage}" />
     <meta property="og:url" content="${req.protocol}://${req.get("host")}/item/${req.params.id}" />
