@@ -49,7 +49,9 @@ describe.skip("insecure http fetch; https unavailable", () => {
       const server = startDevServer(0);
       const port = server.address().port;
       await waitPort(port);
-      const res = await fetch(`http://127.0.0.1:${port}/img/boxlogo.png`);
+      const res = await fetch(
+        `http://127.0.0.1:${port}/img/boxlogo-print2.png`,
+      );
       server.close();
       expect(res.status).toBe(200);
     });

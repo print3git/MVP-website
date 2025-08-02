@@ -1702,7 +1702,7 @@ app.get("/shared/:slug", async (req, res) => {
     const prompt = rows[0]?.prompt || "Shared model";
     const ogImage = rows[0]?.snapshot
       ? `${req.protocol}://${req.get("host")}${rows[0].snapshot}`
-      : `${req.protocol}://${req.get("host")}/img/boxlogo.png`;
+      : `${req.protocol}://${req.get("host")}/img/boxlogo-print2.png`;
     res.send(`<!doctype html>
 <html lang="en">
   <head>
@@ -1733,7 +1733,7 @@ app.get("/community/model/:id", async (req, res) => {
     );
     if (!rows.length) return res.status(404).send("Not found");
     const prompt = rows[0].title || rows[0].prompt || "Community model";
-    const ogImage = `${req.protocol}://${req.get("host")}/img/boxlogo.png`;
+    const ogImage = `${req.protocol}://${req.get("host")}/img/boxlogo-print2.png`;
     res.send(`<!doctype html>
 <html lang="en">
   <head>
@@ -1764,7 +1764,7 @@ app.get("/item/:id", async (req, res) => {
     );
     if (!rows.length) return res.status(404).send("Not found");
     const prompt = rows[0].title || rows[0].prompt || "Community model";
-    const ogImage = `${req.protocol}://${req.get("host")}/img/boxlogo.png`;
+    const ogImage = `${req.protocol}://${req.get("host")}/img/boxlogo-print2.png`;
     res.send(`<!doctype html>
 <html lang="en">
   <head>
