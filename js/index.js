@@ -2,6 +2,40 @@
 import { shareOn } from "./share.js";
 import { track } from "./analytics.js";
 
+(() => {
+  try {
+    const map = {
+      print3Basket: "print2Basket",
+      print3Model: "print2Model",
+      print3JobId: "print2JobId",
+      print3Material: "print2Material",
+      print3Color: "print2Color",
+      print3EtchName: "print2EtchName",
+      print3Email: "print2Email",
+      print3ShipName: "print2ShipName",
+      print3ShipAddress: "print2ShipAddress",
+      print3ShipCity: "print2ShipCity",
+      print3ShipZip: "print2ShipZip",
+      print3DiscountCode: "print2DiscountCode",
+      print3CheckoutItems: "print2CheckoutItems",
+      print3Prompt: "print2Prompt",
+      print3Images: "print2Images",
+      print3Saved: "print2Saved",
+      print3CommunityOpen: "print2CommunityOpen",
+      print3CommunityState: "print2CommunityState",
+    };
+    for (const [oldKey, newKey] of Object.entries(map)) {
+      const val = localStorage.getItem(oldKey);
+      if (val !== null && localStorage.getItem(newKey) === null) {
+        localStorage.setItem(newKey, val);
+        localStorage.removeItem(oldKey);
+      }
+    }
+  } catch {
+    // ignore
+  }
+})();
+
 const API_BASE = (window.API_ORIGIN || "") + "/api";
 const TZ = "America/New_York";
 // Local fallback model used when generation fails or the viewer hasn't loaded a model yet.
@@ -95,8 +129,8 @@ const LOW_POLY_GLB = FALLBACK_GLB_LOW;
 
 function resetMaterialSelection() {
   try {
-    if (!localStorage.getItem("print3Material")) {
-      localStorage.setItem("print3Material", "multi");
+    if (!localStorage.getItem("print2Material")) {
+      localStorage.setItem("print2Material", "multi");
     }
   } catch {
     /* ignore quota errors */
@@ -549,7 +583,7 @@ async function fetchProfile() {
 async function buyNow() {
   if (!userProfile) return;
   if (window.setWizardStage) window.setWizardStage("purchase");
-  const jobId = localStorage.getItem("print3JobId");
+  const jobId = localStorage.getItem("print2JobId");
   const res = await fetch("/api/create-order", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -714,7 +748,7 @@ function renderThumbnails(arr) {
         previewUrls = [...arr];
       }
       try {
-        localStorage.setItem("print3Images", JSON.stringify(arr));
+        localStorage.setItem("print2Images", JSON.stringify(arr));
       } catch {
         /* ignore storage errors */
       }
@@ -775,7 +809,7 @@ async function processFiles(files) {
   schedule(async () => {
     const thumbs = await Promise.all(uploadedFiles.map((f) => getThumbnail(f)));
     try {
-      localStorage.setItem("print3Images", JSON.stringify(thumbs));
+      localStorage.setItem("print2Images", JSON.stringify(thumbs));
     } catch {
       /* ignore storage errors */
     }
@@ -844,12 +878,12 @@ refs.submitBtn.addEventListener("click", async () => {
   if (window.setWizardStage) window.setWizardStage("building");
 
   try {
-    localStorage.setItem("print3Prompt", prompt);
+    localStorage.setItem("print2Prompt", prompt);
     localStorage.setItem("hasGenerated", "true");
 
     const url = await fetchGlb(prompt, uploadedFiles);
-    localStorage.setItem("print3Model", url);
-    localStorage.setItem("print3JobId", lastJobId);
+    localStorage.setItem("print2Model", url);
+    localStorage.setItem("print2JobId", lastJobId);
 
     editsPending = false;
 
@@ -947,13 +981,13 @@ async function init() {
       } else if (refs.viewer.src === FALLBACK_GLB && hiStart !== null) {
         const t = Math.round(performance.now() - hiStart);
         console.log("Model load time", t, "ms");
-        localStorage.setItem("print3Model", FALLBACK_GLB);
+        localStorage.setItem("print2Model", FALLBACK_GLB);
         refs.viewer.removeEventListener("load", handleLoad);
       }
     };
     refs.viewer.addEventListener("load", handleLoad);
     refs.viewer.src = LOW_POLY_GLB;
-    localStorage.removeItem("print3JobId");
+    localStorage.removeItem("print2JobId");
     refs.viewer.addEventListener(
       "load",
       () => {
@@ -1008,8 +1042,8 @@ async function init() {
     }
   });
 
-  const prompt = localStorage.getItem("print3Prompt");
-  const thumbs = JSON.parse(localStorage.getItem("print3Images") || "[]");
+  const prompt = localStorage.getItem("print2Prompt");
+  const thumbs = JSON.parse(localStorage.getItem("print2Images") || "[]");
 
   const oldPlaceholders = [
     "Describe your 3D print request…",
@@ -1025,7 +1059,7 @@ async function init() {
       refs.promptInput.dispatchEvent(new Event("input"));
       usePlaceholder = false;
     } else {
-      localStorage.removeItem("print3Prompt");
+      localStorage.removeItem("print2Prompt");
     }
   }
   if (usePlaceholder) {
@@ -1058,12 +1092,12 @@ async function init() {
   // Ensure checkout uses the model currently shown in the viewer
   refs.checkoutBtn?.addEventListener("click", () => {
     if (refs.viewer?.src) {
-      localStorage.setItem("print3Model", refs.viewer.src);
+      localStorage.setItem("print2Model", refs.viewer.src);
     }
     if (lastJobId) {
-      localStorage.setItem("print3JobId", lastJobId);
+      localStorage.setItem("print2JobId", lastJobId);
     } else {
-      localStorage.removeItem("print3JobId");
+      localStorage.removeItem("print2JobId");
     }
     try {
       const items = [
@@ -1073,8 +1107,8 @@ async function init() {
           snapshot: lastSnapshot || "",
         },
       ];
-      localStorage.setItem("print3CheckoutItems", JSON.stringify(items));
-      localStorage.removeItem("print3Basket");
+      localStorage.setItem("print2CheckoutItems", JSON.stringify(items));
+      localStorage.removeItem("print2Basket");
     } catch {}
     if (window.setWizardStage) window.setWizardStage("purchase");
   });

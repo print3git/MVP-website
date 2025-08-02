@@ -1,4 +1,38 @@
 import { captureSnapshots } from "./snapshot.js";
+
+(() => {
+  try {
+    const map = {
+      print3Basket: "print2Basket",
+      print3Model: "print2Model",
+      print3JobId: "print2JobId",
+      print3Material: "print2Material",
+      print3Color: "print2Color",
+      print3EtchName: "print2EtchName",
+      print3Email: "print2Email",
+      print3ShipName: "print2ShipName",
+      print3ShipAddress: "print2ShipAddress",
+      print3ShipCity: "print2ShipCity",
+      print3ShipZip: "print2ShipZip",
+      print3DiscountCode: "print2DiscountCode",
+      print3CheckoutItems: "print2CheckoutItems",
+      print3Prompt: "print2Prompt",
+      print3Images: "print2Images",
+      print3Saved: "print2Saved",
+      print3CommunityOpen: "print2CommunityOpen",
+      print3CommunityState: "print2CommunityState",
+    };
+    for (const [oldKey, newKey] of Object.entries(map)) {
+      const val = localStorage.getItem(oldKey);
+      if (val !== null && localStorage.getItem(newKey) === null) {
+        localStorage.setItem(newKey, val);
+        localStorage.removeItem(oldKey);
+      }
+    }
+  } catch {
+    // ignore
+  }
+})();
 const API_BASE = (window.API_ORIGIN || "") + "/api";
 function authHeaders() {
   const admin = localStorage.getItem("adminToken");
@@ -21,8 +55,8 @@ function createCard(model) {
   div.innerHTML = `\n    <img src="${model.snapshot || ""}" alt="Model" class="w-full h-full object-contain pointer-events-none" />\n    <span class="sr-only">${model.prompt || "Model"}</span>\n    <button class="purchase absolute bottom-1 left-1 text-xs bg-blue-600 px-1 rounded">Reorder</button>\n    <button class="add-basket absolute bottom-1 right-1 text-xs bg-green-600 px-1 rounded">Add</button>`;
   div.querySelector(".purchase").addEventListener("click", (e) => {
     e.stopPropagation();
-    localStorage.setItem("print3Model", model.model_url);
-    localStorage.setItem("print3JobId", model.job_id);
+    localStorage.setItem("print2Model", model.model_url);
+    localStorage.setItem("print2JobId", model.job_id);
     window.location.href = "payment.html";
   });
   div.querySelector(".add-basket").addEventListener("click", (e) => {
