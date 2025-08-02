@@ -37,7 +37,7 @@ function loadDom() {
 test("single item defaults quantity to 2", async () => {
   const dom = loadDom();
   dom.window.localStorage.setItem(
-    "print3Basket",
+    "print2Basket",
     JSON.stringify([{ modelUrl: "m", jobId: "j" }]),
   );
   dom.window.document.dispatchEvent(new dom.window.Event("DOMContentLoaded"));
