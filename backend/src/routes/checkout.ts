@@ -4,6 +4,7 @@ import { PRODUCT } from "../pricing";
 import { sendMail } from "../../mail";
 
 export interface Order {
+  /** S3 object key (without `.glb`) returned from `storeGlb` */
   slug: string;
   email: string;
   paid?: boolean;
@@ -68,7 +69,9 @@ router.post(
         const order = orders.get(session.id);
         if (order && !order.paid) {
           order.paid = true;
-          const link = `https://huggingface.co/spaces/print2/Sparc3D/resolve/main/output/${order.slug}.glb`;
+          const link = process.env.CLOUDFRONT_MODEL_DOMAIN
+            ? `https://${process.env.CLOUDFRONT_MODEL_DOMAIN}/${order.slug}.glb`
+            : order.slug;
           await sendMail(order.email, "Your model is ready", link);
         }
       }
