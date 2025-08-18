@@ -23,7 +23,7 @@ jobs:
       - name: Verify code scanning enabled
         run: node scripts/check-code-scanning.js
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3.29.8
+        uses: github/codeql-action/init@v3.29.9
         with:
           languages: javascript-typescript
       - name: Build
@@ -31,4 +31,4 @@ jobs:
           node scripts/run-npm-ci.js
           npm run build
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3.29.8
+        uses: github/codeql-action/analyze@v3.29.9
