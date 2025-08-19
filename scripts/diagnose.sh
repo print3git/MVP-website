@@ -2,9 +2,12 @@
 set -euo pipefail
 
 if [[ -f .env ]]; then
-  set -a
-  source .env
-  set +a
+  while IFS='=' read -r key value; do
+    [[ "$key" =~ ^\s*# || -z "$key" ]] && continue
+    if [ -z "${!key+x}" ]; then
+      export "$key"="$value"
+    fi
+  done < .env
 fi
 
 banner() {

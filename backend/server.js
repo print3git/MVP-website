@@ -1,6 +1,6 @@
 // backend/server.js
 
-require("dotenv").config();
+require("dotenv").config({ override: false });
 const { getEnv } = require("./utils/getEnv");
 const CLOUDFRONT_MODEL_DOMAIN = getEnv("CLOUDFRONT_MODEL_DOMAIN");
 if (!CLOUDFRONT_MODEL_DOMAIN && process.env.NODE_ENV !== "test") {
