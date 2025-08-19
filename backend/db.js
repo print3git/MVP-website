@@ -1,5 +1,5 @@
 // backend/db.js
-require("dotenv").config();
+require("dotenv").config({ override: false });
 const { Pool } = require("pg");
 const { v4: uuidv4 } = require("uuid");
 const { dbUrl } = require("./config");

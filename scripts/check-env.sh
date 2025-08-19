@@ -12,10 +12,16 @@ load_env_file() {
   local file="$1"
   while IFS='=' read -r key value; do
     [[ "$key" =~ ^\s*# || -z "$key" ]] && continue
-    if [[ ! -v $key ]]; then
+    if [ -z "${!key+x}" ]; then
       export "$key"="$value"
     fi
   done < "$file"
+}
+
+is_placeholder() {
+  local val="$1"
+  local ending="$2"
+  [[ -z "$val" || "$val" == "your_stripe_key_here" || "$val" == "$ending" || "$val" == *"$ending" ]]
 }
 
 if [ -f .env ]; then
@@ -40,7 +46,17 @@ fi
 : "${AWS_SECRET_ACCESS_KEY:?AWS_SECRET_ACCESS_KEY must be set}"
 : "${DB_URL:?DB_URL must be set}"
 : "${STRIPE_SECRET_KEY:?STRIPE_SECRET_KEY must be set}"
+: "${STRIPE_WEBHOOK_SECRET:?STRIPE_WEBHOOK_SECRET must be set}"
 : "${CLOUDFRONT_MODEL_DOMAIN:?CLOUDFRONT_MODEL_DOMAIN must be set}"
+
+if is_placeholder "$STRIPE_SECRET_KEY" "sk_test"; then
+  echo "STRIPE_SECRET_KEY must be a live secret key" >&2
+  exit 1
+fi
+if is_placeholder "$STRIPE_WEBHOOK_SECRET" "whsec"; then
+  echo "STRIPE_WEBHOOK_SECRET must be a live webhook secret" >&2
+  exit 1
+fi
 required_node_major="${REQUIRED_NODE_MAJOR:-20}"
 current_major=$(node -v | sed -E "s/^v([0-9]+).*/\1/")
 if [ "$current_major" -lt "$required_node_major" ]; then
