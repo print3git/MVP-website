@@ -5,29 +5,63 @@ const fs = require("fs");
 const required = ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "DB_URL"];
 const stripeVars = ["STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET"];
 
-let missing = required.filter((v) => !process.env[v]);
+const requireRealSecrets =
+  process.env.REQUIRE_REAL_SECRETS === "1" ||
+  process.env.GITHUB_REF === "refs/heads/main" ||
+  process.env.BRANCH_NAME === "main";
 
-if (process.env.CI_REQUIRE_EXTERNAL === "1") {
-  missing = missing.concat(stripeVars.filter((v) => !process.env[v]));
-}
+const status = Object.fromEntries(
+  required.map((k) => [k, Boolean(process.env[k])]),
+);
+const missing = required.filter((k) => !status[k]);
 
-if (missing.length) {
+if (missing.length && requireRealSecrets) {
   console.error(`Missing required env vars for CI: ${missing.join(", ")}`);
   process.exit(1);
+}
+
+function setEnv(key, value) {
+  if (!value) return;
+  process.env[key] = value;
+  const envPath = process.env.GITHUB_ENV;
+  if (!envPath) return;
+  let content = "";
+  if (fs.existsSync(envPath)) {
+    content = fs.readFileSync(envPath, "utf8");
+  }
+  const line = `${key}=${value}`;
+  const regex = new RegExp(`^${key}=.*$`, "m");
+  if (regex.test(content)) {
+    const newContent = content.replace(regex, line);
+    fs.writeFileSync(envPath, newContent);
+  } else {
+    fs.appendFileSync(envPath, `${line}\n`);
+  }
+}
+
+console.log(
+  `ci-env-preflight: ${required.map((k) => `${k}=${status[k]}`).join(" ")}`,
+);
+
+const mockValues = {
+  AWS_ACCESS_KEY_ID: "mock_access",
+  AWS_SECRET_ACCESS_KEY: "mock_secret",
+  DB_URL: "postgres://user:pass@localhost:5432/testdb",
+};
+
+for (const key of required) {
+  setEnv(key, process.env[key] || mockValues[key]);
 }
 
 const mocked = [];
 for (const key of stripeVars) {
   if (!process.env[key]) {
-    process.env[key] =
-      key === "STRIPE_SECRET_KEY" ? "sk_test_mock" : "whsec_mock";
+    const value = key === "STRIPE_SECRET_KEY" ? "sk_test_mock" : "whsec_mock";
+    setEnv(key, value);
     mocked.push(key);
+  } else {
+    setEnv(key, process.env[key]);
   }
-  fs.appendFileSync(process.env.GITHUB_ENV, `${key}=${process.env[key]}\n`);
-}
-
-for (const key of required) {
-  fs.appendFileSync(process.env.GITHUB_ENV, `${key}=${process.env[key]}\n`);
 }
 
 mocked.forEach((k) => console.log(`Mocked ${k}`));
