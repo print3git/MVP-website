@@ -18,7 +18,7 @@ router.post(
   "/api/webhook/stripe",
   express.raw({ type: "application/json" }),
   async (
-    req: Request,
+    req: Request<any, any, Buffer>,
     res: Response,
     next: NextFunction,
   ): Promise<void> => {

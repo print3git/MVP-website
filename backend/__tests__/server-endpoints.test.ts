@@ -105,6 +105,7 @@ describe("env validation", () => {
     jest.resetModules();
     delete process.env.CLOUDFRONT_MODEL_DOMAIN;
     process.env.NODE_ENV = "production";
+    process.env.STRIPE_SECRET_KEY = "sk_live_dummy";
     expect(() => require("../server")).not.toThrow();
     process.env.NODE_ENV = "test";
     process.env.CLOUDFRONT_MODEL_DOMAIN = "cdn.test";
