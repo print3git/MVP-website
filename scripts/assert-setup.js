@@ -4,6 +4,7 @@ const os = require("os");
 const path = require("path");
 const child_process = require("child_process");
 const { runNpmCi } = require("./run-npm-ci.js");
+const { loadEnv } = require("../test/envLoader");
 
 // Ensure this script runs from the repo root so relative paths work
 const repoRoot = path.resolve(__dirname, "..");
@@ -31,6 +32,8 @@ if (fs.existsSync(".env")) {
 } else if (fs.existsSync(".env.example")) {
   loadEnvFile(".env.example");
 }
+
+loadEnv(process.env);
 
 try {
   child_process.execSync(

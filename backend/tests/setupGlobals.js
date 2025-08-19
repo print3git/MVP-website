@@ -2,12 +2,8 @@
 // Disable Jest global object deletion warnings by turning off the deletion mode
 global[Symbol.for("$$jest-deletion-mode")] = "off";
 
-const dotenv = require("dotenv");
-const path = require("path");
-const originalDotenvConfig = dotenv.config;
-dotenv.config = (options = {}) =>
-  originalDotenvConfig({ quiet: true, ...options });
-dotenv.config({ path: path.resolve(__dirname, "../../.env.test") });
+const { loadEnv } = require("../../test/envLoader");
+loadEnv(process.env);
 
 const originalEmitWarning = process.emitWarning;
 process.emitWarning = (warning, ...args) => {
@@ -42,46 +38,10 @@ console.warn = (...args) => {
   return originalConsoleWarn(...args);
 };
 
-if (!process.env.CLOUDFRONT_MODEL_DOMAIN) {
-  process.env.CLOUDFRONT_MODEL_DOMAIN = "cdn.test";
-}
-if (!process.env.SPARC3D_ENDPOINT) {
-  process.env.SPARC3D_ENDPOINT = "http://sparc3d.test";
-}
-if (!process.env.SPARC3D_TOKEN) {
-  process.env.SPARC3D_TOKEN = "token";
-}
-
-// Provide dummy AWS credentials so tests don't need real ones
-if (!process.env.AWS_ACCESS_KEY_ID) {
-  process.env.AWS_ACCESS_KEY_ID = "test";
-}
-if (!process.env.AWS_SECRET_ACCESS_KEY) {
-  process.env.AWS_SECRET_ACCESS_KEY = "test";
-}
-if (!process.env.DB_URL) {
-  process.env.DB_URL = "postgres://user:pass@localhost/db";
-}
-const isPlaceholder = (val, ending) =>
-  !val ||
-  val === "your_stripe_key_here" ||
-  val === ending ||
-  val.endsWith(ending);
-const stripeKey = process.env.STRIPE_SECRET_KEY;
-const webhook = process.env.STRIPE_WEBHOOK_SECRET;
-if (isPlaceholder(stripeKey, "sk_test")) {
-  throw new Error("STRIPE_SECRET_KEY must be set to a non-test value");
-}
-if (isPlaceholder(webhook, "whsec")) {
-  throw new Error("STRIPE_WEBHOOK_SECRET must be set to a non-test value");
-}
-if (!process.env.STRIPE_TEST_KEY) {
-  process.env.STRIPE_TEST_KEY = stripeKey;
-}
-if (!process.env.STRIPE_PUBLISHABLE_KEY) {
-  process.env.STRIPE_PUBLISHABLE_KEY = "pk_live";
-}
-global.__STRIPE_ENV__ = { stripeKey, stripeWebhook: webhook };
+global.__STRIPE_ENV__ = {
+  stripeKey: process.env.STRIPE_SECRET_KEY,
+  stripeWebhook: process.env.STRIPE_WEBHOOK_SECRET,
+};
 
 // Ensure any proxy environment variables do not interfere with HTTP mocking
 for (const key of [

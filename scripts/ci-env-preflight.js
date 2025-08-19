@@ -1,11 +1,7 @@
 #!/usr/bin/env node
-const required = [
-  "AWS_ACCESS_KEY_ID",
-  "AWS_SECRET_ACCESS_KEY",
-  "DB_URL",
-  "STRIPE_SECRET_KEY",
-  "STRIPE_WEBHOOK_SECRET",
-];
+const { loadEnv, REQUIRED_KEYS } = require("../test/envLoader");
+loadEnv(process.env);
+const required = REQUIRED_KEYS;
 const missing = required.filter((v) => !process.env[v]);
 if (missing.length) {
   console.error(`Missing required env vars for CI: ${missing.join(", ")}`);

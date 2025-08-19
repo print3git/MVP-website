@@ -23,11 +23,14 @@ if (missingGlb.length) {
 }
 
 const stripeKey = getEnv("STRIPE_SECRET_KEY");
-if (isPlaceholder(stripeKey, "sk_test")) {
+if (process.env.NODE_ENV === "production" && isPlaceholder(stripeKey, "sk_test")) {
   throw new Error("STRIPE_SECRET_KEY must be a live secret key");
 }
 const stripeWebhook = getEnv("STRIPE_WEBHOOK_SECRET");
-if (isPlaceholder(stripeWebhook, "whsec")) {
+if (
+  process.env.NODE_ENV === "production" &&
+  isPlaceholder(stripeWebhook, "whsec")
+) {
   throw new Error("STRIPE_WEBHOOK_SECRET must be a live webhook secret");
 }
 

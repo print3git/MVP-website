@@ -1,4 +1,6 @@
 const { defineConfig } = require("@playwright/test");
+const { loadEnv } = require("./test/envLoader");
+loadEnv(process.env);
 // Global hooks to fail on browser console errors, uncaught exceptions, and network failures
 require("./e2e/support/playwright-error-hooks-8dj8yveiflqu4id.js");
 const baseURL = process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3000";

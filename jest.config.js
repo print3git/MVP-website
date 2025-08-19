@@ -1,6 +1,6 @@
 module.exports = {
   setupFiles: [
-    "<rootDir>/test/jest.setup.ts",
+    "<rootDir>/test/jest.setup.js",
     "<rootDir>/backend/tests/setupGlobals.js",
   ],
   setupFilesAfterEnv: ["<rootDir>/test/setupAuthMiddleware.js"],
