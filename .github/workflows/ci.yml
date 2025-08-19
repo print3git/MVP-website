@@ -75,8 +75,18 @@ jobs:
 
       - name: Prepare test env
         run: |
-          cp .env.example .env.test
-          echo "DB_URL=postgres://user:pass@localhost/db" >> .env.test
+          echo "DB_URL=postgres://user:pass@localhost/db" > .env.test
+
+      - name: Loader precedence preflight
+        env:
+          STRIPE_SECRET_KEY: sk_live_xxx
+          STRIPE_WEBHOOK_SECRET: whsec_xxx
+        run: |
+          cat <<'EOF' > /tmp/ci.env
+          STRIPE_SECRET_KEY=
+          STRIPE_WEBHOOK_SECRET=
+          EOF
+          node scripts/env-loader-preflight.js /tmp/ci.env
 
       - name: Run CI
         env:
