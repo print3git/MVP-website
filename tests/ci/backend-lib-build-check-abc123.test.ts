@@ -1,4 +1,4 @@
-import { execSync } from "child_process";
+import { spawnSync } from "child_process";
 import fs from "fs";
 import path from "path";
 
@@ -8,7 +8,13 @@ describe("backend build artifacts", () => {
   const libDir = path.join(backendDir, "lib");
 
   test("TypeScript output exists after build", () => {
-    execSync("npm run build", { cwd: repoRoot, stdio: "inherit" });
+    const result = spawnSync("npm", ["run", "build"], {
+      cwd: repoRoot,
+      stdio: "inherit",
+    });
+    if (result.status !== 0) {
+      throw new Error(`npm run build exited with code ${result.status}`);
+    }
     if (!fs.existsSync(libDir)) {
       throw new Error(
         `Missing ${path.relative(repoRoot, libDir)} directory after build. ` +
