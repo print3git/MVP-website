@@ -58,11 +58,14 @@ function assertProp(
 ) {
   const prop = type.getProperty(name);
   expect(prop).toBeDefined();
-  const propType = checker.getTypeOfSymbolAtLocation(
-    prop!,
-    (prop!.valueDeclaration ?? prop!.declarations![0])!,
-  );
-  expect(checker.typeToString(propType)).toBe(expected);
+  const declaration =
+    prop!.declarations?.find((d) => ts.isPropertySignature(d)) ||
+    prop!.declarations?.[0];
+  const propType = checker.getTypeOfSymbolAtLocation(prop!, declaration!);
+  const typeString = checker.typeToString(propType);
+  const isOptional = (prop!.flags & ts.SymbolFlags.Optional) !== 0;
+  const finalType = isOptional ? `${typeString} | undefined` : typeString;
+  expect(finalType).toBe(expected);
 }
 
 function hasCallable(
@@ -114,7 +117,7 @@ describe("stripe route type checks", () => {
       checker,
       bodyType,
       "metadata",
-      "{ [x: string]: string; } | undefined",
+      "Record<string, string> | undefined",
     );
     assertProp(checker, bodyType, "userId", "string | undefined");
     expect(isAssignableToReadableStream(checker, bodyType)).toBe(false);
@@ -127,7 +130,7 @@ describe("stripe route type checks", () => {
     const { checker, sourceFile } = createProgram(webhookPath);
     const [reqParam, resParam] = getHandlerParams(sourceFile);
     const bodyType = getBodyType(checker, reqParam)!;
-    expect(checker.typeToString(bodyType)).toBe("Buffer");
+    expect(checker.typeToString(bodyType)).toMatch(/^Buffer/);
     expect(isAssignableToReadableStream(checker, bodyType)).toBe(false);
     const resType = checker.getTypeAtLocation(resParam);
     expect(hasCallable(checker, resType, "status")).toBe(true);

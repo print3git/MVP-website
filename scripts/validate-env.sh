@@ -47,9 +47,10 @@ elif [ -f "$repo_root/.env.example" ]; then
 fi
 
 # Provide safe mock defaults for external secrets
+mock_id=$(date +%s)
 for kv in \
-  STRIPE_SECRET_KEY=sk_test_mock \
-  STRIPE_WEBHOOK_SECRET=whsec_mock \
+  STRIPE_SECRET_KEY=sk_test_${mock_id}_mock \
+  STRIPE_WEBHOOK_SECRET=whsec_${mock_id}_mock \
   AWS_ACCESS_KEY_ID=AKIA_MOCK \
   AWS_SECRET_ACCESS_KEY=aws_secret_mock \
   CF_PAGES_API_TOKEN=cf_mock; do

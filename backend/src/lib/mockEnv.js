@@ -1,12 +1,10 @@
-/**
- * Mock secret values used during local development and testing.
- * These defaults prevent tests from failing when environment variables are
- * missing.
- * @type {Record<string, string>}
- */
+
+const crypto = require("crypto");
+const mockId = crypto.randomBytes(3).toString("hex");
+
 const mockSecrets = {
-  STRIPE_SECRET_KEY: "sk_test_mock",
-  STRIPE_WEBHOOK_SECRET: "whsec_mock",
+  STRIPE_SECRET_KEY: `sk_test_${mockId}_mock`,
+  STRIPE_WEBHOOK_SECRET: `whsec_${mockId}_mock`,
   AWS_ACCESS_KEY_ID: "AKIA_MOCK",
   AWS_SECRET_ACCESS_KEY: "aws_secret_mock",
   CF_PAGES_API_TOKEN: "cf_mock",

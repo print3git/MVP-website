@@ -34,6 +34,13 @@ const stripeWebhook = getEnv("STRIPE_WEBHOOK_SECRET", {
   defaultValue: mockSecrets.STRIPE_WEBHOOK_SECRET,
 });
 
+const requireLive =
+  process.env.NODE_ENV === "production" ||
+  process.env.CI_REQUIRE_EXTERNAL === "1";
+if (requireLive && !/^sk_live/.test(stripeKey)) {
+  throw new Error("STRIPE_SECRET_KEY must be a live secret");
+}
+
 module.exports = {
   dbUrl: getEnv("DB_URL"),
   stripeKey,
