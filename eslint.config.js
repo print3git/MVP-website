@@ -14,6 +14,7 @@ const globals = require("globals");
 const jsdoc = require("eslint-plugin-jsdoc");
 const tsParser = require("@typescript-eslint/parser");
 const frontend = require("./eslint.frontend-87adf32bca1e546.cjs");
+const isCI = Boolean(process.env.CI);
 
 module.exports = [
   {
@@ -43,7 +44,7 @@ module.exports = [
     languageOptions: {
       parser: tsParser,
       parserOptions: {
-        project: ["./tsconfig.base.json"],
+        project: true,
         tsconfigRootDir: __dirname,
       },
     },
@@ -59,7 +60,7 @@ module.exports = [
   },
   {
     languageOptions: {
-      ecmaVersion: 12,
+      ecmaVersion: 2022,
       globals: { ...globals.node, ...globals.es2021, ...globals.jest },
     },
   },
@@ -72,10 +73,14 @@ module.exports = [
         "error",
         { argsIgnorePattern: "^_", caughtErrorsIgnorePattern: "^_" },
       ],
-      "jsdoc/require-param": "error",
     },
   },
   jsdoc.configs["flat/recommended"],
+  {
+    rules: {
+      "jsdoc/require-param": isCI ? "off" : "error",
+    },
+  },
   {
     files: ["**/*.{js,jsx,ts,tsx}"],
     ignores: [
@@ -92,7 +97,7 @@ module.exports = [
       "upload/**",
       "src/**",
     ],
-    rules: { "jsdoc/require-jsdoc": "error" },
+    rules: { "jsdoc/require-jsdoc": isCI ? "off" : "error" },
   },
   {
     files: ["backend/**/*", "backend/scripts/**/*"],

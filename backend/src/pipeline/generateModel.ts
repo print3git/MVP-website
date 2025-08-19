@@ -4,7 +4,6 @@ import { prepareImage } from '../lib/prepareImage';
 import { generateGlb } from '../lib/sparc3dClient';
 import { preserveColors } from '../lib/preserveColors';
 import { storeGlb } from '../lib/storeGlb';
-import { capture } from '../lib/logger';
 
 export interface GenerateModelParams {
   prompt?: string;
