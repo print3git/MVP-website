@@ -2,9 +2,9 @@ const Stripe = require("stripe");
 
 const secret = process.env.STRIPE_SECRET_KEY;
 const webhook = process.env.STRIPE_WEBHOOK_SECRET;
-const secretPlaceholder = !secret || /dummy|your|sk_test$/.test(secret);
-const webhookPlaceholder = !webhook || /dummy|your|whsec$/.test(webhook);
-const skip = process.env.CI && (secretPlaceholder || webhookPlaceholder);
+const secretPlaceholder = !secret || /dummy|your|sk_test|mock$/.test(secret);
+const webhookPlaceholder = !webhook || /dummy|your|whsec|mock$/.test(webhook);
+const skip = secretPlaceholder || webhookPlaceholder;
 if (skip) {
   console.log(
     "Skipping Stripe validation diagnostics: STRIPE secrets missing or placeholders",

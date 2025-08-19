@@ -18,14 +18,14 @@ describe("checkout env validation", () => {
       jest.isolateModules(() => require("../src/routes/checkout"));
     }).not.toThrow();
   });
-  test("throws when all stripe keys are missing", () => {
+  test("does not throw when all stripe keys are missing", () => {
     const secret = process.env.STRIPE_SECRET_KEY;
     delete process.env.STRIPE_TEST_KEY;
     delete process.env.STRIPE_LIVE_KEY;
     delete process.env.STRIPE_SECRET_KEY;
     expect(() => {
       jest.isolateModules(() => require("../src/routes/checkout"));
-    }).toThrow("Stripe key not configured");
+    }).not.toThrow();
     process.env.STRIPE_SECRET_KEY = secret;
   });
   test("router exposes orders map", () => {

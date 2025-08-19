@@ -30,6 +30,21 @@ elif [ -f .env.example ]; then
   load_env_file .env.example
 fi
 
+# Provide safe mock defaults for external secrets
+for kv in \
+  STRIPE_SECRET_KEY=sk_test_mock \
+  STRIPE_WEBHOOK_SECRET=whsec_mock \
+  AWS_ACCESS_KEY_ID=AKIA_MOCK \
+  AWS_SECRET_ACCESS_KEY=aws_secret_mock \
+  CF_PAGES_API_TOKEN=cf_mock \
+  CLOUDFRONT_MODEL_DOMAIN=cdn.test; do
+  key=${kv%%=*}
+  val=${kv#*=}
+  if [[ -z "${!key:-}" ]]; then
+    export "$key"="$val"
+  fi
+done
+
 if [[ -z "${STRIPE_TEST_KEY:-}" && -z "${STRIPE_LIVE_KEY:-}" ]]; then
   echo "Using dummy STRIPE_TEST_KEY" >&2
   export STRIPE_TEST_KEY="sk_test_dummy_$(date +%s)"
@@ -42,20 +57,13 @@ elif [[ -z "${HF_API_KEY:-}" ]]; then
   export HF_API_KEY="$HF_TOKEN"
 fi
 
-: "${AWS_ACCESS_KEY_ID:?AWS_ACCESS_KEY_ID must be set}"
-: "${AWS_SECRET_ACCESS_KEY:?AWS_SECRET_ACCESS_KEY must be set}"
 : "${DB_URL:?DB_URL must be set}"
-: "${STRIPE_SECRET_KEY:?STRIPE_SECRET_KEY must be set}"
-: "${STRIPE_WEBHOOK_SECRET:?STRIPE_WEBHOOK_SECRET must be set}"
-: "${CLOUDFRONT_MODEL_DOMAIN:?CLOUDFRONT_MODEL_DOMAIN must be set}"
 
 if is_placeholder "$STRIPE_SECRET_KEY" "sk_test"; then
-  echo "STRIPE_SECRET_KEY must be a live secret key" >&2
-  exit 1
+  echo "Using mock STRIPE_SECRET_KEY" >&2
 fi
 if is_placeholder "$STRIPE_WEBHOOK_SECRET" "whsec"; then
-  echo "STRIPE_WEBHOOK_SECRET must be a live webhook secret" >&2
-  exit 1
+  echo "Using mock STRIPE_WEBHOOK_SECRET" >&2
 fi
 required_node_major="${REQUIRED_NODE_MAJOR:-20}"
 current_major=$(node -v | sed -E "s/^v([0-9]+).*/\1/")

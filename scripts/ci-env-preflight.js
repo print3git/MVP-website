@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 const fs = require("fs");
 
 const required = ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "DB_URL"];

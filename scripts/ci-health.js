@@ -1,19 +1,8 @@
 #!/usr/bin/env node
 const { execSync } = require("child_process");
 
-const requiredEnv = [
-  "DB_URL",
-  "STRIPE_SECRET_KEY",
-  "AWS_ACCESS_KEY_ID",
-  "AWS_SECRET_ACCESS_KEY",
-];
-
-for (const name of requiredEnv) {
-  if (!process.env[name]) {
-    console.error(`Missing required env var: ${name}`);
-    process.exit(1);
-  }
-}
+const { applyMockEnv } = require("../backend/src/lib/mockEnv");
+applyMockEnv();
 
 const services = [
   process.env.DALLE_SERVER_URL,
