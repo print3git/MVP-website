@@ -27,7 +27,7 @@ const skip = process.env.CI && (secretPlaceholder || webhookPlaceholder);
   });
 
   test("stripe client boots and lists customers", async () => {
-    const stripe = new Stripe(secret, { apiVersion: "2024-08-16" });
+    const stripe = new Stripe(secret, { apiVersion: "2025-06-30.basil" });
     const list = await stripe.customers.list({ limit: 1 });
     expect(Array.isArray(list.data)).toBe(true);
   });

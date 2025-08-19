@@ -7,7 +7,9 @@ const { orders } = require("../backend/src/routes/checkout");
   const port = 4001;
   process.env.STRIPE_WEBHOOK_SECRET =
     process.env.STRIPE_WEBHOOK_SECRET || "whsec_test";
-  const stripe = new Stripe("sk_test_dummy");
+  const stripe = new Stripe("sk_test_dummy", {
+    apiVersion: "2025-06-30.basil",
+  });
   const { url, close } = await startServer(port);
   const sessionId = `sess_${Date.now()}`;
   orders.set(sessionId, {
