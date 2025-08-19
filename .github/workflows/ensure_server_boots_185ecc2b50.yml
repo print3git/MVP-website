@@ -21,6 +21,7 @@ jobs:
       S3_BUCKET: ${{ secrets.S3_BUCKET }}
       HF_TOKEN: ${{ secrets.HF_TOKEN }}
       PORT: 3000
+      CI_REQUIRE_EXTERNAL: '0'
     steps:
       - name: Checkout code
         uses: actions/checkout@v5

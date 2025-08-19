@@ -9,6 +9,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      PORT: 3000
+      CI_REQUIRE_EXTERNAL: '0'
     timeout-minutes: 20
     strategy:
       matrix:

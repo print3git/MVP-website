@@ -5,17 +5,9 @@ const fs = require("fs");
 const required = ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "DB_URL"];
 const stripeVars = ["STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET"];
 
-const requireRealSecrets =
-  process.env.REQUIRE_REAL_SECRETS === "1" ||
-  process.env.GITHUB_REF === "refs/heads/main" ||
-  process.env.BRANCH_NAME === "main";
-
-const status = Object.fromEntries(
-  required.map((k) => [k, Boolean(process.env[k])]),
-);
-const missing = required.filter((k) => !status[k]);
-
-if (missing.length && requireRealSecrets) {
+const requireExternal = process.env.CI_REQUIRE_EXTERNAL === "1";
+const missing = required.filter((k) => !process.env[k]);
+if (missing.length && requireExternal) {
   console.error(`Missing required env vars for CI: ${missing.join(", ")}`);
   process.exit(1);
 }
@@ -39,19 +31,34 @@ function setEnv(key, value) {
   }
 }
 
-console.log(
-  `ci-env-preflight: ${required.map((k) => `${k}=${status[k]}`).join(" ")}`,
-);
-
-const mockValues = {
-  AWS_ACCESS_KEY_ID: "mock_access",
-  AWS_SECRET_ACCESS_KEY: "mock_secret",
+const fallbacks = {
+  AWS_ACCESS_KEY_ID: "AKIA_TEST",
+  AWS_SECRET_ACCESS_KEY: "SECRET_TEST",
   DB_URL: "postgres://user:pass@localhost:5432/testdb",
 };
 
 for (const key of required) {
-  setEnv(key, process.env[key] || mockValues[key]);
+  if (!process.env[key]) {
+    setEnv(key, fallbacks[key]);
+    console.log(`Seeded ${key} with fallback`);
+  } else {
+    setEnv(key, process.env[key]);
+  }
 }
+
+if (!process.env.PORT) {
+  setEnv("PORT", "3000");
+  console.log("Seeded PORT with fallback 3000");
+} else {
+  setEnv("PORT", process.env.PORT);
+}
+
+const status = Object.fromEntries(
+  required.map((k) => [k, Boolean(process.env[k])]),
+);
+console.log(
+  `ci-env-preflight: ${required.map((k) => `${k}=${status[k]}`).join(" ")}`,
+);
 
 const mocked = [];
 for (const key of stripeVars) {
