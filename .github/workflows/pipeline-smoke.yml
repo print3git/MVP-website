@@ -13,8 +13,6 @@ jobs:
     env:
       STRIPE_TEST_KEY: ${{ secrets.STRIPE_TEST_KEY }}
       DB_URL: ${{ secrets.DB_URL }}
-      STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
-      STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
       HF_API_KEY: ${{ secrets.HF_API_KEY }}
       CLOUDFRONT_MODEL_DOMAIN: ${{ secrets.CLOUDFRONT_MODEL_DOMAIN }}
       SPARC3D_ENDPOINT: ${{ secrets.SPARC3D_ENDPOINT }}
@@ -28,10 +26,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
 
-      - name: Stripe preflight
-        run: |
-          echo "STRIPE_SECRET_KEY present: $([[ \"$STRIPE_SECRET_KEY\" =~ ^sk_ ]] && echo true || echo false)"
-          echo "STRIPE_WEBHOOK_SECRET present: $([[ \"$STRIPE_WEBHOOK_SECRET\" =~ ^whsec_ ]] && echo true || echo false)"
+      - name: Load Stripe env
+        run: node scripts/ci-env-preflight.js
+        env:
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
