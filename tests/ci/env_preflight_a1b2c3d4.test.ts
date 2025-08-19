@@ -1,17 +1,28 @@
 import path from "path";
 import { spawnSync } from "child_process";
+import fs from "fs";
+import os from "os";
 
 const script = path.resolve(__dirname, "../../scripts/ci-env-preflight.js");
 const node = process.execPath;
 
 describe("ci env preflight", () => {
-  test("fails when required envs missing", () => {
+  test("logs when required envs missing", () => {
     const result = spawnSync(node, [script], {
       env: {},
       encoding: "utf8",
     });
-    expect(result.status).toBe(1);
-    expect(result.stderr).toMatch(/Missing required env vars for CI/);
+    expect(result.status).toBe(0);
+    expect(result.stdout).toMatch(/STRIPE_SECRET_KEY missing/);
+  });
+
+  test("writes secrets to GITHUB_ENV when provided", () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "env-"));
+    const env = { GITHUB_ENV: path.join(tmp, "env"), CI: "1" };
+    const result = spawnSync(node, [script], { env, encoding: "utf8" });
+    expect(result.status).toBe(0);
+    const content = fs.readFileSync(env.GITHUB_ENV, "utf8");
+    expect(content).toMatch(/STRIPE_SECRET_KEY=/);
   });
 
   test("mocks stripe by default in CI", () => {
@@ -31,7 +42,8 @@ describe("ci env preflight", () => {
       ],
       { env, encoding: "utf8" },
     );
-    expect(result.stdout.trim()).toBe("mock");
+    const lines = result.stdout.trim().split(/\r?\n/);
+    expect(lines.pop()).toBe("mock");
   });
 
   test("allows real stripe when CI_REQUIRE_EXTERNAL=1", () => {
@@ -52,6 +64,7 @@ describe("ci env preflight", () => {
       ],
       { env, encoding: "utf8" },
     );
-    expect(result.stdout.trim()).toBe("missing");
+    const lines = result.stdout.trim().split(/\r?\n/);
+    expect(lines.pop()).toBe("missing");
   });
 });
