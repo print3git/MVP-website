@@ -22,6 +22,9 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
+    env:
+      STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+      STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
     services:
       docker:
         image: docker:dind
@@ -33,6 +36,10 @@ jobs:
             sudo apt-get update && sudo apt-get install -y docker.io
           fi
       - uses: actions/checkout@v5
+      - name: Stripe preflight
+        run: |
+          echo "STRIPE_SECRET_KEY present: $([[ \"$STRIPE_SECRET_KEY\" =~ ^sk_ ]] && echo true || echo false)"
+          echo "STRIPE_WEBHOOK_SECRET present: $([[ \"$STRIPE_WEBHOOK_SECRET\" =~ ^whsec_ ]] && echo true || echo false)"
       - uses: actions/setup-node@v4
         with:
           node-version: 20
