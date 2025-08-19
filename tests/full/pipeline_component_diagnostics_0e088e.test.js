@@ -91,7 +91,9 @@ describe("Stripe charge", () => {
   });
 
   test("creates charge successfully", async () => {
-    const stripe = new Stripe("sk_test");
+    const stripe = new Stripe("sk_test", {
+      apiVersion: "2025-06-30.basil",
+    });
     const res = await stripe.charges.create({
       amount: 100,
       currency: "usd",
