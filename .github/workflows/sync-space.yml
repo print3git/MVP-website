@@ -9,6 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       STRIPE_TEST_KEY: ${{ secrets.STRIPE_TEST_KEY }}
+      PORT: 3000
+      DB_URL: postgres://user:pass@localhost:5432/testdb
 
     steps:
       - uses: actions/checkout@v5
