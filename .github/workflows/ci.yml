@@ -30,10 +30,11 @@ jobs:
         run: |
           echo 'REQUIRED: intent/behavior tests'
       - uses: actions/checkout@v5
-      - name: Stripe preflight
-        run: |
-          echo "STRIPE_SECRET_KEY present: $([[ \"$STRIPE_SECRET_KEY\" =~ ^sk_ ]] && echo true || echo false)"
-          echo "STRIPE_WEBHOOK_SECRET present: $([[ \"$STRIPE_WEBHOOK_SECRET\" =~ ^whsec_ ]] && echo true || echo false)"
+      - name: Load Stripe env
+        run: node scripts/ci-env-preflight.js
+        env:
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
       - uses: actions/setup-node@v4
         with:
           node-version: 20
