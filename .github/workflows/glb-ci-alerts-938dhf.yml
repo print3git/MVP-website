@@ -10,6 +10,9 @@ on:
 jobs:
   notify:
     runs-on: ubuntu-latest
+    env:
+      PORT: 3000
+      DB_URL: postgres://user:pass@localhost:5432/testdb
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
