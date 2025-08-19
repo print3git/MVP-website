@@ -170,6 +170,10 @@ jobs:
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '0'
         run: npm run test:a11y
 
+      - name: Run integration diagnostics
+        run: node scripts/run-jest.js tests/diagnostic-env-vars-4be91cf27a.test.ts tests/diagnostic-stripe-smoke-d3f8a1b5c7.test.ts tests/diagnostic-cloudflare-smoke-7e2c9d4f8b.test.ts tests/diagnostic-db-smoke-5a6e2d9c1f.test.ts
+        continue-on-error: true
+
   a11y:
     runs-on: ubuntu-latest
     steps:
