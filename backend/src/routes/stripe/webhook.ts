@@ -1,13 +1,13 @@
-import express, {
-  Router,
-  type NextFunction,
-  type Request,
-  type Response,
+import express, { Router } from "express";
+import type {
+  NextFunction,
+  Request as ExpressRequest,
+  Response as ExpressResponse,
 } from "express";
 import Stripe from "stripe";
-import db from "../../db";
-import { enqueuePrint } from "../../queue/printQueue";
-import { enqueuePrint as enqueueDbPrint } from "../../queue/dbPrintQueue";
+import db from "../../../db";
+import { enqueuePrint } from "../../../queue/printQueue";
+import { enqueuePrint as enqueueDbPrint } from "../../../queue/dbPrintQueue";
 
 const router = Router();
 const stripe = new Stripe(process.env["STRIPE_KEY"] as string, {
@@ -17,7 +17,11 @@ const stripe = new Stripe(process.env["STRIPE_KEY"] as string, {
 router.post(
   "/api/webhook/stripe",
   express.raw({ type: "application/json" }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (
+    req: ExpressRequest<unknown, unknown, Buffer>,
+    res: ExpressResponse,
+    next: NextFunction,
+  ) => {
     try {
       const sig = req.headers["stripe-signature"] as string;
       const event = stripe.webhooks.constructEvent(

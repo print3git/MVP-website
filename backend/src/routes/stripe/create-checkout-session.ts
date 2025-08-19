@@ -1,15 +1,31 @@
-import { Router, type NextFunction, type Request, type Response } from "express";
+import { Router } from "express";
+import type {
+  NextFunction,
+  Request as ExpressRequest,
+  Response as ExpressResponse,
+} from "express";
 import Stripe from "stripe";
-import db from "../../db";
+import db from "../../../db";
 
 const router = Router();
 const stripe = new Stripe(process.env["STRIPE_KEY"] as string, {
   apiVersion: "2025-06-30.basil",
 });
 
+interface CheckoutSessionBody {
+  price: number;
+  qty?: number;
+  metadata?: Record<string, string>;
+  userId?: string;
+}
+
 router.post(
   "/api/create-checkout-session",
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (
+    req: ExpressRequest<unknown, unknown, CheckoutSessionBody>,
+    res: ExpressResponse,
+    next: NextFunction,
+  ) => {
   try {
     const { price, qty = 1, metadata = {}, userId } = req.body;
 
@@ -19,7 +35,7 @@ router.post(
         "SELECT COUNT(*) FROM orders WHERE user_id=$1",
         [userId],
       );
-      const orderCount = parseInt(rows[0].count, 10) || 0;
+      const orderCount = parseInt((rows[0] as any).count, 10) || 0;
       if (orderCount === 0) {
         unitAmount = Math.floor(unitAmount * 0.9);
       }
