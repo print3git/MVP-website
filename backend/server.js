@@ -10,9 +10,9 @@ if (process.env.NODE_ENV === "test") {
   if (!process.env.S3_BUCKET) {
     process.env.S3_BUCKET = "test-bucket";
   }
-  if (!process.env.STRIPE_WEBHOOK_SECRET) {
-    process.env.STRIPE_WEBHOOK_SECRET = "whsec";
-  }
+}
+if (!process.env.STRIPE_WEBHOOK_SECRET) {
+  throw new Error("STRIPE_WEBHOOK_SECRET must be set");
 }
 const express = require("express");
 const http2 = require("http2");

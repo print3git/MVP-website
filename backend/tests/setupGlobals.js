@@ -62,18 +62,26 @@ if (!process.env.AWS_SECRET_ACCESS_KEY) {
 if (!process.env.DB_URL) {
   process.env.DB_URL = "postgres://user:pass@localhost/db";
 }
-if (!process.env.STRIPE_SECRET_KEY) {
-  process.env.STRIPE_SECRET_KEY = "sk_test";
+const isPlaceholder = (val, ending) =>
+  !val ||
+  val === "your_stripe_key_here" ||
+  val === ending ||
+  val.endsWith(ending);
+const stripeKey = process.env.STRIPE_SECRET_KEY;
+const webhook = process.env.STRIPE_WEBHOOK_SECRET;
+if (isPlaceholder(stripeKey, "sk_test")) {
+  throw new Error("STRIPE_SECRET_KEY must be set to a non-test value");
+}
+if (isPlaceholder(webhook, "whsec")) {
+  throw new Error("STRIPE_WEBHOOK_SECRET must be set to a non-test value");
 }
 if (!process.env.STRIPE_TEST_KEY) {
-  process.env.STRIPE_TEST_KEY = process.env.STRIPE_SECRET_KEY;
+  process.env.STRIPE_TEST_KEY = stripeKey;
 }
 if (!process.env.STRIPE_PUBLISHABLE_KEY) {
-  process.env.STRIPE_PUBLISHABLE_KEY = "pk_test";
+  process.env.STRIPE_PUBLISHABLE_KEY = "pk_live";
 }
-if (!process.env.STRIPE_WEBHOOK_SECRET) {
-  process.env.STRIPE_WEBHOOK_SECRET = "whsec";
-}
+global.__STRIPE_ENV__ = { stripeKey, stripeWebhook: webhook };
 
 // Ensure any proxy environment variables do not interfere with HTTP mocking
 for (const key of [
