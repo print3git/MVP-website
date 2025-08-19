@@ -5,7 +5,7 @@ import express, {
 } from "express";
 import Stripe from "stripe";
 import { PRODUCT } from "../pricing";
-import { sendMail } from "../../mail";
+import { sendMail } from "../../mail.js";
 
 export interface Order {
   /** S3 object key (without `.glb`) returned from `storeGlb` */
@@ -30,13 +30,18 @@ const router = express.Router();
 
 router.post(
   "/api/checkout",
-  async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const { slug, email } = req.body as Order;
-    if (!slug || !email) {
-      return res.status(400).json({ error: "missing fields" });
-    }
-    const sessionParams: Stripe.Checkout.SessionCreateParams = {
+  async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const { slug, email } = req.body as Order;
+      if (!slug || !email) {
+        res.status(400).json({ error: "missing fields" });
+        return;
+      }
+      const sessionParams: Stripe.Checkout.SessionCreateParams = {
       mode: "payment",
       line_items: [
         {
@@ -52,18 +57,23 @@ router.post(
       success_url: `${req.headers.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${req.headers.origin}/cancel`,
     };
-    const session = await stripe.checkout.sessions.create(sessionParams);
-    orders.set(session.id, { slug, email, paid: false });
-    res.json({ checkoutUrl: session.url });
-  } catch (err) {
-    next(err);
-  }
-});
+      const session = await stripe.checkout.sessions.create(sessionParams);
+      orders.set(session.id, { slug, email, paid: false });
+      res.json({ checkoutUrl: session.url });
+    } catch (err) {
+      next(err);
+    }
+  },
+);
 
 router.post(
   "/api/stripe/webhook",
   express.raw({ type: "application/json" }),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     try {
       const sig = req.headers["stripe-signature"] as string;
       const event = stripe.webhooks.constructEvent(
@@ -84,10 +94,12 @@ router.post(
         }
       }
       res.sendStatus(200);
+      return;
     } catch (err) {
       // signature errors should return 400
       if (err instanceof Error && err.message.includes("Webhook Error")) {
-        return res.sendStatus(400);
+        res.sendStatus(400);
+        return;
       }
       next(err);
     }

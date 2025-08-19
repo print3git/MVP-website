@@ -5,6 +5,11 @@ const webhook = process.env.STRIPE_WEBHOOK_SECRET;
 const secretPlaceholder = !secret || /dummy|your|sk_test$/.test(secret);
 const webhookPlaceholder = !webhook || /dummy|your|whsec$/.test(webhook);
 const skip = process.env.CI && (secretPlaceholder || webhookPlaceholder);
+if (skip) {
+  console.log(
+    "Skipping Stripe validation diagnostics: STRIPE secrets missing or placeholders",
+  );
+}
 
 /**
  * This diagnostic suite ensures the environment provides real Stripe

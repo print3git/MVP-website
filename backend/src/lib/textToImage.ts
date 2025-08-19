@@ -4,7 +4,7 @@ import { pipeline } from "stream/promises";
 import path from "path";
 import { uploadFile } from "./uploadS3";
 import { capture } from "./logger";
-import logger from "../../src/logger";
+import logger from "../logger.js";
 
 /**
  * Generate an image from text using Stability AI and upload to S3.
@@ -12,7 +12,7 @@ import logger from "../../src/logger";
  * @returns {Promise<string>} Public URL of generated PNG
  */
 export async function textToImage(prompt: string): Promise<string> {
-  const key = process.env.STABILITY_KEY;
+  const key = process.env["STABILITY_KEY"];
   if (!key) throw new Error("STABILITY_KEY is not set");
   const endpoint = "https://api.stability.ai/v2beta/stable-image/generate/core";
   try {

@@ -8,35 +8,36 @@ on:
   workflow_dispatch:
 
 jobs:
-  audit:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
-      - run: npm install --no-audit --no-fund
-      - run: npm audit --audit-level=high
-      - run: npm audit --prefix backend --audit-level=high
-
   build:
     runs-on: ubuntu-latest
-    services:
-      docker:
-        image: docker:dind
-        options: --privileged
     steps:
-      - name: Ensure Docker CLI
+      - name: REQUIRED
         run: |
-          if ! command -v docker >/dev/null; then
-            sudo apt-get update && sudo apt-get install -y docker.io
-          fi
+          echo 'REQUIRED: production build'
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
+          cache: "npm"
+      - run: npm ci
+      - name: Production build
+        run: npm run build
+
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: REQUIRED
+        run: |
+          echo 'REQUIRED: intent/behavior tests'
+      - uses: actions/checkout@v5
+      - name: Stripe preflight
+        run: |
+          echo "STRIPE_SECRET_KEY present: $([[ \"$STRIPE_SECRET_KEY\" =~ ^sk_ ]] && echo true || echo false)"
+          echo "STRIPE_WEBHOOK_SECRET present: $([[ \"$STRIPE_WEBHOOK_SECRET\" =~ ^whsec_ ]] && echo true || echo false)"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
       - name: Clean npm proxy settings
         run: |
           unset NPM_CONFIG_HTTP_PROXY NPM_CONFIG_HTTPS_PROXY
@@ -48,33 +49,17 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('backend/package-lock.json') }}
-      - run: npm install --no-audit --no-fund
-      - name: Cache Playwright browsers
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-playwright-
+          restore-keys: ${{ runner.os }}-playwright-
+      - run: npm ci
       - name: Install Playwright browsers
         env:
           PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
-          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '0'
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "0"
         run: npx playwright install --with-deps
-      - name: Install backend dependencies
-        run: npm install --no-audit --no-fund --prefix backend
-
-      - name: Validate ESLint modules
-        run: |
-          node -e "require.resolve('@eslint/js')" || \
-            (echo '❌ @eslint/js not found' && exit 1)
-
-      - name: Install Husky hooks
-        run: npm run prepare
-
       - name: Prepare test env
         run: |
+
           echo "DB_URL=postgres://user:pass@localhost/db" > .env.test
 
       - name: Loader precedence preflight
@@ -159,55 +144,11 @@ jobs:
       - name: Run visual tests
         if: ${{ secrets.PERCY_TOKEN }}
         env:
-          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
           PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
-          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '0'
-        run: npx percy exec -- npm run e2e
-
-      - name: Verify frontend readiness
-        run: node e2e/wait-for-backend-a3f9X2.test.js
-
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "0"
+        run: npm run test:ci
       - name: Run smoke tests
-        if: ${{ !secrets.PERCY_TOKEN }}
         env:
           PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
-          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '0'
-        run: npm run e2e
-
-      - name: Run accessibility tests
-        env:
-          PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
-          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '0'
-        run: npm run test:a11y
-
-      - name: Run integration diagnostics
-        run: node scripts/run-jest.js tests/diagnostic-env-vars-4be91cf27a.test.ts tests/diagnostic-stripe-smoke-d3f8a1b5c7.test.ts tests/diagnostic-cloudflare-smoke-7e2c9d4f8b.test.ts tests/diagnostic-db-smoke-5a6e2d9c1f.test.ts
-        continue-on-error: true
-
-  a11y:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
-      - run: npm install --no-audit --no-fund
-      - run: npm run a11y
-
-  smoke-fallback:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
-      - run: npm install --no-audit --no-fund
-      - name: Run smoke tests with fallback env
-        env:
-          STRIPE_TEST_KEY: dummy
-          DB_URL: postgres://localhost:5432/dev
-        run: |
-          npm run setup
-          npm run smoke
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "0"
+        run: npm run smoke

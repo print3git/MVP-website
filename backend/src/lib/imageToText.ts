@@ -6,17 +6,14 @@ import axios from 'axios';
  * @returns caption text
  */
 export async function imageToText(imageURL: string): Promise<string> {
-  const endpoint = process.env.IMAGE2TEXT_ENDPOINT;
-  const key = process.env.IMAGE2TEXT_KEY;
+  const endpoint = process.env["IMAGE2TEXT_ENDPOINT"];
+  const key = process.env["IMAGE2TEXT_KEY"];
   if (!endpoint) throw new Error('IMAGE2TEXT_ENDPOINT is not set');
-  const res = await axios.post(
-    endpoint,
-    { imageURL },
-    {
-      headers: key ? { Authorization: `Bearer ${key}` } : undefined,
-      validateStatus: () => true,
-    },
-  );
+  const config = {
+    ...(key ? { headers: { Authorization: `Bearer ${key}` } } : {}),
+    validateStatus: () => true,
+  };
+  const res = await axios.post(endpoint, { imageURL }, config);
   if (res.status >= 400) {
     const msg = res.data?.error || `request failed with status ${res.status}`;
     throw new Error(msg);

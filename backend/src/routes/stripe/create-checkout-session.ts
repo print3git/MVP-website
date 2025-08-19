@@ -5,7 +5,7 @@ import {
   type Response,
 } from "express";
 import Stripe from "stripe";
-import db from "../../db";
+import db from "../../db.js";
 
 interface CheckoutSessionBody {
   price: number;
