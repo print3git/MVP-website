@@ -31,10 +31,9 @@ describe("isolated ESLint failures", () => {
     });
   });
 
-  test("typescript parsing error", () => {
+  test("typescript file parses without error", () => {
     const res = runEslint(["scripts/ci_watchdog.ts", "--no-ignore"]);
-    expect(res.status).not.toBe(0);
-    expect(res.stdout).toMatch(/Parsing error: Unexpected token !/);
+    expect(res.status).toBe(0);
   });
 
   test("backend directory ignored", () => {
