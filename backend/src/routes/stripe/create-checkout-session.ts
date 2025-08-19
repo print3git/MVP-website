@@ -1,6 +1,18 @@
-import { Router, type NextFunction, type Request, type Response } from "express";
+import {
+  Router,
+  type NextFunction,
+  type Request,
+  type Response,
+} from "express";
 import Stripe from "stripe";
 import db from "../../db";
+
+interface CheckoutSessionBody {
+  price: number;
+  qty?: number;
+  metadata?: Record<string, string>;
+  userId?: string;
+}
 
 const router = Router();
 const stripe = new Stripe(process.env["STRIPE_KEY"] as string, {
@@ -9,7 +21,11 @@ const stripe = new Stripe(process.env["STRIPE_KEY"] as string, {
 
 router.post(
   "/api/create-checkout-session",
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (
+    req: Request<{}, any, CheckoutSessionBody>,
+    res: Response,
+    next: NextFunction,
+  ) => {
   try {
     const { price, qty = 1, metadata = {}, userId } = req.body;
 
