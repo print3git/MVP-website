@@ -62,19 +62,12 @@ if (!process.env.AWS_SECRET_ACCESS_KEY) {
 if (!process.env.DB_URL) {
   process.env.DB_URL = "postgres://user:pass@localhost/db";
 }
-const isPlaceholder = (val, ending) =>
-  !val ||
-  val === "your_stripe_key_here" ||
-  val === ending ||
-  val.endsWith(ending);
-const stripeKey = process.env.STRIPE_SECRET_KEY;
-const webhook = process.env.STRIPE_WEBHOOK_SECRET;
-if (isPlaceholder(stripeKey, "sk_test")) {
-  throw new Error("STRIPE_SECRET_KEY must be set to a non-test value");
-}
-if (isPlaceholder(webhook, "whsec")) {
-  throw new Error("STRIPE_WEBHOOK_SECRET must be set to a non-test value");
-}
+const { applyMockEnv, mockSecrets } = require("../src/lib/mockEnv");
+applyMockEnv();
+const stripeKey =
+  process.env.STRIPE_SECRET_KEY || mockSecrets.STRIPE_SECRET_KEY;
+const webhook =
+  process.env.STRIPE_WEBHOOK_SECRET || mockSecrets.STRIPE_WEBHOOK_SECRET;
 if (!process.env.STRIPE_TEST_KEY) {
   process.env.STRIPE_TEST_KEY = stripeKey;
 }

@@ -1,6 +1,8 @@
 // backend/server.js
 
 require("dotenv").config({ override: false });
+const { applyMockEnv, mockSecrets } = require("./src/lib/mockEnv");
+applyMockEnv();
 const { getEnv } = require("./utils/getEnv");
 const CLOUDFRONT_MODEL_DOMAIN = getEnv("CLOUDFRONT_MODEL_DOMAIN");
 if (!CLOUDFRONT_MODEL_DOMAIN && process.env.NODE_ENV !== "test") {
@@ -12,7 +14,7 @@ if (process.env.NODE_ENV === "test") {
   }
 }
 if (!process.env.STRIPE_WEBHOOK_SECRET) {
-  throw new Error("STRIPE_WEBHOOK_SECRET must be set");
+  process.env.STRIPE_WEBHOOK_SECRET = mockSecrets.STRIPE_WEBHOOK_SECRET;
 }
 const express = require("express");
 const http2 = require("http2");

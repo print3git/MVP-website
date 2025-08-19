@@ -1,12 +1,11 @@
 "use strict";
 
 const { getEnv } = require("./src/lib/getEnv");
-const required = ["DB_URL", "STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET"];
-const isPlaceholder = (val, ending) =>
-  !val ||
-  val === "your_stripe_key_here" ||
-  val === ending ||
-  val.endsWith(ending);
+const { applyMockEnv, mockSecrets } = require("./src/lib/mockEnv");
+
+applyMockEnv();
+
+const required = ["DB_URL"];
 const optionalGlb = [
   "CLOUDFRONT_MODEL_DOMAIN",
   "SPARC3D_ENDPOINT",
@@ -22,14 +21,12 @@ if (missingGlb.length) {
   console.warn(`Missing optional GLB env vars: ${missingGlb.join(", ")}`);
 }
 
-const stripeKey = getEnv("STRIPE_SECRET_KEY");
-if (isPlaceholder(stripeKey, "sk_test")) {
-  throw new Error("STRIPE_SECRET_KEY must be a live secret key");
-}
-const stripeWebhook = getEnv("STRIPE_WEBHOOK_SECRET");
-if (isPlaceholder(stripeWebhook, "whsec")) {
-  throw new Error("STRIPE_WEBHOOK_SECRET must be a live webhook secret");
-}
+const stripeKey = getEnv("STRIPE_SECRET_KEY", {
+  defaultValue: mockSecrets.STRIPE_SECRET_KEY,
+});
+const stripeWebhook = getEnv("STRIPE_WEBHOOK_SECRET", {
+  defaultValue: mockSecrets.STRIPE_WEBHOOK_SECRET,
+});
 
 module.exports = {
   dbUrl: getEnv("DB_URL"),

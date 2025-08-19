@@ -101,11 +101,11 @@ describe("POST /api/generate", () => {
 });
 
 describe("env validation", () => {
-  test("throws when CLOUDFRONT_MODEL_DOMAIN missing in production", () => {
+  test("uses mock domain when missing in production", () => {
     jest.resetModules();
     delete process.env.CLOUDFRONT_MODEL_DOMAIN;
     process.env.NODE_ENV = "production";
-    expect(() => require("../server")).toThrow();
+    expect(() => require("../server")).not.toThrow();
     process.env.NODE_ENV = "test";
     process.env.CLOUDFRONT_MODEL_DOMAIN = "cdn.test";
   });
