@@ -10,28 +10,21 @@ const baseLogger = createLogger({
   transports: [consoleTransport],
 });
 
-// Format a log entry and send to console in JSON form
+/**
+ * Format a log entry and forward it to winston.
+ * @param {"info"|"warn"|"error"} level - log level for the message
+ * @param {string} msg - message to log
+ * @param {object} [meta] - additional metadata for the log entry
+ * @returns {void}
+ */
 function output(level, msg, meta = {}) {
   const { code, ...rest } = meta;
-  const entry = {
-    timestamp: new Date().toISOString(),
-    level,
-    message: msg,
-    ...(code ? { code } : {}),
-    ...rest,
-  };
-  const str = JSON.stringify(entry);
-  if (level === "error") {
-    console.error(str);
-  } else {
-    console.log(str);
-  }
   baseLogger.log({
     level,
     message: msg,
     ...(code ? { code } : {}),
     ...rest,
-    timestamp: entry.timestamp,
+    timestamp: new Date().toISOString(),
   });
 }
 
