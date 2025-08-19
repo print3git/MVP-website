@@ -59,7 +59,7 @@ module.exports = [
   },
   {
     languageOptions: {
-      ecmaVersion: 12,
+      ecmaVersion: 2022,
       globals: { ...globals.node, ...globals.es2021, ...globals.jest },
     },
   },
