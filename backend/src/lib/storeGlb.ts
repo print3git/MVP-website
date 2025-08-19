@@ -12,10 +12,10 @@ export async function storeGlb(
   if (data.length < 12 || data.toString("utf8", 0, 4) !== "glTF") {
     throw new Error("Invalid GLB");
   }
-  const region = process.env.AWS_REGION;
-  const bucket = process.env.S3_BUCKET;
-  const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
-  const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
+  const region = process.env["AWS_REGION"];
+  const bucket = process.env["S3_BUCKET"];
+  const accessKeyId = process.env["AWS_ACCESS_KEY_ID"];
+  const secretAccessKey = process.env["AWS_SECRET_ACCESS_KEY"];
   if (!region) throw new Error("AWS_REGION is not set");
   if (!bucket) throw new Error("S3_BUCKET is not set");
   if (!accessKeyId) throw new Error("AWS_ACCESS_KEY_ID is not set");
@@ -25,7 +25,6 @@ export async function storeGlb(
     credentials: { accessKeyId, secretAccessKey },
   });
   const key = `models/${Date.now()}-${Math.random().toString(36).slice(2)}.glb`;
-  let lastError: any;
   for (let i = 0; i < attempts; i++) {
     try {
       await client.send(
@@ -37,10 +36,8 @@ export async function storeGlb(
           ACL: "public-read",
         }),
       );
-      lastError = undefined;
       break;
     } catch (err: any) {
-      lastError = err;
       const isNetworkError =
         err?.name === "NetworkingError" || /network/i.test(err?.message || "");
       if (!isNetworkError || i === attempts - 1) {

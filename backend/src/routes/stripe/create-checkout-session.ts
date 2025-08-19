@@ -1,6 +1,6 @@
 import { Router, type NextFunction, type Request, type Response } from "express";
 import Stripe from "stripe";
-import db from "../../db";
+import db from "../../db.js";
 
 const router = Router();
 const stripe = new Stripe(process.env["STRIPE_KEY"] as string, {

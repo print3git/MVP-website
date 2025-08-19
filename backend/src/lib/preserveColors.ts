@@ -6,7 +6,7 @@ import { NodeIO } from '@gltf-transform/core';
  */
 export async function preserveColors(glb: Buffer): Promise<Buffer> {
   const io = new NodeIO();
-  const doc = io.readBinary(glb);
+  const doc = await io.readBinary(glb);
   const root = doc.getRoot();
 
   for (const mesh of root.listMeshes()) {
@@ -28,5 +28,6 @@ export async function preserveColors(glb: Buffer): Promise<Buffer> {
     }
   }
 
-  return io.writeBinary(doc);
+  const array = await io.writeBinary(doc);
+  return Buffer.from(array);
 }

@@ -24,13 +24,13 @@ export async function uploadFile(
   contentType: string,
 ): Promise<string> {
   filePath = resolveLocalFile(filePath, ["/tmp", "uploads"], "file not found");
-  const region = process.env.AWS_REGION;
-  const bucket = process.env.S3_BUCKET;
+  const region = process.env["AWS_REGION"];
+  const bucket = process.env["S3_BUCKET"];
   const domain =
-    process.env.CLOUDFRONT_DOMAIN || process.env.CLOUDFRONT_MODEL_DOMAIN;
+    process.env["CLOUDFRONT_DOMAIN"] || process.env["CLOUDFRONT_MODEL_DOMAIN"];
 
-  const accessKey = process.env.AWS_ACCESS_KEY_ID;
-  const secretKey = process.env.AWS_SECRET_ACCESS_KEY;
+  const accessKey = process.env["AWS_ACCESS_KEY_ID"];
+  const secretKey = process.env["AWS_SECRET_ACCESS_KEY"];
   if (!region) throw new Error("AWS_REGION is not set");
   if (!bucket) throw new Error("S3_BUCKET is not set");
   if (!domain) throw new Error("CLOUDFRONT_DOMAIN is not set");

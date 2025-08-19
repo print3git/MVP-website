@@ -27,7 +27,11 @@ export async function prepareImage(image: string): Promise<string> {
   let cleanup = false;
 
   if (image.startsWith("data:")) {
-    const [, base64] = image.split(",", 2);
+    const parts = image.split(",", 2);
+    const base64 = parts[1];
+    if (!base64) {
+      throw new Error("invalid data url");
+    }
     const name = `${Date.now()}-${Math.random().toString(36).slice(2)}.png`;
     filePath = safeJoin("/tmp", name);
     await fs.promises.writeFile(filePath, Buffer.from(base64, "base64"));
