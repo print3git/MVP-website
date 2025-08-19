@@ -2,6 +2,11 @@
 
 const { getEnv } = require("./src/lib/getEnv");
 const required = ["DB_URL", "STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET"];
+const isPlaceholder = (val, ending) =>
+  !val ||
+  val === "your_stripe_key_here" ||
+  val === ending ||
+  val.endsWith(ending);
 const optionalGlb = [
   "CLOUDFRONT_MODEL_DOMAIN",
   "SPARC3D_ENDPOINT",
@@ -17,16 +22,19 @@ if (missingGlb.length) {
   console.warn(`Missing optional GLB env vars: ${missingGlb.join(", ")}`);
 }
 
+const stripeKey = getEnv("STRIPE_SECRET_KEY");
+if (isPlaceholder(stripeKey, "sk_test")) {
+  throw new Error("STRIPE_SECRET_KEY must be a live secret key");
+}
+const stripeWebhook = getEnv("STRIPE_WEBHOOK_SECRET");
+if (isPlaceholder(stripeWebhook, "whsec")) {
+  throw new Error("STRIPE_WEBHOOK_SECRET must be a live webhook secret");
+}
+
 module.exports = {
   dbUrl: getEnv("DB_URL"),
-  stripeKey: getEnv("STRIPE_SECRET_KEY"),
-  stripeWebhook: (() => {
-    const raw = getEnv("STRIPE_WEBHOOK_SECRET");
-    if (raw && raw.startsWith("whsec_")) {
-      return raw.split("_", 1)[0];
-    }
-    return raw;
-  })(),
+  stripeKey,
+  stripeWebhook,
   stripePublishable: getEnv("STRIPE_PUBLISHABLE_KEY", { default: "" }),
   dalleServerUrl: getEnv("DALLE_SERVER_URL", {
     default: "http://localhost:5002",
