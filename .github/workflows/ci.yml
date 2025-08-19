@@ -31,6 +31,8 @@ jobs:
           echo 'REQUIRED: intent/behavior tests'
       - uses: actions/checkout@v5
       - name: Stripe preflight
+        env:
+          GITHUB_ENV: ${{ runner.temp }}/env.out
         run: |
           echo "STRIPE_SECRET_KEY present: $([[ \"$STRIPE_SECRET_KEY\" =~ ^sk_ ]] && echo true || echo false)"
           echo "STRIPE_WEBHOOK_SECRET present: $([[ \"$STRIPE_WEBHOOK_SECRET\" =~ ^whsec_ ]] && echo true || echo false)"
@@ -66,6 +68,7 @@ jobs:
         env:
           STRIPE_SECRET_KEY: sk_live_xxx
           STRIPE_WEBHOOK_SECRET: whsec_xxx
+          GITHUB_ENV: ${{ runner.temp }}/env.out
         run: |
           cat <<'EOF' > /tmp/ci.env
           STRIPE_SECRET_KEY=

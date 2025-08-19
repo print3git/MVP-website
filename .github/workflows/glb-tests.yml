@@ -25,6 +25,8 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Stripe preflight
+        env:
+          GITHUB_ENV: ${{ runner.temp }}/env.out
         run: |
           echo "STRIPE_SECRET_KEY present: $([[ \"$STRIPE_SECRET_KEY\" =~ ^sk_ ]] && echo true || echo false)"
           echo "STRIPE_WEBHOOK_SECRET present: $([[ \"$STRIPE_WEBHOOK_SECRET\" =~ ^whsec_ ]] && echo true || echo false)"
@@ -47,6 +49,8 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Stripe preflight
+        env:
+          GITHUB_ENV: ${{ runner.temp }}/env.out
         run: |
           echo "STRIPE_SECRET_KEY present: $([[ \"$STRIPE_SECRET_KEY\" =~ ^sk_ ]] && echo true || echo false)"
           echo "STRIPE_WEBHOOK_SECRET present: $([[ \"$STRIPE_WEBHOOK_SECRET\" =~ ^whsec_ ]] && echo true || echo false)"
