@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const { createLogger, format, transports } = require("winston");
 
 const isTest = process.env.NODE_ENV === "test";

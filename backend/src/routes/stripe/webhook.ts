@@ -1,9 +1,5 @@
-import express, {
-  Router,
-  type NextFunction,
-  type Request,
-  type Response,
-} from "express";
+import express, { Router } from "express";
+import type { NextFunction, Request, Response } from "express";
 import Stripe from "stripe";
 import db from "../../db";
 import { enqueuePrint } from "../../queue/printQueue";

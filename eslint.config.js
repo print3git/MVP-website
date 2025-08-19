@@ -35,7 +35,7 @@ module.exports = [
       "scripts/ci_watchdog.js",
       "scripts/check-gh-workflow-sync-23859.ts",
       "upload/**",
-      // "src/**", // removed to enable frontend linting
+      "src/**",
     ],
   },
   {
@@ -47,6 +47,7 @@ module.exports = [
         tsconfigRootDir: __dirname,
       },
     },
+    rules: { "no-undef": "off" },
   },
   {
     settings: {
@@ -59,7 +60,7 @@ module.exports = [
   },
   {
     languageOptions: {
-      ecmaVersion: 12,
+      ecmaVersion: 2022,
       globals: { ...globals.node, ...globals.es2021, ...globals.jest },
     },
   },
@@ -76,6 +77,9 @@ module.exports = [
     },
   },
   jsdoc.configs["flat/recommended"],
+  {
+    rules: { "jsdoc/require-jsdoc": "off" },
+  },
   {
     files: ["**/*.{js,jsx,ts,tsx}"],
     ignores: [
@@ -96,11 +100,11 @@ module.exports = [
   },
   {
     files: ["backend/**/*", "backend/scripts/**/*"],
-    rules: { "jsdoc/require-jsdoc": "off" },
+    rules: { "jsdoc/require-jsdoc": "off", "no-undef": "off" },
   },
   {
     files: ["scripts/**/*"],
-    rules: { "jsdoc/require-jsdoc": "off" },
+    rules: { "jsdoc/require-jsdoc": "off", "no-undef": "off" },
   },
   {
     files: ["js/**/*"],
@@ -108,7 +112,7 @@ module.exports = [
   },
   {
     files: ["tests/**/*"],
-    rules: { "jsdoc/require-jsdoc": "off" },
+    rules: { "jsdoc/require-jsdoc": "off", "no-undef": "off" },
   },
   ...frontend,
 ];

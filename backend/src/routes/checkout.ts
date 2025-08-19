@@ -1,8 +1,5 @@
-import express, {
-  type NextFunction,
-  type Request,
-  type Response,
-} from "express";
+import express from "express";
+import type { NextFunction, Request, Response } from "express";
 import Stripe from "stripe";
 import { PRODUCT } from "../pricing";
 import { sendMail } from "../../mail";
@@ -31,34 +28,35 @@ const router = express.Router();
 router.post(
   "/api/checkout",
   async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const { slug, email } = req.body as Order;
-    if (!slug || !email) {
-      return res.status(400).json({ error: "missing fields" });
-    }
-    const sessionParams: Stripe.Checkout.SessionCreateParams = {
-      mode: "payment",
-      line_items: [
-        {
-          price_data: {
-            currency: PRODUCT.currency,
-            product_data: { name: PRODUCT.name },
-            unit_amount: PRODUCT.priceCents,
+    try {
+      const { slug, email } = req.body as Order;
+      if (!slug || !email) {
+        return res.status(400).json({ error: "missing fields" });
+      }
+      const sessionParams: Stripe.Checkout.SessionCreateParams = {
+        mode: "payment",
+        line_items: [
+          {
+            price_data: {
+              currency: PRODUCT.currency,
+              product_data: { name: PRODUCT.name },
+              unit_amount: PRODUCT.priceCents,
+            },
+            quantity: 1,
           },
-          quantity: 1,
-        },
-      ],
-      metadata: { slug, email },
-      success_url: `${req.headers.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${req.headers.origin}/cancel`,
-    };
-    const session = await stripe.checkout.sessions.create(sessionParams);
-    orders.set(session.id, { slug, email, paid: false });
-    res.json({ checkoutUrl: session.url });
-  } catch (err) {
-    next(err);
-  }
-});
+        ],
+        metadata: { slug, email },
+        success_url: `${req.headers.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${req.headers.origin}/cancel`,
+      };
+      const session = await stripe.checkout.sessions.create(sessionParams);
+      orders.set(session.id, { slug, email, paid: false });
+      res.json({ checkoutUrl: session.url });
+    } catch (err) {
+      next(err);
+    }
+  },
+);
 
 router.post(
   "/api/stripe/webhook",
