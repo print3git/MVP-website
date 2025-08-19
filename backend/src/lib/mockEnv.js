@@ -1,3 +1,4 @@
+
 const crypto = require("crypto");
 const mockId = crypto.randomBytes(3).toString("hex");
 
@@ -11,6 +12,12 @@ const mockSecrets = {
   DB_URL: "postgres://localhost/test",
 };
 
+/**
+ * Apply default mock values to an environment object when keys are missing.
+ *
+ * @param {NodeJS.ProcessEnv} [env=process.env] - Environment object to mutate.
+ * @returns {NodeJS.ProcessEnv} The updated environment.
+ */
 function applyMockEnv(env = process.env) {
   for (const [key, value] of Object.entries(mockSecrets)) {
     if (!env[key]) {

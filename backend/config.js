@@ -1,5 +1,11 @@
 "use strict";
 
+/**
+ * Loads environment variables for the backend and applies fallbacks for local
+ * development. Missing required variables are logged to the console.
+ *
+ * @module backend/config
+ */
 const { getEnv } = require("./src/lib/getEnv");
 const { applyMockEnv, mockSecrets } = require("./src/lib/mockEnv");
 
