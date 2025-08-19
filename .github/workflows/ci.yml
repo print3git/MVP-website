@@ -10,6 +10,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      PORT: 3000
+      CI_REQUIRE_EXTERNAL: '0'
     steps:
       - name: REQUIRED
         run: |
@@ -28,6 +31,7 @@ jobs:
     env:
       PORT: 3000
       DB_URL: postgres://user:pass@localhost:5432/testdb
+      CI_REQUIRE_EXTERNAL: '0'
     steps:
       - name: REQUIRED
         run: |

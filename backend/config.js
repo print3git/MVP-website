@@ -37,8 +37,13 @@ const stripeWebhook = getEnv("STRIPE_WEBHOOK_SECRET", {
 const requireLive =
   process.env.NODE_ENV === "production" ||
   process.env.CI_REQUIRE_EXTERNAL === "1";
-if (requireLive && !/^sk_live/.test(stripeKey)) {
-  throw new Error("STRIPE_SECRET_KEY must be a live secret");
+if (requireLive) {
+  if (!/^sk_live/.test(stripeKey)) {
+    throw new Error("STRIPE_SECRET_KEY must be a live secret");
+  }
+  if (!/^whsec_/.test(stripeWebhook)) {
+    throw new Error("STRIPE_WEBHOOK_SECRET must be a live webhook secret");
+  }
 }
 
 module.exports = {
