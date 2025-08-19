@@ -62,7 +62,9 @@ router.post(
         const order = exports.orders.get(session.id);
         if (order && !order.paid) {
           order.paid = true;
-          const link = `https://huggingface.co/spaces/print2/Sparc3D/resolve/main/output/${order.slug}.glb`;
+          const link = process.env.CLOUDFRONT_MODEL_DOMAIN
+            ? `https://${process.env.CLOUDFRONT_MODEL_DOMAIN}/${order.slug}.glb`
+            : order.slug;
           await (0, mail_1.sendMail)(order.email, "Your model is ready", link);
         }
       }
