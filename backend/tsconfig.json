@@ -12,6 +12,6 @@
     "noEmit": true,
     "types": ["node"]
   },
-  "include": ["src/**/*", "tests/**/*"],
-  "exclude": ["coverage", "node_modules"]
+  "include": ["src/**/*", "global.d.ts"],
+  "exclude": ["coverage", "node_modules", "tests"]
 }

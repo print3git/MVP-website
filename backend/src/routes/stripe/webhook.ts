@@ -5,9 +5,9 @@ import express, {
   type Response,
 } from "express";
 import Stripe from "stripe";
-import db from "../../db";
-import { enqueuePrint } from "../../queue/printQueue";
-import { enqueuePrint as enqueueDbPrint } from "../../queue/dbPrintQueue";
+import db from "../../db.js";
+import { enqueuePrint } from "../../queue/printQueue.js";
+import { enqueuePrint as enqueueDbPrint } from "../../queue/dbPrintQueue.js";
 
 const router = Router();
 const stripe = new Stripe(process.env["STRIPE_KEY"] as string, {
@@ -18,10 +18,10 @@ router.post(
   "/api/webhook/stripe",
   express.raw({ type: "application/json" }),
   async (
-    req: Request<{}, any, Buffer>,
+    req: Request,
     res: Response,
     next: NextFunction,
-  ) => {
+  ): Promise<void> => {
     try {
       const sig = req.headers["stripe-signature"] as string;
       const event = stripe.webhooks.constructEvent(
@@ -35,17 +35,19 @@ router.post(
           "paid",
           session.id,
         ]);
-        const jobId = session.metadata?.jobId;
+        const jobId = session.metadata?.["jobId"];
         if (jobId) {
           await enqueueDbPrint(jobId, session.id, {}, null, null);
           enqueuePrint(jobId);
         }
       }
       res.sendStatus(200);
+      return;
     } catch (err: any) {
       if (err.message) {
         console.error("Webhook Error:", err.message);
-        return res.status(400).send("Webhook Error");
+        res.status(400).send("Webhook Error");
+        return;
       }
       next(err);
     }

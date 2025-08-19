@@ -17,8 +17,8 @@ export async function generateGlb({
   prompt,
   imageURL,
 }: GenerateGlbParams): Promise<Buffer> {
-  const endpoint = process.env.SPARC3D_ENDPOINT;
-  const token = process.env.SPARC3D_TOKEN;
+  const endpoint = process.env["SPARC3D_ENDPOINT"];
+  const token = process.env["SPARC3D_TOKEN"];
   if (!endpoint) {
     throw new Error("SPARC3D_ENDPOINT is not set");
   }
