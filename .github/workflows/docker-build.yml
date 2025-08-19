@@ -12,7 +12,7 @@ jobs:
     env:
       SKIP_TESTS: 0
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - run: echo "Using npm"
       - name: Build Docker image
         run: docker build -t api:latest .
