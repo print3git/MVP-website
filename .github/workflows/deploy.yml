@@ -33,14 +33,14 @@ jobs:
         working-directory: frontend
 
       - name: Build frontend
-        run: npm run build
         working-directory: frontend
+        run: |
+          npm ci
+          npm run build
 
-      - name: Assert build output
-        run: node scripts/assert-dist.mjs
+      - name: Verify build output
+        run: ls -al frontend/dist && test -f frontend/dist/index.html
 
-      - name: Wrangler version
-        run: npx wrangler --version
 
       - name: Assert Pages project has no build config
         env:
@@ -91,21 +91,14 @@ jobs:
           name: pages-url
           path: pages-url.txt
 
-      - name: Comment with Pages URL
-        if: steps.deploy.outputs.url != ''
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const url = process.env.URL;
-            const sha = context.sha;
-            await github.repos.createCommitComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              commit_sha: sha,
-              body: `Cloudflare Pages preview: ${url}`
-            });
+      - name: Assert frontend artifact
+        run: node scripts/assert-frontend-dist.js
+
+      - name: Publish to Cloudflare Pages
+        run: npx wrangler@3 pages deploy frontend/dist --project-name ${{ secrets.CF_PAGES_PROJECT }}
         env:
-          URL: ${{ steps.deploy.outputs.url }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_PAGES_API_TOKEN }}
 
   pages-disabled:
     if: vars.ENABLE_PAGES != '1'
