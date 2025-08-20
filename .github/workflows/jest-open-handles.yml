@@ -1,0 +1,28 @@
+name: Jest open handles
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  jest-open-handles:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+      - name: Run Jest with open handles
+        run: |
+          npm test --prefix backend -- --detectOpenHandles --listTests --maxWorkers=50% 2>jest-stderr.log
+      - name: Upload stderr
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jest-stderr
+          path: jest-stderr.log
