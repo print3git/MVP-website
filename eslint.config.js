@@ -59,6 +59,12 @@ module.exports = [
     },
   },
   {
+    files: ["**/*.js"],
+    languageOptions: {
+      parserOptions: { project: null },
+    },
+  },
+  {
     settings: {
       jsdoc: {
         tagNamePreference: {
