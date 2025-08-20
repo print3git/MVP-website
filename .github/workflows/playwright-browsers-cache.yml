@@ -3,6 +3,10 @@ name: Playwright browsers cache
 on:
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   cache-browsers:
     runs-on: ubuntu-latest
