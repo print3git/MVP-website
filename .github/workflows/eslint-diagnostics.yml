@@ -1,0 +1,40 @@
+name: ESLint Diagnostics
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  eslint:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm ci --prefix backend
+      - name: Lint root
+        id: lint-root
+        run: |
+          npm run check-conflicts
+          npx eslint 'scripts/**/*.js' --max-warnings=0 --no-warn-ignored
+        continue-on-error: true
+      - name: Lint backend
+        id: lint-backend
+        run: npm run lint --prefix backend -- --ignore-pattern lib
+        continue-on-error: true
+      - name: Generate ESLint report
+        if: steps.lint-root.outcome == 'failure' || steps.lint-backend.outcome == 'failure'
+        run: npx eslint 'scripts/**/*.js' backend --ignore-pattern backend/lib -f json -o eslint-results.json || true
+      - name: Upload ESLint results
+        if: steps.lint-root.outcome == 'failure' || steps.lint-backend.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: eslint-results
+          path: eslint-results.json
