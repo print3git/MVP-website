@@ -4,11 +4,11 @@ const app = require("../server");
 test("GET /healthz returns ok", async () => {
   const res = await request(app).get("/healthz");
   expect(res.status).toBe(200);
-  expect(res.body).toEqual({ status: "ok" });
+  expect(res.body).toEqual({ ok: true });
 });
 
 test("GET /health returns ok", async () => {
   const res = await request(app).get("/health");
   expect(res.status).toBe(200);
-  expect(res.body).toEqual({ status: "ok" });
+  expect(res.body).toEqual({ ok: true });
 });
