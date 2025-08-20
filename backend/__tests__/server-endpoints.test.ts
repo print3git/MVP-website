@@ -34,9 +34,8 @@ let app;
 
 beforeAll(() => {
   process.env.NODE_ENV = "test";
-  process.env.STRIPE_WEBHOOK_SECRET = "whsec";
-  process.env.S3_BUCKET = "test-bucket";
-  process.env.CLOUDFRONT_MODEL_DOMAIN = "cdn.test";
+  const { applyMockEnv } = require("../src/lib/mockEnv");
+  applyMockEnv();
   app = require("../server");
 });
 
