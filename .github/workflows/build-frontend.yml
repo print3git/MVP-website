@@ -7,23 +7,24 @@ on:
 
 jobs:
   build:
+
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
     strategy:
       matrix:
-        node-version: [20, 22]
+        os: [ubuntu-latest]
+        node: [20, 22]
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: ${{ matrix.node }}
           cache: npm
-          cache-dependency-path: frontend/package-lock.json
-      - run: npm ci
-        working-directory: frontend
-      - run: npm run build
-        working-directory: frontend
-      - run: node scripts/assert-frontend-dist.js
+      - run: npm ci && npm run lint && npm run build
+      - run: test -d dist
       - uses: actions/upload-artifact@v4
         with:
-          name: frontend-dist-${{ matrix.node-version }}
+          name: frontend-dist-${{ matrix.node }}
           path: frontend/dist

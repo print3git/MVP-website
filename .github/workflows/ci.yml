@@ -10,6 +10,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
     env:
       PORT: 3000
       CI_REQUIRE_EXTERNAL: "0"
@@ -22,9 +25,8 @@ jobs:
         with:
           node-version: 20
           cache: "npm"
-      - run: npm ci
-      - name: Production build
-        run: npm run build
+      - run: npm ci && npm run lint && npm run build
+      - run: test -d dist
 
   tests:
     runs-on: ubuntu-latest

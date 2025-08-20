@@ -12,12 +12,19 @@ async function main() {
   });
   try {
     await waitOn({
-      resources: ["http://localhost:3000/healthz"],
+      resources: [
+        "http://localhost:3000/healthz",
+        "http://localhost:3000/readyz",
+      ],
       timeout: 120000,
     });
-    const res = await fetch("http://localhost:3000/healthz");
-    if (!res.ok) {
-      throw new Error(`Expected 200 from /healthz, got ${res.status}`);
+    const health = await fetch("http://localhost:3000/healthz");
+    if (!health.ok) {
+      throw new Error(`Expected 200 from /healthz, got ${health.status}`);
+    }
+    const ready = await fetch("http://localhost:3000/readyz");
+    if (!ready.ok) {
+      throw new Error(`Expected 200 from /readyz, got ${ready.status}`);
     }
     console.log("Server responded within timeout");
   } catch (err) {

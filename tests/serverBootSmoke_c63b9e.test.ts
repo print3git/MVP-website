@@ -16,7 +16,10 @@ describe("backend server boot", () => {
     proc = spawn(process.execPath, [serverPath], { stdio: "ignore" });
     try {
       await waitOn({
-        resources: ["http://localhost:3000/healthz"],
+        resources: [
+          "http://localhost:3000/healthz",
+          "http://localhost:3000/readyz",
+        ],
         timeout: 5000,
       });
     } catch (err) {
