@@ -95,8 +95,12 @@ jobs:
           sed -r 's/\x1B\[[0-9;]*[JKmsu]//g' coverage/lcov.info \
             > coverage/lcov.sanitized.info
 
-      - name: Upload to Coveralls
-        run: cat coverage/lcov.sanitized.info | npx coveralls
+      - name: Upload coverage to Coveralls
+        run: |
+          for i in 1 2 3; do
+            cat coverage/lcov.sanitized.info | npx coveralls && exit 0 || sleep 5
+          done
+          echo "Coveralls unavailable; continuing"
 
       - name: Check bundle size
         run: npm run bundle:size
