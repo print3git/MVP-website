@@ -109,7 +109,10 @@ if (result.status) {
     console.error("\n\u26d4 Jest output (last 50 lines):\n");
     console.error(snippet);
     try {
-      const failLog = path.join(repoRoot, "coverage", "failed.log");
+      const workerId = process.env.JEST_WORKER_ID
+        ? `.${process.env.JEST_WORKER_ID}`
+        : "";
+      const failLog = path.join(repoRoot, "coverage", `failed${workerId}.log`);
       fs.mkdirSync(path.dirname(failLog), { recursive: true });
       fs.writeFileSync(failLog, combined);
       console.error(`Full output written to ${failLog}`);

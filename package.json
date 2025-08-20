@@ -78,7 +78,8 @@
     "test:webhook": "node scripts/test-webhook.js",
     "check:code-scanning": "node scripts/check-code-scanning.js",
     "commitlint": "commitlint --from=HEAD~1",
-    "lint:md": "markdownlint-cli2 \"**/*.md\""
+    "lint:md": "markdownlint-cli2 \"**/*.md\"",
+    "test:ci:fast": "sh -c \"if [ -z \\\"$CI\\\" ]; then echo 'test:ci:fast is CI-only' >&2; exit 1; fi; node scripts/run-jest.js --runInBand --bail=1 --detectOpenHandles --testTimeout=20000 --logHeapUsage --maxWorkers=2\""
   },
   "babel": {
     "presets": [
