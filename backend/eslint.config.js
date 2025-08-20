@@ -5,6 +5,9 @@ const jsdoc = require("eslint-plugin-jsdoc");
 
 module.exports = [
   {
+    ignores: ["lib/**"],
+  },
+  {
     languageOptions: {
       globals: {
         ...globals.node,

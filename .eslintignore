@@ -1,0 +1,6 @@
+frontend/dist
+**/dist
+**/build
+coverage
+.cache
+backend/lib

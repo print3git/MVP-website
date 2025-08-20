@@ -13,7 +13,6 @@ const prettier = require("eslint-config-prettier");
 const globals = require("globals");
 const jsdoc = require("eslint-plugin-jsdoc");
 const tsParser = require("@typescript-eslint/parser");
-const fs = require("fs");
 const frontend = require("./eslint.frontend-87adf32bca1e546.cjs");
 const isCI = Boolean(process.env.CI);
 
@@ -45,16 +44,8 @@ module.exports = [
     languageOptions: {
       parser: tsParser,
       parserOptions: {
+        project: ["./tsconfig.eslint.json"],
         tsconfigRootDir: __dirname,
-        ...(isCI
-          ? {}
-          : {
-              project: [
-                "tsconfig.json",
-                "backend/tsconfig.json",
-                "backend/tsconfig.build.json",
-              ].filter((p) => fs.existsSync(p)),
-            }),
       },
     },
   },
@@ -76,7 +67,13 @@ module.exports = [
   {
     languageOptions: {
       ecmaVersion: 2022,
-      globals: { ...globals.node, ...globals.es2021, ...globals.jest },
+      globals: { ...globals.node, ...globals.es2021 },
+    },
+  },
+  {
+    files: ["**/*.test.{ts,js}", "tests/**/*.{ts,js}"],
+    languageOptions: {
+      globals: { ...globals.jest, ...globals.node },
     },
   },
   js.configs.recommended,
