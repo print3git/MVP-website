@@ -1,0 +1,26 @@
+name: nock report
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  nock-report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5.0.0
+      - uses: actions/setup-node@v4.4.0
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: node scripts/run-jest.js tests/diagnostics/nock_reporter.test.js
+      - name: upload netconnect report
+        if: always()
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: netconnect
+          path: .artifacts/netconnect.json
