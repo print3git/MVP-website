@@ -1,17 +1,13 @@
 {
   "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "noEmit": true,
-    "allowJs": true,
-    "checkJs": false,
-    "types": ["node"]
-  },
-  "include": [
-    "backend/**/*.ts",
-    "backend/**/*.tsx",
-    "tests/**/*.ts",
-    "tests/**/*.tsx",
-    "scripts/**/*.ts"
-  ],
-  "exclude": ["node_modules", "dist", "build", "coverage", ".next", ".cache"]
+  "compilerOptions": { "noEmit": true },
+  "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.cjs", "**/*.mjs"],
+  "exclude": [
+    "**/dist",
+    "**/build",
+    "coverage",
+    ".cache",
+    "frontend/dist",
+    "node_modules"
+  ]
 }
