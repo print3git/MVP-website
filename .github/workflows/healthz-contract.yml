@@ -1,0 +1,24 @@
+name: Healthz Contract
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - run: npm ci
+      - run: node scripts/run-jest.js tests/diagnostics/healthz_contract.test.js
+      - uses: actions/upload-artifact@v4
+        with:
+          name: healthz.json
+          path: .artifacts/healthz.json
