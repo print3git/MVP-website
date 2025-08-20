@@ -612,9 +612,13 @@ test("/api/generate 400 when no prompt or image", async () => {
 
 test("/api/generate falls back on server failure", async () => {
   jest.spyOn(console, "error").mockImplementation(() => {});
+  process.env.CI_REQUIRE_EXTERNAL = "0";
   generateModel.mockRejectedValueOnce(new Error("fail"));
   const res = await request(app).post("/api/generate").send({ prompt: "t" });
-  expect(res.status).toBe(500);
+  expect(res.status).toBe(200);
+  expect(typeof res.body.glb_url).toBe("string");
+  expect(res.body.fallback).toBe(true);
+  expect(res.body.reason).toBe("external_unavailable");
 });
 
 test("/api/generate saves authenticated user id", async () => {
