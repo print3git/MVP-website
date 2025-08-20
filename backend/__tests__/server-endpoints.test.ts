@@ -91,12 +91,14 @@ describe("POST /api/generate", () => {
     expect(res.body.glb_url).toBe("/model.glb");
   });
 
-  test("returns 500 when generator throws", async () => {
+  test("returns 500 when generator throws and external required", async () => {
+    process.env.CI_REQUIRE_EXTERNAL = "1";
     generateModel.mockRejectedValueOnce(new Error("boom"));
     const res = await request(app)
       .post("/api/generate")
       .send({ prompt: "bad" });
     expect(res.status).toBe(500);
+    delete process.env.CI_REQUIRE_EXTERNAL;
   });
 });
 

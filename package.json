@@ -54,6 +54,7 @@
     "dev": "node backend/server.js",
     "validate-env": "bash scripts/validate-env.sh",
     "setup": "bash scripts/setup.sh",
+    "build:frontend": "npm --prefix frontend ci && npm --prefix frontend run build",
     "e2e": "playwright test",
     "test:e2e": "playwright test",
     "test:unit": "npm test --prefix backend",

@@ -494,7 +494,7 @@ app.post(
       } catch (err) {
         logger.error("🚨 generateModel() failed:", err);
         if (process.env.CI_REQUIRE_EXTERNAL !== "1") {
-          return res.status(200).json({ glb_url: "/model.glb" });
+          return res.status(200).json({ glb_url: "/models/placeholder.glb" });
         }
         return res.status(500).json({ error: err.message });
       }
@@ -526,7 +526,7 @@ app.post(
       logError(err);
       logger.info("🔹 Exiting /api/generate with error");
       if (process.env.CI_REQUIRE_EXTERNAL !== "1") {
-        return res.status(200).json({ glb_url: "/model.glb" });
+        return res.status(200).json({ glb_url: "/models/placeholder.glb" });
       }
       return res.status(500).json({ error: err.message });
     }

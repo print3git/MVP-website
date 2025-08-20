@@ -23,6 +23,6 @@ describe("db-check script", () => {
         },
         encoding: "utf8",
       });
-    }).toThrow(/DB_URL is not set/);
+    }).toThrow(/DB_URL must be set/);
   });
 });
