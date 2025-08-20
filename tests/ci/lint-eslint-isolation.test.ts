@@ -1,7 +1,7 @@
 import { spawnSync } from "child_process";
 import path from "path";
 
-test("ESLint reports no fatal errors", () => {
+test("ESLint runs in isolation", () => {
   const repoRoot = path.join(__dirname, "..", "..");
   const childScript = `
     const { ESLint } = require("eslint");
@@ -21,7 +21,7 @@ test("ESLint reports no fatal errors", () => {
   const proc = spawnSync(
     process.execPath,
     ["--experimental-vm-modules", "--eval", childScript],
-    { cwd: repoRoot, encoding: "utf8" },
+    { cwd: repoRoot, encoding: "utf8", env: { ...process.env, CI: "1" } },
   );
   if (proc.status !== 0) {
     console.error(proc.stderr);
