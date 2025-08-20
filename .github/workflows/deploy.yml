@@ -22,19 +22,25 @@ jobs:
         run: npm ci
 
       - name: Build frontend
-        run: npm run build:frontend
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build
+
+      - name: Verify build output
+        run: ls -al frontend/dist && test -f frontend/dist/index.html
 
       - name: Run deployment readiness test
         run: npm run test:cf-readiness
 
+      - name: Assert frontend artifact
+        run: node scripts/assert-frontend-dist.js
+
       - name: Publish to Cloudflare Pages
-        uses: cloudflare/pages-action@v1
-        with:
-          projectName: ${{ secrets.CF_PAGES_PROJECT }}
-          accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          apiToken: ${{ secrets.CF_PAGES_API_TOKEN }}
-          directory: ./frontend/dist
-          wranglerVersion: "3"
+        run: npx wrangler@3 pages deploy frontend/dist --project-name ${{ secrets.CF_PAGES_PROJECT }}
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_PAGES_API_TOKEN }}
 
   pages-disabled:
     if: vars.ENABLE_PAGES != '1'
