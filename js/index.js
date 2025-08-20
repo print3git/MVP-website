@@ -719,9 +719,8 @@ function renderThumbnails(arr) {
     const img = document.createElement("img");
     try {
       const parsed = new URL(url, window.location.href);
-      if (parsed.protocol === "javascript:") {
-        throw new Error("invalid url");
-      }
+      const blocked = new Set(["javascript:", "data:", "vbscript:"]);
+      if (blocked.has(parsed.protocol)) throw new Error("invalid url");
       img.src = parsed.href;
     } catch {
       img.src = "";
@@ -1335,3 +1334,8 @@ if (document.readyState !== "loading") {
   start();
 }
 window.addEventListener("DOMContentLoaded", start);
+
+if (typeof module !== "undefined") {
+  module.exports = { renderThumbnails };
+}
+export { renderThumbnails };
