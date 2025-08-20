@@ -1,4 +1,4 @@
-const axios = require("axios");
+const axios = require("../../src/lib/http");
 
 describe("network guard", () => {
   test("external requests are blocked", async () => {
