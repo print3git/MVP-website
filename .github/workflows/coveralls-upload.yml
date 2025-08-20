@@ -1,0 +1,28 @@
+name: Coveralls Upload
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types:
+      - completed
+
+jobs:
+  upload:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - name: Download coverage artifact
+        uses: actions/download-artifact@v4.1.8
+        with:
+          run-id: ${{ github.event.workflow_run.id }}
+          name: lcov
+          path: .
+      - name: Upload to Coveralls
+        uses: coverallsapp/github-action@v2.2.3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: coverage/lcov.info
+          retry: true
