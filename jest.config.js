@@ -4,6 +4,7 @@ module.exports = {
     "<rootDir>/backend/tests/setupGlobals.js",
   ],
   setupFilesAfterEnv: [
+    "<rootDir>/tests/utils/testEnv.ts",
     "<rootDir>/test/setupAuthMiddleware.js",
     "<rootDir>/tests/setup/nock.ts",
     "<rootDir>/tests/setup/teardown.ts",
