@@ -20,14 +20,14 @@ jobs:
 
       - name: Install deps
         run: npm ci
+        working-directory: frontend
 
       - name: Build frontend
-        run: npm run build:frontend
+        run: npm run build
+        working-directory: frontend
 
       - name: Assert build output
-        run: |
-          test -d frontend/dist
-          test -f frontend/dist/index.html
+        run: node scripts/assert-dist.mjs
 
       - name: Deploy with Wrangler
         env:
