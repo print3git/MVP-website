@@ -32,7 +32,11 @@ describe("isolated ESLint failures", () => {
   });
 
   test("typescript file parses without error", () => {
-    const res = runEslint(["scripts/ci_watchdog.ts", "--no-ignore"]);
+    const res = runEslint([
+      "scripts/ci_watchdog.ts",
+      "--no-ignore",
+      "--parser-options=project:scripts/tsconfig.json",
+    ]);
     expect(res.status).toBe(0);
   });
 
