@@ -44,9 +44,15 @@ module.exports = [
     languageOptions: {
       parser: tsParser,
       parserOptions: {
-        project: true,
+        project: ["./tsconfig.eslint.json"],
         tsconfigRootDir: __dirname,
       },
+    },
+  },
+  {
+    files: ["**/*.js"],
+    languageOptions: {
+      parserOptions: { project: null },
     },
   },
   {
