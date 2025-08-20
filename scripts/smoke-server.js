@@ -8,8 +8,15 @@ const axios = require("axios");
       validateStatus: () => true,
     });
     if (health.status !== 200) throw new Error(`/healthz ${health.status}`);
-    if (health.data.status !== "ok")
+    if (!health.data.ok)
       throw new Error(`bad healthz body ${JSON.stringify(health.data)}`);
+
+    const ready = await axios.get(`${base}/readyz`, {
+      validateStatus: () => true,
+    });
+    if (ready.status !== 200) throw new Error(`/readyz ${ready.status}`);
+    if (!ready.data.ok)
+      throw new Error(`bad readyz body ${JSON.stringify(ready.data)}`);
 
     const gen = await axios.post(
       `${base}/api/generate`,
