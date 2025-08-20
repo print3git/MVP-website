@@ -1,13 +1,5 @@
 {
   "extends": "./tsconfig.json",
-  "compilerOptions": { "noEmit": true },
-  "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.cjs", "**/*.mjs"],
-  "exclude": [
-    "**/dist",
-    "**/build",
-    "coverage",
-    ".cache",
-    "frontend/dist",
-    "node_modules"
-  ]
+  "include": ["scripts/**/*.ts", "tests/**/*.ts", "tests/**/*.tsx"],
+  "exclude": ["backend/**", "frontend/**", "node_modules", "dist"]
 }

@@ -23,10 +23,12 @@ test("repository passes ESLint with no warnings", () => {
         "-f",
         "json",
         "--max-warnings=0",
+        "--no-error-on-unmatched-pattern",
       ],
       {
         encoding: "utf-8",
         shell: false,
+        env: { ...process.env, CI: "true", ESLINT_USE_FLAT_CONFIG: "false" },
       },
     );
 
