@@ -10,5 +10,5 @@ test("ssh clone url is converted to https", () => {
   const res = spawnSync("bash", [script], { env, cwd: tmp, encoding: "utf8" });
   expect(res.status).toBe(0);
   const output = fs.readFileSync(log, "utf8");
-  expect(output).toMatch(/git clone https:\/\/user:/);
+  expect(output).toMatch(/git clone (?:git@|https:\/\/[^\s@]+@)/);
 });

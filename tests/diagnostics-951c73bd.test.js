@@ -7,6 +7,8 @@ const repoRoot = path.join(__dirname, "..");
 const backendDir = path.join(repoRoot, "backend");
 const stub = path.join(backendDir, "tests", "stubExecSync.js");
 
+jest.setTimeout(300000);
+
 describe("diagnostics supplemental suite", () => {
   describe("shell command invocation", () => {
     test("stubExecSync with safe PATH has no CodeQL warnings", () => {

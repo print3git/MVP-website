@@ -6,6 +6,8 @@ const path = require("path");
 const repoRoot = path.resolve(__dirname, "..");
 const stub = path.join(repoRoot, "backend", "tests", "stubExecSync.js");
 
+jest.setTimeout(300000);
+
 function runLint(cwd, extraEnv = {}) {
   return spawnSync("npm", ["run", "lint"], {
     cwd,

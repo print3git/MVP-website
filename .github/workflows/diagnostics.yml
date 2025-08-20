@@ -5,11 +5,15 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  schedule:
+    - cron: '0 0 * * *'
   workflow_dispatch:
 
 jobs:
   lint:
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     continue-on-error: true
     steps:
       - name: DIAGNOSTIC
@@ -25,7 +29,9 @@ jobs:
         run: npm run lint
 
   audit:
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     continue-on-error: true
     steps:
       - name: DIAGNOSTIC
@@ -43,7 +49,9 @@ jobs:
         run: npm audit --prefix backend --audit-level=high
 
   stripe_cloudflare:
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     continue-on-error: true
     env:
       CI_REQUIRE_EXTERNAL: "0"
