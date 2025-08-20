@@ -30,10 +30,16 @@ jobs:
 
   tests:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
     env:
       PORT: 3000
       DB_URL: postgres://user:pass@localhost:5432/testdb
       CI_REQUIRE_EXTERNAL: "0"
+      JEST_SHARD_TOTAL: 4
+      JEST_SHARD_INDEX: ${{ matrix.shard }}
     steps:
       - name: REQUIRED
         run: |
@@ -62,6 +68,7 @@ jobs:
           key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
           restore-keys: ${{ runner.os }}-playwright-
       - run: npm ci
+      - run: node scripts/assert-setup.js
       - name: Install Playwright browsers
         env:
           PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
@@ -83,35 +90,51 @@ jobs:
           EOF
           node scripts/env-loader-preflight.js /tmp/ci.env
 
-      - name: Run CI
-        env:
-          PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
-          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "0"
-        run: npm run ci
-
-      - name: Run coverage
-        run: SKIP_PW_DEPS=1 npm run coverage
-
-      - name: Sanitize coverage for Coveralls
-        run: sed -r -i 's/\x1B\[[0-9;]*[JKmsu]//g' coverage/lcov.info
-
+      - name: Format check
+        if: matrix.shard == 1
+        run: npm run format:check
+      - name: Lint
+        if: matrix.shard == 1
+        run: npm run lint
+      - name: Typecheck
+        if: matrix.shard == 1
+        run: npm run typecheck
+      - name: I18n lint
+        if: matrix.shard == 1
+        run: npm run i18n:lint
+      - name: Run backend tests shard
+        run: node scripts/jest-shard.js
+      - name: Upload junit artifact
+        uses: actions/upload-artifact@v4.3.4
+        with:
+          name: junit-${{ matrix.shard }}
+          path: junit/junit-${{ matrix.shard }}.xml
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4.3.4
         with:
-          name: lcov
-          path: coverage/lcov.info
+          name: coverage-${{ matrix.shard }}
+          path: coverage/shard-${{ matrix.shard }}/lcov.info
+      - name: Run a11y tests
+        if: matrix.shard == 1
+        run: npm run test:a11y
+      - name: Run UI tests
+        if: matrix.shard == 1
+        run: npm run test:ui
 
       - name: Check bundle size
+        if: matrix.shard == 1
         run: npm run bundle:size
 
       - name: Check for duplicate packages
+        if: matrix.shard == 1
         run: npm run deps:dedupe-check
 
       - name: Run Lighthouse CI
-        if: github.event_name == 'pull_request'
+        if: matrix.shard == 1 && github.event_name == 'pull_request'
         run: npm run lhci
 
       - name: Verify lockfiles
+        if: matrix.shard == 1
         run: |
           npm run deps:check
           git diff --exit-code package-lock.json
@@ -119,6 +142,7 @@ jobs:
           git diff --exit-code backend/hunyuan_server/package-lock.json
 
       - name: Audit dependencies
+        if: matrix.shard == 1
         run: |
           npm audit --audit-level=high
           npm audit --prefix backend --audit-level=high
@@ -127,7 +151,7 @@ jobs:
           fi
 
       - name: Validate Snyk token
-        if: ${{ secrets.SNYK_TOKEN }}
+        if: matrix.shard == 1 && secrets.SNYK_TOKEN
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run: |
@@ -135,30 +159,31 @@ jobs:
           npx snyk auth --token=$SNYK_TOKEN
 
       - name: Snyk scan backend
-        if: success() && secrets.SNYK_TOKEN
+        if: matrix.shard == 1 && success() && secrets.SNYK_TOKEN
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run: npx snyk test --severity-threshold=high --file=backend/package.json
 
       - name: Fallback to npm audit
-        if: ${{ !secrets.SNYK_TOKEN }}
+        if: matrix.shard == 1 && ${{ !secrets.SNYK_TOKEN }}
         run: |
           echo "⚠️ SNYK_TOKEN missing or invalid; running npm audit instead"
           npm audit --audit-level=high --prefix backend
 
       - name: Snyk scan hunyuan_server
-        if: success() && secrets.SNYK_TOKEN && fileExists('backend/hunyuan_server/package.json')
+        if: matrix.shard == 1 && success() && secrets.SNYK_TOKEN && fileExists('backend/hunyuan_server/package.json')
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run: npx snyk test --severity-threshold=high --file=backend/hunyuan_server/package.json
 
       - name: Run visual tests
-        if: ${{ secrets.PERCY_TOKEN }}
+        if: matrix.shard == 1 && secrets.PERCY_TOKEN
         env:
           PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "0"
         run: npm run test:ci
       - name: Run smoke tests
+        if: matrix.shard == 1
         env:
           PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "0"
