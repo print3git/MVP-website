@@ -57,6 +57,7 @@
     "e2e": "playwright test",
     "test:e2e": "playwright test",
     "test:unit": "npm test --prefix backend",
+    "coveralls:retry": "node scripts/coveralls-retry.js",
     "serve": "npm run build && node scripts/dev-server.js",
     "smoke": "node scripts/run-smoke.js",
     "predeploy": "node scripts/check-missing-links.js",
