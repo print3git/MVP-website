@@ -11,4 +11,7 @@
 
 
 # GitHub workflows
-.github/workflows/ @devops-team
+/.github/workflows/** @devops-team
+
+# CI scripts
+/scripts/ci/** @devops-team
