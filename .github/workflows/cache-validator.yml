@@ -1,0 +1,31 @@
+name: NPM cache validator
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - name: frontend
+            working-directory: .
+            lockfile: package-lock.json
+          - name: backend
+            working-directory: backend
+            lockfile: backend/package-lock.json
+    steps:
+      - uses: actions/checkout@v5
+      - id: setup
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: ${{ matrix.lockfile }}
+      - run: npm ci --prefer-offline
+        working-directory: ${{ matrix.working-directory }}
+      - run: echo "cache hit: ${{ steps.setup.outputs.cache-hit }}"
