@@ -8,7 +8,12 @@ const axios = require("axios");
       validateStatus: () => true,
     });
     if (health.status !== 200) throw new Error(`/healthz ${health.status}`);
-    if (health.data.status !== "ok")
+    const healthy =
+      (typeof health.data === "string" && health.data.trim() === "ok") ||
+      (typeof health.data === "object" &&
+        health.data &&
+        health.data.ok === true);
+    if (!healthy)
       throw new Error(`bad healthz body ${JSON.stringify(health.data)}`);
 
     const gen = await axios.post(
