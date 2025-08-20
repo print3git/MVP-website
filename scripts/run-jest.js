@@ -55,6 +55,9 @@ function runJest(args) {
   if (!jestArgs.includes("--runInBand")) {
     jestArgs.push("--runInBand");
   }
+  if (!jestArgs.includes("--detectOpenHandles")) {
+    jestArgs.push("--detectOpenHandles");
+  }
 
   const fileArgs = jestArgs.filter((arg) => !arg.startsWith("-"));
   const runFromRoot = fileArgs.some((arg) => {

@@ -2,7 +2,10 @@
 module.exports = {
   rootDir: ".",
   setupFiles: ["<rootDir>/tests/setupGlobals.js"],
-  setupFilesAfterEnv: ["<rootDir>/tests/setup.js"],
+  setupFilesAfterEnv: [
+    "<rootDir>/tests/setup.js",
+    "<rootDir>/../tests/setup/abort-on-timeout.js",
+  ],
   globalTeardown: "<rootDir>/tests/globalTeardown.js",
   testEnvironment: "node",
   transform: {
