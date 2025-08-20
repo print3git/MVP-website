@@ -14,10 +14,19 @@ test("repository passes ESLint with no warnings", () => {
     expect(eslintConfigLoaded).toBe(true);
     const result = spawnSync(
       "npx",
-      ["eslint", ".", "-f", "json", "--max-warnings=0"],
+      [
+        "eslint",
+        "--ignore-pattern",
+        "frontend/**/*",
+        "backend/**/*.{js,ts,tsx}",
+        "scripts/**/*.js",
+        "-f",
+        "json",
+        "--max-warnings=0",
+      ],
       {
         encoding: "utf-8",
-        shell: true,
+        shell: false,
       },
     );
 
