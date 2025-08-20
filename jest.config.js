@@ -5,7 +5,7 @@ module.exports = {
   ],
   setupFilesAfterEnv: [
     "<rootDir>/test/setupAuthMiddleware.js",
-    "<rootDir>/tests/setup/nock.ts",
+    ...(process.env.CI ? ["<rootDir>/tests/setup/nock.ts"] : []),
   ],
   coverageThreshold: {
     global: {
