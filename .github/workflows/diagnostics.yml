@@ -45,6 +45,8 @@ jobs:
   stripe_cloudflare:
     runs-on: ubuntu-latest
     continue-on-error: true
+    env:
+      CI_REQUIRE_EXTERNAL: "0"
     steps:
       - name: DIAGNOSTIC
         run: |
@@ -58,4 +60,5 @@ jobs:
       - name: Cloudflare readiness
         run: npm run test:cf-readiness
       - name: Stripe webhook
+        if: env.CI_REQUIRE_EXTERNAL == '1'
         run: npm run test:webhook
