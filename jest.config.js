@@ -3,9 +3,11 @@ module.exports = {
     "<rootDir>/test/jest.setup.ts",
     "<rootDir>/backend/tests/setupGlobals.js",
   ],
+  globalSetup: "<rootDir>/tests/setup/globalSetup.ts",
+  globalTeardown: "<rootDir>/tests/setup/globalTeardown.ts",
   setupFilesAfterEnv: [
-    "<rootDir>/test/setupAuthMiddleware.js",
-    "<rootDir>/tests/setup/nock.ts",
+    "<rootDir>/tests/setup/http-guard.ts",
+    "<rootDir>/tests/setup/teardown.ts",
   ],
   coverageThreshold: {
     global: {

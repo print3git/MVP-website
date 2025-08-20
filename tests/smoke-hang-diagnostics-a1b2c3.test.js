@@ -1,5 +1,4 @@
 describe.skip("insecure http fetch; https unavailable", () => {
-  const { startDevServer } = require("../scripts/dev-server");
   const { main, run } = require("../scripts/run-smoke.js");
   const child_process = require("child_process");
   const net = require("net");
@@ -25,18 +24,16 @@ describe.skip("insecure http fetch; https unavailable", () => {
   }
 
   describe("smoke hang diagnostics", () => {
-    test("npm run serve binds to port 3000", async () => {
-      const server = startDevServer(3000);
-      await waitPort(3000);
-      server.close();
+    test("npm run serve binds to port", async () => {
+      const { port } = globalThis.__TEST_SERVER__.address();
+      await waitPort(port);
     });
 
     test("homepage responds at /", async () => {
-      const server = startDevServer(0);
-      const port = server.address().port;
-      await waitPort(port);
-      const res = await fetch(`http://127.0.0.1:${port}/`);
-      server.close();
+      const base = globalThis.__TEST_BASE_URL__;
+      const url = new URL(base);
+      await waitPort(Number(url.port));
+      const res = await fetch(`${base}/`);
       expect(res.status).toBe(200);
     });
 
@@ -46,20 +43,18 @@ describe.skip("insecure http fetch; https unavailable", () => {
     });
 
     test("static asset loads", async () => {
-      const server = startDevServer(0);
-      const port = server.address().port;
-      await waitPort(port);
-      const res = await fetch(`http://127.0.0.1:${port}/img/box%20logo.png`);
-      server.close();
+      const base = globalThis.__TEST_BASE_URL__;
+      const url = new URL(base);
+      await waitPort(Number(url.port));
+      const res = await fetch(`${base}/img/box%20logo.png`);
       expect(res.status).toBe(200);
     });
 
     test("readiness under 3s", async () => {
       const t = Date.now();
-      const server = startDevServer(0);
-      const port = server.address().port;
-      await waitPort(port);
-      server.close();
+      const base = globalThis.__TEST_BASE_URL__;
+      const url = new URL(base);
+      await waitPort(Number(url.port));
       expect(Date.now() - t).toBeLessThan(3000);
     });
 
