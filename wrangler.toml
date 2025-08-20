@@ -1,5 +1,2 @@
 name = "mvp-website"
 pages_build_output_dir = "frontend/dist"
-
-[build]
-command = "npm run build:frontend"
