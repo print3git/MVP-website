@@ -29,6 +29,11 @@ beforeEach(() => {
   delete process.env.HTTPS_PROXY;
   nock.disableNetConnect();
   nock.enableNetConnect("127.0.0.1");
+
+  nock("https://api.stability.ai")
+    .persist()
+    .post(/\/v2beta\/stable-image\/generate\/core/)
+    .reply(200, { id: "mock", image_url: "https://example.com/fake.png" });
   global.consoleErrors = [];
   jest.spyOn(console, "error").mockImplementation((...args) => {
     const msg = args.join(" ");
