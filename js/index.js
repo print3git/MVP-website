@@ -288,6 +288,7 @@ function setStep(name) {
 window.shareOn = shareOn;
 let uploadedFiles = [];
 let previewUrls = [];
+const BLOCKED_SCHEMES = new Set(["javascript:", "data:", "vbscript:"]);
 let lastJobId = null;
 
 let savedProfile = null;
@@ -719,8 +720,7 @@ function renderThumbnails(arr) {
     const img = document.createElement("img");
     try {
       const parsed = new URL(url, window.location.href);
-      const blocked = new Set(["javascript:", "data:", "vbscript:"]);
-      if (blocked.has(parsed.protocol)) throw new Error("invalid url");
+      if (BLOCKED_SCHEMES.has(parsed.protocol)) throw new Error("invalid url");
       img.src = parsed.href;
     } catch {
       img.src = "";
