@@ -7,10 +7,20 @@ const repoRoot = path.resolve(__dirname, "..", "..");
 const eslintBin = path.join(repoRoot, "node_modules", ".bin", "eslint");
 
 function runEslint(args) {
-  return spawnSync("node", ["--experimental-vm-modules", eslintBin, ...args], {
-    cwd: repoRoot,
-    encoding: "utf8",
-  });
+  const res = spawnSync(
+    "node",
+    ["--experimental-vm-modules", eslintBin, ...args],
+    {
+      cwd: repoRoot,
+      encoding: "utf8",
+      timeout: 20_000,
+      env: { ...process.env, CI: "1" },
+    },
+  );
+  if (res.error && res.error.code === "ETIMEDOUT") {
+    throw new Error(`ESLint timed out after 20s: ${args.join(" ")}`);
+  }
+  return res;
 }
 
 describe("isolated ESLint failures", () => {
