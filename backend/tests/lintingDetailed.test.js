@@ -13,10 +13,19 @@ test("detailed backend ESLint report", () => {
     fs.mkdirSync(coverageDir, { recursive: true });
     fs.writeFileSync(path.join(coverageDir, ".gitkeep"), "");
   }
-  const output = execSync(`npx eslint -f json .`, {
-    cwd: backendDir,
-    encoding: "utf8",
-  });
+  const cmd = `npx eslint -f json .`;
+  let output;
+  try {
+    output = execSync(cmd, {
+      cwd: backendDir,
+      encoding: "utf8",
+    });
+  } catch (err) {
+    console.error(`ESLint command: ${cmd}`);
+    if (err.stdout) console.error(err.stdout);
+    if (err.stderr) console.error(err.stderr);
+    throw err;
+  }
   const results = JSON.parse(output);
   const errors = results
     .flatMap((r) => r.messages.map((m) => ({ ...m, file: r.filePath })))

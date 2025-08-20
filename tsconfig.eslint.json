@@ -11,6 +11,7 @@
     "backend/**/*.tsx",
     "tests/**/*.ts",
     "tests/**/*.tsx",
+    "scripts/*.ts",
     "scripts/**/*.ts"
   ],
   "exclude": ["node_modules", "dist", "build", "coverage", ".next", ".cache"]

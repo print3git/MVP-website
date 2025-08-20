@@ -7,10 +7,13 @@ const repoRoot = path.resolve(__dirname, "..", "..");
 const eslintBin = path.join(repoRoot, "node_modules", ".bin", "eslint");
 
 function runEslint(args) {
-  return spawnSync("node", ["--experimental-vm-modules", eslintBin, ...args], {
+  const cmd = ["node", "--experimental-vm-modules", eslintBin, ...args];
+  const res = spawnSync(cmd[0], cmd.slice(1), {
     cwd: repoRoot,
     encoding: "utf8",
   });
+  res.cmd = cmd.join(" ");
+  return res;
 }
 
 describe("isolated ESLint failures", () => {
@@ -33,6 +36,11 @@ describe("isolated ESLint failures", () => {
 
   test("typescript file parses without error", () => {
     const res = runEslint(["scripts/ci_watchdog.ts", "--no-ignore"]);
+    if (res.status !== 0) {
+      console.error(`ESLint command: ${res.cmd}`);
+      if (res.stdout) console.error(res.stdout);
+      if (res.stderr) console.error(res.stderr);
+    }
     expect(res.status).toBe(0);
   });
 
@@ -54,7 +62,11 @@ describe("isolated ESLint failures", () => {
       "--no-warn-ignored",
     ]);
     fs.rmSync(tmpDir, { recursive: true, force: true });
-    if (res.stderr) console.error(res.stderr);
+    if (res.status !== 0) {
+      console.error(`ESLint command: ${res.cmd}`);
+      if (res.stdout) console.error(res.stdout);
+      if (res.stderr) console.error(res.stderr);
+    }
     expect(res.status).toBe(0);
   });
 });
