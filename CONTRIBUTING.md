@@ -37,3 +37,15 @@ npm test          # execute unit tests
 npm run coverage  # generate coverage report
 SKIP_PW_DEPS=1 npm run smoke  # run the Playwright smoke test
 ```
+
+### ESLint locally
+
+Run ESLint with `npm run lint` for the root and `npm run lint --prefix backend` for backend code. To view the final configuration for a file, run `npx eslint --print-config path/to/file`.
+
+If ESLint reports an error like:
+
+```
+Error: Cannot read file '.../tsconfig.json' referenced from parserOptions.project
+```
+
+run `npm run setup` to regenerate missing TypeScript config files and ensure the project path exists. This clears the common `parserOptions.project` lookup error.

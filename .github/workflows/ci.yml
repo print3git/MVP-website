@@ -8,6 +8,42 @@ on:
   workflow_dispatch:
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    name: lint (${{ matrix.workspace }} / node ${{ matrix.node }})
+    strategy:
+      matrix:
+        node: [18, 20]
+        workspace: [root, backend, scripts]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: "npm"
+      - name: Install dependencies
+        run: |
+          if [ "${{ matrix.workspace }}" = "backend" ]; then
+            npm ci --prefix backend
+          else
+            npm ci
+          fi
+      - name: Run ESLint
+        run: |
+          mkdir -p reports/eslint
+          if [ "${{ matrix.workspace }}" = "backend" ]; then
+            (cd backend && npx eslint -f junit -o ../reports/eslint/backend-${{ matrix.node }}.xml .)
+          elif [ "${{ matrix.workspace }}" = "scripts" ]; then
+            npx eslint scripts -f junit -o reports/eslint/scripts-${{ matrix.node }}.xml
+          else
+            npx eslint -f junit -o reports/eslint/root-${{ matrix.node }}.xml .
+          fi
+      - name: Upload ESLint reports
+        if: always()
+        uses: actions/upload-artifact@v4.3.4
+        with:
+          name: eslint-reports
+          path: reports/eslint
   build:
     runs-on: ubuntu-latest
     defaults:
