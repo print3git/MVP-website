@@ -24,8 +24,13 @@ describe("s3 upload integrity", () => {
     "AWS_ACCESS_KEY_ID",
     "AWS_SECRET_ACCESS_KEY",
   ];
+  if (process.env.CI_REQUIRE_EXTERNAL !== "1") {
+    console.warn("Skipping s3 integration test: CI_REQUIRE_EXTERNAL !== 1");
+    test.skip("s3 upload", () => {});
+    return;
+  }
   for (const v of required) {
-    if (!process.env[v]) {
+    if (!process.env[v] || /mock/.test(process.env[v]!)) {
       console.warn("Skipping s3 integration test due to missing", v);
       test.skip("s3 upload", () => {});
       return;

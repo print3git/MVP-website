@@ -8,7 +8,8 @@
     "strictNullChecks": true,
     "noEmit": true,
     "lib": ["ESNext", "DOM"],
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "types": ["node"]
   },
   "include": ["backend/utils/generateTitle.js"],
   "exclude": ["node_modules", "img", "models", "uploads"]

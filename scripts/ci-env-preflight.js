@@ -2,15 +2,17 @@
 
 const fs = require("fs");
 
-const required = ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "DB_URL"];
-const stripeVars = ["STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET"];
+const dummies = {
+  STRIPE_SECRET_KEY: "sk_test_mock",
+  STRIPE_WEBHOOK_SECRET: "whsec_mock",
+  AWS_ACCESS_KEY_ID: "mock",
+  AWS_SECRET_ACCESS_KEY: "mock",
+  AWS_REGION: "us-east-1",
+  S3_BUCKET: "mock-bucket",
+  DB_URL: "postgres://user:pass@localhost:5432/testdb",
+};
 
 const requireExternal = process.env.CI_REQUIRE_EXTERNAL === "1";
-const missing = required.filter((k) => !process.env[k]);
-if (missing.length && requireExternal) {
-  console.error(`Missing required env vars for CI: ${missing.join(", ")}`);
-  process.exit(1);
-}
 
 function setEnv(key, value) {
   if (!value) return;
@@ -31,16 +33,9 @@ function setEnv(key, value) {
   }
 }
 
-const fallbacks = {
-  AWS_ACCESS_KEY_ID: "AKIA_TEST",
-  AWS_SECRET_ACCESS_KEY: "SECRET_TEST",
-  DB_URL: "postgres://user:pass@localhost:5432/testdb",
-};
-
-for (const key of required) {
+for (const [key, dummy] of Object.entries(dummies)) {
   if (!process.env[key]) {
-    setEnv(key, fallbacks[key]);
-    console.log(`Seeded ${key} with fallback`);
+    setEnv(key, dummy);
   } else {
     setEnv(key, process.env[key]);
   }
@@ -48,33 +43,30 @@ for (const key of required) {
 
 if (!process.env.PORT) {
   setEnv("PORT", "3000");
-  console.log("Seeded PORT with fallback 3000");
 } else {
   setEnv("PORT", process.env.PORT);
 }
 
-const status = Object.fromEntries(
-  required.map((k) => [k, Boolean(process.env[k])]),
-);
-console.log(
-  `ci-env-preflight: ${required.map((k) => `${k}=${status[k]}`).join(" ")}`,
-);
-
-const mocked = [];
-for (const key of stripeVars) {
-  if (!process.env[key]) {
-    const value = key === "STRIPE_SECRET_KEY" ? "sk_test_mock" : "whsec_mock";
-    setEnv(key, value);
-    mocked.push(key);
-  } else {
-    setEnv(key, process.env[key]);
+const missing = [];
+for (const [key, dummy] of Object.entries(dummies)) {
+  const val = process.env[key];
+  const hasLive = val && val !== dummy;
+  if (requireExternal && !hasLive) {
+    missing.push(key);
   }
+  dummies[key] = hasLive;
 }
 
-mocked.forEach((k) => console.log(`Mocked ${k}`));
-stripeVars
-  .filter((k) => !mocked.includes(k))
-  .forEach((k) => console.log(`Using live ${k}`));
+if (missing.length) {
+  console.error(`Missing required env vars for CI: ${missing.join(", ")}`);
+  process.exit(1);
+}
+
+console.log(
+  `ci-env-preflight: ${Object.entries(dummies)
+    .map(([k, v]) => `${k}=${v}`)
+    .join(" ")}`,
+);
 
 if (process.env.CI && process.env.CI_REQUIRE_EXTERNAL !== "1") {
   const Module = require("module");

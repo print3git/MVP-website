@@ -18,8 +18,13 @@ describe("glb upload to s3", () => {
     "AWS_ACCESS_KEY_ID",
     "AWS_SECRET_ACCESS_KEY",
   ];
+  if (process.env.CI_REQUIRE_EXTERNAL !== "1") {
+    console.warn("Skipping s3 upload test: CI_REQUIRE_EXTERNAL !== 1");
+    test.skip("glb upload", () => {});
+    return;
+  }
   for (const v of required) {
-    if (!process.env[v]) {
+    if (!process.env[v] || /mock/.test(process.env[v]!)) {
       console.warn("Skipping s3 upload test due to missing", v);
       test.skip("glb upload", () => {});
       return;

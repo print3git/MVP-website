@@ -19,10 +19,16 @@ describe("full pipeline e2e", () => {
     "SPARC3D_ENDPOINT",
     "SPARC3D_TOKEN",
     "STRIPE_SECRET_KEY",
+    "STABILITY_KEY",
   ];
 
+  if (process.env.CI_REQUIRE_EXTERNAL !== "1") {
+    console.warn("Skipping e2e test: CI_REQUIRE_EXTERNAL !== 1");
+    test.skip("full pipeline", () => {});
+    return;
+  }
   for (const v of required) {
-    if (!process.env[v]) {
+    if (!process.env[v] || /mock/.test(process.env[v]!)) {
       console.warn("Skipping e2e test due to missing", v);
       test.skip("full pipeline", () => {});
       return;

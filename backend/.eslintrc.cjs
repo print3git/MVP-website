@@ -1,8 +1,14 @@
+const fs = require('fs');
+const path = require('path');
+const projects = ['tsconfig.json', 'tsconfig.build.json']
+  .map((p) => path.join(__dirname, p))
+  .filter(fs.existsSync);
+
 module.exports = {
   parser: '@typescript-eslint/parser',
   parserOptions: {
-    project: './tsconfig.json',
     tsconfigRootDir: __dirname,
+    ...(projects.length ? { project: projects } : {}),
   },
   extends: ['eslint:recommended', 'prettier'],
   env: { node: true, jest: true },

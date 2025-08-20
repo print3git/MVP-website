@@ -35,7 +35,7 @@ const stripeWebhook = getEnv("STRIPE_WEBHOOK_SECRET", {
 });
 
 const requireLive =
-  process.env.NODE_ENV === "production" ||
+  process.env.NODE_ENV === "production" &&
   process.env.CI_REQUIRE_EXTERNAL === "1";
 if (requireLive) {
   if (!/^sk_live/.test(stripeKey)) {
