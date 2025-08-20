@@ -14,11 +14,15 @@ if (fs.existsSync(baselinePath)) {
   }
 }
 
-const output = execSync("pnpm exec eslint . -f json", {
-  cwd: repoRoot,
-  encoding: "utf8",
-});
-const results = JSON.parse(output);
+const rootOutput = execSync(
+  'npx eslint "scripts/**/*.js" --no-warn-ignored -f json || true',
+  { cwd: repoRoot, encoding: "utf8" },
+);
+const backendOutput = execSync(
+  "npx eslint . --no-warn-ignored --ignore-pattern lib -f json || true",
+  { cwd: path.join(repoRoot, "backend"), encoding: "utf8" },
+);
+const results = [...JSON.parse(rootOutput || "[]"), ...JSON.parse(backendOutput || "[]")];
 const counts = results.reduce(
   (acc, r) => {
     acc.errorCount += r.errorCount || 0;
