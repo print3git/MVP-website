@@ -38,8 +38,8 @@ jobs:
           npm ci
           npm run build
 
-      - name: Verify build output
-        run: ls -al frontend/dist && test -f frontend/dist/index.html
+      - name: Guard frontend build output
+        run: node scripts/assert-frontend-dist.js
 
 
       - name: Assert Pages project has no build config

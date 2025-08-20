@@ -22,8 +22,8 @@ jobs:
           pwd
           ls -la
           find frontend -maxdepth 2 -type d -print
-      - name: Assert dist index
-        run: node scripts/ci/assert-dist.js
+      - name: Ensure frontend dist
+        run: node scripts/assert-frontend-dist.js
       - name: Upload dist artifact
         uses: actions/upload-artifact@v4
         with:
