@@ -1,0 +1,16 @@
+name: Jest Early Warning
+
+on:
+  pull_request:
+
+jobs:
+  backend-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci --prefix backend
+      - run: npm test --prefix backend -- --maxWorkers=50% --runInBand=false --silent --reporters=default
