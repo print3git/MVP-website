@@ -13,7 +13,6 @@ const prettier = require("eslint-config-prettier");
 const globals = require("globals");
 const jsdoc = require("eslint-plugin-jsdoc");
 const tsParser = require("@typescript-eslint/parser");
-const fs = require("fs");
 const frontend = require("./eslint.frontend-87adf32bca1e546.cjs");
 const isCI = Boolean(process.env.CI);
 
@@ -49,13 +48,15 @@ module.exports = [
         ...(isCI
           ? {}
           : {
-              project: [
-                "tsconfig.json",
-                "backend/tsconfig.json",
-                "backend/tsconfig.build.json",
-              ].filter((p) => fs.existsSync(p)),
+              project: ["tsconfig.json"],
             }),
       },
+    },
+  },
+  {
+    files: ["scripts/**/*.ts"],
+    languageOptions: {
+      parserOptions: { project: null },
     },
   },
   {

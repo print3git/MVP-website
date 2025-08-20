@@ -11,6 +11,10 @@
     "skipLibCheck": true,
     "types": ["node"]
   },
-  "include": ["backend/utils/generateTitle.js"],
+  "include": [
+    "backend/utils/generateTitle.js",
+    "backend/**/*.{ts,tsx}",
+    "tests/**/*.{ts,tsx}"
+  ],
   "exclude": ["node_modules", "img", "models", "uploads"]
 }
