@@ -1,0 +1,23 @@
+name: Playwright browsers cache
+
+on:
+  pull_request:
+
+jobs:
+  cache-browsers:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/ms-playwright
+            ~/.cache/ms-playwright-ffmpeg
+          key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Install Playwright browsers
+        if: runner.os == 'Linux'
+        run: npx playwright install --with-deps
