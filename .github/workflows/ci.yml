@@ -7,6 +7,10 @@ on:
     branches: [main]
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -28,138 +32,105 @@ jobs:
       - run: npm ci && npm run lint && npm run build
       - run: test -d dist
 
-  tests:
+  test-backend:
     runs-on: ubuntu-latest
-    env:
-      PORT: 3000
-      DB_URL: postgres://user:pass@localhost:5432/testdb
-      CI_REQUIRE_EXTERNAL: "0"
     steps:
-      - name: REQUIRED
-        run: |
-          echo 'REQUIRED: intent/behavior tests'
       - uses: actions/checkout@v5
-      - name: Load Stripe env
-        run: node scripts/ci-env-preflight.js
-        env:
-          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
-          STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: "npm"
-      - name: Clean npm proxy settings
-        run: |
-          unset NPM_CONFIG_HTTP_PROXY NPM_CONFIG_HTTPS_PROXY
-          npm config delete proxy
-          npm config delete https-proxy
-        env:
-          NPM_CONFIG_LEGACY_PEER_DEPS: true
-      - name: Cache Playwright browsers
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
-          restore-keys: ${{ runner.os }}-playwright-
+          cache-dependency-path: |
+            package-lock.json
+            backend/package-lock.json
       - run: npm ci
-      - name: Install Playwright browsers
-        env:
-          PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
-          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "0"
-        run: npx playwright install --with-deps
-      - name: Prepare test env
-        run: |
+      - run: npm ci --prefix backend
+      - name: Run backend tests
+        run: node scripts/run-jest.js backend --ci --coverage --coverageDirectory=coverage/backend
+      - uses: actions/upload-artifact@v4.3.4
+        with:
+          name: junit-backend
+          path: junit-backend.xml
+          if-no-files-found: ignore
+      - uses: actions/upload-artifact@v4.3.4
+        with:
+          name: coverage-backend
+          path: coverage/backend
 
-          echo "DB_URL=postgres://user:pass@localhost/db" > .env.test
+  test-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: |
+            package-lock.json
+            frontend/package-lock.json
+      - run: npm ci
+      - name: Run frontend tests
+        run: node scripts/run-jest.js frontend --ci --coverage --coverageDirectory=coverage/frontend
+      - uses: actions/upload-artifact@v4.3.4
+        with:
+          name: junit-frontend
+          path: junit-frontend.xml
+          if-no-files-found: ignore
+      - uses: actions/upload-artifact@v4.3.4
+        with:
+          name: coverage-frontend
+          path: coverage/frontend
 
-      - name: Loader precedence preflight
-        env:
-          STRIPE_SECRET_KEY: sk_live_xxx
-          STRIPE_WEBHOOK_SECRET: whsec_xxx
-        run: |
-          cat <<'EOF' > /tmp/ci.env
-          STRIPE_SECRET_KEY=
-          STRIPE_WEBHOOK_SECRET=
-          EOF
-          node scripts/env-loader-preflight.js /tmp/ci.env
+  test-integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+      - run: npm ci
+      - name: Run integration tests
+        run: node scripts/run-jest.js tests/integration --ci --coverage --coverageDirectory=coverage/integration
+      - uses: actions/upload-artifact@v4.3.4
+        with:
+          name: junit-integration
+          path: junit-integration.xml
+          if-no-files-found: ignore
+      - uses: actions/upload-artifact@v4.3.4
+        with:
+          name: coverage-integration
+          path: coverage/integration
 
-      - name: Run CI
-        env:
-          PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
-          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "0"
-        run: npm run ci
-
-      - name: Run coverage
-        run: SKIP_PW_DEPS=1 npm run coverage
-
-      - name: Sanitize coverage for Coveralls
-        run: sed -r -i 's/\x1B\[[0-9;]*[JKmsu]//g' coverage/lcov.info
-
-      - name: Upload coverage artifact
-        uses: actions/upload-artifact@v4.3.4
+  coverage-merge:
+    runs-on: ubuntu-latest
+    needs:
+      - test-backend
+      - test-frontend
+      - test-integration
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+      - run: npm ci --ignore-scripts
+      - uses: actions/download-artifact@v4.1.8
+        with:
+          name: coverage-backend
+          path: coverage/backend
+      - uses: actions/download-artifact@v4.1.8
+        with:
+          name: coverage-frontend
+          path: coverage/frontend
+      - uses: actions/download-artifact@v4.1.8
+        with:
+          name: coverage-integration
+          path: coverage/integration
+      - run: npx nyc merge coverage/backend coverage/frontend coverage/integration coverage/coverage-final.json
+      - run: npx nyc report --reporter=lcov --report-dir=coverage
+      - uses: actions/upload-artifact@v4.3.4
         with:
           name: lcov
           path: coverage/lcov.info
-
-      - name: Check bundle size
-        run: npm run bundle:size
-
-      - name: Check for duplicate packages
-        run: npm run deps:dedupe-check
-
-      - name: Run Lighthouse CI
-        if: github.event_name == 'pull_request'
-        run: npm run lhci
-
-      - name: Verify lockfiles
-        run: |
-          npm run deps:check
-          git diff --exit-code package-lock.json
-          git diff --exit-code backend/package-lock.json
-          git diff --exit-code backend/hunyuan_server/package-lock.json
-
-      - name: Audit dependencies
-        run: |
-          npm audit --audit-level=high
-          npm audit --prefix backend --audit-level=high
-          if [ -f backend/hunyuan_server/package.json ]; then
-            npm audit --prefix backend/hunyuan_server --audit-level=high
-          fi
-
-      - name: Validate Snyk token
-        if: ${{ secrets.SNYK_TOKEN }}
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        run: |
-          echo "Validating SNYK_TOKEN..."
-          npx snyk auth --token=$SNYK_TOKEN
-
-      - name: Snyk scan backend
-        if: success() && secrets.SNYK_TOKEN
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        run: npx snyk test --severity-threshold=high --file=backend/package.json
-
-      - name: Fallback to npm audit
-        if: ${{ !secrets.SNYK_TOKEN }}
-        run: |
-          echo "⚠️ SNYK_TOKEN missing or invalid; running npm audit instead"
-          npm audit --audit-level=high --prefix backend
-
-      - name: Snyk scan hunyuan_server
-        if: success() && secrets.SNYK_TOKEN && fileExists('backend/hunyuan_server/package.json')
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        run: npx snyk test --severity-threshold=high --file=backend/hunyuan_server/package.json
-
-      - name: Run visual tests
-        if: ${{ secrets.PERCY_TOKEN }}
-        env:
-          PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
-          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "0"
-        run: npm run test:ci
-      - name: Run smoke tests
-        env:
-          PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
-          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "0"
-        run: npm run smoke

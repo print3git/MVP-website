@@ -21,6 +21,7 @@ describe("run-coverage SKIP_HANDLE_CHECK", () => {
       SKIP_NET_CHECKS: "1",
       SKIP_DB_CHECK: "1",
       SKIP_PW_DEPS: "1",
+      DISABLE_COVERAGE_THRESHOLD: "1",
     };
     let failed = false;
     try {
@@ -42,6 +43,7 @@ describe("run-coverage SKIP_HANDLE_CHECK", () => {
       SKIP_DB_CHECK: "1",
       SKIP_PW_DEPS: "1",
       SKIP_HANDLE_CHECK: "1",
+      DISABLE_COVERAGE_THRESHOLD: "1",
     };
     execFileSync(
       "node",

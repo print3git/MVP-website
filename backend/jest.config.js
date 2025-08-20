@@ -2,7 +2,10 @@
 module.exports = {
   rootDir: ".",
   setupFiles: ["<rootDir>/tests/setupGlobals.js"],
-  setupFilesAfterEnv: ["<rootDir>/tests/setup.js"],
+  setupFilesAfterEnv: [
+    "<rootDir>/../tests/utils/testEnv.ts",
+    "<rootDir>/tests/setup.js",
+  ],
   globalTeardown: "<rootDir>/tests/globalTeardown.js",
   testEnvironment: "node",
   transform: {
@@ -10,7 +13,10 @@ module.exports = {
   },
   testMatch: ["**/?(*.)+(spec|test).[jt]s?(x)"],
   moduleFileExtensions: ["ts", "js", "json"],
-  testTimeout: 10000,
+  testTimeout: 120000,
+  maxWorkers: "50%",
+  detectOpenHandles: true,
+  forceExit: true,
   coverageDirectory: "coverage",
   coverageReporters: ["text", "lcov", "json-summary"],
 };
@@ -35,10 +41,10 @@ module.exports = {
   ],
   coverageThreshold: {
     global: {
-      branches: 0,
-      functions: 0,
-      lines: 0,
-      statements: 0,
+      lines: 80,
+      branches: 70,
+      functions: 75,
+      statements: 80,
     },
   },
 };

@@ -3527,5 +3527,9 @@ app.use((err, _req, res, _next) => {
   res.status(status).json({ error: message });
 });
 
+if (process.env.NODE_ENV === "test") {
+  global.__servers?.push(app.listen(0));
+}
+
 module.exports = app;
 module.exports.checkCompetitionStart = checkCompetitionStart;

@@ -13,11 +13,15 @@ const env = {
   STRIPE_SECRET_KEY: "sk",
   SKIP_NET_CHECKS: "1",
   SKIP_PW_DEPS: "1",
+  DISABLE_COVERAGE_THRESHOLD: "1",
 };
 
 describe("npm run coverage", () => {
   afterAll(() => {
-    fs.rmSync(path.join(repoRoot, "coverage"), { recursive: true, force: true });
+    fs.rmSync(path.join(repoRoot, "coverage"), {
+      recursive: true,
+      force: true,
+    });
     fs.rmSync(path.join(repoRoot, "backend", "coverage"), {
       recursive: true,
       force: true,
@@ -29,8 +33,15 @@ describe("npm run coverage", () => {
       "npm run coverage --silent -- backend/tests/coverage/lcovParse.test.ts",
       { cwd: repoRoot, env },
     );
-    const summaryPath = path.join(repoRoot, "backend", "coverage", "coverage-summary.json");
+    const summaryPath = path.join(
+      repoRoot,
+      "backend",
+      "coverage",
+      "coverage-summary.json",
+    );
     expect(fs.existsSync(summaryPath)).toBe(true);
-    expect(() => JSON.parse(fs.readFileSync(summaryPath, "utf8"))).not.toThrow();
+    expect(() =>
+      JSON.parse(fs.readFileSync(summaryPath, "utf8")),
+    ).not.toThrow();
   });
 });

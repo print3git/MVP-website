@@ -37,3 +37,15 @@ npm test          # execute unit tests
 npm run coverage  # generate coverage report
 SKIP_PW_DEPS=1 npm run smoke  # run the Playwright smoke test
 ```
+
+## Watchdog warnings
+
+Jest includes a watchdog that reports when a test leaves timers or other handles
+running. If you see an output similar to:
+
+```
+Jest did not exit one second after the test run has completed.
+```
+
+it means a handle was left open and the watchdog aborted the run. Clean up
+lingering intervals, timeouts, or servers in your tests before re-running.

@@ -16,6 +16,10 @@ on:
       - 'backend/src/pipeline/generateModel.*'
       - 'backend/tests/glb/**'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   unit-tests:
     runs-on: ubuntu-latest

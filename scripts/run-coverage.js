@@ -46,11 +46,14 @@ const jestArgs = [
   "--coverageReporters=text-lcov",
   "--coverageReporters=json-summary",
   "--coverageReporters=lcov",
-  "--coverageThreshold={}",
   "--config",
   path.join(__dirname, "..", "backend", "jest.config.js"),
   ...(extraArgs.length ? ["--runTestsByPath", ...extraArgs] : []),
 ];
+
+if (process.env.DISABLE_COVERAGE_THRESHOLD === "1") {
+  jestArgs.push("--coverageThreshold={}");
+}
 
 const jestBin = path.join(
   __dirname,
