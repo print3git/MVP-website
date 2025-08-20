@@ -492,11 +492,15 @@ app.post(
           image: file,
         });
       } catch (err) {
-        logger.error("🚨 generateModel() failed:", err);
+        logger.debug("generateModelPipeline failed", err);
         if (process.env.CI_REQUIRE_EXTERNAL !== "1") {
-          return res.status(200).json({ glb_url: "/models/placeholder.glb" });
+          return res.status(200).json({
+            glb_url: "/static/placeholders/empty.glb",
+            fallback: true,
+            reason: "external_unavailable",
+          });
         }
-        return res.status(500).json({ error: err.message });
+        throw err;
       }
       const finishTime = new Date();
       const cost =
@@ -526,7 +530,11 @@ app.post(
       logError(err);
       logger.info("🔹 Exiting /api/generate with error");
       if (process.env.CI_REQUIRE_EXTERNAL !== "1") {
-        return res.status(200).json({ glb_url: "/models/placeholder.glb" });
+        return res.status(200).json({
+          glb_url: "/static/placeholders/empty.glb",
+          fallback: true,
+          reason: "external_unavailable",
+        });
       }
       return res.status(500).json({ error: err.message });
     }

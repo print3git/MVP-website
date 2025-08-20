@@ -52,6 +52,10 @@ if (!process.env.SPARC3D_TOKEN) {
   process.env.SPARC3D_TOKEN = "token";
 }
 
+if (!process.env.CI_REQUIRE_EXTERNAL) {
+  process.env.CI_REQUIRE_EXTERNAL = "0";
+}
+
 // Provide dummy AWS credentials so tests don't need real ones
 if (!process.env.AWS_ACCESS_KEY_ID) {
   process.env.AWS_ACCESS_KEY_ID = "test";
