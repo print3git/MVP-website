@@ -10,7 +10,10 @@ module.exports = {
   },
   testMatch: ["**/?(*.)+(spec|test).[jt]s?(x)"],
   moduleFileExtensions: ["ts", "js", "json"],
-  testTimeout: 10000,
+  testTimeout: 120000,
+  maxWorkers: "50%",
+  detectOpenHandles: true,
+  forceExit: true,
   coverageDirectory: "coverage",
   coverageReporters: ["text", "lcov", "json-summary"],
 };

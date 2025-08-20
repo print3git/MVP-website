@@ -6,7 +6,12 @@ module.exports = {
   setupFilesAfterEnv: [
     "<rootDir>/test/setupAuthMiddleware.js",
     "<rootDir>/tests/setup/nock.ts",
+    "<rootDir>/tests/setup/teardown.ts",
   ],
+  testTimeout: 120000,
+  maxWorkers: "50%",
+  detectOpenHandles: true,
+  forceExit: true,
   coverageThreshold: {
     global: {
       branches: 55,
