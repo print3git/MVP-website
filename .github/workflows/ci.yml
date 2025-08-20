@@ -24,7 +24,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "npm"
+          cache: 'npm'
+          cache-dependency-path: |
+            package-lock.json
+            backend/package-lock.json
+            frontend/package-lock.json
       - run: npm ci && npm run lint && npm run build
       - run: test -d dist
 
@@ -47,7 +51,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "npm"
+          cache: 'npm'
+          cache-dependency-path: |
+            package-lock.json
+            backend/package-lock.json
+            frontend/package-lock.json
       - name: Clean npm proxy settings
         run: |
           unset NPM_CONFIG_HTTP_PROXY NPM_CONFIG_HTTPS_PROXY
@@ -59,14 +67,12 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
-          restore-keys: ${{ runner.os }}-playwright-
+          key: ${{ runner.os }}-pw-${{ hashFiles('**/package-lock.json') }}
       - run: npm ci
-      - name: Install Playwright browsers
+      - run: npx playwright install --with-deps
         env:
           PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "0"
-        run: npx playwright install --with-deps
       - name: Prepare test env
         run: |
 
