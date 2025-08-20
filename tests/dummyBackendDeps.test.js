@@ -1,4 +1,4 @@
-const axios = require("axios");
+const axios = require("../src/lib/http");
 const dotenv = require("dotenv");
 const forwarded = require("forwarded");
 
