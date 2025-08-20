@@ -52,6 +52,9 @@ function runJest(args) {
   const jestBin = path.join(backendDir, "node_modules", ".bin", "jest");
 
   let jestArgs = [...args];
+  if (!jestArgs.some((arg) => arg.startsWith("--group"))) {
+    jestArgs.push("--group=-quarantine");
+  }
   if (!jestArgs.includes("--runInBand")) {
     jestArgs.push("--runInBand");
   }

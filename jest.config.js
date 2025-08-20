@@ -1,4 +1,5 @@
 module.exports = {
+  runner: "groups",
   setupFiles: [
     "<rootDir>/test/jest.setup.ts",
     "<rootDir>/backend/tests/setupGlobals.js",

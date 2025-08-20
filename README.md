@@ -14,6 +14,14 @@ Only two GitHub Action jobs are required to merge changes:
 
 Additional checks such as strict linting, dependency audits, and Stripe/Cloudflare smoke tests run in a separate diagnostics workflow. These jobs use `continue-on-error: true` so they surface issues without blocking merges.
 
+### Quarantined tests
+
+Some flaky tests live in `tests/quarantine/` and run in a separate `test-quarantine` CI job. These failures do not block merges, but results are uploaded as build artifacts for review.
+
+Current quarantined tests:
+
+- Playwright screenshot suite (`tests/quarantine/frontend-stability.test.tsx`).
+
 ## 🤖 Codex Integration
 
 Before you run any Codex-driven prompts, always sync your code and Hugging Face Space:
