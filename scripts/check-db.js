@@ -26,7 +26,7 @@ if (process.env.SKIP_DB_CHECK) {
 
 const dbUrl = process.env.DB_URL;
 if (!dbUrl) {
-  console.error("DB_URL is not set");
+  console.error("DB_URL must be set");
   process.exit(1);
 }
 

@@ -18,8 +18,11 @@ jobs:
         with:
           node-version: 20
 
+      - name: Install dependencies
+        run: npm ci
+
       - name: Build frontend
-        run: npm ci && npm run build:frontend
+        run: npm run build:frontend
 
       - name: Run deployment readiness test
         run: npm run test:cf-readiness
@@ -28,10 +31,10 @@ jobs:
         uses: cloudflare/pages-action@v1
         with:
           projectName: ${{ secrets.CF_PAGES_PROJECT }}
-          accountId:   ${{ secrets.CF_ACCOUNT_ID }}
-          apiToken:    ${{ secrets.CF_PAGES_API_TOKEN }}
-          directory:   ./frontend/dist
-          wranglerVersion: '3'
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          apiToken: ${{ secrets.CF_PAGES_API_TOKEN }}
+          directory: ./frontend/dist
+          wranglerVersion: "3"
 
   pages-disabled:
     if: vars.ENABLE_PAGES != '1'

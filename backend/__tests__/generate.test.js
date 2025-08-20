@@ -77,18 +77,22 @@ describe("POST /api/generate", () => {
     expect(res.status).toBe(400);
   });
 
-  test("500 when model generation fails", async () => {
+  test("500 when model generation fails with external requirement", async () => {
+    process.env.CI_REQUIRE_EXTERNAL = "1";
     generateModel.mockRejectedValue(new Error("boom"));
     const res = await request(app)
       .post("/api/generate")
       .send({ prompt: "fail" });
     expect(res.status).toBe(500);
     expect(db.insertGenerationLog).not.toHaveBeenCalled();
+    delete process.env.CI_REQUIRE_EXTERNAL;
   });
 
-  test("500 when database insert fails", async () => {
+  test("500 when database insert fails with external requirement", async () => {
+    process.env.CI_REQUIRE_EXTERNAL = "1";
     db.query.mockRejectedValueOnce(new Error("db fail"));
     const res = await request(app).post("/api/generate").send({ prompt: "hi" });
     expect(res.status).toBe(500);
+    delete process.env.CI_REQUIRE_EXTERNAL;
   });
 });
