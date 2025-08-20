@@ -37,10 +37,7 @@ jobs:
       - name: Verify coverage summary
         run: node scripts/run-jest.js backend/__tests__/coverageSummaryExists.test.js
       - name: Upload coverage to Coveralls
-        run: |
-          for i in 1 2 3; do
-            cat coverage/lcov.info | npx coveralls && exit 0 || sleep 5
-          done
-          echo "Coveralls unavailable; continuing"
+        run: npm run coveralls:retry
+        continue-on-error: true
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
