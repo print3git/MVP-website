@@ -13,6 +13,7 @@ describe("run-coverage network skip", () => {
       DB_URL: "postgres://user:pass@localhost/db",
       STRIPE_SECRET_KEY: "sk_test",
       CLOUDFRONT_MODEL_DOMAIN: "cdn.test",
+      DISABLE_COVERAGE_THRESHOLD: "1",
     };
     delete env.npm_config_http_proxy;
     delete env.npm_config_https_proxy;

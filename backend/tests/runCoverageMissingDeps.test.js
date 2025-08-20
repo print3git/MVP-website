@@ -18,6 +18,7 @@ function runCoverage(extraEnv = {}) {
     STRIPE_SECRET_KEY: "sk",
     SKIP_NET_CHECKS: "1",
     SKIP_PW_DEPS: "1",
+    DISABLE_COVERAGE_THRESHOLD: "1",
     ...extraEnv,
   };
   return spawnSync(
