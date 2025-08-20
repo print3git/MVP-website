@@ -71,7 +71,7 @@ console.log(
 if (process.env.CI && process.env.CI_REQUIRE_EXTERNAL !== "1") {
   const Module = require("module");
   const originalLoad = Module._load;
-  Module._load = function (request, parent, isMain) {
+  Module._load = function (request, _parent, _isMain) {
     if (request === "stripe") {
       return function () {
         return {

@@ -75,7 +75,10 @@ child_process.spawnSync = function (cmd, args = [], opts = {}) {
   if (cmd.includes("npm")) {
     return { status: 0, stdout: "", stderr: "" };
   }
-  if (!/^[-\w/.]+$/.test(cmd)) {
+  if (opts.shell === true) {
+    throw new Error("shell option not allowed");
+  }
+  if (!/^\/[\w/.-]+$/.test(cmd)) {
     throw new Error("unsafe command");
   }
   return origSpawnSync(cmd, args, opts);
