@@ -4,6 +4,10 @@ on:
   deployment_status:
     types: [success]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   lighthouse:
     if: ${{ github.event.deployment_status.environment == 'preview' }}

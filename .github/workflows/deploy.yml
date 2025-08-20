@@ -4,6 +4,10 @@ on:
   push:
     branches: [00000production]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   deploy:
     if: vars.ENABLE_PAGES == '1'
