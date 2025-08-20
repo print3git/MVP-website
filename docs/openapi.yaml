@@ -13,12 +13,11 @@ paths:
             application/json:
               schema:
                 type: object
-                required: [ok, version]
+                required: [status]
                 properties:
-                  ok:
-                    type: boolean
-                  version:
+                  status:
                     type: string
+                    enum: [ok]
   /readyz:
     get:
       summary: Readiness check

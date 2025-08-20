@@ -9,10 +9,15 @@ const axios = require("axios");
     });
     if (health.status !== 200) throw new Error(`/healthz ${health.status}`);
     const healthy =
-      (typeof health.data === "string" && health.data.trim() === "ok") ||
-      (typeof health.data === "object" &&
-        health.data &&
-        health.data.ok === true);
+      typeof health.data === "object" &&
+      health.data &&
+      (health.data.status === "ok" || health.data.ok === true);
+    if (health.data && health.data.ok === true && health.data.status !== "ok") {
+      console.warn(
+        "/healthz { ok: true } is deprecated; prefer { status: 'ok' }",
+      );
+    }
+    // TODO: remove legacy { ok: true } support after 2025-08-27
     if (!healthy)
       throw new Error(`bad healthz body ${JSON.stringify(health.data)}`);
 

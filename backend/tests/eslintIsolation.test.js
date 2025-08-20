@@ -10,6 +10,7 @@ function runEslint(args) {
   return spawnSync("node", ["--experimental-vm-modules", eslintBin, ...args], {
     cwd: repoRoot,
     encoding: "utf8",
+    env: { ...process.env, CI: "1" },
   });
 }
 

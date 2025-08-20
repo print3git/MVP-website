@@ -19,7 +19,14 @@ integration("serves /healthz", async () => {
   const server = startDevServer(0);
   const { port } = server.address();
   const res = await fetch(`http://127.0.0.1:${port}/healthz`);
+  const body = await res.json();
+  const healthy = body && (body.status === "ok" || body.ok === true);
+  if (body && body.ok === true && body.status !== "ok") {
+    console.warn("/healthz { ok: true } is deprecated; prefer { status: 'ok' }");
+  }
+  // TODO: remove legacy { ok: true } support after 2025-08-27
   expect(res.status).toBe(200);
+  expect(healthy).toBe(true);
   await new Promise((resolve) => server.close(resolve));
 });
 

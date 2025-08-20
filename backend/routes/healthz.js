@@ -5,7 +5,9 @@ const db = require("../db");
 const router = express.Router();
 
 function healthHandler(_req, res) {
-  res.json({ ok: true, version: pkg.version });
+  res.statusCode = 200;
+  res.setHeader("Content-Type", "application/json");
+  res.end(JSON.stringify({ status: "ok" }));
 }
 
 async function readyHandler(_req, res) {

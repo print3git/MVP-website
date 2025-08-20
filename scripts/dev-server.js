@@ -24,7 +24,10 @@ app.post("/api/generate", (_req, res) => {
 });
 
 app.get("/healthz", (_req, res) => {
-  res.send("ok");
+  res
+    .status(200)
+    .set("Content-Type", "application/json")
+    .send(JSON.stringify({ status: "ok" }));
 });
 
 function startDevServer(port = 3000, useHttps = process.env.USE_HTTPS === "1") {
