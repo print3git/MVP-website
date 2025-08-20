@@ -25,6 +25,7 @@ Thank you for helping improve this project! Please follow these steps to keep ou
 - All new code should include appropriate tests.
 - CI runs `npm run ci` and `npm test`; please ensure these succeed locally.
 - If Playwright dependencies are already installed you can set `SKIP_PW_DEPS=1` when running setup or CI to skip the lengthy install step.
+- Mock all external HTTP calls in tests. Only `localhost` traffic is permitted; any other network access must be stubbed with tools like [nock](https://github.com/nock/nock).
 
 ## How to run tests / lint / coverage / smoke
 
