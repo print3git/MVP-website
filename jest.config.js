@@ -3,7 +3,10 @@ module.exports = {
     "<rootDir>/test/jest.setup.ts",
     "<rootDir>/backend/tests/setupGlobals.js",
   ],
-  setupFilesAfterEnv: ["<rootDir>/test/setupAuthMiddleware.js"],
+  setupFilesAfterEnv: [
+    "<rootDir>/test/setupAuthMiddleware.js",
+    "<rootDir>/tests/setup/nock.ts",
+  ],
   coverageThreshold: {
     global: {
       branches: 55,

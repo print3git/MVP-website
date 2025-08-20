@@ -1,41 +1,36 @@
-name: Smoke Test
+name: Server Smoke Test
 
 on:
-  push:
-    branches:
-      - dev
-      - 00000production
+  pull_request:
 
 jobs:
-  smoke_test:
+  smoke:
     runs-on: ubuntu-latest
     env:
       PORT: 3000
       DB_URL: postgres://user:pass@localhost:5432/testdb
-      CI_REQUIRE_EXTERNAL: '0'
+      CI_REQUIRE_EXTERNAL: "0"
     steps:
       - uses: actions/checkout@v5
-      - name: Load Stripe env
-        run: node scripts/ci-env-preflight.js
-        env:
-          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
-          STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Cache node_modules
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.npm
-            node_modules
-            backend/node_modules
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
-      - name: Cache Next.js build
-        uses: actions/cache@v3
-        with:
-          path: .next/cache
-          key: ${{ runner.os }}-nextjs-${{ github.sha }}
-      - run: npm install -g pnpm
-      - run: pnpm install
-      - run: pnpm run smoke
+          cache: "npm"
+      - run: npm run setup
+      - name: Start backend
+        run: |
+          npm run dev 2>&1 | tee /tmp/server.log &
+          echo $! > /tmp/server.pid
+        shell: bash
+      - name: Wait for healthz
+        run: npx wait-on http://localhost:3000/healthz --timeout 300000 || { cat /tmp/server.log; exit 1; }
+        shell: bash
+      - name: Run smoke script
+        run: node scripts/smoke-server.js
+      - name: Stop backend
+        if: always()
+        run: |
+          kill $(cat /tmp/server.pid) || true
+          sleep 5
+          cat /tmp/server.log || true
+        shell: bash

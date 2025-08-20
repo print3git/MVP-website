@@ -9,4 +9,30 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, version]
+                properties:
+                  ok:
+                    type: boolean
+                  version:
+                    type: string
+  /readyz:
+    get:
+      summary: Readiness check
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, version]
+                properties:
+                  ok:
+                    type: boolean
+                  version:
+                    type: string
 components: {}

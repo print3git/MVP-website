@@ -1,0 +1,30 @@
+name: Build frontend
+
+on:
+  pull_request:
+    paths:
+      - 'frontend/**'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        node: [20, 22]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - run: npm ci && npm run lint && npm run build
+      - run: test -d dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist-${{ matrix.node }}
+          path: frontend/dist
