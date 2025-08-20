@@ -101,12 +101,12 @@ describe("POST /api/generate", () => {
 });
 
 describe("env validation", () => {
-  test("uses mock domain when missing in production", () => {
+  test("throws when domain missing in production", () => {
     jest.resetModules();
     delete process.env.CLOUDFRONT_MODEL_DOMAIN;
     process.env.NODE_ENV = "production";
     process.env.STRIPE_SECRET_KEY = "sk_live_dummy";
-    expect(() => require("../server")).not.toThrow();
+    expect(() => require("../server")).toThrow();
     process.env.NODE_ENV = "test";
     process.env.CLOUDFRONT_MODEL_DOMAIN = "cdn.test";
   });
