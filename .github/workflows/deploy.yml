@@ -32,19 +32,16 @@ jobs:
           echo "::add-mask::$CLOUDFLARE_API_TOKEN"
           echo "::add-mask::$CLOUDFLARE_ACCOUNT_ID"
 
-      - name: Install deps
-        run: npm ci
-        working-directory: frontend
-
       - name: Build frontend
         working-directory: frontend
+        run: npm run build:ci
+
+      - name: Assert dist exists
         run: |
-          npm ci
-          npm run build
-
-      - name: Verify build output
-        run: ls -al frontend/dist && test -f frontend/dist/index.html
-
+          if [ ! -f frontend/dist/index.html ]; then
+            echo "frontend/dist/index.html missing after build" >&2
+            exit 1
+          fi
 
       - name: Assert Pages project has no build config
         env:
