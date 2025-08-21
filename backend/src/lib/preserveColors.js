@@ -1,5 +1,8 @@
 const { NodeIO } = require("@gltf-transform/core");
 
+/**
+ * @param {*} glb
+ */
 async function preserveColors(glb) {
   const io = new NodeIO();
   const doc = await io.readBinary(glb);
