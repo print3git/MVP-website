@@ -28,7 +28,7 @@ describe.skip("insecure http fetch; https unavailable", () => {
     test("npm run serve binds to port 3000", async () => {
       const server = startDevServer(3000);
       await waitPort(3000);
-      server.close();
+      await new Promise((r) => server.close(r));
     });
 
     test("homepage responds at /", async () => {
@@ -36,7 +36,7 @@ describe.skip("insecure http fetch; https unavailable", () => {
       const port = server.address().port;
       await waitPort(port);
       const res = await fetch(`http://127.0.0.1:${port}/`);
-      server.close();
+      await new Promise((r) => server.close(r));
       expect(res.status).toBe(200);
     });
 
@@ -50,7 +50,7 @@ describe.skip("insecure http fetch; https unavailable", () => {
       const port = server.address().port;
       await waitPort(port);
       const res = await fetch(`http://127.0.0.1:${port}/img/box%20logo.png`);
-      server.close();
+      await new Promise((r) => server.close(r));
       expect(res.status).toBe(200);
     });
 
@@ -59,7 +59,7 @@ describe.skip("insecure http fetch; https unavailable", () => {
       const server = startDevServer(0);
       const port = server.address().port;
       await waitPort(port);
-      server.close();
+      await new Promise((r) => server.close(r));
       expect(Date.now() - t).toBeLessThan(3000);
     });
 
