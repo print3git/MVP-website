@@ -22,6 +22,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+      - run: npm ci && npm run build --prefix frontend
+      - name: ban dist symlinks
+        run: |
+          if find frontend/dist -type l | grep -q .; then
+            echo "Symlinks found in dist; replacing with copies";
+            while IFS= read -r -d '' l; do
+              tgt="$(readlink -f "$l")"; rm "$l"; cp -R "$tgt" "$l";
+            done < <(find frontend/dist -type l -print0)
+          fi
       - name: Validate config
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -44,6 +53,14 @@ jobs:
             package-lock.json
             frontend/package-lock.json
       - run: npm ci && npm run build --prefix frontend
+      - name: ban dist symlinks
+        run: |
+          if find frontend/dist -type l | grep -q .; then
+            echo "Symlinks found in dist; replacing with copies";
+            while IFS= read -r -d '' l; do
+              tgt="$(readlink -f "$l")"; rm "$l"; cp -R "$tgt" "$l";
+            done < <(find frontend/dist -type l -print0)
+          fi
       - name: verify build
         run: |
           if [ ! -f frontend/dist/index.html ]; then
@@ -55,8 +72,8 @@ jobs:
             fi
             exit 1
           fi
-      - name: copy dist without symlinks
-        run: cp -aL frontend/dist/. pages_dist/
+      - name: copy dist
+        run: cp -a frontend/dist/. pages_dist/
       - name: Deploy to Cloudflare Pages
         id: deploy
         env:
