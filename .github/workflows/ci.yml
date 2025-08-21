@@ -27,27 +27,50 @@ jobs:
       CI_REQUIRE_EXTERNAL: "0"
     steps:
       - name: Heartbeat
+        id: heartbeat
         run: |
           while true; do date; sleep 120; done &
       - name: REQUIRED
+        id: required
         run: |
           echo 'REQUIRED: production build'
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v5
+      - name: Setup Node
+        id: setup-node
+        uses: actions/setup-node@v4
         with:
           node-version: 20
-      - uses: actions/cache@v4
+      - name: Cache npm
+        id: cache
+        uses: actions/cache@v4
         with:
           path: ~/.npm
           key: npm-fe-${{ hashFiles('frontend/package-lock.json') }}
           restore-keys: npm-fe-
-      - run: npm ci && npm run lint && npm run build
-      - run: test -d dist
-      - if: failure()
+      - name: Install, lint, build
+        id: build
+        run: npm ci && npm run lint && npm run build
+      - name: Verify dist output
+        id: verify-dist
+        run: test -d dist
+      - name: Upload logs
+        if: failure()
+        id: upload-logs
         uses: actions/upload-artifact@v4.3.4
         with:
           name: ${{ github.job }}-logs
           path: ${{ runner.temp }}/_github_workflow/*.log
+      - name: Job outcome
+        if: success()
+        run: echo '## Job outcome: 🟢 Success' >> "$GITHUB_STEP_SUMMARY"
+      - name: Job outcome
+        if: failure()
+        run: |
+          first_failed=$(echo '${{ toJSON(steps) }}' | jq -r 'to_entries|map(select(.value.outcome=="failure"))|first|.value.name')
+          echo '## Job outcome: 🔴 Failure' >> "$GITHUB_STEP_SUMMARY"
+          echo "First failing step: ${first_failed}" >> "$GITHUB_STEP_SUMMARY"
 
   test-backend:
     runs-on:
@@ -59,40 +82,67 @@ jobs:
         shard: [aa, ab, ac]
     steps:
       - name: Heartbeat
+        id: heartbeat
         run: |
           while true; do date; sleep 120; done &
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v5
+      - name: Setup Node (root)
+        id: setup-node-root
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: "npm"
           cache-dependency-path: package-lock.json
-      - run: npm ci
-      - uses: actions/setup-node@v4
+      - name: Install root dependencies
+        id: npm-ci-root
+        run: npm ci
+      - name: Setup Node (backend)
+        id: setup-node-backend
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: "npm"
           cache-dependency-path: backend/package-lock.json
-      - run: npm ci --prefix backend
+      - name: Install backend dependencies
+        id: npm-ci-backend
+        run: npm ci --prefix backend
       - name: Run backend tests
+        id: run-tests
         run: |
           node scripts/run-jest.js backend --listTests | split -n l/3 - test-files-
           TEST_FILES=$(cat test-files-${{ matrix.shard }} | tr '\n' ' ')
           node scripts/run-jest.js --runTestsByPath $TEST_FILES --ci --coverage --coverageDirectory=coverage/backend
-      - uses: actions/upload-artifact@v4.3.4
+      - name: Upload junit
+        id: upload-junit
+        uses: actions/upload-artifact@v4.3.4
         with:
           name: junit-backend-${{ matrix.shard }}
           path: junit-backend.xml
           if-no-files-found: ignore
-      - uses: actions/upload-artifact@v4.3.4
+      - name: Upload coverage
+        id: upload-coverage
+        uses: actions/upload-artifact@v4.3.4
         with:
           name: coverage-backend-${{ matrix.shard }}
           path: coverage/backend
-      - if: failure()
+      - name: Upload logs
+        if: failure()
+        id: upload-logs
         uses: actions/upload-artifact@v4.3.4
         with:
           name: ${{ github.job }}-logs
           path: ${{ runner.temp }}/_github_workflow/*.log
+      - name: Job outcome
+        if: success()
+        run: echo '## Job outcome: 🟢 Success' >> "$GITHUB_STEP_SUMMARY"
+      - name: Job outcome
+        if: failure()
+        run: |
+          first_failed=$(echo '${{ toJSON(steps) }}' | jq -r 'to_entries|map(select(.value.outcome=="failure"))|first|.value.name')
+          echo '## Job outcome: 🔴 Failure' >> "$GITHUB_STEP_SUMMARY"
+          echo "First failing step: ${first_failed}" >> "$GITHUB_STEP_SUMMARY"
 
   test-frontend:
     runs-on:
@@ -110,40 +160,69 @@ jobs:
             pattern: 'generated_frontend_[8-f]'
     steps:
       - name: Heartbeat
+        id: heartbeat
         run: |
           while true; do date; sleep 120; done &
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v5
+      - name: Setup Node (root)
+        id: setup-node-root
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: "npm"
           cache-dependency-path: package-lock.json
-      - run: npm ci
-      - uses: actions/setup-node@v4
+      - name: Install root dependencies
+        id: npm-ci-root
+        run: npm ci
+      - name: Setup Node
+        id: setup-node
+        uses: actions/setup-node@v4
         with:
           node-version: 20
-      - uses: actions/cache@v4
+      - name: Cache npm
+        id: cache
+        uses: actions/cache@v4
         with:
           path: ~/.npm
           key: npm-fe-${{ hashFiles('frontend/package-lock.json') }}
           restore-keys: npm-fe-
-      - run: npm ci --prefix frontend
+      - name: Install frontend dependencies
+        id: npm-ci-frontend
+        run: npm ci --prefix frontend
       - name: Run frontend tests
+        id: run-tests
         run: node scripts/run-jest.js --testPathPattern "${{ matrix.pattern }}" --ci --coverage --coverageDirectory=coverage/frontend
-      - uses: actions/upload-artifact@v4.3.4
+      - name: Upload junit
+        id: upload-junit
+        uses: actions/upload-artifact@v4.3.4
         with:
           name: junit-frontend-${{ matrix.shard }}
           path: junit-frontend.xml
           if-no-files-found: ignore
-      - uses: actions/upload-artifact@v4.3.4
+      - name: Upload coverage
+        id: upload-coverage
+        uses: actions/upload-artifact@v4.3.4
         with:
           name: coverage-frontend-${{ matrix.shard }}
           path: coverage/frontend
-      - if: failure()
+      - name: Upload logs
+        if: failure()
+        id: upload-logs
         uses: actions/upload-artifact@v4.3.4
         with:
           name: ${{ github.job }}-logs
           path: ${{ runner.temp }}/_github_workflow/*.log
+      - name: Job outcome
+        if: success()
+        run: echo '## Job outcome: 🟢 Success' >> "$GITHUB_STEP_SUMMARY"
+      - name: Job outcome
+        if: failure()
+        run: |
+          first_failed=$(echo '${{ toJSON(steps) }}' | jq -r 'to_entries|map(select(.value.outcome=="failure"))|first|.value.name')
+          echo '## Job outcome: 🔴 Failure' >> "$GITHUB_STEP_SUMMARY"
+          echo "First failing step: ${first_failed}" >> "$GITHUB_STEP_SUMMARY"
 
   test-integration:
     if: github.event_name == 'push'
@@ -152,31 +231,54 @@ jobs:
       - ubuntu-latest
     steps:
       - name: Heartbeat
+        id: heartbeat
         run: |
           while true; do date; sleep 120; done &
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v5
+      - name: Setup Node
+        id: setup-node
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: "npm"
           cache-dependency-path: package-lock.json
-      - run: npm ci
+      - name: Install dependencies
+        id: npm-ci
+        run: npm ci
       - name: Run integration tests
+        id: run-tests
         run: node scripts/run-jest.js tests/integration --ci --coverage --coverageDirectory=coverage/integration
-      - uses: actions/upload-artifact@v4.3.4
+      - name: Upload junit
+        id: upload-junit
+        uses: actions/upload-artifact@v4.3.4
         with:
           name: junit-integration
           path: junit-integration.xml
           if-no-files-found: ignore
-      - uses: actions/upload-artifact@v4.3.4
+      - name: Upload coverage
+        id: upload-coverage
+        uses: actions/upload-artifact@v4.3.4
         with:
           name: coverage-integration
           path: coverage/integration
-      - if: failure()
+      - name: Upload logs
+        if: failure()
+        id: upload-logs
         uses: actions/upload-artifact@v4.3.4
         with:
           name: ${{ github.job }}-logs
           path: ${{ runner.temp }}/_github_workflow/*.log
+      - name: Job outcome
+        if: success()
+        run: echo '## Job outcome: 🟢 Success' >> "$GITHUB_STEP_SUMMARY"
+      - name: Job outcome
+        if: failure()
+        run: |
+          first_failed=$(echo '${{ toJSON(steps) }}' | jq -r 'to_entries|map(select(.value.outcome=="failure"))|first|.value.name')
+          echo '## Job outcome: 🔴 Failure' >> "$GITHUB_STEP_SUMMARY"
+          echo "First failing step: ${first_failed}" >> "$GITHUB_STEP_SUMMARY"
 
   coverage-merge:
     if: github.event_name == 'push'
@@ -189,37 +291,67 @@ jobs:
       - test-integration
     steps:
       - name: Heartbeat
+        id: heartbeat
         run: |
           while true; do date; sleep 120; done &
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v5
+      - name: Setup Node
+        id: setup-node
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: "npm"
           cache-dependency-path: package-lock.json
-      - run: npm ci --ignore-scripts
-      - uses: actions/download-artifact@v4.1.8
+      - name: Install dependencies
+        id: npm-ci
+        run: npm ci --ignore-scripts
+      - name: Download backend coverage
+        id: download-backend
+        uses: actions/download-artifact@v4.1.8
         with:
           pattern: coverage-backend-*
           path: coverage/backend
           merge-multiple: true
-      - uses: actions/download-artifact@v4.1.8
+      - name: Download frontend coverage
+        id: download-frontend
+        uses: actions/download-artifact@v4.1.8
         with:
           pattern: coverage-frontend-*
           path: coverage/frontend
           merge-multiple: true
-      - uses: actions/download-artifact@v4.1.8
+      - name: Download integration coverage
+        id: download-integration
+        uses: actions/download-artifact@v4.1.8
         with:
           name: coverage-integration
           path: coverage/integration
-      - run: npx nyc merge coverage/backend coverage/frontend coverage/integration coverage/coverage-final.json
-      - run: npx nyc report --reporter=lcov --report-dir=coverage
-      - uses: actions/upload-artifact@v4.3.4
+      - name: Merge coverage
+        id: nyc-merge
+        run: npx nyc merge coverage/backend coverage/frontend coverage/integration coverage/coverage-final.json
+      - name: Generate lcov report
+        id: nyc-report
+        run: npx nyc report --reporter=lcov --report-dir=coverage
+      - name: Upload lcov
+        id: upload-lcov
+        uses: actions/upload-artifact@v4.3.4
         with:
           name: lcov
           path: coverage/lcov.info
-      - if: failure()
+      - name: Upload logs
+        if: failure()
+        id: upload-logs
         uses: actions/upload-artifact@v4.3.4
         with:
           name: ${{ github.job }}-logs
           path: ${{ runner.temp }}/_github_workflow/*.log
+      - name: Job outcome
+        if: success()
+        run: echo '## Job outcome: 🟢 Success' >> "$GITHUB_STEP_SUMMARY"
+      - name: Job outcome
+        if: failure()
+        run: |
+          first_failed=$(echo '${{ toJSON(steps) }}' | jq -r 'to_entries|map(select(.value.outcome=="failure"))|first|.value.name')
+          echo '## Job outcome: 🔴 Failure' >> "$GITHUB_STEP_SUMMARY"
+          echo "First failing step: ${first_failed}" >> "$GITHUB_STEP_SUMMARY"
