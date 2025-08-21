@@ -139,14 +139,17 @@ if (!requiredPaths.every((p) => fs.existsSync(p))) {
   }
   const install = () => {
     try {
-      const r = spawnSync("npm", ["ci"], { stdio: "inherit", env: getEnv() });
+      const r = spawnSync("npm", ["ci", "--ignore-scripts"], {
+        stdio: "inherit",
+        env: getEnv(),
+      });
       if (r.status === 0) return true;
       throw new Error("npm ci failed");
     } catch (err) {
       const msg = String(err.message || err);
       if (msg.includes("EUSAGE")) {
         console.warn("npm ci failed, falling back to 'npm install'");
-        const res = spawnSync("npm", ["install"], {
+        const res = spawnSync("npm", ["install", "--ignore-scripts"], {
           stdio: "inherit",
           env: getEnv(),
         });

@@ -107,7 +107,7 @@ function rootDepsInstalled() {
 if (!rootDepsInstalled()) {
   console.log("Root dependencies missing. Installing...");
   try {
-    runNpmCi();
+    runNpmCi(".", { ignoreScripts: true });
   } catch (err) {
     const msg = String(err.message || err);
     if (msg.includes("EUSAGE")) {
@@ -205,7 +205,7 @@ function pluginInstalled() {
 if (!jestInstalled() || !pluginInstalled()) {
   console.log("Dependencies missing. Installing root dependencies...");
   try {
-    runNpmCi();
+    runNpmCi(".", { ignoreScripts: true });
   } catch (err) {
     console.error("Failed to install dependencies:", err.message);
     process.exit(1);

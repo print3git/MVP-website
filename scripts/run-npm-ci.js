@@ -29,17 +29,20 @@ function cleanupNpmCache() {
   }
 }
 
-function runNpmCi(dir = ".") {
+function runNpmCi(dir = ".", opts = {}) {
   const options = { stdio: "inherit" };
   if (dir !== ".") options.cwd = dir;
+  const ignoreScripts = opts.ignoreScripts || process.env.NPM_IGNORE_SCRIPTS;
+  const ciCmd = `npm ci --no-audit --no-fund${ignoreScripts ? " --ignore-scripts" : ""}`;
   try {
-    execSync("npm ci --no-audit --no-fund", options);
+    execSync(ciCmd, options);
   } catch (err) {
     const output = String(err.stderr || err.stdout || err.message || "");
     if (output.includes("EUSAGE")) {
       console.warn(`npm ci failed in ${dir}, falling back to 'npm install'`);
-      execSync("npm install --no-audit --no-fund", options);
-      execSync("npm ci --no-audit --no-fund", options);
+      const installCmd = `npm install --no-audit --no-fund${ignoreScripts ? " --ignore-scripts" : ""}`;
+      execSync(installCmd, options);
+      execSync(ciCmd, options);
     } else if (
       /TAR_ENTRY_ERROR|ENOENT|ENOTEMPTY|tarball .*corrupted/.test(output)
     ) {
@@ -51,7 +54,7 @@ function runNpmCi(dir = ".") {
         recursive: true,
         force: true,
       });
-      execSync("npm ci --no-audit --no-fund", options);
+      execSync(ciCmd, options);
     } else {
       throw err;
     }
