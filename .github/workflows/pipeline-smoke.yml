@@ -3,7 +3,6 @@ name: Full Pipeline Smoke Test
 env:
   HUSKY: 0
 
-
 on:
   push:
     branches:
@@ -49,39 +48,36 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-
-      - name: Setup pnpm
-        run: |
-          corepack enable
-          pnpm set version 9.15.9
-
       - name: Install dependencies
-        run: pnpm install
+        run: |
+          npm ci
+          npm ci --prefix frontend
+          npm run build --prefix frontend
 
       - name: Ensure frontend build output exists
         run: test -f frontend/dist/index.html
 
       - name: Run smoke tests
-        run: pnpm run smoke
+        run: npm run smoke
 
       - name: Start backend
-        run: pnpm dev &
+        run: npm run dev &
         shell: bash
 
       - name: Wait for backend
         run: npx wait-on http://localhost:3000 --timeout 300000
 
       - name: Test generate endpoint
-        run: pnpm run test:generate
+        run: npm run test:generate
       - name: Test Stripe webhook
         if: env.CI_REQUIRE_EXTERNAL == '1'
-        run: pnpm run test:webhook
+        run: npm run test:webhook
 
       - name: Stop backend
         run: pkill -f "node backend/server.js" || true
 
       - name: Run diagnostics
-        run: pnpm diagnose
+        run: npm run diagnose
 
       - name: Collect logs
         if: always()

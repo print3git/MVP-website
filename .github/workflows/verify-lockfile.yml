@@ -40,11 +40,6 @@ jobs:
         with:
           node-version: 20
 
-      - name: Setup pnpm
-        run: |
-          corepack enable
-          pnpm set version 9.15.9
-
       # Install dependencies without auditing and without funding messages
       - run: npm install --no-audit --no-fund
 
@@ -57,16 +52,5 @@ jobs:
           if ! git diff --quiet package-lock.json; then
             echo "::error::package-lock.json is out of sync. Please run 'npm install' and commit the updated lock file." >&2
             git diff package-lock.json >&2
-            exit 1
-          fi
-
-      - name: Regenerate pnpm lockfile
-        run: pnpm install --lockfile-only --ignore-workspace-root-check
-
-      - name: Ensure pnpm lockfile is up to date
-        run: |
-          if ! git diff --quiet pnpm-lock.yaml; then
-            echo "::error::pnpm-lock.yaml is out of sync. Please run 'pnpm install' and commit the updated lock file." >&2
-            git diff pnpm-lock.yaml >&2
             exit 1
           fi
