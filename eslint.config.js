@@ -13,6 +13,9 @@ const prettier = require("eslint-config-prettier");
 const globals = require("globals");
 const jsdoc = require("eslint-plugin-jsdoc");
 const tsParser = require("@typescript-eslint/parser");
+const ymlPlugin = require("eslint-plugin-yml");
+const ymlRecommended = ymlPlugin.configs["flat/recommended"];
+const tsPlugin = require("@typescript-eslint/eslint-plugin");
 const frontend = require("./eslint.frontend-87adf32bca1e546.cjs");
 const isCI = Boolean(process.env.CI);
 
@@ -37,7 +40,7 @@ module.exports = [
       "scripts/check-gh-workflow-sync-23859.ts",
       "upload/**",
       // "src/**", // removed to enable frontend linting
-  ],
+    ],
   },
   {
     files: ["**/*.{ts,tsx}"],
@@ -73,7 +76,7 @@ module.exports = [
   js.configs.recommended,
   prettier,
   {
-    plugins: { jsdoc },
+    plugins: { jsdoc, "@typescript-eslint": tsPlugin },
     rules: {
       "no-unused-vars": [
         "error",
@@ -121,5 +124,8 @@ module.exports = [
     files: ["tests/**/*"],
     rules: { "jsdoc/require-jsdoc": "off" },
   },
+  ymlRecommended[0],
+  { ...ymlRecommended[1], files: [".github/workflows/*.yml"] },
+  ymlRecommended[2],
   ...frontend,
 ];
