@@ -44,8 +44,12 @@ jobs:
                 "${{ github.api_url }}/repos/${{ github.repository }}/actions/jobs/$job_id/logs" \
                 -o logs/$job_id.log
             done
+      - name: Trim logs
+        run: find logs -type f -size +1M -exec truncate -s 1M {} \;
       - name: Upload logs artifact
         uses: actions/upload-artifact@v4.3.1
         with:
           name: failed-logs-${{ github.event.workflow_run.id }}
           path: logs
+          retention-days: 7
+          if-no-files-found: ignore

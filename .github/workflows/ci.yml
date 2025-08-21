@@ -42,10 +42,15 @@ jobs:
       - run: npm ci && npm run lint && npm run build
       - run: test -d dist
       - if: failure()
+        name: trim logs
+        run: find "${{ runner.temp }}/_github_workflow" -type f -size +1M -exec truncate -s 1M {} \;
+      - if: failure()
         uses: actions/upload-artifact@v4.3.4
         with:
           name: ${{ github.job }}-logs
           path: ${{ runner.temp }}/_github_workflow/*.log
+          retention-days: 7
+          if-no-files-found: ignore
 
   test-backend:
     runs-on: ubuntu-latest
@@ -80,15 +85,16 @@ jobs:
           name: junit-backend-${{ matrix.shard }}
           path: junit-backend.xml
           if-no-files-found: ignore
-      - uses: actions/upload-artifact@v4.3.4
-        with:
-          name: coverage-backend-${{ matrix.shard }}
-          path: coverage/backend
+      - if: failure()
+        name: trim logs
+        run: find "${{ runner.temp }}/_github_workflow" -type f -size +1M -exec truncate -s 1M {} \;
       - if: failure()
         uses: actions/upload-artifact@v4.3.4
         with:
           name: ${{ github.job }}-logs
           path: ${{ runner.temp }}/_github_workflow/*.log
+          retention-days: 7
+          if-no-files-found: ignore
 
   test-frontend:
     runs-on: ubuntu-latest
@@ -129,15 +135,16 @@ jobs:
           name: junit-frontend-${{ matrix.shard }}
           path: junit-frontend.xml
           if-no-files-found: ignore
-      - uses: actions/upload-artifact@v4.3.4
-        with:
-          name: coverage-frontend-${{ matrix.shard }}
-          path: coverage/frontend
+      - if: failure()
+        name: trim logs
+        run: find "${{ runner.temp }}/_github_workflow" -type f -size +1M -exec truncate -s 1M {} \;
       - if: failure()
         uses: actions/upload-artifact@v4.3.4
         with:
           name: ${{ github.job }}-logs
           path: ${{ runner.temp }}/_github_workflow/*.log
+          retention-days: 7
+          if-no-files-found: ignore
 
   test-integration:
     if: github.event_name == 'push'
@@ -160,56 +167,14 @@ jobs:
           name: junit-integration
           path: junit-integration.xml
           if-no-files-found: ignore
-      - uses: actions/upload-artifact@v4.3.4
-        with:
-          name: coverage-integration
-          path: coverage/integration
+      - if: failure()
+        name: trim logs
+        run: find "${{ runner.temp }}/_github_workflow" -type f -size +1M -exec truncate -s 1M {} \;
       - if: failure()
         uses: actions/upload-artifact@v4.3.4
         with:
           name: ${{ github.job }}-logs
           path: ${{ runner.temp }}/_github_workflow/*.log
+          retention-days: 7
+          if-no-files-found: ignore
 
-  coverage-merge:
-    if: github.event_name == 'push'
-    runs-on: ubuntu-latest
-    needs:
-      - test-backend
-      - test-frontend
-      - test-integration
-    steps:
-      - name: Heartbeat
-        run: |
-          while true; do date; sleep 120; done &
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: "npm"
-          cache-dependency-path: package-lock.json
-      - run: npm ci --ignore-scripts
-      - uses: actions/download-artifact@v4.1.8
-        with:
-          pattern: coverage-backend-*
-          path: coverage/backend
-          merge-multiple: true
-      - uses: actions/download-artifact@v4.1.8
-        with:
-          pattern: coverage-frontend-*
-          path: coverage/frontend
-          merge-multiple: true
-      - uses: actions/download-artifact@v4.1.8
-        with:
-          name: coverage-integration
-          path: coverage/integration
-      - run: npx nyc merge coverage/backend coverage/frontend coverage/integration coverage/coverage-final.json
-      - run: npx nyc report --reporter=lcov --report-dir=coverage
-      - uses: actions/upload-artifact@v4.3.4
-        with:
-          name: lcov
-          path: coverage/lcov.info
-      - if: failure()
-        uses: actions/upload-artifact@v4.3.4
-        with:
-          name: ${{ github.job }}-logs
-          path: ${{ runner.temp }}/_github_workflow/*.log
