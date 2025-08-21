@@ -3,12 +3,11 @@ name: Backend Only CI
 env:
   HUSKY: 0
 
-
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+  workflow_run:
+    workflows: ["Preflight"]
+    types:
+      - completed
   workflow_dispatch:
 
 concurrency:
@@ -19,7 +18,13 @@ permissions:
   contents: read
 
 jobs:
+  preflight:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    uses: ./.github/workflows/preflight.yml
+
   backend-tests:
+    needs: preflight
+    if: github.event_name == 'workflow_dispatch' || needs.preflight.outputs.run_backend == 'true'
     runs-on: ubuntu-latest
     continue-on-error: true
     strategy:
