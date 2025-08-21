@@ -1,0 +1,90 @@
+name: CI audit
+description: Audit which workflows should run for the current event
+inputs:
+  workflow_glob:
+    description: Glob pattern used to find workflow files
+    default: .github/workflows/*.yml
+outputs:
+  skipped:
+    description: JSON array of workflows that likely skipped this event
+    value: ${{ steps.audit.outputs.skipped }}
+runs:
+  using: composite
+  steps:
+    - name: Compute changed files
+      id: changes
+      uses: actions/github-script@v7
+      with:
+        result-encoding: string
+        script: |
+          const event = context.eventName;
+          let files = [];
+          if (event === 'pull_request' || event === 'pull_request_target') {
+            const pr = context.payload.pull_request;
+            const list = await github.paginate(github.rest.pulls.listFiles, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+            });
+            files = list.map(f => f.filename);
+          } else {
+            const diff = await github.rest.repos.compareCommits({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              base: context.payload.before,
+              head: context.payload.after,
+            });
+            files = diff.data.files.map(f => f.filename);
+          }
+          core.setOutput('files', JSON.stringify(files));
+          return files;
+    - name: Audit workflows
+      id: audit
+      uses: actions/github-script@v7
+      env:
+        WORKFLOW_GLOB: ${{ inputs.workflow_glob }}
+      with:
+        script: |
+          const fs = require('fs');
+          const yaml = require('js-yaml');
+          const {glob} = require('glob');
+          const minimatch = require('minimatch');
+          const workflows = glob.sync(process.env.WORKFLOW_GLOB);
+          const changed = JSON.parse('${{ steps.changes.outputs.files }}');
+          const eventName = context.eventName;
+          const skipped = [];
+          for (const file of workflows) {
+            const data = yaml.load(fs.readFileSync(file, 'utf8'));
+            const on = data.on || {};
+            let run = false;
+            if (Array.isArray(on)) {
+              run = on.includes(eventName);
+            } else if (on[eventName] !== undefined) {
+              const cfg = on[eventName];
+              if (cfg === null || typeof cfg === 'string') {
+                run = true;
+              } else {
+                const paths = cfg.paths || [];
+                const pathsIgnore = cfg['paths-ignore'] || [];
+                run = true;
+                if (paths.length) {
+                  run = changed.some(f => paths.some(p => minimatch(f, p)));
+                }
+                if (run && pathsIgnore.length) {
+                  if (changed.some(f => pathsIgnore.some(p => minimatch(f, p)))) {
+                    run = false;
+                  }
+                }
+              }
+            }
+            core.info(`${file} => ${run ? 'should run' : 'skipped'}`);
+            if (!run) skipped.push(file);
+          }
+          if (skipped.length) {
+            core.summary.addHeading('Skipped workflows');
+            core.summary.addList(skipped);
+          } else {
+            core.summary.addRaw('All workflows matched current changes');
+          }
+          await core.summary.write();
+          core.setOutput('skipped', JSON.stringify(skipped));
