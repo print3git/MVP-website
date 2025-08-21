@@ -1,0 +1,19 @@
+name: binary scan
+
+on:
+  pull_request:
+    paths-ignore:
+      - allowed-binaries.txt
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Scan for new binary files
+        run: scripts/guard/binary-scan.sh origin/${{ github.event.pull_request.base.ref }}
