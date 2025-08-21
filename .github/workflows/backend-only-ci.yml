@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         shard: [aa, ab, ac]
     steps:
