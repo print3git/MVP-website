@@ -3,7 +3,7 @@ name: Build frontend
 on:
   pull_request:
     paths:
-      - 'frontend/**'
+      - "frontend/**"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -11,7 +11,6 @@ concurrency:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -33,6 +32,7 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
       - run: npm ci && npm run lint && npm run build
       - run: test -d dist
+      - run: node ../scripts/assert-frontend-dist.js
       - uses: actions/upload-artifact@v4
         with:
           name: frontend-dist-${{ matrix.node }}

@@ -9,4 +9,39 @@ const indexFile = path.join(distDir, "index.html");
 if (!fs.existsSync(indexFile)) {
   throw new Error(`Missing index.html in ${distDir}`);
 }
+
+/**
+ * Recursively collect symlinks inside a directory.
+ * @param {string} dir
+ * @param {string[]} acc
+ * @returns {string[]}
+ */
+function collectSymlinks(dir, acc = []) {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isSymbolicLink()) {
+      acc.push(full);
+    } else if (entry.isDirectory()) {
+      collectSymlinks(full, acc);
+    }
+  }
+  return acc;
+}
+
+let symlinks = collectSymlinks(distDir);
+if (symlinks.length) {
+  const tmpDir = path.join(path.dirname(distDir), "dist_nolinks");
+  fs.cpSync(distDir, tmpDir, { recursive: true, dereference: true });
+  fs.rmSync(distDir, { recursive: true, force: true });
+  fs.renameSync(tmpDir, distDir);
+  symlinks = collectSymlinks(distDir);
+  if (symlinks.length) {
+    console.error("Symlinks found in dist:");
+    for (const link of symlinks) console.error(" -", link);
+  } else {
+    console.error("Symlinks were found and replaced with copies.");
+  }
+  process.exit(1);
+}
+
 console.log("Found frontend build output:", indexFile);
