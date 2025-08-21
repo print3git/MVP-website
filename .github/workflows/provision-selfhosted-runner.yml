@@ -1,0 +1,45 @@
+name: provision-selfhosted-runner
+
+on:
+  workflow_dispatch:
+    inputs:
+      runner_token:
+        description: 'Registration token for the GitHub runner'
+        required: false
+
+jobs:
+  provision:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate runner token
+        id: token
+        if: secrets.GITHUB_TOKEN_FOR_RUNNER_ADMIN != ''
+        run: echo "token=$(node scripts/gh-runner-token.js)" >> "$GITHUB_OUTPUT"
+        env:
+          GITHUB_TOKEN_FOR_RUNNER_ADMIN: ${{ secrets.GITHUB_TOKEN_FOR_RUNNER_ADMIN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+
+      - name: Set runner token
+        run: echo "GH_RUNNER_REG_TOKEN=${{ steps.token.outputs.token || inputs.runner_token }}" >> "$GITHUB_ENV"
+
+      - name: Require runner token
+        run: |
+          if [ -z "$GH_RUNNER_REG_TOKEN" ]; then
+            echo 'Runner registration token is required.'
+            exit 1
+          fi
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform init
+        working-directory: infra
+        run: terraform init
+
+      - name: Terraform apply
+        working-directory: infra
+        env:
+          GH_RUNNER_REG_TOKEN: ${{ env.GH_RUNNER_REG_TOKEN }}
+        run: terraform apply -auto-approve
