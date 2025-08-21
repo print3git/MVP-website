@@ -96,3 +96,19 @@ jobs:
           sleep 5
           cat /tmp/server.log || true
         shell: bash
+
+      - name: Frontend dry build
+        run: |
+          npm ci --prefix frontend
+          npm run build --prefix frontend
+          node -e "require('fs').accessSync('frontend/dist/index.html')"
+
+      - name: List dist files
+        run: |
+          tar -czf frontend-dist.tar.gz -C frontend/dist .
+          tar -tvf frontend-dist.tar.gz | tee frontend-dist-filetree.txt
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist-filetree
+          path: frontend-dist-filetree.txt
