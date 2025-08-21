@@ -1,0 +1,13 @@
+name: build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: ./.github/workflows/_router.yml
+    with:
+      job_name: "build-frontend"
+      steps_yaml: |
+        - uses: actions/checkout@v4
+        - run: node -v
