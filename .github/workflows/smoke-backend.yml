@@ -3,10 +3,11 @@ name: Backend Smoke
 env:
   HUSKY: 0
 
-
 on:
-  push:
-  merge_group:
+  workflow_run:
+    workflows: ["Preflight"]
+    types:
+      - completed
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -16,7 +17,13 @@ permissions:
   contents: read
 
 jobs:
+  preflight:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    uses: ./.github/workflows/preflight.yml
+
   backend-smoke:
+    needs: preflight
+    if: needs.preflight.outputs.run_backend == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:

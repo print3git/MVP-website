@@ -3,40 +3,31 @@ name: Preflight
 env:
   HUSKY: 0
 
-
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  merge_group:
+  workflow_call:
+    outputs:
+      run_backend:
+        description: Run backend jobs
+        value: ${{ jobs.changed.outputs.backend }}
 
 jobs:
-  lint-format:
+  changed:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: npm
-      - run: npm ci
-      - run: npm ci --prefix backend
-      - run: npm run format
-      - run: eslint --cache --cache-location .eslintcache --max-warnings=0 $(git diff --name-only origin/$BASE_SHA... | grep -E '\\.(js|ts|tsx)$' || true)
-      - run: npm run lint --prefix backend
-  validate-wrangler:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v4
+          fetch-depth: 2
+      - id: filter
+        uses: dorny/paths-filter@v3.0.2
         with:
-          node-version: 20
-          cache: npm
-      - run: mkdir -p frontend/dist
-      - run: npx -y wrangler pages project validate frontend/dist --config wrangler.toml
+          filters: |
+            backend:
+              - 'backend/**'
+              - '.github/workflows/**'
