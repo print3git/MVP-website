@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+      - name: Ensure frontend directory
+        run: test -d frontend
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -20,8 +22,12 @@ jobs:
             backend/package-lock.json
             frontend/package-lock.json
       - run: npm ci
-      - run: npm ci --prefix frontend
+      - name: Install frontend dependencies
+        run: npm ci
+        working-directory: frontend
       - run: npm ci --prefix backend
       - run: npm run lint:root
-      - run: npm run lint --prefix frontend
+      - name: Lint frontend
+        run: npm run lint
+        working-directory: frontend
       - run: npm run lint --prefix backend

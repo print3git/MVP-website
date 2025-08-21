@@ -32,6 +32,8 @@ jobs:
           while true; do date; sleep 120; done &
       - name: Checkout code
         uses: actions/checkout@v5
+      - name: Ensure frontend directory
+        run: test -d frontend
 
       - name: Setup Node
         uses: actions/setup-node@v4

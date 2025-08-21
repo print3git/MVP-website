@@ -16,10 +16,7 @@ function runEslint(file) {
 describe("CI eslint regression checks", () => {
   test("flags missing jsdoc and console usage", () => {
     const tmp = path.join(repoRoot, "tmp-ci-lint.js");
-    fs.writeFileSync(
-      tmp,
-      "function demo(x){console.log(x);return x;}\n",
-    );
+    fs.writeFileSync(tmp, "function demo(x){console.log(x);return x;}\n");
     const res = runEslint(tmp);
     fs.unlinkSync(tmp);
     expect(res.status).not.toBe(0);

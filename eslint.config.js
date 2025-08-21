@@ -37,7 +37,7 @@ module.exports = [
       "scripts/check-gh-workflow-sync-23859.ts",
       "upload/**",
       // "src/**", // removed to enable frontend linting
-  ],
+    ],
   },
   {
     files: ["**/*.{ts,tsx}"],

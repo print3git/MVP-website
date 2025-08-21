@@ -107,6 +107,8 @@ jobs:
         run: |
           while true; do date; sleep 120; done &
       - uses: actions/checkout@v5
+      - name: Ensure frontend directory
+        run: test -d frontend
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -121,9 +123,12 @@ jobs:
           path: ~/.npm
           key: npm-${{ runner.os }}-fe-${{ hashFiles('frontend/package-lock.json') }}
           restore-keys: npm-${{ runner.os }}-fe-
-      - run: npm ci --prefix frontend
+      - name: Install frontend dependencies
+        run: npm ci
+        working-directory: frontend
       - name: Run frontend tests
-        run: node scripts/run-jest.js --testPathPattern "${{ matrix.pattern }}" --ci --coverage --coverageDirectory=coverage/frontend
+        working-directory: frontend
+        run: node ../scripts/run-jest.js --testPathPattern "${{ matrix.pattern }}" --ci --coverage --coverageDirectory=coverage/frontend
       - uses: actions/upload-artifact@v4.3.4
         with:
           name: junit-frontend-${{ matrix.shard }}

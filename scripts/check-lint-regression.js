@@ -22,7 +22,10 @@ const backendOutput = execSync(
   "npx eslint . --no-warn-ignored --ignore-pattern lib -f json || true",
   { cwd: path.join(repoRoot, "backend"), encoding: "utf8" },
 );
-const results = [...JSON.parse(rootOutput || "[]"), ...JSON.parse(backendOutput || "[]")];
+const results = [
+  ...JSON.parse(rootOutput || "[]"),
+  ...JSON.parse(backendOutput || "[]"),
+];
 const counts = results.reduce(
   (acc, r) => {
     acc.errorCount += r.errorCount || 0;
