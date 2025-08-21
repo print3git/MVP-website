@@ -78,7 +78,7 @@ jobs:
         run: |
           node scripts/run-jest.js backend --listTests | split -n l/3 - test-files-
           TEST_FILES=$(cat test-files-${{ matrix.shard }} | tr '\n' ' ')
-          node scripts/run-jest.js --runTestsByPath $TEST_FILES --ci --coverage --coverageDirectory=coverage/backend
+          node scripts/run-jest.js --runTestsByPath $TEST_FILES --maxWorkers=50% --runInBand=false --ci --coverage --coverageDirectory=coverage/backend
       - uses: actions/upload-artifact@v4.3.4
         with:
           name: junit-backend-${{ matrix.shard }}
@@ -103,11 +103,11 @@ jobs:
       matrix:
         include:
           - shard: core
-            pattern: 'frontend[^_]'
+            pattern: "frontend[^_]"
           - shard: gen-a
-            pattern: 'generated_frontend_[0-7]'
+            pattern: "generated_frontend_[0-7]"
           - shard: gen-b
-            pattern: 'generated_frontend_[8-f]'
+            pattern: "generated_frontend_[8-f]"
     steps:
       - name: Heartbeat
         run: |
@@ -129,7 +129,7 @@ jobs:
           restore-keys: npm-fe-
       - run: npm ci --prefix frontend
       - name: Run frontend tests
-        run: node scripts/run-jest.js --testPathPattern "${{ matrix.pattern }}" --ci --coverage --coverageDirectory=coverage/frontend
+        run: node scripts/run-jest.js --testPathPattern "${{ matrix.pattern }}" --maxWorkers=50% --runInBand=false --ci --coverage --coverageDirectory=coverage/frontend
       - uses: actions/upload-artifact@v4.3.4
         with:
           name: junit-frontend-${{ matrix.shard }}
@@ -162,7 +162,7 @@ jobs:
           cache-dependency-path: package-lock.json
       - run: npm ci
       - name: Run integration tests
-        run: node scripts/run-jest.js tests/integration --ci --coverage --coverageDirectory=coverage/integration
+        run: node scripts/run-jest.js tests/integration --maxWorkers=50% --runInBand=false --ci --coverage --coverageDirectory=coverage/integration
       - uses: actions/upload-artifact@v4.3.4
         with:
           name: junit-integration
