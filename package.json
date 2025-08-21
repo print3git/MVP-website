@@ -101,7 +101,9 @@
     "test:frontend:regression": "node scripts/run-jest.js --config tests/jest.config.js --selectProjects frontend",
     "test:ci:regression": "node scripts/run-jest.js --config tests/jest.config.js --selectProjects ci",
     "test:e2e:regression": "playwright test --config tests/playwright.config.ts",
-    "test:regression": "npm run test:backend:regression && npm run test:frontend:regression && npm run test:ci:regression && npm run test:e2e:regression"
+    "test:regression": "npm run test:backend:regression && npm run test:frontend:regression && npm run test:ci:regression && npm run test:e2e:regression",
+    "ci:probe": "bash -O globstar -c 'env -u npm_config_prefix node --test tests/ci/**/*.test.js'",
+    "ci:summary": "node scripts/ci/print-suite-summary.js"
   },
   "babel": {
     "presets": [
