@@ -50,7 +50,7 @@ jobs:
         run: npm install -g pnpm
 
       - name: Regenerate pnpm lockfile
-        run: pnpm install --lockfile-only
+        run: pnpm install --lockfile-only --ignore-workspace-root-check
 
       - name: Ensure pnpm lockfile is up to date
         run: |
