@@ -33,7 +33,7 @@ jobs:
   changed:
     timeout-minutes: 15
     runs-on:
-      - [self-hosted, linux, aws, small]
+      - [self-hosted, linux, aws]
       - ubuntu-latest
     outputs:
       backend: ${{ steps.filter.outputs.backend }}

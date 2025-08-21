@@ -20,7 +20,7 @@ jobs:
   select:
     timeout-minutes: 15
     runs-on:
-      - [self-hosted, linux, aws, small]
+      - [self-hosted, linux, aws]
       - ubuntu-latest
     outputs:
       runs_on: ${{ steps.choose.outputs.runs_on }}

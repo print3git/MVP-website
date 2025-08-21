@@ -7,7 +7,7 @@ on:
 jobs:
   nightly-cache-warmup:
     runs-on:
-      - [self-hosted, linux, aws, small]
+      - [self-hosted, linux, aws]
       - ubuntu-latest
     steps:
       - name: Checkout

@@ -30,7 +30,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch' ||
       needs.preflight.outputs.run_backend == 'true'
     runs-on:
-      - [self-hosted, linux, aws, small]
+      - [self-hosted, linux, aws]
       - ubuntu-latest
     continue-on-error: true
     strategy:

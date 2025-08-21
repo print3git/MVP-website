@@ -8,7 +8,7 @@ on:
 jobs:
   prune:
     runs-on:
-      - [self-hosted, linux, aws, small]
+      - [self-hosted, linux, aws]
       - ubuntu-latest
     steps:
       - name: Prune Docker on self-hosted runners

@@ -19,7 +19,7 @@ jobs:
   rebase:
     if: ${{ !startsWith(github.event.pull_request.head.ref, 'codex/') }}
     runs-on:
-      - [self-hosted, linux, aws, small]
+      - [self-hosted, linux, aws]
       - ubuntu-latest
     steps:
       - name: Heartbeat
@@ -53,7 +53,7 @@ jobs:
     needs: rebase
     if: ${{ needs.rebase.result == 'success' || needs.rebase.result == 'skipped' }}
     runs-on:
-      - [self-hosted, linux, aws, small]
+      - [self-hosted, linux, aws]
       - ubuntu-latest
     steps:
       - name: Heartbeat

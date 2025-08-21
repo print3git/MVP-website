@@ -21,7 +21,7 @@ jobs:
     timeout-minutes: 15
     if: vars.ENABLE_PAGES == '1' && github.event.workflow_run.conclusion == 'success'
     runs-on:
-      - [self-hosted, linux, aws, small]
+      - [self-hosted, linux, aws]
       - ubuntu-latest
     env:
       WRANGLER_VERSION: 3.72.0
@@ -146,7 +146,7 @@ jobs:
     timeout-minutes: 15
     if: vars.ENABLE_PAGES != '1' && github.event.workflow_run.conclusion == 'success'
     runs-on:
-      - [self-hosted, linux, aws, small]
+      - [self-hosted, linux, aws]
       - ubuntu-latest
     steps:
       - name: Heartbeat

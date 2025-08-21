@@ -9,7 +9,7 @@ on:
 jobs:
   lint-typecheck:
     runs-on:
-      - [self-hosted, linux, aws, small]
+      - [self-hosted, linux, aws]
       - ubuntu-latest
     steps:
       - uses: actions/checkout@v5.0.0

@@ -25,7 +25,7 @@ jobs:
     if: github.event_name != 'pull_request' || startsWith(github.head_ref, 'security/')
     name: Analyze
     runs-on:
-      - [self-hosted, linux, aws, small]
+      - [self-hosted, linux, aws]
       - ubuntu-latest
     strategy:
       fail-fast: false

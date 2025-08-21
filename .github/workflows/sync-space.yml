@@ -16,7 +16,7 @@ jobs:
   sync:
     timeout-minutes: 15
     runs-on:
-      - [self-hosted, linux, aws, small]
+      - [self-hosted, linux, aws]
       - ubuntu-latest
     env:
       STRIPE_TEST_KEY: ${{ secrets.STRIPE_TEST_KEY }}

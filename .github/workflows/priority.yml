@@ -17,7 +17,7 @@ concurrency:
 jobs:
   lint-fast:
     runs-on:
-      - [self-hosted, linux, aws, small]
+      - [self-hosted, linux, aws]
       - ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -37,7 +37,7 @@ jobs:
 
   smoke-api:
     runs-on:
-      - [self-hosted, linux, aws, small]
+      - [self-hosted, linux, aws]
       - ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -57,7 +57,7 @@ jobs:
     timeout-minutes: 15
     name: Gate
     runs-on:
-      - [self-hosted, linux, aws, small]
+      - [self-hosted, linux, aws]
       - ubuntu-latest
     needs: [lint-fast, smoke-api]
     if: ${{ always() }}

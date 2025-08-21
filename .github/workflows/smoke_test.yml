@@ -15,7 +15,7 @@ jobs:
   changes:
     timeout-minutes: 15
     runs-on:
-      - [self-hosted, linux, aws, small]
+      - [self-hosted, linux, aws]
       - ubuntu-latest
     outputs:
       frontend: ${{ steps.filter.outputs.frontend }}
@@ -34,7 +34,7 @@ jobs:
     timeout-minutes: 15
     needs: changes
     runs-on:
-      - [self-hosted, linux, aws, small]
+      - [self-hosted, linux, aws]
       - ubuntu-latest
     env:
       PORT: 3000
@@ -76,7 +76,7 @@ jobs:
     needs: [changes, backend-smoke]
     if: needs.changes.outputs.frontend == 'true'
     runs-on:
-      - [self-hosted, linux, aws, small]
+      - [self-hosted, linux, aws]
       - ubuntu-latest
     steps:
       - name: Heartbeat

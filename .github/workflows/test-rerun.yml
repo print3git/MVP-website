@@ -5,7 +5,9 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on:
+      - [self-hosted, linux, aws]
+      - ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v5
