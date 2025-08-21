@@ -1,8 +1,9 @@
 name = "mvp-website"
 pages_build_output_dir = "frontend/dist"
+compatibility_date = "2024-12-01"
 
-[env.production.build]
-command = "npm ci --prefix frontend && npm run build --prefix frontend && node scripts/assert-frontend-dist.js"
+[vars]
+NODE_ENV = "production"
 
-[env.preview.build]
+[build]
 command = "npm ci --prefix frontend && npm run build --prefix frontend && node scripts/assert-frontend-dist.js"
