@@ -2,11 +2,12 @@ name: Deploy
 
 on:
   push:
-    branches: [00000production]
+    branches: [ 00000production ]
     paths:
       - "frontend/**"
       - ".github/workflows/deploy.yml"
   workflow_dispatch:
+
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -18,6 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       WRANGLER_VERSION: 3.72.0
+      HUSKY: "0"
 
     steps:
       - name: Checkout code
@@ -109,3 +111,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo "Pages deploy is disabled for PRs; enable via repo variable."
+    env:
+      HUSKY: "0"

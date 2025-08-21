@@ -18,3 +18,5 @@ jobs:
       - run: npm ci
       - run: node scripts/check-lint-regression.js
       - run: node scripts/check-test-regression.js
+    env:
+      HUSKY: "0"

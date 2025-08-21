@@ -2,10 +2,11 @@ name: ESLint Diagnostics
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   pull_request:
-    branches: [main]
+    branches: [ main ]
   workflow_dispatch:
+
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -34,11 +35,16 @@ jobs:
         run: npm run lint --prefix backend -- --ignore-pattern lib
         continue-on-error: true
       - name: Generate ESLint report
-        if: steps.lint-root.outcome == 'failure' || steps.lint-backend.outcome == 'failure'
-        run: npx eslint 'scripts/**/*.js' backend --ignore-pattern backend/lib -f json -o eslint-results.json || true
+        if: steps.lint-root.outcome == 'failure' || steps.lint-backend.outcome ==
+          'failure'
+        run: npx eslint 'scripts/**/*.js' backend --ignore-pattern backend/lib -f json
+          -o eslint-results.json || true
       - name: Upload ESLint results
-        if: steps.lint-root.outcome == 'failure' || steps.lint-backend.outcome == 'failure'
+        if: steps.lint-root.outcome == 'failure' || steps.lint-backend.outcome ==
+          'failure'
         uses: actions/upload-artifact@v4
         with:
           name: eslint-results
           path: eslint-results.json
+    env:
+      HUSKY: "0"

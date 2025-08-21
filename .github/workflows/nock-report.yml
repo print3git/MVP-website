@@ -2,10 +2,11 @@ name: nock report
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   pull_request:
-    branches: [main]
+    branches: [ main ]
   workflow_dispatch:
+
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -28,3 +29,5 @@ jobs:
         with:
           name: netconnect
           path: .artifacts/netconnect.json
+    env:
+      HUSKY: "0"

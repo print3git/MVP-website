@@ -2,10 +2,11 @@ name: Backend Only CI
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   pull_request:
-    branches: [main]
+    branches: [ main ]
   workflow_dispatch:
+
 
 permissions:
   contents: read
@@ -25,3 +26,5 @@ jobs:
             backend/package-lock.json
       - run: npm ci
       - run: npm test --prefix backend
+    env:
+      HUSKY: "0"

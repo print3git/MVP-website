@@ -2,10 +2,11 @@ name: Jest open handles
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   pull_request:
-    branches: [main]
+    branches: [ main ]
   workflow_dispatch:
+
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -30,3 +31,5 @@ jobs:
         with:
           name: jest-stderr
           path: jest-stderr.log
+    env:
+      HUSKY: "0"

@@ -1,6 +1,6 @@
 name: Coverage
 
-on: [push, pull_request]
+on: [ push, pull_request ]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -33,7 +33,9 @@ jobs:
           console.log(`Lines: ${s.total.lines.pct}%`);
           EOF
       - name: Validate coverage-summary.json
-        run: node -e "JSON.parse(require('fs').readFileSync('coverage/coverage-summary.json','utf-8')); console.log('✅ JSON ok')"
+        run: node -e
+          "JSON.parse(require('fs').readFileSync('coverage/coverage-summary.json','utf-8'));
+          console.log('✅ JSON ok')"
       - name: Check coverage thresholds
         run: node scripts/check-coverage.js
       - name: Validate LCOV report
@@ -45,3 +47,5 @@ jobs:
         continue-on-error: true
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+    env:
+      HUSKY: "0"

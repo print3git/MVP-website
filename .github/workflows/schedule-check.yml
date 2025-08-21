@@ -19,3 +19,5 @@ jobs:
           HF_API_KEY: ${{ secrets.HF_WRITE_TOKEN }}
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
         run: bash scripts/check_sleep_zero.sh
+    env:
+      HUSKY: "0"

@@ -2,10 +2,11 @@ name: Playwright Failure Alerts
 
 on:
   push:
-    branches: [main, dev]
+    branches: [ main, dev ]
   pull_request:
-    branches: [main, dev]
+    branches: [ main, dev ]
   workflow_dispatch:
+
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -17,6 +18,7 @@ jobs:
     env:
       PORT: 3000
       DB_URL: postgres://user:pass@localhost:5432/testdb
+      HUSKY: "0"
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
@@ -39,7 +41,8 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          COMMIT_URL: ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}
+          COMMIT_URL: ${{ github.server_url }}/${{ github.repository }}/commit/${{
+            github.sha }}
         run: |
           NAME=$(grep -Eo '^\s*✖[^ ]+[^\n]*' test.log | head -n1 | sed 's/^\s*✖\s*//')
           STEP="Run Playwright tests"

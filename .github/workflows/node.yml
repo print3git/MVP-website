@@ -2,9 +2,9 @@ name: Node CI
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   pull_request:
-    branches: [main]
+    branches: [ main ]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -16,6 +16,7 @@ jobs:
     env:
       PORT: 3000
       CI_REQUIRE_EXTERNAL: '0'
+      HUSKY: "0"
     timeout-minutes: 20
     strategy:
       matrix:
@@ -38,7 +39,6 @@ jobs:
 
       - run: npm install --no-audit --no-fund
         working-directory: backend
-
 
       - run: npm run lint
         working-directory: backend
@@ -83,4 +83,3 @@ jobs:
         run: |
           echo "⚠️ SNYK_TOKEN missing or invalid; running npm audit instead"
           npm audit --audit-level=high --prefix backend
-

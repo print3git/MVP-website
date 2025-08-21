@@ -5,6 +5,7 @@ on:
     - cron: '0 2 * * *'
   workflow_dispatch:
 
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -25,3 +26,5 @@ jobs:
           name: db-backup-${{ github.run_id }}
           path: backups/db-*.sql.gz
           retention-days: 7
+    env:
+      HUSKY: "0"

@@ -2,9 +2,9 @@ name: OpenAPI Lint
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   pull_request:
-    branches: [main]
+    branches: [ main ]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -21,3 +21,5 @@ jobs:
       - run: npm install --no-audit --no-fund
       - run: npm run lint:md
       - run: npx @ibm/openapi-validator docs/openapi.yaml
+    env:
+      HUSKY: "0"

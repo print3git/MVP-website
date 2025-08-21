@@ -4,6 +4,7 @@ on:
   pull_request:
   workflow_dispatch:
 
+
 permissions: {}
 
 jobs:
@@ -12,3 +13,5 @@ jobs:
     timeout-minutes: 5
     steps:
       - run: echo "hello $GITHUB_RUN_ID"
+    env:
+      HUSKY: "0"

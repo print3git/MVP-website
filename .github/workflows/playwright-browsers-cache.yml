@@ -3,6 +3,7 @@ name: Playwright browsers cache
 on:
   pull_request:
 
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -25,3 +26,5 @@ jobs:
       - name: Install Playwright browsers
         if: runner.os == 'Linux'
         run: npx playwright install --with-deps
+    env:
+      HUSKY: "0"

@@ -22,3 +22,5 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: chart/print3-*.tgz
+    env:
+      HUSKY: "0"

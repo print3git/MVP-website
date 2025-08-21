@@ -2,8 +2,9 @@ name: CodeQL
 
 on:
   push:
-    branches: [dev]
+    branches: [ dev ]
   pull_request:
+
 
 permissions:
   actions: read
@@ -37,3 +38,5 @@ jobs:
           npm run build
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3.29.9
+    env:
+      HUSKY: "0"

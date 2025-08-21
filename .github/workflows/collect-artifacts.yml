@@ -42,3 +42,5 @@ jobs:
         with:
           name: failed-logs-${{ github.event.workflow_run.id }}
           path: logs
+    env:
+      HUSKY: "0"

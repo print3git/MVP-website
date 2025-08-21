@@ -2,8 +2,9 @@ name: Pages Deploy
 
 on:
   push:
-    branches: ["00000production"]
+    branches: [ "00000production" ]
   workflow_dispatch:
+
 
 concurrency:
   group: pages-${{ github.ref }}
@@ -45,9 +46,12 @@ jobs:
           echo "url=$url" >> "$GITHUB_OUTPUT"
       - name: Job summary
         if: steps.deploy.outputs.url
-        run: echo "Deployed to ${{ steps.deploy.outputs.url }}" >> "$GITHUB_STEP_SUMMARY"
+        run: echo "Deployed to ${{ steps.deploy.outputs.url }}" >>
+          "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4
         if: steps.deploy.outputs.url
         with:
           name: pages-deploy-url
           path: deploy-url.txt
+    env:
+      HUSKY: "0"

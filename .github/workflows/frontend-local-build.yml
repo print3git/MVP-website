@@ -3,6 +3,7 @@ name: Frontend dist local build
 on:
   workflow_dispatch:
 
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -23,3 +24,5 @@ jobs:
         with:
           name: frontend-dist
           path: dist
+    env:
+      HUSKY: "0"

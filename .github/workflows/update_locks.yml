@@ -2,7 +2,7 @@ name: Update Locks
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   schedule:
     - cron: '*/5 * * * *'
 
@@ -35,3 +35,5 @@ jobs:
             git add CURRENT_LOCKS.json
             git commit -m "Update CURRENT_LOCKS.json" && git push
           fi
+    env:
+      HUSKY: "0"

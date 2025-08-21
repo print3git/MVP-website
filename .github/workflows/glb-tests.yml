@@ -2,14 +2,14 @@ name: GLB Tests
 
 on:
   push:
-    branches: [main, dev]
+    branches: [ main, dev ]
     paths:
       - 'backend/src/lib/**glb**'
       - 'backend/src/lib/**/*glb*.ts'
       - 'backend/src/pipeline/generateModel.*'
       - 'backend/tests/glb/**'
   pull_request:
-    branches: [main, dev]
+    branches: [ main, dev ]
     paths:
       - 'backend/src/lib/**glb**'
       - 'backend/src/lib/**/*glb*.ts'
@@ -39,6 +39,8 @@ jobs:
         run: npm ci --prefix backend
       - name: Run unit tests
         run: npm run test:unit --prefix backend
+    env:
+      HUSKY: "0"
 
   e2e-tests:
     needs: unit-tests
@@ -46,6 +48,7 @@ jobs:
     env:
       PORT: 3000
       DB_URL: postgres://user:pass@localhost:5432/testdb
+      HUSKY: "0"
     steps:
       - uses: actions/checkout@v5
       - name: Load Stripe env

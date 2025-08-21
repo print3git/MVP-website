@@ -14,3 +14,5 @@ jobs:
     steps:
       - name: Check homepage
         run: curl -fsS https://print2.io/ > /dev/null
+    env:
+      HUSKY: "0"

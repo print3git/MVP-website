@@ -3,6 +3,7 @@ name: Backend Smoke
 on:
   pull_request:
 
+
 permissions:
   contents: read
 
@@ -25,4 +26,7 @@ jobs:
       - name: Healthz test
         run: npm --prefix backend test -- backend/tests/healthz.test.js
       - name: Generate API test
-        run: npm --prefix backend test -- backend/tests/api.test.js -t "POST /api/generate returns glb url"
+        run: npm --prefix backend test -- backend/tests/api.test.js -t "POST
+          /api/generate returns glb url"
+    env:
+      HUSKY: "0"

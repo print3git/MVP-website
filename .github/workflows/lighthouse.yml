@@ -2,7 +2,7 @@ name: Lighthouse
 
 on:
   deployment_status:
-    types: [success]
+    types: [ success ]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -28,3 +28,5 @@ jobs:
         with:
           name: lighthouse-report
           path: .lighthouseci/*report.html
+    env:
+      HUSKY: "0"

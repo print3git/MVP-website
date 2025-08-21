@@ -3,6 +3,7 @@ name: Load Test
 on:
   workflow_dispatch:
 
+
 concurrency:
   # Limit load tests to a single runner across all refs to avoid saturating runner capacity
   group: load-test
@@ -24,3 +25,5 @@ jobs:
         with:
           name: artillery-report
           path: artillery-report.json
+    env:
+      HUSKY: "0"
