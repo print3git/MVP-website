@@ -1,6 +1,7 @@
 name: LFS guard
 on:
   pull_request:
+  push:
 
 jobs:
   lfs-guard:
@@ -9,13 +10,16 @@ jobs:
       - uses: actions/checkout@v4.1.6
         with:
           fetch-depth: 0
-      - name: Verify LFS pointers
+      - name: Fail on LFS pointers in frontend paths
         run: |
           set -e
           git lfs install
-          patterns=("img/*" "*.png" "*.jpg" "*.jpeg")
-          for pattern in "${patterns[@]}"; do
-            git ls-files "$pattern" | while read -r file; do
-              git lfs ls-files --error-unmatch "$file" >/dev/null 2>&1 || { echo "$file is not an LFS pointer" >&2; exit 1; }
-            done
-          done
+          pointer_files=$(git ls-files frontend public assets 2>/dev/null | xargs -r grep -l 'version https://git-lfs.github.com/spec/v1' || true)
+          if [ -n "$pointer_files" ]; then
+            echo "Git LFS pointers detected in frontend build paths:"
+            echo "$pointer_files"
+            echo
+            echo "Please commit real assets or host them in S3/CDN instead of using Git LFS for the frontend."
+            exit 1
+          fi
+
