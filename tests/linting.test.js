@@ -33,6 +33,14 @@ test("repository passes ESLint with no warnings", () => {
     );
 
     if (result.status !== 0) {
+      if (result.stdout) {
+        try {
+          const json = JSON.parse(result.stdout);
+          console.error("ESLint JSON output:\n" + JSON.stringify(json, null, 2));
+        } catch {
+          console.error(result.stdout);
+        }
+      }
       if (result.stderr) console.error(result.stderr);
     }
     expect(result.status).toBe(0);
