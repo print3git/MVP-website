@@ -1,7 +1,11 @@
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 
 /**
- * @param {*} attempts
+ * Store generated GLB data in S3 and return a public URL.
+ *
+ * @param {Buffer} data - Binary GLB contents.
+ * @param {number} [attempts=3] - Number of retry attempts on failure.
+ * @returns {Promise<string>} URL of the uploaded model.
  */
 async function storeGlb(data, attempts = 3) {
   if (data.length < 12 || data.toString("utf8", 0, 4) !== "glTF") {

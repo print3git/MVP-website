@@ -1,7 +1,10 @@
 const { NodeIO } = require("@gltf-transform/core");
 
 /**
- * @param {*} glb
+ * Ensure that vertex colors encoded in extras are preserved on the mesh.
+ *
+ * @param {Uint8Array|Buffer} glb - Binary GLB data.
+ * @returns {Promise<Uint8Array>} GLB with color attributes applied.
  */
 async function preserveColors(glb) {
   const io = new NodeIO();
