@@ -38,10 +38,15 @@ const requireLive =
   process.env.NODE_ENV === "production" &&
   process.env.CI_REQUIRE_EXTERNAL === "1";
 if (requireLive) {
-  if (!/^sk_live/.test(stripeKey)) {
+  const invalid = (val, prefix, mock) =>
+    typeof val !== "string" ||
+    !val.startsWith(prefix) ||
+    val === mock ||
+    /_(test|mock)/.test(val);
+  if (invalid(stripeKey, "sk_live", mockSecrets.STRIPE_SECRET_KEY)) {
     throw new Error("STRIPE_SECRET_KEY must be a live secret");
   }
-  if (!/^whsec_/.test(stripeWebhook)) {
+  if (invalid(stripeWebhook, "whsec_", mockSecrets.STRIPE_WEBHOOK_SECRET)) {
     throw new Error("STRIPE_WEBHOOK_SECRET must be a live webhook secret");
   }
 }
