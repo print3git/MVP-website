@@ -1,0 +1,20 @@
+name: Docker prune
+
+on:
+  schedule:
+    - cron: '0 0 * * 0'
+  workflow_dispatch:
+
+jobs:
+  prune:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prune Docker on self-hosted runners
+        if: ${{ startsWith(runner.name, 'self-hosted') || contains(runner.labels, 'self-hosted') }}
+        run: |
+          docker builder prune -f
+          docker image prune -af
+      - name: Skip on GitHub-hosted runners
+        if: ${{ !(startsWith(runner.name, 'self-hosted') || contains(runner.labels, 'self-hosted')) }}
+        run: |
+          echo "GitHub-hosted runner detected; skipping docker prune" && exit 0
