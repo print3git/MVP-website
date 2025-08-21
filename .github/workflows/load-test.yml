@@ -4,7 +4,8 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  # Limit load tests to a single runner across all refs to avoid saturating runner capacity
+  group: load-test
   cancel-in-progress: true
 
 jobs:
