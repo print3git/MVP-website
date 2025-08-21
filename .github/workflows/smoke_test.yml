@@ -26,9 +26,17 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/frontend-build
       - uses: actions/setup-node@v4
+        id: setup-node
         with:
           node-version: 20
-          cache: "npm"
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            frontend/package-lock.json
+            backend/package-lock.json
+            backend/dalle_server/package-lock.json
+            pnpm-lock.yaml
+      - run: echo "cache-hit: ${{ steps.setup-node.outputs.cache-hit }}"
       - run: npm run setup
       - name: Start backend
         run: |

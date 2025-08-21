@@ -24,22 +24,19 @@ jobs:
       # Checkout the repository's code
       - uses: actions/checkout@v5
 
-      # Cache npm dependencies for faster installs
-      - name: Cache npm
-        id: cache-npm
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-npm-
-      - run: echo "Cache key: ${{ steps.cache-npm.outputs.cache-primary-key }}"
-
       # Setup Node.js 20.x (>=16 required)
       - uses: actions/setup-node@v4
+        id: setup-node
         with:
           node-version: 20
-
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            frontend/package-lock.json
+            backend/package-lock.json
+            backend/dalle_server/package-lock.json
+            pnpm-lock.yaml
+      - run: echo "cache-hit: ${{ steps.setup-node.outputs.cache-hit }}"
       - name: Setup pnpm
         run: |
           corepack enable

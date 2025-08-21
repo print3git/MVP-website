@@ -22,9 +22,17 @@ jobs:
           while true; do date; sleep 120; done &
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
+        id: setup-node
         with:
           node-version: 20
-          cache: 'npm'
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            frontend/package-lock.json
+            backend/package-lock.json
+            backend/dalle_server/package-lock.json
+            pnpm-lock.yaml
+      - run: echo "cache-hit: ${{ steps.setup-node.outputs.cache-hit }}"
       - run: npm install --no-audit --no-fund
       - name: Run Lighthouse CI
         env:
