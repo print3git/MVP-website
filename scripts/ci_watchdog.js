@@ -3,6 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.patchFiles = patchFiles;
+exports.globWalk = globWalk;
 const action_1 = require("@octokit/action");
 const node_child_process_1 = require("node:child_process");
 const promises_1 = __importDefault(require("node:fs/promises"));
@@ -13,48 +15,28 @@ const WINDOW_HOURS = 4;
 const MIN_HITS = 5;
 const MAX_RUNS = 25;
 const sinceIso = new Date(Date.now() - WINDOW_HOURS * 3600_000).toISOString();
-function isWorkflowRun(val) {
-    return (typeof val === "object" &&
-        val !== null &&
-        typeof val.id === "number");
-}
-function isIssue(val) {
-    return (typeof val === "object" &&
-        val !== null &&
-        typeof val.number === "number");
-}
 async function main() {
-    const runsRaw = (await octo.paginate(octo.rest.actions.listWorkflowRunsForRepo, {
+    const apiRuns = await octo.paginate("GET /repos/{owner}/{repo}/actions/runs", {
         owner,
         repo,
         per_page: 100,
         status: "failure",
         event: "pull_request",
         created: `>${sinceIso}`,
+    });
+    const runs = apiRuns.map((r) => ({
+        id: r.id,
+        pull_requests: r.pull_requests?.map((pr) => ({ number: pr.number })),
     }));
-    const runs = Array.isArray(runsRaw)
-        ? runsRaw.filter(isWorkflowRun)
-        : [];
     const clusters = {};
     for (const r of runs.slice(0, MAX_RUNS)) {
-        const log = await octo.rest.actions.downloadWorkflowRunLogs({
+        const log = (await octo.request("GET /repos/{owner}/{repo}/actions/runs/{run_id}/logs", {
             owner,
             repo,
             run_id: r.id,
-            request: { raw: true },
-        });
-        const raw = log.data;
-        const buf = raw instanceof ArrayBuffer
-            ? Buffer.from(raw)
-            : Buffer.isBuffer(raw)
-                ? raw
-                : typeof raw === "string"
-                    ? Buffer.from(raw)
-                    : ArrayBuffer.isView(raw)
-                        ? Buffer.from(raw.buffer)
-                        : null;
-        if (!buf)
-            throw new Error("unexpected log data type");
+            request: { responseType: "arraybuffer" },
+        }));
+        const buf = Buffer.from(log.data);
         const firstLine = buf.toString("utf8").split("\n").find(Boolean) ?? "unknown error";
         const key = firstLine.trim().slice(0, 120);
         clusters[key] ??= { msg: key, runs: [], prs: [] };
@@ -149,8 +131,10 @@ async function upsertIssue(title, cluster) {
         state: "open",
         labels: "ci-watchdog",
     });
-    const data = issuesResp.data;
-    const issues = Array.isArray(data) ? data.filter(isIssue) : [];
+    const issues = issuesResp.data.map((i) => ({
+        title: i.title,
+        number: i.number,
+    }));
     const existing = issues.find((i) => i.title === title);
     const body = `Detected **${cluster.prs.length} PRs** failing with:\n\n\`\`\`\n${cluster.msg}\n\`\`\``;
     if (existing) {
@@ -183,7 +167,9 @@ async function commentOnPRs(cluster) {
         });
     }
 }
-main().catch((e) => {
-    console.error(e);
-    process.exit(1);
-});
+if (require.main === module) {
+    main().catch((e) => {
+        console.error(e);
+        process.exit(1);
+    });
+}
