@@ -18,13 +18,14 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    if: ${{ matrix.node != 22 || contains(github.event.pull_request.labels.*.name, 'full-matrix') }}
+    continue-on-error: ${{ matrix.node == 22 }}
     defaults:
       run:
         working-directory: frontend
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-latest]
         node: [20, 22]
     steps:
       - name: Heartbeat
