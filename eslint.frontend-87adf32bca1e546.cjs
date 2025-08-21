@@ -6,6 +6,7 @@ const tsParser = require('@typescript-eslint/parser');
 const htmlPlugin = require('@html-eslint/eslint-plugin');
 const htmlParser = require('@html-eslint/parser');
 const frontendRules = require('./scripts/eslint-frontend-rules');
+const globals = require('globals');
 
 module.exports = [
   {
@@ -20,6 +21,7 @@ module.exports = [
         project: ['./tsconfig.base.json'],
         tsconfigRootDir: __dirname,
       },
+      globals: { ...globals.browser },
     },
     plugins: {
       react,
@@ -39,7 +41,7 @@ module.exports = [
   },
   {
     files: ['*.html'],
-    languageOptions: { parser: htmlParser },
+    languageOptions: { parser: htmlParser, globals: { ...globals.browser } },
     plugins: {
       html: htmlPlugin,
       'no-inline-styles': noInlineStyles,
