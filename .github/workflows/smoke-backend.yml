@@ -4,10 +4,12 @@ env:
   HUSKY: 0
 
 on:
-  workflow_run:
-    workflows: ["Preflight"]
-    types:
-      - completed
+  push:
+    branches: [00000production]
+  pull_request:
+    types: [labeled, opened, synchronize, reopened]
+  schedule:
+    - cron: '0 0 * * *'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -18,12 +20,12 @@ permissions:
 
 jobs:
   preflight:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'run-full')
     uses: ./.github/workflows/preflight.yml
 
   backend-smoke:
     needs: preflight
-    if: needs.preflight.outputs.run_backend == 'true'
+    if: needs.preflight.outputs.run_backend == 'true' && (github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'run-full'))
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:

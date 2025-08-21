@@ -6,8 +6,11 @@ env:
 
 on:
   push:
-    branches: [dev]
+    branches: [00000production]
   pull_request:
+    types: [labeled, opened, synchronize, reopened]
+  schedule:
+    - cron: '0 0 * * *'
 
 permissions:
   actions: read
@@ -20,7 +23,7 @@ concurrency:
 
 jobs:
   analyze:
-    if: github.event_name != 'pull_request' || startsWith(github.head_ref, 'security/')
+    if: github.event_name != 'pull_request' || startsWith(github.head_ref, 'security/') || contains(github.event.pull_request.labels.*.name, 'run-full')
     name: Analyze
     runs-on: ubuntu-latest
     steps:
