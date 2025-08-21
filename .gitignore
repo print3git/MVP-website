@@ -36,3 +36,11 @@ infra/awscliv2.zip
 test-results/
 
 .artifacts/
+
+# build artifacts
+dist/
+.out/
+.turbo/
+.cache/
+.eslintcache
+.prettiercache
