@@ -1,0 +1,28 @@
+name: Queue Watchdog
+
+on:
+  workflow_dispatch:
+
+jobs:
+  queue-watchdog:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Runner availability
+        run: |
+          echo "Self-hosted runner availability:"
+          gh api repos/${{ github.repository }}/actions/runners --jq '.runners[] | "\(.name): \(.status)"' || echo "No self-hosted runners or gh api failed"
+      - name: Workflow queue length
+        run: |
+          queued=$(gh api repos/${{ github.repository }}/actions/runs --paginate -q '.workflow_runs[] | select(.status=="queued") | .id' | wc -l)
+          echo "Queued workflow runs: $queued"
+      - name: Jobs stuck over 10 minutes
+        run: |
+          cutoff=$(date -u -d '10 minutes ago' +%FT%TZ)
+          echo "Jobs started before $cutoff and still running:"
+          gh api repos/${{ github.repository }}/actions/runs?status=in_progress --paginate --jq '.workflow_runs[].id' | while read run_id; do
+            gh api repos/${{ github.repository }}/actions/runs/$run_id/jobs --jq ".jobs[] | select(.status==\"in_progress\" and .started_at < \"$cutoff\") | \"- Run $run_id job \(.name) started at \(.started_at)\""
+          done || true
