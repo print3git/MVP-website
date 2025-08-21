@@ -8,11 +8,15 @@ if (!fs.existsSync(distPath)) {
   try {
     const rev = execSync("git rev-parse --short HEAD").toString().trim();
     console.error(rev);
-  } catch {}
+  } catch {
+    // ignore errors fetching current revision
+  }
   try {
     const ls = execSync("ls -la frontend/dist").toString().trim();
     console.error(ls);
-  } catch {}
+  } catch {
+    // ignore errors listing frontend/dist
+  }
   process.exit(1);
 }
 console.log(`Found ${distPath}`);
