@@ -1,0 +1,59 @@
+name: Cloudflare Pages Preview
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Heartbeat
+        run: |
+          while true; do date; sleep 120; done &
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            frontend/package-lock.json
+      - run: npm ci && npm run build --prefix frontend
+      - name: Start preview
+        id: preview
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          set -o pipefail
+          url=$(timeout 60 npx -y wrangler pages dev frontend/dist --local false --project-name "${{ secrets.CF_PAGES_PROJECT }}" --branch "$GITHUB_HEAD_REF" 2>&1 | tee /tmp/wrangler.log | grep -Eo 'https://[^ ]+' | tail -n 1)
+          echo "$url" > preview-url.txt
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+      - name: Comment preview URL
+        if: steps.preview.outputs.url
+        uses: actions/github-script@v7
+        env:
+          PREVIEW_URL: ${{ steps.preview.outputs.url }}
+        with:
+          script: |
+            const body = `Cloudflare Pages preview: ${process.env.PREVIEW_URL}`;
+            github.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body
+            });
+      - uses: actions/upload-artifact@v4
+        if: steps.preview.outputs.url
+        with:
+          name: cf-pages-preview-url
+          path: preview-url.txt
