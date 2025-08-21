@@ -13,7 +13,7 @@ concurrency:
 
 jobs:
   coverage:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     outputs:
       duration: ${{ steps.duration.outputs.value }}
     steps:
@@ -41,7 +41,7 @@ jobs:
         run: echo "value=$(( ${{ steps.end.outputs.end }} - ${{ steps.start.outputs.start }} ))" >> "$GITHUB_OUTPUT"
 
   e2e:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     env:
       PORT: 3000
       DB_URL: postgres://user:pass@localhost:5432/testdb

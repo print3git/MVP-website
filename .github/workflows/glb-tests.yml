@@ -25,8 +25,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  unit-tests:
-    runs-on: ubuntu-latest
+    unit-tests:
+      runs-on: ubuntu-latest
     steps:
       - name: Heartbeat
         run: |
@@ -47,9 +47,9 @@ jobs:
       - name: Run unit tests
         run: npm run test:unit --prefix backend
 
-  e2e-tests:
-    needs: unit-tests
-    runs-on: ubuntu-latest
+    e2e-tests:
+      needs: unit-tests
+      runs-on: [self-hosted, linux, x64]
     env:
       PORT: 3000
       DB_URL: postgres://user:pass@localhost:5432/testdb
