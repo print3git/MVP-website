@@ -14,6 +14,12 @@ const globals = require("globals");
 const jsdoc = require("eslint-plugin-jsdoc");
 const tsParser = require("@typescript-eslint/parser");
 const frontend = require("./eslint.frontend-87adf32bca1e546.cjs");
+let ssrFriendly;
+try {
+  ssrFriendly = require("eslint-plugin-ssr-friendly");
+} catch {
+  ssrFriendly = null;
+}
 const isCI = Boolean(process.env.CI);
 
 module.exports = [
@@ -125,6 +131,14 @@ module.exports = [
   {
     files: ["tests/**/*"],
     rules: { "jsdoc/require-jsdoc": "off" },
+  },
+  {
+    files: ["frontend/src/**/*.{ts,tsx,js,jsx}"],
+    env: { browser: true },
+    languageOptions: {
+      globals: { ...globals.browser },
+    },
+    ...(ssrFriendly ? { plugins: { "ssr-friendly": ssrFriendly } } : {}),
   },
   ...frontend,
 ];
