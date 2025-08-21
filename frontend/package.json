@@ -4,6 +4,10 @@
   "private": true,
   "scripts": {
     "build": "mkdir -p dist && echo '<!doctype html><html><head><meta charset=\"utf-8\"><title>frontend</title></head><body></body></html>' > dist/index.html",
-    "build:ci": "npm ci && npm run build"
+    "build:ci": "npm ci && npm run build",
+    "lint": "eslint . --max-warnings=0"
+  },
+  "devDependencies": {
+    "eslint": "^9.31.0"
   }
 }
