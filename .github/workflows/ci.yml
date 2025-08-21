@@ -35,13 +35,14 @@ jobs:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
-      - uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: npm-fe-${{ hashFiles('frontend/package-lock.json') }}
-          restore-keys: npm-fe-
-      - run: npm ci && npm run lint && npm run build
+          node-version: '20'
+          cache: pnpm
+      - run: corepack enable
+        working-directory: .
+      - run: pnpm i --frozen-lockfile --ignore-scripts
+        working-directory: .
+      - run: pnpm run lint
+      - run: pnpm run build
       - run: test -d dist
       - if: failure()
         uses: actions/upload-artifact@v4.3.4
@@ -64,16 +65,10 @@ jobs:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: "npm"
-          cache-dependency-path: package-lock.json
-      - run: npm ci
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: "npm"
-          cache-dependency-path: backend/package-lock.json
-      - run: npm ci --prefix backend
+          node-version: '20'
+          cache: pnpm
+      - run: corepack enable
+      - run: pnpm i --frozen-lockfile --ignore-scripts
       - name: Run backend tests
         run: |
           node scripts/run-jest.js backend --listTests | split -n l/3 - test-files-
@@ -115,19 +110,10 @@ jobs:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: "npm"
-          cache-dependency-path: package-lock.json
-      - run: npm ci
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: npm-fe-${{ hashFiles('frontend/package-lock.json') }}
-          restore-keys: npm-fe-
-      - run: npm ci --prefix frontend
+          node-version: '20'
+          cache: pnpm
+      - run: corepack enable
+      - run: pnpm i --frozen-lockfile --ignore-scripts
       - name: Run frontend tests
         run: node scripts/run-jest.js --testPathPattern "${{ matrix.pattern }}" --ci --coverage --coverageDirectory=coverage/frontend
       - uses: actions/upload-artifact@v4.3.4
@@ -157,10 +143,10 @@ jobs:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: "npm"
-          cache-dependency-path: package-lock.json
-      - run: npm ci
+          node-version: '20'
+          cache: pnpm
+      - run: corepack enable
+      - run: pnpm i --frozen-lockfile --ignore-scripts
       - name: Run integration tests
         run: node scripts/run-jest.js tests/integration --ci --coverage --coverageDirectory=coverage/integration
       - uses: actions/upload-artifact@v4.3.4
@@ -194,10 +180,10 @@ jobs:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: "npm"
-          cache-dependency-path: package-lock.json
-      - run: npm ci --ignore-scripts
+          node-version: '20'
+          cache: pnpm
+      - run: corepack enable
+      - run: pnpm i --frozen-lockfile --ignore-scripts
       - uses: actions/download-artifact@v4.1.8
         with:
           pattern: coverage-backend-*
