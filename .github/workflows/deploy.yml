@@ -51,6 +51,9 @@ jobs:
       - name: Verify dist output
         run: node scripts/assert-frontend-dist.js
 
+      - name: Copy dist without symlinks
+        run: cp -aL frontend/dist/. pages_dist/
+
       - name: Assert Pages project has no build config
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -79,7 +82,7 @@ jobs:
           set +e
           for attempt in 1 2 3; do
             echo "Attempt $attempt"
-            npx wrangler@${{ env.WRANGLER_VERSION }} pages deploy frontend/dist --project-name mvp-website 2>&1 | tee deploy.log
+            npx wrangler@${{ env.WRANGLER_VERSION }} pages deploy pages_dist --project-name mvp-website 2>&1 | tee deploy.log
             status=${PIPESTATUS[0]}
             if [ $status -eq 0 ]; then
               break
@@ -105,7 +108,7 @@ jobs:
       - name: Publish to Cloudflare Pages
         run: |
           npx wrangler@${{ env.WRANGLER_VERSION }} --version
-          npx wrangler@${{ env.WRANGLER_VERSION }} pages deploy frontend/dist --project-name ${{ secrets.CF_PAGES_PROJECT }}
+          npx wrangler@${{ env.WRANGLER_VERSION }} pages deploy pages_dist --project-name ${{ secrets.CF_PAGES_PROJECT }}
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_PAGES_API_TOKEN }}
