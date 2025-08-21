@@ -8,7 +8,7 @@ on:
       - 'backend/src/lib/**/*glb*.ts'
       - 'backend/src/pipeline/generateModel.*'
       - 'backend/tests/glb/**'
-  pull_request:
+  merge_group:
     branches: [main, dev]
     paths:
       - 'backend/src/lib/**glb**'
