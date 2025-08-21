@@ -7,7 +7,9 @@ env:
 on:
   pull_request:
     paths:
-      - "frontend/**"
+      - 'frontend/**'
+      - '!docs/**'
+      - 'package.json'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
