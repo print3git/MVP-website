@@ -1,5 +1,9 @@
 name: DB Backup
 
+env:
+  HUSKY: 0
+
+
 on:
   schedule:
     - cron: '0 2 * * *'

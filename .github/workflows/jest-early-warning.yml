@@ -1,5 +1,9 @@
 name: Jest Early Warning
 
+env:
+  HUSKY: 0
+
+
 on:
   pull_request:
 

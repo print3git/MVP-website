@@ -1,5 +1,9 @@
 name: Check HF Space Sleep
 
+env:
+  HUSKY: 0
+
+
 on:
   schedule:
     - cron: '0 0 * * *'

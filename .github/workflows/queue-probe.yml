@@ -1,5 +1,9 @@
 name: Queue Probe
 
+env:
+  HUSKY: 0
+
+
 on:
   pull_request:
   workflow_dispatch:

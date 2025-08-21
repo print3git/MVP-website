@@ -1,5 +1,9 @@
 name: Auto Rebase and Merge Queue
 
+env:
+  HUSKY: 0
+
+
 on:
   pull_request:
     types: [opened, synchronize, reopened]

@@ -1,5 +1,9 @@
 name: Weekly Operations Report
 
+env:
+  HUSKY: 0
+
+
 on:
   schedule:
     - cron: '0 6 * * 1'

@@ -1,5 +1,9 @@
 name: Sync HF Space
 
+env:
+  HUSKY: 0
+
+
 on:
   push:
     branches: [ dev ]          # ← adjust target branch if needed

@@ -1,5 +1,9 @@
 name: Backend Smoke
 
+env:
+  HUSKY: 0
+
+
 on:
   push:
   merge_group:

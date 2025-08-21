@@ -1,5 +1,9 @@
 name: Full Pipeline Smoke Test
 
+env:
+  HUSKY: 0
+
+
 on:
   push:
     branches:

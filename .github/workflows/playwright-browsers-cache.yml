@@ -1,5 +1,9 @@
 name: Playwright browsers cache
 
+env:
+  HUSKY: 0
+
+
 on:
   pull_request:
 

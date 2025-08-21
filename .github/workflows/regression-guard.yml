@@ -1,5 +1,9 @@
 name: regression-guard
 
+env:
+  HUSKY: 0
+
+
 on:
   pull_request:
   push:

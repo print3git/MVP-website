@@ -1,5 +1,9 @@
 name: Lighthouse
 
+env:
+  HUSKY: 0
+
+
 on:
   deployment_status:
     types: [success]
