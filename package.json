@@ -21,7 +21,7 @@
   },
   "scripts": {
     "perf-events": "node scripts/perf-events.js",
-    "preinstall": "node scripts/check-node-version.js",
+    "preinstall": "corepack enable && node scripts/check-node-version.js",
     "lhci": "lhci autorun",
     "prepare": "husky install",
     "prepare:dev": "husky install && tsc -p scripts/tsconfig.json",
@@ -99,6 +99,7 @@
     "node": ">=20 <21"
   },
   "type": "commonjs",
+  "packageManager": "pnpm@10.11.0",
   "prettier": {},
   "devDependencies": {
     "@axe-core/cli": "^4.10.2",
