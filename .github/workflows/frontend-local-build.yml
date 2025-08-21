@@ -18,8 +18,8 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
       - run: npm ci && npm run build
-      - run: node -e "require('fs').accessSync('dist/index.html')"
+      - run: node scripts/assert-frontend-dist.js
       - uses: actions/upload-artifact@v4
         with:
           name: frontend-dist
-          path: dist
+          path: frontend/dist
