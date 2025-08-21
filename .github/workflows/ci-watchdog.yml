@@ -23,7 +23,9 @@ jobs:
   scan:
     timeout-minutes: 15
     if: ${{ github.repository_owner == 'print3git' }}
-    runs-on: ubuntu-latest
+    runs-on:
+      - [self-hosted, linux, aws, small]
+      - ubuntu-latest
     steps:
       - name: Heartbeat
         run: |

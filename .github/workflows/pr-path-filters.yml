@@ -8,7 +8,9 @@ on:
 
 jobs:
   lint-typecheck:
-    runs-on: ubuntu-latest
+    runs-on:
+      - [self-hosted, linux, aws, small]
+      - ubuntu-latest
     steps:
       - uses: actions/checkout@v5.0.0
       - uses: pnpm/action-setup@v4.1.0

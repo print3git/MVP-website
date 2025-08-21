@@ -36,7 +36,7 @@ jobs:
   build:
     timeout-minutes: 15
     runs-on:
-      - self-hosted
+      - [self-hosted, linux, aws, small]
       - ubuntu-latest
     defaults:
       run:
@@ -88,7 +88,9 @@ jobs:
 
   test-backend:
     timeout-minutes: 15
-    runs-on: ubuntu-latest-XXL
+    runs-on:
+      - [self-hosted, linux, aws, small]
+      - ubuntu-latest
     strategy:
       fail-fast: true
       max-parallel: 2
@@ -161,7 +163,7 @@ jobs:
   test-frontend:
     timeout-minutes: 15
     runs-on:
-      - self-hosted
+      - [self-hosted, linux, aws, small]
       - ubuntu-latest
     strategy:
       fail-fast: true
@@ -239,7 +241,7 @@ jobs:
     timeout-minutes: 15
     if: github.event_name == 'push'
     runs-on:
-      - self-hosted
+      - [self-hosted, linux, aws, small]
       - ubuntu-latest
     steps:
       - name: Heartbeat
@@ -296,7 +298,7 @@ jobs:
     timeout-minutes: 15
     if: github.event_name == 'push'
     runs-on:
-      - self-hosted
+      - [self-hosted, linux, aws, small]
       - ubuntu-latest
     needs:
       - test-backend

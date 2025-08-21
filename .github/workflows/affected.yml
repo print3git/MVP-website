@@ -12,7 +12,9 @@ concurrency:
 
 jobs:
   affected-builds:
-    runs-on: ubuntu-latest
+    runs-on:
+      - [self-hosted, linux, aws, small]
+      - ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:

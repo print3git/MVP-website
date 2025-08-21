@@ -7,7 +7,9 @@ on:
 
 jobs:
   size:
-    runs-on: ubuntu-latest
+    runs-on:
+      - [self-hosted, linux, aws, small]
+      - ubuntu-latest
     steps:
       - uses: actions/checkout@v5
       - name: Record repository size

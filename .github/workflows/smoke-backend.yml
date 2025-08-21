@@ -25,7 +25,9 @@ jobs:
   db-seed:
     timeout-minutes: 15
     needs: preflight
-    runs-on: ubuntu-latest
+    runs-on:
+      - [self-hosted, linux, aws, small]
+      - ubuntu-latest
     services:
       postgres:
         image: postgres:15
@@ -67,7 +69,9 @@ jobs:
   backend-smoke:
     needs: [preflight, db-seed]
     if: needs.preflight.outputs.run_backend == 'true'
-    runs-on: ubuntu-latest
+    runs-on:
+      - [self-hosted, linux, aws, small]
+      - ubuntu-latest
     timeout-minutes: 5
     services:
       postgres:

@@ -12,7 +12,9 @@ concurrency:
 
 jobs:
   watch:
-    runs-on: ubuntu-latest
+    runs-on:
+      - [self-hosted, linux, aws, small]
+      - ubuntu-latest
     continue-on-error: true
     timeout-minutes: 8
     permissions:

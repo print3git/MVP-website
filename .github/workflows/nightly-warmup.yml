@@ -6,7 +6,9 @@ on:
 
 jobs:
   nightly-cache-warmup:
-    runs-on: ubuntu-latest
+    runs-on:
+      - [self-hosted, linux, aws, small]
+      - ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
