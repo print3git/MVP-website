@@ -12,9 +12,9 @@ if (!fs.existsSync(indexFile)) {
 
 /**
  * Recursively collect symlinks inside a directory.
- * @param {string} dir
- * @param {string[]} acc
- * @returns {string[]}
+ * @param {string} dir Directory to scan for symlinks.
+ * @param {string[]} acc Accumulator for discovered symlink paths.
+ * @returns {string[]} List of symlink paths found.
  */
 function collectSymlinks(dir, acc = []) {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
