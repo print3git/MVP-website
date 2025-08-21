@@ -1,0 +1,73 @@
+name: Provision self-hosted runner
+
+on:
+  workflow_dispatch:
+    inputs:
+      instance_type:
+        description: EC2 instance type
+        required: false
+        default: t3.small
+      labels:
+        description: Labels to add to the runner
+        required: false
+        default: self-hosted,aws,node20,x64
+      use_oidc:
+        description: Authenticate to AWS via GitHub OIDC
+        type: boolean
+        default: false
+      aws_role_arn:
+        description: IAM role ARN to assume when using OIDC
+        required: false
+        default: ''
+
+jobs:
+  provision:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v5.0.0
+      - name: Configure AWS credentials (OIDC)
+        if: inputs.use_oidc == 'true'
+        uses: aws-actions/configure-aws-credentials@v4.3.1
+        with:
+          role-to-assume: ${{ inputs.aws_role_arn }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Export AWS credentials
+        if: inputs.use_oidc != 'true'
+        run: |
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
+          echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> $GITHUB_ENV
+      - name: Get runner registration token
+        id: reg
+        run: |
+          token=$(curl -s -X POST \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/${{ github.repository }}/actions/runners/registration-token | jq -r .token)
+          echo "token=$token" >> $GITHUB_OUTPUT
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3.1.2
+      - name: Terraform init
+        working-directory: infra/selfhosted-runner/terraform
+        run: terraform init
+      - name: Terraform plan
+        working-directory: infra/selfhosted-runner/terraform
+        env:
+          GH_RUNNER_REG_TOKEN: ${{ steps.reg.outputs.token }}
+        run: terraform plan -var "instance_type=${{ inputs.instance_type }}" -var "labels=${{ inputs.labels }}" -var "repo_owner=${{ github.repository_owner }}" -var "repo_name=${{ github.event.repository.name }}"
+      - name: Terraform apply
+        working-directory: infra/selfhosted-runner/terraform
+        env:
+          GH_RUNNER_REG_TOKEN: ${{ steps.reg.outputs.token }}
+        run: terraform apply -auto-approve -var "instance_type=${{ inputs.instance_type }}" -var "labels=${{ inputs.labels }}" -var "repo_owner=${{ github.repository_owner }}" -var "repo_name=${{ github.event.repository.name }}"
+      - name: Output runner info
+        if: success()
+        working-directory: infra/selfhosted-runner/terraform
+        run: |
+          public_ip=$(terraform output -raw public_ip)
+          instance_id=$(terraform output -raw instance_id)
+          echo "Public IP: $public_ip" >> $GITHUB_STEP_SUMMARY
+          echo "Instance ID: $instance_id" >> $GITHUB_STEP_SUMMARY
