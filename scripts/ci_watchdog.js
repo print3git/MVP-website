@@ -13,8 +13,18 @@ const WINDOW_HOURS = 4;
 const MIN_HITS = 5;
 const MAX_RUNS = 25;
 const sinceIso = new Date(Date.now() - WINDOW_HOURS * 3600_000).toISOString();
+function isWorkflowRun(val) {
+    return (typeof val === "object" &&
+        val !== null &&
+        typeof val.id === "number");
+}
+function isIssue(val) {
+    return (typeof val === "object" &&
+        val !== null &&
+        typeof val.number === "number");
+}
 async function main() {
-    const runs = (await octo.paginate(octo.rest.actions.listWorkflowRunsForRepo, {
+    const runsRaw = (await octo.paginate(octo.rest.actions.listWorkflowRunsForRepo, {
         owner,
         repo,
         per_page: 100,
@@ -22,6 +32,9 @@ async function main() {
         event: "pull_request",
         created: `>${sinceIso}`,
     }));
+    const runs = Array.isArray(runsRaw)
+        ? runsRaw.filter(isWorkflowRun)
+        : [];
     const clusters = {};
     for (const r of runs.slice(0, MAX_RUNS)) {
         const log = await octo.rest.actions.downloadWorkflowRunLogs({
@@ -130,12 +143,14 @@ async function globWalk(dir, ext, out = []) {
     return out;
 }
 async function upsertIssue(title, cluster) {
-    const { data: issues } = await octo.rest.issues.listForRepo({
+    const issuesResp = await octo.rest.issues.listForRepo({
         owner,
         repo,
         state: "open",
         labels: "ci-watchdog",
     });
+    const data = issuesResp.data;
+    const issues = Array.isArray(data) ? data.filter(isIssue) : [];
     const existing = issues.find((i) => i.title === title);
     const body = `Detected **${cluster.prs.length} PRs** failing with:\n\n\`\`\`\n${cluster.msg}\n\`\`\``;
     if (existing) {

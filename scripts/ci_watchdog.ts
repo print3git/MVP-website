@@ -19,8 +19,26 @@ type WorkflowRun = {
   pull_requests?: { number: number }[] | null;
 };
 
+type Issue = { title?: string; number: number };
+
+function isWorkflowRun(val: unknown): val is WorkflowRun {
+  return (
+    typeof val === "object" &&
+    val !== null &&
+    typeof (val as { id?: unknown }).id === "number"
+  );
+}
+
+function isIssue(val: unknown): val is Issue {
+  return (
+    typeof val === "object" &&
+    val !== null &&
+    typeof (val as { number?: unknown }).number === "number"
+  );
+}
+
 async function main() {
-  const runs = (await octo.paginate(
+  const runsRaw = (await octo.paginate(
     octo.rest.actions.listWorkflowRunsForRepo,
     {
       owner,
@@ -30,7 +48,10 @@ async function main() {
       event: "pull_request",
       created: `>${sinceIso}`,
     },
-  )) as WorkflowRun[];
+  )) as unknown;
+  const runs = Array.isArray(runsRaw)
+    ? runsRaw.filter(isWorkflowRun)
+    : [];
 
   const clusters: Record<string, Cluster> = {};
 
@@ -164,12 +185,14 @@ async function globWalk(dir: string, ext: string, out: string[] = []) {
 }
 
 async function upsertIssue(title: string, cluster: Cluster) {
-  const { data: issues } = await octo.rest.issues.listForRepo({
+  const issuesResp = await octo.rest.issues.listForRepo({
     owner,
     repo,
     state: "open",
     labels: "ci-watchdog",
   });
+  const data = issuesResp.data as unknown;
+  const issues = Array.isArray(data) ? data.filter(isIssue) : [];
   const existing = issues.find((i) => i.title === title);
   const body = `Detected **${cluster.prs.length} PRs** failing with:\n\n\`\`\`\n${cluster.msg}\n\`\`\``;
 
