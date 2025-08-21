@@ -46,8 +46,10 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install pnpm
-        run: npm install -g pnpm
+      - name: Setup pnpm
+        run: |
+          corepack enable
+          pnpm set version 9.15.9
 
       - name: Install dependencies
         run: pnpm install

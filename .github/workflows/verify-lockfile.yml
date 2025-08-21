@@ -34,6 +34,11 @@ jobs:
         with:
           node-version: 20
 
+      - name: Setup pnpm
+        run: |
+          corepack enable
+          pnpm set version 9.15.9
+
       # Install dependencies without auditing and without funding messages
       - run: npm install --no-audit --no-fund
 
@@ -48,9 +53,6 @@ jobs:
             git diff package-lock.json >&2
             exit 1
           fi
-
-      - name: Install pnpm
-        run: npm install -g pnpm
 
       - name: Regenerate pnpm lockfile
         run: pnpm install --lockfile-only
