@@ -17,6 +17,7 @@ jobs:
       run:
         working-directory: frontend
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest]
         node: [20, 22]
