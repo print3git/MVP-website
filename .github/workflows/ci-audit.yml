@@ -1,0 +1,21 @@
+name: CI Auditor
+on:
+  push:
+    branches: [dev, 00000production]
+  pull_request:
+    branches: [dev, 00000production]
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - id: audit
+        uses: GrantBirki/auditor-action@v4.4.2
+        continue-on-error: true
+      - name: Publish summary
+        if: always()
+        run: |
+          echo "${{ steps.audit.outputs.summary }}" >> "$GITHUB_STEP_SUMMARY"
+          if echo "${{ steps.audit.outputs.likely_skipped }}" | grep -Eiq '(lint|test|build|e2e)'; then
+            echo "::warning::Likely skipped workflows: ${{ steps.audit.outputs.likely_skipped }}"
+          fi
