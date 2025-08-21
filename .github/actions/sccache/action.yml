@@ -1,0 +1,23 @@
+name: Setup sccache
+runs:
+  using: composite
+  steps:
+    - name: Download sccache
+      if: runner.os == 'Linux'
+      shell: bash
+      run: |
+        set -euo pipefail
+        version=0.7.7
+        url="https://github.com/mozilla/sccache/releases/download/v${version}/sccache-v${version}-x86_64-unknown-linux-musl.tar.gz"
+        mkdir -p "$HOME/.local/bin"
+        curl -sSL "$url" | tar xz --strip-components=1 -C "$HOME/.local/bin" "sccache-v${version}-x86_64-unknown-linux-musl/sccache"
+        chmod +x "$HOME/.local/bin/sccache"
+        echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+    - name: Export env
+      shell: bash
+      run: |
+        echo "RUSTC_WRAPPER=sccache" >> "$GITHUB_ENV"
+        echo "SCCACHE_DIR=$HOME/.cache/sccache" >> "$GITHUB_ENV"
+    - name: Show sccache stats
+      shell: bash
+      run: sccache --show-stats || true
