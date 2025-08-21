@@ -1,0 +1,31 @@
+name: Test Timeout Guard
+
+env:
+  HUSKY: 0
+
+on:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - name: Install dependencies
+        run: |
+          corepack enable
+          pnpm i --frozen-lockfile --ignore-scripts
+      - name: Run tests
+        run: pnpm test -- --maxWorkers=50% --runInBand=false
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit.xml
+          path: junit.xml
+          if-no-files-found: ignore
