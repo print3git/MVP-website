@@ -109,9 +109,11 @@ jobs:
           node-version: 20
           cache: "npm"
           cache-dependency-path: package-lock.json
-      - name: Install root dependencies
-        id: npm-ci-root
-        run: npm ci
+        - name: Install root dependencies
+          id: npm-ci-root
+          run: npm ci
+        - name: Build scripts
+          run: npm run ci:build-scripts
       - name: Setup Node (backend)
         id: setup-node-backend
         uses: actions/setup-node@v4
@@ -189,9 +191,11 @@ jobs:
           node-version: 20
           cache: "npm"
           cache-dependency-path: package-lock.json
-      - name: Install root dependencies
-        id: npm-ci-root
-        run: npm ci
+        - name: Install root dependencies
+          id: npm-ci-root
+          run: npm ci
+        - name: Build scripts
+          run: npm run ci:build-scripts
       - name: Setup Node
         id: setup-node
         uses: actions/setup-node@v4
@@ -256,9 +260,11 @@ jobs:
           node-version: 20
           cache: "npm"
           cache-dependency-path: package-lock.json
-      - name: Install dependencies
-        id: npm-ci
-        run: npm ci
+        - name: Install dependencies
+          id: npm-ci
+          run: npm ci
+        - name: Build scripts
+          run: npm run ci:build-scripts
       - name: Run integration tests
         id: run-tests
         run: node scripts/run-jest.js tests/integration --ci --coverage --coverageDirectory=coverage/integration
