@@ -1,0 +1,77 @@
+name: Build and Artifacts
+
+env:
+  HUSKY: 0
+
+on:
+  workflow_call:
+    inputs:
+      build-frontend:
+        type: boolean
+        required: false
+        default: false
+      build-backend:
+        type: boolean
+        required: false
+        default: false
+
+jobs:
+  frontend:
+    if: ${{ inputs.build-frontend }}
+    runs-on:
+      - [self-hosted, linux, aws, small]
+      - ubuntu-latest
+    steps:
+      - name: Heartbeat
+        run: |
+          while true; do date; sleep 120; done &
+      - uses: actions/checkout@v5
+      - name: Build frontend
+        uses: ./.github/actions/frontend-build
+        continue-on-error: true
+      - name: No frontend dist
+        if: hashFiles('frontend/dist/**') == ''
+        run: |
+          echo 'No frontend dist found; skipping upload.' >> "$GITHUB_STEP_SUMMARY"
+          exit 78
+
+  backend:
+    if: ${{ inputs.build-backend }}
+    runs-on:
+      - [self-hosted, linux, aws, small]
+      - ubuntu-latest
+    steps:
+      - name: Heartbeat
+        run: |
+          while true; do date; sleep 120; done &
+      - uses: actions/checkout@v5
+      - name: Detect backend build script
+        id: detect
+        run: |
+          if [ -f backend/package.json ] && jq -e '.scripts.build' backend/package.json > /dev/null; then
+            echo 'has-build=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'has-build=false' >> "$GITHUB_OUTPUT"
+          fi
+      - name: Install backend dependencies
+        if: steps.detect.outputs.has-build == 'true'
+        run: npm ci --prefix backend
+      - name: Build backend
+        if: steps.detect.outputs.has-build == 'true'
+        run: npm --prefix backend run build
+      - name: Upload backend dist
+        if: steps.detect.outputs.has-build == 'true' && hashFiles('backend/dist/**') != ''
+        uses: actions/upload-artifact@v4.3.1
+        with:
+          name: backend-dist
+          path: backend/dist
+      - name: No backend dist
+        if: steps.detect.outputs.has-build == 'true' && hashFiles('backend/dist/**') == ''
+        run: |
+          echo 'No backend dist found; skipping upload.' >> "$GITHUB_STEP_SUMMARY"
+          exit 78
+      - name: No backend build
+        if: steps.detect.outputs.has-build != 'true'
+        run: |
+          echo 'backend/package.json missing or no build script; skipping build.' >> "$GITHUB_STEP_SUMMARY"
+          exit 78
