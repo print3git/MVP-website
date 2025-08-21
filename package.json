@@ -29,7 +29,7 @@
     "preformat:check": "cross-env SKIP_NET_CHECKS=1 SKIP_PW_DEPS=1 node scripts/assert-setup.js",
     "format": "prettier --log-level warn --write \"**/*.{js,jsx,json,md,html}\"",
     "format:check": "prettier --log-level warn --check \"**/*.{js,jsx,json,md,html}\"",
-    "lint:root": "eslint . --ext .ts,.tsx,.js --max-warnings=0",
+    "lint:root": "eslint . --ext .ts,.tsx,.js --max-warnings=0 --cache --cache-location .eslintcache",
     "lint:backend": "eslint . --ext .ts,.tsx,.js --max-warnings=0 --no-eslintrc -c backend/.eslintrc.cjs --ignore-path backend/.eslintignore",
     "lint": "npm run lint --prefix frontend && npm run lint --prefix backend",
     "lint:fix": "eslint . --fix",

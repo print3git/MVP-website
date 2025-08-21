@@ -36,3 +36,4 @@ infra/awscliv2.zip
 test-results/
 
 .artifacts/
+.eslintcache
