@@ -3,12 +3,22 @@ name: CI
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+      - 'img/**'
+      - 'static/**'
   pull_request:
     branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+      - 'img/**'
+      - 'static/**'
   workflow_dispatch:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ci-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 env:
@@ -26,22 +36,31 @@ jobs:
       PORT: 3000
       CI_REQUIRE_EXTERNAL: "0"
     steps:
+      - name: Record start time
+        id: start
+        run: echo "time=$(date +%s)" >> $GITHUB_OUTPUT
       - name: Heartbeat
         run: |
           while true; do date; sleep 120; done &
       - name: REQUIRED
-        run: |
-          echo 'REQUIRED: production build'
+        run: echo 'REQUIRED: production build'
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
       - uses: actions/cache@v4
         with:
           path: ~/.npm
-          key: npm-fe-${{ hashFiles('frontend/package-lock.json') }}
-          restore-keys: npm-fe-
-      - run: npm ci && npm run lint && npm run build
+          key: npm-fe-${{ runner.os }}-${{ hashFiles('frontend/package-lock.json') }}
+          restore-keys: npm-fe-${{ runner.os }}-
+      - run: npm ci
+      - name: Log setup duration
+        run: echo "Setup completed in $(( $(date +%s) - steps.start.outputs.time ))s"
+      - run: npm run lint && npm run build
       - run: test -d dist
       - if: failure()
         uses: actions/upload-artifact@v4.3.4
@@ -58,22 +77,31 @@ jobs:
       matrix:
         shard: [aa, ab, ac]
     steps:
+      - name: Record start time
+        id: start
+        run: echo "time=$(date +%s)" >> $GITHUB_OUTPUT
       - name: Heartbeat
         run: |
           while true; do date; sleep 120; done &
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "npm"
-          cache-dependency-path: package-lock.json
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            backend/package-lock.json
+      - uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json', 'backend/package-lock.json') }}
+          restore-keys: npm-${{ runner.os }}-
       - run: npm ci
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: "npm"
-          cache-dependency-path: backend/package-lock.json
       - run: npm ci --prefix backend
+      - name: Log setup duration
+        run: echo "Setup completed in $(( $(date +%s) - steps.start.outputs.time ))s"
       - name: Run backend tests
         run: |
           node scripts/run-jest.js backend --listTests | split -n l/3 - test-files-
@@ -109,25 +137,31 @@ jobs:
           - shard: gen-b
             pattern: 'generated_frontend_[8-f]'
     steps:
+      - name: Record start time
+        id: start
+        run: echo "time=$(date +%s)" >> $GITHUB_OUTPUT
       - name: Heartbeat
         run: |
           while true; do date; sleep 120; done &
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "npm"
-          cache-dependency-path: package-lock.json
-      - run: npm ci
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            frontend/package-lock.json
       - uses: actions/cache@v4
         with:
           path: ~/.npm
-          key: npm-fe-${{ hashFiles('frontend/package-lock.json') }}
-          restore-keys: npm-fe-
+          key: npm-fe-${{ runner.os }}-${{ hashFiles('frontend/package-lock.json', 'package-lock.json') }}
+          restore-keys: npm-fe-${{ runner.os }}-
+      - run: npm ci
       - run: npm ci --prefix frontend
+      - name: Log setup duration
+        run: echo "Setup completed in $(( $(date +%s) - steps.start.outputs.time ))s"
       - name: Run frontend tests
         run: node scripts/run-jest.js --testPathPattern "${{ matrix.pattern }}" --ci --coverage --coverageDirectory=coverage/frontend
       - uses: actions/upload-artifact@v4.3.4
@@ -151,16 +185,28 @@ jobs:
       - self-hosted
       - ubuntu-latest
     steps:
+      - name: Record start time
+        id: start
+        run: echo "time=$(date +%s)" >> $GITHUB_OUTPUT
       - name: Heartbeat
         run: |
           while true; do date; sleep 120; done &
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "npm"
+          cache: npm
           cache-dependency-path: package-lock.json
+      - uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: npm-${{ runner.os }}-
       - run: npm ci
+      - name: Log setup duration
+        run: echo "Setup completed in $(( $(date +%s) - steps.start.outputs.time ))s"
       - name: Run integration tests
         run: node scripts/run-jest.js tests/integration --ci --coverage --coverageDirectory=coverage/integration
       - uses: actions/upload-artifact@v4.3.4
@@ -188,16 +234,28 @@ jobs:
       - test-frontend
       - test-integration
     steps:
+      - name: Record start time
+        id: start
+        run: echo "time=$(date +%s)" >> $GITHUB_OUTPUT
       - name: Heartbeat
         run: |
           while true; do date; sleep 120; done &
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "npm"
+          cache: npm
           cache-dependency-path: package-lock.json
+      - uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: npm-${{ runner.os }}-
       - run: npm ci --ignore-scripts
+      - name: Log setup duration
+        run: echo "Setup completed in $(( $(date +%s) - steps.start.outputs.time ))s"
       - uses: actions/download-artifact@v4.1.8
         with:
           pattern: coverage-backend-*
