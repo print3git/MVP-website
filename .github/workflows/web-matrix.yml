@@ -19,8 +19,6 @@ jobs:
       - ubuntu-latest
     strategy:
       fail-fast: false
-      matrix:
-        node-version: [18, 20]
     steps:
       - name: Heartbeat
         run: |
@@ -33,14 +31,11 @@ jobs:
             package.json
             pnpm-lock.yaml
           sparse-checkout-cone: true
-      - uses: actions/setup-node@v4.4.0
+      - uses: ./.github/actions/ensure-pnpm
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
       - name: Install dependencies
         run: |
-          corepack enable
-          pnpm install --frozen-lockfile --ignore-scripts
+          pnpm install --no-frozen-lockfile --ignore-scripts
       - name: Build
         run: pnpm -w run build
