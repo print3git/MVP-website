@@ -3,6 +3,10 @@ name: Cloudflare Preview
 on:
   pull_request:
     branches: [main]
+    paths:
+      - 'frontend/**'
+      - '!docs/**'
+      - 'package.json'
   workflow_dispatch:
 
 concurrency:
