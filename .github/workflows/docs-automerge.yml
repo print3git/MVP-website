@@ -1,0 +1,43 @@
+name: Docs automerge
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'docs/**'
+      - '**/*.md'
+
+jobs:
+  automerge:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v5.0.0
+      - uses: dorny/paths-filter@v3.0.2
+        id: changes
+        with:
+          filters: |
+            docs:
+              - 'docs/**'
+              - '**/*.md'
+            other:
+              - '**'
+              - '!docs/**'
+              - '!**/*.md'
+      - if: ${{ steps.changes.outputs.other == 'false' }}
+        uses: actions/github-script@v7.0.1
+        with:
+          script: |
+            github.rest.pulls.createReview({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+              event: 'APPROVE'
+            })
+      - if: ${{ steps.changes.outputs.other == 'false' }}
+        uses: peter-evans/enable-pull-request-automerge@v3.0.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          merge-method: squash
