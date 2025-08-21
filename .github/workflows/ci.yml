@@ -69,6 +69,16 @@ jobs:
 
   test-frontend:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - shard: core
+            pattern: 'frontend[^_]'
+          - shard: gen-a
+            pattern: 'generated_frontend_[0-7]'
+          - shard: gen-b
+            pattern: 'generated_frontend_[8-f]'
     steps:
       - name: Heartbeat
         run: |
@@ -87,15 +97,15 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
       - run: npm ci --prefix frontend
       - name: Run frontend tests
-        run: node scripts/run-jest.js frontend --ci --coverage --coverageDirectory=coverage/frontend
+        run: node scripts/run-jest.js --testPathPattern "${{ matrix.pattern }}" --ci --coverage --coverageDirectory=coverage/frontend
       - uses: actions/upload-artifact@v4.3.4
         with:
-          name: junit-frontend
+          name: junit-frontend-${{ matrix.shard }}
           path: junit-frontend.xml
           if-no-files-found: ignore
       - uses: actions/upload-artifact@v4.3.4
         with:
-          name: coverage-frontend
+          name: coverage-frontend-${{ matrix.shard }}
           path: coverage/frontend
 
   test-integration:
@@ -148,8 +158,9 @@ jobs:
           path: coverage/backend
       - uses: actions/download-artifact@v4.1.8
         with:
-          name: coverage-frontend
+          pattern: coverage-frontend-*
           path: coverage/frontend
+          merge-multiple: true
       - uses: actions/download-artifact@v4.1.8
         with:
           name: coverage-integration
