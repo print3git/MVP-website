@@ -1,0 +1,39 @@
+name: Runner Scheduler
+
+# Jobs are disabled by default; remove "if: ${{ false }}" to enable
+
+env:
+  HUSKY: 0
+
+on:
+  workflow_dispatch:
+
+jobs:
+  stop:
+    if: ${{ false }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Stop runner service
+        run: |
+          aws ssm send-command \
+            --instance-ids "$RUNNER_INSTANCE_ID" \
+            --document-name "AWS-RunShellScript" \
+            --comment "Stop GitHub Actions runner" \
+            --parameters commands='["sudo systemctl stop actions.runner*"]'
+      - name: Stop instance
+        run: aws ec2 stop-instances --instance-ids "$RUNNER_INSTANCE_ID"
+  start:
+    if: ${{ false }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Start instance
+        run: aws ec2 start-instances --instance-ids "$RUNNER_INSTANCE_ID"
+      - name: Wait for instance
+        run: aws ec2 wait instance-status-ok --instance-ids "$RUNNER_INSTANCE_ID"
+      - name: Start runner service
+        run: |
+          aws ssm send-command \
+            --instance-ids "$RUNNER_INSTANCE_ID" \
+            --document-name "AWS-RunShellScript" \
+            --comment "Start GitHub Actions runner" \
+            --parameters commands='["sudo systemctl start actions.runner*"]'
