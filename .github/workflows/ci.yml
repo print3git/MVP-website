@@ -2,27 +2,27 @@ name: CI
 
 on:
   push:
-    branches: [main]
-    paths:
-      - frontend/**
-      - backend/**
-      - package.json
-      - package-lock.json
-      - frontend/package-lock.json
-      - backend/package-lock.json
-      - pnpm-lock.yaml
-      - .github/workflows/**
+    branches: [main, dev, 00000production]
+    # paths: # temporarily broadened to restore coverage
+    #   - frontend/**
+    #   - backend/**
+    #   - package.json
+    #   - package-lock.json
+    #   - frontend/package-lock.json
+    #   - backend/package-lock.json
+    #   - pnpm-lock.yaml
+    #   - .github/workflows/**
   pull_request:
-    branches: [main]
-    paths:
-      - frontend/**
-      - backend/**
-      - package.json
-      - package-lock.json
-      - frontend/package-lock.json
-      - backend/package-lock.json
-      - pnpm-lock.yaml
-      - .github/workflows/**
+    branches: [main, dev, 00000production]
+    # paths: # temporarily broadened to restore coverage
+    #   - frontend/**
+    #   - backend/**
+    #   - package.json
+    #   - package-lock.json
+    #   - frontend/package-lock.json
+    #   - backend/package-lock.json
+    #   - pnpm-lock.yaml
+    #   - .github/workflows/**
   workflow_dispatch:
 
 concurrency:
