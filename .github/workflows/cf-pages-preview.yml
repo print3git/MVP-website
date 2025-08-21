@@ -1,19 +1,21 @@
 name: Cloudflare Pages Preview
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
+  workflow_run:
+    workflows: ["Frontend dry build"]
+    types: [completed]
 
 permissions:
   contents: read
   pull-requests: write
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.event.workflow_run.head_branch }}
   cancel-in-progress: true
 
 jobs:
   preview:
+    if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Heartbeat
@@ -27,7 +29,11 @@ jobs:
           cache-dependency-path: |
             package-lock.json
             frontend/package-lock.json
-      - run: npm ci && npm run build --prefix frontend
+      - uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
+          run-id: ${{ github.event.workflow_run.id }}
       - name: Start preview
         id: preview
         env:
@@ -35,7 +41,7 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
           set -o pipefail
-          url=$(timeout 60 npx -y wrangler pages dev frontend/dist --local false --project-name "${{ secrets.CF_PAGES_PROJECT }}" --branch "$GITHUB_HEAD_REF" 2>&1 | tee /tmp/wrangler.log | grep -Eo 'https://[^ ]+' | tail -n 1)
+          url=$(timeout 60 npx -y wrangler pages dev frontend/dist --local false --project-name "${{ secrets.CF_PAGES_PROJECT }}" --branch "${{ github.event.workflow_run.head_branch }}" 2>&1 | tee /tmp/wrangler.log | grep -Eo 'https://[^ ]+' | tail -n 1)
           echo "$url" > preview-url.txt
           echo "url=$url" >> "$GITHUB_OUTPUT"
       - name: Comment preview URL
@@ -45,11 +51,12 @@ jobs:
           PREVIEW_URL: ${{ steps.preview.outputs.url }}
         with:
           script: |
+            const pr = context.payload.workflow_run.pull_requests[0];
             const body = `Cloudflare Pages preview: ${process.env.PREVIEW_URL}`;
             github.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.issue.number,
+              issue_number: pr.number,
               body
             });
       - uses: actions/upload-artifact@v4
