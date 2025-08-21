@@ -1,0 +1,84 @@
+name: JS Stack Setup
+description: Setup Node.js and Vite for frontend builds
+inputs:
+  node-version:
+    description: Node.js version
+    default: 20
+  frontend-dir:
+    description: Path to frontend directory
+    default: frontend
+  package-manager:
+    description: Package manager to activate via corepack
+    default: pnpm
+outputs:
+  has-frontend:
+    value: ${{ steps.check.outputs.has-frontend }}
+  vite-ok:
+    value: ${{ steps.vite.outputs.vite-ok || steps.check.outputs.vite-ok }}
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: npm
+        cache-dependency-path: |
+          package-lock.json
+          ${{ inputs.frontend-dir }}/package-lock.json
+    - uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: pnpm
+        cache-dependency-path: |
+          pnpm-lock.yaml
+          ${{ inputs.frontend-dir }}/pnpm-lock.yaml
+    - name: Enable corepack
+      shell: bash
+      run: |
+        corepack enable
+        if ! command -v "${{ inputs.package-manager }}" >/dev/null 2>&1; then
+          corepack prepare "${{ inputs.package-manager }}@latest" --activate
+        fi
+    - id: check
+      shell: bash
+      run: |
+        if [[ "$(node -p "require('fs').existsSync('${{ inputs.frontend-dir }}/package.json') && 'ok' || ''")" == "ok" ]]; then
+          echo "has-frontend=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "has-frontend=false" >> "$GITHUB_OUTPUT"
+          echo "vite-ok=true" >> "$GITHUB_OUTPUT"
+        fi
+    - name: Ensure prebuild script
+      if: steps.check.outputs.has-frontend == 'true'
+      shell: bash
+      run: |
+        FD="${{ inputs.frontend-dir }}"
+        if [[ "$(npm pkg get scripts.prebuild --prefix "$FD" 2>/dev/null | tr -d '"')" == "" ]]; then
+          npm pkg set scripts.prebuild="test -x node_modules/.bin/vite || echo 'vite will be installed via devDeps'" --prefix "$FD"
+        fi
+    - name: Ensure vite dev dependency
+      if: steps.check.outputs.has-frontend == 'true'
+      shell: bash
+      run: |
+        FD="${{ inputs.frontend-dir }}"
+        if [[ -z "$(node -p "require('./$FD/package.json').devDependencies?.vite || ''")" ]]; then
+          if [[ -f "$FD/package-lock.json" ]]; then
+            npm install -D vite --prefix "$FD"
+          elif [[ -f "$FD/pnpm-lock.yaml" ]]; then
+            if ! pnpm i -D vite --frozen-lockfile --dir "$FD"; then
+              pnpm i -D vite --no-frozen-lockfile --dir "$FD"
+            fi
+          fi
+        fi
+    - id: vite
+      if: steps.check.outputs.has-frontend == 'true'
+      shell: bash
+      run: |
+        FD="${{ inputs.frontend-dir }}"
+        if test -x "$FD/node_modules/.bin/vite"; then
+          echo "vite-ok=true" >> "$GITHUB_OUTPUT"
+        else
+          echo 'vite not installed in frontend'
+          echo "vite-ok=false" >> "$GITHUB_OUTPUT"
+          exit 1
+        fi
