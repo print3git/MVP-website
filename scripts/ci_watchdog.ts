@@ -16,11 +16,11 @@ type Cluster = { msg: string; runs: number[]; prs: number[] };
 
 type WorkflowRun = {
   id: number;
-  pull_requests?: { number: number }[];
+  pull_requests?: { number: number }[] | null;
 };
 
 async function main() {
-  const runs: WorkflowRun[] = await octo.paginate(
+  const runs = (await octo.paginate(
     octo.rest.actions.listWorkflowRunsForRepo,
     {
       owner,
@@ -30,21 +30,32 @@ async function main() {
       event: "pull_request",
       created: `>${sinceIso}`,
     },
-  );
+  )) as WorkflowRun[];
 
   const clusters: Record<string, Cluster> = {};
 
   for (const r of runs.slice(0, MAX_RUNS)) {
-    const log: { data: ArrayBuffer } =
+    const log: { data: unknown } =
       await octo.rest.actions.downloadWorkflowRunLogs({
         owner,
         repo,
         run_id: r.id,
         request: { raw: true },
       });
+    const raw = log.data;
+    const buf =
+      raw instanceof ArrayBuffer
+        ? Buffer.from(raw)
+        : Buffer.isBuffer(raw)
+        ? raw
+        : typeof raw === "string"
+        ? Buffer.from(raw)
+        : ArrayBuffer.isView(raw)
+        ? Buffer.from(raw.buffer)
+        : null;
+    if (!buf) throw new Error("unexpected log data type");
     const firstLine =
-      Buffer.from(log.data).toString("utf8").split("\n").find(Boolean) ??
-      "unknown error";
+      buf.toString("utf8").split("\n").find(Boolean) ?? "unknown error";
     const key = firstLine.trim().slice(0, 120);
 
     clusters[key] ??= { msg: key, runs: [], prs: [] };
