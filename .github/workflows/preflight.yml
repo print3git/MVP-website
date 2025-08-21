@@ -25,3 +25,14 @@ jobs:
       - run: npm run format
       - run: npm run lint
       - run: npm run lint --prefix backend
+  validate-wrangler:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: mkdir -p frontend/dist
+      - run: npx -y wrangler pages project validate frontend/dist --config wrangler.toml
