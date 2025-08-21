@@ -25,6 +25,7 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
+          cache-dependency-path: package-lock.json
       - run: npm install --no-audit --no-fund
       - run: npm run load -- -o artillery-report.json
       - name: Upload Artillery report
