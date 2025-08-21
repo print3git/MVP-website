@@ -4,8 +4,8 @@ on:
   push:
     branches: [00000production]
     paths:
-      - 'frontend/**'
-      - '.github/workflows/deploy.yml'
+      - "frontend/**"
+      - ".github/workflows/deploy.yml"
   workflow_dispatch:
 
 concurrency:
@@ -40,12 +40,8 @@ jobs:
         working-directory: frontend
         run: npm run build:ci
 
-      - name: Assert dist exists
-        run: |
-          if [ ! -f frontend/dist/index.html ]; then
-            echo "frontend/dist/index.html missing after build" >&2
-            exit 1
-          fi
+      - name: Verify dist output
+        run: node scripts/assert-frontend-dist.js
 
       - name: Assert Pages project has no build config
         env:
@@ -95,9 +91,6 @@ jobs:
         with:
           name: pages-url
           path: pages-url.txt
-
-      - name: Assert frontend artifact
-        run: node scripts/assert-frontend-dist.js
 
       - name: Publish to Cloudflare Pages
         run: npx wrangler@3 pages deploy frontend/dist --project-name ${{ secrets.CF_PAGES_PROJECT }}
