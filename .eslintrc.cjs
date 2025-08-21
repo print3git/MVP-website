@@ -14,6 +14,7 @@ module.exports = {
       extends: [
         "plugin:@typescript-eslint/recommended-requiring-type-checking",
       ],
+      rules: { "no-undef": "off" },
     },
     {
       files: ["**/*.js"],
