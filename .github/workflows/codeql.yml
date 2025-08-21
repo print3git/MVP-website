@@ -44,6 +44,9 @@ jobs:
         with:
           languages: javascript-typescript
           tools: ${{ matrix.codeql-version }}
+      - name: CodeQL CLI version
+        run: codeql --version
+        shell: bash
       - name: Build
         run: |
           npm ci
