@@ -79,7 +79,8 @@ ensureRequired({
 if (!cfg.buildCommand) {
   const fw = detectFramework();
   if (fw) {
-    cfg.buildCommand = "npm run build";
+    cfg.buildCommand =
+      "npm ci --prefix frontend && npm run build --prefix frontend";
   }
 }
 

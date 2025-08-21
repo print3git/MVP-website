@@ -8,12 +8,22 @@ describe("backend build artifacts", () => {
   const libDir = path.join(backendDir, "lib");
 
   test("TypeScript output exists after build", () => {
-    const result = spawnSync("npm", ["run", "build"], {
+    spawnSync("npm", ["ci", "--prefix", "frontend"], {
       cwd: repoRoot,
       stdio: "inherit",
     });
+    const result = spawnSync(
+      "npm",
+      ["run", "build", "--prefix", "frontend"],
+      {
+        cwd: repoRoot,
+        stdio: "inherit",
+      },
+    );
     if (result.status !== 0) {
-      throw new Error(`npm run build exited with code ${result.status}`);
+      throw new Error(
+        `npm run build --prefix frontend exited with code ${result.status}`,
+      );
     }
     if (!fs.existsSync(libDir)) {
       throw new Error(

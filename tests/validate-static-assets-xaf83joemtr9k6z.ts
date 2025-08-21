@@ -4,7 +4,8 @@ import { execSync } from "child_process";
 
 describe("static asset validation", () => {
   test("build output contains required files", () => {
-    execSync("npm run build", { stdio: "inherit" });
+    execSync("npm ci --prefix frontend", { stdio: "inherit" });
+    execSync("npm run build --prefix frontend", { stdio: "inherit" });
 
     const buildDir = path.resolve(__dirname, "..");
     const indexPath = path.join(buildDir, "index.html");

@@ -62,7 +62,8 @@ describe("cloudflare deployment readiness", () => {
   const outputDir = getOutputDir();
 
   test("build succeeds and output valid", () => {
-    execSync("npm run build", { cwd: repoRoot, stdio: "inherit" });
+    execSync("npm ci --prefix frontend", { cwd: repoRoot, stdio: "inherit" });
+    execSync("npm run build --prefix frontend", { cwd: repoRoot, stdio: "inherit" });
     expect(fs.existsSync(outputDir)).toBe(true);
     const entries = fs.readdirSync(outputDir);
     expect(entries.length).toBeGreaterThan(0);

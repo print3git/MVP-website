@@ -26,7 +26,9 @@ describe("auto-cloudflare-config script", () => {
     });
     expect(result.status).toBe(0);
     const cfg = JSON.parse(fs.readFileSync(cfgFile, "utf8"));
-    expect(cfg.buildCommand).toBe("npm run build");
+    expect(cfg.buildCommand).toBe(
+      "npm ci --prefix frontend && npm run build --prefix frontend",
+    );
     const generated = fs
       .readdirSync(tmp)
       .find(

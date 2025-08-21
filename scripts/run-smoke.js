@@ -155,11 +155,13 @@ function main() {
     if (!process.env.SKIP_PW_DEPS) {
       run("npx -y playwright install --with-deps");
     }
+    run("npm ci --prefix frontend");
+    run("npm run build --prefix frontend");
     const waitArgs = process.env.WAIT_ON_TIMEOUT
       ? `-t ${process.env.WAIT_ON_TIMEOUT} `
       : "";
     console.log("WAIT_ON_TIMEOUT:", process.env.WAIT_ON_TIMEOUT || "default");
-    const serve = "npm run serve | tee serve.log";
+    const serve = "node scripts/dev-server.js | tee serve.log";
     const test = `npx -y wait-on ${waitArgs}http://localhost:3000 && npx playwright test --reporter=list --trace on e2e/smoke.test.js | tee pw.log`;
     const cmd = `npx -y concurrently -k -s first --verbose -n serve,pw "${serve}" "${test}"`;
     try {

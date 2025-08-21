@@ -26,7 +26,8 @@ describe("build pipeline diagnostics", () => {
 
   test("build command emits expected artifacts", () => {
     rmSync(buildDir, { recursive: true, force: true });
-    run("npm run build", "Build");
+    run("npm ci --prefix frontend", "npm ci frontend");
+    run("npm run build --prefix frontend", "Build");
     if (!existsSync(buildDir)) {
       throw new Error(`Build output directory missing: ${path.relative(repoRoot, buildDir)}`);
     }

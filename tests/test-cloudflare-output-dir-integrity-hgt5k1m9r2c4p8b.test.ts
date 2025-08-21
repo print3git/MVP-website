@@ -22,7 +22,8 @@ function walk(dir, list = []) {
 }
 
 test("Cloudflare build output has no dangling links", () => {
-  execSync("npm run build", { stdio: "inherit" });
+  execSync("npm ci --prefix frontend", { stdio: "inherit" });
+  execSync("npm run build --prefix frontend", { stdio: "inherit" });
 
   const root = path.resolve(__dirname, "..");
   const outputDir = fs.existsSync(path.join(root, "dist"))

@@ -3,7 +3,10 @@ const fs = require("fs");
 const path = require("path");
 
 test("npm run build succeeds and js folder exists", () => {
-  const result = spawnSync("npm", ["run", "build"], { encoding: "utf8" });
+  spawnSync("npm", ["ci", "--prefix", "frontend"], { encoding: "utf8" });
+  const result = spawnSync("npm", ["run", "build", "--prefix", "frontend"], {
+    encoding: "utf8",
+  });
   expect(result.status).toBe(0);
   const jsDir = path.join(__dirname, "..", "..", "js");
   expect(fs.existsSync(jsDir)).toBe(true);

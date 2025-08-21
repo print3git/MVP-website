@@ -27,7 +27,9 @@ test('adds buildCommand when framework detected', () => {
     require('../auto-cloudflare-config.ts');
   });
   logSpy.mockRestore();
-  expect(JSON.parse(mockFiles['cfg.json']).buildCommand).toBe('npm run build');
+  expect(JSON.parse(mockFiles['cfg.json']).buildCommand).toBe(
+    'npm ci --prefix frontend && npm run build --prefix frontend'
+  );
   const generated = Object.keys(mockFiles).find(f => f.startsWith('cloudflare-pages-config-') && f.endsWith('.ts'));
   expect(generated).toBeDefined();
 });

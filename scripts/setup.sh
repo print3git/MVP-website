@@ -159,8 +159,11 @@ run_ci() {
 }
 
 run_ci ""
+run_ci frontend
 run_ci backend
 run_ci backend/dalle_server
+
+npm run build --prefix frontend
 
 cleanup_npm_cache
 

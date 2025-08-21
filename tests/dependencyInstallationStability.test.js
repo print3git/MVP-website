@@ -5,6 +5,7 @@ const {
   verifyLockfileSync,
   checkDeprecatedDependencies,
   runNpmCi,
+  runFrontendCi,
   checkAll,
 } = require("../scripts/dependency-stability");
 
@@ -53,6 +54,7 @@ describe("dependency installation stability", () => {
       .mockReturnValueOnce("")
       .mockReturnValueOnce("")
       .mockReturnValueOnce("")
+      .mockReturnValueOnce("")
       .mockReturnValueOnce("");
     checkAll();
     expect(execSync.mock.calls.map((c) => c[0])).toEqual([
@@ -60,7 +62,8 @@ describe("dependency installation stability", () => {
       "git diff --name-only package.json package-lock.json",
       "npm ls",
       "npm ci --no-audit --no-fund",
-      "npm run build",
+      "npm ci --prefix frontend --no-audit --no-fund",
+      "npm run build --prefix frontend",
     ]);
   });
 });

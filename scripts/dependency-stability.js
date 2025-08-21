@@ -55,14 +55,22 @@ function runNpmCi() {
   }
 }
 
+function runFrontendCi() {
+  run(
+    "npm ci --prefix frontend --no-audit --no-fund",
+    "npm ci frontend failed",
+  );
+}
+
 function runBuild() {
-  run("npm run build", "npm run build failed");
+  run("npm run build --prefix frontend", "npm run build failed");
 }
 
 function checkAll() {
   verifyLockfileSync();
   checkDeprecatedDependencies();
   runNpmCi();
+  runFrontendCi();
   runBuild();
   console.log("Dependency installation stability check passed.");
 }
