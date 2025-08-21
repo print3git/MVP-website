@@ -4,7 +4,7 @@
   "main": "server.js",
   "scripts": {
     "test": "jest",
-    "test-ci": "jest --reporters=default --ci --runInBand=false --maxWorkers=50%",
+    "test-ci": "jest --ci",
     "test:unit": "npm test",
     "coverage": "node ../scripts/run-coverage.js",
     "start": "node server.js",
@@ -92,6 +92,7 @@
     "jest-environment-jsdom": "^30.0.4",
     "jest-localstorage-mock": "^2.4.26",
     "jest-retries": "^1.0.1",
+    "jest-junit": "^16.0.0",
     "jsdom": "^26.1.0",
     "lighthouse": "^12.7.1",
     "nock": "^13.3.3",

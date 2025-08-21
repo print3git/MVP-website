@@ -1,4 +1,15 @@
 afterAll(async () => {
+  const maybeServers = (globalThis as any).__servers;
+  if (Array.isArray(maybeServers)) {
+    await Promise.all(
+      maybeServers.map((srv) =>
+        typeof srv.close === "function"
+          ? new Promise((resolve) => srv.close(resolve))
+          : Promise.resolve(),
+      ),
+    );
+  }
+
   const maybeServer = (globalThis as any).__SERVER__;
   if (maybeServer && typeof maybeServer.close === "function") {
     await new Promise((resolve) => maybeServer.close(resolve));
