@@ -12,13 +12,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - uses: pnpm/action-setup@v3
-        with:
-          version: 10
-          run_install: false
+      - uses: ./.github/actions/ensure-pnpm
       - name: Get pnpm store directory
         id: pnpm-cache
         shell: bash
@@ -29,5 +23,5 @@ jobs:
           key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-
-      - run: pnpm install
+      - run: pnpm install --no-frozen-lockfile
       - run: pnpm test

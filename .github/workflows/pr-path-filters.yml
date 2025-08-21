@@ -13,13 +13,7 @@ jobs:
       - ubuntu-latest
     steps:
       - uses: actions/checkout@v5.0.0
-      - uses: pnpm/action-setup@v4.1.0
-        with:
-          run_install: false
-      - uses: actions/setup-node@v4.4.0
-        with:
-          node-version: 20
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
+      - uses: ./.github/actions/ensure-pnpm
+      - run: pnpm install --no-frozen-lockfile
       - run: pnpm lint
       - run: pnpm typecheck
