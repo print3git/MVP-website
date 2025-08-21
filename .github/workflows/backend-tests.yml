@@ -24,6 +24,8 @@ jobs:
         with:
           node-version: 20
           cache: pnpm
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
       - name: Run changed tests
         run: |
           corepack enable
