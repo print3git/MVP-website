@@ -52,9 +52,6 @@ function runJest(args) {
   const jestBin = path.join(backendDir, "node_modules", ".bin", "jest");
 
   let jestArgs = [...args];
-  if (!jestArgs.includes("--runInBand")) {
-    jestArgs.push("--runInBand");
-  }
 
   const fileArgs = jestArgs.filter((arg) => !arg.startsWith("-"));
   const runFromRoot = fileArgs.some((arg) => {
