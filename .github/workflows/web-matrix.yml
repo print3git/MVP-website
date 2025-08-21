@@ -1,0 +1,44 @@
+name: web-matrix
+
+env:
+  HUSKY: 0
+
+on:
+  pull_request:
+    paths:
+      - "apps/site/**"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [18, 20]
+    steps:
+      - name: Heartbeat
+        run: |
+          while true; do date; sleep 120; done &
+      - uses: actions/checkout@v5.0.0
+        with:
+          fetch-depth: 1
+          sparse-checkout: |
+            apps/site
+            package.json
+            pnpm-lock.yaml
+          sparse-checkout-cone: true
+      - uses: actions/setup-node@v4.4.0
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+      - name: Install dependencies
+        run: |
+          corepack enable
+          pnpm install --frozen-lockfile --ignore-scripts
+      - name: Build
+        run: pnpm -w run build
