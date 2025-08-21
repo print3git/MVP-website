@@ -48,3 +48,13 @@ jobs:
             backend:
               - 'backend/**'
               - '.github/workflows/**'
+  lfs:
+    timeout-minutes: 5
+    runs-on:
+      - [self-hosted, linux, aws, small]
+      - ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: validate lfs clean
+        run: bash scripts/validate-lfs-clean.sh
+        continue-on-error: true

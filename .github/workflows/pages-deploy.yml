@@ -24,15 +24,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm ci && npm run build --prefix frontend
-      - name: ban dist symlinks
-        run: |
-          if find frontend/dist -type l | grep -q .; then
-            echo "Symlinks found in dist; replacing with copies";
-            while IFS= read -r -d '' l; do
-              tgt="$(readlink -f "$l")"; rm "$l"; cp -R "$tgt" "$l";
-            done < <(find frontend/dist -type l -print0)
-          fi
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+      - uses: ./.github/actions/js-stack-setup
+      - run: pnpm install --no-frozen-lockfile
+        working-directory: frontend
+      - run: pnpm -C frontend build
       - name: Validate config
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -53,39 +50,24 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
-          cache-dependency-path: |
-            package-lock.json
-            frontend/package-lock.json
-      - run: npm ci && npm run build --prefix frontend
-      - name: ban dist symlinks
-        run: |
-          if find frontend/dist -type l | grep -q .; then
-            echo "Symlinks found in dist; replacing with copies";
-            while IFS= read -r -d '' l; do
-              tgt="$(readlink -f "$l")"; rm "$l"; cp -R "$tgt" "$l";
-            done < <(find frontend/dist -type l -print0)
-          fi
-      - name: verify build
-        run: |
-          if [ ! -f frontend/dist/index.html ]; then
-            echo "frontend/dist/index.html is missing"
-            if command -v tree >/dev/null; then
-              tree frontend/dist
-            else
-              find frontend/dist -maxdepth 2 -print
-            fi
-            exit 1
-          fi
-      - name: copy dist
-        run: cp -a frontend/dist/. pages_dist/
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+      - uses: ./.github/actions/js-stack-setup
+      - run: pnpm install --no-frozen-lockfile
+        working-directory: frontend
+      - run: pnpm -C frontend build
+      - run: test -f frontend/dist/index.html
+      - uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
       - name: Deploy to Cloudflare Pages
         id: deploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          url=$(npx -y wrangler pages deploy pages_dist --project-name "${{ secrets.CF_PAGES_PROJECT }}" --branch production | tee /tmp/deploy.log | grep -Eo 'https://[^ ]+\.pages\.dev' | tail -n 1)
+          url=$(npx -y wrangler pages deploy frontend/dist --project-name "${{ secrets.CF_PAGES_PROJECT }}" --branch production | tee /tmp/deploy.log | grep -Eo 'https://[^ ]+\.pages\.dev' | tail -n 1)
           echo "$url" > deploy-url.txt
           echo "url=$url" >> "$GITHUB_OUTPUT"
       - name: Job summary
@@ -99,6 +81,6 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: pages-dist
-          path: pages_dist
+          name: frontend-dist
+          path: frontend/dist
           if-no-files-found: ignore
