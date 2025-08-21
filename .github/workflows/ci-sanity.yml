@@ -1,0 +1,21 @@
+name: CI Sanity Guard
+on:
+  push:
+    branches: [dev, 00000production]
+  pull_request:
+    branches: [dev, 00000production]
+
+jobs:
+  sanity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.3.0
+      - uses: actions/setup-node@v4.4.0
+        with: { node-version: 20 }
+      - name: Install actionlint
+        run: |
+          curl -sSL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash | bash -s -- -b .bin
+      - name: Lint workflow YAMLs
+        run: ./.bin/actionlint -color
+      - name: Verify triggers exist on all workflows
+        run: node scripts/ci/verify-triggers.mjs
