@@ -1,1 +1,5 @@
+name = "mvp-website"
 pages_build_output_dir = "frontend/dist"
+
+[build]
+command = "npm ci --prefix frontend && npm run build --prefix frontend"
