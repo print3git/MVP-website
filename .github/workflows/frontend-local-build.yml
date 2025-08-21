@@ -11,16 +11,21 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - name: Heartbeat
         run: |
           while true; do date; sleep 120; done &
-      - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
-          cache-dependency-path: package-lock.json
-      - run: npm ci && npm run build
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install frontend deps
+        run: npm ci
+        working-directory: frontend
+      - name: Build frontend
+        run: npm run build
+        working-directory: frontend
       - run: node scripts/assert-frontend-dist.js
       - uses: actions/upload-artifact@v4
         with:

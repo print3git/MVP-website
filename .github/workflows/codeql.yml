@@ -23,7 +23,7 @@ jobs:
       - name: Heartbeat
         run: |
           while true; do date; sleep 120; done &
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v4.4.0
         with:
           node-version: 20
@@ -38,6 +38,7 @@ jobs:
         run: |
           npm ci
           npm --prefix backend ci
+          npm ci --prefix frontend
           npm run build
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3.29.9

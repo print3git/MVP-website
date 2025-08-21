@@ -20,21 +20,17 @@ jobs:
       WRANGLER_VERSION: 3.72.0
 
     steps:
-
-      - name: Heartbeat
-
-        run: |
-
-          while true; do date; sleep 120; done &
       - name: Checkout code
-        uses: actions/checkout@v5
-
+        uses: actions/checkout@v4
+      - name: Heartbeat
+        run: |
+          while true; do date; sleep 120; done &
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
-          cache-dependency-path: package-lock.json
+          cache-dependency-path: frontend/package-lock.json
 
       - name: Mask secrets
         env:
@@ -43,6 +39,10 @@ jobs:
         run: |
           echo "::add-mask::$CLOUDFLARE_API_TOKEN"
           echo "::add-mask::$CLOUDFLARE_ACCOUNT_ID"
+
+      - name: Install frontend deps
+        run: npm ci
+        working-directory: frontend
 
       - name: Build frontend
         working-directory: frontend
