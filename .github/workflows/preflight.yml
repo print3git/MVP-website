@@ -15,6 +15,10 @@ on:
         description: Run backend jobs
         value: ${{ jobs.changed.outputs.backend }}
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   changed:
     runs-on: ubuntu-latest
