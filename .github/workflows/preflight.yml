@@ -6,14 +6,28 @@ env:
 on:
   push:
     branches: [main]
+    paths:
+      - backend/**
+      - package.json
+      - package-lock.json
+      - .github/workflows/**
   pull_request:
     branches: [main]
+    paths:
+      - backend/**
+      - package.json
+      - package-lock.json
+      - .github/workflows/**
   merge_group:
   workflow_call:
     outputs:
       run_backend:
         description: Run backend jobs
         value: ${{ jobs.changed.outputs.backend }}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   changed:
