@@ -1,0 +1,12 @@
+name: Debug Queue
+
+on:
+  pull_request:
+
+permissions: {}
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "I ran on ${{ runner.os }} with job id ${{ github.run_id }}"
