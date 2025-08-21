@@ -1,0 +1,36 @@
+name: Cloudflare Pages
+on:
+  push:
+    branches: [00000production]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.3.0
+      - run: corepack enable || true
+      - run: (pnpm -v) || npm i -g pnpm@9
+      - run: cd frontend && pnpm install --no-frozen-lockfile && pnpm build
+      - uses: actions/upload-pages-artifact@v3.0.1
+        with: { path: frontend/dist }
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    env:
+      CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID || secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CF_PAGES_API_TOKEN: ${{ secrets.CF_PAGES_API_TOKEN || secrets.CLOUDFLARE_API_TOKEN }}
+      CF_PAGES_PROJECT: ${{ secrets.CF_PAGES_PROJECT || secrets.CLOUDFLARE_PAGES_PROJECT }}
+    steps:
+      - uses: actions/download-pages-artifact@v3.0.1
+        with: { path: frontend/dist }
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3.14.1
+        with:
+          apiToken: ${{ env.CF_PAGES_API_TOKEN }}
+          accountId: ${{ env.CF_ACCOUNT_ID }}
+          command: pages deploy frontend/dist --project-name=${{ env.CF_PAGES_PROJECT }}
