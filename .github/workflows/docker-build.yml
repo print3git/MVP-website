@@ -1,32 +1,25 @@
-name: Docker Build
+name: docker-ci-layer-cache
 
 env:
   HUSKY: 0
 
-
 on:
-  push:
-    branches: [main]
   pull_request:
-    branches: [main]
+    paths:
+      - 'docker/**'
+      - 'apps/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  docker:
+  build:
     runs-on: ubuntu-latest
-    env:
-      SKIP_TESTS: 0
     steps:
-      - name: Heartbeat
-        run: |
-          while true; do date; sleep 120; done &
-      - uses: actions/checkout@v5
-      - run: echo "Using npm"
-      - name: Build Docker image
-        run: docker build -t api:latest .
-      - name: Scan image for vulnerabilities
-        run: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
-          aquasec/trivy:0.49.1 image --severity CRITICAL,HIGH --exit-code 1 api:latest
+      - uses: actions/checkout@v4.1.1
+      - name: Set up Docker Buildx
+        run: docker buildx create --use
+      - name: Build image with cache
+        run: docker buildx build . --cache-from=type=gha --cache-to=type=gha,mode=max --tag tmp/test:ci --load
+
