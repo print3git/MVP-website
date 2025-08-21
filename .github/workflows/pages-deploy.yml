@@ -3,7 +3,6 @@ name: Pages Deploy
 env:
   HUSKY: 0
 
-
 on:
   push:
     branches: ["00000production"]
@@ -80,7 +79,7 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          url=$(npx -y wrangler pages deploy pages_dist --project-name "${{ secrets.CF_PAGES_PROJECT }}" --branch production | tee /tmp/deploy.log | grep -Eo 'https://[^ ]+' | tail -n 1)
+          url=$(npx -y wrangler pages deploy pages_dist --project-name "${{ secrets.CF_PAGES_PROJECT }}" --branch production | tee /tmp/deploy.log | grep -Eo 'https://[^ ]+\.pages\.dev' | tail -n 1)
           echo "$url" > deploy-url.txt
           echo "url=$url" >> "$GITHUB_OUTPUT"
       - name: Job summary
