@@ -3,7 +3,6 @@ name: Verify Lockfile
 env:
   HUSKY: 0
 
-
 on:
   push:
     branches: [main]
@@ -24,6 +23,7 @@ jobs:
           while true; do date; sleep 120; done &
       # Checkout the repository's code
       - uses: actions/checkout@v5
+      - run: corepack enable
 
       # Cache npm dependencies for faster installs
       - name: Cache npm
@@ -31,10 +31,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
+          key: "${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}"
           restore-keys: |
             ${{ runner.os }}-npm-
-      - run: echo "Cache key: ${{ steps.cache-npm.outputs.cache-primary-key }}"
 
       # Setup Node.js 20.x (>=16 required)
       - uses: actions/setup-node@v4
@@ -42,7 +41,7 @@ jobs:
           node-version: 20
 
       # Install dependencies without auditing and without funding messages
-      - run: npm install --no-audit --no-fund
+      - run: npm ci --no-audit --no-fund
 
       # Regenerate the lockfile without modifying node_modules
       - run: npm install --package-lock-only
@@ -52,6 +51,18 @@ jobs:
         run: |
           if ! git diff --quiet package-lock.json; then
             echo "::error::package-lock.json is out of sync. Please run 'npm install' and commit the updated lock file." >&2
-            git diff package-lock.json >&2
             exit 1
           fi
+
+  lockfile-diff:
+    needs: verify
+    if: ${{ needs.verify.result == 'failure' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - run: corepack enable
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Show lockfile diff
+        run: npx -y lockfile-diff HEAD package-lock.json
