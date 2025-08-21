@@ -32,3 +32,19 @@ jobs:
         with:
           name: frontend-dist-${{ matrix.node }}
           path: frontend/dist
+
+  artifact-lister:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist-20
+          path: frontend/dist
+      - run: |
+          tar -czf frontend-dist.tar.gz -C frontend/dist .
+          tar -tvf frontend-dist.tar.gz | tee frontend-dist-filetree.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist-filetree
+          path: frontend-dist-filetree.txt
