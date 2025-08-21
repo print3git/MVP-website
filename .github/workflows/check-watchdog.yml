@@ -28,12 +28,13 @@ jobs:
           SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           checks=("Build frontend / build" "Backend Smoke" "Cloudflare Pages")
-          deadline=$((SECONDS + 420))
+          deadline=$((SECONDS + 300))
+          backoff=5
           while [ $SECONDS -lt $deadline ]; do
             all_started=1
             for check in "${checks[@]}"; do
               status=$(gh api repos/${{ github.repository }}/commits/$SHA/check-runs \
-                -f check_name="$check" --jq '.check_runs[0].status' 2>/dev/null)
+                -f check_name="$check" --jq '.check_runs[0].status' 2>/dev/null || true)
               if [[ "$status" == "" || "$status" == "queued" ]]; then
                 all_started=0
                 break
@@ -42,13 +43,17 @@ jobs:
             if [ $all_started -eq 1 ]; then
               exit 0
             fi
-            sleep 15
+            sleep $backoff
+            backoff=$((backoff < 60 ? backoff * 2 : 60))
           done
           echo -e "Check\tStatus\tStarted At"
           for check in "${checks[@]}"; do
             gh api repos/${{ github.repository }}/commits/$SHA/check-runs \
               -f check_name="$check" \
-              --jq '.check_runs[0] | [.name,.status,.started_at] | @tsv' 2>/dev/null
+              --jq '.check_runs[0] | [.name,.status,.started_at] | @tsv' 2>/dev/null || true
           done | column -t -s $'\t'
-          echo "Jobs did not start within 7 min — likely runner queue/concurrency jam" >&2
+          echo
+          echo "Recent workflow runs:"
+          gh run list --limit 5 || true
+          echo "Jobs did not start within 5 min — likely runner queue/concurrency jam" >&2
           exit 1
