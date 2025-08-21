@@ -22,6 +22,7 @@ coverage/
 *.png
 *.pdf
 .setup-complete
+.prettiercache
 
 # Terraform local files
 infra/.terraform/
