@@ -607,3 +607,6 @@ npm run perf-events
 
 This will fire 1,000 requests at /v2/events with 50 concurrent connections; adjust parameters in scripts/perf-events.js.
 ```
+
+Temporary note to trigger actions concurrency test.
+Second commit to further test actions concurrency.
