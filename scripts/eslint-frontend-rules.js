@@ -1,12 +1,65 @@
 module.exports = {
   rules: {
     "no-hardcoded-colors": {
+      meta: {
+        type: "suggestion",
+        fixable: "code",
+        docs: {
+          description:
+            "Disallow hardcoded color values in favor of design tokens",
+        },
+        schema: [
+          {
+            type: "object",
+            properties: {
+              tokens: {
+                type: "array",
+                items: { type: "string" },
+              },
+            },
+            additionalProperties: false,
+          },
+        ],
+      },
       create(context) {
+        const options = context.options[0] || {};
+        const tokenSet = new Set(options.tokens || []);
+        const literalToToken = {
+          "#000": "var(--color-black)",
+          "#000000": "var(--color-black)",
+          black: "var(--color-black)",
+          "#fff": "var(--color-white)",
+          "#ffffff": "var(--color-white)",
+          white: "var(--color-white)",
+          red: "var(--color-red)",
+          "#f00": "var(--color-red)",
+          "#ff0000": "var(--color-red)",
+          blue: "var(--color-blue)",
+          "#00f": "var(--color-blue)",
+          "#0000ff": "var(--color-blue)",
+          green: "var(--color-green)",
+          "#0f0": "var(--color-green)",
+          "#00ff00": "var(--color-green)",
+        };
         const colorRegex =
           /#[0-9A-Fa-f]{3,8}\b|\brgba?\(|\bhsl[a]?\(|\b(?:red|blue|green|orange|yellow|purple|black|white|gray|grey|pink|brown)\b/i;
         return {
           Literal(node) {
-            if (typeof node.value === "string" && colorRegex.test(node.value)) {
+            if (typeof node.value !== "string") return;
+            const value = node.value.toLowerCase();
+            if (tokenSet.has(value) || value.startsWith("var(--")) {
+              return;
+            }
+            const token = literalToToken[value];
+            if (token) {
+              context.report({
+                node,
+                message: `Hardcoded color '${node.value}' detected. Use ${token} instead`,
+                fix: (fixer) => fixer.replaceText(node, `'${token}'`),
+              });
+              return;
+            }
+            if (colorRegex.test(value)) {
               context.report({ node, message: "Hardcoded color detected" });
             }
           },
