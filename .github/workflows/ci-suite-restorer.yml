@@ -1,0 +1,123 @@
+name: Full CI Aggregate / all-suites
+on:
+  pull_request:
+  push:
+    branches: [00000production]
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  setup:
+    name: Setup toolchain
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Enable corepack + install pnpm fallback
+        shell: bash
+        run: |
+          corepack enable || true
+          (pnpm -v) || npm i -g pnpm@9
+      - name: Node 20 w/ pnpm cache
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install root deps (tolerate lock drift)
+        run: pnpm install --no-frozen-lockfile
+
+  list-tests:
+    name: Inventory tests
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - uses: actions/checkout@v4
+      - run: corepack enable || true
+      - run: (pnpm -v) || npm i -g pnpm@9
+      - name: Backend list (Jest)
+        run: |
+          cd backend
+          pnpm install --no-frozen-lockfile
+          npx jest --listTests > ../.ci-inventory/jest.txt || true
+      - name: Frontend list (Jest)
+        run: |
+          cd frontend
+          pnpm install --no-frozen-lockfile
+          npx jest --listTests > ../.ci-inventory/jest-frontend.txt || true
+      - name: Playwright list
+        run: |
+          cd frontend
+          npx playwright install --with-deps || true
+          npx playwright list-files > ../.ci-inventory/playwright.txt || true
+      - name: Upload inventory
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-test-inventory
+          path: .ci-inventory
+
+  guard-nonzero:
+    name: Guard: fail if any suite is zero
+    runs-on: ubuntu-latest
+    needs: list-tests
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { name: ci-test-inventory, path: .ci-inventory }
+      - name: Check non-zero counts
+        shell: bash
+        run: |
+          set -euo pipefail
+          fail=0
+          for f in .ci-inventory/*.txt; do
+            c=$(grep -c . "$f" || true)
+            echo "$f -> $c"
+            if [ "$c" -eq 0 ]; then
+              echo "::error title=No tests discovered::$f has zero tests"
+              fail=1
+            fi
+          done
+          exit $fail
+
+  backend-tests:
+    name: Backend Jest
+    runs-on: ubuntu-latest
+    needs: guard-nonzero
+    steps:
+      - uses: actions/checkout@v4
+      - run: corepack enable || true
+      - run: (pnpm -v) || npm i -g pnpm@9
+      - run: cd backend && pnpm install --no-frozen-lockfile && pnpm test -- --reporters=default
+
+  frontend-unit:
+    name: Frontend Jest
+    runs-on: ubuntu-latest
+    needs: guard-nonzero
+    steps:
+      - uses: actions/checkout@v4
+      - run: corepack enable || true
+      - run: (pnpm -v) || npm i -g pnpm@9
+      - run: cd frontend && pnpm install --no-frozen-lockfile && pnpm test -- --reporters=default
+
+  e2e:
+    name: Playwright E2E
+    runs-on: ubuntu-latest
+    needs: [frontend-build]
+    steps:
+      - uses: actions/checkout@v4
+      - run: corepack enable || true
+      - run: (pnpm -v) || npm i -g pnpm@9
+      - run: |
+          cd frontend
+          pnpm install --no-frozen-lockfile
+          npx playwright install --with-deps
+          pnpm exec playwright test --reporter=line
+
+  frontend-build:
+    name: Frontend build (vite)
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - uses: actions/checkout@v4
+      - run: corepack enable || true
+      - run: (pnpm -v) || npm i -g pnpm@9
+      - run: cd frontend && pnpm install --no-frozen-lockfile && pnpm build
+      - uses: actions/upload-artifact@v4
+        with: { name: frontend-dist, path: frontend/dist }
