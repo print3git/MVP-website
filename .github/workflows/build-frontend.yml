@@ -1,4 +1,6 @@
 name: Build frontend
+env:
+  HUSKY: 0
 
 on:
   pull_request:
@@ -18,8 +20,8 @@ jobs:
         working-directory: frontend
     strategy:
       matrix:
-        os: [ubuntu-latest]
-        node: [20, 22]
+        os: [ ubuntu-latest ]
+        node: [ 20, 22 ]
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
@@ -32,6 +34,8 @@ jobs:
         with:
           name: frontend-dist-${{ matrix.node }}
           path: frontend/dist
+    env:
+      HUSKY: 0
 
   artifact-lister:
     runs-on: ubuntu-latest
@@ -48,3 +52,5 @@ jobs:
         with:
           name: frontend-dist-filetree
           path: frontend-dist-filetree.txt
+    env:
+      HUSKY: 0

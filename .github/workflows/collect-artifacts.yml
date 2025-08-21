@@ -1,4 +1,6 @@
 name: Collect Failed Logs
+env:
+  HUSKY: 0
 
 on:
   workflow_run:

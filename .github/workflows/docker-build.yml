@@ -1,4 +1,6 @@
 name: Docker Build
+env:
+  HUSKY: 0
 
 on:
   push:

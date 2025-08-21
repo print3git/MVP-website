@@ -1,4 +1,6 @@
 name: Reset Credits
+env:
+  HUSKY: 0
 
 on:
   schedule:

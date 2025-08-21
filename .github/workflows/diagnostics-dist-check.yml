@@ -1,4 +1,6 @@
 name: diagnostics-dist-check
+env:
+  HUSKY: 0
 
 on:
   pull_request:

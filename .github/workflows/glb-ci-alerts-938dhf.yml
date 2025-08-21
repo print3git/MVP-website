@@ -1,4 +1,6 @@
 name: Playwright Failure Alerts
+env:
+  HUSKY: 0
 
 on:
   push:

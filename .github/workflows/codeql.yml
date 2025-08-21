@@ -1,4 +1,6 @@
 name: CodeQL
+env:
+  HUSKY: 0
 
 on:
   push:

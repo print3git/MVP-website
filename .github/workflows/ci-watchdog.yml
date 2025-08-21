@@ -1,4 +1,6 @@
 name: CI Watchdog
+env:
+  HUSKY: 0
 on:
   workflow_run:
     workflows: ["CI", "build", "test"]

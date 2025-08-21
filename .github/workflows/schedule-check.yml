@@ -1,4 +1,6 @@
 name: Check HF Space Sleep
+env:
+  HUSKY: 0
 
 on:
   schedule:

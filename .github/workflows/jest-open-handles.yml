@@ -1,4 +1,6 @@
 name: Jest open handles
+env:
+  HUSKY: 0
 
 on:
   push:

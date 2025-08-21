@@ -1,4 +1,6 @@
 name: Coverage
+env:
+  HUSKY: 0
 
 on: [push, pull_request]
 

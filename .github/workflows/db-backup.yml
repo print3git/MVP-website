@@ -1,4 +1,6 @@
 name: DB Backup
+env:
+  HUSKY: 0
 
 on:
   schedule:

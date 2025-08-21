@@ -1,4 +1,6 @@
 name: Weekly Operations Report
+env:
+  HUSKY: 0
 
 on:
   schedule:

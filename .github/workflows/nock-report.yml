@@ -1,4 +1,6 @@
 name: nock report
+env:
+  HUSKY: 0
 
 on:
   push:

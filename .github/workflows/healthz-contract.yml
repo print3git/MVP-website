@@ -1,4 +1,6 @@
 name: Healthz Contract
+env:
+  HUSKY: 0
 
 on:
   workflow_dispatch:

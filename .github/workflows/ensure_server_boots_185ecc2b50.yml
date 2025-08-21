@@ -1,4 +1,6 @@
 name: Ensure Server Boots
+env:
+  HUSKY: 0
 
 on:
   workflow_dispatch:

@@ -1,4 +1,6 @@
 name: Coveralls Upload
+env:
+  HUSKY: 0
 
 on:
   workflow_run:

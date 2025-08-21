@@ -1,4 +1,6 @@
 name: Nightly CI
+env:
+  HUSKY: 0
 
 on:
   schedule:

@@ -1,4 +1,6 @@
 name: Sync Labels
+env:
+  HUSKY: 0
 on:
   push:
     paths:

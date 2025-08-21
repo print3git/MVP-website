@@ -1,4 +1,6 @@
 name: print2 Pro Reminders
+env:
+  HUSKY: 0
 
 on:
   schedule:

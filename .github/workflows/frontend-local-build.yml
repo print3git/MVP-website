@@ -1,4 +1,6 @@
 name: Frontend dist local build
+env:
+  HUSKY: 0
 
 on:
   workflow_dispatch:

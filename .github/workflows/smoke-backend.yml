@@ -1,4 +1,6 @@
 name: Backend Smoke
+env:
+  HUSKY: 0
 
 on:
   pull_request:

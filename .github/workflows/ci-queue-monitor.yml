@@ -1,4 +1,6 @@
 name: CI Queue Monitor
+env:
+  HUSKY: 0
 
 on:
   schedule:

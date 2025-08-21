@@ -1,4 +1,6 @@
 name: Pages Deploy
+env:
+  HUSKY: 0
 
 on:
   push:

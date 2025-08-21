@@ -1,4 +1,6 @@
 name: ESLint Diagnostics
+env:
+  HUSKY: 0
 
 on:
   push:

@@ -1,4 +1,6 @@
 name: NPM cache validator
+env:
+  HUSKY: 0
 
 on:
   push:

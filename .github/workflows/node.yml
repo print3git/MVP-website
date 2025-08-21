@@ -1,4 +1,6 @@
 name: Node CI
+env:
+  HUSKY: 0
 
 on:
   push:
