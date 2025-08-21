@@ -23,8 +23,13 @@ jobs:
           node-version: 20
           cache: npm
           cache-dependency-path: package-lock.json
-      - run: npm ci
-      - run: npm ci --prefix frontend
+      - name: Install deps (policy-aware)
+        run: CI_PM=pnpm npm run ci:bootstrap
+        shell: bash
+      - name: Install deps (policy-aware)
+        run: CI_PM=pnpm npm run ci:bootstrap
+        shell: bash
+        working-directory: frontend
       - name: Record tool versions
         run: |
           echo "node: $(node -v)" >> versions.txt

@@ -39,7 +39,15 @@ jobs:
             package-lock.json
             backend/package-lock.json
             frontend/package-lock.json
-      - run: npm ci
-      - run: npm ci --prefix frontend
-      - run: npm ci --prefix backend
+      - name: Install deps (policy-aware)
+        run: CI_PM=pnpm npm run ci:bootstrap
+        shell: bash
+      - name: Install deps (policy-aware)
+        run: CI_PM=pnpm npm run ci:bootstrap
+        shell: bash
+        working-directory: frontend
+      - name: Install deps (policy-aware)
+        run: CI_PM=pnpm npm run ci:bootstrap
+        shell: bash
+        working-directory: backend
       - run: ${{ inputs.run }}

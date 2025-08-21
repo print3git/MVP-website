@@ -61,7 +61,9 @@ jobs:
           cache: 'npm'
           cache-dependency-path: 'backend/package-lock.json'
 
-      - run: npm install --no-audit --no-fund
+      - name: Install deps (policy-aware)
+        run: CI_PM=pnpm npm run ci:bootstrap
+        shell: bash
         working-directory: backend
 
 
