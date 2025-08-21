@@ -1,0 +1,33 @@
+name: CI Router
+
+on:
+  workflow_call:
+    inputs:
+      port:
+        required: false
+        type: string
+        default: '3000'
+      ci_require_external:
+        required: false
+        type: string
+        default: '0'
+
+env:
+  PORT: ${{ inputs.port }}
+  CI_REQUIRE_EXTERNAL: ${{ inputs.ci_require_external }}
+
+jobs:
+  selfhosted:
+    runs-on: [self-hosted, linux, aws, mvp-runner]
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./.github/actions/frontend-build
+
+  ubuntu:
+    needs: selfhosted
+    if: needs.selfhosted.result == 'failure' || needs.selfhosted.outcome == 'cancelled'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./.github/actions/frontend-build
