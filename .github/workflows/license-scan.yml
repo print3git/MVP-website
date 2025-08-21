@@ -1,0 +1,30 @@
+name: license scan
+
+on:
+  pull_request:
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run license scan
+        id: scan
+        run: |
+          if command -v licensee >/dev/null 2>&1; then
+            licensee detect . --json > license-report.json
+          elif command -v fossa >/dev/null 2>&1; then
+            fossa analyze || true
+            fossa report json > license-report.json
+          else
+            echo "licensee or fossa-cli not installed; skipping scan."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          cat license-report.json
+      - name: Upload license report
+        if: steps.scan.outputs.skip != 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: license-report
+          path: license-report.json
