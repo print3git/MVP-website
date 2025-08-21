@@ -28,10 +28,19 @@ jobs:
       - uses: actions/setup-node@v4.4.0
         with:
           node-version: 20
-      - uses: actions/download-artifact@v4
+      - name: Try download backend-dist
+        id: dl
+        uses: actions/download-artifact@v4.3.0
         with:
           name: backend-dist
           path: backend/dist
+        continue-on-error: true
+      - name: Check artifact presence
+        if: steps.dl.outcome == 'failure'
+        run: |
+          echo "::error::Artifact 'backend-dist' not found. Ensure the backend build job uploads it."
+          exit 1
+        shell: bash
       - uses: actions/download-artifact@v4
         with:
           name: frontend-dist
