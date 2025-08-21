@@ -6,7 +6,10 @@
     "types": ["node"],
     "strict": true,
     "noImplicitAny": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "skipLibCheck": true,
+    "noEmitOnError": false,
+    "moduleResolution": "node"
   },
   "files": ["ci_watchdog.ts", "auto-cloudflare-config.ts"]
 }
