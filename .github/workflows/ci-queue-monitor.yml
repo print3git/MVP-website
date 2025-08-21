@@ -1,0 +1,58 @@
+name: CI Queue Monitor
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      pull-requests: write
+      contents: read
+    steps:
+      - name: Check CI queue and cancel obsolete runs
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const thresholdMinutes = 30;
+            const runLimit = 10;
+            const now = Date.now();
+
+            const { data: pulls } = await github.rest.pulls.list({ owner, repo, state: 'open', per_page: 100 });
+            const openPRs = new Set(pulls.map(pr => pr.number));
+
+            const runs = await github.paginate(github.rest.actions.listWorkflowRunsForRepo, {
+              owner,
+              repo,
+              event: 'pull_request',
+              status: 'queued',
+              per_page: 100
+            });
+
+            const byPr = new Map();
+            for (const run of runs) {
+              const age = (now - Date.parse(run.created_at)) / 60000;
+              if (age <= thresholdMinutes) continue;
+              for (const pr of run.pull_requests || []) {
+                if (!openPRs.has(pr.number)) continue;
+                const list = byPr.get(pr.number) || [];
+                list.push(run);
+                byPr.set(pr.number, list);
+              }
+            }
+
+            for (const [prNumber, prRuns] of byPr.entries()) {
+              if (prRuns.length <= runLimit) continue;
+              const body = `CI queue monitor: ${prRuns.length} runs have been queued for over ${thresholdMinutes} minutes. Cancelling older runs to keep the latest run active.`;
+              await github.rest.issues.createComment({ owner, repo, issue_number: prNumber, body });
+              prRuns.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+              const [, ...obsolete] = prRuns;
+              for (const run of obsolete) {
+                await github.rest.actions.cancelWorkflowRun({ owner, repo, run_id: run.id });
+              }
+            }
