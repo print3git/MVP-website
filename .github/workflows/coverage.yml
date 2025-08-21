@@ -22,9 +22,16 @@ jobs:
       - uses: actions/setup-node@v4.4.0
         with:
           node-version: 20
-      - run: SKIP_PW_DEPS=1 npm run setup
-        env:
-          DB_URL: postgres://localhost:5432/dev
+      - name: Download backend dist
+        uses: actions/download-artifact@v4
+        with:
+          name: backend-dist
+          path: backend
+      - name: Download frontend dist
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
       - run: SKIP_PW_DEPS=1 npm run coverage
       - name: Coverage summary
         run: |
