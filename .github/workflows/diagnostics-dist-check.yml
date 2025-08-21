@@ -12,6 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
+      - name: Heartbeat
+        run: |
+          while true; do date; sleep 120; done &
       - name: Checkout
         uses: actions/checkout@v4
       - name: Setup Node

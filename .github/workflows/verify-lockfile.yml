@@ -14,6 +14,9 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
+      - name: Heartbeat
+        run: |
+          while true; do date; sleep 120; done &
       # Checkout the repository's code
       - uses: actions/checkout@v5
 

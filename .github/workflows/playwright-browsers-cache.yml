@@ -11,6 +11,9 @@ jobs:
   cache-browsers:
     runs-on: ubuntu-latest
     steps:
+      - name: Heartbeat
+        run: |
+          while true; do date; sleep 120; done &
       - name: Checkout
         uses: actions/checkout@v5
 

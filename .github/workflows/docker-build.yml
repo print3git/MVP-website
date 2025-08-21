@@ -16,6 +16,9 @@ jobs:
     env:
       SKIP_TESTS: 0
     steps:
+      - name: Heartbeat
+        run: |
+          while true; do date; sleep 120; done &
       - uses: actions/checkout@v5
       - run: echo "Using npm"
       - name: Build Docker image

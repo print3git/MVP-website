@@ -18,6 +18,9 @@ jobs:
       actions: read
       contents: read
     steps:
+      - name: Heartbeat
+        run: |
+          while true; do date; sleep 120; done &
       - name: Download coverage artifact
         uses: actions/download-artifact@v4.1.8
         with:

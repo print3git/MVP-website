@@ -20,6 +20,9 @@ jobs:
     timeout-minutes: 5
     continue-on-error: true
     steps:
+      - name: Heartbeat
+        run: |
+          while true; do date; sleep 120; done &
       - name: DIAGNOSTIC
         run: |
           echo 'DIAGNOSTIC: strict lint'
@@ -38,6 +41,9 @@ jobs:
     timeout-minutes: 5
     continue-on-error: true
     steps:
+      - name: Heartbeat
+        run: |
+          while true; do date; sleep 120; done &
       - name: DIAGNOSTIC
         run: |
           echo 'DIAGNOSTIC: dependency audit'
@@ -60,6 +66,9 @@ jobs:
     env:
       CI_REQUIRE_EXTERNAL: "0"
     steps:
+      - name: Heartbeat
+        run: |
+          while true; do date; sleep 120; done &
       - name: DIAGNOSTIC
         run: |
           echo 'DIAGNOSTIC: Stripe/Cloudflare smoke'

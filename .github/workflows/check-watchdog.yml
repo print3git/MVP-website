@@ -10,6 +10,9 @@ jobs:
     permissions:
       checks: read
     steps:
+      - name: Heartbeat
+        run: |
+          while true; do date; sleep 120; done &
       - name: Watch required checks
         env:
           GH_TOKEN: ${{ github.token }}

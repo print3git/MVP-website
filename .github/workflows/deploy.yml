@@ -20,6 +20,12 @@ jobs:
       WRANGLER_VERSION: 3.72.0
 
     steps:
+
+      - name: Heartbeat
+
+        run: |
+
+          while true; do date; sleep 120; done &
       - name: Checkout code
         uses: actions/checkout@v5
 
@@ -108,4 +114,7 @@ jobs:
     if: vars.ENABLE_PAGES != '1'
     runs-on: ubuntu-latest
     steps:
+      - name: Heartbeat
+        run: |
+          while true; do date; sleep 120; done &
       - run: echo "Pages deploy is disabled for PRs; enable via repo variable."

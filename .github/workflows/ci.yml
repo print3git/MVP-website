@@ -21,6 +21,9 @@ jobs:
       PORT: 3000
       CI_REQUIRE_EXTERNAL: "0"
     steps:
+      - name: Heartbeat
+        run: |
+          while true; do date; sleep 120; done &
       - name: REQUIRED
         run: |
           echo 'REQUIRED: production build'
@@ -35,6 +38,9 @@ jobs:
   test-backend:
     runs-on: ubuntu-latest
     steps:
+      - name: Heartbeat
+        run: |
+          while true; do date; sleep 120; done &
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
         with:
@@ -60,6 +66,9 @@ jobs:
   test-frontend:
     runs-on: ubuntu-latest
     steps:
+      - name: Heartbeat
+        run: |
+          while true; do date; sleep 120; done &
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
         with:
@@ -84,6 +93,9 @@ jobs:
   test-integration:
     runs-on: ubuntu-latest
     steps:
+      - name: Heartbeat
+        run: |
+          while true; do date; sleep 120; done &
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
         with:
@@ -110,6 +122,9 @@ jobs:
       - test-frontend
       - test-integration
     steps:
+      - name: Heartbeat
+        run: |
+          while true; do date; sleep 120; done &
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
         with:
