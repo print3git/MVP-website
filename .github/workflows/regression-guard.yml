@@ -10,6 +10,10 @@ on:
     branches:
       - main
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   guard:
     runs-on: ubuntu-latest
@@ -23,6 +27,16 @@ jobs:
           node-version: 20
           cache: npm
           cache-dependency-path: package-lock.json
-      - run: npm ci
+      - name: Install dependencies
+        run: |
+          for attempt in 1 2; do
+            if npm ci; then
+              break
+            elif [ $attempt -eq 2 ]; then
+              exit 1
+            else
+              sleep $((2**attempt))
+            fi
+          done
       - run: node scripts/check-lint-regression.js
       - run: node scripts/check-test-regression.js
