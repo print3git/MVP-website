@@ -68,9 +68,7 @@ jobs:
           path: ${{ runner.temp }}/_github_workflow/*.log
 
   test-backend:
-    runs-on:
-      - self-hosted
-      - ubuntu-latest
+    runs-on: ubuntu-latest-XXL
     strategy:
       fail-fast: true
       max-parallel: 2

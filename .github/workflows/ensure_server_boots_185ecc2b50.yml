@@ -14,7 +14,9 @@ concurrency:
 
 jobs:
   boot_check:
-    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 2
+    runs-on: ubuntu-latest-XXL
     env:
       STRIPE_TEST_KEY: ${{ secrets.STRIPE_TEST_KEY }}
       # Fallback DB connection so check-env.sh passes
