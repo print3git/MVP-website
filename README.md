@@ -11,6 +11,7 @@ Only two GitHub Action jobs are required to merge changes:
 
 - **Production build** – runs the exact build command that ships to users.
 - **Intent/behavior tests** – exercises the application to verify user flows.
+- Attach a self-hosted runner for queue-free builds.
 
 Additional checks such as strict linting, dependency audits, and Stripe/Cloudflare smoke tests run in a separate diagnostics workflow. These jobs use `continue-on-error: true` so they surface issues without blocking merges.
 

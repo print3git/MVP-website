@@ -17,7 +17,8 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.repository == 'your-org/prod-repo' && fromJSON('["self-hosted","linux"]') || 'ubuntu-latest' }}
+    # No effect until you connect a machine, but prevents queue hell long-term.
     if: ${{ matrix.node != 22 || contains(github.event.pull_request.labels.*.name, 'full-matrix') }}
     continue-on-error: ${{ matrix.node == 22 }}
     defaults:
@@ -47,7 +48,8 @@ jobs:
           path: frontend/dist
 
   artifact-lister:
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.repository == 'your-org/prod-repo' && fromJSON('["self-hosted","linux"]') || 'ubuntu-latest' }}
+    # No effect until you connect a machine, but prevents queue hell long-term.
     continue-on-error: true
     needs: build
     steps:
