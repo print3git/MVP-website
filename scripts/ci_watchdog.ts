@@ -1,4 +1,6 @@
 import { Octokit } from "@octokit/action";
+import type { OctokitResponse } from "@octokit/types";
+import type { components } from "@octokit/openapi-types";
 import { execSync } from "node:child_process";
 import fs from "node:fs/promises";
 import path from "node:path";
@@ -14,36 +16,36 @@ const sinceIso = new Date(Date.now() - WINDOW_HOURS * 3600_000).toISOString();
 
 type Cluster = { msg: string; runs: number[]; prs: number[] };
 
-type WorkflowRun = {
-  id: number;
-  pull_requests?: { number: number }[];
-};
+type WorkflowRun = components["schemas"]["workflow-run"];
+type PRRef = { number: number };
+type WR = Omit<WorkflowRun, "pull_requests"> & { pull_requests?: PRRef[] };
 
 async function main() {
-  const runs: WorkflowRun[] = await octo.paginate(
-    octo.rest.actions.listWorkflowRunsForRepo,
-    {
-      owner,
-      repo,
-      per_page: 100,
-      status: "failure",
-      event: "pull_request",
-      created: `>${sinceIso}`,
-    },
-  );
+  const { data } = await octo.rest.actions.listWorkflowRunsForRepo({
+    owner,
+    repo,
+    per_page: 100,
+    status: "failure",
+    event: "pull_request",
+    created: `>${sinceIso}`,
+  });
+  const runs: WR[] = (data.workflow_runs ?? []).filter(Boolean) as WR[];
 
   const clusters: Record<string, Cluster> = {};
 
   for (const r of runs.slice(0, MAX_RUNS)) {
-    const log: { data: ArrayBuffer } =
-      await octo.rest.actions.downloadWorkflowRunLogs({
+    const res = (await octo.request(
+      "GET /repos/{owner}/{repo}/actions/runs/{run_id}/logs",
+      {
         owner,
         repo,
         run_id: r.id,
         request: { raw: true },
-      });
+      },
+    )) as OctokitResponse<ArrayBuffer, any>;
+    const buf: ArrayBuffer = res.data as ArrayBuffer;
     const firstLine =
-      Buffer.from(log.data).toString("utf8").split("\n").find(Boolean) ??
+      Buffer.from(buf).toString("utf8").split("\n").find(Boolean) ??
       "unknown error";
     const key = firstLine.trim().slice(0, 120);
 
