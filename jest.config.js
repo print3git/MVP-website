@@ -13,6 +13,9 @@ module.exports = {
   maxWorkers: "50%",
   detectOpenHandles: true,
   forceExit: true,
+  testEnvironment: "node",
+  testRunner: "jest-circus/runner",
+  retryTimes: 2,
   coverageThreshold: {
     global: {
       lines: 80,
