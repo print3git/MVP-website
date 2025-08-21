@@ -5,6 +5,12 @@ const { generateGlb } = require("../lib/sparc3dClient");
 const { storeGlb } = require("../lib/storeGlb");
 const logger = require("../../../src/logger");
 
+/**
+ * @param {object} [root0={}]
+ * @param {string} [root0.prompt]
+ * @param {string} [root0.image]
+ * @returns {Promise<string>}
+ */
 async function generateModel({ prompt, image } = {}) {
   logger.info(
     "🔸 generateModel called with prompt:",

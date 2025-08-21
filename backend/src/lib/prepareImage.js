@@ -7,6 +7,10 @@ const uploadS3_1 = require("./uploadS3");
 function __importDefault(mod) {
   return mod && mod.__esModule ? mod : { default: mod };
 }
+/**
+ * @param {string} image
+ * @returns {Promise<string>}
+ */
 async function prepareImage(image) {
   if (/^https?:\/\//.test(image)) {
     return image;

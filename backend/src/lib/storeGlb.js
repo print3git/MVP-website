@@ -1,5 +1,10 @@
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 
+/**
+ * @param {Buffer} data
+ * @param {number} [attempts=3]
+ * @returns {Promise<string>}
+ */
 async function storeGlb(data, attempts = 3) {
   if (data.length < 12 || data.toString("utf8", 0, 4) !== "glTF") {
     throw new Error("Invalid GLB");
