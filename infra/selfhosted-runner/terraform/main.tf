@@ -2,6 +2,8 @@ data "aws_default_vpc" "default" {}
 
 data "aws_availability_zones" "available" {}
 
+data "aws_region" "current" {}
+
 data "aws_subnet" "default" {
   default_for_az    = true
   availability_zone = data.aws_availability_zones.available.names[0]
@@ -67,9 +69,39 @@ resource "aws_iam_role_policy_attachment" "ssm" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
+data "aws_iam_policy_document" "cw_agent" {
+  statement {
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+      "logs:DescribeLogStreams"
+    ]
+    resources = [
+      aws_cloudwatch_log_group.runner.arn,
+      "${aws_cloudwatch_log_group.runner.arn}:*"
+    ]
+  }
+
+  statement {
+    actions   = ["cloudwatch:PutMetricData"]
+    resources = ["*"]
+    condition {
+      test     = "StringEquals"
+      variable = "cloudwatch:namespace"
+      values   = ["CWAgent"]
+    }
+  }
+}
+
+resource "aws_iam_policy" "cw_agent" {
+  name_prefix = "gha-runner-cw-agent-"
+  policy      = data.aws_iam_policy_document.cw_agent.json
+}
+
 resource "aws_iam_role_policy_attachment" "cw" {
   role       = aws_iam_role.runner.name
-  policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+  policy_arn = aws_iam_policy.cw_agent.arn
 }
 
 resource "aws_iam_instance_profile" "runner" {
@@ -95,6 +127,59 @@ resource "aws_instance" "runner" {
   }
 }
 
+resource "aws_cloudwatch_log_group" "runner" {
+  name              = "/github-runner/service"
+  retention_in_days = 14
+}
+
+resource "aws_cloudwatch_metric_alarm" "runner_offline" {
+  alarm_name          = "github-runner-offline"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = 5
+  metric_name         = "StatusCheckFailed_Instance"
+  namespace           = "AWS/EC2"
+  period              = 60
+  statistic           = "Maximum"
+  threshold           = 1
+  alarm_description   = "Runner EC2 instance failed status checks for 5 minutes"
+  treat_missing_data  = "breaching"
+  dimensions = {
+    InstanceId = aws_instance.runner.id
+  }
+}
+
+resource "aws_cloudwatch_dashboard" "runner" {
+  dashboard_name = "gha-runner"
+  dashboard_body = jsonencode({
+    widgets = [
+      {
+        type   = "metric"
+        width  = 12
+        height = 6
+        properties = {
+          metrics = [["AWS/EC2", "CPUUtilization", "InstanceId", aws_instance.runner.id]]
+          stat    = "Average"
+          period  = 300
+          region  = data.aws_region.current.name
+          title   = "CPU Utilization"
+        }
+      },
+      {
+        type   = "metric"
+        width  = 12
+        height = 6
+        properties = {
+          metrics = [["CWAgent", "mem_used_percent", "InstanceId", aws_instance.runner.id]]
+          stat    = "Average"
+          period  = 300
+          region  = data.aws_region.current.name
+          title   = "Memory Usage"
+        }
+      }
+    ]
+  })
+}
+
 resource "aws_ssm_association" "runner_setup" {
   name = "AWS-RunShellScript"
 
@@ -108,6 +193,7 @@ resource "aws_ssm_association" "runner_setup" {
       repo_owner = var.repo_owner
       repo_name  = var.repo_name
       labels     = var.labels
+      log_group  = aws_cloudwatch_log_group.runner.name
     })]
   }
 
