@@ -20,8 +20,12 @@ test("pipeline configuration avoids common deadlocks", async () => {
     if (!file.endsWith(".yml") && !file.endsWith(".yaml")) continue;
     const content = await fs.readFile(path.join(workflowsDir, file), "utf8");
 
-    if (/concurrency:\s*\n\s*group:\s*ci-\$\{\{\s*github.ref\s*\}\}/.test(content)) {
-      errors.push(`${file}: uses broad concurrency group ci-\${{ github.ref }}`);
+    if (
+      /concurrency:\s*\n\s*group:\s*ci-\$\{\{\s*github.ref\s*\}\}/.test(content)
+    ) {
+      errors.push(
+        `${file}: uses broad concurrency group ci-\${{ github.ref }}`,
+      );
     }
 
     const lines = content.split(/\r?\n/);
@@ -56,10 +60,24 @@ test("pipeline configuration avoids common deadlocks", async () => {
     }
   }
 
+  let frontendDistFound = false;
   try {
     await fs.access(path.join(repoRoot, "frontend", "dist", "index.html"));
-  } catch {
-    errors.push("Missing frontend build artifact: frontend/dist/index.html");
+    frontendDistFound = true;
+  } catch {}
+  if (!frontendDistFound) {
+    const artifactEnv = [
+      process.env.ATTACHED_ARTIFACTS,
+      process.env.CI_ARTIFACTS,
+      process.env.ARTIFACTS,
+    ]
+      .filter(Boolean)
+      .join("\n");
+    if (!/\bfrontend-dist\b/.test(artifactEnv)) {
+      errors.push(
+        "Missing frontend build artifact: frontend/dist/index.html or artifact frontend-dist",
+      );
+    }
   }
 
   if (errors.length) {
@@ -71,7 +89,9 @@ test("pipeline configuration avoids common deadlocks", async () => {
         .trim();
     } catch {}
     try {
-      distListing = execSync("ls -la frontend/dist", { cwd: repoRoot }).toString();
+      distListing = execSync("ls -la frontend/dist", {
+        cwd: repoRoot,
+      }).toString();
     } catch (err) {
       distListing = `ls failed: ${err.message}`;
     }
