@@ -1,0 +1,37 @@
+name: Cloudflare Preview
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Heartbeat
+        run: |
+          while true; do date; sleep 120; done &
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            frontend/package-lock.json
+      - run: npm ci && npm ci --prefix frontend && npm run build --prefix frontend
+      - name: Run wrangler pages dev
+        run: |
+          npx -y wrangler@4.31.0 pages dev frontend/dist --port=8787 --persist-to=.wrangler &
+          pid=$!
+          sleep 5
+          kill $pid || true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cloudflare-preview
+          path: .wrangler
