@@ -1,0 +1,49 @@
+name: Queue Watchdog
+description: Warns when jobs stay queued too long
+inputs:
+  label:
+    description: Runner label to monitor
+    default: ubuntu-latest
+  timeoutMinutes:
+    description: Minutes to wait before warning
+    default: '15'
+runs:
+  using: composite
+  steps:
+    - name: Watch queue
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ github.token }}
+        script: |
+          const label = '${{ inputs.label }}';
+          const timeoutMinutes = parseInt('${{ inputs.timeoutMinutes }}', 10);
+          const timeout = timeoutMinutes * 60 * 1000;
+          const start = Date.now();
+          const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+          async function queuedJobs() {
+            const { data } = await github.rest.actions.listJobsForWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: context.runId,
+            });
+            return data.jobs.filter(j => j.status === 'queued' && j.labels.includes(label));
+          }
+
+          let jobs = await queuedJobs();
+          while (jobs.length && Date.now() - start < timeout) {
+            core.info(`Waiting on: ${jobs.map(j => j.name).join(', ')}`);
+            await sleep(30000);
+            jobs = await queuedJobs();
+          }
+
+          if (jobs.length) {
+            const names = jobs.map(j => j.name);
+            core.warning(`Jobs queued over ${timeoutMinutes} minutes: ${names.join(', ')}`);
+            await core.summary
+              .addHeading('Queue watchdog')
+              .addRaw(`The following jobs have been queued on \`${label}\` for over ${timeoutMinutes} minutes:`, true)
+              .addList(names)
+              .addRaw('Consider rerunning the workflow or using self-hosted runners.', true)
+              .write();
+          }
