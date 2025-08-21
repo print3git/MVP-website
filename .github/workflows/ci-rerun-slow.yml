@@ -4,12 +4,13 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: ${{ github.ref }}-ci
+  cancel-in-progress: false
 
 jobs:
   coverage:
     runs-on: ubuntu-latest
+    timeout-minutes: 12
     outputs:
       duration: ${{ steps.duration.outputs.value }}
     steps:
@@ -35,6 +36,7 @@ jobs:
 
   e2e:
     runs-on: ubuntu-latest
+    timeout-minutes: 12
     env:
       PORT: 3000
       DB_URL: postgres://user:pass@localhost:5432/testdb
@@ -79,6 +81,7 @@ jobs:
 
   timings:
     runs-on: ubuntu-latest
+    timeout-minutes: 12
     needs: [coverage, e2e]
     steps:
       - run: |
