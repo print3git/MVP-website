@@ -11,5 +11,5 @@
     "noEmitOnError": false,
     "moduleResolution": "node"
   },
-  "files": ["ci_watchdog.ts", "auto-cloudflare-config.ts"]
+  "files": ["ci_watchdog.ts"]
 }
