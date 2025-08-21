@@ -16,12 +16,15 @@ jobs:
     strategy:
       matrix:
         include:
-          - name: frontend
+          - name: root
             working-directory: .
             lockfile: package-lock.json
           - name: backend
             working-directory: backend
             lockfile: backend/package-lock.json
+          - name: frontend
+            working-directory: frontend
+            lockfile: frontend/package-lock.json
     steps:
       - name: Heartbeat
         run: |
