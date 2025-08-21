@@ -65,6 +65,12 @@ jobs:
               sleep $((2**attempt))
             fi
           done
+      - uses: actions/cache@v4
+        with:
+          path: |
+            backend/node_modules/.cache
+            backend/dist
+          key: backend-${{ hashFiles('backend/pnpm-lock.yaml') }}-${{ hashFiles('backend/tsconfig*.json','backend/src/**') }}
       - name: Run backend tests
         run: |
           node scripts/run-jest.js backend --listTests | split -n l/3 - test-files-
