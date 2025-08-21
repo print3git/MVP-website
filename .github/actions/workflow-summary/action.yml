@@ -1,0 +1,18 @@
+name: Workflow summary
+inputs:
+  needs-json:
+    description: JSON string of job results
+    required: true
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env:
+        NEEDS_JSON: ${{ inputs.needs-json }}
+      run: |
+        echo '## Workflow results' >> "$GITHUB_STEP_SUMMARY"
+        echo "$NEEDS_JSON" | jq -r '
+          to_entries | map("| \(.key) | \(.value.result) |") |
+          ["| Job | Result |", "| --- | --- |"] + . |
+          .[]
+        ' >> "$GITHUB_STEP_SUMMARY"

@@ -372,3 +372,16 @@ jobs:
           first_failed=$(echo '${{ toJSON(steps) }}' | jq -r 'to_entries|map(select(.value.outcome=="failure"))|first|.value.name')
           echo '## Job outcome: 🔴 Failure' >> "$GITHUB_STEP_SUMMARY"
           echo "First failing step: ${first_failed}" >> "$GITHUB_STEP_SUMMARY"
+  summary:
+    if: always()
+    needs:
+      - build
+      - test-backend
+      - test-frontend
+      - test-integration
+      - coverage-merge
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./.github/actions/workflow-summary
+        with:
+          needs-json: ${{ toJSON(needs) }}
