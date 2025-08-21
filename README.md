@@ -532,6 +532,15 @@ run `netlify deploy` as usual once the preflight passes.
 
 The Terraform configuration sets up a budget that emails you if monthly AWS spend exceeds $20. Set `COST_ALERT_EMAIL` before running `terraform apply` to receive these notifications.
 
+## Scheduler
+
+Hugging Face Spaces spin down after periods of inactivity. To keep the backend warm for instant responses, enable the built-in scheduler:
+
+1. Open the Space in your browser and navigate to **Settings → Runtime**.
+2. Toggle **Enable scheduler** so the Space wakes up on a schedule.
+
+When the scheduler is on, users avoid cold starts because the service periodically runs and stays ready. The trade‑off is cost: scheduled wake-ups consume your allotted compute time even when no one is using the Space. Leave the scheduler disabled if occasional startup delays are acceptable and you want to minimize spend.
+
 ## Troubleshooting
 
 ### dpkg was interrupted
