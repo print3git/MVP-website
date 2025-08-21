@@ -15,7 +15,17 @@ concurrency:
 permissions: {}
 
 jobs:
+  context:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print queue context
+        run: |
+          echo "Queue started: $(date)"
+          echo "Runner: ${{ runner.name }}"
+          echo "OS: ${{ runner.os }}"
+
   probe:
+    needs: context
     runs-on: ubuntu-latest
     continue-on-error: true
     timeout-minutes: 5
