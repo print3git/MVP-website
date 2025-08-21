@@ -3,8 +3,26 @@ name: CI
 on:
   push:
     branches: [main]
+    paths:
+      - frontend/**
+      - backend/**
+      - package.json
+      - package-lock.json
+      - frontend/package-lock.json
+      - backend/package-lock.json
+      - pnpm-lock.yaml
+      - .github/workflows/**
   pull_request:
     branches: [main]
+    paths:
+      - frontend/**
+      - backend/**
+      - package.json
+      - package-lock.json
+      - frontend/package-lock.json
+      - backend/package-lock.json
+      - pnpm-lock.yaml
+      - .github/workflows/**
   workflow_dispatch:
 
 concurrency:
@@ -55,6 +73,7 @@ jobs:
       - ubuntu-latest
     strategy:
       fail-fast: true
+      max-parallel: 2
       matrix:
         shard: [aa, ab, ac]
     steps:
@@ -100,6 +119,7 @@ jobs:
       - ubuntu-latest
     strategy:
       fail-fast: true
+      max-parallel: 2
       matrix:
         include:
           - shard: core
