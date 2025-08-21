@@ -36,6 +36,16 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
+      - name: Cache pnpm store
+        uses: actions/cache@v4.2.4
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('pnpm-lock.yaml', 'apps/site/vite.config.ts') }}
+      - name: Cache Vite cache
+        uses: actions/cache@v4.2.4
+        with:
+          path: node_modules/.vite
+          key: ${{ runner.os }}-vite-${{ hashFiles('pnpm-lock.yaml', 'apps/site/vite.config.ts') }}
       - name: Install dependencies
         run: |
           corepack enable
