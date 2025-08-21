@@ -7,6 +7,8 @@ env:
 on:
   push:
   merge_group:
+  pull_request:
+    branches: [main]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -14,6 +16,7 @@ concurrency:
 
 jobs:
   smoke:
+    if: ${{ github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'ci:skip-heavy') }}
     runs-on: ubuntu-latest
     env:
       PORT: 3000

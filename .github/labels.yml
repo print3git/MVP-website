@@ -16,3 +16,6 @@
 - name: question
   color: d876e3
   description: Further information requested
+- name: ci:skip-heavy
+  color: 8e44ad
+  description: Run only lint and smoke tests

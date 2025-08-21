@@ -15,6 +15,7 @@ concurrency:
 
 jobs:
   build:
+    if: ${{ github.event_name != 'pull_request' || !contains(github.event.pull_request.labels.*.name, 'ci:skip-heavy') }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -44,6 +45,7 @@ jobs:
           path: frontend/dist
 
   artifact-lister:
+    if: ${{ github.event_name != 'pull_request' || !contains(github.event.pull_request.labels.*.name, 'ci:skip-heavy') }}
     runs-on: ubuntu-latest
     continue-on-error: true
     needs: build
