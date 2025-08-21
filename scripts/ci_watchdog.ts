@@ -2,6 +2,7 @@ import { Octokit } from "@octokit/action";
 import { execSync } from "node:child_process";
 import fs from "node:fs/promises";
 import path from "node:path";
+import type { components } from "@octokit/openapi-types";
 
 const octo = new Octokit();
 const [owner, repo] = process.env.GITHUB_REPOSITORY!.split("/");
@@ -14,14 +15,11 @@ const sinceIso = new Date(Date.now() - WINDOW_HOURS * 3600_000).toISOString();
 
 type Cluster = { msg: string; runs: number[]; prs: number[] };
 
-type WorkflowRun = {
-  id: number;
-  pull_requests?: { number: number }[];
-};
+type WorkflowRun = components["schemas"]["workflow-run"];
 
 async function main() {
-  const runs: WorkflowRun[] = await octo.paginate(
-    octo.rest.actions.listWorkflowRunsForRepo,
+  const runs = await octo.paginate<WorkflowRun>(
+    "GET /repos/{owner}/{repo}/actions/runs",
     {
       owner,
       repo,
@@ -35,21 +33,25 @@ async function main() {
   const clusters: Record<string, Cluster> = {};
 
   for (const r of runs.slice(0, MAX_RUNS)) {
-    const log: { data: ArrayBuffer } =
-      await octo.rest.actions.downloadWorkflowRunLogs({
-        owner,
-        repo,
-        run_id: r.id,
-        request: { raw: true },
-      });
+    const log: Awaited<
+      ReturnType<typeof octo.rest.actions.downloadWorkflowRunLogs>
+    > = await octo.rest.actions.downloadWorkflowRunLogs({
+      owner,
+      repo,
+      run_id: r.id,
+      request: { raw: true },
+    });
     const firstLine =
-      Buffer.from(log.data).toString("utf8").split("\n").find(Boolean) ??
-      "unknown error";
+      Buffer.from(log.data as ArrayBuffer)
+        .toString("utf8")
+        .split("\n")
+        .find(Boolean) ?? "unknown error";
     const key = firstLine.trim().slice(0, 120);
 
     clusters[key] ??= { msg: key, runs: [], prs: [] };
     clusters[key].runs.push(r.id);
-    clusters[key].prs.push(r.pull_requests?.[0]?.number ?? -1);
+    const pullRequests = r.pull_requests ?? [];
+    clusters[key].prs.push(pullRequests[0]?.number ?? -1);
   }
 
   const systemic = Object.values(clusters).filter(
