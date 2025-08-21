@@ -8,7 +8,9 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "node scripts/ensure-tests-exist.js && npx jest --passWithNoTests=false",
+    "lint": "node ../scripts/ensure-eslint-targets.js \"**/*.{ts,tsx,js}\" --max-warnings=0"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^5.0.1",
