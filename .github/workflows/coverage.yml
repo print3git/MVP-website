@@ -48,3 +48,9 @@ jobs:
         continue-on-error: true
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+      - name: Upload LCOV artifact
+        if: always()
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: lcov
+          path: coverage/lcov.info
