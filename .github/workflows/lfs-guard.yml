@@ -1,25 +1,20 @@
-name: LFS guard
-on:
-  pull_request:
-  push:
-
+name: LFS guard / lfs-guard
+on: [pull_request, push]
 jobs:
-  lfs-guard:
+  lfs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.6
-        with:
-          fetch-depth: 0
-      - name: Fail on LFS pointers in frontend paths
+      - uses: actions/checkout@v5.0.0
+        with: { fetch-depth: 0 }
+      - name: Fail if non-pointer binaries found in img/
+        shell: bash
         run: |
-          set -e
-          git lfs install
-          pointer_files=$(git ls-files frontend public assets 2>/dev/null | xargs -r grep -l 'version https://git-lfs.github.com/spec/v1' || true)
-          if [ -n "$pointer_files" ]; then
-            echo "Git LFS pointers detected in frontend build paths:"
-            echo "$pointer_files"
-            echo
-            echo "Please commit real assets or host them in S3/CDN instead of using Git LFS for the frontend."
-            exit 1
-          fi
-
+          set -euo pipefail
+          bad=0
+          for f in $(git ls-files img/**/* 2>/dev/null || true); do
+            if [ -f "$f" ] && ! grep -q "version https://git-lfs.github.com/spec" "$f" 2>/dev/null; then
+              echo "::error title=Not an LFS pointer::$f should be stored via git-lfs"
+              bad=1
+            fi
+          done
+          exit $bad
