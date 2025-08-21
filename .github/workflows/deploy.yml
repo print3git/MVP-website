@@ -39,8 +39,7 @@ jobs:
           echo "::add-mask::$CLOUDFLARE_ACCOUNT_ID"
 
       - name: Build frontend
-        working-directory: frontend
-        run: npm run build:ci
+        run: npm ci && npm run build --prefix frontend
 
       - name: Verify dist output
         run: node scripts/assert-frontend-dist.js

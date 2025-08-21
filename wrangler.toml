@@ -1,7 +1,1 @@
-name = "mvp-website"
-
-[pages]
-# Cloudflare Pages expects a pre-built directory. Ensure the path matches
-# the frontend build output so wrangler does not try to run its own build
-# or error out with an invalid configuration.
-build_output_dir = "frontend/dist"
+pages_build_output_dir = "frontend/dist"
