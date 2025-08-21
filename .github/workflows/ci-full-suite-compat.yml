@@ -1,0 +1,45 @@
+name: ci-full-suite-compat
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  summarize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: gather
+        id: gather
+        run: |
+          expected=$(jq -r '.expected[]' ci/expected-jobs.json)
+          echo "expected<<EOF" >> $GITHUB_OUTPUT
+          echo "$expected" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+          curl -s -H "Authorization: Bearer ${{ github.token }}" "${{ github.event.workflow_run.jobs_url }}?per_page=100" \
+            | jq -r '.jobs[].name' > ran.txt
+          echo "ran<<EOF" >> $GITHUB_OUTPUT
+          cat ran.txt >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+      - name: summarize
+        run: |
+          echo '| Job | Status |' >> $GITHUB_STEP_SUMMARY
+          echo '| --- | --- |' >> $GITHUB_STEP_SUMMARY
+          missing=()
+          while read job; do
+            if grep -Fxq "$job" <<<"${{ steps.gather.outputs.ran }}"; then
+              echo "| $job | present |" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "| $job | missing |" >> $GITHUB_STEP_SUMMARY
+              missing+=("$job")
+            fi
+          done <<< "${{ steps.gather.outputs.expected }}"
+          if [ ${#missing[@]} -gt 0 ]; then
+            echo "::warning::Missing jobs: ${missing[*]}"
+          fi
