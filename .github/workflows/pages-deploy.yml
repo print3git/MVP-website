@@ -37,6 +37,10 @@ jobs:
             fi
             exit 1
           fi
+      - name: sanitize symlinks
+        run: |
+          find frontend/dist -type l -exec bash -c 't=$(mktemp); cp -L "{}" "$t" && mv "$t" "{}"' \;
+          find frontend/dist -type l -exec rm -f {} +
       - name: Deploy to Cloudflare Pages
         id: deploy
         env:
