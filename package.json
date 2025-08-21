@@ -62,6 +62,7 @@
     "deps:dedupe": "npm dedupe",
     "deps:dedupe-check": "npm dedupe --dry-run",
     "check-cycles": "node scripts/check-cycles.js",
+    "check-secrets": "node scripts/check-secrets.js",
     "bundle:size": "size-limit",
     "dev": "node backend/server.js",
     "validate-env": "bash scripts/validate-env.sh",
