@@ -16,6 +16,7 @@ env:
 
 jobs:
   build:
+    if: hashFiles('frontend/package.json') != ''
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -78,6 +79,7 @@ jobs:
           path: coverage/backend
 
   test-frontend:
+    if: hashFiles('frontend/package.json') != ''
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false

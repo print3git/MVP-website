@@ -9,6 +9,7 @@ concurrency:
 
 jobs:
   build:
+    if: hashFiles('frontend/package.json') != ''
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:

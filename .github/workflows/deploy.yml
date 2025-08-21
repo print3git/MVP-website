@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   deploy:
-    if: vars.ENABLE_PAGES == '1'
+    if: vars.ENABLE_PAGES == '1' && hashFiles('frontend/package.json') != ''
     runs-on: ubuntu-latest
     env:
       WRANGLER_VERSION: 3.72.0
@@ -111,7 +111,7 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_PAGES_API_TOKEN }}
 
   pages-disabled:
-    if: vars.ENABLE_PAGES != '1'
+    if: vars.ENABLE_PAGES != '1' || hashFiles('frontend/package.json') == ''
     runs-on: ubuntu-latest
     steps:
       - name: Heartbeat

@@ -9,6 +9,7 @@ concurrency:
 
 jobs:
   dry-build:
+    if: hashFiles('frontend/package.json') != ''
     runs-on: ubuntu-latest
     steps:
       - name: Heartbeat

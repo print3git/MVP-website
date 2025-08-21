@@ -18,8 +18,12 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           SHA: ${{ github.event.pull_request.head.sha }}
+          HAS_FRONTEND: ${{ hashFiles('frontend/package.json') }}
         run: |
-          checks=("Build frontend / build" "Backend Smoke" "Cloudflare Pages")
+          checks=("Backend Smoke" "Cloudflare Pages")
+          if [ -n "$HAS_FRONTEND" ]; then
+            checks+=("Build frontend / build")
+          fi
           deadline=$((SECONDS + 420))
           while [ $SECONDS -lt $deadline ]; do
             all_started=1

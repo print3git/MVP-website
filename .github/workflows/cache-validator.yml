@@ -13,6 +13,7 @@ concurrency:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    if: matrix.name != 'frontend' || hashFiles('frontend/package.json') != ''
     strategy:
       fail-fast: false
       matrix:

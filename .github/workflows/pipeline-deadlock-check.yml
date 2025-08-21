@@ -19,4 +19,5 @@ jobs:
           node-version: 20
       - run: npm install --no-save yaml
       - run: npm ci && npm run build --prefix frontend
+        if: hashFiles('frontend/package.json') != ''
       - run: node --test tests/ci/pipeline-deadlock-check-b1a2c3d.test.js
