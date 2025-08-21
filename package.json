@@ -66,7 +66,7 @@
     "start:backend": "npm start --prefix backend",
     "predeploy": "node scripts/check-missing-links.js",
     "build": "tsc -p backend/tsconfig.build.json",
-    "postbuild": "npx -y ts-node --transpile-only scripts/check-broken-symlinks-9ac8f74db5e1c32.ts",
+    "postbuild": "bash scripts/remove-dist-symlinks.sh && npx -y ts-node --transpile-only scripts/check-broken-symlinks-9ac8f74db5e1c32.ts",
     "load": "artillery run tests/load/models.yml",
     "visual-test": "percy exec -- npm run e2e",
     "test:a11y": "node scripts/assert-setup.js && bash scripts/install-playwright.sh chromium && playwright test e2e/a11y.test.js",
