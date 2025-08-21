@@ -1,0 +1,14 @@
+name: Self-hosted preference
+on:
+  workflow_call:
+    inputs:
+      label: { required: false, type: string, default: "aws-spot-x64" }
+      fallback: { required: false, type: string, default: "ubuntu-latest" }
+jobs:
+  choose:
+    runs-on: ${{ inputs.fallback }}
+    steps:
+      - id: decide
+        run: echo "label=${{ inputs.label }}" >> $GITHUB_OUTPUT
+    outputs:
+      label: ${{ steps.decide.outputs.label }}
