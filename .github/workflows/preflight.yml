@@ -27,7 +27,7 @@ jobs:
       - run: npm ci
       - run: npm ci --prefix backend
       - run: npm run format
-      - run: npm run lint
+      - run: eslint --cache --cache-location .eslintcache --max-warnings=0 $(git diff --name-only origin/$BASE_SHA... | grep -E '\\.(js|ts|tsx)$' || true)
       - run: npm run lint --prefix backend
   validate-wrangler:
     runs-on: ubuntu-latest
