@@ -186,6 +186,9 @@ importers:
       stripe:
         specifier: ^14.25.0
         version: 14.25.0
+      toml:
+        specifier: ^3.0.0
+        version: 3.0.0
       tsconfig-strictest:
         specifier: ^1.0.0-beta.1
         version: 1.0.0-beta.1(@eslint/js@9.31.0)(@typescript-eslint/eslint-plugin@8.34.1(@typescript-eslint/parser@8.36.0(eslint@9.31.0(jiti@2.5.1))(typescript@5.8.3))(eslint@9.31.0(jiti@2.5.1))(typescript@5.8.3))(@typescript-eslint/parser@8.36.0(eslint@9.31.0(jiti@2.5.1))(typescript@5.8.3))(eslint-config-prettier@10.1.5(eslint@9.31.0(jiti@2.5.1)))(eslint-import-resolver-typescript@3.10.1)(eslint-plugin-import@2.32.0)(eslint-plugin-nuxt@4.0.0(eslint@9.31.0(jiti@2.5.1)))(eslint-plugin-unicorn@48.0.1(eslint@9.31.0(jiti@2.5.1)))(eslint-plugin-vue-scoped-css@2.11.0(eslint@9.31.0(jiti@2.5.1))(vue-eslint-parser@9.4.3(eslint@9.31.0(jiti@2.5.1))))(eslint-plugin-vue@9.33.0(eslint@9.31.0(jiti@2.5.1)))(eslint@9.31.0(jiti@2.5.1))(globals@14.0.0)(prettier@3.6.2)(typescript@5.8.3)(vue-eslint-parser@9.4.3(eslint@9.31.0(jiti@2.5.1)))
@@ -5216,9 +5219,6 @@ packages:
   spdx-expression-parse@4.0.0:
     resolution: {integrity: sha512-Clya5JIij/7C6bRR22+tnGXbc4VKlibKSVj2iHvVeX5iMW7s1SIQlqu699JkODJJIhh/pUu8L0/VLh8xflD+LQ==}
 
-  spdx-license-ids@3.0.21:
-    resolution: {integrity: sha512-Bvg/8F5XephndSK3JffaRqdT+gyhfqIPwDHpX80tJrF8QQRYMo8sNMeaZ2Dp5+jhwKnUmIOyFFQfHRkjJm5nXg==}
-
   spdx-license-ids@3.0.22:
     resolution: {integrity: sha512-4PRT4nh1EImPbt2jASOKHX7PB7I+e4IWNLvkKFDxNhJlfjbYlleYQh285Z/3mPTHSAK/AvdMmw5BNNuYH8ShgQ==}
 
@@ -5472,6 +5472,9 @@ packages:
   toidentifier@1.0.1:
     resolution: {integrity: sha512-o5sSPKEkg/DIQNmH43V0/uerLrpzVedkUh8tGNvaeXpfpuwjKenlSox/2O/BTlZUtEe+JG7s5YhEz608PlAHRA==}
     engines: {node: '>=0.6'}
+
+  toml@3.0.0:
+    resolution: {integrity: sha512-y/mWCZinnvxjTKYhJ+pYxwD0mRLVvOtdS2Awbgxln6iEnt4rk0yBxeSBHkGJcPucRiG0e55mwWp+g/05rsrd6w==}
 
   tough-cookie@2.5.0:
     resolution: {integrity: sha512-nlLsUzgm1kfLXSXfRZMc1KLAugd4hqJHDTvc2hDIwS3mZAfMEuMbc03SujMF+GEcpaX/qboeycw6iO8JwVv2+g==}
@@ -12002,21 +12005,19 @@ snapshots:
   spdx-correct@3.2.0:
     dependencies:
       spdx-expression-parse: 3.0.1
-      spdx-license-ids: 3.0.21
+      spdx-license-ids: 3.0.22
 
   spdx-exceptions@2.5.0: {}
 
   spdx-expression-parse@3.0.1:
     dependencies:
       spdx-exceptions: 2.5.0
-      spdx-license-ids: 3.0.21
+      spdx-license-ids: 3.0.22
 
   spdx-expression-parse@4.0.0:
     dependencies:
       spdx-exceptions: 2.5.0
       spdx-license-ids: 3.0.22
-
-  spdx-license-ids@3.0.21: {}
 
   spdx-license-ids@3.0.22: {}
 
@@ -12310,6 +12311,8 @@ snapshots:
       streamx: 2.22.1
 
   toidentifier@1.0.1: {}
+
+  toml@3.0.0: {}
 
   tough-cookie@2.5.0:
     dependencies:
