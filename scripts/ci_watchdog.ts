@@ -20,30 +20,32 @@ type WorkflowRun = {
 };
 
 async function main() {
-  const runs: WorkflowRun[] = await octo.paginate(
-    octo.rest.actions.listWorkflowRunsForRepo,
-    {
-      owner,
-      repo,
-      per_page: 100,
-      status: "failure",
-      event: "pull_request",
-      created: `>${sinceIso}`,
-    },
-  );
+  const runs = (await octo.paginate(octo.rest.actions.listWorkflowRunsForRepo, {
+    owner,
+    repo,
+    per_page: 100,
+    status: "failure",
+    event: "pull_request",
+    created: `>${sinceIso}`,
+  })) as WorkflowRun[];
 
   const clusters: Record<string, Cluster> = {};
 
   for (const r of runs.slice(0, MAX_RUNS)) {
-    const log: { data: ArrayBuffer } =
-      await octo.rest.actions.downloadWorkflowRunLogs({
-        owner,
-        repo,
-        run_id: r.id,
-        request: { raw: true },
-      });
+    const log = await octo.rest.actions.downloadWorkflowRunLogs({
+      owner,
+      repo,
+      run_id: r.id,
+      request: { raw: true },
+    });
+    const arr =
+      log.data instanceof ArrayBuffer
+        ? log.data
+        : await (
+            log.data as { arrayBuffer: () => Promise<ArrayBuffer> }
+          ).arrayBuffer();
     const firstLine =
-      Buffer.from(log.data).toString("utf8").split("\n").find(Boolean) ??
+      Buffer.from(arr).toString("utf8").split("\n").find(Boolean) ??
       "unknown error";
     const key = firstLine.trim().slice(0, 120);
 
