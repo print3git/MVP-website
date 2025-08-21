@@ -18,12 +18,16 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Cache Playwright browsers
+        id: cache-playwright
         uses: actions/cache@v4
         with:
           path: |
             ~/.cache/ms-playwright
             ~/.cache/ms-playwright-ffmpeg
           key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+      - run: echo "Cache key: ${{ steps.cache-playwright.outputs.cache-primary-key }}"
 
       - name: Install Playwright browsers
         if: runner.os == 'Linux'
