@@ -17,7 +17,9 @@ jobs:
     timeout-minutes: 15
     strategy:
       max-parallel: 2
-    runs-on: ubuntu-latest-XXL
+    runs-on:
+      - [self-hosted, linux, aws, small]
+      - ubuntu-latest
     env:
       STRIPE_TEST_KEY: ${{ secrets.STRIPE_TEST_KEY }}
       # Fallback DB connection so check-env.sh passes

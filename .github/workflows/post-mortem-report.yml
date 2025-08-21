@@ -9,7 +9,9 @@ concurrency:
 
 jobs:
   fail-test:
-    runs-on: ubuntu-latest
+    runs-on:
+      - [self-hosted, linux, aws, small]
+      - ubuntu-latest
     timeout-minutes: 40
     steps:
       - name: Intentionally fail

@@ -16,7 +16,9 @@ jobs:
   stop:
     timeout-minutes: 15
     if: ${{ false }}
-    runs-on: ubuntu-latest
+    runs-on:
+      - [self-hosted, linux, aws, small]
+      - ubuntu-latest
     steps:
       - name: Stop runner service
         run: |
@@ -30,7 +32,9 @@ jobs:
   start:
     timeout-minutes: 15
     if: ${{ false }}
-    runs-on: ubuntu-latest
+    runs-on:
+      - [self-hosted, linux, aws, small]
+      - ubuntu-latest
     steps:
       - name: Start instance
         run: aws ec2 start-instances --instance-ids "$RUNNER_INSTANCE_ID"

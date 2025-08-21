@@ -16,7 +16,9 @@ concurrency:
 jobs:
   changed-tests:
     if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
+    runs-on:
+      - [self-hosted, linux, aws, small]
+      - ubuntu-latest
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v5
@@ -37,7 +39,9 @@ jobs:
 
   full-suite:
     if: github.ref_name == '00000production'
-    runs-on: ubuntu-latest
+    runs-on:
+      - [self-hosted, linux, aws, small]
+      - ubuntu-latest
     strategy:
       fail-fast: true
       matrix:

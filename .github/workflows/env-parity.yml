@@ -14,7 +14,9 @@ concurrency:
 jobs:
   env-parity:
     timeout-minutes: 15
-    runs-on: ubuntu-latest
+    runs-on:
+      - [self-hosted, linux, aws, small]
+      - ubuntu-latest
     steps:
       - name: Heartbeat
         run: |

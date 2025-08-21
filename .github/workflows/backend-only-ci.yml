@@ -29,7 +29,9 @@ jobs:
     needs: preflight
     if: github.event_name == 'workflow_dispatch' ||
       needs.preflight.outputs.run_backend == 'true'
-    runs-on: ubuntu-latest
+    runs-on:
+      - [self-hosted, linux, aws, small]
+      - ubuntu-latest
     continue-on-error: true
     strategy:
       fail-fast: true

@@ -32,7 +32,9 @@ concurrency:
 jobs:
   changed:
     timeout-minutes: 15
-    runs-on: ubuntu-latest
+    runs-on:
+      - [self-hosted, linux, aws, small]
+      - ubuntu-latest
     outputs:
       backend: ${{ steps.filter.outputs.backend }}
     steps:

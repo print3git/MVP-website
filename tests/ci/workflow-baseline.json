@@ -1,0 +1,358 @@
+{
+  "_setup.yml": {
+    "env": false,
+    "cache": true
+  },
+  "actionlint.yml": {
+    "env": true,
+    "cache": false
+  },
+  "affected.yml": {
+    "env": true,
+    "cache": true
+  },
+  "artifacts.yml": {
+    "env": true,
+    "cache": true
+  },
+  "auto_rebase_merge_queue.yml": {
+    "env": true,
+    "cache": false
+  },
+  "backend-only-ci.yml": {
+    "env": true,
+    "cache": true
+  },
+  "backend-tests.yml": {
+    "env": true,
+    "cache": true
+  },
+  "build-frontend.yml": {
+    "env": true,
+    "cache": true
+  },
+  "cache-primer.yml": {
+    "env": true,
+    "cache": true
+  },
+  "cache-validator.yml": {
+    "env": true,
+    "cache": true
+  },
+  "cf-pages-preview.yml": {
+    "env": true,
+    "cache": true
+  },
+  "check-watchdog.yml": {
+    "env": true,
+    "cache": false
+  },
+  "ci-env.yml": {
+    "env": false,
+    "cache": true
+  },
+  "ci-queue-monitor.yml": {
+    "env": true,
+    "cache": false
+  },
+  "ci-rerun-slow.yml": {
+    "env": true,
+    "cache": true
+  },
+  "ci-sparse-checkout.yml": {
+    "env": true,
+    "cache": true
+  },
+  "ci-watchdog.yml": {
+    "env": true,
+    "cache": false
+  },
+  "ci.yml": {
+    "env": true,
+    "cache": true
+  },
+  "cloudflare-preview.yml": {
+    "env": false,
+    "cache": true
+  },
+  "codeql.yml": {
+    "env": true,
+    "cache": true
+  },
+  "collect-artifacts.yml": {
+    "env": true,
+    "cache": false
+  },
+  "coverage.yml": {
+    "env": true,
+    "cache": false
+  },
+  "coveralls-upload.yml": {
+    "env": true,
+    "cache": false
+  },
+  "db-backup.yml": {
+    "env": true,
+    "cache": false
+  },
+  "debug-queue.yml": {
+    "env": true,
+    "cache": false
+  },
+  "deploy.yml": {
+    "env": true,
+    "cache": true
+  },
+  "destroy-selfhosted-runner.yml": {
+    "env": true,
+    "cache": false
+  },
+  "diagnostics-dist-check.yml": {
+    "env": true,
+    "cache": true
+  },
+  "diagnostics.yml": {
+    "env": true,
+    "cache": true
+  },
+  "docker-build.yml": {
+    "env": true,
+    "cache": false
+  },
+  "docker-prune.yml": {
+    "env": false,
+    "cache": false
+  },
+  "endpoint-health.yml": {
+    "env": true,
+    "cache": false
+  },
+  "ensure_server_boots_185ecc2b50.yml": {
+    "env": true,
+    "cache": true
+  },
+  "env-parity.yml": {
+    "env": false,
+    "cache": false
+  },
+  "eslint-diagnostics.yml": {
+    "env": true,
+    "cache": true
+  },
+  "eslint.yml": {
+    "env": false,
+    "cache": true
+  },
+  "frontend-dry-build.yml": {
+    "env": true,
+    "cache": true
+  },
+  "frontend-local-build.yml": {
+    "env": true,
+    "cache": true
+  },
+  "glb-ci-alerts-938dhf.yml": {
+    "env": true,
+    "cache": true
+  },
+  "glb-tests.yml": {
+    "env": true,
+    "cache": true
+  },
+  "go-cache.yml": {
+    "env": true,
+    "cache": true
+  },
+  "healthz-contract.yml": {
+    "env": true,
+    "cache": true
+  },
+  "jest-early-warning.yml": {
+    "env": true,
+    "cache": false
+  },
+  "jest-open-handles.yml": {
+    "env": true,
+    "cache": true
+  },
+  "junit-artifacts.yml": {
+    "env": false,
+    "cache": false
+  },
+  "labels.yml": {
+    "env": false,
+    "cache": false
+  },
+  "lighthouse.yml": {
+    "env": true,
+    "cache": true
+  },
+  "lint.yml": {
+    "env": false,
+    "cache": false
+  },
+  "load-test.yml": {
+    "env": true,
+    "cache": true
+  },
+  "nightly-warmup.yml": {
+    "env": false,
+    "cache": true
+  },
+  "nightly.yml": {
+    "env": true,
+    "cache": false
+  },
+  "nock-report.yml": {
+    "env": true,
+    "cache": true
+  },
+  "node.yml": {
+    "env": true,
+    "cache": true
+  },
+  "nx-optional.yml": {
+    "env": false,
+    "cache": true
+  },
+  "openapi-lint.yml": {
+    "env": true,
+    "cache": false
+  },
+  "ops-report.yml": {
+    "env": true,
+    "cache": true
+  },
+  "package-helm.yml": {
+    "env": true,
+    "cache": false
+  },
+  "pages-deploy.yml": {
+    "env": true,
+    "cache": true
+  },
+  "pages-url-comment.yml": {
+    "env": true,
+    "cache": false
+  },
+  "pipeline-deadlock-check.yml": {
+    "env": true,
+    "cache": false
+  },
+  "pipeline-smoke.yml": {
+    "env": true,
+    "cache": false
+  },
+  "playwright-browsers-cache.yml": {
+    "env": true,
+    "cache": true
+  },
+  "post-mortem-report.yml": {
+    "env": true,
+    "cache": false
+  },
+  "pr-path-filters.yml": {
+    "env": false,
+    "cache": true
+  },
+  "preflight.yml": {
+    "env": true,
+    "cache": false
+  },
+  "preview-deploy.yml": {
+    "env": true,
+    "cache": true
+  },
+  "printclub-reminders.yml": {
+    "env": true,
+    "cache": true
+  },
+  "priority.yml": {
+    "env": true,
+    "cache": true
+  },
+  "provision-selfhosted-runner.yml": {
+    "env": true,
+    "cache": false
+  },
+  "queue-probe.yml": {
+    "env": true,
+    "cache": false
+  },
+  "regression-guard.yml": {
+    "env": true,
+    "cache": true
+  },
+  "reset-credits.yml": {
+    "env": true,
+    "cache": true
+  },
+  "runner-scheduler.yml": {
+    "env": true,
+    "cache": false
+  },
+  "runner-watchdog.yml": {
+    "env": false,
+    "cache": false
+  },
+  "schedule-check.yml": {
+    "env": true,
+    "cache": false
+  },
+  "size-monitor.yml": {
+    "env": false,
+    "cache": false
+  },
+  "skip-heavy.yml": {
+    "env": false,
+    "cache": false
+  },
+  "smoke-backend.yml": {
+    "env": true,
+    "cache": true
+  },
+  "smoke_test.yml": {
+    "env": true,
+    "cache": true
+  },
+  "submodules-shallow.yml": {
+    "env": false,
+    "cache": false
+  },
+  "sync-labels.yml": {
+    "env": true,
+    "cache": false
+  },
+  "sync-space.yml": {
+    "env": true,
+    "cache": false
+  },
+  "test-timeout.yml": {
+    "env": true,
+    "cache": true
+  },
+  "turbo-cache.yml": {
+    "env": false,
+    "cache": true
+  },
+  "typecheck.yml": {
+    "env": false,
+    "cache": false
+  },
+  "update_locks.yml": {
+    "env": true,
+    "cache": false
+  },
+  "verify-lockfile.yml": {
+    "env": true,
+    "cache": true
+  },
+  "warm-cache.yml": {
+    "env": true,
+    "cache": true
+  },
+  "web-matrix.yml": {
+    "env": true,
+    "cache": true
+  }
+}

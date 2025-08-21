@@ -9,7 +9,9 @@ on:
 jobs:
   skip-heavy:
     if: contains(github.event.pull_request.labels.*.name, 'skip-heavy')
-    runs-on: ubuntu-latest
+    runs-on:
+      - [self-hosted, linux, aws, small]
+      - ubuntu-latest
     steps:
       - run: |
           echo "skip-heavy label present, skipping heavy workflows"

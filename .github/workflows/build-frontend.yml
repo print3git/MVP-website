@@ -16,7 +16,9 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on:
+      - [self-hosted, linux, aws, small]
+      - ubuntu-latest
     if: ${{ matrix.node != 22 || contains(github.event.pull_request.labels.*.name,
       'full-matrix') }}
     continue-on-error: ${{ matrix.node == 22 }}

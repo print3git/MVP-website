@@ -24,7 +24,9 @@ jobs:
     timeout-minutes: 15
     if: github.event_name != 'pull_request' || startsWith(github.head_ref, 'security/')
     name: Analyze
-    runs-on: ubuntu-latest
+    runs-on:
+      - [self-hosted, linux, aws, small]
+      - ubuntu-latest
     strategy:
       fail-fast: false
       matrix:

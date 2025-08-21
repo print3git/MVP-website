@@ -16,7 +16,9 @@ jobs:
   validate:
     timeout-minutes: 15
     name: Pages config validate
-    runs-on: ubuntu-latest
+    runs-on:
+      - [self-hosted, linux, aws, small]
+      - ubuntu-latest
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
@@ -40,7 +42,9 @@ jobs:
   deploy:
     timeout-minutes: 15
     needs: validate
-    runs-on: ubuntu-latest
+    runs-on:
+      - [self-hosted, linux, aws, small]
+      - ubuntu-latest
     steps:
       - name: Heartbeat
         run: |

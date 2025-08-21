@@ -30,7 +30,9 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on:
+      - [self-hosted, linux, aws, small]
+      - ubuntu-latest
     env:
       PORT: 3000
       CI_REQUIRE_EXTERNAL: '0'

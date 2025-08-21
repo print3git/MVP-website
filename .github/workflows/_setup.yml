@@ -26,7 +26,9 @@ jobs:
 
   run:
     needs: labels
-    runs-on: ${{ fromJSON(needs.labels.outputs.runs_on_json) }}
+    runs-on:
+      - [self-hosted, linux, aws, small]
+      - ubuntu-latest
     steps:
       - name: Heartbeat
         run: |

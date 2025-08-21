@@ -16,7 +16,9 @@ concurrency:
 jobs:
   monitor:
     timeout-minutes: 15
-    runs-on: ubuntu-latest
+    runs-on:
+      - [self-hosted, linux, aws, small]
+      - ubuntu-latest
     permissions:
       actions: write
       pull-requests: write

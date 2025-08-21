@@ -17,7 +17,9 @@ concurrency:
 jobs:
   docker:
     timeout-minutes: 15
-    runs-on: ubuntu-latest
+    runs-on:
+      - [self-hosted, linux, aws, small]
+      - ubuntu-latest
     env:
       SKIP_TESTS: 0
     steps:
