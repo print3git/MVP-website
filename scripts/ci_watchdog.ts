@@ -16,7 +16,7 @@ type Cluster = { msg: string; runs: number[]; prs: number[] };
 
 type WorkflowRun = {
   id: number;
-  pull_requests?: { number: number }[];
+  pull_requests: { number: number }[] | null;
 };
 
 async function main() {
@@ -35,21 +35,23 @@ async function main() {
   const clusters: Record<string, Cluster> = {};
 
   for (const r of runs.slice(0, MAX_RUNS)) {
-    const log: { data: ArrayBuffer } =
-      await octo.rest.actions.downloadWorkflowRunLogs({
-        owner,
-        repo,
-        run_id: r.id,
-        request: { raw: true },
-      });
+    const log = await octo.rest.actions.downloadWorkflowRunLogs({
+      owner,
+      repo,
+      run_id: r.id,
+      request: { raw: true },
+    });
     const firstLine =
-      Buffer.from(log.data).toString("utf8").split("\n").find(Boolean) ??
-      "unknown error";
+      Buffer.from(log.data as ArrayBuffer)
+        .toString("utf8")
+        .split("\n")
+        .find(Boolean) ?? "unknown error";
     const key = firstLine.trim().slice(0, 120);
 
     clusters[key] ??= { msg: key, runs: [], prs: [] };
     clusters[key].runs.push(r.id);
-    clusters[key].prs.push(r.pull_requests?.[0]?.number ?? -1);
+    const pulls = r.pull_requests ?? [];
+    clusters[key].prs.push(pulls[0]?.number ?? -1);
   }
 
   const systemic = Object.values(clusters).filter(
