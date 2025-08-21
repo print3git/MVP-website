@@ -369,3 +369,16 @@ jobs:
           first_failed=$(echo '${{ toJSON(steps) }}' | jq -r 'to_entries|map(select(.value.outcome=="failure"))|first|.value.name')
           echo '## Job outcome: 🔴 Failure' >> "$GITHUB_STEP_SUMMARY"
           echo "First failing step: ${first_failed}" >> "$GITHUB_STEP_SUMMARY"
+
+  toolchain-debug:
+    runs-on:
+      - [self-hosted, linux, aws]
+      - ubuntu-latest
+    strategy:
+      matrix:
+        tool: [pnpm, vite, eslint, jest, tsc, wrangler, aws, docker]
+    steps:
+      - name: Show tool path and version
+        run: |
+          which ${{ matrix.tool }} || true
+          ${{ matrix.tool }} --version || true
