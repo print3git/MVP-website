@@ -1,0 +1,32 @@
+name: Artifact Dedupe
+description: Upload artifact if path exists and is non-empty
+inputs:
+  name:
+    description: Artifact name
+    required: true
+  path:
+    description: File or directory to upload
+    required: true
+runs:
+  using: composite
+  steps:
+    - id: check
+      shell: bash
+      run: |
+        path="${{ inputs.path }}"
+        if [ ! -e "$path" ]; then
+          echo "upload=false" >> "$GITHUB_OUTPUT"
+          exit 0
+        fi
+        size=$(du -sb "$path" | cut -f1)
+        if [ "$size" -eq 0 ]; then
+          echo "upload=false" >> "$GITHUB_OUTPUT"
+          exit 0
+        fi
+        echo "upload=true" >> "$GITHUB_OUTPUT"
+    - uses: actions/upload-artifact@v4
+      if: steps.check.outputs.upload == 'true'
+      with:
+        name: ${{ inputs.name }}
+        path: ${{ inputs.path }}
+        if-no-files-found: ignore
