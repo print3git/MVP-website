@@ -17,7 +17,7 @@ const mockSecrets = {
  * @returns {NodeJS.ProcessEnv} The updated environment.
  */
 function applyMockEnv(env = process.env) {
-  if (process.env.NODE_ENV === "production" && !process.env.CI) {
+  if (process.env.NODE_ENV === "production") {
     return env;
   }
   for (const [key, value] of Object.entries(mockSecrets)) {
