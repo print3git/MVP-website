@@ -1,5 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const reaper = require('./reaper');
+const { afterEach, beforeEach, expect } = require("@jest/globals");
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const reaper = require("./reaper");
 
 const STALL_MS = 10_000;
 let stallTimer: NodeJS.Timeout | null = null;

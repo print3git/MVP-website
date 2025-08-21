@@ -1,4 +1,5 @@
 import { Octokit } from "@octokit/action";
+import type { Endpoints } from "@octokit/types";
 import { execSync } from "node:child_process";
 import fs from "node:fs/promises";
 import path from "node:path";
@@ -14,32 +15,19 @@ const sinceIso = new Date(Date.now() - WINDOW_HOURS * 3600_000).toISOString();
 
 type Cluster = { msg: string; runs: number[]; prs: number[] };
 
-type WorkflowRun = {
-  id: number;
-  pull_requests?: { number: number }[] | null;
-};
+type ApiWorkflowRun =
+  Endpoints["GET /repos/{owner}/{repo}/actions/runs"]["response"]["data"]["workflow_runs"][number];
 
-type Issue = { title?: string; number: number };
+type WorkflowRun = { id: number; pull_requests?: { number: number }[] };
 
-function isWorkflowRun(val: unknown): val is WorkflowRun {
-  return (
-    typeof val === "object" &&
-    val !== null &&
-    typeof (val as { id?: unknown }).id === "number"
-  );
-}
-
-function isIssue(val: unknown): val is Issue {
-  return (
-    typeof val === "object" &&
-    val !== null &&
-    typeof (val as { number?: unknown }).number === "number"
-  );
-}
+type Issue = Pick<
+  Endpoints["GET /repos/{owner}/{repo}/issues"]["response"]["data"][number],
+  "title" | "number"
+>;
 
 async function main() {
-  const runsRaw = (await octo.paginate(
-    octo.rest.actions.listWorkflowRunsForRepo,
+  const apiRuns = await octo.paginate<ApiWorkflowRun>(
+    "GET /repos/{owner}/{repo}/actions/runs",
     {
       owner,
       repo,
@@ -48,33 +36,25 @@ async function main() {
       event: "pull_request",
       created: `>${sinceIso}`,
     },
-  )) as unknown;
-  const runs = Array.isArray(runsRaw)
-    ? runsRaw.filter(isWorkflowRun)
-    : [];
+  );
+  const runs: WorkflowRun[] = apiRuns.map((r) => ({
+    id: r.id,
+    pull_requests: r.pull_requests?.map((pr) => ({ number: pr.number })),
+  }));
 
   const clusters: Record<string, Cluster> = {};
 
   for (const r of runs.slice(0, MAX_RUNS)) {
-    const log: { data: unknown } =
-      await octo.rest.actions.downloadWorkflowRunLogs({
+    const log = (await octo.request(
+      "GET /repos/{owner}/{repo}/actions/runs/{run_id}/logs",
+      {
         owner,
         repo,
         run_id: r.id,
-        request: { raw: true },
-      });
-    const raw = log.data;
-    const buf =
-      raw instanceof ArrayBuffer
-        ? Buffer.from(raw)
-        : Buffer.isBuffer(raw)
-        ? raw
-        : typeof raw === "string"
-        ? Buffer.from(raw)
-        : ArrayBuffer.isView(raw)
-        ? Buffer.from(raw.buffer)
-        : null;
-    if (!buf) throw new Error("unexpected log data type");
+        request: { responseType: "arraybuffer" },
+      },
+    )) as { data: ArrayBuffer };
+    const buf = Buffer.from(log.data);
     const firstLine =
       buf.toString("utf8").split("\n").find(Boolean) ?? "unknown error";
     const key = firstLine.trim().slice(0, 120);
@@ -156,7 +136,7 @@ fi`,
   });
 }
 
-async function patchFiles(pattern: RegExp, replacement: string) {
+export async function patchFiles(pattern: RegExp, replacement: string) {
   const files = [
     "Dockerfile",
     ...(await globWalk(".github/workflows", ".yml")),
@@ -172,7 +152,11 @@ async function patchFiles(pattern: RegExp, replacement: string) {
   return altered;
 }
 
-async function globWalk(dir: string, ext: string, out: string[] = []) {
+export async function globWalk(
+  dir: string,
+  ext: string,
+  out: string[] = [],
+): Promise<string[]> {
   for (const e of await fs.readdir(dir, { withFileTypes: true })) {
     const p = path.join(dir, e.name);
     if (e.isDirectory()) {
@@ -191,8 +175,10 @@ async function upsertIssue(title: string, cluster: Cluster) {
     state: "open",
     labels: "ci-watchdog",
   });
-  const data = issuesResp.data as unknown;
-  const issues = Array.isArray(data) ? data.filter(isIssue) : [];
+  const issues: Issue[] = issuesResp.data.map((i) => ({
+    title: i.title,
+    number: i.number,
+  }));
   const existing = issues.find((i) => i.title === title);
   const body = `Detected **${cluster.prs.length} PRs** failing with:\n\n\`\`\`\n${cluster.msg}\n\`\`\``;
 
@@ -226,7 +212,9 @@ async function commentOnPRs(cluster: Cluster) {
   }
 }
 
-main().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+if (require.main === module) {
+  main().catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });
+}
