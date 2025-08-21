@@ -13,6 +13,7 @@ module.exports = {
   maxWorkers: "50%",
   detectOpenHandles: true,
   forceExit: true,
+  collectCoverage: process.env.JEST_SKIP_COVERAGE !== "true",
   coverageThreshold: {
     global: {
       lines: 80,

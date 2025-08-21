@@ -13,5 +13,8 @@ concurrency:
 jobs:
   backend-tests:
     uses: ./.github/workflows/_setup.yml
+    env:
+      CI: true
+      JEST_SKIP_COVERAGE: true
     with:
       run: npm test --prefix backend -- --maxWorkers=50% --runInBand=false --silent --reporters=default
