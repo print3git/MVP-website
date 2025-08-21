@@ -1,9 +1,7 @@
 const { getEnv } = require("../../backend/src/lib/getEnv");
 const { mockSecrets } = require("../../backend/src/lib/mockEnv");
 
-const requireExternal =
-  process.env.NODE_ENV === "production" ||
-  process.env.CI_REQUIRE_EXTERNAL === "1";
+const requireExternal = process.env.NODE_ENV === "production";
 
 if (!requireExternal) {
   console.log(

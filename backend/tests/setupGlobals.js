@@ -9,6 +9,10 @@ dotenv.config = (options = {}) =>
   originalDotenvConfig({ quiet: true, ...options });
 dotenv.config({ path: path.resolve(__dirname, "../../.env.test") });
 
+if (!process.env.NODE_ENV) {
+  process.env.NODE_ENV = "test";
+}
+
 const originalEmitWarning = process.emitWarning;
 process.emitWarning = (warning, ...args) => {
   const msg = typeof warning === "string" ? warning : warning?.message;

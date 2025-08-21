@@ -9,7 +9,10 @@
 const { getEnv } = require("./src/lib/getEnv");
 const { applyMockEnv, mockSecrets } = require("./src/lib/mockEnv");
 
-applyMockEnv();
+const isProduction = process.env.NODE_ENV === "production";
+if (!isProduction) {
+  applyMockEnv();
+}
 
 const required = ["DB_URL"];
 const optionalGlb = [
@@ -28,16 +31,13 @@ if (missingGlb.length) {
 }
 
 const stripeKey = getEnv("STRIPE_SECRET_KEY", {
-  defaultValue: mockSecrets.STRIPE_SECRET_KEY,
+  defaultValue: isProduction ? undefined : mockSecrets.STRIPE_SECRET_KEY,
 });
 const stripeWebhook = getEnv("STRIPE_WEBHOOK_SECRET", {
-  defaultValue: mockSecrets.STRIPE_WEBHOOK_SECRET,
+  defaultValue: isProduction ? undefined : mockSecrets.STRIPE_WEBHOOK_SECRET,
 });
 
-const requireLive =
-  process.env.NODE_ENV === "production" &&
-  process.env.CI_REQUIRE_EXTERNAL === "1";
-if (requireLive) {
+if (isProduction) {
   if (!/^sk_live/.test(stripeKey)) {
     throw new Error("STRIPE_SECRET_KEY must be a live secret");
   }
