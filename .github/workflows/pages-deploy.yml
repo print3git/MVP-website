@@ -19,6 +19,10 @@ jobs:
     runs-on:
       - [self-hosted, linux, aws]
       - ubuntu-latest
+    env:
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CF_PAGES_API_TOKEN }}
+      CF_PAGES_PROJECT: ${{ secrets.CF_PAGES_PROJECT }}
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
@@ -35,10 +39,7 @@ jobs:
             done < <(find frontend/dist -type l -print0)
           fi
       - name: Validate config
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: npx -y wrangler pages config validate --project-name "${{ secrets.CF_PAGES_PROJECT }}"
+        run: npx -y wrangler pages config validate --project-name "$CF_PAGES_PROJECT"
 
   deploy:
     timeout-minutes: 15
@@ -46,6 +47,10 @@ jobs:
     runs-on:
       - [self-hosted, linux, aws]
       - ubuntu-latest
+    env:
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CF_PAGES_API_TOKEN }}
+      CF_PAGES_PROJECT: ${{ secrets.CF_PAGES_PROJECT }}
     steps:
       - name: Heartbeat
         run: |
@@ -81,13 +86,15 @@ jobs:
           fi
       - name: copy dist
         run: cp -a frontend/dist/. pages_dist/
+      - name: Show env vars
+        run: |
+          echo "CLOUDFLARE_ACCOUNT_ID=${CLOUDFLARE_ACCOUNT_ID:+***}"
+          echo "CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN:+***}"
+          echo "CF_PAGES_PROJECT=${CF_PAGES_PROJECT:+***}"
       - name: Deploy to Cloudflare Pages
         id: deploy
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          url=$(npx -y wrangler pages deploy pages_dist --project-name "${{ secrets.CF_PAGES_PROJECT }}" --branch production | tee /tmp/deploy.log | grep -Eo 'https://[^ ]+\.pages\.dev' | tail -n 1)
+          url=$(npx -y wrangler pages deploy pages_dist --project-name "$CF_PAGES_PROJECT" --branch production | tee /tmp/deploy.log | grep -Eo 'https://[^ ]+\.pages\.dev' | tail -n 1)
           echo "$url" > deploy-url.txt
           echo "url=$url" >> "$GITHUB_OUTPUT"
       - name: Job summary
