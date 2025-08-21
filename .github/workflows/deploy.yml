@@ -5,11 +5,11 @@ env:
 
 
 on:
-  push:
+  workflow_run:
+    workflows: ["CI"]
     branches: [00000production]
-    paths:
-      - "frontend/**"
-      - ".github/workflows/deploy.yml"
+    types:
+      - completed
   workflow_dispatch:
 
 concurrency:
@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   deploy:
-    if: vars.ENABLE_PAGES == '1'
+    if: vars.ENABLE_PAGES == '1' && github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     env:
       WRANGLER_VERSION: 3.72.0
@@ -115,7 +115,7 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_PAGES_API_TOKEN }}
 
   pages-disabled:
-    if: vars.ENABLE_PAGES != '1'
+    if: vars.ENABLE_PAGES != '1' && github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Heartbeat
