@@ -40,29 +40,34 @@ jobs:
       matrix:
         node-version: 20
 
-    steps:
+      steps:
 
-      - name: Heartbeat
+        - name: Heartbeat
 
-        run: |
+          run: |
 
-          while true; do date; sleep 120; done &
-      - uses: actions/checkout@v5
+            while true; do date; sleep 120; done &
+        - uses: actions/checkout@v5
 
-      - name: Load Stripe env
-        run: node scripts/ci-env-preflight.js
-        env:
-          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
-          STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+        - uses: actions/setup-node@v4
+          with:
+            node-version: ${{ matrix.node-version }}
+            cache: 'npm'
+            cache-dependency-path: | 
+              package-lock.json
+              backend/package-lock.json
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-          cache-dependency-path: 'backend/package-lock.json'
+        - run: npm ci
+        - run: npm run ci:build-scripts
 
-      - run: npm install --no-audit --no-fund
-        working-directory: backend
+        - name: Load Stripe env
+          run: node scripts/ci-env-preflight.js
+          env:
+            STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+            STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+
+        - run: npm install --no-audit --no-fund
+          working-directory: backend
 
 
       - run: npm run lint
