@@ -25,6 +25,8 @@
     "lhci": "lhci autorun",
     "prepare": "husky install",
     "prepare:dev": "husky install && tsc -p scripts/tsconfig.json",
+    "ci:install": "pnpm install --no-frozen-lockfile",
+    "ci:install:strict": "pnpm install --frozen-lockfile",
     "preformat": "cross-env SKIP_NET_CHECKS=1 SKIP_PW_DEPS=1 node scripts/assert-setup.js",
     "preformat:check": "cross-env SKIP_NET_CHECKS=1 SKIP_PW_DEPS=1 node scripts/assert-setup.js",
     "format": "prettier --log-level warn --write \"**/*.{js,jsx,json,md,html}\"",
@@ -99,7 +101,7 @@
     "node": ">=20 <21"
   },
   "type": "commonjs",
-  "packageManager": "pnpm@10.11.0",
+  "packageManager": "pnpm@9.15.9",
   "prettier": {},
   "devDependencies": {
     "@axe-core/cli": "^4.10.2",

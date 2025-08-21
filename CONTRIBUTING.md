@@ -13,6 +13,11 @@ Thank you for helping improve this project! Please follow these steps to keep ou
 - Format each message as `type: short description` (e.g. `fix: handle null user`).
 - Allowed types include `feat`, `fix`, `docs`, `chore`, `refactor`, `test`, `style`, `perf`, `ci`, and `build`.
 
+## Installing dependencies
+
+- Run `npm run ci:install` locally to install packages and update `pnpm-lock.yaml` when needed.
+- CI uses `npm run ci:install:strict`, which fails if the lockfile and `package.json` disagree.
+
 ## Pull Requests
 
 1. Run `npm run setup` after checking out the repo. This installs dependencies and Playwright browsers.
