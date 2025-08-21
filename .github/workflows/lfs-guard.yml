@@ -1,0 +1,21 @@
+name: LFS guard
+on:
+  pull_request:
+
+jobs:
+  lfs-guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.1.6
+        with:
+          fetch-depth: 0
+      - name: Verify LFS pointers
+        run: |
+          set -e
+          git lfs install
+          patterns=("img/*" "*.png" "*.jpg" "*.jpeg")
+          for pattern in "${patterns[@]}"; do
+            git ls-files "$pattern" | while read -r file; do
+              git lfs ls-files --error-unmatch "$file" >/dev/null 2>&1 || { echo "$file is not an LFS pointer" >&2; exit 1; }
+            done
+          done

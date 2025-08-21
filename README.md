@@ -34,6 +34,7 @@ This repository contains the early MVP code for print2's website and backend.
 
 - The backend communicates with the Sparc3D API service.
 - The `img/` folder is now reserved strictly for image assets.
+- Image files are tracked with Git LFS. Existing history won't be rewritten; re-add any affected images through LFS in new commits.
 - HTML files in the `uploads/` directory should use the `.links` extension to avoid being served as plain text.
 
 ## Quick Start
