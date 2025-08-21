@@ -5,4 +5,15 @@ afterAll(async () => {
   }
 
   await (globalThis as any).__DB_POOL__?.end?.();
+
+  const stripeMock =
+    (globalThis as any).__STRIPE_MOCK__ ||
+    (globalThis as any).__STRIPE_PROCESS__;
+  if (stripeMock) {
+    if (typeof stripeMock.close === "function") {
+      await new Promise((resolve) => stripeMock.close(resolve));
+    } else if (typeof stripeMock.kill === "function") {
+      stripeMock.kill("SIGTERM");
+    }
+  }
 });

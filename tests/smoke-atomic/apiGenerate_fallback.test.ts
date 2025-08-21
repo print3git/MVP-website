@@ -21,5 +21,5 @@ test('POST /api/generate returns fallback when externals fail', async () => {
   expect(typeof body.glb_url).toBe('string');
   expect(body.fallback).toBe(true);
   expect(body.reason).toBe('external_unavailable');
-  server.close();
+  await new Promise<void>((resolve) => server.close(() => resolve()));
 });

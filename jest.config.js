@@ -10,7 +10,7 @@ module.exports = {
     "<rootDir>/tests/setup/teardown.ts",
   ],
   testTimeout: 60000,
-  maxWorkers: "50%",
+  maxWorkers: 1,
   detectOpenHandles: true,
   forceExit: true,
   coverageThreshold: {

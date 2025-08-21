@@ -40,7 +40,7 @@ if (extraArgs.includes("--help") || extraArgs.includes("-h")) {
 const jestArgs = [
   "--ci",
   "--coverage",
-  "--maxWorkers=2",
+  "--runInBand",
   "--detectOpenHandles",
   "--forceExit",
   "--coverageReporters=text-lcov",
