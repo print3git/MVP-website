@@ -20,7 +20,7 @@ jobs:
     env:
       PORT: 3000
       CI_REQUIRE_EXTERNAL: '0'
-    timeout-minutes: 20
+    timeout-minutes: 15
     strategy:
       fail-fast: true
       matrix:

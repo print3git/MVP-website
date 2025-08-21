@@ -17,7 +17,7 @@ concurrency:
 jobs:
   lint-format:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
@@ -31,7 +31,7 @@ jobs:
       - run: npm run lint --prefix backend
   validate-wrangler:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4

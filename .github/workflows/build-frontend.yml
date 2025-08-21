@@ -16,6 +16,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     defaults:
       run:
         working-directory: frontend
@@ -47,6 +48,7 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true
     needs: build
+    timeout-minutes: 5
     steps:
       - name: Heartbeat
         run: |

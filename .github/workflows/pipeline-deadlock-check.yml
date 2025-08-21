@@ -15,7 +15,7 @@ concurrency:
 jobs:
   deadlock:
     runs-on: ubuntu-latest
-    timeout-minutes: 1
+    timeout-minutes: 5
     steps:
       - name: Heartbeat
         run: |
