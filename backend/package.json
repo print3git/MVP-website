@@ -37,7 +37,7 @@
     "flag-overdue-printers": "node scripts/flag-overdue-procurement-orders.js",
     "pretest": "node scripts/ensure-deps.js",
     "format:check": "sh -c 'cd .. && prettier --log-level warn --check \"**/*.{js,jsx,json,md}\" --ignore-path .prettierignore'",
-    "postinstall": "npm --prefix .. run build"
+    "postinstall": "npm ci --prefix ../frontend && npm run build --prefix ../frontend"
   },
   "keywords": [],
   "author": "",

@@ -159,6 +159,8 @@ run_ci() {
 }
 
 run_ci ""
+run_ci frontend
+npm run build --prefix frontend
 run_ci backend
 run_ci backend/dalle_server
 

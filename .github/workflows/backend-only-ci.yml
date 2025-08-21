@@ -29,8 +29,10 @@ jobs:
           cache: npm
           cache-dependency-path: |
             package-lock.json
+            frontend/package-lock.json
             backend/package-lock.json
       - run: npm ci
+      - run: npm run build:frontend
       - run: npm ci --prefix backend
       - name: Run backend tests
         run: |
