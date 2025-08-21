@@ -12,6 +12,8 @@ Only two GitHub Action jobs are required to merge changes:
 - **Production build** – runs the exact build command that ships to users.
 - **Intent/behavior tests** – exercises the application to verify user flows.
 
+Documentation-only changes (e.g., edits to `*.md` files or anything under `docs/`) are ignored by CI and will not trigger builds.
+
 Additional checks such as strict linting, dependency audits, and Stripe/Cloudflare smoke tests run in a separate diagnostics workflow. These jobs use `continue-on-error: true` so they surface issues without blocking merges.
 
 ## 🤖 Codex Integration
