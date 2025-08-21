@@ -6,6 +6,16 @@ env:
 
 on:
   pull_request:
+    paths:
+      - 'frontend/**'
+      # shared files that affect both backend and frontend
+      - '.github/**'
+      - 'scripts/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'pnpm-lock.yaml'
+    paths-ignore:
+      - 'backend/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

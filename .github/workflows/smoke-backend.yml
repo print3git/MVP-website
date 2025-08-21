@@ -6,7 +6,27 @@ env:
 
 on:
   push:
+    paths:
+      - 'backend/**'
+      # shared files that affect both backend and frontend
+      - '.github/**'
+      - 'scripts/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'pnpm-lock.yaml'
+    paths-ignore:
+      - 'frontend/**'
   merge_group:
+    paths:
+      - 'backend/**'
+      # shared files that affect both backend and frontend
+      - '.github/**'
+      - 'scripts/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'pnpm-lock.yaml'
+    paths-ignore:
+      - 'frontend/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

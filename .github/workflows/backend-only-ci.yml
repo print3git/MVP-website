@@ -7,8 +7,28 @@ env:
 on:
   push:
     branches: [main]
+    paths:
+      - 'backend/**'
+      # shared files that affect both backend and frontend
+      - '.github/**'
+      - 'scripts/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'pnpm-lock.yaml'
+    paths-ignore:
+      - 'frontend/**'
   pull_request:
     branches: [main]
+    paths:
+      - 'backend/**'
+      # shared files that affect both backend and frontend
+      - '.github/**'
+      - 'scripts/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'pnpm-lock.yaml'
+    paths-ignore:
+      - 'frontend/**'
   workflow_dispatch:
 
 concurrency:
