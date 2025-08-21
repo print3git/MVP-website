@@ -1,0 +1,51 @@
+name: Infra Selfcheck
+
+on:
+  workflow_dispatch:
+
+jobs:
+  selfcheck:
+    name: AWS runner build toolchain check
+    runs-on: [self-hosted, linux, mvp-fleet]
+    steps:
+      - uses: actions/checkout@v4.1.1
+      - name: Validate tools
+        run: |
+          set +e
+          failures=0
+
+          echo 'Node version:'
+          if node -v; then echo 'PASS: node'; else echo 'FAIL: node'; failures=1; fi
+
+          echo 'pnpm version:'
+          if pnpm -v; then echo 'PASS: pnpm'; else echo 'FAIL: pnpm'; failures=1; fi
+
+          echo 'vite version:'
+          if pnpm exec vite --version >/dev/null 2>&1; then pnpm exec vite --version; echo 'PASS: vite'; else echo 'FAIL: vite missing'; failures=1; fi
+
+          echo 'wrangler version:'
+          if wrangler --version >/dev/null 2>&1; then wrangler --version; echo 'PASS: wrangler'; else echo 'FAIL: wrangler'; failures=1; fi
+
+          echo 'git-lfs version:'
+          if git lfs version; then echo 'PASS: git-lfs'; else echo 'FAIL: git-lfs'; failures=1; fi
+
+          echo 'pnpm install:'
+          if pnpm install --no-frozen-lockfile; then echo 'PASS: pnpm install'; else echo 'FAIL: pnpm install'; failures=1; fi
+
+          echo 'vite build:'
+          if pnpm exec vite --version >/dev/null 2>&1; then
+            if pnpm exec vite build; then echo 'PASS: vite build'; else echo 'FAIL: vite build'; failures=1; fi
+          else
+            echo 'vite missing'
+            failures=1
+          fi
+
+          echo 'git lfs ls-files:'
+          if git lfs ls-files >/dev/null; then echo 'PASS: git lfs'; else echo 'FAIL: git lfs'; failures=1; fi
+
+          if [ "$failures" -ne 0 ]; then
+            echo 'Overall: FAIL'
+            exit 1
+          else
+            echo 'Overall: PASS'
+          fi
