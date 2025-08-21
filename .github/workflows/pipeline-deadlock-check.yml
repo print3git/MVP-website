@@ -6,8 +6,9 @@ env:
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
   push:
-    branches: [main]
+    branches: [main, 0000production]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

@@ -2,6 +2,9 @@ name: Cloudflare Pages Preview
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  push:
+    branches: [main, 0000production]
     types: [opened, synchronize, reopened]
 
 permissions:
