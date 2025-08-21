@@ -6,14 +6,25 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      use_self_hosted:
+        description: Use self-hosted runners
+        type: boolean
+        default: true
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  labels:
+    uses: ./.github/workflows/labels.yml
+    with:
+      use_self_hosted: ${{ inputs.use_self_hosted }}
+
   lint:
-    runs-on: ubuntu-latest
+    needs: labels
+    runs-on: ${{ fromJSON(needs.labels.outputs.runs_on_json) }}
     steps:
       - name: Heartbeat
         run: |
