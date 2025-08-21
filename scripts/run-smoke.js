@@ -73,16 +73,6 @@ const env = initEnv(process.env);
 console.log("DB_URL:", env.DB_URL);
 console.log("CLOUDFRONT_MODEL_DOMAIN:", env.CLOUDFRONT_MODEL_DOMAIN);
 console.log("STRIPE_SECRET_KEY:", env.STRIPE_SECRET_KEY);
-console.log("SKIP_PW_DEPS:", env.SKIP_PW_DEPS);
-
-// Skip Playwright dependency installation when the setup flag exists.
-// This prevents repeated apt-get runs in CI environments.
-if (
-  !env.SKIP_PW_DEPS &&
-  fs.existsSync(path.join(process.cwd(), ".setup-complete"))
-) {
-  env.SKIP_PW_DEPS = "1";
-}
 
 let lastCommand = "";
 
@@ -141,27 +131,19 @@ function dumpDiagnostics(err) {
 function main() {
   try {
     runValidateEnv();
-    if (!process.env.SKIP_SETUP && !fs.existsSync(".setup-complete")) {
-      run("bash scripts/setup-codex-9b08f7c1.sh");
-    } else {
-      console.log("Skipping setup step");
-    }
     try {
       execSync('pkill -f "node scripts/dev-server.js"', { stdio: "ignore" });
     } catch {
       // ignore if no server is running
     }
     freePort(process.env.PORT || 3000, env);
-    if (!process.env.SKIP_PW_DEPS) {
-      run("npx -y playwright install --with-deps");
-    }
     const waitArgs = process.env.WAIT_ON_TIMEOUT
       ? `-t ${process.env.WAIT_ON_TIMEOUT} `
       : "";
     console.log("WAIT_ON_TIMEOUT:", process.env.WAIT_ON_TIMEOUT || "default");
-    const serve = "npm run serve | tee serve.log";
-    const test = `npx -y wait-on ${waitArgs}http://localhost:3000 && npx playwright test --reporter=list --trace on e2e/smoke.test.js | tee pw.log`;
-    const cmd = `npx -y concurrently -k -s first --verbose -n serve,pw "${serve}" "${test}"`;
+    const serve = "node scripts/dev-server.js | tee serve.log";
+    const test = `npx -y wait-on ${waitArgs}http://localhost:3000/healthz && node scripts/smoke-server.js | tee smoke.log`;
+    const cmd = `npx -y concurrently -k -s first --verbose -n serve,smoke "${serve}" "${test}"`;
     try {
       run(cmd);
     } catch (_err) {

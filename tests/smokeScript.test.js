@@ -7,23 +7,13 @@ describe("smoke script", () => {
     expect(pkg.scripts.smoke).toBe("node scripts/run-smoke.js");
   });
 
-  test("run-smoke.js checks SKIP_PW_DEPS", () => {
+  test("run-smoke.js validates env and does not run setup", () => {
     const content = fs.readFileSync(
       path.join(__dirname, "..", "scripts", "run-smoke.js"),
       "utf8",
     );
-    expect(/SKIP_PW_DEPS/.test(content)).toBe(true);
-  });
-
-  test("run-smoke.js validates env before setup", () => {
-    const content = fs.readFileSync(
-      path.join(__dirname, "..", "scripts", "run-smoke.js"),
-      "utf8",
-    );
-    const validateIdx = content.indexOf("npm run validate-env");
-    const setupIdx = content.lastIndexOf("npm run setup");
-    expect(validateIdx).toBeGreaterThan(-1);
-    expect(setupIdx).toBeGreaterThan(validateIdx);
+    expect(content).toMatch(/npm run validate-env/);
+    expect(content).not.toMatch(/npm run setup/);
   });
 
   test("run-smoke.js loads env file values", () => {

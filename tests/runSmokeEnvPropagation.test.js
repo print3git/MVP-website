@@ -5,16 +5,10 @@ beforeEach(() => {
   jest.spyOn(child_process, "execSync").mockImplementation(() => {});
 });
 
-afterEach(() => {
-  delete process.env.SKIP_PW_DEPS;
-});
-
-test("passes SKIP_PW_DEPS to setup", () => {
+test("run-smoke does not invoke setup", () => {
   process.env.SKIP_PW_DEPS = "1";
   const { main } = require("../scripts/run-smoke.js");
   main();
-  const call = child_process.execSync.mock.calls.find(
-    (c) => c[0] === "npm run setup",
-  );
-  expect(call[1].env.SKIP_PW_DEPS).toBe("1");
+  const commands = child_process.execSync.mock.calls.map((c) => c[0]);
+  expect(commands).not.toContain("npm run setup");
 });

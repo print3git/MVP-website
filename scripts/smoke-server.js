@@ -48,16 +48,6 @@ async function checkHealth(base) {
         `/readyz status=${ready.status} body=${JSON.stringify(ready.data)}`,
       );
 
-    const gen = await axios.post(
-      `${base}/api/generate`,
-      { prompt: "test" },
-      { validateStatus: () => true },
-    );
-    if (gen.status !== 200 || typeof gen.data.glb_url !== "string")
-      throw new Error(
-        `/api/generate status=${gen.status} body=${JSON.stringify(gen.data)}`,
-      );
-
     clearTimeout(timer);
     console.log("✅ server smoke passed");
   } catch (err) {

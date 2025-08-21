@@ -6,18 +6,16 @@ beforeEach(() => {
 
 afterEach(() => {
   delete process.env.SKIP_SETUP;
-  delete process.env.SKIP_PW_DEPS;
 });
 
 test("run-smoke logs diagnostics on failure", () => {
-  const exec = jest
-    .spyOn(child_process, "execSync")
+  const spawn = jest
+    .spyOn(child_process, "spawnSync")
     .mockImplementation((cmd) => {
       if (cmd.includes("wait-on")) {
-        const err = new Error("fail");
-        err.status = 1;
-        throw err;
+        return { status: 1, stderr: "fail" };
       }
+      return { status: 0, stdout: "", stderr: "" };
     });
   const errors = [];
   const errSpy = jest
@@ -27,11 +25,10 @@ test("run-smoke logs diagnostics on failure", () => {
     throw new Error(`exit:${code}`);
   });
   process.env.SKIP_SETUP = "1";
-  process.env.SKIP_PW_DEPS = "1";
   expect(() => {
     require("../scripts/run-smoke.js").main();
   }).toThrow(/exit:1/);
-  exec.mockRestore();
+  spawn.mockRestore();
   errSpy.mockRestore();
   exit.mockRestore();
   const output = errors.join("\n");

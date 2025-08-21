@@ -9,11 +9,11 @@ afterEach(() => {
   jest.resetModules();
 });
 
-test("run-smoke sets SKIP_PW_DEPS when setup flag exists", () => {
+test("run-smoke does not set SKIP_PW_DEPS when setup flag exists", () => {
   fs.writeFileSync(flag, "");
   jest.isolateModules(() => {
     const { env } = require("../scripts/run-smoke.js");
-    expect(env.SKIP_PW_DEPS).toBe("1");
+    expect(env.SKIP_PW_DEPS).toBeUndefined();
   });
 });
 

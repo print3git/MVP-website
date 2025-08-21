@@ -27,6 +27,10 @@ app.get("/healthz", (_req, res) => {
   res.send("ok");
 });
 
+app.get("/readyz", (_req, res) => {
+  res.json({ ok: true });
+});
+
 function startDevServer(port = 3000, useHttps = process.env.USE_HTTPS === "1") {
   const onError = (err) => {
     console.error("Dev server failed", err.stack || err.message);
