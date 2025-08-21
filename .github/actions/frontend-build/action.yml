@@ -1,24 +1,23 @@
-name: Frontend Build
+name: frontend-build
+description: Install frontend dependencies with pnpm and ensure Vite is present
 runs:
   using: composite
   steps:
-    - uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: pnpm
-        cache-dependency-path: frontend/pnpm-lock.yaml
     - name: Enable corepack
       shell: bash
       run: corepack enable
-    - name: Install deps
-      shell: bash
-      run: pnpm install --no-frozen-lockfile
-      working-directory: frontend
-    - name: Build
-      shell: bash
-      run: pnpm run build
-      working-directory: frontend
-    - uses: actions/upload-artifact@v4
+    - name: Set up pnpm
+      uses: pnpm/action-setup@v4.1.0
       with:
-        name: frontend-dist
-        path: frontend/dist
+        run_install: false
+    - name: Install dependencies
+      shell: bash
+      working-directory: frontend
+      run: pnpm install --no-frozen-lockfile
+    - name: Ensure Vite is installed
+      shell: bash
+      run: |
+        if ! jq -e '.devDependencies.vite' frontend/package.json >/dev/null; then
+          echo 'vite not installed in frontend'
+          exit 1
+        fi

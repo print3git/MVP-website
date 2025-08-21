@@ -1,0 +1,18 @@
+name: frontend-build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4.4.0
+        with:
+          node-version: 20
+          cache: pnpm
+      - uses: ./.github/actions/frontend-build
+      - name: Build frontend
+        shell: bash
+        run: pnpm --prefix frontend run build
