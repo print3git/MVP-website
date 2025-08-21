@@ -9,7 +9,35 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npm ci --prefix backend
+      - run: npx tsc -p backend/tsconfig.build.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: backend-build
+          path: backend/lib
+      - uses: actions/upload-artifact@v4
+        with:
+          name: node-modules
+          path: node_modules
+      - uses: actions/upload-artifact@v4
+        with:
+          name: backend-node-modules
+          path: backend/node_modules
+
   smoke:
+    needs: build
     runs-on: ubuntu-latest
     env:
       PORT: 3000
@@ -20,11 +48,25 @@ jobs:
         run: |
           while true; do date; sleep 120; done &
       - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
+      - uses: actions/download-artifact@v4
+        with:
+          name: backend-build
+          path: backend/lib
+      - uses: actions/download-artifact@v4
+        with:
+          name: node-modules
+          path: node_modules
+      - uses: actions/download-artifact@v4
+        with:
+          name: backend-node-modules
+          path: backend/node_modules
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "npm"
-      - run: npm run setup
       - name: Start backend
         run: |
           npm run dev 2>&1 | tee /tmp/server.log &

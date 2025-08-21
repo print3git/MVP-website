@@ -7,13 +7,57 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4.4.0
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npm ci --prefix backend
+      - run: npx tsc -p backend/tsconfig.build.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: backend-build
+          path: backend/lib
+      - uses: actions/upload-artifact@v4
+        with:
+          name: node-modules
+          path: node_modules
+      - uses: actions/upload-artifact@v4
+        with:
+          name: backend-node-modules
+          path: backend/node_modules
+
   coverage:
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Heartbeat
         run: |
           while true; do date; sleep 120; done &
       - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
+      - uses: actions/download-artifact@v4
+        with:
+          name: backend-build
+          path: backend/lib
+      - uses: actions/download-artifact@v4
+        with:
+          name: node-modules
+          path: node_modules
+      - uses: actions/download-artifact@v4
+        with:
+          name: backend-node-modules
+          path: backend/node_modules
       - name: Load Stripe env
         run: node scripts/ci-env-preflight.js
         env:
@@ -22,9 +66,6 @@ jobs:
       - uses: actions/setup-node@v4.4.0
         with:
           node-version: 20
-      - run: SKIP_PW_DEPS=1 npm run setup
-        env:
-          DB_URL: postgres://localhost:5432/dev
       - run: SKIP_PW_DEPS=1 npm run coverage
       - name: Coverage summary
         run: |
