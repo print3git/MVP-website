@@ -1,0 +1,40 @@
+name: Check Watchdog
+
+on:
+  pull_request:
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    permissions:
+      checks: read
+    steps:
+      - name: Wait for required checks to start
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          checks=('Build frontend / build' 'Backend Smoke' 'Cloudflare Pages')
+          deadline=$((SECONDS + 420))
+          while [ $SECONDS -lt $deadline ]; do
+            resp=$(gh api repos/$REPO/commits/$SHA/check-runs)
+            statuses=""
+            all_started=true
+            for check in "${checks[@]}"; do
+              status=$(echo "$resp" | jq -r --arg name "$check" '.check_runs[] | select(.name==$name) | .status // "not_found"')
+              statuses+="$check\t$status\n"
+              if [[ "$status" != "in_progress" && "$status" != "completed" ]]; then
+                all_started=false
+              fi
+            done
+            if $all_started; then
+              echo -e "Check\tStatus\n$statuses"
+              exit 0
+            fi
+            sleep 15
+          done
+          echo -e "Check\tStatus\n$statuses"
+          echo "Jobs did not start within 7 min — likely runner queue/concurrency jam" >&2
+          exit 1
