@@ -21,7 +21,7 @@
   },
   "scripts": {
     "perf-events": "node scripts/perf-events.js",
-    "preinstall": "corepack enable && node scripts/check-node-version.js",
+    "preinstall": "node scripts/check-node-version.js",
     "lhci": "lhci autorun",
     "prepare": "husky install",
     "prepare:dev": "husky install && tsc -p scripts/tsconfig.json",
@@ -67,7 +67,7 @@
     "smoke": "node scripts/run-smoke.js",
     "start:backend": "npm start --prefix backend",
     "predeploy": "node scripts/check-missing-links.js",
-    "prebuild": "node -e \"require('./scripts/run-npm-ci').runNpmCi('frontend')\" && test -x frontend/node_modules/.bin/vite || (echo \\\"vite not installed in frontend\\\" && exit 1)",
+    "prebuild": "node -e \"require('./scripts/run-npm-ci').runNpmCi('frontend')\" && node scripts/check-vite-bin.js",
     "build": "npm run build --prefix frontend",
     "postbuild": "npx -y ts-node --transpile-only scripts/check-broken-symlinks-9ac8f74db5e1c32.ts",
     "load": "artillery run tests/load/models.yml",
@@ -99,7 +99,7 @@
     "node": ">=20 <21"
   },
   "type": "commonjs",
-  "packageManager": "pnpm@10.11.0",
+  "packageManager": "npm@10.8.2",
   "prettier": {},
   "devDependencies": {
     "@axe-core/cli": "^4.10.2",
