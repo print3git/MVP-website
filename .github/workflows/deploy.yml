@@ -16,8 +16,16 @@ jobs:
   deploy:
     if: vars.ENABLE_PAGES == '1'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
+      - name: Start heartbeat
+        run: |
+          while true; do
+            echo "heartbeat"
+            sleep 300
+          done &
+          echo $! > heartbeat.pid
       - name: Checkout code
         uses: actions/checkout@v5
 
@@ -104,6 +112,10 @@ jobs:
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_PAGES_API_TOKEN }}
+
+      - name: Stop heartbeat
+        if: always()
+        run: kill $(cat heartbeat.pid) || true
 
   pages-disabled:
     if: vars.ENABLE_PAGES != '1'
