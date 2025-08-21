@@ -1,0 +1,36 @@
+name: Test Watchdog
+on:
+  push:
+    branches: [dev, 00000production]
+  pull_request:
+    branches: [dev, 00000production]
+
+concurrency:
+  group: ci-${{ github.ref }}-test-watchdog
+  cancel-in-progress: true
+
+jobs:
+  watchdog:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install tooling (root only, no project install)
+        run: |
+          npm i -D -E glob@10 yaml@2 chalk@5
+
+      - name: Run test discovery watchdog
+        env:
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+          GITHUB_REF: ${{ github.ref }}
+          GITHUB_SHA: ${{ github.sha }}
+          COMMIT_MSG: ${{ github.event.head_commit.message || github.event.pull_request.title }}
+        run: node scripts/ci/test-watchdog.mjs
