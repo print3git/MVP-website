@@ -1,5 +1,9 @@
 name: Endpoint Health
 
+env:
+  HUSKY: 0
+
+
 on:
   schedule:
     - cron: '*/15 * * * *'

@@ -1,5 +1,9 @@
 name: OpenAPI Lint
 
+env:
+  HUSKY: 0
+
+
 on:
   push:
     branches: [main]

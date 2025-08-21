@@ -1,5 +1,9 @@
 name: Load Test
 
+env:
+  HUSKY: 0
+
+
 on:
   workflow_dispatch:
 

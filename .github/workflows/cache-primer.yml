@@ -1,5 +1,9 @@
 name: Cache primer
 
+env:
+  HUSKY: 0
+
+
 on:
   pull_request:
 

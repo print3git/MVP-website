@@ -1,5 +1,9 @@
 name: print2 Pro Reminders
 
+env:
+  HUSKY: 0
+
+
 on:
   schedule:
     - cron: '0 5 * * *'

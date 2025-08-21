@@ -1,5 +1,9 @@
 name: Server Smoke Test
 
+env:
+  HUSKY: 0
+
+
 on:
   push:
   merge_group:

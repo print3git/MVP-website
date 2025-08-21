@@ -1,5 +1,9 @@
 name: Check Watchdog
 
+env:
+  HUSKY: 0
+
+
 on:
   pull_request:
 

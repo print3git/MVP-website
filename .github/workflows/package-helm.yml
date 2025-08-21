@@ -1,5 +1,9 @@
 name: Package Helm Chart
 
+env:
+  HUSKY: 0
+
+
 on:
   push:
     tags:
