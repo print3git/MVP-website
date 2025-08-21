@@ -23,10 +23,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
-          cache-dependency-path: package-lock.json
-      - run: npm ci && npm run build
-      - run: node scripts/assert-frontend-dist.js
+      - run: corepack enable
+      - run: pnpm add -D vite --no-save --dir frontend
+      - run: pnpm run build --prefix frontend
+      - run: |
+          test -f frontend/dist/index.html || { echo 'frontend/dist/index.html missing after build'; exit 1; }
       - uses: actions/upload-artifact@v4
         with:
           name: frontend-dist
