@@ -12,6 +12,4 @@ concurrency:
 
 jobs:
   backend-tests:
-    uses: ./.github/workflows/_setup.yml
-    with:
-      run: npm test --prefix backend -- --maxWorkers=50% --runInBand=false --silent --reporters=default
+    uses: ./.github/workflows/backend-tests.yml
