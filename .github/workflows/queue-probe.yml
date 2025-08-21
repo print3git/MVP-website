@@ -11,4 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      - name: Heartbeat
+        run: |
+          while true; do date; sleep 120; done &
       - run: echo "hello $GITHUB_RUN_ID"

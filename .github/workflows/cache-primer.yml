@@ -11,6 +11,9 @@ jobs:
   root-cache:
     runs-on: ubuntu-latest
     steps:
+      - name: Heartbeat
+        run: |
+          while true; do date; sleep 120; done &
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
         with:
@@ -22,6 +25,9 @@ jobs:
   backend-cache:
     runs-on: ubuntu-latest
     steps:
+      - name: Heartbeat
+        run: |
+          while true; do date; sleep 120; done &
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
         with:

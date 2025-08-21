@@ -16,6 +16,9 @@ jobs:
       DB_URL: postgres://user:pass@localhost:5432/testdb
       CI_REQUIRE_EXTERNAL: "0"
     steps:
+      - name: Heartbeat
+        run: |
+          while true; do date; sleep 120; done &
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
         with:

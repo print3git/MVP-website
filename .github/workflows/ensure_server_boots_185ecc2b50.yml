@@ -27,6 +27,9 @@ jobs:
       PORT: 3000
       CI_REQUIRE_EXTERNAL: '0'
     steps:
+      - name: Heartbeat
+        run: |
+          while true; do date; sleep 120; done &
       - name: Checkout code
         uses: actions/checkout@v5
 

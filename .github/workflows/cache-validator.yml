@@ -23,6 +23,9 @@ jobs:
             working-directory: backend
             lockfile: backend/package-lock.json
     steps:
+      - name: Heartbeat
+        run: |
+          while true; do date; sleep 120; done &
       - uses: actions/checkout@v5
       - id: setup
         uses: actions/setup-node@v4

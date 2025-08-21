@@ -17,6 +17,9 @@ jobs:
     if: ${{ !startsWith(github.event.pull_request.head.ref, 'codex/') }}
     runs-on: ubuntu-latest
     steps:
+      - name: Heartbeat
+        run: |
+          while true; do date; sleep 120; done &
       - name: Rebase
         if: ${{ !startsWith(github.head_ref, 'codex/') }}
         id: rebase
@@ -45,6 +48,9 @@ jobs:
     if: ${{ needs.rebase.result == 'success' || needs.rebase.result == 'skipped' }}
     runs-on: ubuntu-latest
     steps:
+      - name: Heartbeat
+        run: |
+          while true; do date; sleep 120; done &
       - name: Queue for merge
         uses: autifyhq/merge-queue-action@v0.1.0
         env:

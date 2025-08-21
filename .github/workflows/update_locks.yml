@@ -14,6 +14,9 @@ jobs:
   update:
     runs-on: ubuntu-latest
     steps:
+      - name: Heartbeat
+        run: |
+          while true; do date; sleep 120; done &
       - uses: actions/checkout@v5
         with:
           persist-credentials: true

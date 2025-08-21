@@ -12,5 +12,8 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
+      - name: Heartbeat
+        run: |
+          while true; do date; sleep 120; done &
       - name: Check homepage
         run: curl -fsS https://print2.io/ > /dev/null

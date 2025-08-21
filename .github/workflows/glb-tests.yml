@@ -24,6 +24,9 @@ jobs:
   unit-tests:
     runs-on: ubuntu-latest
     steps:
+      - name: Heartbeat
+        run: |
+          while true; do date; sleep 120; done &
       - uses: actions/checkout@v5
       - name: Load Stripe env
         run: node scripts/ci-env-preflight.js
@@ -47,6 +50,9 @@ jobs:
       PORT: 3000
       DB_URL: postgres://user:pass@localhost:5432/testdb
     steps:
+      - name: Heartbeat
+        run: |
+          while true; do date; sleep 120; done &
       - uses: actions/checkout@v5
       - name: Load Stripe env
         run: node scripts/ci-env-preflight.js
