@@ -7,7 +7,9 @@
   },
   "scripts": {
     "build": "vite build",
-    "build:ci": "npm ci && npm run build"
+    "build:ci": "npm ci && npm run build",
+    "ci:all": "npm ci",
+    "build:all": "npm run build"
   },
   "devDependencies": {
     "vite": "^7.1.3"

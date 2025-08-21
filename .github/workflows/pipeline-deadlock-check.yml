@@ -18,5 +18,6 @@ jobs:
         with:
           node-version: 20
       - run: npm install --no-save yaml
-      - run: npm ci && npm run build --prefix frontend
+      - run: npm run ci:all --workspace frontend
+      - run: npm run build:all --workspace frontend
       - run: node --test tests/ci/pipeline-deadlock-check-b1a2c3d.test.js

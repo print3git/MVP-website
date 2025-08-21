@@ -24,9 +24,9 @@ jobs:
           cache: npm
           cache-dependency-path: frontend/package-lock.json
       - name: Install frontend dependencies
-        run: npm ci --prefix frontend
+        run: npm run ci:all --workspace frontend
       - name: Build frontend
-        run: npm run build --prefix frontend
+        run: npm run build:all --workspace frontend
       - name: Print workspace structure
         run: |
           pwd

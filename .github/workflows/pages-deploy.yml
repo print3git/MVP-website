@@ -24,7 +24,8 @@ jobs:
           cache-dependency-path: |
             package-lock.json
             frontend/package-lock.json
-      - run: npm ci && npm run build --prefix frontend
+      - run: npm run ci:all --workspace frontend
+      - run: npm run build:all --workspace frontend
       - name: verify build
         run: |
           if [ ! -f frontend/dist/index.html ]; then

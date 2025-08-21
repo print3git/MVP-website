@@ -20,7 +20,8 @@ jobs:
           node-version: 20
           cache: npm
           cache-dependency-path: package-lock.json
-      - run: npm ci && npm run build
+      - run: npm run ci:all --workspace frontend
+      - run: npm run build:all --workspace frontend
       - run: node scripts/assert-frontend-dist.js
       - uses: actions/upload-artifact@v4
         with:
