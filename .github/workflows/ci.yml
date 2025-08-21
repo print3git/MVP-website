@@ -42,7 +42,7 @@ jobs:
   test-backend:
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         shard: [aa, ab, ac]
     steps:
@@ -80,7 +80,7 @@ jobs:
   test-frontend:
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         include:
           - shard: core
