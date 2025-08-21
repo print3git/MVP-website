@@ -1,5 +1,6 @@
 const fs = require("fs/promises");
 const path = require("path");
+const { execSync } = require("child_process");
 const { test } = require("node:test");
 
 const repoRoot = path.resolve(__dirname, "../..");
@@ -62,7 +63,24 @@ test("pipeline configuration avoids common deadlocks", async () => {
   }
 
   if (errors.length) {
-    await appendSummary(`### CI/CD pipeline issues\n${errors.map((e) => `- ${e}`).join("\n")}`);
+    let commitSha = "unknown";
+    let distListing = "";
+    try {
+      commitSha = execSync("git rev-parse HEAD", { cwd: repoRoot })
+        .toString()
+        .trim();
+    } catch {}
+    try {
+      distListing = execSync("ls -la frontend/dist", { cwd: repoRoot }).toString();
+    } catch (err) {
+      distListing = `ls failed: ${err.message}`;
+    }
+    console.error(`Commit ${commitSha}\n${distListing}`);
+    await appendSummary(
+      `### CI/CD pipeline issues\n${errors
+        .map((e) => `- ${e}`)
+        .join("\n")}\nCommit ${commitSha}\n${distListing}`,
+    );
     throw new Error(errors.join("; "));
   }
 
