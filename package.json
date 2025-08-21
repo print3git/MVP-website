@@ -79,6 +79,7 @@
     "netlify:deploy": "scripts/netlify-preflight.sh && netlify deploy",
     "diagnose": "bash scripts/diagnose.sh",
     "codeql": "node scripts/check-code-scanning.js",
+    "gen:test:changed": "git diff --name-only --diff-filter=AM origin/main...HEAD | xargs -r node scripts/gen-test-skeleton.mjs",
     "test:generate": "node scripts/test-generate.js",
     "test:webhook": "node scripts/test-webhook.js",
     "check:code-scanning": "node scripts/check-code-scanning.js",
