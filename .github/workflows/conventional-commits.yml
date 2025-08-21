@@ -1,0 +1,17 @@
+name: Conventional Commits
+
+on:
+  pull_request:
+
+jobs:
+  commitlint:
+    name: Commitlint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Validate commit messages
+        uses: wagoid/commitlint-github-action@v6.2.1
+        with:
+          configFile: commitlint.config.js
