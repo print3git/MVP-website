@@ -1,0 +1,26 @@
+name: Cloudflare dist fallback (manual/cron)
+
+env:
+  HUSKY: 0
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5.0.0
+      - uses: actions/setup-node@v4.4.0
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            backend/package-lock.json
+            frontend/package-lock.json
+      - run: npm ci
+      - run: npm run -s build --prefix frontend || true
+      - run: scripts/deploy-cf-pages.sh
