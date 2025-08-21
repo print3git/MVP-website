@@ -64,8 +64,13 @@ jobs:
       - name: Run backend tests
         run: npm run coverage --prefix backend
 
+      - uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
+        continue-on-error: true
       - name: Ensure frontend build output exists
-        run: test -f frontend/dist/index.html
+        run: node -e "require('fs').accessSync('frontend/dist/index.html')"
 
       - name: Run smoke tests
         run: npm run smoke
