@@ -3,6 +3,7 @@ name: CodeQL
 env:
   HUSKY: 0
   CODEQL_ACTION_FEATURE_MULTI_LANGUAGE: false
+  CODEQL_BUNDLE: ${{ runner.temp }}/codeql-bundle
 
 
 on:
@@ -29,8 +30,6 @@ jobs:
       - ubuntu-latest
     strategy:
       fail-fast: false
-      matrix:
-        codeql-version: ["2.22.4"]
     steps:
       - name: Heartbeat
         run: |
@@ -45,11 +44,17 @@ jobs:
             backend/package-lock.json
       - name: Verify code scanning enabled
         run: node scripts/check-code-scanning.js
+      - name: Cache CodeQL bundle
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.CODEQL_BUNDLE }}
+          key: ${{ runner.os }}-codeql-bundle-${{ hashFiles('.github/workflows/codeql.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-codeql-bundle-
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3.29.9
         with:
           languages: javascript-typescript
-          tools: ${{ matrix.codeql-version }}
       - name: CodeQL CLI version
         run: codeql --version
         shell: bash
