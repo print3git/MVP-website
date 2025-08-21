@@ -1,0 +1,16 @@
+name: Skip heavy
+
+# Runs on pull requests to short-circuit CI when the `skip-heavy` label is present.
+# Heavy jobs should use `if: "! contains(github.event.pull_request.labels.*.name, 'skip-heavy')"` to honor the label.
+
+on:
+  pull_request:
+
+jobs:
+  skip-heavy:
+    if: contains(github.event.pull_request.labels.*.name, 'skip-heavy')
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "skip-heavy label present, skipping heavy workflows"
+          exit 0
