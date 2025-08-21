@@ -83,7 +83,12 @@
     "test:webhook": "node scripts/test-webhook.js",
     "check:code-scanning": "node scripts/check-code-scanning.js",
     "commitlint": "commitlint --from=HEAD~1",
-    "lint:md": "markdownlint-cli2 \"**/*.md\""
+    "lint:md": "markdownlint-cli2 \"**/*.md\"",
+    "test:backend:regression": "node scripts/run-jest.js --config tests/jest.config.js --selectProjects backend",
+    "test:frontend:regression": "node scripts/run-jest.js --config tests/jest.config.js --selectProjects frontend",
+    "test:ci:regression": "node scripts/run-jest.js --config tests/jest.config.js --selectProjects ci",
+    "test:e2e:regression": "playwright test --config tests/playwright.config.ts",
+    "test:regression": "npm run test:backend:regression && npm run test:frontend:regression && npm run test:ci:regression && npm run test:e2e:regression"
   },
   "babel": {
     "presets": [
@@ -123,6 +128,7 @@
     "@percy/playwright": "^1.0.8",
     "@playwright/test": "^1.53.1",
     "@size-limit/file": "^11.2.0",
+    "@testing-library/jest-dom": "^6.8.0",
     "@testing-library/react": "^14.2.1",
     "@types/node": "^24.0.10",
     "@typescript-eslint/eslint-plugin": "8.34.1",
@@ -145,6 +151,8 @@
     "husky": "^9.1.7",
     "i18next-parser": "^9.3.0",
     "jest": "^29.x",
+    "jest-environment-jsdom": "^30.0.5",
+    "jest-junit": "^16.0.0",
     "kill-port": "^2.0.1",
     "lint-staged": "^16.1.2",
     "lockfile-diff": "^0.1.0",
@@ -155,6 +163,7 @@
     "selfsigned": "^2.3.2",
     "size-limit": "^11.2.0",
     "stripe": "^14.25.0",
+    "supertest": "^7.1.4",
     "toml": "^3.0.0",
     "tsconfig-strictest": "^1.0.0-beta.1",
     "tslib": "^2.8.1",
