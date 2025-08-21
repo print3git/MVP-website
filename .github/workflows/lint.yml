@@ -19,6 +19,12 @@ on:
       - package-lock.json
       - pnpm-lock.yaml
       - .github/workflows/**
+  workflow_dispatch:
+    inputs:
+      use_self_hosted:
+        description: Use self-hosted runners
+        type: boolean
+        default: true
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -32,3 +38,4 @@ jobs:
         npm run lint:root
         npm run lint --prefix frontend
         npm run lint --prefix backend
+      use_self_hosted: ${{ inputs.use_self_hosted }}

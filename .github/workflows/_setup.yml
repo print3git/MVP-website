@@ -7,14 +7,25 @@ on:
         description: Command to execute after dependencies install
         required: true
         type: string
+      use_self_hosted:
+        description: Use self-hosted runners
+        required: false
+        type: boolean
+        default: true
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  labels:
+    uses: ./.github/workflows/labels.yml
+    with:
+      use_self_hosted: ${{ inputs.use_self_hosted }}
+
   run:
-    runs-on: ubuntu-latest
+    needs: labels
+    runs-on: ${{ fromJSON(needs.labels.outputs.runs_on_json) }}
     steps:
       - name: Heartbeat
         run: |
