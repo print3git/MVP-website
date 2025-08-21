@@ -6,9 +6,12 @@ const { storeGlb } = require("../lib/storeGlb");
 const logger = require("../../../src/logger");
 
 /**
- * @param {Object} [root0]
- * @param {*} [root0.prompt]
- * @param {*} [root0.image]
+ * Generate a 3D model from a prompt and/or reference image.
+ *
+ * @param {Object} [root0] - Options for generation.
+ * @param {string} [root0.prompt] - Text prompt describing the model.
+ * @param {string} [root0.image] - Image path or URL used for guidance.
+ * @returns {Promise<string>} Public URL to the generated GLB model.
  */
 async function generateModel({ prompt, image } = {}) {
   logger.info(

@@ -4,11 +4,21 @@ exports.prepareImage = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const uploadS3_1 = require("./uploadS3");
+/**
+ * Wraps CommonJS modules for ESModule interop.
+ *
+ * @param {unknown} mod - Module to normalize.
+ * @returns {{ default: unknown }} Normalized module.
+ * @private
+ */
 function __importDefault(mod) {
   return mod && mod.__esModule ? mod : { default: mod };
 }
 /**
- * @param {*} image
+ * Upload an image (path, data URL or remote URL) to S3 if needed.
+ *
+ * @param {string} image - Image path, data URL, or HTTP URL.
+ * @returns {Promise<string>} Publicly accessible image URL.
  */
 async function prepareImage(image) {
   if (/^https?:\/\//.test(image)) {
