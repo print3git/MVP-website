@@ -1,0 +1,44 @@
+name: Vulnerability Scan
+
+on:
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5.0.0
+      - uses: actions/setup-node@v4.4.0
+        with:
+          node-version: 20
+      - uses: actions/setup-python@v5.6.0
+        with:
+          python-version: '3.x'
+      - name: Run audits
+        run: |
+          set -e
+          if [ -f pnpm-lock.yaml ] && [ ! -f package-lock.json ]; then
+            corepack enable pnpm
+            pnpm audit --audit-level=high > npm-audit.log || true
+          else
+            npm audit --audit-level=high > npm-audit.log || true
+          fi
+          if ls **/requirements.txt >/dev/null 2>&1; then
+            pip install pip-audit
+            for req in $(ls **/requirements.txt); do
+              pip-audit -r "$req" >> pip-audit.log || true
+            done
+          fi
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: vulnerability-scan
+          path: |
+            npm-audit.log
+            pip-audit.log
+          if-no-files-found: ignore
