@@ -13,7 +13,12 @@ jobs:
       - ubuntu-latest
     steps:
       - uses: actions/checkout@v5.0.0
-      - uses: ./.github/actions/ensure-pnpm
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+      - uses: ./.github/actions/install-deps
       - run: pnpm install --no-frozen-lockfile
       - run: pnpm lint
       - run: pnpm typecheck

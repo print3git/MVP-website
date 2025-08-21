@@ -34,6 +34,7 @@ jobs:
           cache-dependency-path: |
             package-lock.json
             frontend/package-lock.json
+      - uses: ./.github/actions/install-deps
       - run: npm ci && npm run build --prefix frontend
       - name: Start preview
         id: preview
