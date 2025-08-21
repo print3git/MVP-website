@@ -1,0 +1,56 @@
+name: Codemod Lint Frontend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - frontend/**
+      - scripts/codemods/**
+      - package.json
+      - package-lock.json
+      - .github/workflows/**
+  pull_request:
+    branches: [main]
+    paths:
+      - frontend/**
+      - scripts/codemods/**
+      - package.json
+      - package-lock.json
+      - .github/workflows/**
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  codemod:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    env:
+      HUSKY: 0
+    steps:
+      - name: Heartbeat
+        run: |
+          while true; do date; sleep 120; done &
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            frontend/package-lock.json
+      - run: npm ci
+      - run: npm ci --prefix frontend
+      - name: Run codemod and lint
+        run: npm run codemod:lint:frontend
+      - name: Diff summary
+        run: |
+          git status --short > codemod-diff.txt
+          git diff --stat >> codemod-diff.txt || true
+      - name: Upload diff summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: codemod-lint-frontend
+          path: codemod-diff.txt
