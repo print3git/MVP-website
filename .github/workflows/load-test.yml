@@ -9,11 +9,12 @@ on:
 
 concurrency:
   # Limit load tests to a single runner across all refs to avoid saturating runner capacity
-  group: load-test
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   load:
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
       - name: Heartbeat

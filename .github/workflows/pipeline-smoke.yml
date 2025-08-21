@@ -16,6 +16,7 @@ concurrency:
 
 jobs:
   smoke_test:
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     env:
       STRIPE_TEST_KEY: ${{ secrets.STRIPE_TEST_KEY }}

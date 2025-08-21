@@ -8,8 +8,13 @@ env:
 on:
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   stop:
+    timeout-minutes: 15
     if: ${{ false }}
     runs-on: ubuntu-latest
     steps:
@@ -23,6 +28,7 @@ jobs:
       - name: Stop instance
         run: aws ec2 stop-instances --instance-ids "$RUNNER_INSTANCE_ID"
   start:
+    timeout-minutes: 15
     if: ${{ false }}
     runs-on: ubuntu-latest
     steps:

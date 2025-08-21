@@ -50,6 +50,7 @@ jobs:
       - run: npm run smoke:api
 
   gate:
+    timeout-minutes: 15
     name: Gate
     runs-on: ubuntu-latest
     needs: [lint-fast, smoke-api]

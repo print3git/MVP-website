@@ -5,6 +5,10 @@ on:
     - cron: '*/10 * * * *'
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   actions: read
   pull-requests: write
@@ -15,6 +19,7 @@ defaults:
 
 jobs:
   watchdog:
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
       - name: Check self-hosted AWS runner

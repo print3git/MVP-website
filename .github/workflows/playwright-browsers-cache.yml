@@ -13,6 +13,7 @@ concurrency:
 
 jobs:
   cache-browsers:
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
       - name: Heartbeat

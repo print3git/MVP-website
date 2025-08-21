@@ -5,10 +5,11 @@ env:
 
 on:
   workflow_run:
-    workflows: ["Preflight"]
+    workflows: [ "Preflight" ]
     types:
       - completed
   workflow_dispatch:
+
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -19,18 +20,21 @@ permissions:
 
 jobs:
   preflight:
-    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event_name != 'workflow_run' ||
+      github.event.workflow_run.conclusion == 'success' }}
     uses: ./.github/workflows/preflight.yml
+    timeout-minutes: 15
 
   backend-tests:
     needs: preflight
-    if: github.event_name == 'workflow_dispatch' || needs.preflight.outputs.run_backend == 'true'
+    if: github.event_name == 'workflow_dispatch' ||
+      needs.preflight.outputs.run_backend == 'true'
     runs-on: ubuntu-latest
     continue-on-error: true
     strategy:
       fail-fast: true
       matrix:
-        shard: [aa, ab, ac]
+        shard: [ aa, ab, ac ]
     steps:
       - name: Heartbeat
         run: |
@@ -70,3 +74,4 @@ jobs:
           node scripts/run-jest.js backend --listTests | split -n l/3 - test-files-
           TEST_FILES=$(cat test-files-${{ matrix.shard }} | tr '\n' ' ')
           node scripts/run-jest.js --runTestsByPath $TEST_FILES --ci
+    timeout-minutes: 15

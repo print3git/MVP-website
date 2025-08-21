@@ -3,7 +3,6 @@ name: Build frontend
 env:
   HUSKY: 0
 
-
 on:
   pull_request:
     paths:
@@ -18,7 +17,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: ${{ matrix.node != 22 || contains(github.event.pull_request.labels.*.name, 'full-matrix') }}
+    if: ${{ matrix.node != 22 || contains(github.event.pull_request.labels.*.name,
+      'full-matrix') }}
     continue-on-error: ${{ matrix.node == 22 }}
     defaults:
       run:
@@ -26,8 +26,8 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        node: [20, 22]
-        shard: [1, 2, 3]
+        node: [ 20, 22 ]
+        shard: [ 1, 2, 3 ]
     steps:
       - name: Heartbeat
         run: |
@@ -48,3 +48,4 @@ jobs:
         with:
           name: frontend-dist-${{ matrix.node }}-${{ matrix.shard }}
           path: frontend/dist
+    timeout-minutes: 15

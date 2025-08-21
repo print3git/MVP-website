@@ -16,6 +16,7 @@ concurrency:
 
 jobs:
   validate:
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true

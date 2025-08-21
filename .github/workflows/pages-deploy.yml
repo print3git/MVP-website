@@ -9,11 +9,12 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: pages-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   validate:
+    timeout-minutes: 15
     name: Pages config validate
     runs-on: ubuntu-latest
     steps:
@@ -37,6 +38,7 @@ jobs:
         run: npx -y wrangler pages config validate --project-name "${{ secrets.CF_PAGES_PROJECT }}"
 
   deploy:
+    timeout-minutes: 15
     needs: validate
     runs-on: ubuntu-latest
     steps:

@@ -18,6 +18,7 @@ concurrency:
 
 jobs:
   deploy:
+    timeout-minutes: 15
     if: vars.ENABLE_PAGES == '1' && github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     env:
@@ -140,6 +141,7 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_PAGES_API_TOKEN }}
 
   pages-disabled:
+    timeout-minutes: 15
     if: vars.ENABLE_PAGES != '1' && github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:

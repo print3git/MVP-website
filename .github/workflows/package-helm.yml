@@ -15,6 +15,7 @@ concurrency:
 
 jobs:
   package:
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
       - name: Heartbeat
