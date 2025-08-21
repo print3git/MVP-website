@@ -3,8 +3,22 @@ name: Lint
 on:
   push:
     branches: [main]
+    paths:
+      - frontend/**
+      - backend/**
+      - package.json
+      - package-lock.json
+      - pnpm-lock.yaml
+      - .github/workflows/**
   pull_request:
     branches: [main]
+    paths:
+      - frontend/**
+      - backend/**
+      - package.json
+      - package-lock.json
+      - pnpm-lock.yaml
+      - .github/workflows/**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
