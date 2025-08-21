@@ -1,0 +1,29 @@
+name: Secret Sentinel
+description: Check presence of CI secrets
+inputs:
+  vars:
+    description: Space-separated list of environment variable names
+    required: true
+outputs:
+  missing:
+    description: JSON array of missing variables
+    value: ${{ steps.check.outputs.missing }}
+runs:
+  using: composite
+  steps:
+    - id: check
+      shell: bash
+      run: |
+        python - <<'PY'
+import os, json
+vars = "${{ inputs.vars }}".split()
+missing = []
+for v in vars:
+    if os.getenv(v):
+        print(f"✅ {v}")
+    else:
+        print(f"❌ {v}")
+        missing.append(v)
+with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+    fh.write(f"missing={json.dumps(missing)}\n")
+PY
