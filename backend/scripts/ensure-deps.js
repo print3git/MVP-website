@@ -139,7 +139,7 @@ if (!fs.existsSync(expressPath)) {
   if (!canReachRegistry()) process.exit(1);
   console.log("Express not found. Installing root dependencies...");
   try {
-    runNpmCi(repoRoot);
+    runNpmCi(repoRoot, { ignoreScripts: true });
   } catch (err) {
     console.error("Failed to install root dependencies:", err.message);
     process.exit(1);
@@ -151,7 +151,7 @@ if (!fs.existsSync(pwPath)) {
   if (!canReachRegistry()) process.exit(1);
   console.log("@playwright/test not found. Installing root dependencies...");
   try {
-    runNpmCi(repoRoot);
+    runNpmCi(repoRoot, { ignoreScripts: true });
   } catch (err) {
     console.error("Failed to install root dependencies:", err.message);
     process.exit(1);
@@ -171,7 +171,7 @@ if (!fs.existsSync(jestPath)) {
     process.exit(1);
   }
   try {
-    runNpmCi();
+    runNpmCi(".", { ignoreScripts: true });
   } catch (err) {
     console.warn(
       "npm ci failed, retrying after cleaning node_modules:",
@@ -183,7 +183,7 @@ if (!fs.existsSync(jestPath)) {
       // ignore errors removing node_modules
     }
     try {
-      execSync("npm ci", { stdio: "inherit" });
+      execSync("npm ci --ignore-scripts", { stdio: "inherit" });
     } catch (err2) {
       console.error("Failed to install dependencies:", err2.message);
       process.exit(1);

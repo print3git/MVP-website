@@ -136,13 +136,13 @@ run_ci() {
   local attempt=1
   local max_attempts=3
   while [ $attempt -le $max_attempts ]; do
-    if npm ci $extra --no-audit --no-fund 2>ci.log; then
+    if npm ci $extra --no-audit --no-fund --ignore-scripts 2>ci.log; then
       rm -f ci.log
       return 0
     fi
     if grep -q "EUSAGE" ci.log; then
       echo "npm ci failed in $dir due to lock mismatch. Running npm install..." >&2
-      npm install $extra --no-audit --no-fund
+      npm install $extra --no-audit --no-fund --ignore-scripts
     elif grep -E -q "TAR_ENTRY_ERROR|ENOENT|ENOTEMPTY|tarball .*corrupted" ci.log; then
       echo "npm ci encountered tar or filesystem errors in $dir. Cleaning cache and retrying ($attempt/$max_attempts)..." >&2
       cleanup_npm_cache
@@ -154,7 +154,7 @@ run_ci() {
     fi
     attempt=$((attempt + 1))
   done
-  npm ci $extra --no-audit --no-fund
+  npm ci $extra --no-audit --no-fund --ignore-scripts
   rm -f ci.log
 }
 
