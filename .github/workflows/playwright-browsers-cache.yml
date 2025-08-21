@@ -28,9 +28,9 @@ jobs:
           path: |
             ~/.cache/ms-playwright
             ~/.cache/ms-playwright-ffmpeg
-          key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-playwright-${{ github.head_ref }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-playwright-
+            ${{ runner.os }}-playwright-${{ github.head_ref }}-
       - run: echo "Cache key: ${{ steps.cache-playwright.outputs.cache-primary-key }}"
 
       - name: Install Playwright browsers
