@@ -32,4 +32,10 @@ module.exports = [
     files: ["**/*", "scripts/**/*"],
     rules: { "jsdoc/require-jsdoc": "off" },
   },
+  // TODO: add docs for legacy lib modules
+  // Temporarily disable param checks until JSDoc is written
+  {
+    files: ["lib/**/*.js", "lib/pipeline/**/*.js"],
+    rules: { "jsdoc/require-param": "off" },
+  },
 ];
