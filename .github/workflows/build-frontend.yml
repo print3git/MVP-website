@@ -28,13 +28,14 @@ jobs:
       - name: Heartbeat
         run: |
           while true; do date; sleep 120; done &
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/frontend-build
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
           cache: npm
           cache-dependency-path: frontend/package-lock.json
-      - run: npm ci && npm run lint && npm run build
+      - run: npm run lint && npm run build
       - run: test -d dist
       - run: node ../scripts/assert-frontend-dist.js
       - uses: actions/upload-artifact@v4

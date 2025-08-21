@@ -17,7 +17,8 @@ jobs:
       - name: Heartbeat
         run: |
           while true; do date; sleep 120; done &
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/frontend-build
       - name: Load Stripe env
         run: node scripts/ci-env-preflight.js
         env:
