@@ -141,6 +141,13 @@ function dumpDiagnostics(err) {
 function main() {
   try {
     runValidateEnv();
+    const artifact = path.join("frontend", "dist", "index.html");
+    if (process.env.NODE_ENV !== "test" && !fs.existsSync(artifact)) {
+      console.error(
+        `Missing frontend build artifact: ${artifact}. Run 'npm run build' and retry`,
+      );
+      process.exit(1);
+    }
     if (!process.env.SKIP_SETUP && !fs.existsSync(".setup-complete")) {
       run("bash scripts/setup-codex-9b08f7c1.sh");
     } else {
@@ -163,7 +170,7 @@ function main() {
       ? `-t ${process.env.WAIT_ON_TIMEOUT} `
       : "";
     console.log("WAIT_ON_TIMEOUT:", process.env.WAIT_ON_TIMEOUT || "default");
-    const serve = "npm run serve | tee serve.log";
+    const serve = "node scripts/dev-server.js | tee serve.log";
     const test = `npx -y wait-on ${waitArgs}http://localhost:3000 && npx playwright test --reporter=list --trace on e2e/smoke.test.js | tee pw.log`;
     const cmd = `npx -y concurrently -k -s first --verbose -n serve,pw "${serve}" "${test}"`;
     try {
