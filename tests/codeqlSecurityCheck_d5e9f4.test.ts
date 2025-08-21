@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const glob = require("glob");
 
 function severityOf(result) {
   return (
@@ -21,11 +22,14 @@ function severityOf(result) {
 }
 
 describe("codeql security output", () => {
+  const defaultSarif =
+    glob.sync(path.join(__dirname, "..", "codeql-results", "*.sarif"))[0] ||
+    path.join(__dirname, "..", "codeql-results.sarif");
   const logFile =
     process.env.CODEQL_OUTPUT ||
     process.env.CODEQL_LOG ||
     process.env.CODEQL_ANNOTATIONS ||
-    path.join(__dirname, "..", "codeql-results.sarif");
+    defaultSarif;
 
   const run = fs.existsSync(logFile) ? test : test.skip;
 
