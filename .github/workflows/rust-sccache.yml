@@ -1,0 +1,26 @@
+name: Rust sccache
+
+on:
+  pull_request:
+    paths:
+      - 'crates/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./.github/actions/sccache
+      - name: Build
+        run: cargo build
+      - name: Test
+        run: cargo test
+      - name: Gather sccache stats
+        if: always()
+        run: sccache --show-stats > sccache-stats.txt
+      - name: Upload sccache stats
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sccache-stats
+          path: sccache-stats.txt
