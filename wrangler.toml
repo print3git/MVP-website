@@ -11,3 +11,6 @@ pages_build_output_dir = "frontend/dist"
 
 [env.preview.build]
 command = "npm ci --prefix frontend && npm run build --prefix frontend"
+
+[pages]
+# no functions dir
