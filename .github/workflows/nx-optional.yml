@@ -9,7 +9,7 @@ on:
 jobs:
   nx:
     runs-on:
-      - [self-hosted, linux, aws, small]
+      - [self-hosted, linux, aws]
       - ubuntu-latest
     steps:
       - uses: actions/checkout@v5

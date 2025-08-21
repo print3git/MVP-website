@@ -28,7 +28,7 @@ jobs:
   unit-tests:
     timeout-minutes: 15
     runs-on:
-      - [self-hosted, linux, aws, small]
+      - [self-hosted, linux, aws]
       - ubuntu-latest
     steps:
       - name: Heartbeat
@@ -54,7 +54,7 @@ jobs:
     timeout-minutes: 15
     needs: unit-tests
     runs-on:
-      - [self-hosted, linux, aws, small]
+      - [self-hosted, linux, aws]
       - ubuntu-latest
     env:
       PORT: 3000

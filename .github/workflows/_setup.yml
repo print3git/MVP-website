@@ -27,7 +27,7 @@ jobs:
   run:
     needs: labels
     runs-on:
-      - [self-hosted, linux, aws, small]
+      - [self-hosted, linux, aws]
       - ubuntu-latest
     steps:
       - name: Heartbeat

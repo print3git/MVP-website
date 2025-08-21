@@ -13,7 +13,9 @@ permissions:
 
 jobs:
   analyze:
-    runs-on: ubuntu-latest
+    runs-on:
+      - [self-hosted, linux, aws]
+      - ubuntu-latest
     strategy:
       fail-fast: false
       matrix:

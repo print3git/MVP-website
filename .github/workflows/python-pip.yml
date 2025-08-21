@@ -8,7 +8,9 @@ on:
 
 jobs:
   install:
-    runs-on: ubuntu-latest
+    runs-on:
+      - [self-hosted, linux, aws]
+      - ubuntu-latest
     strategy:
       matrix:
         python-version: ["3.10", "3.11"]

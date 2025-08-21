@@ -13,7 +13,7 @@ concurrency:
 jobs:
   watch:
     runs-on:
-      - [self-hosted, linux, aws, small]
+      - [self-hosted, linux, aws]
       - ubuntu-latest
     continue-on-error: true
     timeout-minutes: 8

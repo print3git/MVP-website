@@ -26,7 +26,7 @@ jobs:
     timeout-minutes: 15
     needs: preflight
     runs-on:
-      - [self-hosted, linux, aws, small]
+      - [self-hosted, linux, aws]
       - ubuntu-latest
     services:
       postgres:
@@ -70,7 +70,7 @@ jobs:
     needs: [preflight, db-seed]
     if: needs.preflight.outputs.run_backend == 'true'
     runs-on:
-      - [self-hosted, linux, aws, small]
+      - [self-hosted, linux, aws]
       - ubuntu-latest
     timeout-minutes: 5
     services:

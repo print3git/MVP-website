@@ -17,7 +17,7 @@ jobs:
   changed-tests:
     if: github.event_name == 'pull_request'
     runs-on:
-      - [self-hosted, linux, aws, small]
+      - [self-hosted, linux, aws]
       - ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -40,7 +40,7 @@ jobs:
   full-suite:
     if: github.ref_name == '00000production'
     runs-on:
-      - [self-hosted, linux, aws, small]
+      - [self-hosted, linux, aws]
       - ubuntu-latest
     strategy:
       fail-fast: true

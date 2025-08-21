@@ -9,7 +9,9 @@ concurrency:
 
 jobs:
   scan:
-    runs-on: ubuntu-latest
+    runs-on:
+      - [self-hosted, linux, aws]
+      - ubuntu-latest
     steps:
       - uses: actions/checkout@v5.0.0
       - uses: actions/setup-node@v4.4.0

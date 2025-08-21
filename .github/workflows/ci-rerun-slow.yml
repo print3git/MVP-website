@@ -15,7 +15,7 @@ jobs:
   coverage:
     timeout-minutes: 15
     runs-on:
-      - [self-hosted, linux, aws, small]
+      - [self-hosted, linux, aws]
       - ubuntu-latest
     outputs:
       duration: ${{ steps.duration.outputs.value }}
@@ -46,7 +46,7 @@ jobs:
   e2e:
     timeout-minutes: 15
     runs-on:
-      - [self-hosted, linux, aws, small]
+      - [self-hosted, linux, aws]
       - ubuntu-latest
     env:
       PORT: 3000
@@ -100,7 +100,7 @@ jobs:
   timings:
     timeout-minutes: 15
     runs-on:
-      - [self-hosted, linux, aws, small]
+      - [self-hosted, linux, aws]
       - ubuntu-latest
     needs: [coverage, e2e]
     steps:

@@ -5,7 +5,9 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on:
+      - [self-hosted, linux, aws]
+      - ubuntu-latest
     environment:
       name: production
       reviewers:

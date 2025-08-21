@@ -17,7 +17,7 @@ jobs:
     timeout-minutes: 15
     if: ${{ false }}
     runs-on:
-      - [self-hosted, linux, aws, small]
+      - [self-hosted, linux, aws]
       - ubuntu-latest
     steps:
       - name: Stop runner service
@@ -33,7 +33,7 @@ jobs:
     timeout-minutes: 15
     if: ${{ false }}
     runs-on:
-      - [self-hosted, linux, aws, small]
+      - [self-hosted, linux, aws]
       - ubuntu-latest
     steps:
       - name: Start instance

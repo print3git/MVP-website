@@ -21,7 +21,7 @@ jobs:
   lint:
     if: github.event_name != 'pull_request'
     runs-on:
-      - [self-hosted, linux, aws, small]
+      - [self-hosted, linux, aws]
       - ubuntu-latest
     timeout-minutes: 5
     continue-on-error: true
@@ -44,7 +44,7 @@ jobs:
   audit:
     if: github.event_name != 'pull_request'
     runs-on:
-      - [self-hosted, linux, aws, small]
+      - [self-hosted, linux, aws]
       - ubuntu-latest
     timeout-minutes: 5
     continue-on-error: true
@@ -69,7 +69,7 @@ jobs:
   stripe_cloudflare:
     if: github.event_name != 'pull_request'
     runs-on:
-      - [self-hosted, linux, aws, small]
+      - [self-hosted, linux, aws]
       - ubuntu-latest
     timeout-minutes: 5
     continue-on-error: true

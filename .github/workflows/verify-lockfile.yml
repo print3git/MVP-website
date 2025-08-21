@@ -17,7 +17,7 @@ jobs:
   verify:
     timeout-minutes: 15
     runs-on:
-      - [self-hosted, linux, aws, small]
+      - [self-hosted, linux, aws]
       - ubuntu-latest
     steps:
       - name: Heartbeat
@@ -59,7 +59,9 @@ jobs:
   lockfile-diff:
     needs: verify
     if: ${{ needs.verify.result == 'failure' }}
-    runs-on: ubuntu-latest
+    runs-on:
+      - [self-hosted, linux, aws]
+      - ubuntu-latest
     steps:
       - uses: actions/checkout@v5
       - run: corepack enable

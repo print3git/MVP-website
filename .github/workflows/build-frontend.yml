@@ -17,7 +17,7 @@ concurrency:
 jobs:
   build:
     runs-on:
-      - [self-hosted, linux, aws, small]
+      - [self-hosted, linux, aws]
       - ubuntu-latest
     if: ${{ matrix.node != 22 || contains(github.event.pull_request.labels.*.name,
       'full-matrix') }}
