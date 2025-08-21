@@ -1,0 +1,25 @@
+name: Boot Check
+
+env:
+  HUSKY: 0
+
+on:
+  workflow_dispatch:
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  boot_check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v5
+      - run: echo "CI_BOOT=1" >> $GITHUB_ENV
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: corepack enable && pnpm i --frozen-lockfile --ignore-scripts
+      - run: node scripts/boot-check.js
