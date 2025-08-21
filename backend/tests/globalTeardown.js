@@ -25,7 +25,10 @@ module.exports = async () => {
     ._getActiveHandles()
     .filter((h) => !ignored.includes(h));
   if (!process.env.SKIP_HANDLE_CHECK && remaining.length) {
-    console.error("\u274c Teardown detected lingering handles:", remaining);
+    const names = remaining.map((h) => h?.constructor?.name || typeof h);
+    console.error(
+      `\u274c Teardown detected lingering handles: ${names.join(", ")}`,
+    );
     process.exit(1);
   }
 };
