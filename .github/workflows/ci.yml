@@ -16,7 +16,9 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on:
+      - self-hosted
+      - ubuntu-latest
     defaults:
       run:
         working-directory: frontend
@@ -37,8 +39,8 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: ~/.npm
-          key: npm-${{ runner.os }}-fe-${{ hashFiles('frontend/package-lock.json') }}
-          restore-keys: npm-${{ runner.os }}-fe-
+          key: npm-fe-${{ hashFiles('frontend/package-lock.json') }}
+          restore-keys: npm-fe-
       - run: npm ci && npm run lint && npm run build
       - run: test -d dist
       - if: failure()
@@ -48,7 +50,9 @@ jobs:
           path: ${{ runner.temp }}/_github_workflow/*.log
 
   test-backend:
-    runs-on: ubuntu-latest
+    runs-on:
+      - self-hosted
+      - ubuntu-latest
     strategy:
       fail-fast: true
       matrix:
@@ -91,7 +95,9 @@ jobs:
           path: ${{ runner.temp }}/_github_workflow/*.log
 
   test-frontend:
-    runs-on: ubuntu-latest
+    runs-on:
+      - self-hosted
+      - ubuntu-latest
     strategy:
       fail-fast: true
       matrix:
@@ -119,8 +125,8 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: ~/.npm
-          key: npm-${{ runner.os }}-fe-${{ hashFiles('frontend/package-lock.json') }}
-          restore-keys: npm-${{ runner.os }}-fe-
+          key: npm-fe-${{ hashFiles('frontend/package-lock.json') }}
+          restore-keys: npm-fe-
       - run: npm ci --prefix frontend
       - name: Run frontend tests
         run: node scripts/run-jest.js --testPathPattern "${{ matrix.pattern }}" --ci --coverage --coverageDirectory=coverage/frontend
@@ -141,7 +147,9 @@ jobs:
 
   test-integration:
     if: github.event_name == 'push'
-    runs-on: ubuntu-latest
+    runs-on:
+      - self-hosted
+      - ubuntu-latest
     steps:
       - name: Heartbeat
         run: |
@@ -172,7 +180,9 @@ jobs:
 
   coverage-merge:
     if: github.event_name == 'push'
-    runs-on: ubuntu-latest
+    runs-on:
+      - self-hosted
+      - ubuntu-latest
     needs:
       - test-backend
       - test-frontend
