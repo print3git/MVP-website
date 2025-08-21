@@ -1,0 +1,42 @@
+name: Frontend build
+
+env:
+  HUSKY: 0
+
+on:
+  pull_request:
+    paths:
+      - "frontend/**"
+      - "!docs/**"
+      - "pnpm-lock.yaml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on:
+      - [self-hosted, linux, aws, small]
+      - ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Heartbeat
+        run: |
+          while true; do date; sleep 120; done &
+      - uses: actions/checkout@v5.0.0
+      - run: corepack enable
+      - uses: pnpm/action-setup@v4.0.0
+        with:
+          version: 8.15.8
+      - run: pnpm install --no-frozen-lockfile
+      - run: pnpm run build
+      - run: test -d dist
+      - run: node ../scripts/assert-frontend-dist.js
+      - uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: dist
+    timeout-minutes: 15
