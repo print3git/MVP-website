@@ -50,11 +50,10 @@ jobs:
           path: ${{ runner.temp }}/_github_workflow/*.log
 
   test-backend:
-    runs-on:
-      - self-hosted
-      - ubuntu-latest
+    runs-on: ubuntu-latest-XXL
     strategy:
       fail-fast: true
+      max-parallel: 2
       matrix:
         shard: [aa, ab, ac]
     steps:
@@ -100,6 +99,7 @@ jobs:
       - ubuntu-latest
     strategy:
       fail-fast: true
+      max-parallel: 2
       matrix:
         include:
           - shard: core
