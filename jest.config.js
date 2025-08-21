@@ -9,7 +9,7 @@ module.exports = {
     "<rootDir>/tests/setup/nock.ts",
     "<rootDir>/tests/setup/teardown.ts",
   ],
-  testTimeout: 120000,
+  testTimeout: 60000,
   maxWorkers: "50%",
   detectOpenHandles: true,
   forceExit: true,
