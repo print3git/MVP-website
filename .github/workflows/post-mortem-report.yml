@@ -3,9 +3,14 @@ name: Post-mortem reporter
 on:
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   fail-test:
     runs-on: ubuntu-latest
+    timeout-minutes: 40
     steps:
       - name: Intentionally fail
         id: fail_step
