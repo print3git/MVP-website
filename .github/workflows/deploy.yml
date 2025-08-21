@@ -81,6 +81,14 @@ jobs:
       - name: Verify dist output
         run: node scripts/assert-frontend-dist.js
 
+      - name: Ensure dist contains no LFS pointers
+        run: |
+          git lfs install
+          if grep -RIl "https://git-lfs.github.com/spec/v1" frontend/dist; then
+            echo "Git LFS pointers found in build output. Commit real assets or host them externally."
+            exit 1
+          fi
+
       - name: Copy dist without symlinks
         run: cp -aL frontend/dist/. pages_dist/
 

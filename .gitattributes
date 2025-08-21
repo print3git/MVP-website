@@ -28,3 +28,6 @@ sounds/* binary
 models/* binary
 uploads/* binary
 upload/* binary
+
+frontend/** -filter=lfs -diff=lfs -merge=lfs
+frontend/public/** -filter=lfs -diff=lfs -merge=lfs
