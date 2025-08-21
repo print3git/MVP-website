@@ -7,18 +7,22 @@ export default function ModelViewer({ url }) {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    if (error) {
-      document.body.dataset.viewerReady = "error";
-    } else if (loaded) {
-      document.body.dataset.viewerReady = "true";
-    } else {
-      delete document.body.dataset.viewerReady;
+    if (typeof document !== "undefined") {
+      if (error) {
+        document.body.dataset.viewerReady = "error";
+      } else if (loaded) {
+        document.body.dataset.viewerReady = "true";
+      } else {
+        delete document.body.dataset.viewerReady;
+      }
     }
   }, [loaded, error]);
 
   useEffect(
     () => () => {
-      delete document.body.dataset.viewerReady;
+      if (typeof document !== "undefined") {
+        delete document.body.dataset.viewerReady;
+      }
     },
     [],
   );
