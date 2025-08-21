@@ -9,6 +9,7 @@ permissions: {}
 jobs:
   probe:
     runs-on: ubuntu-latest
+    continue-on-error: true
     timeout-minutes: 5
     steps:
       - run: echo "hello $GITHUB_RUN_ID"
