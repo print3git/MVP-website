@@ -1,13 +1,8 @@
 name = "mvp-website"
-
-[env.production]
 pages_build_output_dir = "frontend/dist"
 
 [env.production.build]
 command = "npm ci --prefix frontend && npm run build --prefix frontend"
-
-[env.preview]
-pages_build_output_dir = "frontend/dist"
 
 [env.preview.build]
 command = "npm ci --prefix frontend && npm run build --prefix frontend"
