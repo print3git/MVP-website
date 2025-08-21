@@ -66,6 +66,7 @@
     "smoke": "node scripts/run-smoke.js",
     "start:backend": "npm start --prefix backend",
     "predeploy": "node scripts/check-missing-links.js",
+    "prebuild": "test -x frontend/node_modules/.bin/vite || (echo \"vite not installed in frontend\" && exit 1)",
     "build": "npm run build --prefix frontend",
     "postbuild": "npx -y ts-node --transpile-only scripts/check-broken-symlinks-9ac8f74db5e1c32.ts",
     "load": "artillery run tests/load/models.yml",
