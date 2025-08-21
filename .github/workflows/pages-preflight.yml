@@ -26,5 +26,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+      - uses: ./.github/actions/install-deps
       - run: node scripts/check-wrangler-pages.js
       - run: node scripts/check-asset-links.js

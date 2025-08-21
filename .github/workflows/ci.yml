@@ -198,10 +198,7 @@ jobs:
           run: npm ci
         - name: Build scripts
           run: npm run ci:build-scripts
-      - name: Ensure pnpm
-        uses: ./.github/actions/ensure-pnpm
-        with:
-          cache-dependency-path: pnpm-lock.yaml
+      - uses: ./.github/actions/install-deps
       - name: Install frontend dependencies
         run: pnpm -C frontend install --no-frozen-lockfile
       - name: Run frontend tests

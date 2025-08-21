@@ -24,6 +24,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+      - uses: ./.github/actions/install-deps
       - run: npm ci && npm run build --prefix frontend
       - name: ban dist symlinks
         run: |
@@ -57,6 +58,7 @@ jobs:
           cache-dependency-path: |
             package-lock.json
             frontend/package-lock.json
+      - uses: ./.github/actions/install-deps
       - run: npm ci && npm run build --prefix frontend
       - name: ban dist symlinks
         run: |
