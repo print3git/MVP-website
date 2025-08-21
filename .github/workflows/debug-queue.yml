@@ -15,6 +15,7 @@ permissions: {}
 
 jobs:
   debug:
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
       - run: echo "I ran on ${{ runner.os }} with job id ${{ github.run_id }}"

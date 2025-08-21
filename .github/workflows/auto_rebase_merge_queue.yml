@@ -3,10 +3,9 @@ name: Auto Rebase and Merge Queue
 env:
   HUSKY: 0
 
-
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
+    types: [ opened, synchronize, reopened ]
 
 permissions:
   contents: write
@@ -47,6 +46,7 @@ jobs:
               issue_number: context.issue.number,
               labels: ['rebase-needed']
             })
+    timeout-minutes: 15
   merge-queue:
     needs: rebase
     if: ${{ needs.rebase.result == 'success' || needs.rebase.result == 'skipped' }}
@@ -59,3 +59,4 @@ jobs:
         uses: autifyhq/merge-queue-action@v0.1.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    timeout-minutes: 15

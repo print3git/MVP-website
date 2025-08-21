@@ -21,6 +21,7 @@ concurrency:
 
 jobs:
   collect-logs:
+    timeout-minutes: 15
     if: ${{ github.event.workflow_run.conclusion == 'failure' }}
     runs-on: ubuntu-latest
     steps:

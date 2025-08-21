@@ -17,6 +17,7 @@ concurrency:
 
 jobs:
   notify:
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     env:
       PORT: 3000

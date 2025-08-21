@@ -13,6 +13,7 @@ concurrency:
 
 jobs:
   root-cache:
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
       - name: Heartbeat
@@ -27,6 +28,7 @@ jobs:
       - run: npm ci
 
   backend-cache:
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
       - name: Heartbeat
@@ -41,6 +43,7 @@ jobs:
       - run: npm ci --prefix backend
 
   frontend-cache:
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
       - name: Heartbeat

@@ -17,6 +17,7 @@ concurrency:
 
 jobs:
   jest-open-handles:
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:

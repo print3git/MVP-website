@@ -18,10 +18,12 @@ permissions:
 
 jobs:
   preflight:
+    timeout-minutes: 15
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     uses: ./.github/workflows/preflight.yml
 
   db-seed:
+    timeout-minutes: 15
     needs: preflight
     runs-on: ubuntu-latest
     services:

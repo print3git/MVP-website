@@ -3,9 +3,9 @@ name: Cache primer
 env:
   HUSKY: 0
 
-
 on:
   pull_request:
+
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -25,6 +25,7 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
       - run: npm ci
+    timeout-minutes: 15
 
   backend-cache:
     runs-on: ubuntu-latest
@@ -39,6 +40,7 @@ jobs:
           cache: npm
           cache-dependency-path: backend/package-lock.json
       - run: npm ci --prefix backend
+    timeout-minutes: 15
 
   frontend-cache:
     runs-on: ubuntu-latest
@@ -50,3 +52,4 @@ jobs:
           cache: npm
           cache-dependency-path: frontend/package-lock.json
       - run: npm ci --prefix frontend
+    timeout-minutes: 15

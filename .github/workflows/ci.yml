@@ -34,6 +34,7 @@ env:
 
 jobs:
   build:
+    timeout-minutes: 15
     runs-on:
       - self-hosted
       - ubuntu-latest
@@ -86,6 +87,7 @@ jobs:
           echo "First failing step: ${first_failed}" >> "$GITHUB_STEP_SUMMARY"
 
   test-backend:
+    timeout-minutes: 15
     runs-on: ubuntu-latest-XXL
     strategy:
       fail-fast: true
@@ -157,6 +159,7 @@ jobs:
           echo "First failing step: ${first_failed}" >> "$GITHUB_STEP_SUMMARY"
 
   test-frontend:
+    timeout-minutes: 15
     runs-on:
       - self-hosted
       - ubuntu-latest
@@ -233,6 +236,7 @@ jobs:
           echo "First failing step: ${first_failed}" >> "$GITHUB_STEP_SUMMARY"
 
   test-integration:
+    timeout-minutes: 15
     if: github.event_name == 'push'
     runs-on:
       - self-hosted
@@ -289,6 +293,7 @@ jobs:
           echo "First failing step: ${first_failed}" >> "$GITHUB_STEP_SUMMARY"
 
   coverage-merge:
+    timeout-minutes: 15
     if: github.event_name == 'push'
     runs-on:
       - self-hosted

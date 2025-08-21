@@ -18,11 +18,13 @@ concurrency:
 
 jobs:
   labels:
+    timeout-minutes: 15
     uses: ./.github/workflows/labels.yml
     with:
       use_self_hosted: ${{ inputs.use_self_hosted }}
 
   lint:
+    timeout-minutes: 15
     needs: labels
     runs-on: ${{ fromJSON(needs.labels.outputs.runs_on_json) }}
     steps:
