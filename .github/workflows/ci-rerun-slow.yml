@@ -86,6 +86,11 @@ jobs:
           PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
         run: |
           npx -y concurrently -k -s first "npm run serve" "npx wait-on http://localhost:3000 --timeout 300000 && npx playwright test e2e/*.test.js"
+      - name: Cleanup Playwright processes
+        if: always()
+        run: |
+          pkill -9 node || true
+          pkill -9 chromium || true
       - id: end
         run: echo "end=$(date +%s)" >> "$GITHUB_OUTPUT"
       - id: duration

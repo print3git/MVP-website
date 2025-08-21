@@ -67,3 +67,8 @@ jobs:
           PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "0"
         run: npx playwright test e2e/smoke.test.js
+      - name: Cleanup Playwright processes
+        if: always()
+        run: |
+          pkill -9 node || true
+          pkill -9 chromium || true
