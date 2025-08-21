@@ -12,20 +12,9 @@ concurrency:
 
 jobs:
   lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-          cache-dependency-path: |
-            package-lock.json
-            backend/package-lock.json
-            frontend/package-lock.json
-      - run: npm ci
-      - run: npm ci --prefix frontend
-      - run: npm ci --prefix backend
-      - run: npm run lint:root
-      - run: npm run lint --prefix frontend
-      - run: npm run lint --prefix backend
+    uses: ./.github/workflows/_setup.yml
+    with:
+      run: |
+        npm run lint:root
+        npm run lint --prefix frontend
+        npm run lint --prefix backend

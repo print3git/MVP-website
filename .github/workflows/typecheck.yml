@@ -12,18 +12,6 @@ concurrency:
 
 jobs:
   typecheck:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-          cache-dependency-path: |
-            package-lock.json
-            backend/package-lock.json
-            frontend/package-lock.json
-      - run: npm ci
-      - run: npm ci --prefix frontend
-      - run: npm ci --prefix backend
-      - run: npx tsc --noEmit
+    uses: ./.github/workflows/_setup.yml
+    with:
+      run: npx tsc --noEmit
