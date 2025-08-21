@@ -58,6 +58,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Ensure frontend build output exists
+        run: test -f frontend/dist/index.html
+
       - name: Run smoke tests
         run: pnpm run smoke
 
