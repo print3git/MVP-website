@@ -39,8 +39,9 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: ~/.npm
-          key: npm-fe-${{ hashFiles('frontend/package-lock.json') }}
-          restore-keys: npm-fe-
+          key: npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: npm-
+          save-always: false
       - run: npm ci && npm run lint && npm run build
       - run: test -d dist
       - if: failure()
@@ -65,14 +66,16 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "npm"
-          cache-dependency-path: package-lock.json
+      - uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: npm-
+          save-always: false
       - run: npm ci
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "npm"
-          cache-dependency-path: backend/package-lock.json
       - run: npm ci --prefix backend
       - name: Run backend tests
         run: |
@@ -116,17 +119,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "npm"
-          cache-dependency-path: package-lock.json
-      - run: npm ci
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
       - uses: actions/cache@v4
         with:
           path: ~/.npm
-          key: npm-fe-${{ hashFiles('frontend/package-lock.json') }}
-          restore-keys: npm-fe-
+          key: npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: npm-
+          save-always: false
+      - run: npm ci
       - run: npm ci --prefix frontend
       - name: Run frontend tests
         run: node scripts/run-jest.js --testPathPattern "${{ matrix.pattern }}" --ci --coverage --coverageDirectory=coverage/frontend
@@ -158,8 +157,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "npm"
-          cache-dependency-path: package-lock.json
+      - uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: npm-
+          save-always: false
       - run: npm ci
       - name: Run integration tests
         run: node scripts/run-jest.js tests/integration --ci --coverage --coverageDirectory=coverage/integration
@@ -195,8 +198,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "npm"
-          cache-dependency-path: package-lock.json
+      - uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: npm-
+          save-always: false
       - run: npm ci --ignore-scripts
       - uses: actions/download-artifact@v4.1.8
         with:
