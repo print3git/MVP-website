@@ -13,22 +13,35 @@ resource "aws_iam_openid_connect_provider" "github" {
 }
 
 resource "aws_iam_role" "github" {
-  name = "github-oidc-role"
+  name               = "github-oidc-role"
+  assume_role_policy = templatefile(
+    "${path.module}/../../selfhosted-runner/iam/oidc-trust-policy.json",
+    {
+      oidc_provider_arn = aws_iam_openid_connect_provider.github.arn,
+      github_org        = var.github_org,
+      github_repo       = var.github_repo
+    }
+  )
+}
 
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [{
-      Effect = "Allow",
-      Principal = {
-        Federated = aws_iam_openid_connect_provider.github.arn
-      },
-      Action = "sts:AssumeRoleWithWebIdentity",
-      Condition = {
-        StringEquals = { "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com" },
-        StringLike   = { "token.actions.githubusercontent.com:sub" = "repo:${var.github_org}/${var.github_repo}:*" }
-      }
-    }]
-  })
+resource "aws_iam_role_policy_attachment" "github_ec2" {
+  role       = aws_iam_role.github.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2FullAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "github_ssm" {
+  role       = aws_iam_role.github.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMFullAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "github_cloudwatch" {
+  role       = aws_iam_role.github.name
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchFullAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "github_s3" {
+  role       = aws_iam_role.github.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
 }
 
 resource "aws_security_group" "runner" {
