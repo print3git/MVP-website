@@ -2,12 +2,7 @@ name: provision-runners
 
 on:
   pull_request:
-    paths:
-      - 'infra/terraform/gha-runners/**'
-      - '.github/workflows/provision-runners.yml'
   push:
-    paths:
-      - 'infra/terraform/gha-runners/**'
   workflow_dispatch:
 
 permissions:

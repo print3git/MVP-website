@@ -1,9 +1,7 @@
 name: Full CI Aggregate
 on:
   push:
-    branches: [dev, 00000production]
   pull_request:
-    branches: [dev, 00000production]
 
 concurrency:
   group: ci-${{ github.ref }}-aggregate
@@ -23,6 +21,7 @@ jobs:
           done
           [ $missing -eq 0 ] || { echo "❌ Missing required workflows"; exit 1; }
   manifest:
+    if: ${{ always() }}
     runs-on: ubuntu-latest
     needs: safety
     steps:

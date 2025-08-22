@@ -1,0 +1,26 @@
+name: No Skip Guard
+
+on:
+  workflow_run:
+    workflows: ["CI", "CI Full Lane", "Full CI Aggregate", "CI Gate", "provision-runners", "Queue Probe"]
+    types: [completed]
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail on unexpected skipped jobs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          skips=$(gh api repos/$REPO/actions/runs/$RUN_ID/jobs --paginate \
+            --jq '.jobs[] | select(.conclusion=="skipped" and (.name | test("\\[skip-ok\\]" ) | not)) | .name')
+          if [ -n "$skips" ]; then
+            echo "Found skipped jobs without annotation:" >&2
+            echo "$skips" >&2
+            exit 1
+          fi
+          echo "No skipped jobs"
