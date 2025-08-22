@@ -1,78 +1,168 @@
 name: CI Fast Lane
 on:
   pull_request:
+permissions:
+  contents: read
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 jobs:
-  impact:
+  changes:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     outputs:
-      backend: ${{ steps.map.outputs.backend }}
-      frontend: ${{ steps.map.outputs.frontend }}
-      e2e: ${{ steps.map.outputs.e2e }}
-      docs: ${{ steps.map.outputs.docs }}
-      infra: ${{ steps.map.outputs.infra }}
+      backend: ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+      e2e: ${{ steps.filter.outputs.e2e }}
+      docs: ${{ steps.filter.outputs.docs }}
+      infra: ${{ steps.filter.outputs.infra }}
+      _any: ${{ steps.any.outputs._any }}
     steps:
       - uses: actions/checkout@v4
-      - id: map
-        uses: ./.github/actions/ci-impact-map
+        with:
+          fetch-depth: 0
+      - id: filter
+        uses: dorny/paths-filter@v3.0.2
+        with:
+          base: ${{ github.event.pull_request.base.sha }}
+          head: ${{ github.event.pull_request.head.sha }}
+          filters: |
+            backend:
+              - 'backend/**'
+            frontend:
+              - 'frontend/**'
+            e2e:
+              - 'e2e/**'
+            docs:
+              - 'docs/**'
+            infra:
+              - 'infra/**'
+      - id: any
+        env:
+          backend: ${{ steps.filter.outputs.backend }}
+          frontend: ${{ steps.filter.outputs.frontend }}
+          e2e: ${{ steps.filter.outputs.e2e }}
+          docs: ${{ steps.filter.outputs.docs }}
+          infra: ${{ steps.filter.outputs.infra }}
+        run: |
+          any=false
+          for area in backend frontend e2e docs infra; do
+            val="${!area}"
+            if [ "$val" != "false" ]; then
+              any=true
+            fi
+          done
+          echo "_any=$any" >> "$GITHUB_OUTPUT"
+      - name: Summary
+        env:
+          backend: ${{ steps.filter.outputs.backend }}
+          frontend: ${{ steps.filter.outputs.frontend }}
+          e2e: ${{ steps.filter.outputs.e2e }}
+          docs: ${{ steps.filter.outputs.docs }}
+          infra: ${{ steps.filter.outputs.infra }}
+          any: ${{ steps.any.outputs._any }}
+        run: |
+          {
+            echo '### Fast Lane file changes'
+            echo ''
+            printf '| area | changed |\n'
+            printf '| --- | --- |\n'
+            printf '| backend | %s |\n' "$backend"
+            printf '| frontend | %s |\n' "$frontend"
+            printf '| e2e | %s |\n' "$e2e"
+            printf '| docs | %s |\n' "$docs"
+            printf '| infra | %s |\n' "$infra"
+            echo ''
+            echo "_any: $any"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: actionlint
+        uses: rhysd/actionlint@v1.7.7
+      - name: Verify gating
+        run: |
+          unset npm_config_http_proxy npm_config_https_proxy
+          npm install js-yaml@4.1.0
+          node - <<'NODE'
+          const fs=require('fs'); const yaml=require('js-yaml');
+          const wf=yaml.load(fs.readFileSync('.github/workflows/ci-fast-lane.yml','utf8'));
+          const jobs=wf.jobs||{};
+          for (const [name,job] of Object.entries(jobs)) {
+            if (!job['runs-on']) throw new Error(`Job ${name} missing runs-on`);
+            const cond=job.if||'';
+            if (cond.includes('needs.changes.outputs')) {
+              const needs=job.needs? (Array.isArray(job.needs)?job.needs:[job.needs]):[];
+              if (!needs.includes('changes')) {
+                throw new Error(`Job ${name} references needs.changes without needs: changes`);
+              }
+            }
+          }
+          NODE
+
   lint:
     uses: ./.github/workflows/reusable-test-job.yml
-    needs: impact
+    needs: changes
+    if: needs.changes.outputs._any == 'true'
     with:
       suite: lint
       command: npm run lint
   typecheck:
     uses: ./.github/workflows/reusable-test-job.yml
-    needs: impact
+    needs: changes
+    if: needs.changes.outputs._any == 'true'
     with:
       suite: typecheck
       command: npm run typecheck
   unit:
     uses: ./.github/workflows/reusable-test-job.yml
-    needs: impact
+    needs: changes
+    if: needs.changes.outputs._any == 'true'
     with:
       suite: unit
       command: JEST_RETRIES=2 npm test -- --config scripts/ci/jest.config.ci.ts
   backend:
-    if: needs.impact.outputs.backend == 'true'
     uses: ./.github/workflows/reusable-test-job.yml
-    needs: impact
+    needs: changes
+    if: needs.changes.outputs.backend == 'true' || needs.changes.outputs._any == 'true'
     with:
       suite: backend
       command: npm test -- --backend
   frontend:
-    if: needs.impact.outputs.frontend == 'true'
     uses: ./.github/workflows/reusable-test-job.yml
-    needs: impact
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true' || needs.changes.outputs._any == 'true'
     with:
       suite: frontend
       command: npm test -- --frontend
   e2e:
-    if: needs.impact.outputs.e2e == 'true'
     uses: ./.github/workflows/reusable-test-job.yml
-    needs: impact
+    needs: changes
+    if: needs.changes.outputs.e2e == 'true' || needs.changes.outputs._any == 'true'
     with:
       suite: e2e
       command: npm run test:e2e
   docs:
-    if: needs.impact.outputs.docs == 'true'
     uses: ./.github/workflows/reusable-test-job.yml
-    needs: impact
+    needs: changes
+    if: needs.changes.outputs.docs == 'true' || needs.changes.outputs._any == 'true'
     with:
       suite: docs
       command: npm test -- --docs
   infra:
-    if: needs.impact.outputs.infra == 'true'
     uses: ./.github/workflows/reusable-test-job.yml
-    needs: impact
+    needs: changes
+    if: needs.changes.outputs.infra == 'true' || needs.changes.outputs._any == 'true'
     with:
       suite: infra
       command: npm test -- --infra
   inventory:
     uses: ./.github/workflows/reusable-test-job.yml
-    needs: impact
+    needs: changes
+    if: needs.changes.outputs._any == 'true'
     with:
       suite: inventory
       command: npm run test:inventory
