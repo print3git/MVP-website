@@ -1,0 +1,50 @@
+name: Deploy Pages artifact
+
+env:
+  HUSKY: 0
+
+on:
+  push:
+    branches: [dev]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on:
+      - [self-hosted, linux, aws]
+      - ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Heartbeat
+        run: |
+          while true; do date; sleep 120; done &
+      - uses: actions/checkout@v4.1.7
+      - uses: actions/setup-node@v4.0.3
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run build
+      - run: node ../scripts/assert-frontend-dist.js
+      - uses: actions/upload-artifact@v4.3.3
+        with:
+          name: frontend-dist
+          path: frontend/dist
+      - name: Deploy to Cloudflare Pages
+        env:
+          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          CF_PROJECT_NAME: ${{ secrets.CF_PROJECT_NAME }}
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          GITHUB_SHA: ${{ github.sha }}
+        run: |
+          tar -czf dist.tar.gz -C dist .
+          curl -X POST "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT_ID/pages/projects/$CF_PROJECT_NAME/deployments" \
+            -H "Authorization: Bearer $CF_API_TOKEN" \
+            -F "metadata={\"branch\":\"dev\",\"commit_hash\":\"$GITHUB_SHA\"};type=application/json" \
+            -F "deployment=@dist.tar.gz"
