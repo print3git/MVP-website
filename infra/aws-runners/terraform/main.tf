@@ -1,5 +1,5 @@
 locals {
-  runner_labels       = ["self-hosted", "linux", "x64", "ephemeral", "aws-ec2"]
+  runner_labels       = ["self-hosted", "linux", "x64", "ephemeral", "aws", "aws-ec2"]
   runner_label_string = join(",", local.runner_labels)
 }
 
