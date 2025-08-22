@@ -1,0 +1,75 @@
+name: CI Canary (Self-hosted start latency)
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+    inputs:
+      threshold_seconds:
+        description: "SLO (seconds)"
+        default: "120"
+        required: false
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      has_runner: ${{ steps.detect.outputs.has_runner }}
+    steps:
+      - id: detect
+        shell: bash
+        env:
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          data=$(gh api -H "Accept: application/vnd.github+json" \
+            "/repos/$REPO/actions/runners")
+          found=$(echo "$data" | jq '[.runners[] | (.labels | map(.name))] | map([index("self-hosted"), index("linux"), index("x64"), index("aws-runner")] | all(. != null)) | any')
+          if [[ "$found" == "true" ]]; then
+            echo "has_runner=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "No matching self-hosted runner; skipping." >&2
+            echo "has_runner=false" >> "$GITHUB_OUTPUT"
+          fi
+  canary:
+    name: selfhosted-canary
+    needs: check
+    if: needs.check.outputs.has_runner == 'true'
+    runs-on: [self-hosted, linux, x64, aws-runner]
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prove the runner does minimal work
+        run: |
+          uname -a
+          echo "Self-hosted canary OK"
+      - name: Assert latency SLO
+        id: slo
+        uses: ./.github/actions/canary-latency
+        with:
+          threshold_seconds: ${{ inputs.threshold_seconds || vars.CI_SLO_START_SECONDS || '120' }}
+      - name: Upload timings artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: canary-timings
+          path: |
+            $GITHUB_STEP_SUMMARY
+      - name: Comment PR with latency
+        if: github.event_name == 'workflow_dispatch' && github.event.pull_request.number
+        uses: actions/github-script@v7
+        env:
+          LATENCY: ${{ steps.slo.outputs.latency_seconds }}
+          RESULT: ${{ steps.slo.outcome }}
+        with:
+          script: |
+            const body = `${process.env.RESULT === 'success' ? '✅' : '❌'} self-hosted latency ${process.env.LATENCY}s`;
+            await github.rest.issues.createComment({
+              ...context.repo,
+              issue_number: context.payload.pull_request.number,
+              body
+            });
+  control:
+    name: control-ubuntu
+    needs: canary
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - run: echo "Control path (repo ok)."
