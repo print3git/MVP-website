@@ -1,6 +1,12 @@
 name = "print2"
 compatibility_date = "2025-08-22"
 
+[build]
+command = "bash -lc 'corepack enable && pnpm -C frontend install --frozen-lockfile && pnpm -C frontend build'"
+
+[pages]
+build_output_dir = "frontend/dist"
+
 [env.preview]
   name = "print2"
 

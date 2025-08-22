@@ -15,7 +15,32 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  build-frontend:
+    runs-on: [self-hosted, linux, aws]
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+      - run: corepack enable
+      - uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+      - run: pnpm install --frozen-lockfile
+        working-directory: frontend
+      - run: pnpm build
+        working-directory: frontend
+      - run: test -f frontend/dist/index.html
+      - uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
+
   smoke_test:
+    needs: build-frontend
     timeout-minutes: 15
     runs-on: [self-hosted, linux, aws]
     env:
@@ -50,13 +75,12 @@ jobs:
         with:
           node-version: 20
       - name: Install dependencies
-        run: |
-          npm ci
-          npm ci --prefix frontend
-          npm run build --prefix frontend
-
-      - name: Ensure frontend build output exists
-        run: test -f frontend/dist/index.html
+        run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
+      - run: test -f frontend/dist/index.html
 
       - name: Run smoke tests
         run: npm run smoke

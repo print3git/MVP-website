@@ -6,7 +6,31 @@ on:
     - cron: "0 3 * * *"
 
 jobs:
+  build-frontend:
+    runs-on: [self-hosted]
+    steps:
+      - uses: actions/checkout@v4.1.7
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+      - run: corepack enable
+      - uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+      - run: pnpm install --frozen-lockfile
+        working-directory: frontend
+      - run: pnpm build
+        working-directory: frontend
+      - run: test -f frontend/dist/index.html
+      - uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
+
   feature-test:
+    needs: build-frontend
     runs-on: [self-hosted]
     steps:
       - name: Log tooling versions
@@ -26,6 +50,12 @@ jobs:
 
       - name: Workspace tests
         run: npm test -w || echo 'workspace tests skipped'
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
+      - run: test -f frontend/dist/index.html
 
       - name: Playwright smoke
         if: vars.RUN_PLAYWRIGHT_SMOKE == '1'
