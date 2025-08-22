@@ -34,6 +34,9 @@ jobs:
     needs: check
     if: needs.check.outputs.has_runner == 'true'
     runs-on: [self-hosted, linux, x64, aws-runner]
+    permissions:
+      issues: write
+      pull-requests: write
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -59,13 +62,18 @@ jobs:
           LATENCY: ${{ steps.slo.outputs.latency_seconds }}
           RESULT: ${{ steps.slo.outcome }}
         with:
+          github-token: ${{ github.token }}
           script: |
             const body = `${process.env.RESULT === 'success' ? '✅' : '❌'} self-hosted latency ${process.env.LATENCY}s`;
-            await github.rest.issues.createComment({
-              ...context.repo,
-              issue_number: context.payload.pull_request.number,
-              body
-            });
+            try {
+              await github.rest.issues.createComment({
+                ...context.repo,
+                issue_number: context.payload.pull_request.number,
+                body
+              });
+            } catch (e) {
+              core.warning("Comment skipped: insufficient permissions (" + e.message + ")");
+            }
   control:
     name: control-ubuntu
     needs: canary
