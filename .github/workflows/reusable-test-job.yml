@@ -18,7 +18,7 @@ jobs:
       contents: read
     defaults:
       run:
-        shell: bash -euo pipefail
+        shell: bash
     steps:
       - name: Preflight (print context)
         env:
