@@ -1,0 +1,33 @@
+name: action validators
+
+on:
+  pull_request:
+  push:
+    branches: [dev]
+
+jobs:
+  actionlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: reviewdog/action-actionlint@v1
+        with:
+          reporter: github-pr-check
+
+  composite-schema-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          npm i -D ajv js-yaml glob
+          node - <<'JS'
+          const fs=require('fs'),yaml=require('js-yaml');const {globSync}=require('glob');
+          const files=globSync('.github/actions/**/action.yml');
+          let bad=0;
+          for(const f of files){
+            const doc=yaml.load(fs.readFileSync(f,'utf8'));
+            const ok = doc && doc.name && doc.runs && doc.runs.using==='composite' && Array.isArray(doc.runs.steps);
+            if(!ok){ console.error('Invalid composite action:', f); bad++; }
+          }
+          process.exit(bad?1:0);
+          JS
