@@ -31,6 +31,47 @@ jobs:
         with:
           run_install: false
 # <<< END MANAGED BLOCK: ci-guard:windows-cancel-guard
+# >>> BEGIN MANAGED BLOCK: ci-guard:corepack-pnpm-windows
+      - name: Setup Node (Windows)
+        if: startsWith(runner.os, 'Windows')
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: |
+            pnpm-lock.yaml
+            frontend/pnpm-lock.yaml
+            backend/pnpm-lock.yaml
+
+      - name: Enable Corepack (Windows)
+        if: startsWith(runner.os, 'Windows')
+        shell: pwsh
+        run: corepack enable
+
+      - name: Prepare pnpm via Corepack (Windows)
+        if: startsWith(runner.os, 'Windows')
+        shell: pwsh
+        run: |
+          $pm = ""
+          try { $pm = (Get-Content package.json | ConvertFrom-Json).packageManager } catch {}
+          if ($pm -and $pm -match "^pnpm@") {
+            $ver = $pm.Split("@")[1]
+            corepack prepare "pnpm@$ver" --activate
+          } else {
+            corepack prepare pnpm@10 --activate
+          }
+
+      - name: Fallback: pnpm/action-setup (Windows)
+        if: startsWith(runner.os, 'Windows')
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Verify pnpm (Windows)
+        if: startsWith(runner.os, 'Windows')
+        shell: pwsh
+        run: pnpm -v
+# <<< END MANAGED BLOCK: ci-guard:corepack-pnpm-windows
       - uses: actions/setup-node@v4
         with:
           node-version: 20
