@@ -18,9 +18,7 @@ concurrency:
 jobs:
   jest-open-handles:
     timeout-minutes: 15
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     continue-on-error: true
     steps:
       - name: Heartbeat

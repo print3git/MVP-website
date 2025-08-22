@@ -7,9 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     steps:
       - uses: actions/checkout@v5
       - uses: ./.github/actions/sccache

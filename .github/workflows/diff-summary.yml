@@ -9,9 +9,7 @@ concurrency:
 
 jobs:
   diff:
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     permissions:
       contents: read
       issues: write

@@ -13,9 +13,7 @@ jobs:
   comment:
     timeout-minutes: 15
     if: ${{ github.event.workflow_run.conclusion != 'cancelled' }}
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     permissions:
       contents: read
       issues: write

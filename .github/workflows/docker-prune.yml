@@ -7,9 +7,7 @@ on:
 
 jobs:
   prune:
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     steps:
       - name: Prune Docker on self-hosted runners
         if: ${{ startsWith(runner.name, 'self-hosted') || contains(runner.labels, 'self-hosted') }}

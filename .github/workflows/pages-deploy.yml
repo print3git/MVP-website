@@ -17,9 +17,7 @@ jobs:
   validate:
     timeout-minutes: 15
     name: Pages config validate
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     env:
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CF_PAGES_API_TOKEN }}
@@ -45,9 +43,7 @@ jobs:
   deploy:
     timeout-minutes: 15
     needs: validate
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     env:
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CF_PAGES_API_TOKEN }}

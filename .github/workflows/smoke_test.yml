@@ -14,9 +14,7 @@ concurrency:
 jobs:
   changes:
     timeout-minutes: 15
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     outputs:
       frontend: ${{ steps.filter.outputs.frontend }}
     steps:
@@ -33,9 +31,7 @@ jobs:
   backend-smoke:
     timeout-minutes: 15
     needs: changes
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     env:
       PORT: 3000
       DB_URL: postgres://user:pass@localhost:5432/testdb
@@ -75,9 +71,7 @@ jobs:
     timeout-minutes: 15
     needs: [changes, backend-smoke]
     if: needs.changes.outputs.frontend == 'true'
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     steps:
       - name: Heartbeat
         run: |

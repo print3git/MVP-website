@@ -23,9 +23,7 @@ jobs:
   collect-logs:
     timeout-minutes: 15
     if: ${{ github.event.workflow_run.conclusion == 'failure' }}
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     steps:
       - name: Heartbeat
         run: |

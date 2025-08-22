@@ -6,9 +6,7 @@ on:
 
 jobs:
   check:
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     steps:
       - name: Checkout
         uses: actions/checkout@v4

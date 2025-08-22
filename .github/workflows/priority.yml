@@ -16,9 +16,7 @@ concurrency:
 
 jobs:
   lint-fast:
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v5
@@ -36,9 +34,7 @@ jobs:
       - run: npm run lint:fast
 
   smoke-api:
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v5
@@ -56,9 +52,7 @@ jobs:
   gate:
     timeout-minutes: 15
     name: Gate
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     needs: [lint-fast, smoke-api]
     if: ${{ always() }}
     steps:

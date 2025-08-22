@@ -9,9 +9,7 @@ permissions:
 
 jobs:
   label:
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     steps:
       - uses: actions/labeler@v5
         with:

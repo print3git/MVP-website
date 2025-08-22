@@ -15,9 +15,7 @@ on:
 
 jobs:
   skip-heavy:
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     steps:
       - if: contains(github.event.pull_request.labels.*.name, 'skip-heavy')
         run: |

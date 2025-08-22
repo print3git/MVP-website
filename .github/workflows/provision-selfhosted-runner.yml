@@ -27,9 +27,7 @@ concurrency:
 jobs:
   provision:
     timeout-minutes: 15
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     permissions:
       contents: read
       id-token: write

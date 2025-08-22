@@ -6,9 +6,7 @@ on:
 
 jobs:
   turbo:
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
