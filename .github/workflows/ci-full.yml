@@ -1,0 +1,359 @@
+name: CI Full Lane
+
+on:
+  pull_request:
+    branches:
+      - dev
+      - '00000production'
+  push:
+    branches:
+      - dev
+      - '00000production'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  docs:
+    name: CI Full Lane / docs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5.0.0
+      - uses: actions/setup-node@v4.4.0
+        with:
+          node-version: 20
+      - uses: pnpm/action-setup@v4.1.0
+        with:
+          version: 9
+      - name: Setup pnpm store
+        id: pnpm-cache
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - uses: actions/cache@v4.2.4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-pnpm-
+      - uses: actions/cache@v4.2.4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-modules-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-modules-
+      - run: pnpm install --no-frozen-lockfile
+      - run: |
+          pnpm lint:md
+          pnpm predeploy
+
+  lint:
+    name: CI Full Lane / lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5.0.0
+      - uses: actions/setup-node@v4.4.0
+        with:
+          node-version: 20
+      - uses: pnpm/action-setup@v4.1.0
+        with:
+          version: 9
+      - name: Setup pnpm store
+        id: pnpm-cache
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - uses: actions/cache@v4.2.4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml','frontend/pnpm-lock.yaml','backend/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-pnpm-
+      - uses: actions/cache@v4.2.4
+        with:
+          path: |
+            node_modules
+            frontend/node_modules
+            backend/node_modules
+          key: ${{ runner.os }}-modules-${{ hashFiles('pnpm-lock.yaml','frontend/pnpm-lock.yaml','backend/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-modules-
+      - run: pnpm install --no-frozen-lockfile
+      - run: pnpm install --no-frozen-lockfile --prefix frontend
+      - run: pnpm install --no-frozen-lockfile --prefix backend
+      - run: pnpm lint
+
+  typecheck:
+    name: CI Full Lane / typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5.0.0
+      - uses: actions/setup-node@v4.4.0
+        with:
+          node-version: 20
+      - uses: pnpm/action-setup@v4.1.0
+        with:
+          version: 9
+      - name: Setup pnpm store
+        id: pnpm-cache
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - uses: actions/cache@v4.2.4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml','frontend/pnpm-lock.yaml','backend/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-pnpm-
+      - uses: actions/cache@v4.2.4
+        with:
+          path: |
+            node_modules
+            frontend/node_modules
+            backend/node_modules
+          key: ${{ runner.os }}-modules-${{ hashFiles('pnpm-lock.yaml','frontend/pnpm-lock.yaml','backend/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-modules-
+      - run: pnpm install --no-frozen-lockfile
+      - run: pnpm install --no-frozen-lockfile --prefix frontend
+      - run: pnpm install --no-frozen-lockfile --prefix backend
+      - run: |
+          pnpm exec tsc --noEmit
+          if [ -f frontend/tsconfig.json ]; then pnpm exec tsc --noEmit -p frontend/tsconfig.json; fi
+          if [ -f backend/tsconfig.json ]; then pnpm exec tsc --noEmit -p backend/tsconfig.json; fi
+
+  unit:
+    name: CI Full Lane / unit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5.0.0
+      - uses: actions/setup-node@v4.4.0
+        with:
+          node-version: 20
+      - uses: pnpm/action-setup@v4.1.0
+        with:
+          version: 9
+      - name: Setup pnpm store
+        id: pnpm-cache
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - uses: actions/cache@v4.2.4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml','frontend/pnpm-lock.yaml','backend/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-pnpm-
+      - uses: actions/cache@v4.2.4
+        with:
+          path: |
+            node_modules
+            frontend/node_modules
+            backend/node_modules
+          key: ${{ runner.os }}-modules-${{ hashFiles('pnpm-lock.yaml','frontend/pnpm-lock.yaml','backend/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-modules-
+      - run: pnpm install --no-frozen-lockfile
+      - run: pnpm install --no-frozen-lockfile --prefix frontend
+      - run: pnpm install --no-frozen-lockfile --prefix backend
+      - name: Run unit tests
+        env:
+          JEST_JUNIT_OUTPUT_DIR: junit
+        run: |
+          pnpm exec jest --config backend/jest.config.js --runInBand --reporters=default --reporters=jest-junit
+          pnpm exec jest --config frontend/jest.config.js --runInBand --env=jsdom --reporters=default --reporters=jest-junit
+      - uses: actions/upload-artifact@v4.6.2
+        if: always()
+        with:
+          name: junit
+          path: junit
+
+  frontend:
+    name: CI Full Lane / frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5.0.0
+      - uses: actions/setup-node@v4.4.0
+        with:
+          node-version: 20
+      - uses: pnpm/action-setup@v4.1.0
+        with:
+          version: 9
+      - name: Setup pnpm store
+        id: pnpm-cache
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - uses: actions/cache@v4.2.4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml','frontend/pnpm-lock.yaml','backend/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-pnpm-
+      - uses: actions/cache@v4.2.4
+        with:
+          path: |
+            node_modules
+            frontend/node_modules
+            backend/node_modules
+          key: ${{ runner.os }}-modules-${{ hashFiles('pnpm-lock.yaml','frontend/pnpm-lock.yaml','backend/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-modules-
+      - run: pnpm install --no-frozen-lockfile
+      - run: pnpm install --no-frozen-lockfile --prefix frontend
+      - run: pnpm install --no-frozen-lockfile --prefix backend
+      - run: pnpm --prefix frontend build
+      - run: pnpm bundle:size
+      - uses: actions/upload-artifact@v4.6.2
+        if: always()
+        with:
+          name: frontend-dist
+          path: frontend/dist
+
+  e2e:
+    name: CI Full Lane / e2e
+    needs: [lint, typecheck, unit]
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5.0.0
+      - uses: actions/setup-node@v4.4.0
+        with:
+          node-version: 20
+      - uses: pnpm/action-setup@v4.1.0
+        with:
+          version: 9
+      - name: Setup pnpm store
+        id: pnpm-cache
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - uses: actions/cache@v4.2.4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml','frontend/pnpm-lock.yaml','backend/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-pnpm-
+      - uses: actions/cache@v4.2.4
+        with:
+          path: |
+            node_modules
+            frontend/node_modules
+            backend/node_modules
+          key: ${{ runner.os }}-modules-${{ hashFiles('pnpm-lock.yaml','frontend/pnpm-lock.yaml','backend/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-modules-
+      - run: pnpm install --no-frozen-lockfile
+      - run: pnpm install --no-frozen-lockfile --prefix frontend
+      - run: pnpm install --no-frozen-lockfile --prefix backend
+      - name: Run Playwright tests
+        env:
+          PLAYWRIGHT_JUNIT_OUTPUT_NAME: results.xml
+        run: |
+          mkdir -p junit
+          pnpm exec playwright test --reporter=junit
+          mv results.xml junit/e2e.xml
+      - uses: actions/upload-artifact@v4.6.2
+        if: always()
+        with:
+          name: junit
+          path: junit
+
+  infra:
+    name: CI Full Lane / infra
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5.0.0
+      - uses: actions/setup-node@v4.4.0
+        with:
+          node-version: 20
+      - uses: pnpm/action-setup@v4.1.0
+        with:
+          version: 9
+      - name: Setup pnpm store
+        id: pnpm-cache
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - uses: actions/cache@v4.2.4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml','frontend/pnpm-lock.yaml','backend/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-pnpm-
+      - uses: actions/cache@v4.2.4
+        with:
+          path: |
+            node_modules
+            frontend/node_modules
+            backend/node_modules
+          key: ${{ runner.os }}-modules-${{ hashFiles('pnpm-lock.yaml','frontend/pnpm-lock.yaml','backend/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-modules-
+      - run: pnpm install --no-frozen-lockfile
+      - run: pnpm install --no-frozen-lockfile --prefix frontend
+      - run: pnpm install --no-frozen-lockfile --prefix backend
+      - run: |
+          for file in $(git ls-files '*.json'); do
+            jq . "$file" >/dev/null
+          done
+          if [ -d schemas ]; then
+            for file in $(git ls-files '*.json'); do
+              schema="schemas/$(basename "$file")"
+              if [ -f "$schema" ]; then pnpm exec ajv-cli validate -s "$schema" -d "$file"; fi
+            done
+          fi
+          pnpm exec actionlint
+          pnpm exec yamllint -c .yamllint.yml .github/workflows
+
+  coverage:
+    name: CI Full Lane / coverage
+    needs: unit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5.0.0
+      - uses: actions/setup-node@v4.4.0
+        with:
+          node-version: 20
+      - uses: pnpm/action-setup@v4.1.0
+        with:
+          version: 9
+      - name: Setup pnpm store
+        id: pnpm-cache
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - uses: actions/cache@v4.2.4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml','frontend/pnpm-lock.yaml','backend/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-pnpm-
+      - uses: actions/cache@v4.2.4
+        with:
+          path: |
+            node_modules
+            frontend/node_modules
+            backend/node_modules
+          key: ${{ runner.os }}-modules-${{ hashFiles('pnpm-lock.yaml','frontend/pnpm-lock.yaml','backend/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-modules-
+      - run: pnpm install --no-frozen-lockfile
+      - run: pnpm install --no-frozen-lockfile --prefix frontend
+      - run: pnpm install --no-frozen-lockfile --prefix backend
+      - run: pnpm coverage
+      - uses: actions/upload-artifact@v4.6.2
+        if: always()
+        with:
+          name: coverage
+          path: coverage
+
+  codeql:
+    name: CI Full Lane / codeql
+    permissions:
+      security-events: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5.0.0
+      - uses: actions/setup-node@v4.4.0
+        with:
+          node-version: 20
+      - uses: pnpm/action-setup@v4.1.0
+        with:
+          version: 9
+      - name: Setup pnpm store
+        id: pnpm-cache
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - uses: actions/cache@v4.2.4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml','frontend/pnpm-lock.yaml','backend/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-pnpm-
+      - uses: actions/cache@v4.2.4
+        with:
+          path: |
+            node_modules
+            frontend/node_modules
+            backend/node_modules
+          key: ${{ runner.os }}-modules-${{ hashFiles('pnpm-lock.yaml','frontend/pnpm-lock.yaml','backend/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-modules-
+      - run: pnpm install --no-frozen-lockfile
+      - run: pnpm install --no-frozen-lockfile --prefix frontend
+      - run: pnpm install --no-frozen-lockfile --prefix backend
+      - uses: github/codeql-action/init@v3.29.9
+        with:
+          languages: javascript-typescript
+      - run: pnpm build:frontend
+      - uses: github/codeql-action/analyze@v3.29.9
