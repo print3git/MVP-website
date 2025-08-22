@@ -1,0 +1,34 @@
+name: Runner parity guard
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency: repo-ci
+
+jobs:
+  parity:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check runner parity
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const run_id = process.env.GITHUB_RUN_ID;
+            const pages = await github.paginate(github.rest.actions.listJobsForWorkflowRun, { owner, repo, run_id });
+            const mismatches = [];
+            for (const job of pages) {
+              const labels = job.labels || [];
+              const expectedSelf = labels.includes('self-hosted');
+              const runnerName = job.runner_name || '';
+              const actualSelf = runnerName && !runnerName.startsWith('GitHub Actions');
+              if (expectedSelf !== actualSelf) {
+                mismatches.push(`${job.name} expected ${expectedSelf ? 'self-hosted' : 'hosted'} but ran on ${actualSelf ? 'self-hosted' : 'hosted'}`);
+              }
+            }
+            if (mismatches.length) {
+              core.setFailed('Runner parity mismatch:\n' + mismatches.join('\n'));
+            }

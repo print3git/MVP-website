@@ -5,6 +5,8 @@ on:
   pull_request:
     branches: [dev, 00000production]
 
+concurrency: repo-ci
+
 jobs:
   sanity:
     runs-on: ubuntu-latest
