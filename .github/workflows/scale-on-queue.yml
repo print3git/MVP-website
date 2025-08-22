@@ -1,0 +1,58 @@
+name: scale-on-queue
+
+on:
+  workflow_job:
+    types: [queued]
+
+jobs:
+  scale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Read config
+        id: cfg
+        run: |
+          pip install pyyaml >/dev/null
+          python <<'PY'
+import yaml, json, os
+with open('.github/ci/selfhosted-min.yml') as f:
+    c = yaml.safe_load(f)
+region = os.environ.get('AWS_REGION_OVERRIDE') or c['aws_region']
+asg = os.environ.get('ASG_NAME_OVERRIDE') or c['asg_name']
+print(f"region={region}", file=open(os.environ['GITHUB_OUTPUT'], 'a'))
+print(f"asg={asg}", file=open(os.environ['GITHUB_OUTPUT'], 'a'))
+print(f"labels={json.dumps(c['labels'])}", file=open(os.environ['GITHUB_OUTPUT'], 'a'))
+PY
+        env:
+          AWS_REGION_OVERRIDE: ${{ vars.AWS_REGION }}
+          ASG_NAME_OVERRIDE: ${{ vars.ASG_NAME }}
+      - name: Check labels
+        id: match
+        run: |
+          python <<'PY'
+import json, os
+cfg = set(json.loads(os.environ['CONFIG_LABELS']))
+job = set(json.loads(os.environ['JOB_LABELS']))
+print(f"match={str(bool(cfg & job)).lower()}", file=open(os.environ['GITHUB_OUTPUT'], 'a'))
+PY
+        env:
+          CONFIG_LABELS: ${{ steps.cfg.outputs.labels }}
+          JOB_LABELS: ${{ toJson(github.event.workflow_job.labels) }}
+      - name: Configure AWS creds
+        if: steps.match.outputs.match == 'true'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ steps.cfg.outputs.region }}
+      - name: Scale ASG
+        if: steps.match.outputs.match == 'true'
+        env:
+          ASG: ${{ steps.cfg.outputs.asg }}
+          AWS_REGION: ${{ steps.cfg.outputs.region }}
+        run: |
+          current=$(aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names "$ASG" --query "AutoScalingGroups[0].DesiredCapacity" --output text)
+          if [ "$current" -lt 1 ]; then
+            aws autoscaling set-desired-capacity --auto-scaling-group-name "$ASG" --desired-capacity 1 --honor-cooldown
+          else
+            echo "Capacity already $current, not scaling"
+          fi

@@ -1,0 +1,55 @@
+name: _ci-try-selfhosted
+
+on:
+  workflow_call:
+    inputs:
+      job-name:
+        required: true
+        type: string
+      steps:
+        required: true
+        type: string
+
+jobs:
+  config:
+    runs-on: ubuntu-latest
+    outputs:
+      labels: ${{ steps.read.outputs.labels }}
+      timeout: ${{ steps.read.outputs.timeout }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: Read config
+        id: read
+        run: |
+          pip install pyyaml >/dev/null
+          python <<'PY'
+import yaml, json, os
+with open('.github/ci/selfhosted-min.yml') as f:
+    c = yaml.safe_load(f)
+print(f"labels={json.dumps(c['labels'])}", file=open(os.environ['GITHUB_OUTPUT'], 'a'))
+print(f"timeout={c['queue_timeout_minutes']}", file=open(os.environ['GITHUB_OUTPUT'], 'a'))
+PY
+
+  try-self-hosted:
+    name: ${{ inputs.job-name }} (self-hosted)
+    needs: config
+    runs-on: ${{ fromJson(needs.config.outputs.labels) }}
+    timeout-minutes: ${{ needs.config.outputs.timeout }}
+    outputs:
+      fell_back: ${{ steps.flag.outputs.fell_back }}
+    steps:
+      - name: Run steps
+        run: ${{ inputs.steps }}
+      - name: Mark
+        if: always()
+        id: flag
+        run: echo "fell_back=false" >> $GITHUB_OUTPUT
+
+  fallback:
+    name: ${{ inputs.job-name }} (fallback)
+    needs: try-self-hosted
+    if: needs.try-self-hosted.outputs.fell_back != 'false'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run steps
+        run: ${{ inputs.steps }}
