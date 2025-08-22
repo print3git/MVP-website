@@ -13,14 +13,12 @@ on:
 permissions:
   contents: read
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+concurrency: repo-ci
 
 jobs:
   docs:
     name: CI Full Lane / docs
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64, gha]
     steps:
       - uses: actions/checkout@v5.0.0
       - uses: actions/setup-node@v4.4.0
@@ -49,7 +47,7 @@ jobs:
 
   lint:
     name: CI Full Lane / lint
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64, gha]
     steps:
       - uses: actions/checkout@v5.0.0
       - uses: actions/setup-node@v4.4.0
@@ -81,7 +79,7 @@ jobs:
 
   typecheck:
     name: CI Full Lane / typecheck
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64, gha]
     steps:
       - uses: actions/checkout@v5.0.0
       - uses: actions/setup-node@v4.4.0
@@ -116,7 +114,7 @@ jobs:
 
   unit:
     name: CI Full Lane / unit
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64, gha]
     steps:
       - uses: actions/checkout@v5.0.0
       - uses: actions/setup-node@v4.4.0
@@ -158,7 +156,7 @@ jobs:
 
   frontend:
     name: CI Full Lane / frontend
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64, gha]
     steps:
       - uses: actions/checkout@v5.0.0
       - uses: actions/setup-node@v4.4.0
@@ -198,7 +196,7 @@ jobs:
     name: CI Full Lane / e2e
     needs: [lint, typecheck, unit]
     if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64, gha]
     steps:
       - uses: actions/checkout@v5.0.0
       - uses: actions/setup-node@v4.4.0
