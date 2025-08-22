@@ -1,0 +1,104 @@
+name: ci-duration-guard
+
+on:
+  workflow_run:
+    workflows: ["ci"]
+    types: [completed]
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      actions: read
+    steps:
+      - name: Collect timings
+        id: collect
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const run = context.payload.workflow_run;
+            const jobs = await github.paginate(
+              github.rest.actions.listJobsForWorkflowRun,
+              { owner: context.repo.owner, repo: context.repo.repo, run_id: run.id }
+            );
+            const timings = jobs.map(j => ({
+              name: j.name,
+              duration: (new Date(j.completed_at) - new Date(j.started_at)) / 60000
+            }));
+            const total = (new Date(run.updated_at) - new Date(run.run_started_at)) / 60000;
+            return { timings, total };
+
+      - name: Fetch history
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api repos/${{ github.repository }}/actions/artifacts \
+            --paginate -q '.artifacts[] | select(.name=="ci-duration-trend") | .archive_download_url' \
+            | head -n 1 | xargs -r gh api --output trend.zip
+          if [ -f trend.zip ]; then unzip -p trend.zip trend.json > trend.json && rm trend.zip; else echo '[]' > trend.json; fi
+
+      - name: Update history
+        env:
+          RESULT: ${{ steps.collect.outputs.result }}
+        run: |
+          node -e "const fs=require('fs');const hist=JSON.parse(fs.readFileSync('trend.json','utf8'));const res=JSON.parse(process.env.RESULT);hist.push(res.total);fs.writeFileSync('trend.json',JSON.stringify(hist));"
+
+      - name: Upload trend
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-duration-trend
+          path: trend.json
+
+      - name: Check durations
+        id: check
+        env:
+          RESULT: ${{ steps.collect.outputs.result }}
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          const res=JSON.parse(process.env.RESULT);
+          const history=JSON.parse(fs.readFileSync('trend.json','utf8'));
+          const avg=history.slice(0,-1).reduce((a,b)=>a+b,0)/Math.max(1,history.length-1);
+          const overJob=res.timings.find(t=>t.duration>15);
+          const overTotal=res.total>60;
+          const regression=avg && res.total>avg*1.25;
+          const chart='https://quickchart.io/chart?c='+encodeURIComponent(JSON.stringify({type:'line',data:{labels:history.map((_,i)=>i+1),datasets:[{label:"Total CI mins",data:history}]}}));
+          fs.writeFileSync(process.env.GITHUB_OUTPUT,
+            `overJob=${overJob?overJob.name:''}\n`+
+            `overTotal=${overTotal}\n`+
+            `regression=${regression}\n`+
+            `avg=${avg}\n`+
+            `chart=${chart}\n`);
+          NODE
+
+      - name: Comment on PR
+        if: ${{ github.event.workflow_run.event == 'pull_request' }}
+        env:
+          RESULT: ${{ steps.collect.outputs.result }}
+          OVER_JOB: ${{ steps.check.outputs.overJob }}
+          OVER_TOTAL: ${{ steps.check.outputs.overTotal }}
+          REGRESSION: ${{ steps.check.outputs.regression }}
+          AVG: ${{ steps.check.outputs.avg }}
+          CHART: ${{ steps.check.outputs.chart }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const res = JSON.parse(process.env.RESULT);
+            const lines = [
+              `CI total time: ${res.total.toFixed(2)}m`,
+              process.env.OVER_JOB ? `Job ${process.env.OVER_JOB} ran over 15m` : '',
+              process.env.OVER_TOTAL === 'true' ? 'Total CI time exceeded 60m' : '',
+              process.env.REGRESSION === 'true' ? `Regression >25% vs avg ${parseFloat(process.env.AVG).toFixed(2)}m` : '',
+              `![CI duration trend](${process.env.CHART})`
+            ].filter(Boolean);
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.workflow_run.pull_requests[0].number,
+              body: lines.join('\n')
+            });
+
+      - name: Fail if thresholds exceeded
+        if: ${{ steps.check.outputs.overTotal == 'true' || steps.check.outputs.overJob != '' || steps.check.outputs.regression == 'true' }}
+        run: exit 1
