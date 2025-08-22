@@ -1,0 +1,9 @@
+[
+  "CI / build",
+  "CI / test-backend (aa)",
+  "CI / test-backend (ab)",
+  "CI / test-backend (ac)",
+  "CI / test-frontend (core)",
+  "CI / test-frontend (gen-a)",
+  "CI / test-frontend (gen-b)"
+]

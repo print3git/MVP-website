@@ -1,0 +1,93 @@
+name: CI Inventory
+
+on:
+  pull_request:
+  schedule:
+    - cron: '0 3 * * *'
+
+permissions:
+  actions: read
+  checks: read
+  contents: read
+  pull-requests: write
+
+jobs:
+  inventory:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Gather CI inventory
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const artifact = require('@actions/artifact');
+            const { owner, repo } = context.repo;
+            const sha = context.eventName === 'pull_request'
+              ? context.payload.pull_request.head.sha
+              : context.sha;
+
+            // Load expected checks
+            let expected = [];
+            try {
+              const { data } = await github.rest.repos.getContent({
+                owner,
+                repo,
+                path: 'scripts/ci/expected-checks.json',
+              });
+              expected = JSON.parse(Buffer.from(data.content, data.encoding).toString());
+            } catch (err) {
+              core.warning('expected-checks.json not found, assuming none');
+            }
+
+            // Collect check runs
+            const runs = await github.paginate(github.rest.checks.listForRef, {
+              owner,
+              repo,
+              ref: sha,
+            });
+
+            const inventory = {};
+            for (const run of runs) {
+              const created = run.created_at ? new Date(run.created_at) : null;
+              const started = run.started_at ? new Date(run.started_at) : null;
+              const completed = run.completed_at ? new Date(run.completed_at) : null;
+              inventory[run.name] = {
+                status: run.conclusion || run.status,
+                startDelayMs: created && started ? started - created : null,
+                durationMs: started && completed ? completed - started : null,
+              };
+            }
+
+            fs.writeFileSync('ci-inventory.json', JSON.stringify(inventory, null, 2));
+
+            const executed = Object.keys(inventory);
+            const missing = expected.filter((e) => !executed.includes(e));
+            const extra = executed.filter((e) => !expected.includes(e));
+
+            if (context.eventName === 'pull_request') {
+              const marker = '<!-- ci-inventory -->';
+              const prNumber = context.payload.pull_request.number;
+              let body = `${marker}\n| Job | Queue (s) | Duration (s) |\n| --- | --- | --- |\n`;
+              for (const [name, info] of Object.entries(inventory)) {
+                const q = info.startDelayMs != null ? (info.startDelayMs / 1000).toFixed(1) : 'n/a';
+                const d = info.durationMs != null ? (info.durationMs / 1000).toFixed(1) : 'n/a';
+                body += `| ${name} | ${q} | ${d} |\n`;
+              }
+              if (missing.length) body += `\n**Missing**: ${missing.join(', ')}\n`;
+              if (extra.length) body += `\n**Extra**: ${extra.join(', ')}\n`;
+
+              const comments = await github.paginate(github.rest.issues.listComments, {
+                owner,
+                repo,
+                issue_number: prNumber,
+              });
+              const existing = comments.find((c) => c.body.includes(marker));
+              if (existing) {
+                await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+              } else {
+                await github.rest.issues.createComment({ owner, repo, issue_number: prNumber, body });
+              }
+            }
+
+            const client = artifact.create();
+            await client.uploadArtifact('ci-inventory', ['ci-inventory.json'], '.', { retentionDays: 7 });
