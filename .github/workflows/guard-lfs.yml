@@ -1,0 +1,23 @@
+name: LFS Guard
+on: [pull_request, push]
+jobs:
+  lfs-guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0, lfs: false }
+      - name: Verify LFS pointers
+        shell: bash
+        run: |
+          set -euo pipefail
+          missing=$(git lfs ls-files --errors 2>&1 | sed -n 's/^\\! \\(.*\\)$/\\1/p' || true)
+          if [ -n "$missing" ]; then
+            echo "::error::Files expected to be LFS pointers are not: "
+            echo "$missing"
+            exit 1
+          fi
+          echo "All LFS-tracked files are pointers."
+      - name: Guidance
+        if: failure()
+        run: bash scripts/ci-guard/lfs-migrate-enforce/migrate.sh || true
+        shell: bash

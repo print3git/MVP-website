@@ -31,3 +31,7 @@ upload/* binary
 
 frontend/** -filter=lfs -diff=lfs -merge=lfs
 frontend/public/** -filter=lfs -diff=lfs -merge=lfs
+# >>> BEGIN MANAGED BLOCK: ci-guard:lfs-migrate-enforce
+img/*.png filter=lfs diff=lfs merge=lfs -text
+img/*.jpg filter=lfs diff=lfs merge=lfs -text
+# <<< END MANAGED BLOCK: ci-guard:lfs-migrate-enforce
