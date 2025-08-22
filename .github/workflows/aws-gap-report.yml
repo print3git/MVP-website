@@ -18,6 +18,7 @@ jobs:
         id: generate
         run: |
           set -euo pipefail
+          command -v rg >/dev/null 2>&1 || rg() { grep "$@"; }
           REPORT=aws-gap-report.md
           echo "### AWS Gap Report" > "$REPORT"
           echo >> "$REPORT"
@@ -25,7 +26,7 @@ jobs:
 
           echo "#### CI Runners" >> "$REPORT"
           oidc=$(rg -l "id-token" .github/workflows || true)
-          self_hosted=$(rg -n "runs-on: *.*self-hosted" -g "*.yml" .github/workflows || true)
+          self_hosted=$(rg -n "runs-on: *.*self-hosted" .github/workflows/*.yml || true)
           ubuntu_latest=$(rg -l "runs-on: ubuntu-latest" .github/workflows || true)
           if [ -n "$oidc" ]; then echo "- [x] OIDC role present" >> "$REPORT"; else echo "- [ ] OIDC role present" >> "$REPORT"; blockers=$((blockers+1)); fi
           if [ -n "$self_hosted" ]; then echo "- self-hosted labels present" >> "$REPORT"; echo "\n\`\`\`\n$self_hosted\n\`\`\`" >> "$REPORT"; else echo "- self-hosted labels missing" >> "$REPORT"; fi
