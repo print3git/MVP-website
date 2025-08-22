@@ -32,3 +32,6 @@ jobs:
             ${{ runner.os }}-pnpm-
       - run: pnpm install --no-frozen-lockfile
       - run: pnpm test
+      - name: Post test telemetry
+        if: always()
+        uses: ./.github/actions/with-test-telemetry

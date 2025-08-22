@@ -24,6 +24,9 @@ jobs:
           pnpm i --frozen-lockfile --ignore-scripts
       - name: Run tests
         run: pnpm test -- --maxWorkers=50% --runInBand=false
+      - name: Post test telemetry
+        if: always()
+        uses: ./.github/actions/with-test-telemetry
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4

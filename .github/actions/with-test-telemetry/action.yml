@@ -1,0 +1,58 @@
+name: with-test-telemetry
+description: "Collect test telemetry and append to run inventory"
+inputs:
+  results-path:
+    description: "Path to junit XML results file"
+    required: false
+    default: junit.xml
+runs:
+  using: composite
+  steps:
+    - name: Enable corepack
+      shell: bash
+      run: corepack enable
+    - name: Ensure pnpm
+      shell: bash
+      run: |
+        if [ -f pnpm-lock.yaml ]; then
+          corepack prepare pnpm@10.11.0 --activate
+        fi
+    - name: Parse test results
+      shell: bash
+      run: |
+        node <<'NODE'
+        const fs = require('fs');
+        const path = require('path');
+        const junitPath = process.env.RESULTS_PATH;
+        let tests = 0, failures = 0, duration = 0;
+        if (fs.existsSync(junitPath)) {
+          const xml = fs.readFileSync(junitPath, 'utf8');
+          const m = xml.match(/tests="(\d+)"[^>]*failures="(\d+)"[^>]*time="([0-9.]+)"/);
+          if (m) {
+            tests = parseInt(m[1], 10);
+            failures = parseInt(m[2], 10);
+            duration = Math.round(parseFloat(m[3]) * 1000);
+          }
+        }
+        const record = { tests_count: tests, failures_count: failures, duration_ms: duration };
+        const inventory = path.join(process.cwd(), 'ci-test-inventory.json');
+        let arr = [];
+        if (fs.existsSync(inventory)) {
+          try { arr = JSON.parse(fs.readFileSync(inventory, 'utf8')); } catch {}
+        }
+        arr.push(record);
+        fs.writeFileSync(inventory, JSON.stringify(arr, null, 2));
+        const summaryPath = process.env.GITHUB_STEP_SUMMARY;
+        if (summaryPath) {
+          const lines = [
+            '| Metric | Value |',
+            '| --- | --- |',
+            `| Tests | ${tests} |`,
+            `| Failures | ${failures} |`,
+            `| Duration (ms) | ${duration} |`
+          ].join('\n');
+          fs.appendFileSync(summaryPath, lines + '\n');
+        }
+        NODE
+      env:
+        RESULTS_PATH: ${{ inputs["results-path"] }}
