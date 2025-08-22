@@ -1,0 +1,66 @@
+name: Coveralls
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  coveralls:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install root dependencies
+        if: hashFiles('package-lock.json') != ''
+        run: npm ci
+
+      - name: Install frontend dependencies
+        if: hashFiles('frontend/package-lock.json') != ''
+        run: npm ci --prefix frontend
+
+      - name: Install backend dependencies
+        if: hashFiles('backend/package-lock.json') != ''
+        run: npm ci --prefix backend
+
+      - name: Test root
+        if: hashFiles('package.json') != ''
+        run: npm test --silent -- --coverage --runInBand --passWithNoTests
+
+      - name: Test frontend
+        if: hashFiles('frontend/package.json') != ''
+        run: npm test --prefix frontend --silent -- --coverage --runInBand --passWithNoTests
+
+      - name: Test backend
+        if: hashFiles('backend/package.json') != ''
+        run: npm test --prefix backend --silent -- --coverage --runInBand --passWithNoTests
+
+      - name: Merge coverage
+        run: |
+          mkdir -p coverage
+          lcov_files=$(find . -path '*/coverage/lcov.info' -print | sort)
+          if [ -z "$lcov_files" ]; then
+            echo "No LCOV files found" >&2
+            exit 1
+          fi
+          : > coverage/lcov.info
+          for file in $lcov_files; do
+            cat "$file" >> coverage/lcov.info
+          done
+
+      - name: Upload to Coveralls
+        uses: coverallsapp/github-action@v2.3.4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: coverage/lcov.info
+          coveralls-endpoint: https://coveralls.io
+          parallel: false
+          flag-name: combined
+          base-path: ${{ github.workspace }}
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN || secrets.GITHUB_TOKEN }}
