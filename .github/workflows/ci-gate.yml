@@ -15,8 +15,13 @@ jobs:
       inventory-missing: ${{ steps.inventory.outputs.missing }}
     steps:
       - uses: actions/checkout@v5
-      - name: Generate test inventory
-        run: node scripts/list-tests.ts
+      - run: npm ci
+      - run: npm run gen:test-inventory
+      - uses: actions/upload-artifact@v4.3.1
+        if: always()
+        with:
+          name: test-inventory
+          path: test-inventory/current.json
       - name: Check test inventory
         id: inventory
         run: |

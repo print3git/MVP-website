@@ -103,7 +103,8 @@
     "test:e2e:regression": "playwright test --config tests/playwright.config.ts",
     "test:regression": "npm run test:backend:regression && npm run test:frontend:regression && npm run test:ci:regression && npm run test:e2e:regression",
     "ci:probe": "bash -O globstar -c 'env -u npm_config_prefix node --test tests/ci/**/*.test.js'",
-    "ci:summary": "node scripts/ci/print-suite-summary.js"
+    "ci:summary": "node scripts/ci/print-suite-summary.js",
+    "gen:test-inventory": "tsx scripts/gen-test-inventory.ts"
   },
   "babel": {
     "presets": [
@@ -185,6 +186,7 @@
     "toml": "^3.0.0",
     "tsconfig-strictest": "^1.0.0-beta.1",
     "tslib": "^2.8.1",
+    "tsx": "^4.7.2",
     "typescript": "^5.8.3",
     "wait-on": "^8.0.3",
     "yaml": "^2.8.0"

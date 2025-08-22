@@ -45,3 +45,4 @@ dist/
 .cache/
 .eslintcache
 .prettiercache
+test-inventory/
