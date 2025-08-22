@@ -1,58 +1,77 @@
-name: runner-ssm-bootstrap
+name: Runner SSM Bootstrap
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '0 6 * * *'
+    inputs:
+      instance-id:
+        description: EC2 instance ID
+        required: false
+      tag:
+        description: Target tag in the form Key=Value
+        required: false
+      region:
+        description: AWS region
+        required: true
+      labels:
+        description: Runner labels
+        default: mvp-gh-runner
+        required: false
+
+permissions:
+  actions: write
+  id-token: write
+  contents: read
 
 jobs:
   bootstrap:
+    # >>> BEGIN MANAGED BLOCK: ci-guard:ssm-runner
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.1
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4.0.2
-        with:
-          aws-region: ${{ secrets.AWS_REGION }}
-          role-to-assume: ${{ secrets.AWS_RUNNER_ROLE }}
-      - name: Get runner token
+      - name: Get registration token
         id: token
-        uses: actions/github-script@v7.0.1
+        uses: actions/github-script@v7
         with:
           script: |
-            const res = await github.rest.actions.createRegistrationTokenForRepo({
+            const {data} = await github.rest.actions.createRegistrationTokenForRepo({
               owner: context.repo.owner,
-              repo: context.repo.repo,
+              repo: context.repo.repo
             });
-            core.setOutput('token', res.data.token);
-      - name: Install runner via SSM
+            core.setSecret(data.token);
+            return {token: data.token};
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_SSM_RUNNER_ROLE }}
+          aws-region: ${{ inputs.region }}
+      - name: Install runner
         run: |
-          aws ssm send-command \
-            --document-name AWS-RunShellScript \
-            --instance-ids "${{ secrets.RUNNER_INSTANCE_ID }}" \
-            --comment "bootstrap github runner" \
-            --parameters commands="/usr/local/bin/install.sh $TOKEN"
-        env:
-          TOKEN: ${{ steps.token.outputs.token }}
-      - name: Health check
-        run: |
-          aws ssm describe-instance-information --filters "Key=InstanceIds,Values=${{ secrets.RUNNER_INSTANCE_ID }}"
-          curl -s -H "Authorization: token $GITHUB_TOKEN" \
-            "https://api.github.com/repos/${{ github.repository }}/actions/runners" | jq '.'
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-      - name: Recreate service if offline
-        run: |
-          online=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-            "https://api.github.com/repos/${{ github.repository }}/actions/runners" | jq -r '.runners[] | select(.labels[].name=="mvp-gh-runner") | .status')
-          if [ "$online" != "online" ]; then
-            aws ssm send-command \
-              --document-name AWS-RunShellScript \
-              --instance-ids "${{ secrets.RUNNER_INSTANCE_ID }}" \
-              --comment "restart github runner" \
-              --parameters commands="/usr/local/bin/install.sh $TOKEN"
+          set -euo pipefail
+          if [ -n "${{ inputs.instance-id }}" ]; then
+            TARGET="--instance-ids ${{ inputs.instance-id }}"
+          elif [ -n "${{ inputs.tag }}" ]; then
+            KEY="${{ inputs.tag }}"
+            TARGET="--targets Key=tag:${KEY%%=*},Values=${KEY#*=}"
+          else
+            echo "instance-id or tag required" >&2
+            exit 1
           fi
-        env:
-          TOKEN: ${{ steps.token.outputs.token }}
-          GITHUB_TOKEN: ${{ github.token }}
-
+          aws ssm send-command $TARGET \
+            --region "${{ inputs.region }}" \
+            --document-name AWS-RunShellScript \
+            --parameters commands="curl -fsSL https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/scripts/ssm-runner/install.sh -o /tmp/install.sh; chmod +x /tmp/install.sh; GITHUB_OWNER=${{ github.repository_owner }} GITHUB_REPO=${{ github.event.repository.name }} GH_TOKEN=${{ steps.token.outputs.token }} /tmp/install.sh" >/tmp/ssm.json
+      - name: Verify registration
+        id: verify
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const runners = await github.paginate(github.rest.actions.listSelfHostedRunnersForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            });
+            const r = runners.find(r => r.name === 'mvp-gh-runner');
+            if (!r) core.setFailed('Runner not found');
+            else core.setOutput('labels', r.labels.map(l=>l.name).join(','));
+      - name: Summary
+        if: steps.verify.outcome == 'success'
+        run: echo "Runner mvp-gh-runner online with labels: ${{ steps.verify.outputs.labels }}" >> "$GITHUB_STEP_SUMMARY"
+    # <<< END MANAGED BLOCK: ci-guard:ssm-runner

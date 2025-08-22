@@ -4,11 +4,29 @@ on:
     inputs:
       label: { required: false, type: string, default: "aws-spot-x64" }
       fallback: { required: false, type: string, default: "ubuntu-latest" }
+    outputs:
+      # >>> BEGIN MANAGED BLOCK: ci-guard:ssm-runner
+      runs_on:
+        description: Runner spec
+        value: ${{ jobs.choose.outputs.runs_on }}
+      # <<< END MANAGED BLOCK: ci-guard:ssm-runner
 jobs:
   choose:
-    runs-on: ${{ inputs.fallback }}
+    # >>> BEGIN MANAGED BLOCK: ci-guard:ssm-runner
+    runs-on: ubuntu-latest
+    outputs:
+      runs_on: ${{ steps.decide.outputs.runs_on }}
     steps:
       - id: decide
-        run: echo "label=${{ inputs.label }}" >> $GITHUB_OUTPUT
-    outputs:
-      label: ${{ steps.decide.outputs.label }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const label = core.getInput('label');
+            const fallback = core.getInput('fallback');
+            const runners = await github.paginate(github.rest.actions.listSelfHostedRunnersForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            });
+            const online = runners.find(r => r.status === 'online' && r.labels.some(l => l.name === label));
+            core.setOutput('runs_on', online ? `["self-hosted","linux","x64","${label}"]` : JSON.stringify(fallback));
+    # <<< END MANAGED BLOCK: ci-guard:ssm-runner
