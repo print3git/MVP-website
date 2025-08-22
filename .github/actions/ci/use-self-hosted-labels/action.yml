@@ -1,0 +1,21 @@
+name: Use self-hosted labels
+description: Output runner labels preferring self-hosted when requested
+inputs:
+  use-self-hosted:
+    description: Prefer self-hosted runner
+    required: true
+    default: "false"
+outputs:
+  labels:
+    description: JSON string for runs-on
+runs:
+  using: composite
+  steps:
+    - id: set
+      shell: bash
+      run: |
+        if [ "${{ inputs.use-self-hosted }}" = "true" ]; then
+          echo 'labels=["self-hosted","linux","ephemeral","aws-ec2"]' >> "$GITHUB_OUTPUT"
+        else
+          echo 'labels="ubuntu-latest"' >> "$GITHUB_OUTPUT"
+        fi

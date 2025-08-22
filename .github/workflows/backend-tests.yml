@@ -14,11 +14,14 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  routing:
+    uses: ./.github/workflows/ci-routing.yml
+    with:
+      use-self-hosted: true
   changed-tests:
     if: github.event_name == 'pull_request'
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    needs: routing
+    runs-on: ${{ fromJSON(needs.routing.outputs.runs-on) }}
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v5
@@ -38,13 +41,12 @@ jobs:
 
   full-suite:
     if: github.ref_name == '00000production'
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    needs: routing
+    runs-on: ${{ fromJSON(needs.routing.outputs.runs-on) }}
     strategy:
       fail-fast: true
       matrix:
-        shard: [ aa, ab, ac ]
+        shard: [aa, ab, ac]
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
