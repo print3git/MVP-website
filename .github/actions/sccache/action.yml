@@ -1,4 +1,5 @@
 name: Setup sccache
+description: Configure sccache for Rust builds
 runs:
   using: composite
   steps:

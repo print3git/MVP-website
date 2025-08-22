@@ -1,4 +1,5 @@
 name: Ensure pnpm
+description: Ensure pnpm and Node caching
 inputs:
   cache-dependency-path:
     description: Optional path to lockfile for caching

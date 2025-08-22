@@ -1,0 +1,23 @@
+name: ci:validate-actions
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    name: ci:validate-actions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5.0.0
+      - uses: actions/setup-node@v4.4.0
+        with:
+          node-version: 20
+      - name: Install dependencies
+        run: npm ci
+      - name: Install yamllint
+        run: pip install yamllint
+      - name: Run action tests
+        run: node scripts/run-jest.js tests/validate-actions.test.js
