@@ -1,0 +1,7 @@
+name: UnknownLabel
+on: push
+jobs:
+  build:
+    runs-on: imaginary-runner
+    steps:
+      - run: echo hi

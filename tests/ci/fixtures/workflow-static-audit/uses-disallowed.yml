@@ -1,0 +1,6 @@
+name: Uses
+on: push
+jobs:
+  reuse:
+    uses: ./.github/workflows/some.yml
+    runs-on: ubuntu-latest

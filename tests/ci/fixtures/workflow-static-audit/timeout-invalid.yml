@@ -1,0 +1,8 @@
+name: TimeoutInvalid
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: ${{ inputs.minutes }}
+    steps:
+      - run: echo oops

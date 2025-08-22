@@ -1,0 +1,9 @@
+name: Nested
+on: push
+jobs:
+  build:
+    runs-on:
+      - [self-hosted, linux, x64]
+      - ubuntu-latest
+    steps:
+      - run: echo hi

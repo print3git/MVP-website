@@ -1,0 +1,16 @@
+name: Workflow Static Audit
+
+on: [pull_request, push]
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+      - run: npm ci
+      - run: npm run ci:workflow-audit
+      - run: npm run test:workflow-audit
