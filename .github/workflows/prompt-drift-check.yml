@@ -1,0 +1,64 @@
+name: Prompt Drift Check
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  drift:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5.0.0
+      - name: Verify prompt files
+        id: verify
+        uses: actions/github-script@v7.0.1
+        with:
+          script: |
+            const fs = require('fs');
+            const crypto = require('crypto');
+            const manifest = JSON.parse(fs.readFileSync('codex/prompts-manifest.json', 'utf8'));
+            const results = [];
+            for (const pack of manifest.packs) {
+              for (const [file, expected] of Object.entries(pack.files)) {
+                const info = { pack: pack.name, file };
+                if (fs.existsSync(file)) {
+                  const content = fs.readFileSync(file, 'utf8')
+                    .split(/\r?\n/)
+                    .map(l => l.trimEnd())
+                    .join('\n')
+                    .trim();
+                  const hash = crypto.createHash('sha256').update(content).digest('hex');
+                  info.status = hash === expected ? 'ok' : 'mismatch';
+                  if (info.status === 'mismatch') info.actual = hash;
+                } else {
+                  info.status = 'missing';
+                }
+                results.push(info);
+              }
+            }
+            let summary = '';
+            for (const r of results) {
+              summary += `${r.status === 'ok' ? '✅' : '❌'} ${r.file} (${r.pack})\n`;
+            }
+            core.summary.addRaw(summary).write();
+            const failures = results.filter(r => r.status !== 'ok');
+            if (failures.length) {
+              let body = 'The following files are missing or changed:\n';
+              body += failures.map(r => `- [ ] ${r.file} (${r.pack}) - ${r.status}`).join('\n');
+              const title = 'Prompt drift detected';
+              const { data: issues } = await github.rest.issues.listForRepo({ owner: context.repo.owner, repo: context.repo.repo, state: 'open' });
+              const existing = issues.find(i => i.title === title);
+              if (existing) {
+                await github.rest.issues.update({ owner: context.repo.owner, repo: context.repo.repo, issue_number: existing.number, body });
+              } else {
+                await github.rest.issues.create({ owner: context.repo.owner, repo: context.repo.repo, title, body });
+              }
+              core.setFailed('Prompt drift detected');
+            } else {
+              console.log('All files match manifest');
+            }

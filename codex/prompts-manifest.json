@@ -1,0 +1,16 @@
+{
+  "packs": [
+    {
+      "name": "initial-readme",
+      "files": {
+        "README.md": "b1b1aa589e4ef00cc4aa4f3dec8c9060aace7201f27f554f354f9cbda6ff4835"
+      }
+    },
+    {
+      "name": "prompt-drift-check",
+      "files": {
+        ".github/workflows/prompt-drift-check.yml": "f9293e266c037aed04930e2b34bec8f7e4cd9580a83e4e7067c0721f243469d9"
+      }
+    }
+  ]
+}
