@@ -48,14 +48,26 @@ jobs:
     needs: [list-current, baseline-on-default]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v4.1.8
+      - uses: actions/checkout@v4.1.7
+      - uses: actions/setup-node@v4.0.3
         with:
-          name: test-list-current
-          path: .
+          node-version: 20
       - uses: actions/download-artifact@v4.1.8
         with:
           name: test-list-baseline
           path: .
+      - name: Generate test inventory
+        shell: bash
+        run: |
+          set -euo pipefail
+          if npm run -q gen:test-inventory; then
+            echo "generated via npm script"
+          elif [ -f scripts/gen-test-inventory.ts ]; then
+            npx tsx scripts/gen-test-inventory.ts
+          else
+            echo "::error::No generator found (gen:test-inventory or scripts/gen-test-inventory.ts)"; exit 2
+          fi
+          test -s test-inventory/current.json || { echo "::error::current.json missing or empty"; cat test-inventory/ 2>/dev/null || true; exit 2; }
       - name: Compare lists
         run: |
           node -e "
@@ -71,3 +83,8 @@ jobs:
           if (drop>THRESH){console.error('Test count dropped more than threshold:',drop,'>',THRESH); process.exit(1);}"
         env:
           ALLOWABLE_DROP: "0"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-inventory-${{ github.run_id }}
+          path: test-inventory/current.json
