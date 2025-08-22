@@ -9,9 +9,7 @@ on:
 
 jobs:
   automerge:
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     permissions:
       contents: write
       pull-requests: write

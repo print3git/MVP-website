@@ -15,8 +15,7 @@ env:
 jobs:
   backend-unit:
     name: Backend Unit (Node ${{ matrix.node }})
-    runs-on:
-      - [self-hosted, linux, aws]
+    runs-on: [self-hosted, linux, aws]
       - ${{ github.event_name == 'workflow_dispatch' && inputs.runner || 'ubuntu-latest' }}
     strategy:
       fail-fast: false
@@ -41,9 +40,7 @@ jobs:
 
   backend-integration:
     name: Backend Integration (Node ${{ matrix.node }})
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ${{ github.event_name == 'workflow_dispatch' && inputs.runner || 'ubuntu-latest' }}
+    runs-on: [self-hosted, linux, aws]
     strategy:
       fail-fast: false
       matrix:
@@ -67,9 +64,7 @@ jobs:
 
   frontend:
     name: Frontend (Node ${{ matrix.node }})
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ${{ github.event_name == 'workflow_dispatch' && inputs.runner || 'ubuntu-latest' }}
+    runs-on: [self-hosted, linux, aws]
     strategy:
       fail-fast: false
       matrix:
@@ -94,9 +89,7 @@ jobs:
 
   e2e:
     name: E2E (${{ matrix.browser }})
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ${{ github.event_name == 'workflow_dispatch' && inputs.runner || 'ubuntu-latest' }}
+    runs-on: [self-hosted, linux, aws]
     strategy:
       fail-fast: false
       matrix:
@@ -118,9 +111,7 @@ jobs:
 
   cicd-selftest:
     name: CI/CD Selftest
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ${{ github.event_name == 'workflow_dispatch' && inputs.runner || 'ubuntu-latest' }}
+    runs-on: [self-hosted, linux, aws]
     steps:
       - uses: actions/checkout@v5.0.0
       - uses: actions/setup-node@v4.4.0
@@ -140,9 +131,7 @@ jobs:
 
   summary:
     name: Summary
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     needs:
       - backend-unit
       - backend-integration

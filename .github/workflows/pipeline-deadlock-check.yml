@@ -14,9 +14,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   deadlock:
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     timeout-minutes: 1
     steps:
       - name: Heartbeat

@@ -25,9 +25,7 @@ concurrency:
 jobs:
   rebase:
     if: ${{ !startsWith(github.event.pull_request.head.ref, 'codex/') }}
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     steps:
       - name: Heartbeat
         run: |
@@ -59,9 +57,7 @@ jobs:
   merge-queue:
     needs: rebase
     if: ${{ needs.rebase.result == 'success' || needs.rebase.result == 'skipped' }}
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     steps:
       - name: Heartbeat
         run: |

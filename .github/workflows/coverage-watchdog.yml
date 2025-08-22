@@ -12,9 +12,7 @@ concurrency:
 
 jobs:
   watchdog:
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     timeout-minutes: 60
     permissions:
       contents: read

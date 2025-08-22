@@ -14,9 +14,7 @@ concurrency:
 jobs:
   coverage:
     timeout-minutes: 15
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     outputs:
       duration: ${{ steps.duration.outputs.value }}
     steps:
@@ -45,9 +43,7 @@ jobs:
 
   e2e:
     timeout-minutes: 15
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     env:
       PORT: 3000
       DB_URL: postgres://user:pass@localhost:5432/testdb
@@ -99,9 +95,7 @@ jobs:
 
   timings:
     timeout-minutes: 15
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     needs: [coverage, e2e]
     steps:
       - name: Heartbeat

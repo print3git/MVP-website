@@ -19,9 +19,7 @@ concurrency:
 
 jobs:
   build:
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     continue-on-error: ${{ matrix.node == 22 }}
     defaults:
       run:

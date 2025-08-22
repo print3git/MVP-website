@@ -14,9 +14,7 @@ concurrency:
 jobs:
   root-cache:
     timeout-minutes: 15
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     steps:
       - name: Heartbeat
         run: |
@@ -31,9 +29,7 @@ jobs:
 
   backend-cache:
     timeout-minutes: 15
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     steps:
       - name: Heartbeat
         run: |
@@ -48,9 +44,7 @@ jobs:
 
   frontend-cache:
     timeout-minutes: 15
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     steps:
       - name: Heartbeat
         run: |

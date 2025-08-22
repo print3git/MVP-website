@@ -17,9 +17,7 @@ concurrency:
 jobs:
   smoke_test:
     timeout-minutes: 15
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     env:
       STRIPE_TEST_KEY: ${{ secrets.STRIPE_TEST_KEY }}
       DB_URL: ${{ secrets.DB_URL }}

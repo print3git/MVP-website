@@ -5,9 +5,7 @@ on:
 
 jobs:
   dependency-review:
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     permissions:
       contents: read
     steps:

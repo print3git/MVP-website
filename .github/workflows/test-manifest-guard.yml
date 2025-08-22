@@ -7,9 +7,7 @@ on:
 jobs:
   guard:
     if: ${{ !contains(github.event.pull_request.labels.*.name, 'maintenance-ok') }}
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     steps:
       - uses: actions/checkout@v4.1.0
         with:

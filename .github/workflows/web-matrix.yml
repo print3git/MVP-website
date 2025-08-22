@@ -14,9 +14,7 @@ concurrency:
 
 jobs:
   build:
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     strategy:
       fail-fast: false
     steps:

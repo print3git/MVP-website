@@ -15,9 +15,7 @@ concurrency:
 jobs:
   sync:
     timeout-minutes: 15
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     env:
       STRIPE_TEST_KEY: ${{ secrets.STRIPE_TEST_KEY }}
       PORT: 3000

@@ -13,9 +13,7 @@ concurrency:
 
 jobs:
   deploy:
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     defaults:
       run:
         working-directory: frontend

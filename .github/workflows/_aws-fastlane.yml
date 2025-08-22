@@ -45,7 +45,7 @@ jobs:
           node-version: 20
       - uses: ./.github/actions/node-setup
       - id: pnpm-store
-        run: echo "dir=$(pnpm store path)" >> $GITHUB_OUTPUT
+        run: echo "dir=$(pnpm store path)" >> "$GITHUB_OUTPUT"
       - name: Cache dependencies
         uses: actions/cache@v4
         with:

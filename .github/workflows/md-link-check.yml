@@ -7,9 +7,7 @@ on:
 
 jobs:
   md-link-check:
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     steps:
       - uses: actions/checkout@v5.0.0
       - name: Check markdown links

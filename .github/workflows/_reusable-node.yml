@@ -20,9 +20,7 @@ on:
 
 jobs:
   build:
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     steps:
       - name: Checkout
         if: ${{ inputs.sparse-checkout == '' }}

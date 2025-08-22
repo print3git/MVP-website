@@ -16,9 +16,7 @@ concurrency:
 jobs:
   deploy:
     timeout-minutes: 15
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     env:
       PORT: 3000
     steps:

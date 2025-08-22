@@ -12,7 +12,7 @@ on:
 jobs:
   try-self-hosted:
     runs-on: [self-hosted, linux, x64, mvp-gh-runner]
-    timeout-minutes: ${{ vars.MAX_QUEUE_MINUTES || 5 }}
+    timeout-minutes: ${{ fromJSON(vars.MAX_QUEUE_MINUTES || '5') }}
     continue-on-error: true
     outputs:
       started: ${{ steps.started.outputs.ok || '' }}

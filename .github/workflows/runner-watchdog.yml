@@ -20,9 +20,7 @@ defaults:
 jobs:
   watchdog:
     timeout-minutes: 15
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     steps:
       - name: Check self-hosted AWS runner
         id: check

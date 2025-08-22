@@ -16,8 +16,6 @@ permissions: {}
 jobs:
   debug:
     timeout-minutes: 15
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     steps:
       - run: echo "I ran on ${{ runner.os }} with job id ${{ github.run_id }}"

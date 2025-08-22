@@ -19,9 +19,7 @@ concurrency:
 jobs:
   select:
     timeout-minutes: 15
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     outputs:
       runs_on: ${{ steps.choose.outputs.runs_on }}
     steps:

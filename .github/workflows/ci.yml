@@ -42,9 +42,7 @@ jobs:
         echo "self-hosted wrapper active"
   build:
     timeout-minutes: 15
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     defaults:
       run:
         working-directory: frontend
@@ -95,9 +93,7 @@ jobs:
 
   test-backend:
     timeout-minutes: 15
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     strategy:
       fail-fast: true
       max-parallel: 2
@@ -179,9 +175,7 @@ jobs:
 
   test-frontend:
     timeout-minutes: 15
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     strategy:
       fail-fast: true
       max-parallel: 2
@@ -257,9 +251,7 @@ jobs:
   test-integration:
     timeout-minutes: 15
     if: github.event_name == 'push'
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     steps:
       - name: Heartbeat
         id: heartbeat
@@ -321,9 +313,7 @@ jobs:
   coverage-merge:
     timeout-minutes: 15
     if: github.event_name == 'push'
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     needs:
       - test-backend
       - test-frontend
@@ -396,9 +386,7 @@ jobs:
           echo "First failing step: ${first_failed}" >> "$GITHUB_STEP_SUMMARY"
 
   toolchain-debug:
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     strategy:
       matrix:
         tool: [pnpm, vite, eslint, jest, tsc, wrangler, aws, docker]

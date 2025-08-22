@@ -26,9 +26,7 @@ jobs:
   lint:
     timeout-minutes: 15
     needs: labels
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: [self-hosted, linux, aws]
     steps:
       - name: Heartbeat
         run: |
