@@ -1,0 +1,97 @@
+name: AWS Gap Report
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  aws_gap_report:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      actions: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Generate report
+        id: generate
+        run: |
+          set -euo pipefail
+          REPORT=aws-gap-report.md
+          echo "### AWS Gap Report" > "$REPORT"
+          echo >> "$REPORT"
+          blockers=0
+
+          echo "#### CI Runners" >> "$REPORT"
+          oidc=$(rg -l "id-token" .github/workflows || true)
+          self_hosted=$(rg -n "runs-on: *.*self-hosted" -g "*.yml" .github/workflows || true)
+          ubuntu_latest=$(rg -l "runs-on: ubuntu-latest" .github/workflows || true)
+          if [ -n "$oidc" ]; then echo "- [x] OIDC role present" >> "$REPORT"; else echo "- [ ] OIDC role present" >> "$REPORT"; blockers=$((blockers+1)); fi
+          if [ -n "$self_hosted" ]; then echo "- self-hosted labels present" >> "$REPORT"; echo "\n\`\`\`\n$self_hosted\n\`\`\`" >> "$REPORT"; else echo "- self-hosted labels missing" >> "$REPORT"; fi
+          if [ -n "$ubuntu_latest" ]; then echo "- [ ] Workflows use runs-on: ubuntu-latest" >> "$REPORT"; echo "\n\`\`\`\n$ubuntu_latest\n\`\`\`" >> "$REPORT"; blockers=$((blockers+1)); else echo "- [x] No ubuntu-latest workflows" >> "$REPORT"; fi
+          echo >> "$REPORT"
+
+          echo "#### Images" >> "$REPORT"
+          if [ -f frontend/Dockerfile ]; then echo "- [x] frontend Dockerfile" >> "$REPORT"; else echo "- [ ] frontend Dockerfile" >> "$REPORT"; blockers=$((blockers+1)); fi
+          if [ -f backend/Dockerfile ]; then echo "- [x] backend Dockerfile" >> "$REPORT"; else echo "- [ ] backend Dockerfile" >> "$REPORT"; blockers=$((blockers+1)); fi
+          ecr=$(rg -i "ecr" -l || true)
+          if [ -n "$ecr" ]; then echo "- [x] ECR references present" >> "$REPORT"; else echo "- [ ] ECR references present" >> "$REPORT"; fi
+          echo >> "$REPORT"
+
+          echo "#### Deploy" >> "$REPORT"
+          deploy=$(rg -i "ecs|eks|fargate" -l || true)
+          alb=$(rg -i "alb|targetgroup|route53|acm" -l || true)
+          if [ -n "$deploy" ]; then echo "- [x] ECS/EKS/Fargate references" >> "$REPORT"; else echo "- [ ] ECS/EKS/Fargate references" >> "$REPORT"; blockers=$((blockers+1)); fi
+          if [ -n "$alb" ]; then echo "- [x] ALB/TargetGroup/Route53/ACM references" >> "$REPORT"; else echo "- [ ] ALB/TargetGroup/Route53/ACM references" >> "$REPORT"; fi
+          echo >> "$REPORT"
+
+          echo "#### Frontend" >> "$REPORT"
+          s3=$(rg -i "s3" -l || true)
+          cf=$(rg -i "cloudfront" -l || true)
+          if [ -n "$s3" ]; then echo "- [x] S3 references" >> "$REPORT"; else echo "- [ ] S3 references" >> "$REPORT"; blockers=$((blockers+1)); fi
+          if [ -n "$cf" ]; then echo "- [x] CloudFront references" >> "$REPORT"; else echo "- [ ] CloudFront references" >> "$REPORT"; fi
+          echo >> "$REPORT"
+
+          echo "#### Secrets" >> "$REPORT"
+          secrets=$(rg -o "secrets\.[A-Z0-9_\-]+" -h .github/workflows | sort -u)
+          if [ -n "$secrets" ]; then echo "Referenced secrets:" >> "$REPORT"; echo "$secrets" | sed 's/^/  - /' >> "$REPORT"; else echo "No secrets referenced" >> "$REPORT"; fi
+          echo >> "$REPORT"
+
+          echo "#### Datastores" >> "$REPORT"
+          rds=$(rg -i "rds" -l || true)
+          elasticache=$(rg -i "elasticache" -l || true)
+          if [ -n "$rds" ]; then echo "- [x] RDS references" >> "$REPORT"; else echo "- [ ] RDS references" >> "$REPORT"; fi
+          if [ -n "$elasticache" ]; then echo "- [x] ElastiCache references" >> "$REPORT"; else echo "- [ ] ElastiCache references" >> "$REPORT"; fi
+          echo >> "$REPORT"
+
+          echo "#### Credentials" >> "$REPORT"
+          creds=$(rg -n "AKIA[0-9A-Z]{16}" || true)
+          if [ -n "$creds" ]; then echo "- [ ] Hardcoded AWS credentials found" >> "$REPORT"; echo "\n\`\`\`\n$creds\n\`\`\`" >> "$REPORT"; blockers=$((blockers+1)); else echo "- [x] No hardcoded AWS credentials" >> "$REPORT"; fi
+          echo >> "$REPORT"
+
+          echo "#### Post-deploy smoke tests" >> "$REPORT"
+          smoke=$(rg -l "post-deploy" .github/workflows || true)
+          if [ -n "$smoke" ]; then echo "- [x] Post-deploy smoke tests present" >> "$REPORT"; else echo "- [ ] Post-deploy smoke tests present" >> "$REPORT"; blockers=$((blockers+1)); fi
+          echo >> "$REPORT"
+
+          echo "blockers=$blockers" >> "$GITHUB_OUTPUT"
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: aws-gap-report
+          path: aws-gap-report.md
+      - name: Comment on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('aws-gap-report.md', 'utf8');
+            const {owner, repo, number} = context.issue;
+            await github.rest.issues.createComment({owner, repo, issue_number: number, body: report});
+      - name: Fail if blockers
+        if: steps.generate.outputs.blockers != '0'
+        run: |
+          echo "Blockers found" >&2
+          exit 1
