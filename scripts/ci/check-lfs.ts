@@ -1,7 +1,7 @@
 import { execFileSync } from "node:child_process";
 import fs from "node:fs/promises";
 
-async function getLfsGlobs(): Promise<string[]> {
+export async function getLfsGlobs(): Promise<string[]> {
   const lines = (await fs.readFile(".gitattributes", "utf8")).split(/\r?\n/);
   return lines
     .map((l) => l.trim())
@@ -15,7 +15,7 @@ async function getLfsGlobs(): Promise<string[]> {
     .map((l) => l.split(/\s+/)[0]);
 }
 
-function listFiles(globs: string[]): string[] {
+export function listFiles(globs: string[]): string[] {
   const files = new Set<string>();
   for (const g of globs) {
     try {
@@ -33,7 +33,7 @@ function listFiles(globs: string[]): string[] {
   return [...files];
 }
 
-async function findNonPointers(files: string[]): Promise<string[]> {
+export async function findNonPointers(files: string[]): Promise<string[]> {
   const bad: string[] = [];
   for (const f of files) {
     try {
@@ -48,15 +48,20 @@ async function findNonPointers(files: string[]): Promise<string[]> {
   return bad;
 }
 
-async function main() {
+export async function checkLfs(): Promise<string[]> {
   const globs = await getLfsGlobs();
   const files = listFiles(globs);
-  const offenders = await findNonPointers(files);
+  return findNonPointers(files);
+}
+
+async function main() {
+  const offenders = await checkLfs();
   if (!offenders.length) {
     console.log("No LFS issues found");
     return;
   }
   console.log("Non-LFS pointer files detected:\n" + offenders.join("\n"));
+  process.exitCode = 1;
   const cmds = offenders
     .map((f) => `git lfs migrate import --include=${JSON.stringify(f)}`)
     .join("\n");
@@ -94,6 +99,9 @@ async function main() {
   });
 }
 
-main().catch((err) => {
-  console.error(err);
-});
+if (require.main === module) {
+  main().catch((err) => {
+    console.error(err);
+    process.exitCode = 1;
+  });
+}
