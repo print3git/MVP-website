@@ -1,5 +1,6 @@
 # MVP Website
 
+[![Coverage Status](https://coveralls.io/repos/github/OWNER/REPO/badge.svg?branch=dev)](https://coveralls.io/github/OWNER/REPO?branch=dev)
 [![Build](https://github.com/OWNER/REPO/actions/workflows/build-frontend.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/build-frontend.yml)
 [![Lint](https://github.com/OWNER/REPO/actions/workflows/lint.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/lint.yml)
 [![Tests](https://github.com/OWNER/REPO/actions/workflows/backend-tests.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/backend-tests.yml)

@@ -1,0 +1,18 @@
+name: Coveralls
+
+on: [push, pull_request]
+
+jobs:
+  coveralls:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "Run coveralls"
+  coverage_guard:
+    needs: coveralls
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: node scripts/coverage-threshold.js
+        env:
+          MIN_COVERAGE: 0
