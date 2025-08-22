@@ -1,0 +1,67 @@
+name: AWS Fastlane
+
+on:
+  workflow_call:
+    inputs:
+      matrix:
+        description: JSON matrix configuration
+        required: false
+        default: '{}'
+        type: string
+      script:
+        description: Shell script to run
+        required: true
+        type: string
+      artifact-name:
+        description: Optional artifact name to upload
+        required: false
+        default: ''
+        type: string
+      artifact-path:
+        description: Path of artifact to upload
+        required: false
+        default: ''
+        type: string
+
+jobs:
+  run:
+    runs-on:
+      - self-hosted
+      - aws-ephemeral
+    strategy:
+      matrix: ${{ fromJson(inputs.matrix) }}
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4.0.2
+        with:
+          role-to-assume: ${{ secrets.FASTLANE_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: ./.github/actions/node-setup
+      - id: pnpm-store
+        run: echo "dir=$(pnpm store path)" >> $GITHUB_OUTPUT
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ steps.pnpm-store.outputs.dir }}
+            ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/pnpm-lock.yaml', '**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - uses: ./.github/actions/install-deps
+      - name: Run script
+        shell: bash
+        run: ${{ inputs.script }}
+      - name: Upload artifact
+        if: inputs.artifact-name != '' && inputs.artifact-path != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.artifact-name }}
+          path: ${{ inputs.artifact-path }}
