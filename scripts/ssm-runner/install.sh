@@ -1,39 +1,19 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO="${GITHUB_REPOSITORY:-mvpstudio/MVP-website}"
-TOKEN="${1:-${GH_RUNNER_TOKEN:-}}"
-LABEL="mvp-gh-runner"
-RUNNER_DIR=/opt/actions-runner
-SERVICE="actions.runner.${REPO//\//.}.${LABEL}.service"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+USER_DATA="$SCRIPT_DIR/user-data.sh"
 
-if [ -z "$TOKEN" ]; then
-  echo "Usage: $0 <token>" >&2
-  exit 1
-fi
+OWNER=${GITHUB_OWNER:?GITHUB_OWNER not set}
+REPO=${GITHUB_REPO:?GITHUB_REPO not set}
+TOKEN_API="https://api.github.com/repos/$OWNER/$REPO/actions/runners/registration-token"
 
-cd "$RUNNER_DIR"
+: "${GH_TOKEN:?GH_TOKEN not set}"
 
-cleanup() {
-  if systemctl list-units --full -all | grep -Fq "$SERVICE"; then
-    ./svc.sh uninstall "$SERVICE" || true
-  fi
-  if [ -f .runner ]; then
-    ./config.sh remove --token "$TOKEN" || true
-  fi
-}
-trap cleanup ERR
+runner_token="$(curl -fsSL -X POST -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "$TOKEN_API" | jq -r '.token')"
+install -m 600 /dev/null /run/gha-token
+printf '%s' "$runner_token" > /run/gha-token
 
-if systemctl is-active --quiet "$SERVICE"; then
-  systemctl restart "$SERVICE"
-  exit 0
-fi
-
-./config.sh --unattended --replace \
-  --url "https://github.com/${REPO}" \
-  --token "$TOKEN" \
-  --labels "self-hosted,linux,x64,${LABEL}"
-
-./svc.sh install "$SERVICE"
-systemctl enable "$SERVICE"
-systemctl start "$SERVICE"
+declare -fx GITHUB_OWNER GITHUB_REPO
+trap 'rm -f /run/gha-token' EXIT
+GITHUB_OWNER="$OWNER" GITHUB_REPO="$REPO" bash "$USER_DATA"

@@ -1,38 +1,52 @@
 #!/usr/bin/env bash
-set -euxo pipefail
+set -euo pipefail
 
-# Basic packages for runner
-apt-get update
-apt-get install -y curl jq tar
+RUNNER_DIR="/opt/actions-runner"
+RUNNER_NAME="mvp-gh-runner"
+TOKEN_FILE="/run/gha-token"
 
-# Enable corepack so pnpm/yarn can be used if needed
-if command -v corepack >/dev/null 2>&1; then
-  corepack enable || true
+if [[ -f "$TOKEN_FILE" ]]; then
+  GITHUB_RUNNER_TOKEN="$(cat "$TOKEN_FILE")"
+  rm -f "$TOKEN_FILE"
+elif [[ -n "${GITHUB_RUNNER_TOKEN:-}" ]]; then
+  :
+else
+  echo "Registration token not provided" >&2
+  exit 1
 fi
 
-RUNNER_DIR=/opt/actions-runner
+OWNER=${GITHUB_OWNER:?GITHUB_OWNER not set}
+REPO=${GITHUB_REPO:?GITHUB_REPO not set}
+REPO_SLUG="$OWNER/$REPO"
+SERVICE_NAME="actions.runner.${OWNER}-${REPO}.${RUNNER_NAME}.service"
+
+corepack enable >/dev/null 2>&1 || true
 mkdir -p "$RUNNER_DIR"
 cd "$RUNNER_DIR"
 
-# Download runner if not already present
-if [ ! -f bin/Runner.Listener ]; then
-  RUNNER_VERSION="${RUNNER_VERSION:-2.311.0}"
-  curl -fsSL "https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz" -o runner.tgz
-  tar xzf runner.tgz
-  rm runner.tgz
+installed=""
+if [[ -x ./bin/Runner.Listener ]]; then
+  installed="$(./bin/Runner.Listener --version || true)"
+fi
+latest_json="$(curl -fsSL https://api.github.com/repos/actions/runner/releases/latest)"
+latest_ver="$(echo "$latest_json" | jq -r '.tag_name' | tr -d 'v')"
+if [[ "$installed" != "$latest_ver" ]]; then
+  systemctl stop "$SERVICE_NAME" 2>/dev/null || true
+  rm -rf ./*
+  curl -fsSL "$(echo "$latest_json" | jq -r '.assets[] | select(.name | test("linux-x64")) | .browser_download_url')" -o runner.tar.gz
+  tar -xzf runner.tar.gz
+  rm runner.tar.gz
 fi
 
-# Fetch helper scripts from repo main branch
-REPO="${GH_REPOSITORY:-mvpstudio/MVP-website}"
-BASE="https://raw.githubusercontent.com/${REPO}/main/scripts/ssm-runner"
-for f in install.sh uninstall.sh; do
-  curl -fsSL "$BASE/$f" -o "/usr/local/bin/$f"
-  chmod +x "/usr/local/bin/$f"
-  ln -sf "/usr/local/bin/$f" "/usr/local/bin/ssm-runner-${f%.sh}"
-done
+./config.sh remove --token "$GITHUB_RUNNER_TOKEN" >/dev/null 2>&1 || true
+./config.sh --url "https://github.com/$REPO_SLUG" \
+  --token "$GITHUB_RUNNER_TOKEN" \
+  --name "$RUNNER_NAME" \
+  --labels "self-hosted,linux,x64,$RUNNER_NAME" \
+  --unattended
 
-# If a token is provided via GH_RUNNER_TOKEN, perform install
-if [ -n "${GH_RUNNER_TOKEN:-}" ]; then
-  /usr/local/bin/install.sh "$GH_RUNNER_TOKEN"
-fi
+unset GITHUB_RUNNER_TOKEN
 
+./svc.sh install "$RUNNER_NAME"
+systemctl enable "$SERVICE_NAME"
+systemctl start "$SERVICE_NAME"
