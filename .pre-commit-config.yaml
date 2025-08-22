@@ -12,3 +12,10 @@ repos:
     rev: v9.33.0
     hooks:
       - id: eslint
+  - repo: local
+    hooks:
+      - id: test-file-suffix
+        name: ensure new test files have random suffix
+        entry: node scripts/check-test-file-suffix.js
+        language: system
+        files: (?i)(?:^|/)(?:tests?|__tests__|ci-guard)/.*\.(?:test|spec)\.[cm]?[jt]sx?$
