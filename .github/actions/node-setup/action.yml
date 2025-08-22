@@ -1,4 +1,5 @@
 name: Node setup
+description: Prepare Node environment and pnpm
 runs:
   using: composite
   steps:

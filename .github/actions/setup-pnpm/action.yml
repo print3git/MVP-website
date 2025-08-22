@@ -1,4 +1,5 @@
 name: Setup pnpm
+description: Configure pnpm via corepack
 runs:
   using: composite
   steps:

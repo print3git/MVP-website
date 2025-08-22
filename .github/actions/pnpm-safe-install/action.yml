@@ -1,4 +1,5 @@
 name: pnpm safe install
+description: Install dependencies with corepack pnpm
 runs:
   using: composite
   steps:
