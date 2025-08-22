@@ -4,6 +4,7 @@
 [![Lint](https://github.com/OWNER/REPO/actions/workflows/lint.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/lint.yml)
 [![Tests](https://github.com/OWNER/REPO/actions/workflows/backend-tests.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/backend-tests.yml)
 [![CI](https://github.com/OWNER/REPO/actions/workflows/ci.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/ci.yml)
+[![CI Suites Guard](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/OWNER/REPO/dev/ci/suites-badge.json)](https://github.com/OWNER/REPO/actions/workflows/ci-gate.yml?query=branch%3Adev)
 [![npm version](https://img.shields.io/npm/v/mvp-website.svg)](https://www.npmjs.com/package/mvp-website)
 [![Coverage Status](https://coveralls.io/repos/github/OWNER/REPO/badge.svg?branch=main)](https://coveralls.io/github/OWNER/REPO?branch=main)
 [![Frontend Coverage](https://github.com/OWNER/REPO/actions/workflows/coverage.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/coverage.yml)
