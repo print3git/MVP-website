@@ -2,6 +2,9 @@ name: Node setup
 runs:
   using: composite
   steps:
+    - name: Setup env aliases
+      shell: bash
+      run: echo "BASH_ENV=$GITHUB_WORKSPACE/scripts/env/aliases.sh" >> "$GITHUB_ENV"
     - name: Enable Corepack and set PNPM_HOME
       shell: bash
       run: |

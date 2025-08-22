@@ -5,21 +5,18 @@ on:
     branches: [00000production]
   workflow_dispatch:
 
+env:
+  BASH_ENV: scripts/env/aliases.sh
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID || secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CF_PAGES_API_TOKEN: ${{ secrets.CF_PAGES_API_TOKEN || secrets.CLOUDFLARE_API_TOKEN }}
+      CF_PAGES_PROJECT: ${{ secrets.CF_PAGES_PROJECT || secrets.CLOUDFLARE_PAGES_PROJECT }}
     steps:
       - uses: actions/checkout@v5
-      - name: Map env vars
-        run: |
-          node -e "const m=require('./ci/cloudflare/vars-alias.map.json');for(const [t,aliases] of Object.entries(m)){for(const a of aliases){const v=process.env[a];if(v){console.log(`${t}=${v}`);break;}}}" >> $GITHUB_ENV
-        env:
-          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          CF_PAGES_API_TOKEN: ${{ secrets.CF_PAGES_API_TOKEN }}
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CF_PAGES_PROJECT: ${{ secrets.CF_PAGES_PROJECT }}
-          CLOUDFLARE_PAGES_PROJECT: ${{ secrets.CLOUDFLARE_PAGES_PROJECT }}
       - uses: actions/download-artifact@v4
         with:
           name: frontend-dist

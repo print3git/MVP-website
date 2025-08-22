@@ -4,6 +4,9 @@ on:
     branches: [00000production]
   workflow_dispatch:
 
+env:
+  BASH_ENV: scripts/env/aliases.sh
+
 jobs:
   build:
     runs-on: ubuntu-latest

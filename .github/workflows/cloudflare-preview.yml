@@ -4,10 +4,13 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - 'frontend/**'
-      - '!docs/**'
-      - 'package.json'
+      - "frontend/**"
+      - "!docs/**"
+      - "package.json"
   workflow_dispatch:
+
+env:
+  BASH_ENV: scripts/env/aliases.sh
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
