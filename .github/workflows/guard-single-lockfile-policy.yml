@@ -1,0 +1,11 @@
+name: single lockfile policy guard
+
+on:
+  pull_request:
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5.0.0
+      - run: node scripts/ci-guard/single-lockfile-policy/index.js

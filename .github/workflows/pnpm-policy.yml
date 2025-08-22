@@ -16,12 +16,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5.0.0
-      - name: prevent mixed package managers
+      # >>> BEGIN MANAGED BLOCK: ci-guard:single-lockfile-policy
+      - name: Enforce single lockfile policy (pnpm)
+        shell: bash
         run: |
-          if [ -f package-lock.json ] && [ -f pnpm-lock.yaml ]; then
-            echo "Error: both package-lock.json and pnpm-lock.yaml exist." >&2
-            exit 1
+          set -euo pipefail
+          if [ -f package-lock.json ]; then
+            echo "::error::package-lock.json found at repo root; canonical manager is pnpm"; exit 1
           fi
+          if compgen -G "**/package-lock.json" > /dev/null; then
+            echo "::warning::Nested package-lock.json files detected. Add to allowlist if intentional."
+          fi
+      # <<< END MANAGED BLOCK: ci-guard:single-lockfile-policy
       - name: enable corepack
         run: corepack enable
       - uses: pnpm/action-setup@v4.1.0
