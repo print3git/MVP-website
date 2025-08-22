@@ -34,6 +34,12 @@ env:
   BASH_ENV: scripts/env/aliases.sh
 
 jobs:
+  self-hosted-minimal:
+    uses: ./.github/workflows/_ci-try-selfhosted.yml
+    with:
+      job-name: self-hosted-minimal
+      steps: |
+        echo "self-hosted wrapper active"
   build:
     timeout-minutes: 15
     runs-on:

@@ -1,0 +1,8 @@
+aws_region: us-east-1
+asg_name: MVP-GH-Runners
+labels:
+  - self-hosted
+  - linux
+  - x64
+  - aws-runner
+queue_timeout_minutes: 5
