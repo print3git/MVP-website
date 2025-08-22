@@ -1,0 +1,127 @@
+name: Nightly Full CI
+
+on:
+  schedule:
+    - cron: "0 4 * * *"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  full:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5.0.0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4.4.0
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            backend/package-lock.json
+            frontend/package-lock.json
+
+      - name: Enable pnpm
+        run: corepack enable || true
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          npm ci --prefix backend
+          npm ci --prefix frontend
+          npx playwright install --with-deps
+
+      - name: Count backend tests
+        id: backend-count
+        run: |
+          cd backend
+          echo "count=$(npx jest --listTests | wc -l)" >> $GITHUB_OUTPUT
+
+      - name: Run backend tests
+        run: cd backend && npm test -- --reporters=default
+
+      - name: Count frontend tests
+        id: frontend-count
+        run: |
+          cd frontend
+          echo "count=$(npx jest --listTests | wc -l)" >> $GITHUB_OUTPUT
+
+      - name: Run frontend tests
+        run: cd frontend && npm test -- --reporters=default
+
+      - name: Count e2e tests
+        id: e2e-count
+        run: |
+          cd frontend
+          echo "count=$(npx playwright list-files | wc -l)" >> $GITHUB_OUTPUT
+
+      - name: Run e2e tests
+        run: cd frontend && npx playwright test --reporter=line
+
+      - name: Download previous baseline
+        run: |
+          set -e
+          url=$(curl -s -H "Authorization: Bearer ${{ github.token }}" \
+            https://api.github.com/repos/${{ github.repository }}/actions/artifacts?per_page=100 \
+            | jq -r '.artifacts[] | select(.name=="ci-baseline") | .archive_download_url' | head -n 1)
+          if [ -n "$url" ]; then
+            curl -L -H "Authorization: Bearer ${{ github.token }}" "$url" -o baseline.zip
+            unzip baseline.zip
+          fi
+          [ -f ci-baseline.json ] || echo '{}' > ci-baseline.json
+
+      - name: Update baseline and detect regression
+        id: baseline
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const now = new Date().toISOString();
+          const file = 'ci-baseline.json';
+          let baseline = {};
+          if (fs.existsSync(file)) baseline = JSON.parse(fs.readFileSync(file, 'utf8'));
+          const counts = {
+            backend: Number(process.env.BACKEND_COUNT),
+            frontend: Number(process.env.FRONTEND_COUNT),
+            e2e: Number(process.env.E2E_COUNT)
+          };
+          let regression = false;
+          for (const [suite, count] of Object.entries(counts)) {
+            const cur = baseline[suite] || {min: count, last: count};
+            if (count === 0 || count < cur.min) regression = true;
+            baseline[suite] = {
+              min: Math.min(cur.min, count),
+              last: count,
+              updatedAt: now
+            };
+          }
+          fs.writeFileSync(file, JSON.stringify(baseline, null, 2));
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `regression=${regression}\n`);
+          NODE
+        env:
+          BACKEND_COUNT: ${{ steps.backend-count.outputs.count }}
+          FRONTEND_COUNT: ${{ steps.frontend-count.outputs.count }}
+          E2E_COUNT: ${{ steps.e2e-count.outputs.count }}
+
+      - name: Upload baseline
+        uses: actions/upload-artifact@v4.3.4
+        with:
+          name: ci-baseline
+          path: ci-baseline.json
+
+      - name: Create regression issue
+        if: steps.baseline.outputs.regression == 'true'
+        uses: actions/github-script@v7.0.1
+        with:
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('ci-baseline.json', 'utf8');
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: 'CI regression detected',
+              body: `Test counts dropped or zero in nightly run.\n\n\`\`\`json\n${body}\n\`\`\``,
+              labels: ['ci-regression']
+            });
