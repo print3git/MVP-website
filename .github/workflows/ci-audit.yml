@@ -1,22 +1,14 @@
-name: CI Workflow Coverage Auditor
-on: [pull_request, push]
+name: CI Audit
+on:
+  pull_request:
+  push:
+    branches: [00000production]
 jobs:
   audit:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - run: node --version
-      - name: Run audit
-        run: |
-          node scripts/ci-audit.ts
-      - name: Upload audit artifact
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: ci-coverage-audit
-          path: ci/coverage-audit.json
+        with: { node-version: 20 }
+      - run: npm ci || pnpm install || yarn install
+      - run: npm run ci-audit:workflows

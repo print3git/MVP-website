@@ -104,6 +104,7 @@
     "test:regression": "npm run test:backend:regression && npm run test:frontend:regression && npm run test:ci:regression && npm run test:e2e:regression",
     "ci:probe": "bash -O globstar -c 'env -u npm_config_prefix node --test tests/ci/**/*.test.js'",
     "ci:summary": "node scripts/ci/print-suite-summary.js",
+    "ci-audit:workflows": "tsx scripts/ci-audit/check-ci-files.ts",
     "test:inventory": "vitest run -t test-inventory"
   },
   "babel": {
@@ -186,6 +187,7 @@
     "toml": "^3.0.0",
     "tsconfig-strictest": "^1.0.0-beta.1",
     "tslib": "^2.8.1",
+    "tsx": "^4.19.1",
     "typescript": "^5.8.3",
     "vitest": "^2.1.1",
     "wait-on": "^8.0.3",
