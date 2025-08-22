@@ -50,3 +50,26 @@ automatic scale down on idle runners help keep usage minimal.
 The userdata script obtains an ephemeral registration token for every instance
 at boot. Repository registration tokens can be rotated from the GitHub UI or by
 regenerating the PAT used by the bootstrapping script.
+
+## Bump capacity
+
+Ephemeral runners live in an Auto Scaling Group with a desired capacity of zero.
+To queue jobs, increase the group's size and scale back down when finished.
+
+### Terraform
+
+```bash
+cd infra/runners
+terraform apply -var="desired_capacity=2"
+```
+
+### AWS CLI
+
+```bash
+aws autoscaling set-desired-capacity \
+  --auto-scaling-group-name aws-ephemeral-runner \
+  --desired-capacity 2
+```
+
+Replace `2` with the number of runners you need and set it back to `0` to turn
+them off.
