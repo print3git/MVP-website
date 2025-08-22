@@ -196,7 +196,7 @@ resource "aws_launch_template" "runner" {
   user_data = base64encode(local.user_data)
   tag_specifications {
     resource_type = "instance"
-    tags          = merge(local.tags, { Name = "${var.project}-runner" })
+    tags          = merge(local.tags, { Name = "${var.project}-runner", runner = "gha" })
   }
 }
 
@@ -206,6 +206,7 @@ resource "aws_autoscaling_group" "runner" {
   max_size            = 1
   min_size            = 0
   vpc_zone_identifier = local.subnet_ids
+  default_cooldown    = 600
   launch_template {
     id      = aws_launch_template.runner.id
     version = "$Latest"
@@ -213,6 +214,11 @@ resource "aws_autoscaling_group" "runner" {
   tag {
     key                 = "Name"
     value               = "${var.project}-runner"
+    propagate_at_launch = true
+  }
+  tag {
+    key                 = "runner"
+    value               = "gha"
     propagate_at_launch = true
   }
   lifecycle {
@@ -238,4 +244,85 @@ resource "aws_autoscaling_schedule" "scale_up" {
   desired_capacity       = 1
   recurrence             = "0 6 * * *"
   autoscaling_group_name = aws_autoscaling_group.runner.name
+}
+
+resource "aws_autoscaling_policy" "queued_jobs" {
+  name                   = "${var.project}-queued-jobs"
+  policy_type            = "TargetTrackingScaling"
+  autoscaling_group_name = aws_autoscaling_group.runner.name
+
+  target_tracking_configuration {
+    customized_metric_specification {
+      metric_name = "QueuedJobs"
+      namespace   = "GitHubActions"
+      statistic   = "Average"
+    }
+    target_value = 0.5
+  }
+}
+
+data "archive_file" "queue_metric" {
+  type        = "zip"
+  source_file = "${path.module}/lambda/queue-metric.js"
+  output_path = "${path.module}/lambda/queue-metric.zip"
+}
+
+resource "aws_iam_role" "queue_metric" {
+  name               = "${var.project}-queue-metric-role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect    = "Allow",
+      Action    = "sts:AssumeRole",
+      Principal = { Service = "lambda.amazonaws.com" }
+    }]
+  })
+  tags = local.tags
+}
+
+resource "aws_iam_role_policy" "queue_metric" {
+  role = aws_iam_role.queue_metric.id
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect   = "Allow",
+      Action   = ["cloudwatch:PutMetricData"],
+      Resource = "*"
+    }]
+  })
+}
+
+resource "aws_lambda_function" "queue_metric" {
+  function_name    = "${var.project}-queue-metric"
+  filename         = data.archive_file.queue_metric.output_path
+  source_code_hash = data.archive_file.queue_metric.output_base64sha256
+  role             = aws_iam_role.queue_metric.arn
+  handler          = "queue-metric.handler"
+  runtime          = "nodejs20.x"
+  environment {
+    variables = {
+      GITHUB_TOKEN = var.github_token
+      GITHUB_OWNER = var.owner
+      GITHUB_REPO  = var.repo
+    }
+  }
+}
+
+resource "aws_cloudwatch_event_rule" "queue_metric" {
+  name                = "${var.project}-queue-metric"
+  schedule_expression = "rate(1 minute)"
+}
+
+resource "aws_cloudwatch_event_target" "queue_metric" {
+  rule      = aws_cloudwatch_event_rule.queue_metric.name
+  target_id = "queue-metric"
+  arn       = aws_lambda_function.queue_metric.arn
+}
+
+resource "aws_lambda_permission" "queue_metric" {
+  statement_id  = "AllowExecutionFromEvents"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.queue_metric.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.queue_metric.arn
 }
