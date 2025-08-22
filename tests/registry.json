@@ -1,0 +1,4256 @@
+{
+  "generatedAt": "2025-08-22T10:52:37.161Z",
+  "branch": "work",
+  "commit": "26cc324ac5bc741147acf3ff0f77b1c8ed971b07",
+  "packages": {
+    "root": {
+      "current": [
+        {
+          "path": "scripts/__tests__/aliqjanonrwoynf.test.ts",
+          "hash": "8c6cfb7e73c1e917cf0e94d51098e449b1e57e7b",
+          "size": 1324
+        },
+        {
+          "path": "scripts/__tests__/auto-cloudflare-config-a1b2c3d4e5f6g7h.test.ts",
+          "hash": "0dca24c24ef46bf067c547c029d5464d21fa884a",
+          "size": 1796
+        },
+        {
+          "path": "scripts/__tests__/auto-cloudflare-config-compile.test.ts",
+          "hash": "cf0aca566c4c675bed2d36983bb11ecaa71bda61",
+          "size": 866
+        },
+        {
+          "path": "scripts/__tests__/auto-cloudflare-config-xvpfhoqbxmsielp.test.ts",
+          "hash": "e594fff2f95d83dff5fb2fa935280fcddc90c16a",
+          "size": 1894
+        },
+        {
+          "path": "scripts/__tests__/check-broken-symlinks-f7c290a1b2c3d4e.test.ts",
+          "hash": "4906e019e78830e7ddf5195419bf470055182245",
+          "size": 2160
+        },
+        {
+          "path": "scripts/__tests__/check-broken-symlinks_KG1DrVdKhzzakxp.test.ts",
+          "hash": "7a2e11a3668e0bcf720cc61523bf0296d8bb58a4",
+          "size": 963
+        },
+        {
+          "path": "scripts/__tests__/check-env-dbfailpass.test.ts",
+          "hash": "ac00334a1546ae58658a293dcd09d97b9f5f74a8",
+          "size": 925
+        },
+        {
+          "path": "scripts/__tests__/check-symlinks-de41f2c6a8b903e.test.ts",
+          "hash": "91bf33650caf167a8cee5ff736e4979b8c764cb3",
+          "size": 984
+        },
+        {
+          "path": "scripts/__tests__/ensure-deps-offline.test.ts",
+          "hash": "c1ec56199b269c04b7c6a3067dec84adba1d49de",
+          "size": 293
+        },
+        {
+          "path": "scripts/__tests__/ensure-deps.test.ts",
+          "hash": "aa322e1dd330ca53a4520df73d28dc53e3e5cb33",
+          "size": 215
+        },
+        {
+          "path": "scripts/__tests__/validate-static-refs-3ea7bd43ffcd123.test.ts",
+          "hash": "7fb422c68d838358cb13422353e1dcab85abfa6d",
+          "size": 2012
+        },
+        {
+          "path": "scripts/__tests__/validateEnvTest_vzl6.test.ts",
+          "hash": "94985e387c42a1a4cc7681f220676e40a2c6d3e1",
+          "size": 547
+        },
+        {
+          "path": "src/generated_frontend_a1b2c3d4e5f6g7h.test.js",
+          "hash": "5638d9850d5fb72414d6f70e32b8ac2cd35ff84b",
+          "size": 4181
+        },
+        {
+          "path": "src/generated_frontend_abcd.test.js",
+          "hash": "560b1205a72f406591b5b2254cbd1917d6d2a80f",
+          "size": 10541
+        },
+        {
+          "path": "tests/analyticsWrapper.test.js",
+          "hash": "f7e78fd52f512c0b2f453a30afdb68a04f3c29cc",
+          "size": 1276
+        },
+        {
+          "path": "tests/aptCheckInstallAptUtils.test.js",
+          "hash": "c9d1ce4cfc4001b6d2575e2c5077e857bfac9a68",
+          "size": 826
+        },
+        {
+          "path": "tests/aptCheckScript.test.js",
+          "hash": "9251b33f5553919a6dbf9f42e6185ad2b822eb20",
+          "size": 383
+        },
+        {
+          "path": "tests/aptCheckScriptFailure.test.js",
+          "hash": "9f864069a24779d17f1bac66a6f14f1b74d273bb",
+          "size": 490
+        },
+        {
+          "path": "tests/aptCheckScriptInstallFailure.test.js",
+          "hash": "b992442568b72dec83773d4dffde9943296c6211",
+          "size": 514
+        },
+        {
+          "path": "tests/aptCheckScriptMissing.test.js",
+          "hash": "f18cdcadd00a2ede36b9765cfff490d44d0fe7a6",
+          "size": 630
+        },
+        {
+          "path": "tests/aptCheckScriptTimeout.test.js",
+          "hash": "726964d1adefda2f9966c9ad1e25d14536bae3cd",
+          "size": 487
+        },
+        {
+          "path": "tests/assertSetup.test.js",
+          "hash": "0ee1a8c0ac12c28836191a8868b11a9525e91ae5",
+          "size": 4041
+        },
+        {
+          "path": "tests/assertSetupNodeVersion.test.js",
+          "hash": "6daddfb2d37f7b1f43847a65d4b3e9063ca965a8",
+          "size": 768
+        },
+        {
+          "path": "tests/backend/integration/models.routes.test.js",
+          "hash": "6f52eb6ff0eab910262276c405171c020c333d8d",
+          "size": 1214
+        },
+        {
+          "path": "tests/backend/unit/accounting.test.js",
+          "hash": "eddf30a7e0a759cb0d17b32a7add4129a073f789",
+          "size": 424
+        },
+        {
+          "path": "tests/backendFormat.test.js",
+          "hash": "86415f55a490eb954c6ddb62cfd83bbd7d9521d7",
+          "size": 249
+        },
+        {
+          "path": "tests/backendFormatEnotempty.test.js",
+          "hash": "1bceda7de54384e7c170da4be0bc2e883d0e929a",
+          "size": 690
+        },
+        {
+          "path": "tests/backendFormatMissingDeps.test.js",
+          "hash": "ea9e614b023cb59eb2ed02ae6d14576306a8e4e3",
+          "size": 1225
+        },
+        {
+          "path": "tests/backendFormatRenameError.test.js",
+          "hash": "00c9cf2c1eda5cc175880ab7f9879437d97cc7cf",
+          "size": 688
+        },
+        {
+          "path": "tests/backendFormatTarError.test.js",
+          "hash": "fea1658010d379aa93453f9428c3b7eb799cee8f",
+          "size": 684
+        },
+        {
+          "path": "tests/backendNpmTestIntegration.test.js",
+          "hash": "283da279fef7de146882c067b263b0d5ad8007e2",
+          "size": 535
+        },
+        {
+          "path": "tests/backendNpmTestMissingDeps.test.js",
+          "hash": "21951090885f533a1ac9ef98cca9acad11d2a3d4",
+          "size": 1339
+        },
+        {
+          "path": "tests/backendScriptsLint.test.js",
+          "hash": "62f5a2cafc402b6055289b5285ae48a848bc0b2a",
+          "size": 224
+        },
+        {
+          "path": "tests/backendServerLint.test.js",
+          "hash": "6cb4d5b7e0e97cca227b68f4dcdd0a4d06d02bbf",
+          "size": 205
+        },
+        {
+          "path": "tests/backendSyntax.test.js",
+          "hash": "0433269427406b013f850632d9a825f8deef7f96",
+          "size": 922
+        },
+        {
+          "path": "tests/backendUnitScript.test.js",
+          "hash": "32b0821aff050397428b9c17f1e3840582092419",
+          "size": 197
+        },
+        {
+          "path": "tests/browserConnectivity.test.js",
+          "hash": "e20190035c9e6741effdf8702a81ecc6d88bbf8d",
+          "size": 847
+        },
+        {
+          "path": "tests/buildScript.test.js",
+          "hash": "35b94c201f21af45c121581a1744cfd760be9a6d",
+          "size": 133
+        },
+        {
+          "path": "tests/checkCodeScanningScript.test.js",
+          "hash": "b1690d5f849bd495c5024d675ddb50aeb83bff8e",
+          "size": 1933
+        },
+        {
+          "path": "tests/checkCoverageScript.test.js",
+          "hash": "ca7306459f585e5dfcc1e6d14ce7b059df187635",
+          "size": 3158
+        },
+        {
+          "path": "tests/checkCoverageScriptRoot.test.js",
+          "hash": "65613fedd70af075b1a5a5392ca1c1683e626a9c",
+          "size": 2971
+        },
+        {
+          "path": "tests/checkHostDeps.test.js",
+          "hash": "5225270e49927b54e4806760084ee88510259fe0",
+          "size": 4860
+        },
+        {
+          "path": "tests/checkHostDepsNetworkFailure.test.js",
+          "hash": "3327d02f266daae41dc46e28d879113c60f5f0fa",
+          "size": 624
+        },
+        {
+          "path": "tests/checkNodeVersionScript.test.js",
+          "hash": "b79a2387a8b0bfa054f9f464455359bc3bb4a4f6",
+          "size": 797
+        },
+        {
+          "path": "tests/checkRepoRoot.test.ts",
+          "hash": "12ffab54cee82c9a218f38da14da4752f6813702",
+          "size": 542
+        },
+        {
+          "path": "tests/checkSecrets-env-p1q2r3.test.ts",
+          "hash": "39848ef21c10f1432e9f6c90e39ce502805db88d",
+          "size": 453
+        },
+        {
+          "path": "tests/checkoutForm.react.test.js",
+          "hash": "9fb05e492d22c9f6b0892e0000fef4df411d12f0",
+          "size": 1464
+        },
+        {
+          "path": "tests/checkoutStyles.83d9e6f7a2b1c4d.test.js",
+          "hash": "c4e6399d269fd7914e3c3592a5acc8aced478711",
+          "size": 1211
+        },
+        {
+          "path": "tests/ci/action-manifest-sanity.test.js",
+          "hash": "abe27e6c6d0dd12f2a1dc8b26eb306f66c7c5887",
+          "size": 1228
+        },
+        {
+          "path": "tests/ci/artifact-contracts.test.js",
+          "hash": "805296daec9513243dda86708ea65ea53ae7e6eb",
+          "size": 1425
+        },
+        {
+          "path": "tests/ci/backend-lib-build-check-abc123.test.ts",
+          "hash": "34f817875f9df8266227638e1f26e65661cfdfa0",
+          "size": 1044
+        },
+        {
+          "path": "tests/ci/browser-globals-ssr-sanity.test.js",
+          "hash": "35bca620dd75121acc08336e49c3ade974d27554",
+          "size": 1176
+        },
+        {
+          "path": "tests/ci/build-pipeline-diagnostic-6b7f9e18c3d2a4b1.test.ts",
+          "hash": "5a5be86102802dba60efc50d335d05e100fc1a08",
+          "size": 1274
+        },
+        {
+          "path": "tests/ci/codeql-tools-config.test.js",
+          "hash": "e23bc3c41d2e250f0c2b97b75791c5dd51ef9931",
+          "size": 1219
+        },
+        {
+          "path": "tests/ci/coverageEnvFailTest_b7e1c93f.test.ts",
+          "hash": "87a643112ad67a15fac4a58de0c668f9ed9f1a09",
+          "size": 838
+        },
+        {
+          "path": "tests/ci/diagnostic-server-waiton-c01ebf750a9.test.ts",
+          "hash": "21afcf4f5b0731457611d49d1b132a904a973314",
+          "size": 1508
+        },
+        {
+          "path": "tests/ci/diagnostic_stripe_webhook_prod_gate.test.ts",
+          "hash": "58d4287169e6b1963f1a335d7b0ab86097fff091",
+          "size": 1116
+        },
+        {
+          "path": "tests/ci/dist-outputs-contract.test.js",
+          "hash": "02969e63679b95d4cd321e7aac43e4a41640d4a3",
+          "size": 1834
+        },
+        {
+          "path": "tests/ci/envVarValidation_e4c5d2b1.test.ts",
+          "hash": "6099415047129320e18ac084fb8920220df4b3f7",
+          "size": 663
+        },
+        {
+          "path": "tests/ci/env_loader_preflight_ba718dce.test.ts",
+          "hash": "fe7e3560f4a8dd07367a002e6bbb612f6a793389",
+          "size": 748
+        },
+        {
+          "path": "tests/ci/env_merge_precedence_7c3d1b.test.ts",
+          "hash": "fec7b7b139d598fa8a23af93a2f725ab537799c1",
+          "size": 1875
+        },
+        {
+          "path": "tests/ci/env_preflight_a1b2c3d4.test.ts",
+          "hash": "6b7d6ac78c65804e9a255e96340ac354bf0e9669",
+          "size": 1661
+        },
+        {
+          "path": "tests/ci/eslint-config-sanity.test.js",
+          "hash": "18347dc6c814948e0bba45095cf1a3170e1edf46",
+          "size": 899
+        },
+        {
+          "path": "tests/ci/eslint_sanity_5e4c9d2a.test.ts",
+          "hash": "13fad3ce5e9ac1f85063012436b3c026bb24c502",
+          "size": 1136
+        },
+        {
+          "path": "tests/ci/frontend-prereqs.test.js",
+          "hash": "ecbe84ab3c08240af82a8c86a122f664dca4fed4",
+          "size": 1705
+        },
+        {
+          "path": "tests/ci/git-lfs-pointers.test.js",
+          "hash": "754964cb80e99ae402a5be9bc01662de76c7f839",
+          "size": 1407
+        },
+        {
+          "path": "tests/ci/lockfile-parity.test.js",
+          "hash": "c31479c387f63034989dcfa4e29f447e581a4c60",
+          "size": 1127
+        },
+        {
+          "path": "tests/ci/pipeline-deadlock-check-b1a2c3d.test.js",
+          "hash": "a3f07679d71fbfb7b359a78f903cda6596b5b537",
+          "size": 3183
+        },
+        {
+          "path": "tests/ci/pipeline-deadlock-check-dc53172.test.js",
+          "hash": "8d2a33c109270918d61b418e3602978112580a95",
+          "size": 3382
+        },
+        {
+          "path": "tests/ci/pnpm-availability.test.js",
+          "hash": "b889e5f23dd3a1499ee8c912cca44f2af2968387",
+          "size": 713
+        },
+        {
+          "path": "tests/ci/self-hosted-fallback.test.js",
+          "hash": "ad45c6d5f0e4cef30b0dac0d3a1d04850fc34969",
+          "size": 1156
+        },
+        {
+          "path": "tests/ci/stripe_env_fallback.test.ts",
+          "hash": "5b12d8f84e8c7ae6c02499b1072e2aca4f027703",
+          "size": 1400
+        },
+        {
+          "path": "tests/ci/test-cloudflare-deployment-readiness-4c7a3f2e1b0d9c8.test.ts",
+          "hash": "eb46e989e34292e99c04ad233c8bafaa56ed5214",
+          "size": 2331
+        },
+        {
+          "path": "tests/ci/test-eslint-stability.test.ts",
+          "hash": "ed362a34e9fca3908fe6c658cb488c072827104b",
+          "size": 1298
+        },
+        {
+          "path": "tests/ci/test-frontend-stability-815c72f49a3d6e1.test.tsx",
+          "hash": "57d363ab68383c8d9ff4e98df285e58ea511c715",
+          "size": 2605
+        },
+        {
+          "path": "tests/ci/test-lost-test-discovery-af982b1476cde34.test.ts",
+          "hash": "7a81e8a8b51d8b333cbc0bcff8a77531160dee19",
+          "size": 2726
+        },
+        {
+          "path": "tests/ci/test-server-env-prereq-check-af93k8x2ms4n05q.test.ts",
+          "hash": "0dc8ea7d546776a4964915e7bef66f1f8574ce8c",
+          "size": 842
+        },
+        {
+          "path": "tests/ci/test-stripe-types.test.ts",
+          "hash": "281a9ed8f65b6d3efb89fea244362080fa25f264",
+          "size": 30
+        },
+        {
+          "path": "tests/ci/tsc_sanity_4e1a2b.test.ts",
+          "hash": "83641f7b2180a1f0546d18b4eff1371f6ebf64b7",
+          "size": 596
+        },
+        {
+          "path": "tests/ci/watchdog-utils.test.ts",
+          "hash": "75c0174084e7963201e7f29e153ecb397b75bc8a",
+          "size": 1927
+        },
+        {
+          "path": "tests/ci/workflows.regression.test.js",
+          "hash": "8507e15a1d6604fef4b19c03db9fc5ef2194925b",
+          "size": 572
+        },
+        {
+          "path": "tests/ci/wrangler-pages-config.test.js",
+          "hash": "78a608e97f8633d239fb4c5c78361684a2687359",
+          "size": 1121
+        },
+        {
+          "path": "tests/ciHealthCheck.test.js",
+          "hash": "d66f66282c7e955dfc53ddd049e9dd6eb3842530",
+          "size": 1661
+        },
+        {
+          "path": "tests/ciNetworkFailure.test.js",
+          "hash": "42f708eb3b167e17cbf8f08a8784ad62c28e6ba6",
+          "size": 669
+        },
+        {
+          "path": "tests/codeqlScanningEnabled.test.js",
+          "hash": "e7f4da5c788f3c5c3aaa5bc56a23ae86528154ef",
+          "size": 719
+        },
+        {
+          "path": "tests/codeqlScript.test.js",
+          "hash": "9fdfc198b98e18c9bc6a2ddf0a59f7fd843c9c3c",
+          "size": 184
+        },
+        {
+          "path": "tests/codeqlScriptExec.test.js",
+          "hash": "6d9536dfb1e692c78ee0adb467f8f1891a7f0f82",
+          "size": 337
+        },
+        {
+          "path": "tests/codeqlSecurityCheck_d5e9f4.test.ts",
+          "hash": "f84c950cdbd5c4c7155e911d8d645243baa66eea",
+          "size": 2010
+        },
+        {
+          "path": "tests/codeqlWorkflow.test.js",
+          "hash": "437aaac5dc9c00b132e83cf05ddaff948dbfc0aa",
+          "size": 1414
+        },
+        {
+          "path": "tests/codeqlWorkflowLint.test.js",
+          "hash": "3ec543a3c7dbbce15cea19de3828fb94054ae414",
+          "size": 216
+        },
+        {
+          "path": "tests/commitMsgHook.test.js",
+          "hash": "dde3ae3ca75145028e224cdd503e02ff563fe533",
+          "size": 468
+        },
+        {
+          "path": "tests/componentsRender_98c4d6f2a5b1e7g.test.js",
+          "hash": "3deaed7a9c15b52102adfbd1697b0948d44d2b70",
+          "size": 1141
+        },
+        {
+          "path": "tests/coverageNodeMismatch.test.js",
+          "hash": "8c1f113d16cd5efab389972e0b53bb6eb8dd20f2",
+          "size": 838
+        },
+        {
+          "path": "tests/coverageNodeVersion.test.js",
+          "hash": "5c2999532484036fbde83f4f5f9c86d2c744440a",
+          "size": 709
+        },
+        {
+          "path": "tests/coverageReadme.test.js",
+          "hash": "933efab1430c5de0e57593926aeb74b594659a47",
+          "size": 341
+        },
+        {
+          "path": "tests/coverageScript.test.js",
+          "hash": "11a34eda3445c1783294cc87e422eac0d06810fb",
+          "size": 200
+        },
+        {
+          "path": "tests/coverageSummary.test.js",
+          "hash": "0fe9ad6101846e99948780cf748ebc21dda7dc5c",
+          "size": 235
+        },
+        {
+          "path": "tests/coverageSummaryMissing.test.js",
+          "hash": "03a66649bbff6e2981c025e4143891e6b322c1ea",
+          "size": 1081
+        },
+        {
+          "path": "tests/coverageThresholdFail.test.js",
+          "hash": "bc668c7e598d7f4035c0e0a136796d1eda985ccb",
+          "size": 1623
+        },
+        {
+          "path": "tests/coverageWorkflow.test.js",
+          "hash": "b5e923d1201f5a11553e991a4e0a4dd9f008e6d5",
+          "size": 1159
+        },
+        {
+          "path": "tests/coverageWorkflowLint.test.js",
+          "hash": "0abbeffeaf419ca3b7796bc2cbb0d8303b2e46f8",
+          "size": 220
+        },
+        {
+          "path": "tests/critical/glbPipelineProductionVerification_7f6a9d13.test.ts",
+          "hash": "f91e911a82786cbfaf5bd8055817625df3ebf025",
+          "size": 1248
+        },
+        {
+          "path": "tests/crossEnvInstalled.test.js",
+          "hash": "5844d35ef98dd92e0a031994f11334620be237d8",
+          "size": 576
+        },
+        {
+          "path": "tests/crossSpawnInstalled.test.js",
+          "hash": "d98652f32239a447b907de4fd488932687cd597b",
+          "size": 330
+        },
+        {
+          "path": "tests/dbCheckModuleResolution.test.js",
+          "hash": "e9cde4a6a86ac9870dac9135502219210da68066",
+          "size": 580
+        },
+        {
+          "path": "tests/dbCheckPlaceholder.test.js",
+          "hash": "e5c07f2a731609cd3f739a27d4f31314d3f25fb2",
+          "size": 630
+        },
+        {
+          "path": "tests/dbCheckScript.test.js",
+          "hash": "5de9ed0f9be10f4440c80e24fe116fa82b82f079",
+          "size": 862
+        },
+        {
+          "path": "tests/dbCheckScriptFailure.test.js",
+          "hash": "7357bee6cb208caefd8f2a722f309577fa38d779",
+          "size": 602
+        },
+        {
+          "path": "tests/debug/debugEnvVars_e9a2d1.test.js",
+          "hash": "03cae5752038782744e38be9c5279323571a8a85",
+          "size": 985
+        },
+        {
+          "path": "tests/debug/dependencySanityCheck_f9605c.test.js",
+          "hash": "047ede5aac411b9bf2ab5e5856955a181fbbb2f0",
+          "size": 1041
+        },
+        {
+          "path": "tests/dependency.test.js",
+          "hash": "f01884dd306d0742b16fdb87d2e5856bf109e263",
+          "size": 2293
+        },
+        {
+          "path": "tests/dependencyInstallationStability.test.js",
+          "hash": "55ecf01ac2f398de3fb1478f6e89d6560e5220af",
+          "size": 1964
+        },
+        {
+          "path": "tests/detailedLint.test.js",
+          "hash": "143745fb25e03989c7d7083a42f5b0606d419ab7",
+          "size": 1376
+        },
+        {
+          "path": "tests/dev-server.integration.test.ts",
+          "hash": "37193d05fecd81e9114d31bd4c91d810134fd506",
+          "size": 1003
+        },
+        {
+          "path": "tests/dev-server.test.ts",
+          "hash": "e1594a17a6a3c0d3d420ad176bff2a5264fe0c7d",
+          "size": 1141
+        },
+        {
+          "path": "tests/devServerPages.test.js",
+          "hash": "bc83fc538bc7b4ac12f6df2f6a750d832d16ce05",
+          "size": 664
+        },
+        {
+          "path": "tests/diagnoseScript.test.js",
+          "hash": "4294fe53ed7d0833dbba97e73bb744a178353356",
+          "size": 674
+        },
+        {
+          "path": "tests/diagnostic-cloudflare-assetcheck-cd7a6f94e38.test.ts",
+          "hash": "c8d9b1182b20dfa7d9d6818a8b47132bfe396d36",
+          "size": 1932
+        },
+        {
+          "path": "tests/diagnostic-cloudflare-smoke-7e2c9d4f8b.test.ts",
+          "hash": "ac766ecff4b57937cac22f3529a9e4941c91bf0c",
+          "size": 1048
+        },
+        {
+          "path": "tests/diagnostic-db-smoke-5a6e2d9c1f.test.ts",
+          "hash": "3db178b1860f32d5b1d66faf072ee8898341b049",
+          "size": 936
+        },
+        {
+          "path": "tests/diagnostic-env-validation-c42aa19f7d5.test.ts",
+          "hash": "6d00179c5678c97eeccb8bdf3a933266adc5ff1d",
+          "size": 2312
+        },
+        {
+          "path": "tests/diagnostic-env-vars-4be91cf27a.test.ts",
+          "hash": "fbfaf487207fa78daea25da2b1c543110b1f0058",
+          "size": 706
+        },
+        {
+          "path": "tests/diagnostic-eslint-config.test.ts",
+          "hash": "a8cc807c9fe9de9b6952ef20690f712ec1e812c5",
+          "size": 480
+        },
+        {
+          "path": "tests/diagnostic-glb-pipeline-44eb3019f13.test.ts",
+          "hash": "264cc4be073882beb9924039f08e309394e4c684",
+          "size": 1657
+        },
+        {
+          "path": "tests/diagnostic-stripe-preflight-31f8c6a2e7.test.ts",
+          "hash": "576226228a5fe6c7e7361c0316bfd7664f9fea3f",
+          "size": 473
+        },
+        {
+          "path": "tests/diagnostic-stripe-smoke-d3f8a1b5c7.test.ts",
+          "hash": "d67bac4e20a68a3fc7157a48267e91bc4ed244e0",
+          "size": 788
+        },
+        {
+          "path": "tests/diagnostic-stripe-types.test.ts",
+          "hash": "d4fa11c1d31c81ed7770d8df5011f0970d17f6c2",
+          "size": 927
+        },
+        {
+          "path": "tests/diagnostic_auto_cloudflare_config_b73e2.test.ts",
+          "hash": "7cb0873aad79e36cc1cb370e246fd667368f1eb0",
+          "size": 1187
+        },
+        {
+          "path": "tests/diagnostic_auto_cloudflare_integration_9b1c7d3e5f.test.ts",
+          "hash": "d7a059ad8391f2b8839612b949c9a7cd1df1e5a5",
+          "size": 4078
+        },
+        {
+          "path": "tests/diagnostic_stripe_integration_79333af6.test.ts",
+          "hash": "700d51a424226a66824edb6372c1a912ed52f6f6",
+          "size": 2207
+        },
+        {
+          "path": "tests/diagnostics-34ad9c7e.test.js",
+          "hash": "e4447da7104ffc9136fdfd57edb1a899aa4d1815",
+          "size": 3361
+        },
+        {
+          "path": "tests/diagnostics-951c73bd.test.js",
+          "hash": "60a991ae8632573d9a35ea74ef7f5b9d93f4da3b",
+          "size": 3689
+        },
+        {
+          "path": "tests/diagnostics-c0de9a88.test.js",
+          "hash": "890da6460cf59a3828af40fcddc098a46d06167e",
+          "size": 3141
+        },
+        {
+          "path": "tests/diagnostics-d1a2b3c4.test.js",
+          "hash": "2ec976535f5419b9f7a02976d17dfdda8bc88c16",
+          "size": 4455
+        },
+        {
+          "path": "tests/diagnostics/healthz_contract.test.js",
+          "hash": "0facf1d4b1a3fef393a08c7d885e1e33f95717b8",
+          "size": 878
+        },
+        {
+          "path": "tests/diagnostics/healthz_probe.test.js",
+          "hash": "fb5702bab4a11cdd0f49e28811dc7b3d162c7e32",
+          "size": 510
+        },
+        {
+          "path": "tests/diagnostics/netconnect_sentinel.test.js",
+          "hash": "dd1e33771c30720660ebb062b3793da5a582122b",
+          "size": 511
+        },
+        {
+          "path": "tests/diagnostics/nock_reporter.test.js",
+          "hash": "e7c5fdf67b712e65facd1658bf2ff40c139a8af2",
+          "size": 815
+        },
+        {
+          "path": "tests/docs_drift_detector_b3e0812f.test.ts",
+          "hash": "3bdfe6e64e8e47d61c74dd0b546c2ce10d66d26c",
+          "size": 665
+        },
+        {
+          "path": "tests/download_security_check_7523.test.ts",
+          "hash": "8e654bee358a68bf05f5abdb09c15a96baa67ff3",
+          "size": 843
+        },
+        {
+          "path": "tests/dummy.test.js",
+          "hash": "280f913fd3bce8421572e3738f4a7e336eb745a6",
+          "size": 110
+        },
+        {
+          "path": "tests/dummyBackendDeps.test.js",
+          "hash": "d7c00632e34c0b2dee27ffd0afb16f464296b8c0",
+          "size": 283
+        },
+        {
+          "path": "tests/e2e/signup.spec.ts",
+          "hash": "7dcc5e22db03d7736ff48315810f64c9a447da12",
+          "size": 415
+        },
+        {
+          "path": "tests/e2eSkip.test.js",
+          "hash": "f677b9ffb226e251a311ea5590690ea540d49135",
+          "size": 624
+        },
+        {
+          "path": "tests/ensureDeps.test.js",
+          "hash": "cf44560c737e457d811041cd55c05f2307dab19b",
+          "size": 5881
+        },
+        {
+          "path": "tests/ensureDepsHostDeps.test.js",
+          "hash": "fa52ca2b73443a6e146a828a0f56086e5430719a",
+          "size": 594
+        },
+        {
+          "path": "tests/ensureDepsMissingDeps.test.js",
+          "hash": "3da8e28d6d1b06603f2338c6f44f4cd095d5f38f",
+          "size": 1352
+        },
+        {
+          "path": "tests/ensureDepsNodeVersion.test.js",
+          "hash": "c5a49bb27fa27457435b0fd853857d2151606be7",
+          "size": 664
+        },
+        {
+          "path": "tests/ensureDepsSkipNetCheck.test.js",
+          "hash": "d60c6a3996a288c22db82b6182b13d2d043f2354",
+          "size": 968
+        },
+        {
+          "path": "tests/ensureDepsTrust.test.js",
+          "hash": "f18f35249c0a9af759233c4e1526d169fe0553e2",
+          "size": 538
+        },
+        {
+          "path": "tests/ensureRootDeps.test.js",
+          "hash": "01277b46e727b7cee547f07e7c8177e524039cb7",
+          "size": 2543
+        },
+        {
+          "path": "tests/ensureRootDepsEnotempty.test.js",
+          "hash": "2f2e750a1c2005587267f415d4227d06224fd099",
+          "size": 974
+        },
+        {
+          "path": "tests/ensureRootDepsFailure.test.js",
+          "hash": "b0d78a438a48b00f1c8cec959b3493f818c984a8",
+          "size": 903
+        },
+        {
+          "path": "tests/ensureRootDepsNodeVersionMismatch.test.js",
+          "hash": "6eac711c8a3fe873aa6fd7f3e46f0b61e159aa95",
+          "size": 767
+        },
+        {
+          "path": "tests/ensureRootDepsTrust.test.js",
+          "hash": "59976bd41e40e3671299bf58585d9a2df807e3c8",
+          "size": 543
+        },
+        {
+          "path": "tests/ensureRootDepsWinston.test.js",
+          "hash": "25e451044f14bf61f503cfa405129d79e75c3d13",
+          "size": 752
+        },
+        {
+          "path": "tests/env-check-7d93f1c0a5b4e2f.test.ts",
+          "hash": "b7d747d6cb6b5fa1c71434b0747dcc6c705a3651",
+          "size": 674
+        },
+        {
+          "path": "tests/env-vars-healthcheck_a7b3c9d0.test.ts",
+          "hash": "d5f85d60d978ae4eb814e93f2c0982e7c00cc31c",
+          "size": 647
+        },
+        {
+          "path": "tests/env/envSanityCheck_0d4f2b3a.test.js",
+          "hash": "513331a2c4cd9be3921f61bbe07522b1a4db30f7",
+          "size": 522
+        },
+        {
+          "path": "tests/env/envSecretsPresence_7f5cde4b.test.ts",
+          "hash": "5f093027e1dcd7b49245a871df4dd0f5ad025187",
+          "size": 909
+        },
+        {
+          "path": "tests/envParsing.test.js",
+          "hash": "d01ab101d2f8673b5297a43702a8e877ce1a364a",
+          "size": 1371
+        },
+        {
+          "path": "tests/envVars.test.js",
+          "hash": "abf2756bc5002960e353d7d1a0714a0e73c08a4e",
+          "size": 418
+        },
+        {
+          "path": "tests/envVarsStrictness.test.ts",
+          "hash": "2b0ed97b2f12b2807f1d0eb0ce63817ce1533b6c",
+          "size": 827
+        },
+        {
+          "path": "tests/env_diagnostics_b63f9e0c.test.ts",
+          "hash": "358db25d3656a1c50e9900a5d84d36107fda8f04",
+          "size": 2402
+        },
+        {
+          "path": "tests/env_stability_snapshot_b74d2e91.test.ts",
+          "hash": "4b83494a5bb686a24894f42f3495081294db3140",
+          "size": 715
+        },
+        {
+          "path": "tests/environment.test.js",
+          "hash": "d58b14c8a7461963cfb79601ce60c947931221aa",
+          "size": 1333
+        },
+        {
+          "path": "tests/eslintCiRules.test.js",
+          "hash": "4d8a0e1d4025790fa88cf5d16117d3dfb2cdaf51",
+          "size": 1815
+        },
+        {
+          "path": "tests/eslintConfig.test.js",
+          "hash": "85a8e687b391a6b706f7aa61def7157c6a3a1a2e",
+          "size": 381
+        },
+        {
+          "path": "tests/eslintConfigResolution.test.js",
+          "hash": "b7753b5701fe5a17375465fb58e375f0b1257803",
+          "size": 1430
+        },
+        {
+          "path": "tests/eslintDiagnostics.test.js",
+          "hash": "d08967ed5bffa451a0a5d3d38e619dbb154c0652",
+          "size": 2006
+        },
+        {
+          "path": "tests/eslintParserResolution.test.js",
+          "hash": "03703f689bee2f9a07e72a8cfe90454a3e06eb5f",
+          "size": 2854
+        },
+        {
+          "path": "tests/fallbackModel.test.js",
+          "hash": "ded4a40b034a9e94b1ff318163eddef5532dd864",
+          "size": 437
+        },
+        {
+          "path": "tests/flaky-test-detector.test.js",
+          "hash": "382907c3d61fee1b8aad73842fde10480df4191f",
+          "size": 683
+        },
+        {
+          "path": "tests/formatScript.test.js",
+          "hash": "cbd4cd77c00bb09efc42cfd7d7008b8a1d3a241e",
+          "size": 814
+        },
+        {
+          "path": "tests/frontend-dep-check-4f3e0c9a2d5b6e7.spec.ts",
+          "hash": "dbf3d7958801dd08d2e05473b1ab8a06fd3b16f7",
+          "size": 1990
+        },
+        {
+          "path": "tests/frontend-elements.test.js",
+          "hash": "d36bfcb1d5e206ae6416c8bbe2856c9381717e25",
+          "size": 1255
+        },
+        {
+          "path": "tests/frontend/CheckoutForm.test.jsx",
+          "hash": "441f5718f70b19bf6124c6400967f3b7566dccb9",
+          "size": 1194
+        },
+        {
+          "path": "tests/frontendElementPresence.test.js",
+          "hash": "0f111b710736f5dc506129f20803047710288877",
+          "size": 788
+        },
+        {
+          "path": "tests/frontendJsSyntax.test.js",
+          "hash": "07e10b7a6aaba4a53f2277a5620e6baf1028cd4f",
+          "size": 817
+        },
+        {
+          "path": "tests/frontendSyntax.test.js",
+          "hash": "a14b5a2107e73e25853d6d0b43a2597dca6e375b",
+          "size": 412
+        },
+        {
+          "path": "tests/full-glb-download-check-04d24e066ef4.test.ts",
+          "hash": "6aeea742bf38ef275e1400cc06e1fa5cec6a1054",
+          "size": 879
+        },
+        {
+          "path": "tests/full-stack/backend.integration.test.js",
+          "hash": "9c04e8443ec38b67608e57087a23059c31d284ab",
+          "size": 1195
+        },
+        {
+          "path": "tests/full-stack/backend.unit.test.js",
+          "hash": "ff57ff844b4a1f134ca10b3259f574fe60a64c73",
+          "size": 574
+        },
+        {
+          "path": "tests/full-stack/cicd.workflow.test.js",
+          "hash": "fdf8e2772504f9abfd8810a07c91f31f85ce2427",
+          "size": 672
+        },
+        {
+          "path": "tests/full-stack/e2e-signup.spec.ts",
+          "hash": "54776b584541732dc1054b618dcdd16afb7ff461",
+          "size": 168
+        },
+        {
+          "path": "tests/full-stack/frontend.signup.test.js",
+          "hash": "b44c9fb2eba752bca9e884009f315407fa981310",
+          "size": 1631
+        },
+        {
+          "path": "tests/full/end_to_end_pipeline_test_d7649a2b.test.js",
+          "hash": "74c564f7b61198fd3f5bbdc69a7e2f5ed0f853af",
+          "size": 983
+        },
+        {
+          "path": "tests/full/pipeline_component_diagnostics_09df71.test.js",
+          "hash": "a5f02b7af2e70c895a5aae70fa31c4a6e250f723",
+          "size": 4287
+        },
+        {
+          "path": "tests/full/pipeline_component_diagnostics_0e088e.test.js",
+          "hash": "3ae85eece44487713dc0cfda592ac803cb62e9b7",
+          "size": 4390
+        },
+        {
+          "path": "tests/fullPipelineScript.test.js",
+          "hash": "411c81015f910c279b42703518c6ac6fa061e462",
+          "size": 2013
+        },
+        {
+          "path": "tests/generateRoute.test.js",
+          "hash": "e54f1564ae6bbc18cbb02b75834ef9fb4ee9a7d6",
+          "size": 597
+        },
+        {
+          "path": "tests/generated_api_0da9a298.test.js",
+          "hash": "8220c8bab84050925f1b7156ab8640b8def47cb5",
+          "size": 7714
+        },
+        {
+          "path": "tests/generated_api_1172cb7a.test.js",
+          "hash": "71a29ab56830f717733a789b4ec9cb817249cde8",
+          "size": 2746
+        },
+        {
+          "path": "tests/generated_api_2fc66fef.test.js",
+          "hash": "7d968a062aeb7747a15fa92bc4e423d4e33e5462",
+          "size": 8490
+        },
+        {
+          "path": "tests/generated_api_a132b4c5.test.js",
+          "hash": "d4654e40878545f868763cc39a0bd763f7135195",
+          "size": 2040
+        },
+        {
+          "path": "tests/generated_api_bd2e3c4a.test.js",
+          "hash": "81106ddaeb4e3a6d8db73945bb2036cdaafea4e1",
+          "size": 837
+        },
+        {
+          "path": "tests/generated_api_c1a9e8f2.test.js",
+          "hash": "d9e861b2306b24da804f8fcb75946a555558d2d3",
+          "size": 8755
+        },
+        {
+          "path": "tests/generated_api_fd01d47a.test.js",
+          "hash": "a38ad15d8dc3ff051582b8636d81fbe90245e575",
+          "size": 8298
+        },
+        {
+          "path": "tests/generated_frontend_2ddb6ba6.test.js",
+          "hash": "21f44edd6f93a2a5c7333120089a5f28df2ebab9",
+          "size": 11779
+        },
+        {
+          "path": "tests/generated_frontend_51d58f47.test.js",
+          "hash": "d6a41980466bef303c87dba258ead6401896bf83",
+          "size": 3248
+        },
+        {
+          "path": "tests/generated_frontend_9ad4e5b1.test.js",
+          "hash": "81def07c04a7eea3987b5b0b765203b3e164e436",
+          "size": 12654
+        },
+        {
+          "path": "tests/generated_frontend_b4c9a3e0.test.js",
+          "hash": "dc6eeed377220745c3d4aef361caeb37fd1d50a0",
+          "size": 22366
+        },
+        {
+          "path": "tests/generated_frontend_b5729acf.test.js",
+          "hash": "89f5f0c00b565845b8b3e2ccf9ef9b6aaaf86e8f",
+          "size": 3307
+        },
+        {
+          "path": "tests/generated_frontend_bdfbbf6e.test.js",
+          "hash": "5d0c60c04e65a92b27d215e1de6932d899398d53",
+          "size": 5608
+        },
+        {
+          "path": "tests/generated_frontend_c664b58d.test.js",
+          "hash": "ce6f3828bf8cb00984d33ebbd806593325aa5c85",
+          "size": 1531
+        },
+        {
+          "path": "tests/generated_frontend_c83b6ff1.test.js",
+          "hash": "027216c68d88614ef61c90d93d7b9141ea573a5a",
+          "size": 860
+        },
+        {
+          "path": "tests/generated_frontend_ef552632.test.js",
+          "hash": "57ba7633c88df5ac7964abc5033bff18a8d6346d",
+          "size": 2052
+        },
+        {
+          "path": "tests/generated_frontend_ef73b1c2.test.js",
+          "hash": "03b6b6a9ae4b1575cd56d8b823f7d65996a0d98f",
+          "size": 863
+        },
+        {
+          "path": "tests/generated_pipeline_a48fb55c.test.js",
+          "hash": "57d8d94863c738b37887d30fcd7f5c02f7ef8577",
+          "size": 1013
+        },
+        {
+          "path": "tests/generated_queue_9e780262.test.js",
+          "hash": "9ddaa9bd61f9bf1729c28fd91b0b5c110f69ed88",
+          "size": 2066
+        },
+        {
+          "path": "tests/generated_queue_f19e6a8b.test.js",
+          "hash": "a377ded8ac3302dac0a66acc42f21cb7d45f7769",
+          "size": 1179
+        },
+        {
+          "path": "tests/generated_queue_failureNotifications_d19cc9e7.test.js",
+          "hash": "59da81a639e2b40e520c022bb3c7dc691ebd87e8",
+          "size": 7652
+        },
+        {
+          "path": "tests/generated_queue_jobDispatching_70ecb345.test.js",
+          "hash": "cdbc59d5fa52a4c5277edcb0958df2fc6eb72801",
+          "size": 15559
+        },
+        {
+          "path": "tests/generated_queue_retryLogic_4e5f6a7b.test.js",
+          "hash": "f90ae15437be97b4e43437174acf6312be573873",
+          "size": 15982
+        },
+        {
+          "path": "tests/generated_queue_retry_5966892c.test.js",
+          "hash": "cd630f153574200a4543d28f75d35c26429607a0",
+          "size": 24131
+        },
+        {
+          "path": "tests/generated_routes_a1b2c3d4.test.js",
+          "hash": "03ffbc06f661346708c8e4be3e7869f8be870bbd",
+          "size": 694
+        },
+        {
+          "path": "tests/generated_routes_c52fd8b4.test.js",
+          "hash": "f583019ac7ddab127d58749611e4104e753a7bc9",
+          "size": 896
+        },
+        {
+          "path": "tests/generated_utils_c8d4e7.test.js",
+          "hash": "1a57746cc10c82da18a321fcc0c1e44871769ccc",
+          "size": 947
+        },
+        {
+          "path": "tests/generated_utils_e19c7a3d.test.js",
+          "hash": "352f024a397b1ad752d99f992ff9786a41ae66b1",
+          "size": 894
+        },
+        {
+          "path": "tests/generated_utils_f2a1e6d8.test.js",
+          "hash": "8fddc31e05340539a7608ea81f08b33b4308fefb",
+          "size": 606
+        },
+        {
+          "path": "tests/gitignore.test.js",
+          "hash": "c0057a47408d23ffa02c9e8b53ec4e34b11a0b7c",
+          "size": 347
+        },
+        {
+          "path": "tests/glb-buffer-tests.8375sdg.test.js",
+          "hash": "a0445bef2d6c5016129c244a8b447e2c4b60dcd3",
+          "size": 3156
+        },
+        {
+          "path": "tests/glb-correctness-check-fd74ce.test.ts",
+          "hash": "b2224a88acc689ae1e01f12fb8bc1ca5115a8a06",
+          "size": 1073
+        },
+        {
+          "path": "tests/glb-integrity-checks.9238jfi.test.js",
+          "hash": "1b2207b9d7e8a55555edca685f91ded546a8bedf",
+          "size": 1156
+        },
+        {
+          "path": "tests/glb-output-consistency-9e8b7c6a.test.ts",
+          "hash": "a8cde7f1641ed49c9bbb6e99b7becd29c2762cc9",
+          "size": 2416
+        },
+        {
+          "path": "tests/glb-telemetry-check_ab12cd.test.ts",
+          "hash": "7c716ff470e56b741f0324d17fe609111eab369b",
+          "size": 2604
+        },
+        {
+          "path": "tests/glb/glbValidation.test.ts",
+          "hash": "25fbb83d0c6d76d649af0f5d59039c043df11451",
+          "size": 1006
+        },
+        {
+          "path": "tests/glb/test_pipeline_fire_drill_9e59a6bf.test.ts",
+          "hash": "9406ca4efd7a99ac996ccfba44c6d483f0394f6f",
+          "size": 1234
+        },
+        {
+          "path": "tests/glbPipeline.51e959b6.test.js",
+          "hash": "c0f418afd936482e640e6e06e347ff2ff355324b",
+          "size": 102518
+        },
+        {
+          "path": "tests/glbPipelineE2ETest__bd81dcf1.test.ts",
+          "hash": "83c927745848ef4a0af7b52457a96f9eb70ab1e1",
+          "size": 1156
+        },
+        {
+          "path": "tests/glbPipelineE2E_2fd91a8a.test.js",
+          "hash": "3ea73dc3afe7c5196c21a623abb57356e168ea6e",
+          "size": 1110
+        },
+        {
+          "path": "tests/glb_pipeline_integrity_fa04d9c1.test.ts",
+          "hash": "292b90c92c64cc8b86bdeefac3338d76c794b080",
+          "size": 3721
+        },
+        {
+          "path": "tests/installPlaywright.test.js",
+          "hash": "15fc8ed4c03b57d574031c6a627a46f89bf78bb0",
+          "size": 2224
+        },
+        {
+          "path": "tests/internal/asyncCleanup.test.ts",
+          "hash": "b88d71a2d60eec0065c416e763484cd980f57780",
+          "size": 3071
+        },
+        {
+          "path": "tests/internal/hung-handle.test.ts",
+          "hash": "ef5fec2df3a76403defc30b6dc4d8fcf39bc660f",
+          "size": 1161
+        },
+        {
+          "path": "tests/internal/long-op-warning.test.ts",
+          "hash": "be1d17c238ca0a5bdb59d4393716c1ec805d1151",
+          "size": 564
+        },
+        {
+          "path": "tests/internal/net-guard.test.ts",
+          "hash": "d3911e1c8b68b1ab33a4881dc2ad5b2b5808c69b",
+          "size": 607
+        },
+        {
+          "path": "tests/internal/reaper-smoke.test.ts",
+          "hash": "d4df57bc2db70af477bfd9b3517fe75eddd604a9",
+          "size": 743
+        },
+        {
+          "path": "tests/internal/testCleanupValidator_ffd892a3.test.ts",
+          "hash": "2dc7ca52f362aae4bae24eb7c322984254e141ae",
+          "size": 1328
+        },
+        {
+          "path": "tests/internal/test_audit_registry_random.test.js",
+          "hash": "2fa2b14ddf7dd73189c199fe3b137a300d44eb87",
+          "size": 1124
+        },
+        {
+          "path": "tests/internal/test_audit_runner_6bc1a2e3.test.js",
+          "hash": "2cab9274ba10e365da91305a0a7aded2f71d6975",
+          "size": 1689
+        },
+        {
+          "path": "tests/internal/test_env_guard_ff9a1c.test.ts",
+          "hash": "8c7d2402431ec87723a45d69e2ea9b83520dfccb",
+          "size": 493
+        },
+        {
+          "path": "tests/jestDeletionMode.test.js",
+          "hash": "5dc9eb6ced50e9beccf2fe28d577c7143f6e7605",
+          "size": 164
+        },
+        {
+          "path": "tests/jestTransform.test.js",
+          "hash": "226683cc23925cd2eb879c62512c8e1631f872e2",
+          "size": 358
+        },
+        {
+          "path": "tests/jsdocCoverage.test.js",
+          "hash": "ebf46f2211c0412c48f613ac972aa0d29949aaf8",
+          "size": 486
+        },
+        {
+          "path": "tests/lint-fixes-6c7d9e12.test.js",
+          "hash": "c2f1167236d79dfe7d018c2cd9ac4771d838769f",
+          "size": 3722
+        },
+        {
+          "path": "tests/lintExit.test.js",
+          "hash": "8426c6c5523258ce7d0beaaefba5aacab2daa1db",
+          "size": 365
+        },
+        {
+          "path": "tests/lintUnusedVars.test.js",
+          "hash": "559aae1347e2d21dc1a4047da9726e8ffe03a8ad",
+          "size": 310
+        },
+        {
+          "path": "tests/lint_regression_guard_78c92f2d.test.ts",
+          "hash": "7b4f933ecef57d7f7367e0ae4f8c4f45cc604c0e",
+          "size": 358
+        },
+        {
+          "path": "tests/linting-diagnostics-a1b2c3.test.js",
+          "hash": "37a82abeb1802f7399fb0b6dd6670d3e953e43d6",
+          "size": 3323
+        },
+        {
+          "path": "tests/linting-diagnostics-abc123.test.js",
+          "hash": "5cba2051be81bbc4dfb8d471f1dbcfd4fc1ed9d6",
+          "size": 3558
+        },
+        {
+          "path": "tests/linting.test.js",
+          "hash": "f1f4071910de7d040d58fd9790e68495d829ece9",
+          "size": 1332
+        },
+        {
+          "path": "tests/lintingDetailed.test.js",
+          "hash": "6bb57d8f20334d91c87bacdbc0b282b1f35aa241",
+          "size": 780
+        },
+        {
+          "path": "tests/lock-sync.test.js",
+          "hash": "64c3b9f1206da88ac8d8a42f01bfe2f8f0af43db",
+          "size": 1366
+        },
+        {
+          "path": "tests/lockfileValidity.test.js",
+          "hash": "e9ba53a6fff5de4a2b1ba552563a2e4f07724164",
+          "size": 405
+        },
+        {
+          "path": "tests/lockfile_integrity_713e1c.test.ts",
+          "hash": "61e647f2e591ae7f9560a67dc4461957b70a732f",
+          "size": 579
+        },
+        {
+          "path": "tests/loggerLint.test.js",
+          "hash": "dbfbe35d94e5891ed0af83da87981ee64ebd4070",
+          "size": 1825
+        },
+        {
+          "path": "tests/miseConfig.test.js",
+          "hash": "05181a48e3a28262c3deb509527c4488a1b942fa",
+          "size": 286
+        },
+        {
+          "path": "tests/miseInstalled.test.js",
+          "hash": "e98cdfd597e549ab82935f0e361a83892baa228a",
+          "size": 236
+        },
+        {
+          "path": "tests/miseTrust.test.js",
+          "hash": "cfd7ab90dcc1ade338c21f7b8ac0f21a15e72a68",
+          "size": 254
+        },
+        {
+          "path": "tests/mutation.test.js",
+          "hash": "7aa44c0be7dcbc5bec64c3484da3e0c87c15dad9",
+          "size": 401
+        },
+        {
+          "path": "tests/network.test.js",
+          "hash": "64631daff833f01833e1d7656a799e19d7f41c7b",
+          "size": 1604
+        },
+        {
+          "path": "tests/networkAudit.test.ts",
+          "hash": "260aa7bde876c495fe545e525d60ca9ebb37f540",
+          "size": 834
+        },
+        {
+          "path": "tests/networkCheckApt.test.js",
+          "hash": "72b457f516593e5daaa059a8354557a33df4a233",
+          "size": 416
+        },
+        {
+          "path": "tests/networkCheckCdn400.test.js",
+          "hash": "f1b32f3dd17699ee23bba0d66770f7c4c74022f4",
+          "size": 856
+        },
+        {
+          "path": "tests/networkCheckCdnFailure.test.js",
+          "hash": "fd0fb11b406c1435aa23085cb694a67c40795283",
+          "size": 812
+        },
+        {
+          "path": "tests/networkCheckCdnHttpError.test.js",
+          "hash": "07e1b61f88698f0e8c69b196924c8e7bb3bf5931",
+          "size": 845
+        },
+        {
+          "path": "tests/networkCheckErrorOutput.test.js",
+          "hash": "a1da26e088da73fe744004acdf7592096c85dd73",
+          "size": 702
+        },
+        {
+          "path": "tests/networkCheckFailure.test.js",
+          "hash": "71be814dfcc6e44e779f5a676ae6865839000e77",
+          "size": 520
+        },
+        {
+          "path": "tests/networkCheckHttpError.test.js",
+          "hash": "7b7fad37cc5c7626e045b5fb4aaafdc6ebeb1a13",
+          "size": 714
+        },
+        {
+          "path": "tests/networkCheckOptionalHosts.test.js",
+          "hash": "ebf0c4c71cca07e79b965ef22214bec775b87408",
+          "size": 836
+        },
+        {
+          "path": "tests/networkCheckScript.test.js",
+          "hash": "a0c2728f3725ba066a1cca9647ebb7b951d238fd",
+          "size": 636
+        },
+        {
+          "path": "tests/networkCheckScriptFailure.test.js",
+          "hash": "2b4244f3628c9a09537b3a08eaa35eb8019bddf9",
+          "size": 656
+        },
+        {
+          "path": "tests/networkCheckSkipApt.test.js",
+          "hash": "0a915fd510b796e98f92aec3258a592a40fd5c1b",
+          "size": 859
+        },
+        {
+          "path": "tests/networkCheckSkipPwDeps.test.js",
+          "hash": "76fc1368dba025bc5ffb0a57709b5c3fb8069242",
+          "size": 739
+        },
+        {
+          "path": "tests/networkConnectivity.test.js",
+          "hash": "154150f45f38937274044b38b27b534a4888a64e",
+          "size": 2019
+        },
+        {
+          "path": "tests/noGlobalViteTsc.test.js",
+          "hash": "55af311cf779ca20759d730aa69224882ace4a7b",
+          "size": 648
+        },
+        {
+          "path": "tests/noUnusedVars.test.js",
+          "hash": "f8ba2c71e3e81b4fe9894952c6b73f9a015df9bc",
+          "size": 349
+        },
+        {
+          "path": "tests/nodeVersion.test.js",
+          "hash": "327bcdccd74591025e85bda11bf890b02d6e3d4d",
+          "size": 1006
+        },
+        {
+          "path": "tests/npmRunSmoke.test.js",
+          "hash": "5dcde524ed9f75d782e6cd10cc2ef134f2a3d7d8",
+          "size": 647
+        },
+        {
+          "path": "tests/npm_integrity_check_2d3b9b.test.ts",
+          "hash": "dd825fbe1dec8c3e8ee57712a455f093556b814b",
+          "size": 334
+        },
+        {
+          "path": "tests/npxJestFailure.test.js",
+          "hash": "0e5a5d359390bf10c02282e1bf99742dfd4a3c0d",
+          "size": 395
+        },
+        {
+          "path": "tests/nycrcThreshold.test.js",
+          "hash": "a0e5d2113554dec0280340cca9b6578d38d1bf83",
+          "size": 587
+        },
+        {
+          "path": "tests/packageJsonDuplicateLines.test.js",
+          "hash": "47c575ebc23e71fffba94d51f2b56c7fd9470daf",
+          "size": 558
+        },
+        {
+          "path": "tests/pipeline.spec.ts",
+          "hash": "de8becfab6b99b485b4245174b7cb52830ca270c",
+          "size": 1166
+        },
+        {
+          "path": "tests/playwrightTimeout.test.js",
+          "hash": "21ad9c43fb7468526ebc241e7f74b49f91e64ab5",
+          "size": 172
+        },
+        {
+          "path": "tests/pnpm-lock-sync.test.js",
+          "hash": "59ff2701dfad1ee1add1fd5e7c4e5b23097b1f6d",
+          "size": 1121
+        },
+        {
+          "path": "tests/preCommit.test.js",
+          "hash": "f0cffcd1a35283c81adce1ca9ff1ac0b4f4ffdd8",
+          "size": 852
+        },
+        {
+          "path": "tests/pretestScript.test.js",
+          "hash": "620e6b77a736d31daf6f0bd744ec88a524035e06",
+          "size": 199
+        },
+        {
+          "path": "tests/prettierIgnore.test.js",
+          "hash": "7ce776e8f2eea0c484ab1f675beee29e177ba5be",
+          "size": 335
+        },
+        {
+          "path": "tests/processEnvCount.test.js",
+          "hash": "9f79566254b68f2cab892af9fe7c9d16b78758e8",
+          "size": 353
+        },
+        {
+          "path": "tests/projectStructure.test.js",
+          "hash": "616aed637b242743f9966046883f2f7e2e3b081b",
+          "size": 669
+        },
+        {
+          "path": "tests/proxyUnset.test.js",
+          "hash": "ec7a6ed49bf1b87ec49713c4a88ee6482123940c",
+          "size": 225
+        },
+        {
+          "path": "tests/regression/full_pipeline_guard_e71bb2.test.js",
+          "hash": "bc16cae02ed8779935941b3f54de88f27d2a0de6",
+          "size": 2877
+        },
+        {
+          "path": "tests/renderThumbnails.test.js",
+          "hash": "9064471b95b9fa8ad95de49973ce70c2013fe11c",
+          "size": 1333
+        },
+        {
+          "path": "tests/reproduceCoverageFailure.test.js",
+          "hash": "719b29653a247332a0347375776483a7054db1d1",
+          "size": 1097
+        },
+        {
+          "path": "tests/rollback_guard_f47d90ab.test.ts",
+          "hash": "b72cb0f1d547eeec5fea1dcf051a3403df2baa34",
+          "size": 603
+        },
+        {
+          "path": "tests/rootCoverageFailure.test.js",
+          "hash": "9f6e6a96f7dae5a51262490ee8182c418d343128",
+          "size": 1319
+        },
+        {
+          "path": "tests/rootFormat.test.js",
+          "hash": "2f61622d5ff3485bc1d4683eaabddebb45bbf798",
+          "size": 190
+        },
+        {
+          "path": "tests/rootFormatMissingDeps.test.js",
+          "hash": "8fc4e14da723543de30b742d81d745ca4d261d20",
+          "size": 1199
+        },
+        {
+          "path": "tests/rootFormatTarError.test.js",
+          "hash": "7e17500319feb531a058f411670dc112e10a30c4",
+          "size": 664
+        },
+        {
+          "path": "tests/runCoverageCommandFailure.test.js",
+          "hash": "dda6aa4a40b8ac806f887addc4b6e186edde751c",
+          "size": 1098
+        },
+        {
+          "path": "tests/runCoverageFailLog.test.js",
+          "hash": "2cd578b0bf83cd2e95f150ed7156c37c597e601c",
+          "size": 1201
+        },
+        {
+          "path": "tests/runCoverageLintFailOutput.test.js",
+          "hash": "4e55069ac8832e13da7736e84f1410993263c8ed",
+          "size": 1265
+        },
+        {
+          "path": "tests/runCoverageScript.test.js",
+          "hash": "f4efc12e2bddc34d95be64db6b26f1b9df0196b3",
+          "size": 1603
+        },
+        {
+          "path": "tests/runCoverageSkipHandleCheck.test.js",
+          "hash": "7c7b4289ca59268f49c6e779e85d13d20e2c710b",
+          "size": 1331
+        },
+        {
+          "path": "tests/runCoverageSkipNet.test.js",
+          "hash": "0b2db7795205bd6e74b0446daae5ede20db11463",
+          "size": 836
+        },
+        {
+          "path": "tests/runJestBackendDepsResolution.test.js",
+          "hash": "2e7fbd720317fd0a099a7503dc42ad7c0965de33",
+          "size": 638
+        },
+        {
+          "path": "tests/runJestBackendJs.test.js",
+          "hash": "d59564302414108b5d8c6e331d05fb76714b059f",
+          "size": 607
+        },
+        {
+          "path": "tests/runJestBackendJsIntegration.test.js",
+          "hash": "16b08c9975bd7141b06219ff6efe73064b8e5acc",
+          "size": 517
+        },
+        {
+          "path": "tests/runJestIntegration.test.js",
+          "hash": "d3d242a8d1c23fe590bc84f521d1a27d5721a9ad",
+          "size": 592
+        },
+        {
+          "path": "tests/runJestMissingDeps.test.js",
+          "hash": "1ed1b878767a7938a2ab71d35445f20575fe1612",
+          "size": 1397
+        },
+        {
+          "path": "tests/runJestMissingFile.test.js",
+          "hash": "4ecbd92e1438b5e5fb202ad723a2804fa62117e5",
+          "size": 677
+        },
+        {
+          "path": "tests/runNpmCi.test.js",
+          "hash": "8475dc6769dc0464dc7e590bd5c7f367065c8ec2",
+          "size": 2005
+        },
+        {
+          "path": "tests/runSmoke.commandOrder.test.js",
+          "hash": "e66f67b461a6b44d46026f16536a6818e3f279c2",
+          "size": 1020
+        },
+        {
+          "path": "tests/runSmoke.defaults.test.js",
+          "hash": "03c42d76274ae0a294d7d5333ec1a168aed23c2b",
+          "size": 1407
+        },
+        {
+          "path": "tests/runSmoke.diagnostics.test.js",
+          "hash": "3e23a68ec44b0c25b2379c57e97f47960b8c4048",
+          "size": 1057
+        },
+        {
+          "path": "tests/runSmoke.fallback-env.test.ts",
+          "hash": "a8df6004930445d07ac59336c5b12098d60a68ec",
+          "size": 467
+        },
+        {
+          "path": "tests/runSmoke.freePort.test.js",
+          "hash": "35634f5c5b1733265e3408462f1e1520c413a7fd",
+          "size": 545
+        },
+        {
+          "path": "tests/runSmoke.killPort.test.js",
+          "hash": "6eebce5348e84d861b2159f7f77af536c7fce969",
+          "size": 578
+        },
+        {
+          "path": "tests/runSmoke.load-env-file.test.ts",
+          "hash": "49f74fbdd1d69a74fb7e54b167849cce688b9427",
+          "size": 697
+        },
+        {
+          "path": "tests/runSmoke.missingArtifact.test.js",
+          "hash": "639546040714da9d66ddfe64ba1a70c403d0e2cb",
+          "size": 985
+        },
+        {
+          "path": "tests/runSmoke.no-warn.test.js",
+          "hash": "4c9e28710b9a1f6e24dc0e834a0ef176144f9667",
+          "size": 513
+        },
+        {
+          "path": "tests/runSmoke.setupFlag.test.js",
+          "hash": "c3c26c3f2d4f8fdaae4d17858c8fb6167ec9522a",
+          "size": 732
+        },
+        {
+          "path": "tests/runSmoke.skipDBCheck.test.js",
+          "hash": "985b57a1724a06455f49549d75672b09ee538e92",
+          "size": 154
+        },
+        {
+          "path": "tests/runSmoke.skipSetup.test.js",
+          "hash": "93b8a8024702f638bb3a9728a0c587027a6d564f",
+          "size": 975
+        },
+        {
+          "path": "tests/runSmokeEnvPropagation.test.js",
+          "hash": "2505f9e8de89b14a4fa66cb03e60f055c8afb537",
+          "size": 515
+        },
+        {
+          "path": "tests/runSmokeScriptRun.test.js",
+          "hash": "248daecc92d47c59394573e923ba82f988bac348",
+          "size": 627
+        },
+        {
+          "path": "tests/s3-upload-failure-recovery_2e5a8f.test.ts",
+          "hash": "5ef1ecf57262c4ab43391e262b5954770c3a447f",
+          "size": 1055
+        },
+        {
+          "path": "tests/security/codeql-scan-7f3a9d2b6c1a.test.ts",
+          "hash": "7c7333292bf75731d8c2da00d521fbaa9abe81d4",
+          "size": 1988
+        },
+        {
+          "path": "tests/security/codeqlAnnotationParser_e3a4b5c6.test.ts",
+          "hash": "22cd7312d39110e7f4e40401acf8c296f7d5b11e",
+          "size": 1087
+        },
+        {
+          "path": "tests/security/shellInjectionScan_84c5e2.test.ts",
+          "hash": "21e59bdbda24b24865e1277ab049ff1cf583db05",
+          "size": 799
+        },
+        {
+          "path": "tests/server/serverEnvFailTest_7bd6e2f9.test.ts",
+          "hash": "28b9ec598fcde30897d1839eb0f84cfb68f0fe36",
+          "size": 563
+        },
+        {
+          "path": "tests/serverBootSmoke_c63b9e.test.ts",
+          "hash": "4f5e90356e34058bea4e991bfa0150bd7770b94a",
+          "size": 804
+        },
+        {
+          "path": "tests/setup/testMiseInstaller_98c6b7a2.test.js",
+          "hash": "49c7dd96ae1c858545e9c814a36363f213e33225",
+          "size": 2264
+        },
+        {
+          "path": "tests/setupFix_74g8d9k3.test.ts",
+          "hash": "8030e23751f2af658a35ddc34c5172c73379f5bd",
+          "size": 499
+        },
+        {
+          "path": "tests/setupScript.test.js",
+          "hash": "b0714862def45ed749e6f9c75e2f38b861a10584",
+          "size": 991
+        },
+        {
+          "path": "tests/setupScriptAptFailure.test.js",
+          "hash": "8e7b7a4426cd127e4101386e87998c59941f4d33",
+          "size": 495
+        },
+        {
+          "path": "tests/setupScriptCacheRetry.test.js",
+          "hash": "1d888f7a7d2e3e0962311bb3a82b2ec40b525f1b",
+          "size": 679
+        },
+        {
+          "path": "tests/setupScriptEnotempty.test.js",
+          "hash": "3e6476192506a51f61991aa2b381f97e476c7d84",
+          "size": 678
+        },
+        {
+          "path": "tests/setupScriptEusageFailure.test.js",
+          "hash": "605ab3888e89e6752cda9b2ed7dc52d5ea18a715",
+          "size": 692
+        },
+        {
+          "path": "tests/setupScriptFailure.test.js",
+          "hash": "5dddb0372099d006c040414e3ff5febaa3380d52",
+          "size": 701
+        },
+        {
+          "path": "tests/setupScriptProxy.test.js",
+          "hash": "dbfec0039309f30575f29b6b427a979174d2d1f5",
+          "size": 455
+        },
+        {
+          "path": "tests/setupScriptRmFailure.test.js",
+          "hash": "8ff4f5002a7f2ed0d25ca22e5044a7b4348d15cf",
+          "size": 1050
+        },
+        {
+          "path": "tests/setupScriptRmRetry.test.js",
+          "hash": "553ca9de28d89f71ccee01b7201f59fc90f57829",
+          "size": 1256
+        },
+        {
+          "path": "tests/setupScriptTarError.test.js",
+          "hash": "6398456283298bf1966d67f4a13c37c29ed9e071",
+          "size": 1197
+        },
+        {
+          "path": "tests/setupScriptTarErrorRetry.test.js",
+          "hash": "d21161b5e9646aebd86f7d4a3b976700e902ea30",
+          "size": 681
+        },
+        {
+          "path": "tests/setupScriptTarballWarn.test.js",
+          "hash": "0ef85b304517160f111e79b2d90c9440d1d43ad0",
+          "size": 684
+        },
+        {
+          "path": "tests/setupScriptZDataError.test.js",
+          "hash": "2d32bfc0a817f3bacffea776a0ba045cd3b1f15c",
+          "size": 671
+        },
+        {
+          "path": "tests/shell_safety_check_k1n2m3.test.js",
+          "hash": "3b187ba975a6e77f97a7df80241ce7fb5fca8513",
+          "size": 1434
+        },
+        {
+          "path": "tests/smoke-atomic/apiEndpoint_1a2b3c4d.test.js",
+          "hash": "86cb073c2cec5d9f01780023f9c4a8fb1719a6cc",
+          "size": 1143
+        },
+        {
+          "path": "tests/smoke-atomic/apiGenerate_fallback.test.ts",
+          "hash": "b5a208501e429e8f0e5ba95933a59570f9f86b8a",
+          "size": 948
+        },
+        {
+          "path": "tests/smoke-atomic/apiGenerate_g5h6i7j8.test.js",
+          "hash": "62974155aebef73bb8ffb8b3e106d08fd2684030",
+          "size": 1042
+        },
+        {
+          "path": "tests/smoke-atomic/apiGenerate_m3n4o5p6.test.js",
+          "hash": "da44a55c7e7191846178df690297b7af97e7b65d",
+          "size": 1105
+        },
+        {
+          "path": "tests/smoke-atomic/envValidation_a1b2c3d4.test.js",
+          "hash": "f34986e841d2d1c737ddfa50d9afc1c3569550dd",
+          "size": 1116
+        },
+        {
+          "path": "tests/smoke-atomic/envValidation_abc123xy.test.js",
+          "hash": "712eb64c4ba05744511320669225dbf9efc22b07",
+          "size": 1631
+        },
+        {
+          "path": "tests/smoke-atomic/envValidation_c4d2a3b9.test.js",
+          "hash": "a1bbfa7e87719d6462b55884088738c9e2a89310",
+          "size": 884
+        },
+        {
+          "path": "tests/smoke-atomic/frontendBuildIntegrity_9JJFHkZfHrx8KOA.test.js",
+          "hash": "2f0528486428734cd4c714c38e7b9da0e834fd60",
+          "size": 2070
+        },
+        {
+          "path": "tests/smoke-atomic/frontendBuild_b7e9c0d3.test.js",
+          "hash": "d6bb08465ebb064526547faefec8752fd3d969a3",
+          "size": 583
+        },
+        {
+          "path": "tests/smoke-atomic/frontendBuild_c9d0e1f2.test.js",
+          "hash": "4e60c878f0d23f6ae86b1f4977135ccda38de6db",
+          "size": 458
+        },
+        {
+          "path": "tests/smoke-atomic/frontendBuild_de67fg89.test.js",
+          "hash": "d48221d2a7034bf339a3a68b8860a3a55f810f67",
+          "size": 494
+        },
+        {
+          "path": "tests/smoke-atomic/healthCheck_e5f6g7h8.test.js",
+          "hash": "044d03ac9148051910cc0ba51e69f337f5c21bb7",
+          "size": 964
+        },
+        {
+          "path": "tests/smoke-atomic/httpHealthCheck_e7f8g9h0.test.js",
+          "hash": "bddac51fdd1a308271a4c0b46c4c4515f3f4eb4e",
+          "size": 543
+        },
+        {
+          "path": "tests/smoke-atomic/httpHealth_b3d8e7f6.test.js",
+          "hash": "c4a5a3571cae2ae5ad0f96d731476dce9d7e7f8a",
+          "size": 1014
+        },
+        {
+          "path": "tests/smoke-atomic/playwrightReady_a4b5c6d7.test.js",
+          "hash": "d8f998604e8f5db69a27d8249bf8312c9d17426b",
+          "size": 1429
+        },
+        {
+          "path": "tests/smoke-atomic/runHelper_h9i0j1k2.test.js",
+          "hash": "26558f3f87655e504477ecf3d0b9aebfb3d60611",
+          "size": 587
+        },
+        {
+          "path": "tests/smoke-atomic/runSmokeHelper_f3e2d1c4.test.js",
+          "hash": "90926d7724cd0918e47adf9928720997ccab221b",
+          "size": 728
+        },
+        {
+          "path": "tests/smoke-atomic/runSmokeHelper_q7r8s9t0.test.js",
+          "hash": "eed8d78702a9f1536b0bd215752ee5ef75c16f09",
+          "size": 713
+        },
+        {
+          "path": "tests/smoke-atomic/serveStartup_a1b2c3d4.test.js",
+          "hash": "4027d2c462fafbb2c062052b808497f7ff6e817c",
+          "size": 982
+        },
+        {
+          "path": "tests/smoke-atomic/serveStartup_d3e4f5g6.test.js",
+          "hash": "02b0a6cef05d19b4d186efb6d6b26b40fedea34b",
+          "size": 789
+        },
+        {
+          "path": "tests/smoke-atomic/serveStartup_f9a1b2c3.test.js",
+          "hash": "03cbe76cd0391ca6a8dc064ed9d6f6516589fc54",
+          "size": 902
+        },
+        {
+          "path": "tests/smoke-atomic/setupIdempotent_7890abcd.test.js",
+          "hash": "5844707750645260de314730e20a4d5fe297344d",
+          "size": 612
+        },
+        {
+          "path": "tests/smoke-atomic/setupIdempotent_b5c6d7e8.test.js",
+          "hash": "8ba212a4a77175d16066b0c1085f07cae31502df",
+          "size": 499
+        },
+        {
+          "path": "tests/smoke-atomic/setupIdempotent_e8f6g1h2.test.js",
+          "hash": "406435914c88a8a158a68eb4799901a37153fde2",
+          "size": 578
+        },
+        {
+          "path": "tests/smoke-atomic/viewerReady_f1g2h3i4.test.js",
+          "hash": "389bbfe6ee67cc447c937be700c930b718a9e19d",
+          "size": 1138
+        },
+        {
+          "path": "tests/smoke-atomic/viewerReady_i9j0k1l2.test.js",
+          "hash": "10ba9c7d5dae23b8bfa3c404c8d4c83597d976ac",
+          "size": 1236
+        },
+        {
+          "path": "tests/smoke-hang-diagnostics-57f3c8.test.js",
+          "hash": "ff86b8b33a33c60aa27aecdc01831ab6a3bca886",
+          "size": 3671
+        },
+        {
+          "path": "tests/smoke-hang-diagnostics-a1b2c3.test.js",
+          "hash": "1b3a38de8d498116eb1756c0edb0776531882661",
+          "size": 3172
+        },
+        {
+          "path": "tests/smoke-hang-diagnostics-c9f8e7d6.test.js",
+          "hash": "00cfe0f4291576a327e6f3d7eb348f2cbdb146a8",
+          "size": 4090
+        },
+        {
+          "path": "tests/smoke-hang-diagnostics-df535d.test.js",
+          "hash": "16d2793c4673b4e0e329f0b1496ec6fff907fad5",
+          "size": 3689
+        },
+        {
+          "path": "tests/smoke-hang-diagnostics-x1y2z3.test.js",
+          "hash": "21123231c12a7116a66e9ea98cda8f42f89bf631",
+          "size": 4620
+        },
+        {
+          "path": "tests/smoke/smokePortFail_a8b7c6d5.test.ts",
+          "hash": "d0f967644cb2b932192fc838fa65539373fb818a",
+          "size": 761
+        },
+        {
+          "path": "tests/smokeCanFetchFailFast.test.js",
+          "hash": "5b4941efa22b03118c8af97437bff53489baf441",
+          "size": 227
+        },
+        {
+          "path": "tests/smokeScript.test.js",
+          "hash": "91889ecfb5e6df8afb7e17537d5957b0ada3594a",
+          "size": 1339
+        },
+        {
+          "path": "tests/smokeScriptWaitOn.test.js",
+          "hash": "6f249916b02c0757f766696184ed828209bdae03",
+          "size": 329
+        },
+        {
+          "path": "tests/smokeStages.test.js",
+          "hash": "49185ff589081168894325cb7f01ea65ad92514e",
+          "size": 1256
+        },
+        {
+          "path": "tests/smokeViewerReady.test.js",
+          "hash": "444ab47b0b1a2f89b6170fa66a552819ac5e0a5c",
+          "size": 292
+        },
+        {
+          "path": "tests/smoke_coverage_crosscheck_5a1f3d.test.ts",
+          "hash": "9c51f4997ab85dbcb8e045458fab4044e1eef7d8",
+          "size": 2610
+        },
+        {
+          "path": "tests/snapshot_integrity_check_7c1f8a.test.ts",
+          "hash": "072ee342e1d2970792eba2f729539f852471df09",
+          "size": 975
+        },
+        {
+          "path": "tests/stabilityKeyGuard.test.ts",
+          "hash": "9c5b14a52abaa91756b31f042e89c3d3a36ecd74",
+          "size": 527
+        },
+        {
+          "path": "tests/stripeEnvPlaceholders.test.js",
+          "hash": "9f231c84b6480ac6614e0e11ebac37670a5cf79e",
+          "size": 680
+        },
+        {
+          "path": "tests/sync-atomic/dest-dir-exists_SHRxQRo5.test.js",
+          "hash": "01b8d2f113723352e3e619395fea1e7a1149255d",
+          "size": 634
+        },
+        {
+          "path": "tests/sync-atomic/dest-dir-exists_kttYg92d.test.js",
+          "hash": "a2fd6ac65fe87286bac45a203bacc4a2a4431485",
+          "size": 904
+        },
+        {
+          "path": "tests/sync-atomic/dest-exists_y5Z6a7B8.test.js",
+          "hash": "cfc104616deff10495eb709c71abe26c005974ba",
+          "size": 556
+        },
+        {
+          "path": "tests/sync-atomic/dest_dir_exists_ced9a050.test.js",
+          "hash": "6c5f6bc477646b7b6eed2e3a5cb1c24aa055d6ce",
+          "size": 825
+        },
+        {
+          "path": "tests/sync-atomic/final-contents-check_VOEB5M9B.test.js",
+          "hash": "40cdd436576be1fd9129cbdb91bcb4ec2a0d1d2b",
+          "size": 792
+        },
+        {
+          "path": "tests/sync-atomic/final-contents_N8ZmOOIZ.test.js",
+          "hash": "394d6719374da7669ebbba267565c3b2813b051e",
+          "size": 564
+        },
+        {
+          "path": "tests/sync-atomic/final-contents_c9D0e1F2.test.js",
+          "hash": "1b81ff9499bfbbcfbd0bb5515128b3b992ed0289",
+          "size": 902
+        },
+        {
+          "path": "tests/sync-atomic/final_contents_5fef2220.test.js",
+          "hash": "37ab12ac30775ac651ac41a945f8968b6066be1e",
+          "size": 913
+        },
+        {
+          "path": "tests/sync-atomic/git-lfs-clone_ok_kY2ZLHiI.test.js",
+          "hash": "6c69de08fbe1a561d1e17092f0e7939d30161978",
+          "size": 1189
+        },
+        {
+          "path": "tests/sync-atomic/git-lfs-fetch_timeout_hqOJclAM.test.js",
+          "hash": "ac2cb2ae955acf5d2be001b3dff36a304d4c706d",
+          "size": 753
+        },
+        {
+          "path": "tests/sync-atomic/lfs-clone-ok_a1B2c3D4.test.js",
+          "hash": "1c12cd4769b65d9335d09cc49b74ededf2203a85",
+          "size": 738
+        },
+        {
+          "path": "tests/sync-atomic/lfs-clone-success_4fMtzrkE.test.js",
+          "hash": "905b470d8b663a45a61e645249e8de3121cec6c2",
+          "size": 536
+        },
+        {
+          "path": "tests/sync-atomic/lfs-fetch-timeout_z6jroy5D.test.js",
+          "hash": "a7ecdb7d65b4391c83b50431b57cf6bf007582ef",
+          "size": 416
+        },
+        {
+          "path": "tests/sync-atomic/lfs-timeout_e5F6g7H8.test.js",
+          "hash": "f893502090e2d8674dfb3988cac7b62bd2c2dfb1",
+          "size": 572
+        },
+        {
+          "path": "tests/sync-atomic/lfs_clone_success_c989ab2d.test.js",
+          "hash": "66ff3a2b289a119d803a4579d5c7dd7d13d4f9aa",
+          "size": 977
+        },
+        {
+          "path": "tests/sync-atomic/lfs_fetch_timeout_989bff63.test.js",
+          "hash": "b0f7e5ba2825b3278e342e8fc19ea5ebfbfc1bff",
+          "size": 976
+        },
+        {
+          "path": "tests/sync-atomic/missing-auth-vars_KLpJEMiy.test.js",
+          "hash": "a12a126278c278644c6f695dba7a303b1e1cd1ab",
+          "size": 476
+        },
+        {
+          "path": "tests/sync-atomic/missing-auth-vars_WNaSgFdR.test.js",
+          "hash": "c59ff7bde15d253a6264e2cf5db4f5313ab87f68",
+          "size": 467
+        },
+        {
+          "path": "tests/sync-atomic/missing-auth_i9J0k1L2.test.js",
+          "hash": "b7b97fd66e2d76dadecf2a21bec9edb3b791f4c3",
+          "size": 333
+        },
+        {
+          "path": "tests/sync-atomic/missing_auth_vars_fccf54c3.test.js",
+          "hash": "69f0af13adc79929b84b5790df4f8f6418517c00",
+          "size": 516
+        },
+        {
+          "path": "tests/sync-atomic/rsync-permission_denied_YXN6eP1R.test.js",
+          "hash": "af5cd8c56fcf77c8ad10bd58cf6ca08aaed84f5f",
+          "size": 763
+        },
+        {
+          "path": "tests/sync-atomic/rsync-permission_q7R8s9T0.test.js",
+          "hash": "920f70e369e41890106d7c15a2490650ab6b19ce",
+          "size": 615
+        },
+        {
+          "path": "tests/sync-atomic/rsync-permissions_GhXypj9J.test.js",
+          "hash": "36d569e27b15d7513a70263dfd0346e2c1fcf415",
+          "size": 562
+        },
+        {
+          "path": "tests/sync-atomic/rsync-retry_hDjlABOT.test.js",
+          "hash": "10695069c1a851ff045f0f8dd1d116ffcbb3b3c5",
+          "size": 708
+        },
+        {
+          "path": "tests/sync-atomic/rsync-retry_success_vuUYw0hr.test.js",
+          "hash": "fb5859ef3528a8b756de01c492748af817d5130d",
+          "size": 892
+        },
+        {
+          "path": "tests/sync-atomic/rsync-retry_u1V2w3X4.test.js",
+          "hash": "17d2cd3b12098c115f03fde39a472e8664cc69d5",
+          "size": 640
+        },
+        {
+          "path": "tests/sync-atomic/rsync_permissions_f1a75a32.test.js",
+          "hash": "5c452893e4414296d3e876c7c4a04e7943787956",
+          "size": 779
+        },
+        {
+          "path": "tests/sync-atomic/rsync_retry_562be5cf.test.js",
+          "hash": "86b32ad9ad63fbbd553f8b42d4b226dd19edd2ec",
+          "size": 799
+        },
+        {
+          "path": "tests/sync-atomic/ssh-fallback_DYv8qCNv.test.js",
+          "hash": "0aa6891fa46857a0c21183b5e3654953d8864d57",
+          "size": 591
+        },
+        {
+          "path": "tests/sync-atomic/ssh-fallback_https_zdVjpndc.test.js",
+          "hash": "4052a2264a02f2286c79814a9b32734416b1c329",
+          "size": 1089
+        },
+        {
+          "path": "tests/sync-atomic/ssh-fallback_m3N4o5P6.test.js",
+          "hash": "f652e2256971f3091f4141286e6469e4e1cb0caf",
+          "size": 930
+        },
+        {
+          "path": "tests/sync-atomic/ssh_fallback_e417f743.test.js",
+          "hash": "04d3b9d981cf8fc3743d3a9153ddd1d8e3eaeea4",
+          "size": 746
+        },
+        {
+          "path": "tests/temp-files-cleanup_f6e092cd.test.ts",
+          "hash": "91f71603598628ada2987fcb3fcd39e08cb00266",
+          "size": 1531
+        },
+        {
+          "path": "tests/test-cloudflare-output-dir-integrity-hgt5k1m9r2c4p8b.test.ts",
+          "hash": "461ef4313e205973187f763741b5e69a0361b116",
+          "size": 1835
+        },
+        {
+          "path": "tests/test-component-error-boundaries-rds567890abcXYZ.test.tsx",
+          "hash": "4b27b77627a75e2a5d83223dc09a36639767e734",
+          "size": 1252
+        },
+        {
+          "path": "tests/test-env-validation-and-mise-c972d8f4a8b123e.test.ts",
+          "hash": "d2e75d7e3b05db0ecb7491170261f3dd759c248f",
+          "size": 2761
+        },
+        {
+          "path": "tests/test-external-api-availability-XpVIU86nGkXrFIM.test.ts",
+          "hash": "de83a6e25d58a57c7bdce617a26f6d852992c70b",
+          "size": 1694
+        },
+        {
+          "path": "tests/test-package-lock-sync-check-8f5c3e7b2a1d4f6.test.ts",
+          "hash": "f6aedeb1338ae7cdeff1bd6a281a862bc92e59e1",
+          "size": 1393
+        },
+        {
+          "path": "tests/test-server-boot-time-debug-abc123def456ghi.test.ts",
+          "hash": "6112841cb3fab7e77f5613ebda01c72f266d3d36",
+          "size": 1825
+        },
+        {
+          "path": "tests/testBackendScript.integration.test.js",
+          "hash": "2f942c03371565df75107cd2582a9e0ebcb5971f",
+          "size": 671
+        },
+        {
+          "path": "tests/testBackendScript.test.js",
+          "hash": "ce4ba922e4fd5b766898f01f691a829c0726d92b",
+          "size": 309
+        },
+        {
+          "path": "tests/testCoverageIntegrityCheck__fb048b9a.test.ts",
+          "hash": "713fe23ce36f66db90b767a2495e6d38b9307549",
+          "size": 2543
+        },
+        {
+          "path": "tests/testScript.test.js",
+          "hash": "e1a41a7b1275e33f6b79e8c85c350b8e90e8e623",
+          "size": 194
+        },
+        {
+          "path": "tests/test_coverage_tracker_83191b.test.ts",
+          "hash": "7f032bf038888989198795c4e2ba3b050a6b925c",
+          "size": 1057
+        },
+        {
+          "path": "tests/utils/sanity.test.ts",
+          "hash": "752f01e454322142d9c8b8283dd42f2828abaff5",
+          "size": 626
+        },
+        {
+          "path": "tests/validateEnv.test.js",
+          "hash": "c26eeeff1940f573c90f9b11269ebdee744553ea",
+          "size": 7788
+        },
+        {
+          "path": "tests/validateEnvAptNetwork.test.js",
+          "hash": "42ff81881f7b83122c738787eb00a2f7dd9e8629",
+          "size": 975
+        },
+        {
+          "path": "tests/validateEnvAutoInstallNode.test.js",
+          "hash": "e2e388a4dd42fc5a2e392a83cad9935bd950a5dd",
+          "size": 462
+        },
+        {
+          "path": "tests/validateEnvInstallMise.test.js",
+          "hash": "b74321e54596d28f2b9723c7982c96335390816d",
+          "size": 395
+        },
+        {
+          "path": "tests/validateEnvMiseMissing.test.js",
+          "hash": "389b36e634e2fe8b681a8c636a65e87f4529220a",
+          "size": 583
+        },
+        {
+          "path": "tests/validateEnvNodePath.test.js",
+          "hash": "67628194108fb92ffdb528ac12437dc4c791bccd",
+          "size": 576
+        },
+        {
+          "path": "tests/validateEnvRequiredVars.test.js",
+          "hash": "ad6ae48d2b7b78ea19cae5e740a0d05c0d3f0478",
+          "size": 1813
+        },
+        {
+          "path": "tests/viteLocalBinary.test.js",
+          "hash": "4b3a1196c1c3d587f5be530c53b1030eb2b8f809",
+          "size": 742
+        },
+        {
+          "path": "tests/vulnerability.test.js",
+          "hash": "437a92d1efdf32bc2bff93d384ed9705664ea6eb",
+          "size": 326
+        },
+        {
+          "path": "tests/wranglerToml.test.js",
+          "hash": "85bbc707c37395aaea8134504201f05e9f60d656",
+          "size": 517
+        },
+        {
+          "path": "tests/zz_ci_completion_guard_e8f3c1.test.ts",
+          "hash": "3d2f2707ff5242c233c433b39b8129d4b1b0bc90",
+          "size": 1113
+        }
+      ],
+      "historical": [
+        {
+          "path": "tests/diagnostic-env-validation-c42aa19f7d5.test.ts",
+          "firstSeenSha": "d42a581a9278594e14ed0d14cdb11b0de60bd92e",
+          "lastSeenSha": "d42a581a9278594e14ed0d14cdb11b0de60bd92e"
+        },
+        {
+          "path": "tests/ci/diagnostic-server-waiton-c01ebf750a9.test.ts",
+          "firstSeenSha": "1ce4521b6f1754fb28d95a08f4a259363da4b54a",
+          "lastSeenSha": "1ce4521b6f1754fb28d95a08f4a259363da4b54a"
+        },
+        {
+          "path": "tests/checkoutStyles.83d9e6f7a2b1c4d.test.js",
+          "firstSeenSha": "b8cfbfd9b601bcf805a41b3542f0086c883ef8c9",
+          "lastSeenSha": "38a88497b982f8dded1a6e506bf54cd122a73416"
+        },
+        {
+          "path": "tests/componentsRender_98c4d6f2a5b1e7g.test.js",
+          "firstSeenSha": "b8cfbfd9b601bcf805a41b3542f0086c883ef8c9",
+          "lastSeenSha": "38a88497b982f8dded1a6e506bf54cd122a73416"
+        },
+        {
+          "path": "tests/diagnostic-cloudflare-assetcheck-cd7a6f94e38.test.ts",
+          "firstSeenSha": "b8cfbfd9b601bcf805a41b3542f0086c883ef8c9",
+          "lastSeenSha": "b8cfbfd9b601bcf805a41b3542f0086c883ef8c9"
+        },
+        {
+          "path": "tests/diagnostic-glb-pipeline-44eb3019f13.test.ts",
+          "firstSeenSha": "31cfb04e3b06ba344c3056e3bfc18952e065babd",
+          "lastSeenSha": "31cfb04e3b06ba344c3056e3bfc18952e065babd"
+        },
+        {
+          "path": "tests/env-check-7d93f1c0a5b4e2f.test.ts",
+          "firstSeenSha": "192a31f0a4cbd507781492d907d2a3c739caedf8",
+          "lastSeenSha": "192a31f0a4cbd507781492d907d2a3c739caedf8"
+        },
+        {
+          "path": "tests/smoke-atomic/frontendBuildIntegrity_9JJFHkZfHrx8KOA.test.js",
+          "firstSeenSha": "b95bbd13bcc366a948fc0d20b7d0a6f7a1dd0600",
+          "lastSeenSha": "b95bbd13bcc366a948fc0d20b7d0a6f7a1dd0600"
+        },
+        {
+          "path": "tests/frontend-dep-check-4f3e0c9a2d5b6e7.spec.ts",
+          "firstSeenSha": "33a60838e6ed7d98ac16f46e18b86b23c4b15e7d",
+          "lastSeenSha": "33a60838e6ed7d98ac16f46e18b86b23c4b15e7d"
+        },
+        {
+          "path": "tests/ci/test-cloudflare-deployment-readiness-4c7a3f2e1b0d9c8.test.ts",
+          "firstSeenSha": "684371a864794fd099fbb0b8560eba952c7b4bc5",
+          "lastSeenSha": "684371a864794fd099fbb0b8560eba952c7b4bc5"
+        },
+        {
+          "path": "scripts/__tests__/check-broken-symlinks-f7c290a1b2c3d4e.test.ts",
+          "firstSeenSha": "81ab2c93866f93cf0fc0e6b73bc5b150029b873c",
+          "lastSeenSha": "81ab2c93866f93cf0fc0e6b73bc5b150029b873c"
+        },
+        {
+          "path": "scripts/__tests__/aliqjanonrwoynf.test.ts",
+          "firstSeenSha": "eae5b666f8c1adf69e4ab32698da8397186b1663",
+          "lastSeenSha": "eae5b666f8c1adf69e4ab32698da8397186b1663"
+        },
+        {
+          "path": "scripts/__tests__/check-broken-symlinks_KG1DrVdKhzzakxp.test.ts",
+          "firstSeenSha": "34392d906ad0b6a3254f14d621c8a9c5c63bfb48",
+          "lastSeenSha": "34392d906ad0b6a3254f14d621c8a9c5c63bfb48"
+        },
+        {
+          "path": "scripts/__tests__/validate-static-refs-3ea7bd43ffcd123.test.ts",
+          "firstSeenSha": "da9ebd8558dcbfdf840b852eecb290c7e6d38bf6",
+          "lastSeenSha": "da9ebd8558dcbfdf840b852eecb290c7e6d38bf6"
+        },
+        {
+          "path": "scripts/__tests__/auto-cloudflare-config-xvpfhoqbxmsielp.test.ts",
+          "firstSeenSha": "d18e3c2b46a475a86ecd802f024a0b70e5a46c68",
+          "lastSeenSha": "d18e3c2b46a475a86ecd802f024a0b70e5a46c68"
+        },
+        {
+          "path": "tests/smoke-hang-diagnostics-57f3c8.test.js",
+          "firstSeenSha": "1167269006e9dd21177186d5ba4f564d307786c4",
+          "lastSeenSha": "f1e24f73d7ebe2ad5234723d2bd00d82446847b7"
+        },
+        {
+          "path": "tests/smoke-hang-diagnostics-a1b2c3.test.js",
+          "firstSeenSha": "1167269006e9dd21177186d5ba4f564d307786c4",
+          "lastSeenSha": "146e5d8e8a02ea14bf7dfc51c46ef0e9746500fb"
+        },
+        {
+          "path": "tests/smoke-hang-diagnostics-c9f8e7d6.test.js",
+          "firstSeenSha": "1167269006e9dd21177186d5ba4f564d307786c4",
+          "lastSeenSha": "f1e24f73d7ebe2ad5234723d2bd00d82446847b7"
+        },
+        {
+          "path": "tests/smoke-hang-diagnostics-df535d.test.js",
+          "firstSeenSha": "1167269006e9dd21177186d5ba4f564d307786c4",
+          "lastSeenSha": "f1e24f73d7ebe2ad5234723d2bd00d82446847b7"
+        },
+        {
+          "path": "tests/smoke-hang-diagnostics-x1y2z3.test.js",
+          "firstSeenSha": "1167269006e9dd21177186d5ba4f564d307786c4",
+          "lastSeenSha": "1167269006e9dd21177186d5ba4f564d307786c4"
+        },
+        {
+          "path": "scripts/__tests__/check-env-dbfailpass.test.ts",
+          "firstSeenSha": "f954370d0f1b61f53bf175f5bf71e4b7911adb3b",
+          "lastSeenSha": "f954370d0f1b61f53bf175f5bf71e4b7911adb3b"
+        },
+        {
+          "path": "scripts/__tests__/auto-cloudflare-config-a1b2c3d4e5f6g7h.test.ts",
+          "firstSeenSha": "9a2d7c21021a05fd30ba14a4d5009877bc2701c3",
+          "lastSeenSha": "9a2d7c21021a05fd30ba14a4d5009877bc2701c3"
+        },
+        {
+          "path": "scripts/__tests__/check-symlinks-de41f2c6a8b903e.test.ts",
+          "firstSeenSha": "ce855696c9f1dacce4e63458f74327595fe0837a",
+          "lastSeenSha": "ce855696c9f1dacce4e63458f74327595fe0837a"
+        },
+        {
+          "path": "scripts/__tests__/auto-cloudflare-config-compile.test.ts",
+          "firstSeenSha": "55ddb5c2a02931854037efab3fda930829cec5ed",
+          "lastSeenSha": "55ddb5c2a02931854037efab3fda930829cec5ed"
+        },
+        {
+          "path": "tests/security/codeql-scan-7f3a9d2b6c1a.test.ts",
+          "firstSeenSha": "f0f6ae5ec962425e5a5b321142bda6501e538079",
+          "lastSeenSha": "f0f6ae5ec962425e5a5b321142bda6501e538079"
+        },
+        {
+          "path": "tests/ci/backend-lib-build-check-abc123.test.ts",
+          "firstSeenSha": "e1b4502dd8cf22cd3aa191ee24b255923e200dd2",
+          "lastSeenSha": "22aa6130f667c4122ae648f85b31f695a3959063"
+        },
+        {
+          "path": "tests/frontendElementPresence.test.js",
+          "firstSeenSha": "fe4bf2808e8f67e9f3943c5af63d9d57f3afcad2",
+          "lastSeenSha": "fe4bf2808e8f67e9f3943c5af63d9d57f3afcad2"
+        },
+        {
+          "path": "tests/frontend-elements.test.js",
+          "firstSeenSha": "2d008d40b72a84d991d54e7f0ca0cd40ecc246b1",
+          "lastSeenSha": "2d008d40b72a84d991d54e7f0ca0cd40ecc246b1"
+        },
+        {
+          "path": "tests/ci/test-eslint-stability.test.ts",
+          "firstSeenSha": "ff076b66ca7f3e4f32ef292f4fffb810cb6ec9f4",
+          "lastSeenSha": "ff076b66ca7f3e4f32ef292f4fffb810cb6ec9f4"
+        },
+        {
+          "path": "tests/diagnostic-eslint-config.test.ts",
+          "firstSeenSha": "ab78fe9bfc487139e9933a214eff60ee615b6103",
+          "lastSeenSha": "207df1a45293ee567a4cdb79b757fb3e8377e0bb"
+        },
+        {
+          "path": "tests/diagnostic-stripe-types.test.ts",
+          "firstSeenSha": "c7db3f46257fcfcbfe789ef4fbab183f83edfb3a",
+          "lastSeenSha": "c7db3f46257fcfcbfe789ef4fbab183f83edfb3a"
+        },
+        {
+          "path": "tests/full/pipeline_component_diagnostics_09df71.test.js",
+          "firstSeenSha": "c7db3f46257fcfcbfe789ef4fbab183f83edfb3a",
+          "lastSeenSha": "c7db3f46257fcfcbfe789ef4fbab183f83edfb3a"
+        },
+        {
+          "path": "tests/full/pipeline_component_diagnostics_0e088e.test.js",
+          "firstSeenSha": "c7db3f46257fcfcbfe789ef4fbab183f83edfb3a",
+          "lastSeenSha": "c7db3f46257fcfcbfe789ef4fbab183f83edfb3a"
+        },
+        {
+          "path": "tests/ci/test-stripe-types.test.ts",
+          "firstSeenSha": "9b1886a7fed2225e21d6d81a925b69f4882edba0",
+          "lastSeenSha": "9b1886a7fed2225e21d6d81a925b69f4882edba0"
+        },
+        {
+          "path": "tests/diagnostic_auto_cloudflare_integration_9b1c7d3e5f.test.ts",
+          "firstSeenSha": "2cf4a097005143b448b974a7207722cc4438e884",
+          "lastSeenSha": "2cf4a097005143b448b974a7207722cc4438e884"
+        },
+        {
+          "path": "tests/diagnostic_auto_cloudflare_config_b73e2.test.ts",
+          "firstSeenSha": "c849b8661b80d83ddad4aa7ffc7de292027b1bde",
+          "lastSeenSha": "c849b8661b80d83ddad4aa7ffc7de292027b1bde"
+        },
+        {
+          "path": "tests/diagnostic_stripe_integration_79333af6.test.ts",
+          "firstSeenSha": "d0112952000273bf6ea0eaf83fd5dce7a4d80cbd",
+          "lastSeenSha": "2a73cd57006a58f668fb2aeaafeaf1a9a859c39f"
+        },
+        {
+          "path": "tests/ci/build-pipeline-diagnostic-6b7f9e18c3d2a4b1.test.ts",
+          "firstSeenSha": "0813a07a0055f4cd78db7e11fbc63d0d819c79f9",
+          "lastSeenSha": "0813a07a0055f4cd78db7e11fbc63d0d819c79f9"
+        },
+        {
+          "path": "tests/stripeEnvPlaceholders.test.js",
+          "firstSeenSha": "8b590583c92596923a80dc0e753b737519f70c9a",
+          "lastSeenSha": "2a73cd57006a58f668fb2aeaafeaf1a9a859c39f"
+        },
+        {
+          "path": "tests/dependencyInstallationStability.test.js",
+          "firstSeenSha": "d8ded68103720949308fc0da4392cf478852d752",
+          "lastSeenSha": "d8ded68103720949308fc0da4392cf478852d752"
+        },
+        {
+          "path": "tests/diagnostic-cloudflare-smoke-7e2c9d4f8b.test.ts",
+          "firstSeenSha": "c5bba6661a6e7942f926adfd65cdccc1661b63bc",
+          "lastSeenSha": "c5bba6661a6e7942f926adfd65cdccc1661b63bc"
+        },
+        {
+          "path": "tests/diagnostic-db-smoke-5a6e2d9c1f.test.ts",
+          "firstSeenSha": "c5bba6661a6e7942f926adfd65cdccc1661b63bc",
+          "lastSeenSha": "c5bba6661a6e7942f926adfd65cdccc1661b63bc"
+        },
+        {
+          "path": "tests/diagnostic-env-vars-4be91cf27a.test.ts",
+          "firstSeenSha": "c5bba6661a6e7942f926adfd65cdccc1661b63bc",
+          "lastSeenSha": "c5bba6661a6e7942f926adfd65cdccc1661b63bc"
+        },
+        {
+          "path": "tests/diagnostic-stripe-smoke-d3f8a1b5c7.test.ts",
+          "firstSeenSha": "c5bba6661a6e7942f926adfd65cdccc1661b63bc",
+          "lastSeenSha": "2a73cd57006a58f668fb2aeaafeaf1a9a859c39f"
+        },
+        {
+          "path": "tests/loggerLint.test.js",
+          "firstSeenSha": "a569f17c195191b67efa86b0b53ce157b4a3265f",
+          "lastSeenSha": "a569f17c195191b67efa86b0b53ce157b4a3265f"
+        },
+        {
+          "path": "tests/eslintCiRules.test.js",
+          "firstSeenSha": "294d335ac49451c290227af1f36b0d9ee20c9bea",
+          "lastSeenSha": "294d335ac49451c290227af1f36b0d9ee20c9bea"
+        },
+        {
+          "path": "tests/ci/tsc_sanity_4e1a2b.test.ts",
+          "firstSeenSha": "b7c9e2712caf45dd34721e7412b3492ffda1f025",
+          "lastSeenSha": "b7c9e2712caf45dd34721e7412b3492ffda1f025"
+        },
+        {
+          "path": "tests/ci/eslint_sanity_5e4c9d2a.test.ts",
+          "firstSeenSha": "707c8f7a30a9a804e5410914c541d2922ed40e4a",
+          "lastSeenSha": "707c8f7a30a9a804e5410914c541d2922ed40e4a"
+        },
+        {
+          "path": "tests/diagnostic-stripe-preflight-31f8c6a2e7.test.ts",
+          "firstSeenSha": "2a73cd57006a58f668fb2aeaafeaf1a9a859c39f",
+          "lastSeenSha": "2a73cd57006a58f668fb2aeaafeaf1a9a859c39f"
+        },
+        {
+          "path": "tests/ci/env_loader_preflight_ba718dce.test.ts",
+          "firstSeenSha": "f062c74eb46d03434ee77cc6fc49288302c9ea06",
+          "lastSeenSha": "f062c74eb46d03434ee77cc6fc49288302c9ea06"
+        },
+        {
+          "path": "tests/ci/env_merge_precedence_7c3d1b.test.ts",
+          "firstSeenSha": "73c608baa1fa6da3d1fc2610dfea805b9f75c410",
+          "lastSeenSha": "73c608baa1fa6da3d1fc2610dfea805b9f75c410"
+        },
+        {
+          "path": "tests/ci/env_preflight_a1b2c3d4.test.ts",
+          "firstSeenSha": "0c226ed996075aafc5bee6ec851ea74fa1eadbd4",
+          "lastSeenSha": "0c226ed996075aafc5bee6ec851ea74fa1eadbd4"
+        },
+        {
+          "path": "tests/ci/stripe_env_fallback.test.ts",
+          "firstSeenSha": "c49967bf9de7f168f696cbc3f81f308c1ee0df7e",
+          "lastSeenSha": "c49967bf9de7f168f696cbc3f81f308c1ee0df7e"
+        },
+        {
+          "path": "tests/ci/diagnostic_stripe_webhook_prod_gate.test.ts",
+          "firstSeenSha": "d4a651c8b6403dd05002532ae06ea65ad24978c4",
+          "lastSeenSha": "0c80c77c6ff5c10545f4a30702cf867b6ff920c4"
+        },
+        {
+          "path": "tests/renderThumbnails.test.js",
+          "firstSeenSha": "f085d39e8f1fc421ab255107b5eacc515143a779",
+          "lastSeenSha": "f085d39e8f1fc421ab255107b5eacc515143a779"
+        },
+        {
+          "path": "tests/linting.test.js",
+          "firstSeenSha": "f364065d490e05a3c03eb9bca98bb8afa87ca331",
+          "lastSeenSha": "35a7e7a9bfcad21fde4a1882cd25fc6fd63b00ff"
+        },
+        {
+          "path": "tests/dbCheckScript.test.js",
+          "firstSeenSha": "f091e1df26b0ed4384922149c7cfb5bfe907f0b6",
+          "lastSeenSha": "f091e1df26b0ed4384922149c7cfb5bfe907f0b6"
+        },
+        {
+          "path": "tests/networkAudit.test.ts",
+          "firstSeenSha": "07d835e7fb9a6231cbd78e816dc1e8b88e10ce2b",
+          "lastSeenSha": "07d835e7fb9a6231cbd78e816dc1e8b88e10ce2b"
+        },
+        {
+          "path": "tests/smoke-atomic/apiGenerate_fallback.test.ts",
+          "firstSeenSha": "c99a6ba29984fb0c557cf32825e510439d403036",
+          "lastSeenSha": "146e5d8e8a02ea14bf7dfc51c46ef0e9746500fb"
+        },
+        {
+          "path": "tests/flaky-test-detector.test.js",
+          "firstSeenSha": "43ae25b6bbe498a5027a69536f5ce3064ba3fd41",
+          "lastSeenSha": "43ae25b6bbe498a5027a69536f5ce3064ba3fd41"
+        },
+        {
+          "path": "tests/serverBootSmoke_c63b9e.test.ts",
+          "firstSeenSha": "655f2ad3837837ceeb6d56ba823fca9d9644b284",
+          "lastSeenSha": "655f2ad3837837ceeb6d56ba823fca9d9644b284"
+        },
+        {
+          "path": "tests/diagnostics/healthz_probe.test.js",
+          "firstSeenSha": "cd6cb07bb7043d354050789ee44cf04b156f1dda",
+          "lastSeenSha": "cd6cb07bb7043d354050789ee44cf04b156f1dda"
+        },
+        {
+          "path": "tests/diagnostics/healthz_contract.test.js",
+          "firstSeenSha": "49bf180883ab6dfd0292de06f0ee826efe088a6a",
+          "lastSeenSha": "49bf180883ab6dfd0292de06f0ee826efe088a6a"
+        },
+        {
+          "path": "tests/diagnostics-951c73bd.test.js",
+          "firstSeenSha": "8627fbfca7f05328d2aa02f05459872ba0de28be",
+          "lastSeenSha": "8627fbfca7f05328d2aa02f05459872ba0de28be"
+        },
+        {
+          "path": "tests/diagnostics-c0de9a88.test.js",
+          "firstSeenSha": "8627fbfca7f05328d2aa02f05459872ba0de28be",
+          "lastSeenSha": "8627fbfca7f05328d2aa02f05459872ba0de28be"
+        },
+        {
+          "path": "tests/sync-atomic/ssh-fallback_DYv8qCNv.test.js",
+          "firstSeenSha": "8627fbfca7f05328d2aa02f05459872ba0de28be",
+          "lastSeenSha": "8627fbfca7f05328d2aa02f05459872ba0de28be"
+        },
+        {
+          "path": "tests/diagnostics/nock_reporter.test.js",
+          "firstSeenSha": "8bc9dffe579f25ba76dc632e83c622eef3a9e126",
+          "lastSeenSha": "8bc9dffe579f25ba76dc632e83c622eef3a9e126"
+        },
+        {
+          "path": "tests/diagnostics/netconnect_sentinel.test.js",
+          "firstSeenSha": "e38289ee52ad0ec2fd6cff8ae660fd2f11bc8481",
+          "lastSeenSha": "e38289ee52ad0ec2fd6cff8ae660fd2f11bc8481"
+        },
+        {
+          "path": "tests/internal/net-guard.test.ts",
+          "firstSeenSha": "07f9cf18274be452646a8b53a4d8ee0447e1e79a",
+          "lastSeenSha": "07f9cf18274be452646a8b53a4d8ee0447e1e79a"
+        },
+        {
+          "path": "tests/internal/long-op-warning.test.ts",
+          "firstSeenSha": "aa32e13a73f40f667e400b88b8dff28065facd18",
+          "lastSeenSha": "aa32e13a73f40f667e400b88b8dff28065facd18"
+        },
+        {
+          "path": "tests/internal/hung-handle.test.ts",
+          "firstSeenSha": "39662f0866b4910a35595625ad2d7ebfa6ecf123",
+          "lastSeenSha": "39662f0866b4910a35595625ad2d7ebfa6ecf123"
+        },
+        {
+          "path": "tests/internal/reaper-smoke.test.ts",
+          "firstSeenSha": "83e4318db5e3f51532258663857936c80bd8ac18",
+          "lastSeenSha": "83e4318db5e3f51532258663857936c80bd8ac18"
+        },
+        {
+          "path": "tests/preCommit.test.js",
+          "firstSeenSha": "e015a8e405092ee7bde6f9f6c0b855b59029f996",
+          "lastSeenSha": "e015a8e405092ee7bde6f9f6c0b855b59029f996"
+        },
+        {
+          "path": "tests/runCoverageScript.test.js",
+          "firstSeenSha": "04a827ce34b6b0f97e569f1c9ee3ea6bdeafda9e",
+          "lastSeenSha": "04a827ce34b6b0f97e569f1c9ee3ea6bdeafda9e"
+        },
+        {
+          "path": "tests/runCoverageSkipHandleCheck.test.js",
+          "firstSeenSha": "04a827ce34b6b0f97e569f1c9ee3ea6bdeafda9e",
+          "lastSeenSha": "04a827ce34b6b0f97e569f1c9ee3ea6bdeafda9e"
+        },
+        {
+          "path": "tests/runCoverageSkipNet.test.js",
+          "firstSeenSha": "04a827ce34b6b0f97e569f1c9ee3ea6bdeafda9e",
+          "lastSeenSha": "04a827ce34b6b0f97e569f1c9ee3ea6bdeafda9e"
+        },
+        {
+          "path": "tests/lintingDetailed.test.js",
+          "firstSeenSha": "207df1a45293ee567a4cdb79b757fb3e8377e0bb",
+          "lastSeenSha": "207df1a45293ee567a4cdb79b757fb3e8377e0bb"
+        },
+        {
+          "path": "tests/detailedLint.test.js",
+          "firstSeenSha": "0e6e706c08538ff0d0c593cdaff7a2eb2adc6ef3",
+          "lastSeenSha": "0e6e706c08538ff0d0c593cdaff7a2eb2adc6ef3"
+        },
+        {
+          "path": "tests/eslintConfigResolution.test.js",
+          "firstSeenSha": "0e6e706c08538ff0d0c593cdaff7a2eb2adc6ef3",
+          "lastSeenSha": "0e6e706c08538ff0d0c593cdaff7a2eb2adc6ef3"
+        },
+        {
+          "path": "tests/ci/pipeline-deadlock-check-b1a2c3d.test.js",
+          "firstSeenSha": "943b7a816744f844b08c1f3650ef91fb8397699e",
+          "lastSeenSha": "3dab44504c9483a3a9cde19a050e54db65c3307c"
+        },
+        {
+          "path": "tests/codeqlSecurityCheck_d5e9f4.test.ts",
+          "firstSeenSha": "2827fe1a1349f1d86377a3d7aef1f9063e44ca68",
+          "lastSeenSha": "2827fe1a1349f1d86377a3d7aef1f9063e44ca68"
+        },
+        {
+          "path": "tests/smokeStages.test.js",
+          "firstSeenSha": "8aef4c2c4b1148abf39051751f6f6742ad6009a9",
+          "lastSeenSha": "8aef4c2c4b1148abf39051751f6f6742ad6009a9"
+        },
+        {
+          "path": "tests/noGlobalViteTsc.test.js",
+          "firstSeenSha": "45c3d4feef0f93383846947e6e78cc93c4682705",
+          "lastSeenSha": "45c3d4feef0f93383846947e6e78cc93c4682705"
+        },
+        {
+          "path": "tests/wranglerToml.test.js",
+          "firstSeenSha": "0c07e889e9d2567cb9c82c31954c3aeb6013e15a",
+          "lastSeenSha": "c05b8388db55a8dbc1403e34c1b068eb735ea6fc"
+        },
+        {
+          "path": "tests/runSmoke.missingArtifact.test.js",
+          "firstSeenSha": "a6dff126a6c61c52a01ce30b1f869299fc0814a0",
+          "lastSeenSha": "a6dff126a6c61c52a01ce30b1f869299fc0814a0"
+        },
+        {
+          "path": "tests/viteLocalBinary.test.js",
+          "firstSeenSha": "668c8c2ae0622fb66290eef352eafd4ef0adfc4f",
+          "lastSeenSha": "668c8c2ae0622fb66290eef352eafd4ef0adfc4f"
+        },
+        {
+          "path": "tests/internal/asyncCleanup.test.ts",
+          "firstSeenSha": "d0c70ede91b65963cd41ea2afa38698cacbde93d",
+          "lastSeenSha": "d0c70ede91b65963cd41ea2afa38698cacbde93d"
+        },
+        {
+          "path": "tests/eslintParserResolution.test.js",
+          "firstSeenSha": "f37905c9e093cd3fe3b31f6e0e6e774399b22886",
+          "lastSeenSha": "f37905c9e093cd3fe3b31f6e0e6e774399b22886"
+        },
+        {
+          "path": "tests/full-stack/backend.integration.test.js",
+          "firstSeenSha": "94030a677a6cada5523500ca3dea0778f76323b7",
+          "lastSeenSha": "94030a677a6cada5523500ca3dea0778f76323b7"
+        },
+        {
+          "path": "tests/full-stack/backend.unit.test.js",
+          "firstSeenSha": "94030a677a6cada5523500ca3dea0778f76323b7",
+          "lastSeenSha": "94030a677a6cada5523500ca3dea0778f76323b7"
+        },
+        {
+          "path": "tests/full-stack/cicd.workflow.test.js",
+          "firstSeenSha": "94030a677a6cada5523500ca3dea0778f76323b7",
+          "lastSeenSha": "94030a677a6cada5523500ca3dea0778f76323b7"
+        },
+        {
+          "path": "tests/full-stack/e2e-signup.spec.ts",
+          "firstSeenSha": "94030a677a6cada5523500ca3dea0778f76323b7",
+          "lastSeenSha": "94030a677a6cada5523500ca3dea0778f76323b7"
+        },
+        {
+          "path": "tests/full-stack/frontend.signup.test.js",
+          "firstSeenSha": "94030a677a6cada5523500ca3dea0778f76323b7",
+          "lastSeenSha": "94030a677a6cada5523500ca3dea0778f76323b7"
+        },
+        {
+          "path": "tests/ci/pipeline-deadlock-check-dc53172.test.js",
+          "firstSeenSha": "f3de71d518ca4c98414501c0fb7eea1543bfc29e",
+          "lastSeenSha": "f3de71d518ca4c98414501c0fb7eea1543bfc29e"
+        },
+        {
+          "path": "tests/backend/integration/models.routes.test.js",
+          "firstSeenSha": "6507410e5b92b78d83ecaa21db12184c11b9bb80",
+          "lastSeenSha": "6507410e5b92b78d83ecaa21db12184c11b9bb80"
+        },
+        {
+          "path": "tests/backend/unit/accounting.test.js",
+          "firstSeenSha": "6507410e5b92b78d83ecaa21db12184c11b9bb80",
+          "lastSeenSha": "6507410e5b92b78d83ecaa21db12184c11b9bb80"
+        },
+        {
+          "path": "tests/ci/workflows.regression.test.js",
+          "firstSeenSha": "6507410e5b92b78d83ecaa21db12184c11b9bb80",
+          "lastSeenSha": "6507410e5b92b78d83ecaa21db12184c11b9bb80"
+        },
+        {
+          "path": "tests/e2e/signup.spec.ts",
+          "firstSeenSha": "6507410e5b92b78d83ecaa21db12184c11b9bb80",
+          "lastSeenSha": "6507410e5b92b78d83ecaa21db12184c11b9bb80"
+        },
+        {
+          "path": "tests/frontend/CheckoutForm.test.jsx",
+          "firstSeenSha": "6507410e5b92b78d83ecaa21db12184c11b9bb80",
+          "lastSeenSha": "6507410e5b92b78d83ecaa21db12184c11b9bb80"
+        },
+        {
+          "path": "tests/ci/watchdog-utils.test.ts",
+          "firstSeenSha": "c212f04fde21ba145fd4092d9c38afded74b3db5",
+          "lastSeenSha": "c212f04fde21ba145fd4092d9c38afded74b3db5"
+        },
+        {
+          "path": "tests/ci/self-hosted-fallback.test.js",
+          "firstSeenSha": "51a34f1d9f5ab4f66c0e77d1b665beae359a891c",
+          "lastSeenSha": "51a34f1d9f5ab4f66c0e77d1b665beae359a891c"
+        },
+        {
+          "path": "tests/ci/action-manifest-sanity.test.js",
+          "firstSeenSha": "5b046e711b1b938ba0746c9859308594a13dbfc1",
+          "lastSeenSha": "5b046e711b1b938ba0746c9859308594a13dbfc1"
+        },
+        {
+          "path": "tests/ci/artifact-contracts.test.js",
+          "firstSeenSha": "5b046e711b1b938ba0746c9859308594a13dbfc1",
+          "lastSeenSha": "5b046e711b1b938ba0746c9859308594a13dbfc1"
+        },
+        {
+          "path": "tests/ci/browser-globals-ssr-sanity.test.js",
+          "firstSeenSha": "5b046e711b1b938ba0746c9859308594a13dbfc1",
+          "lastSeenSha": "5b046e711b1b938ba0746c9859308594a13dbfc1"
+        },
+        {
+          "path": "tests/ci/codeql-tools-config.test.js",
+          "firstSeenSha": "5b046e711b1b938ba0746c9859308594a13dbfc1",
+          "lastSeenSha": "5b046e711b1b938ba0746c9859308594a13dbfc1"
+        },
+        {
+          "path": "tests/ci/dist-outputs-contract.test.js",
+          "firstSeenSha": "5b046e711b1b938ba0746c9859308594a13dbfc1",
+          "lastSeenSha": "5b046e711b1b938ba0746c9859308594a13dbfc1"
+        },
+        {
+          "path": "tests/ci/eslint-config-sanity.test.js",
+          "firstSeenSha": "5b046e711b1b938ba0746c9859308594a13dbfc1",
+          "lastSeenSha": "5b046e711b1b938ba0746c9859308594a13dbfc1"
+        },
+        {
+          "path": "tests/ci/frontend-prereqs.test.js",
+          "firstSeenSha": "5b046e711b1b938ba0746c9859308594a13dbfc1",
+          "lastSeenSha": "5b046e711b1b938ba0746c9859308594a13dbfc1"
+        },
+        {
+          "path": "tests/ci/git-lfs-pointers.test.js",
+          "firstSeenSha": "5b046e711b1b938ba0746c9859308594a13dbfc1",
+          "lastSeenSha": "5b046e711b1b938ba0746c9859308594a13dbfc1"
+        },
+        {
+          "path": "tests/ci/lockfile-parity.test.js",
+          "firstSeenSha": "5b046e711b1b938ba0746c9859308594a13dbfc1",
+          "lastSeenSha": "5b046e711b1b938ba0746c9859308594a13dbfc1"
+        },
+        {
+          "path": "tests/ci/pnpm-availability.test.js",
+          "firstSeenSha": "5b046e711b1b938ba0746c9859308594a13dbfc1",
+          "lastSeenSha": "5b046e711b1b938ba0746c9859308594a13dbfc1"
+        },
+        {
+          "path": "tests/ci/wrangler-pages-config.test.js",
+          "firstSeenSha": "5b046e711b1b938ba0746c9859308594a13dbfc1",
+          "lastSeenSha": "5b046e711b1b938ba0746c9859308594a13dbfc1"
+        }
+      ]
+    },
+    "backend": {
+      "current": [
+        {
+          "path": "backend/__tests__/auth.test.js",
+          "hash": "a58a54bf63ffbfce124deb0b3797b138f03a41a1",
+          "size": 2287
+        },
+        {
+          "path": "backend/__tests__/coverageSummaryExists.test.js",
+          "hash": "db7847592049e2f557c9845738b618d3dc49f29a",
+          "size": 298
+        },
+        {
+          "path": "backend/__tests__/dummyCoverage.test.js",
+          "hash": "4d913f4fc61bc607b3e61018788bc2cf16147685",
+          "size": 198
+        },
+        {
+          "path": "backend/__tests__/generate.test.js",
+          "hash": "47a875ffefba900d27d7660df8529d4b8b1645ab",
+          "size": 2909
+        },
+        {
+          "path": "backend/__tests__/glbPrep.test.ts",
+          "hash": "3b7d0c7b6bb5b39b8555a767755dd1466bbf4bf1",
+          "size": 2522
+        },
+        {
+          "path": "backend/__tests__/health.test.js",
+          "hash": "9b520b387aec7160a555f84a86d80ddf510849c7",
+          "size": 348
+        },
+        {
+          "path": "backend/__tests__/items.test.js",
+          "hash": "e2bc9ca2b1276de285fdebf5680dd1b53cef10c9",
+          "size": 874
+        },
+        {
+          "path": "backend/__tests__/lcovExists.test.js",
+          "hash": "313327f795b78b43584d5ded287c66a3274fecaa",
+          "size": 400
+        },
+        {
+          "path": "backend/__tests__/runSmokeWarn.test.js",
+          "hash": "d2b149cfa7397129bc07522b0ac4eb10f92d6eed",
+          "size": 786
+        },
+        {
+          "path": "backend/__tests__/server-endpoints.test.ts",
+          "hash": "bbe09c9a8a23612a49eef74a8465c696f04b4c83",
+          "size": 3534
+        },
+        {
+          "path": "backend/__tests__/server.test.ts",
+          "hash": "b4143217629f2286e2adbb4b8a923c8b25fdde82",
+          "size": 744
+        },
+        {
+          "path": "backend/__tests__/users.test.js",
+          "hash": "e3e18d164bee67d9ba2620f675b8903f51e39b11",
+          "size": 1317
+        },
+        {
+          "path": "backend/dalle_server/tests/generate.test.js",
+          "hash": "31450cd1456e60520d11105fdc18b24595ff4ccc",
+          "size": 455
+        },
+        {
+          "path": "backend/src/__tests__/app.test.js",
+          "hash": "9e3f5487b083d749e00fb762e34d24aaba690fdf",
+          "size": 730
+        },
+        {
+          "path": "backend/src/__tests__/models.test.js",
+          "hash": "7e2cb34056635931534176b48a0cd99abbde1af4",
+          "size": 2766
+        },
+        {
+          "path": "backend/tests/abandonedOffers.test.js",
+          "hash": "1aa0b5ec56ef49b46c0c23038de84712f0be1761",
+          "size": 1167
+        },
+        {
+          "path": "backend/tests/accounting.test.js",
+          "hash": "accca64c7c9adca388a57ac882781f014ffcc94f",
+          "size": 322
+        },
+        {
+          "path": "backend/tests/accounting.test.ts",
+          "hash": "6719964f4811c5b2130fcda399b9a054ecf59b73",
+          "size": 374
+        },
+        {
+          "path": "backend/tests/additionalApi.test.js",
+          "hash": "f68aa3ae8966ae06a9a973df4177d164e0313277",
+          "size": 27038
+        },
+        {
+          "path": "backend/tests/adminAds.test.js",
+          "hash": "7d859802f9b6e2752b361ff1c171e380f84bf1fa",
+          "size": 1300
+        },
+        {
+          "path": "backend/tests/adminAnalytics.test.js",
+          "hash": "3a63bdbb990e6be6bc254c19e292674233744745",
+          "size": 1242
+        },
+        {
+          "path": "backend/tests/analytics.test.js",
+          "hash": "f3a4d0334f9c27815c086330245ecd2f79a00f94",
+          "size": 4976
+        },
+        {
+          "path": "backend/tests/api.test.js",
+          "hash": "72df693f29e6ef3ecfae4191e0abae9f4b1cd76e",
+          "size": 32334
+        },
+        {
+          "path": "backend/tests/api.test.ts",
+          "hash": "347f5fda105f14c6ea6ad48f72b92829362322d9",
+          "size": 32159
+        },
+        {
+          "path": "backend/tests/apiGenerateRoute.test.ts",
+          "hash": "0b5799334725c64e2e328ba4436a4bc941f7db9b",
+          "size": 742
+        },
+        {
+          "path": "backend/tests/apiModels.test.js",
+          "hash": "ff4c03fd32c6db6c9b1e920abb8800bd5a5ac136",
+          "size": 3802
+        },
+        {
+          "path": "backend/tests/assertSetup.test.js",
+          "hash": "beb6c04c63ea4dd5fbbf1d663dce57665b2954d4",
+          "size": 1949
+        },
+        {
+          "path": "backend/tests/assertSetupBackendDeps.test.js",
+          "hash": "7cad746b4e8f98e1b2d4b7c99a4b1698c028a0be",
+          "size": 1607
+        },
+        {
+          "path": "backend/tests/autoProcurePrinters.test.js",
+          "hash": "cbb1c47b445a558151905d648e96cd81c782a9a7",
+          "size": 1347
+        },
+        {
+          "path": "backend/tests/autoProcurePrinters.test.ts",
+          "hash": "cbb1c47b445a558151905d648e96cd81c782a9a7",
+          "size": 1347
+        },
+        {
+          "path": "backend/tests/awsCredentials.test.js",
+          "hash": "c8078542137c75665e6ca4faff39f5052f20557a",
+          "size": 346
+        },
+        {
+          "path": "backend/tests/awsCredentials.test.ts",
+          "hash": "3e2d7639b3dfd76e2ac5eafa4cffd28fe3587d29",
+          "size": 271
+        },
+        {
+          "path": "backend/tests/businessIntelReport.test.js",
+          "hash": "73f2d79437d61097807324f245e556c6619806c6",
+          "size": 1010
+        },
+        {
+          "path": "backend/tests/cart.test.js",
+          "hash": "6eab2220fea4b8277a8b50b8046d19572785c4a4",
+          "size": 2813
+        },
+        {
+          "path": "backend/tests/checkCapacity.test.js",
+          "hash": "6ad61addacc8a2c4e5db04712b3598e9cb4074c1",
+          "size": 1234
+        },
+        {
+          "path": "backend/tests/checkCoverageScript.test.js",
+          "hash": "f81ff2c0eb892907badf63b75b2d5022007d4f0b",
+          "size": 705
+        },
+        {
+          "path": "backend/tests/checkEnvProxy.test.ts",
+          "hash": "eddc0fbbcaa549743d973af2e03580cbaccc71c4",
+          "size": 755
+        },
+        {
+          "path": "backend/tests/checkHostDeps.test.ts",
+          "hash": "4fd9debdfc6cb4e969c421f57d678e40bb744a4c",
+          "size": 611
+        },
+        {
+          "path": "backend/tests/checkInventory.test.js",
+          "hash": "bca7fbeba35e36ca92c2efe40b4c77638df337bf",
+          "size": 1124
+        },
+        {
+          "path": "backend/tests/checkSleepZero.test.js",
+          "hash": "6a490e242b6b23b4f7635caed019119a949e979b",
+          "size": 817
+        },
+        {
+          "path": "backend/tests/checkout.edgecases.test.ts",
+          "hash": "f0d98671a5e0466c6de65aabae92a37c4eae022b",
+          "size": 2167
+        },
+        {
+          "path": "backend/tests/checkout.env.test.js",
+          "hash": "9ef4a2983406a81ccb6a73f50548f366c26edd88",
+          "size": 1291
+        },
+        {
+          "path": "backend/tests/checkout.shared.test.ts",
+          "hash": "43c383a6d622ff5eed454c4c0ae92eecbbb3cc23",
+          "size": 847
+        },
+        {
+          "path": "backend/tests/checkout.test.ts",
+          "hash": "bc55dfaa1b26439abc667ba71274b65d563c0182",
+          "size": 2393
+        },
+        {
+          "path": "backend/tests/checkoutModule.test.js",
+          "hash": "c9a149320a71faf38f4fce8171c494ca0b2c0e4e",
+          "size": 181
+        },
+        {
+          "path": "backend/tests/ciGuards.test.js",
+          "hash": "7c5b625d8e7d285e6ac59ef6dbefd42dd6978b63",
+          "size": 438
+        },
+        {
+          "path": "backend/tests/cleanupPasswordResets.test.js",
+          "hash": "5278ef86734367526ce27add4a8598fe84e9dd28",
+          "size": 732
+        },
+        {
+          "path": "backend/tests/commissions.test.js",
+          "hash": "3898618a53a1cce75d1bf3109b3bb4923c2f21aa",
+          "size": 1954
+        },
+        {
+          "path": "backend/tests/concurrentlyInstalled.test.js",
+          "hash": "2be21e643511f2338588dcd495ec3933ef820ead",
+          "size": 325
+        },
+        {
+          "path": "backend/tests/config.test.js",
+          "hash": "85393ded869585ce4f7b61268981accb8a901f10",
+          "size": 1397
+        },
+        {
+          "path": "backend/tests/coverage-summary.test.ts",
+          "hash": "1633b1a3500818a18dd89088719c5bef8b01077b",
+          "size": 1119
+        },
+        {
+          "path": "backend/tests/coverageFailureHandling_dbe6fc.test.ts",
+          "hash": "b610a4fed874cac250834ca03cbebfec6cf100c3",
+          "size": 1136
+        },
+        {
+          "path": "backend/tests/createOrder.additional.test.js",
+          "hash": "4b7c053401cc8709dacf2da07f534699a6d54f4f",
+          "size": 1890
+        },
+        {
+          "path": "backend/tests/dbAccess.test.js",
+          "hash": "5840f2f030c59557e56e8cc240a05de60821d6d0",
+          "size": 823
+        },
+        {
+          "path": "backend/tests/dbCartItems.test.js",
+          "hash": "ec1809d0c3ee0fd3611cf0d8bbaac7e233c6f397",
+          "size": 2222
+        },
+        {
+          "path": "backend/tests/detailedLint.test.js",
+          "hash": "aa9aa7fad34f91c3602bdec3e9f65fdffa0a0c55",
+          "size": 1204
+        },
+        {
+          "path": "backend/tests/dev-server.test.ts",
+          "hash": "8627fe8838c60ca5f5b16b66214168c2c381c00e",
+          "size": 434
+        },
+        {
+          "path": "backend/tests/diagnostic-stripe-validate-2fb39dcee74.test.ts",
+          "hash": "bbc1ee7d172006b50bd6be34e4056331965677b2",
+          "size": 1470
+        },
+        {
+          "path": "backend/tests/engagement.test.js",
+          "hash": "519d03450fdb1cba9f77144b4c74fc33fea98fa8",
+          "size": 1415
+        },
+        {
+          "path": "backend/tests/envValidation.test.js",
+          "hash": "38e78f84dd7c16efd6aae9a80f9f47b1c1eece0c",
+          "size": 3305
+        },
+        {
+          "path": "backend/tests/env_loader_ci.test.ts",
+          "hash": "338d431da90fccdd651dff3da32797a51fe858e0",
+          "size": 1203
+        },
+        {
+          "path": "backend/tests/eslintIsolation.test.js",
+          "hash": "c2a6388fb4ec363293f97a52fd962d70b03df3e0",
+          "size": 2126
+        },
+        {
+          "path": "backend/tests/eslint_load.test.js",
+          "hash": "9e6a74e739d9f9c919180d34bd141ab3f67c3304",
+          "size": 287
+        },
+        {
+          "path": "backend/tests/flagOverdueProcurementOrders.test.js",
+          "hash": "4bc9758ad46803a710e30fe3adc517d5f0e6319f",
+          "size": 1388
+        },
+        {
+          "path": "backend/tests/flagOverdueProcurementOrders.test.ts",
+          "hash": "4bc9758ad46803a710e30fe3adc517d5f0e6319f",
+          "size": 1388
+        },
+        {
+          "path": "backend/tests/flashSale.test.js",
+          "hash": "9ce762399d489d313af6d907ca79d51a7df696c4",
+          "size": 2297
+        },
+        {
+          "path": "backend/tests/followupJob.test.js",
+          "hash": "0c8329372245f0b8f8b2e8345c821e18effbe682",
+          "size": 1189
+        },
+        {
+          "path": "backend/tests/formatScript.test.js",
+          "hash": "fcb2c839378159eaa7f541151f42d6b6b5bbe319",
+          "size": 657
+        },
+        {
+          "path": "backend/tests/frontend/bulkDiscount.test.js",
+          "hash": "4b69cc1a57e9121ab864e85dd131f4905f986776",
+          "size": 1328
+        },
+        {
+          "path": "backend/tests/frontend/community.test.js",
+          "hash": "7adb89f8fc88bec901b9635008c4368fe1977af0",
+          "size": 1763
+        },
+        {
+          "path": "backend/tests/frontend/competitions.test.js",
+          "hash": "a24f3eb1e15848464211fc2e3b3f2f42191c0213",
+          "size": 2133
+        },
+        {
+          "path": "backend/tests/frontend/components/CheckoutForm.test.js",
+          "hash": "7e7a265a6e2dbdb12fa9abbbeec3036f26fa71a6",
+          "size": 1191
+        },
+        {
+          "path": "backend/tests/frontend/domUtils.test.js",
+          "hash": "b63229dc69272e51a776f98411b0da89484b543b",
+          "size": 887
+        },
+        {
+          "path": "backend/tests/frontend/flashBanner.test.js",
+          "hash": "647fc228454b79c97d3debf2b77536097e838f20",
+          "size": 3471
+        },
+        {
+          "path": "backend/tests/frontend/generateModel.static.test.js",
+          "hash": "c88ca9d9be647b63ef91c8e891f5e3b5d2c8b245",
+          "size": 511
+        },
+        {
+          "path": "backend/tests/frontend/index.test.js",
+          "hash": "f9d85ef116b7314b633e678fe433a10ed459ead7",
+          "size": 3470
+        },
+        {
+          "path": "backend/tests/frontend/login.test.js",
+          "hash": "17dddf2e8bf02d7d7bd926be3402fe1b5f1edce3",
+          "size": 1868
+        },
+        {
+          "path": "backend/tests/frontend/modelViewerFallback.e2e.test.ts",
+          "hash": "5a4c16d2c3ef0ccab8a2a18616c3f571180b42f7",
+          "size": 978
+        },
+        {
+          "path": "backend/tests/frontend/modelViewerHeadFail.e2e.test.ts",
+          "hash": "49043159e80ace5bffcf7e79755792599bee2d8c",
+          "size": 1096
+        },
+        {
+          "path": "backend/tests/frontend/modelViewerLoader.test.js",
+          "hash": "8d1c316139be94f9231d9e99fb501f57592c135d",
+          "size": 4283
+        },
+        {
+          "path": "backend/tests/frontend/profile.test.js",
+          "hash": "c367fc5413ccec9566fb92b07b599ebc728397b0",
+          "size": 1147
+        },
+        {
+          "path": "backend/tests/frontend/quantityDefault.test.js",
+          "hash": "0b487fcb5b2cc2bcbd566353b19a35045852a1a2",
+          "size": 1435
+        },
+        {
+          "path": "backend/tests/frontend/sanitizedScripts.test.js",
+          "hash": "e5cfac83581349083c9f35e178237321f85382f4",
+          "size": 705
+        },
+        {
+          "path": "backend/tests/frontend/share.test.js",
+          "hash": "b869285e14287ea554b286298d6fa6cbfad17161",
+          "size": 1296
+        },
+        {
+          "path": "backend/tests/frontend/sharedModel.test.js",
+          "hash": "30822dfaa3e7ddd0b73741e5d3961107cb5b4fe3",
+          "size": 1550
+        },
+        {
+          "path": "backend/tests/frontend/signup.test.js",
+          "hash": "6d43c556967641ca0104e271efda80064c953924",
+          "size": 1887
+        },
+        {
+          "path": "backend/tests/frontend/slotCount.test.js",
+          "hash": "59be74ab3114f09c74cf9857590f41ba825a80d6",
+          "size": 2981
+        },
+        {
+          "path": "backend/tests/frontend/viewerReady.test.js",
+          "hash": "2ad9bb54c1a894065d8251fa2179ef5b1fd89fc3",
+          "size": 2221
+        },
+        {
+          "path": "backend/tests/full-glb-api-route-check-dab123.test.ts",
+          "hash": "2805b6f33ddb007330a40c9afddedcba38b99823",
+          "size": 610
+        },
+        {
+          "path": "backend/tests/full-pipeline-e2e-ab12cd.test.ts",
+          "hash": "c7a4f19f12e717204f1c9a3c0c3cce42c335470d",
+          "size": 1857
+        },
+        {
+          "path": "backend/tests/full-pipeline-e2e-c3d9ef.test.ts",
+          "hash": "77a9e7dcddc8e49cad1a8b250af9bc0a23e11cfb",
+          "size": 2321
+        },
+        {
+          "path": "backend/tests/full_pipeline_e2e_7a4d9c.test.ts",
+          "hash": "fd8b88d95086504b764fed1a128b8b60fb2cf9fc",
+          "size": 1876
+        },
+        {
+          "path": "backend/tests/generateModel.test.ts",
+          "hash": "f0e426427e6d1ecf044fa15e6dd15209d0e22529",
+          "size": 3056
+        },
+        {
+          "path": "backend/tests/generateOpsReport.test.js",
+          "hash": "c270b1abb2f28061a7ef1a5818dff9b670d046da",
+          "size": 1100
+        },
+        {
+          "path": "backend/tests/getEnv.test.js",
+          "hash": "2428da3c2304e063aa0ac929993955612e7bb2d9",
+          "size": 686
+        },
+        {
+          "path": "backend/tests/glb-upload-s3-0b9dfd.test.ts",
+          "hash": "24934a39ad845dc7d8b8de41d7decbcb14551ca3",
+          "size": 1817
+        },
+        {
+          "path": "backend/tests/glb-verifier-tmq5yw2pk9ds8jl.spec.ts",
+          "hash": "148847d0ab3150dd3f02cfff24f9618b0e59e555",
+          "size": 1971
+        },
+        {
+          "path": "backend/tests/glb/cacheDedup.test.ts",
+          "hash": "5d73355e8a46251a23cd478a30b6854133c46cc2",
+          "size": 955
+        },
+        {
+          "path": "backend/tests/glb/workflow.integration.test.ts",
+          "hash": "07209f5b702c0962f8096fe7f5dc45b020e22e98",
+          "size": 2984
+        },
+        {
+          "path": "backend/tests/health-handler.test.js",
+          "hash": "658cd475785d09737111720ce4bfcb30e596dba7",
+          "size": 276
+        },
+        {
+          "path": "backend/tests/health.test.js",
+          "hash": "1d14e18c6e7a122678c82b4bb39b24954bf2b348",
+          "size": 1137
+        },
+        {
+          "path": "backend/tests/healthz.test.js",
+          "hash": "5adf3cc8443e72bc07553b096ad75f0eccb0cfe5",
+          "size": 783
+        },
+        {
+          "path": "backend/tests/hubAdmin.test.js",
+          "hash": "16a9c1a59edd04a876d0dae03b0c4dade72c224b",
+          "size": 2910
+        },
+        {
+          "path": "backend/tests/leaseReminders.test.js",
+          "hash": "36e0eb9c490138cff76e70f10b8f0fd554e67be2",
+          "size": 952
+        },
+        {
+          "path": "backend/tests/lint-files.test.js",
+          "hash": "921f2757a77af5aab8bc001bc3714ae2f56e8604",
+          "size": 1046
+        },
+        {
+          "path": "backend/tests/lint-isolation-a1b2c3.test.js",
+          "hash": "07ae1ac41a966ed08a4b03932f183e4a51ccd339",
+          "size": 418
+        },
+        {
+          "path": "backend/tests/lint-isolation-czgvv3.test.js",
+          "hash": "40bf30af8277da8710a8ef16d26098b83fbdcde1",
+          "size": 416
+        },
+        {
+          "path": "backend/tests/lint-isolation-d4e5f6.test.js",
+          "hash": "9dbb701fcf9f3e043378d5bde3775217efb2386d",
+          "size": 423
+        },
+        {
+          "path": "backend/tests/lint-isolation-duk0ze.test.js",
+          "hash": "abb5c0abe3e68254e4372001869dd0c281ab176e",
+          "size": 420
+        },
+        {
+          "path": "backend/tests/lint-isolation-e4i8aq.test.js",
+          "hash": "a5a516de6a6a11545290f6f461e8a0214c0d8869",
+          "size": 401
+        },
+        {
+          "path": "backend/tests/lint-isolation-g7h8i9.test.js",
+          "hash": "ec7d42f01dbcf5a4de54e69a4335c58b9f9df8d9",
+          "size": 429
+        },
+        {
+          "path": "backend/tests/lint-isolation-j1k2l3.test.js",
+          "hash": "a9031badac56464768997a8ba2e20b22a7a0ff9d",
+          "size": 435
+        },
+        {
+          "path": "backend/tests/lint-isolation-lq9f3t.test.js",
+          "hash": "25ff5364e18247dcfe787e5bef7d59092662d600",
+          "size": 422
+        },
+        {
+          "path": "backend/tests/lint-isolation-m4n5o6.test.js",
+          "hash": "ba3cdd09ede747003284d468de6009773322bf60",
+          "size": 433
+        },
+        {
+          "path": "backend/tests/lint-isolation-nqzhet.test.js",
+          "hash": "6e6a5ca86b68f690ca95b497354d88a643453b1b",
+          "size": 393
+        },
+        {
+          "path": "backend/tests/lint-isolation-p543rn.test.js",
+          "hash": "527640d94eb8a9b8a90d096c487ddca6a995cca4",
+          "size": 413
+        },
+        {
+          "path": "backend/tests/lint-isolation-p7q8r9.test.js",
+          "hash": "58bf9939a030793011500e1f985e4813d571b358",
+          "size": 433
+        },
+        {
+          "path": "backend/tests/lint-isolation-poupi4.test.js",
+          "hash": "2fe29be06dd7a20d1cbd5695be4b247d545a19de",
+          "size": 399
+        },
+        {
+          "path": "backend/tests/lint-isolation-s1t2u3.test.js",
+          "hash": "d96ae6392df7820cd153a5e43e7e72ef2e240edf",
+          "size": 455
+        },
+        {
+          "path": "backend/tests/lint-isolation-v4w5x6.test.js",
+          "hash": "055edc058d7674629ff6bacdb7d120ca690a2565",
+          "size": 437
+        },
+        {
+          "path": "backend/tests/lint-isolation-wu7l4n.test.js",
+          "hash": "34a3042ef1ec44fe217a7641cc6e4c10b8f57dbd",
+          "size": 388
+        },
+        {
+          "path": "backend/tests/linting-diagnostics-9b3adf.test.js",
+          "hash": "03c4bdeba8ab1303d86e4c916a7e21a533f9e598",
+          "size": 3157
+        },
+        {
+          "path": "backend/tests/linting.test.js",
+          "hash": "3236e82d8a5cb3b7733b348003ec37c538f836db",
+          "size": 715
+        },
+        {
+          "path": "backend/tests/lintingDetailed.test.js",
+          "hash": "52b3b327bcc10f162b04e691590855b30268df27",
+          "size": 1129
+        },
+        {
+          "path": "backend/tests/lockfileSemver.test.js",
+          "hash": "e8a79bf4d7102e1c6a34b2f4f1a4bbcb78fd979c",
+          "size": 1016
+        },
+        {
+          "path": "backend/tests/lockfileSync.test.js",
+          "hash": "6362041cd585b1d31793bf46df8b09fac51e1737",
+          "size": 643
+        },
+        {
+          "path": "backend/tests/logger.test.js",
+          "hash": "5045d6d176e8f64da7a5bb76a6866696987d155e",
+          "size": 2091
+        },
+        {
+          "path": "backend/tests/loggerDeps.test.js",
+          "hash": "be59d68c9d66ab0889deb1527aa6b0e90c24a5bd",
+          "size": 321
+        },
+        {
+          "path": "backend/tests/loggerFormat.test.js",
+          "hash": "c26ec3c82612d785f8e479263139b534482c743f",
+          "size": 1410
+        },
+        {
+          "path": "backend/tests/mailingList.test.js",
+          "hash": "7ebbb0b556e52aa2843b3cea94d26ca7737d9a22",
+          "size": 2478
+        },
+        {
+          "path": "backend/tests/migrationsDryRun.test.js",
+          "hash": "dfdd342bc391434867d6bcfdbf41122ff792de28",
+          "size": 1023
+        },
+        {
+          "path": "backend/tests/miseConfig.test.js",
+          "hash": "cf389511c6f535fa9844dd2d3468fe81de287e2a",
+          "size": 559
+        },
+        {
+          "path": "backend/tests/miseToml.test.js",
+          "hash": "2d6491ff25c60ab22565030b40b9ae375170fe12",
+          "size": 381
+        },
+        {
+          "path": "backend/tests/miseTrustPersist.test.js",
+          "hash": "69ce9d86b5c7addd0660486fb89ad7b3d2b69e56",
+          "size": 377
+        },
+        {
+          "path": "backend/tests/mockEnv.test.js",
+          "hash": "e7229443fbec752803d4248af11fe2e72d8a1b44",
+          "size": 997
+        },
+        {
+          "path": "backend/tests/model-to-glb-conversion-3b7d21.test.ts",
+          "hash": "4625e9d633a56d158c87e6cfc71b86d221e648fe",
+          "size": 1535
+        },
+        {
+          "path": "backend/tests/modelViewerCdnFallback.test.ts",
+          "hash": "1413b61ed42fb37d2afec7ad274a08d63769b2c9",
+          "size": 2595
+        },
+        {
+          "path": "backend/tests/modelsMigration.test.js",
+          "hash": "2e4602d0cb153612d86e86df28ac0625ecf3abb7",
+          "size": 835
+        },
+        {
+          "path": "backend/tests/modelsSchema.test.js",
+          "hash": "1a2fabdfb59f522d7c3a0579f4a41c53e6db6dcd",
+          "size": 785
+        },
+        {
+          "path": "backend/tests/networkBlock.test.js",
+          "hash": "dee8046da6a38cc609d4af9b6e8fb80686eb35f2",
+          "size": 244
+        },
+        {
+          "path": "backend/tests/noPlaywrightImport.test.ts",
+          "hash": "6c54ec818307a2a7bc2e08d146671ef6bbc86329",
+          "size": 1268
+        },
+        {
+          "path": "backend/tests/nodeVersionFiles.test.js",
+          "hash": "70f46d436b6f0817be92486c9178ab99a6d66cb4",
+          "size": 702
+        },
+        {
+          "path": "backend/tests/notifyManualClearing.test.js",
+          "hash": "ee265aeaac7f5b2cefdd0de7891f1bf65f4d67d5",
+          "size": 1090
+        },
+        {
+          "path": "backend/tests/npmRegistryConnectivity.test.ts",
+          "hash": "41e8bbcb50e882b41f1bdddca5e749702aa7c485",
+          "size": 395
+        },
+        {
+          "path": "backend/tests/operationsDashboard.test.js",
+          "hash": "0016ce01c876d3a219634207da80f669a4800228",
+          "size": 1302
+        },
+        {
+          "path": "backend/tests/opsReport.test.js",
+          "hash": "5eebed4389b8d5304672851ca72a3644bd7c5b7c",
+          "size": 2048
+        },
+        {
+          "path": "backend/tests/orderDelayNotifications.test.js",
+          "hash": "77cdc8d6134a08946b61408759c2e876bb625fbe",
+          "size": 1313
+        },
+        {
+          "path": "backend/tests/packageIntegrity.test.js",
+          "hash": "8bd923e75412c4a80b3c1bfcfde356fe231906e1",
+          "size": 420
+        },
+        {
+          "path": "backend/tests/passwordReset.test.js",
+          "hash": "5b09377de9ef0b70a6fec3d393cf7e8bccea3ba6",
+          "size": 3128
+        },
+        {
+          "path": "backend/tests/payouts.test.js",
+          "hash": "08231cc9d5c09d529b560f7bbcaf995c7c1d484f",
+          "size": 3005
+        },
+        {
+          "path": "backend/tests/prepareImage.test.ts",
+          "hash": "2c5fd2efb9aaa74a9ac2f6be1877f367ab37060a",
+          "size": 2279
+        },
+        {
+          "path": "backend/tests/preserveColors.test.ts",
+          "hash": "5465869d0ae8123e2bdfe83e0947a1673610cb9d",
+          "size": 1206
+        },
+        {
+          "path": "backend/tests/printJobs.test.js",
+          "hash": "c8bc01d6a1480c9927572aa645aa96b6ca27734c",
+          "size": 1027
+        },
+        {
+          "path": "backend/tests/printclubReminders.test.js",
+          "hash": "c412f3e7f776d206010b1928581f4b4271737e84",
+          "size": 1282
+        },
+        {
+          "path": "backend/tests/printerWebhook.test.js",
+          "hash": "cf63fb072051cc82199894f1901c951d99f072c9",
+          "size": 845
+        },
+        {
+          "path": "backend/tests/printers/octoprint.test.js",
+          "hash": "ea60a62fe6a415183f7559e7825f0b606f99a9c3",
+          "size": 2425
+        },
+        {
+          "path": "backend/tests/printers/slicer.test.js",
+          "hash": "6bdb821c61813471181d4c1c16214002c63dc173",
+          "size": 457
+        },
+        {
+          "path": "backend/tests/procurement.test.js",
+          "hash": "bc8300ea8538b8209f8ebf0ffe7de40afbfc5257",
+          "size": 1186
+        },
+        {
+          "path": "backend/tests/procurement.test.ts",
+          "hash": "5286a8e5876217020bab2641f6f449dc09e7e674",
+          "size": 1186
+        },
+        {
+          "path": "backend/tests/queue/dbPrintQueue.test.js",
+          "hash": "63334200d0bb6d69eda6518a54d39c5c54284a04",
+          "size": 481
+        },
+        {
+          "path": "backend/tests/queue/jobQueue.test.js",
+          "hash": "b6189307d98684b72376413966ca0cd6a2a6117a",
+          "size": 874
+        },
+        {
+          "path": "backend/tests/queue/printQueue.test.js",
+          "hash": "36d8cc3dd8ab00b3e1601d6194463fb1b12ac638",
+          "size": 1275
+        },
+        {
+          "path": "backend/tests/queue/printWorker.test.js",
+          "hash": "1d57156cd6083bca93b1a54c70abc7944c623b16",
+          "size": 3985
+        },
+        {
+          "path": "backend/tests/queue/printerTelemetry.test.js",
+          "hash": "a4e27545b1ac127747971109860109ff6af83d71",
+          "size": 1161
+        },
+        {
+          "path": "backend/tests/queue/routing.test.js",
+          "hash": "5acbbc01611c7044424c71837217f8b2a4e7ab11",
+          "size": 2029
+        },
+        {
+          "path": "backend/tests/referralPost.test.js",
+          "hash": "2ae04a249af266d9b0964c055c59f7a75cd7b811",
+          "size": 1369
+        },
+        {
+          "path": "backend/tests/regression/generatePipelineReturn.test.ts",
+          "hash": "fa357f97734eac4ff5b232652791468cfdd0d667",
+          "size": 1069
+        },
+        {
+          "path": "backend/tests/reminderJob.test.js",
+          "hash": "ea53e4d8f59499a1eb863f6732d3ee043f461bc8",
+          "size": 995
+        },
+        {
+          "path": "backend/tests/rewards.test.js",
+          "hash": "612172aec0fccbbfcbb9d11cfbec2d770ef5eedc",
+          "size": 4869
+        },
+        {
+          "path": "backend/tests/rootJestScript.test.js",
+          "hash": "cbf5189b34e869ff1644f1b29237567c83bbc4fb",
+          "size": 166
+        },
+        {
+          "path": "backend/tests/runCoverageMissingDeps.test.js",
+          "hash": "67065a1e9f7beb7e4163cec0c21dd6d59531de7f",
+          "size": 1617
+        },
+        {
+          "path": "backend/tests/runCoverageScript.test.js",
+          "hash": "6ccc54981da9ebd0f0bee0d5a5f8b51d7c58e5f3",
+          "size": 1655
+        },
+        {
+          "path": "backend/tests/runJestCli.test.js",
+          "hash": "1e35f63887a674eee24a7baf6685c70e279c1b8c",
+          "size": 790
+        },
+        {
+          "path": "backend/tests/runSmokeConcurrentlyFailure.test.ts",
+          "hash": "e8ea5c250cb5dcb93b95bd3db949238f4dbc6432",
+          "size": 943
+        },
+        {
+          "path": "backend/tests/runSmokeConnectFailure.test.ts",
+          "hash": "235d5b4b3bea16f701fdd8a72bff0126fe0ffd3c",
+          "size": 930
+        },
+        {
+          "path": "backend/tests/runSmokeFailure.test.ts",
+          "hash": "241ad99574c2c91424cba0d71b0055452ed70301",
+          "size": 781
+        },
+        {
+          "path": "backend/tests/runSmokeValidateEnvFailure.test.ts",
+          "hash": "0feb893b73ee8ccac5f48e7b2976410b4412dbf1",
+          "size": 936
+        },
+        {
+          "path": "backend/tests/saleCredits.test.js",
+          "hash": "f7073f3bb6af6d5c54c34a9a2cf3a5c6945efc2b",
+          "size": 3846
+        },
+        {
+          "path": "backend/tests/scalingEngine.test.js",
+          "hash": "9b26ff6e047ae5d199dac27b5417c42e64ed809b",
+          "size": 2173
+        },
+        {
+          "path": "backend/tests/scalingEngine.test.ts",
+          "hash": "9b26ff6e047ae5d199dac27b5417c42e64ed809b",
+          "size": 2173
+        },
+        {
+          "path": "backend/tests/serverExport.test.js",
+          "hash": "30fe928ad003e4a9547dc9fa2a3d0d16507285ff",
+          "size": 214
+        },
+        {
+          "path": "backend/tests/serverInit.test.js",
+          "hash": "ed437cdd2c242bff4127a205700617b88775c6e5",
+          "size": 1257
+        },
+        {
+          "path": "backend/tests/serverLint.test.js",
+          "hash": "20d11c77bcd2d25cf80b510a1d049c1ece2fc9d2",
+          "size": 1225
+        },
+        {
+          "path": "backend/tests/setupValidation.test.js",
+          "hash": "ef12b02ff671ad6066b7d0409bb28f2a26fdc658",
+          "size": 930
+        },
+        {
+          "path": "backend/tests/shippingConfirmations.test.js",
+          "hash": "18ac3f43abc0df94cf5b5732dafe47582900d3c1",
+          "size": 1664
+        },
+        {
+          "path": "backend/tests/shippingConfirmations.test.ts",
+          "hash": "18ac3f43abc0df94cf5b5732dafe47582900d3c1",
+          "size": 1664
+        },
+        {
+          "path": "backend/tests/socialShares.test.js",
+          "hash": "a50480d7ce6640489913ba4060950578fdaf6d6a",
+          "size": 1779
+        },
+        {
+          "path": "backend/tests/spaceAdmin.test.js",
+          "hash": "b240b439a96b47320ff624b248e4aeb1c64f6a0d",
+          "size": 1244
+        },
+        {
+          "path": "backend/tests/sparc3dClient.test.js",
+          "hash": "db47064196b31ce62818f3e2fadf2bff2dca18cd",
+          "size": 2752
+        },
+        {
+          "path": "backend/tests/sparc3dClient.test.ts",
+          "hash": "156667bbc65cb28c6617b80e5d6525d81ebaeb2a",
+          "size": 1725
+        },
+        {
+          "path": "backend/tests/storeGlb.edgecases.test.ts",
+          "hash": "7aef2eb16ad23b6232123a1d6bece9c5fbe4b49f",
+          "size": 2750
+        },
+        {
+          "path": "backend/tests/storeGlb.test.ts",
+          "hash": "87471c622049dc321daefc3f33d5aa89b3fb6d7f",
+          "size": 1399
+        },
+        {
+          "path": "backend/tests/stripe-route-types.test.ts",
+          "hash": "605f58c65a9b4f618369de96b1b73cc513931269",
+          "size": 4452
+        },
+        {
+          "path": "backend/tests/stripeWebhook.test.js",
+          "hash": "ee685cbb33b42d2422ffe25c17db5204b5d15b62",
+          "size": 508
+        },
+        {
+          "path": "backend/tests/stripeWebhookEnv.test.js",
+          "hash": "077da9ef36eb0d02ead575bd22c1a687ca5d69a7",
+          "size": 1218
+        },
+        {
+          "path": "backend/tests/subscriptions.test.js",
+          "hash": "62c371095611cb75d138c0cf1c5975206aad1a35",
+          "size": 4490
+        },
+        {
+          "path": "backend/tests/syncMailingList.test.js",
+          "hash": "405d33223b43f51c1b1dbdba6771ac67c8f19183",
+          "size": 1147
+        },
+        {
+          "path": "backend/tests/test-glb-full-pipeline-debug-d42fc93e7ab56cd.test.ts",
+          "hash": "4596a934b4a0ba0a6f3f7802bcf9c00aac5eb761",
+          "size": 1694
+        },
+        {
+          "path": "backend/tests/test-s3-upload-integrity-a1b2c3d4e5f6g7h.test.ts",
+          "hash": "6530ec3d5a4ed59c19a04bef51b1fecb2f975e31",
+          "size": 2537
+        },
+        {
+          "path": "backend/tests/testCiScript.test.js",
+          "hash": "af8b40d3d4e8b2f106c0821171506333ab6943a2",
+          "size": 244
+        },
+        {
+          "path": "backend/tests/text-to-model-api-call-7c8a9d.test.ts",
+          "hash": "5449ac6599ae8baeef4c9eb13ed27b74dde86e14",
+          "size": 1147
+        },
+        {
+          "path": "backend/tests/text-to-model-api-call-af3d9e.test.ts",
+          "hash": "bf53e0bb6b6ce3b429b462b6f33f1cec78ff0be4",
+          "size": 929
+        },
+        {
+          "path": "backend/tests/textToImage.edgecases.test.ts",
+          "hash": "6fc0a4e60986769b57f3021466616010b72809fa",
+          "size": 2044
+        },
+        {
+          "path": "backend/tests/textToImage.mock.test.ts",
+          "hash": "634dc938ee47752e329d2bb3d1c23e390b526c17",
+          "size": 290
+        },
+        {
+          "path": "backend/tests/textToImage.proxy.test.ts",
+          "hash": "42d36b8c822470122375c7464309de71c6f8ab30",
+          "size": 1978
+        },
+        {
+          "path": "backend/tests/textToImage.test.js",
+          "hash": "be4820926c59e4f4ca4d52633bcc8f9cec92a6c1",
+          "size": 4603
+        },
+        {
+          "path": "backend/tests/textToImage.test.ts",
+          "hash": "2171f417da3b9a9c89b4fb67fab93ee55d52eff6",
+          "size": 3339
+        },
+        {
+          "path": "backend/tests/uploadS3.test.ts",
+          "hash": "b6bf76f28a00bd1e1b453667bd65c9b5814c3ddc",
+          "size": 1338
+        },
+        {
+          "path": "backend/tests/utils/dailyPrints.init.test.ts",
+          "hash": "924f61e12ce64d2a65070a260bab61a9043a8d93",
+          "size": 489
+        },
+        {
+          "path": "backend/tests/utils/dailyPrints.test.js",
+          "hash": "9715a28761ebbb6ffb07c958697a5e108df1a606",
+          "size": 701
+        },
+        {
+          "path": "backend/tests/utils/dailyPrints.test.ts",
+          "hash": "052bfa051b22354ef039f4beb0d0ea267c6542fd",
+          "size": 487
+        },
+        {
+          "path": "backend/tests/utils/generateAdCopy.test.js",
+          "hash": "cef07d6cf634cdb780e0446c4a83a66005669b49",
+          "size": 2449
+        },
+        {
+          "path": "backend/tests/utils/generateAdCopy.test.ts",
+          "hash": "f3f965c78a79f486d2df07519dfe3f66b62beba1",
+          "size": 1368
+        },
+        {
+          "path": "backend/tests/utils/generateShareCard.test.js",
+          "hash": "81ff760a664e95042c4fd3dc0a63c06520fbf258",
+          "size": 1553
+        },
+        {
+          "path": "backend/tests/utils/generateShareCard.test.ts",
+          "hash": "821b6312034cb562b60835446f545f9de53167a8",
+          "size": 737
+        },
+        {
+          "path": "backend/tests/utils/generateTitle.test.js",
+          "hash": "edcf2e4672b5835a92842298098c66002b5cec37",
+          "size": 813
+        },
+        {
+          "path": "backend/tests/utils/generateTitle.test.ts",
+          "hash": "670e283715d9888649fbeb46b07c8e0910489fff",
+          "size": 686
+        },
+        {
+          "path": "backend/tests/utils/getEnv.test.js",
+          "hash": "248fb3ba9518d13ab03d9d66bd2ce8f8bf8d0c1b",
+          "size": 771
+        },
+        {
+          "path": "backend/tests/utils/getEnv.test.ts",
+          "hash": "4868ab475dc95f1933f9d68ee66444a5bf98eb46",
+          "size": 638
+        },
+        {
+          "path": "backend/tests/utils/incentives.test.js",
+          "hash": "c2b67a894cbd3eab0d353bbe18c30c674f74a3d6",
+          "size": 525
+        },
+        {
+          "path": "backend/tests/utils/stripAnsi.test.ts",
+          "hash": "1abc8101624005bdb0ffa4478fffee915cb3f33c",
+          "size": 510
+        },
+        {
+          "path": "backend/tests/utils/validateStl.test.js",
+          "hash": "cab89a7f582ccdabf434334cfc3a08021dd7ebdf",
+          "size": 2490
+        },
+        {
+          "path": "backend/tests/utils/validateStl.test.ts",
+          "hash": "b5ccb05b5e8e262435acd7233f5e8a5189d57e26",
+          "size": 1249
+        },
+        {
+          "path": "backend/tests/validateEnv.test.ts",
+          "hash": "d3e29ea62a961e1b0bea32c703255916de0061ff",
+          "size": 3049
+        },
+        {
+          "path": "backend/tests/validateEnvMiseInstall.test.ts",
+          "hash": "1d6ecba4101612ac0d7206b6434670bc287204bf",
+          "size": 401
+        },
+        {
+          "path": "backend/tests/validateEnvNodeVersion.test.ts",
+          "hash": "eff6c073740dc01d863f253cea7ac75c456f0262",
+          "size": 773
+        },
+        {
+          "path": "backend/tests/validateGlbExports.test.ts",
+          "hash": "aab355457f0ce1429905b0235294a775df0e6cf7",
+          "size": 1201
+        },
+        {
+          "path": "backend/tests/validateMiddleware.test.js",
+          "hash": "ab1ce9be0257687e5abcceb82d8560bccae1a423",
+          "size": 1623
+        },
+        {
+          "path": "backend/tests/weeklyReset.test.js",
+          "hash": "9dfd1f6efb78db3f154a892a4c16b04067160f75",
+          "size": 724
+        },
+        {
+          "path": "backend/tests/workflowsNodeVersion.test.js",
+          "hash": "1e323808bc83811e9d52296443a7f1beb495ba7a",
+          "size": 531
+        }
+      ],
+      "historical": [
+        {
+          "path": "backend/tests/diagnostic-stripe-validate-2fb39dcee74.test.ts",
+          "firstSeenSha": "47af093ad46fb94819e641ff41d40ec7f3db9608",
+          "lastSeenSha": "5f4300aecb1d7d9602c5e0d31e0c6c091c2495e3"
+        },
+        {
+          "path": "backend/tests/glb-verifier-tmq5yw2pk9ds8jl.spec.ts",
+          "firstSeenSha": "14b764b754071d2063ff0f1cef1f7e236c911c73",
+          "lastSeenSha": "14b764b754071d2063ff0f1cef1f7e236c911c73"
+        },
+        {
+          "path": "backend/tests/frontend/quantityDefault.test.js",
+          "firstSeenSha": "deddb18d16489238ab412763db7e7dfacb5fb5ac",
+          "lastSeenSha": "deddb18d16489238ab412763db7e7dfacb5fb5ac"
+        },
+        {
+          "path": "backend/tests/eslintIsolation.test.js",
+          "firstSeenSha": "ab78fe9bfc487139e9933a214eff60ee615b6103",
+          "lastSeenSha": "e37d4ae630589bde180a5807d71bf7a85e5d32b5"
+        },
+        {
+          "path": "backend/tests/full_pipeline_e2e_7a4d9c.test.ts",
+          "firstSeenSha": "c7db3f46257fcfcbfe789ef4fbab183f83edfb3a",
+          "lastSeenSha": "af62d353407dd91bac975146800a5f0a1c71bf21"
+        },
+        {
+          "path": "backend/tests/stripe-route-types.test.ts",
+          "firstSeenSha": "ef5a944aad6069188713520f647449baad92d731",
+          "lastSeenSha": "26964f32ec7889d2fa46bb200a80e3e99f3f8d00"
+        },
+        {
+          "path": "backend/__tests__/server-endpoints.test.ts",
+          "firstSeenSha": "5f4300aecb1d7d9602c5e0d31e0c6c091c2495e3",
+          "lastSeenSha": "f091e1df26b0ed4384922149c7cfb5bfe907f0b6"
+        },
+        {
+          "path": "backend/tests/checkout.env.test.js",
+          "firstSeenSha": "5f4300aecb1d7d9602c5e0d31e0c6c091c2495e3",
+          "lastSeenSha": "5f4300aecb1d7d9602c5e0d31e0c6c091c2495e3"
+        },
+        {
+          "path": "backend/tests/config.test.js",
+          "firstSeenSha": "5f4300aecb1d7d9602c5e0d31e0c6c091c2495e3",
+          "lastSeenSha": "5f4300aecb1d7d9602c5e0d31e0c6c091c2495e3"
+        },
+        {
+          "path": "backend/tests/mockEnv.test.js",
+          "firstSeenSha": "5f4300aecb1d7d9602c5e0d31e0c6c091c2495e3",
+          "lastSeenSha": "5f4300aecb1d7d9602c5e0d31e0c6c091c2495e3"
+        },
+        {
+          "path": "backend/tests/stripeWebhook.test.js",
+          "firstSeenSha": "5f4300aecb1d7d9602c5e0d31e0c6c091c2495e3",
+          "lastSeenSha": "5f4300aecb1d7d9602c5e0d31e0c6c091c2495e3"
+        },
+        {
+          "path": "backend/tests/env_loader_ci.test.ts",
+          "firstSeenSha": "af62d353407dd91bac975146800a5f0a1c71bf21",
+          "lastSeenSha": "af62d353407dd91bac975146800a5f0a1c71bf21"
+        },
+        {
+          "path": "backend/tests/eslint_load.test.js",
+          "firstSeenSha": "af62d353407dd91bac975146800a5f0a1c71bf21",
+          "lastSeenSha": "af62d353407dd91bac975146800a5f0a1c71bf21"
+        },
+        {
+          "path": "backend/tests/glb-upload-s3-0b9dfd.test.ts",
+          "firstSeenSha": "af62d353407dd91bac975146800a5f0a1c71bf21",
+          "lastSeenSha": "af62d353407dd91bac975146800a5f0a1c71bf21"
+        },
+        {
+          "path": "backend/tests/test-s3-upload-integrity-a1b2c3d4e5f6g7h.test.ts",
+          "firstSeenSha": "af62d353407dd91bac975146800a5f0a1c71bf21",
+          "lastSeenSha": "af62d353407dd91bac975146800a5f0a1c71bf21"
+        },
+        {
+          "path": "backend/__tests__/generate.test.js",
+          "firstSeenSha": "f091e1df26b0ed4384922149c7cfb5bfe907f0b6",
+          "lastSeenSha": "f091e1df26b0ed4384922149c7cfb5bfe907f0b6"
+        },
+        {
+          "path": "backend/tests/test-glb-full-pipeline-debug-d42fc93e7ab56cd.test.ts",
+          "firstSeenSha": "95c69b3bac0499c8595d7545b6611e5d08eed235",
+          "lastSeenSha": "95c69b3bac0499c8595d7545b6611e5d08eed235"
+        },
+        {
+          "path": "backend/__tests__/health.test.js",
+          "firstSeenSha": "df2fd5425f9ef694cf84582e48bf239124a0d46b",
+          "lastSeenSha": "df2fd5425f9ef694cf84582e48bf239124a0d46b"
+        },
+        {
+          "path": "backend/tests/healthz.test.js",
+          "firstSeenSha": "df2fd5425f9ef694cf84582e48bf239124a0d46b",
+          "lastSeenSha": "655f2ad3837837ceeb6d56ba823fca9d9644b284"
+        },
+        {
+          "path": "backend/tests/api.test.js",
+          "firstSeenSha": "c99a6ba29984fb0c557cf32825e510439d403036",
+          "lastSeenSha": "c99a6ba29984fb0c557cf32825e510439d403036"
+        },
+        {
+          "path": "backend/tests/api.test.ts",
+          "firstSeenSha": "c99a6ba29984fb0c557cf32825e510439d403036",
+          "lastSeenSha": "c99a6ba29984fb0c557cf32825e510439d403036"
+        },
+        {
+          "path": "backend/tests/health-handler.test.js",
+          "firstSeenSha": "655f2ad3837837ceeb6d56ba823fca9d9644b284",
+          "lastSeenSha": "655f2ad3837837ceeb6d56ba823fca9d9644b284"
+        },
+        {
+          "path": "backend/tests/coverage-summary.test.ts",
+          "firstSeenSha": "04a827ce34b6b0f97e569f1c9ee3ea6bdeafda9e",
+          "lastSeenSha": "04a827ce34b6b0f97e569f1c9ee3ea6bdeafda9e"
+        },
+        {
+          "path": "backend/tests/coverageFailureHandling_dbe6fc.test.ts",
+          "firstSeenSha": "04a827ce34b6b0f97e569f1c9ee3ea6bdeafda9e",
+          "lastSeenSha": "04a827ce34b6b0f97e569f1c9ee3ea6bdeafda9e"
+        },
+        {
+          "path": "backend/tests/runCoverageMissingDeps.test.js",
+          "firstSeenSha": "04a827ce34b6b0f97e569f1c9ee3ea6bdeafda9e",
+          "lastSeenSha": "04a827ce34b6b0f97e569f1c9ee3ea6bdeafda9e"
+        },
+        {
+          "path": "backend/tests/runCoverageScript.test.js",
+          "firstSeenSha": "04a827ce34b6b0f97e569f1c9ee3ea6bdeafda9e",
+          "lastSeenSha": "04a827ce34b6b0f97e569f1c9ee3ea6bdeafda9e"
+        },
+        {
+          "path": "backend/tests/stripeWebhookEnv.test.js",
+          "firstSeenSha": "0c80c77c6ff5c10545f4a30702cf867b6ff920c4",
+          "lastSeenSha": "0c80c77c6ff5c10545f4a30702cf867b6ff920c4"
+        }
+      ]
+    },
+    "frontend": {
+      "current": [],
+      "historical": []
+    },
+    "docs": {
+      "current": [],
+      "historical": []
+    },
+    "infra": {
+      "current": [],
+      "historical": []
+    },
+    "e2e": {
+      "current": [
+        {
+          "path": "e2e/a11y.test.js",
+          "hash": "a4a86a3fc451f52526ef1fe9dff956cc26cfd3dc",
+          "size": 1093
+        },
+        {
+          "path": "e2e/api-models.test.js",
+          "hash": "4c13f0f1cd61d1676f83264709ad677c369b66e8",
+          "size": 962
+        },
+        {
+          "path": "e2e/crossBrowserFlow_0a1b2c3d4e5f6g7.test.js",
+          "hash": "3630bd5b4611d394500dfb10f94a5c0badd1e2a1",
+          "size": 1411
+        },
+        {
+          "path": "e2e/e2e-full-glb-pipeline.92bsye2.spec.ts",
+          "hash": "10f53659fb08366e4be71839c75aa37291155d11",
+          "size": 1529
+        },
+        {
+          "path": "e2e/e2e-fullstack-live-glb.2918hsf.spec.ts",
+          "hash": "11cbe30331d36f24125b26e07cb0dd095584b4cd",
+          "size": 2335
+        },
+        {
+          "path": "e2e/e2e-nightly-glb.9283nlt.spec.ts",
+          "hash": "700f6a791c185f388545c4061417f230ac69d344",
+          "size": 1647
+        },
+        {
+          "path": "e2e/e2e-smoke-glb.3289sms.spec.ts",
+          "hash": "51b9a22fb8cc1a88d6d9ac8069c03f61c294c891",
+          "size": 1189
+        },
+        {
+          "path": "e2e/frontend-ci-abc123def456ghi.spec.ts",
+          "hash": "82d16d30d0199c5467f0c08fd089707271dbbf39",
+          "size": 3714
+        },
+        {
+          "path": "e2e/frontend-glb-download-e2e-7512lgb.spec.ts",
+          "hash": "b2e634df4ccb4e6135f52b0610147fa423150755",
+          "size": 1314
+        },
+        {
+          "path": "e2e/frontendGlbRequest.test.tsx",
+          "hash": "6c72631586443d33ca9f604f2cff926643d38869",
+          "size": 1589
+        },
+        {
+          "path": "e2e/full-session.vxiz75p2hujwq57.test.js",
+          "hash": "b68f9bb508e44bced8078144f532108e2d6193fa",
+          "size": 2655
+        },
+        {
+          "path": "e2e/fullFlow.o4uhhq6se5pj1lg.spec.ts",
+          "hash": "7c409db2bddc145f2991c7a5448d8c12572ac6b1",
+          "size": 1665
+        },
+        {
+          "path": "e2e/generate.test.js",
+          "hash": "c31745e9a3c23a8bdede3600d096c8592b290a8a",
+          "size": 1570
+        },
+        {
+          "path": "e2e/link-image-check_q4w5e6r7t8y9u0i.test.ts",
+          "hash": "ef0dacc4ce45458ef75ae9023c0f25e19e9c1a6e",
+          "size": 1192
+        },
+        {
+          "path": "e2e/model-upload.test.js",
+          "hash": "b64b49f2544646ee319645f638d9098912c1164d",
+          "size": 3210
+        },
+        {
+          "path": "e2e/pipeline-slow.3f92ab7c8de6f1a.spec.ts",
+          "hash": "6df4d29bf245a6958e2df7579c4e4eb8de08cd89",
+          "size": 2007
+        },
+        {
+          "path": "e2e/smoke-debug.test.js",
+          "hash": "daabcf76a930bbee190bdcd3092895dd8eb01daa",
+          "size": 1738
+        },
+        {
+          "path": "e2e/smoke.test.js",
+          "hash": "9104f0f077a4727293100d4d49a622ede8076ece",
+          "size": 4558
+        },
+        {
+          "path": "e2e/status.test.js",
+          "hash": "a1484259aa04c0d7599224d90ef3526a83cd54b3",
+          "size": 350
+        },
+        {
+          "path": "e2e/support/playwright-error-hooks-8dj8yveiflqu4id.js",
+          "hash": "45b9fc96b95cad2f633525023df65ac1f32163cd",
+          "size": 951
+        },
+        {
+          "path": "e2e/ui-guard.test.js",
+          "hash": "538da9b611958d51c6864b1a88434af8bc6098bb",
+          "size": 1842
+        },
+        {
+          "path": "e2e/ui-regression-wuxuyyiiilt9aax.spec.ts",
+          "hash": "b7a5a64ec99e3901bc2bf79bdafe66da42b3ee2d",
+          "size": 695
+        },
+        {
+          "path": "e2e/visual-regression.v9bwawkekyygjis.spec.ts",
+          "hash": "c0a164f150ebea55f4a67de30d86df91332b5f8d",
+          "size": 1894
+        },
+        {
+          "path": "e2e/wait-for-backend-a3f9X2.test.js",
+          "hash": "29cd3bc387f3aa2a41aab4fe0715e7abfb7c076b",
+          "size": 1162
+        }
+      ],
+      "historical": [
+        {
+          "path": "e2e/ui-regression-wuxuyyiiilt9aax.spec.ts",
+          "firstSeenSha": "38a88497b982f8dded1a6e506bf54cd122a73416",
+          "lastSeenSha": "38a88497b982f8dded1a6e506bf54cd122a73416"
+        },
+        {
+          "path": "e2e/full-session.vxiz75p2hujwq57.test.js",
+          "firstSeenSha": "b614888eef95255590899d93870da4da4a41d1f2",
+          "lastSeenSha": "b614888eef95255590899d93870da4da4a41d1f2"
+        },
+        {
+          "path": "e2e/wait-for-backend-a3f9X2.test.js",
+          "firstSeenSha": "655f2ad3837837ceeb6d56ba823fca9d9644b284",
+          "lastSeenSha": "655f2ad3837837ceeb6d56ba823fca9d9644b284"
+        }
+      ]
+    }
+  },
+  "totals": {
+    "currentCount": 701,
+    "historicalCount": 142
+  }
+}

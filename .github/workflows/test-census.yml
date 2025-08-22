@@ -1,7 +1,7 @@
-name: CI Workflow Coverage Auditor
+name: Test Census & Drift Auditor
 on: [pull_request, push]
 jobs:
-  audit:
+  census:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -10,13 +10,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: node --version
-      - name: Run audit
+      - name: Run census
         run: |
-          node scripts/ci-audit.ts
-      - name: Upload audit artifact
+          npx ts-node --compiler-options '{"module":"commonjs"}' scripts/test-census.ts
+      - name: Upload registry artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ci-coverage-audit
-          path: ci/coverage-audit.json
+          name: test-registry
+          path: tests/registry.json

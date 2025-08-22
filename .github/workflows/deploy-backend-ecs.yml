@@ -1,0 +1,39 @@
+name: deploy-backend-ecs
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4.3.1
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE }}
+          aws-region: us-east-1
+      - name: Get latest backend image digest
+        id: ecr
+        run: |
+          digest=$(aws ecr describe-images --repository-name mvp-backend --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageDigest' --output text)
+          echo "Latest digest: $digest"
+          echo "digest=$digest" >> $GITHUB_OUTPUT
+      - name: Force new ECS deployment
+        run: |
+          aws ecs update-service --cluster mvp-cluster --service mvp-service --force-new-deployment
+      - name: Smoke test
+        run: |
+          for i in {1..30}; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" https://api.${{ secrets.DOMAIN }}/healthz || true)
+            if [ "$code" = "200" ]; then
+              echo "Service healthy"
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "Service failed health check" >&2
+          exit 1
