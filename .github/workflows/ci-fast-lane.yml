@@ -34,7 +34,7 @@ jobs:
     needs: impact
     with:
       suite: unit
-      command: npm test
+      command: JEST_RETRIES=2 npm test -- --config scripts/ci/jest.config.ci.ts
   backend:
     if: needs.impact.outputs.backend == 'true'
     uses: ./.github/workflows/reusable-test-job.yml

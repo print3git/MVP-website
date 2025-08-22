@@ -11,7 +11,7 @@ on:
       working-directory:
         required: false
         type: string
-        default: '.'
+        default: "."
       use-self-hosted:
         required: false
         type: boolean
@@ -46,3 +46,9 @@ jobs:
           command: ${{ inputs.command }}
           working-directory: ${{ inputs.working-directory }}
           retry: ${{ inputs.retry-flaky }}
+      - name: Upload junit
+        if: ${{ always() && hashFiles('junit.xml') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-${{ inputs.suite }}
+          path: junit.xml
