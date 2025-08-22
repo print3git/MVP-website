@@ -1,0 +1,16 @@
+name: pnpm bootstrap guard
+
+on:
+  pull_request:
+
+jobs:
+  pnpm-bootstrap-guard:
+    runs-on:
+      - [self-hosted, linux, aws]
+      - ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5.0.0
+        with:
+          fetch-depth: 0
+      - name: Check pnpm bootstrap block
+        run: node scripts/ci-guard/pnpm-bootstrap/check.js .github/workflows/dependency-checker.yml

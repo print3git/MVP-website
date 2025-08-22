@@ -2,7 +2,7 @@ name: dependency-checker
 
 on:
   schedule:
-    - cron: '0 0 * * 0'
+    - cron: "0 0 * * 0"
 
 jobs:
   check:
@@ -12,6 +12,23 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      # >>> BEGIN MANAGED BLOCK: ci-guard:pnpm-bootstrap
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: |
+            pnpm-lock.yaml
+            frontend/pnpm-lock.yaml
+      - name: Enable corepack
+        run: corepack enable
+        shell: bash
+      - name: Ensure pnpm installed (fallback)
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+      # <<< END MANAGED BLOCK: ci-guard:pnpm-bootstrap
 
       - name: Check Node dependencies
         run: |
