@@ -1,0 +1,6 @@
+required:
+  - Gate
+  - Suites Guard
+  - Full Aggregate
+  - LFS Guard
+  - Cloudflare Deploy

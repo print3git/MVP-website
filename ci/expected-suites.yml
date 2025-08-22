@@ -1,0 +1,15 @@
+expected:
+  frontend:lint:
+    - frontend:lint
+  frontend:build:
+    - frontend:build
+  frontend:test:
+    - frontend:test
+  backend:test:
+    - backend:test
+  types:check:
+    - types:check
+  e2e:smoke:
+    - e2e:smoke
+  codeql:analyze:
+    - codeql:analyze

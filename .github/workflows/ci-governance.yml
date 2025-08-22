@@ -1,0 +1,24 @@
+name: CI Governance
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/**'
+      - 'ci/**'
+
+jobs:
+  suites:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install deps
+        run: npm ci
+      - name: Snapshot suites
+        run: npx ts-node scripts/ci/snapshot-suites.ts
+      - name: Diff suites
+        run: |
+          cp ci/expected-suites.yml ci/expected-suites.prev.yml
+          npx ts-node scripts/ci/snapshot-suites.ts
+          diff -u ci/expected-suites.prev.yml ci/expected-suites.yml || true
+      - name: Check required checks
+        run: cat ci/required-checks.yml

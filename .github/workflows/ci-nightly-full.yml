@@ -1,0 +1,22 @@
+name: CI Nightly Full
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install deps
+        run: npm ci
+      - name: Snapshot suites
+        run: npx ts-node scripts/ci/snapshot-suites.ts
+      - name: Commit update
+        run: |
+          if [ -n "$(git status --porcelain ci/expected-suites.yml)" ]; then
+            git config user.name github-actions
+            git config user.email actions@github.com
+            git commit -am "chore: update expected suites" && git push
+          fi
