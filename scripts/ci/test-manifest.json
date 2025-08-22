@@ -1,0 +1,5 @@
+{
+  "frontend": ["frontend/src/**/*.test.{ts,tsx}"],
+  "backend": ["backend/tests/**/*.test.ts"],
+  "e2e": ["e2e/**/*.spec.ts"]
+}
