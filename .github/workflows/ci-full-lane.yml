@@ -1,10 +1,8 @@
 name: CI Full Lane
 on:
-  pull_request:
   push:
-    branches:
-      - dev
-      - "00000production"
+    branches: ["**"]
+  pull_request:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true

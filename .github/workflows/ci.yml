@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main, dev, 00000production]
+    branches: ["**"]
     # paths: # temporarily broadened to restore coverage
     #   - frontend/**
     #   - backend/**
@@ -13,7 +13,6 @@ on:
     #   - pnpm-lock.yaml
     #   - .github/workflows/**
   pull_request:
-    branches: [main, dev, 00000production]
     # paths: # temporarily broadened to restore coverage
     #   - frontend/**
     #   - backend/**

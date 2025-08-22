@@ -1,14 +1,9 @@
 name: CI Full Lane
 
 on:
-  pull_request:
-    branches:
-      - dev
-      - '00000production'
   push:
-    branches:
-      - dev
-      - '00000production'
+    branches: ["**"]
+  pull_request:
 
 permissions:
   contents: read
