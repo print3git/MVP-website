@@ -1,0 +1,14 @@
+name: guard corepack pnpm windows
+on: [pull_request, push]
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: corepack enable
+      - run: npm ci
+      - run: npx ts-node --transpile-only scripts/ci-guard/corepack-pnpm-windows/audit.ts
+      - run: node scripts/run-jest.js tests/ci-guard/corepack-pnpm-windows/audit.test.ts
