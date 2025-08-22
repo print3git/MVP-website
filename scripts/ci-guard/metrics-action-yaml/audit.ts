@@ -8,19 +8,17 @@ function audit(file) {
     throw new Error(`File not found: ${abs}`);
   }
   const raw = fs.readFileSync(abs, "utf8");
-  if (raw.includes("\t")) {
-    throw new Error("Tabs detected");
-  }
-  if (/\r/.test(raw)) {
-    throw new Error("CRLF line endings detected");
-  }
   const lines = raw.split("\n");
   lines.forEach((line, idx) => {
+    if (line.includes("\t")) {
+      throw new Error(`${abs}:${idx + 1} Tabs detected`);
+    }
+    if (line.includes("\r")) {
+      throw new Error(`${abs}:${idx + 1} CRLF line endings detected`);
+    }
     const m = line.match(/^( +)\S/);
-    if (m) {
-      if (m[1].length % 2 !== 0) {
-        throw new Error(`Invalid indentation on line ${idx + 1}`);
-      }
+    if (m && m[1].length % 2 !== 0) {
+      throw new Error(`${abs}:${idx + 1} Invalid indentation`);
     }
   });
   const pre = raw.replace(
@@ -34,9 +32,14 @@ function audit(file) {
       return start + indented + indent + end.trim();
     },
   );
+  const lineCounter = new yaml.LineCounter();
   let doc;
   try {
-    doc = yaml.parseDocument(pre, { prettyErrors: true, uniqueKeys: true });
+    doc = yaml.parseDocument(pre, {
+      prettyErrors: true,
+      uniqueKeys: true,
+      lineCounter,
+    });
   } catch (e) {
     const pos = e.linePos?.[0];
     const loc = pos ? `:${pos.line}:${pos.col}` : "";
@@ -48,40 +51,70 @@ function audit(file) {
     const loc = pos ? `:${pos.line}:${pos.col}` : "";
     throw new Error(`${abs}${loc} ${e.message}`);
   }
-  const data = doc.toJSON();
-  if (!data.name || !data.description) {
-    throw new Error("name/description required");
+  function loc(node) {
+    const pos = node && node.range ? lineCounter.linePos(node.range[0]) : { line: 0, col: 0 };
+    return `${abs}:${pos.line}:${pos.col}`;
   }
-  if (data.runs?.using !== "composite") {
-    throw new Error('runs.using must be "composite"');
+  if (!doc.get("name") || !doc.get("description")) {
+    throw new Error(`${abs}:1 name/description required`);
   }
-  const steps = data.runs?.steps;
-  if (!Array.isArray(steps) || steps.length === 0) {
-    throw new Error("steps must be non-empty array");
+  const runs = doc.get("runs", true);
+  const using = runs?.get("using", true);
+  if (!using || using.toString() !== "composite") {
+    throw new Error(`${loc(using || runs)} runs.using must be "composite"`);
   }
-  for (const [i, step] of steps.entries()) {
+  const stepsNode = runs.get("steps", true);
+  if (!stepsNode || stepsNode.items.length === 0) {
+    throw new Error(`${loc(stepsNode || runs)} steps must be non-empty array`);
+  }
+  let scriptCount = 0;
+  let uploadFound = false;
+  for (const item of stepsNode.items) {
+    const step = item.toJSON();
     const hasUses = Object.prototype.hasOwnProperty.call(step, "uses");
     const hasRun = Object.prototype.hasOwnProperty.call(step, "run");
-    const hasShell = Object.prototype.hasOwnProperty.call(step, "shell");
     if (hasUses && hasRun) {
-      throw new Error(`step ${i} has both uses and run`);
+      throw new Error(`${loc(item)} step has both uses and run`);
     }
     if (hasRun) {
-      if (!hasShell) throw new Error(`step ${i} missing shell`);
+      scriptCount++;
+      const shellNode = item.get("shell", true);
+      if (!shellNode) {
+        throw new Error(`${loc(item)} step missing shell`);
+      }
+      if (shellNode.toString() !== "bash") {
+        throw new Error(`${loc(shellNode)} script step shell must be bash`);
+      }
     } else if (!hasUses) {
-      throw new Error(`step ${i} missing uses or run`);
+      throw new Error(`${loc(item)} step missing uses or run`);
+    }
+    if (hasUses && /^actions\/upload-artifact@/.test(step.uses)) {
+      const pathNode = item.get("with", true)?.get("path", true);
+      if (!pathNode || pathNode.toString() !== "ci/metrics/series.ndjson") {
+        throw new Error(`${loc(pathNode || item)} upload-artifact path must be ci/metrics/series.ndjson`);
+      }
+      uploadFound = true;
     }
   }
-  const timings = data.inputs?.timings;
-  if (!timings || timings.required !== true) {
-    throw new Error("inputs.timings.required must be true");
+  if (scriptCount !== 1) {
+    throw new Error(`${loc(stepsNode)} expected exactly one script step, found ${scriptCount}`);
   }
-  const inventory = data.inputs?.inventory;
-  if (!inventory || inventory.default === undefined) {
-    throw new Error("inputs.inventory.default required");
+  if (!uploadFound) {
+    throw new Error(`${loc(stepsNode)} missing upload-artifact step`);
   }
-  if (typeof inventory.default !== "string") {
-    throw new Error("inputs.inventory.default must be string");
+  const inputs = doc.get("inputs", true);
+  const timings = inputs?.get("timings", true);
+  const timingsReq = timings?.get("required", true);
+  if (!timings || timingsReq?.toJSON() !== true) {
+    throw new Error(`${loc(timingsReq || timings || inputs)} inputs.timings.required must be true`);
+  }
+  const inventory = inputs?.get("inventory", true);
+  const invDef = inventory?.get("default", true);
+  if (!inventory || invDef === undefined) {
+    throw new Error(`${loc(inventory || inputs)} inputs.inventory.default required`);
+  }
+  if (typeof invDef.toJSON() !== "string") {
+    throw new Error(`${loc(invDef)} inputs.inventory.default must be string`);
   }
 }
 

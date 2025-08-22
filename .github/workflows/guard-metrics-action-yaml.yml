@@ -1,20 +1,16 @@
-name: metrics action yaml guard
-
-env:
-  HUSKY: 0
+name: Guard metrics action YAML
 
 on:
-  pull_request:
   push:
-    branches: [main]
+  pull_request:
 
 jobs:
-  validate:
+  guard:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.1
-      - uses: actions/setup-node@v4.4.0
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npx -y @actions/manifest-validation@latest .github/actions/ci-metrics-emit/action.yml
-      - run: npx -y yaml-eslint .github/actions/ci-metrics-emit/action.yml || true
+      - run: npm ci
+      - run: node scripts/ci-guard/metrics-action-yaml/audit.ts

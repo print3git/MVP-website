@@ -50,6 +50,7 @@ describe("metrics action audit", () => {
     const file = writeTemp(yaml.stringify(obj));
     const res = runAudit(file);
     expect(res.ok).toBe(false);
+    expect(res.stderr).toMatch(new RegExp(`${file}:\\d+:\\d+`));
     expect(res.stderr).toMatch(/runs\.using/);
   });
 
@@ -59,6 +60,7 @@ describe("metrics action audit", () => {
     const file = writeTemp(yaml.stringify(obj));
     const res = runAudit(file);
     expect(res.ok).toBe(false);
+    expect(res.stderr).toMatch(new RegExp(`${file}:\\d+:\\d+`));
     expect(res.stderr).toMatch(/both uses and run/);
   });
 
@@ -68,6 +70,7 @@ describe("metrics action audit", () => {
     const file = writeTemp(yaml.stringify(obj));
     const res = runAudit(file);
     expect(res.ok).toBe(false);
+    expect(res.stderr).toMatch(new RegExp(`${file}:\\d+:\\d+`));
     expect(res.stderr).toMatch(/missing shell/);
   });
 
@@ -147,5 +150,54 @@ describe("metrics action audit", () => {
     const res = runAudit(missing);
     expect(res.ok).toBe(false);
     expect(res.stderr).toMatch(/File not found/);
+  });
+
+  test("t13 multiple script steps fails", () => {
+    const obj = JSON.parse(JSON.stringify(validObj));
+    obj.runs.steps.push({ run: "echo hi", shell: "bash" });
+    const file = writeTemp(yaml.stringify(obj));
+    const res = runAudit(file);
+    expect(res.ok).toBe(false);
+    expect(res.stderr).toMatch(/exactly one script step/);
+  });
+
+  test("t14 script shell not bash fails", () => {
+    const obj = JSON.parse(JSON.stringify(validObj));
+    obj.runs.steps[0].shell = "sh";
+    const file = writeTemp(yaml.stringify(obj));
+    const res = runAudit(file);
+    expect(res.ok).toBe(false);
+    expect(res.stderr).toMatch(/shell must be bash/);
+  });
+
+  test("t15 missing upload-artifact step fails", () => {
+    const obj = JSON.parse(JSON.stringify(validObj));
+    obj.runs.steps = obj.runs.steps.filter(
+      (s: any) => !(s.uses && s.uses.startsWith("actions/upload-artifact@")),
+    );
+    const file = writeTemp(yaml.stringify(obj));
+    const res = runAudit(file);
+    expect(res.ok).toBe(false);
+    expect(res.stderr).toMatch(/missing upload-artifact step/);
+  });
+
+  test("t16 upload-artifact path wrong fails", () => {
+    const obj = JSON.parse(JSON.stringify(validObj));
+    const up = obj.runs.steps.find(
+      (s: any) => s.uses && s.uses.startsWith("actions/upload-artifact@"),
+    );
+    up.with.path = "ci/metrics/bad.ndjson";
+    const file = writeTemp(yaml.stringify(obj));
+    const res = runAudit(file);
+    expect(res.ok).toBe(false);
+    expect(res.stderr).toMatch(/upload-artifact path/);
+  });
+
+  test("t17 extra top-level key passes", () => {
+    const obj = JSON.parse(JSON.stringify(validObj));
+    obj.branding = { color: "blue", icon: "smile" };
+    const file = writeTemp(yaml.stringify(obj));
+    const res = runAudit(file);
+    expect(res.ok).toBe(true);
   });
 });
