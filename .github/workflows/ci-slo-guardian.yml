@@ -1,0 +1,65 @@
+name: CI SLO Guardian
+on:
+  pull_request:
+  schedule:
+    - cron: '0 * * * *'
+permissions:
+  actions: read
+  issues: write
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Evaluate SLOs
+        id: eval
+        uses: actions/github-script@v7
+        env:
+          X: 300
+          Y: 95
+        with:
+          script: |
+            const cutoff = Date.now() - 24*60*60*1000;
+            const {owner, repo} = context.repo;
+            const artifacts = await github.paginate(github.rest.actions.listArtifactsForRepo, {owner, repo, per_page: 100});
+            const recent = artifacts.filter(a => a.name === 'ci-metrics' && new Date(a.created_at).getTime() >= cutoff);
+            const metrics = {queue: [], started:0, queued:0, zero:0};
+            for (const art of recent) {
+              const zip = await github.rest.actions.downloadArtifact({owner, repo, artifact_id: art.id, archive_format: 'zip'});
+              const buffer = Buffer.from(zip.data);
+              const zlib = require('node:zlib');
+              const unzip = zlib.unzipSync(buffer);
+              const lines = unzip.toString('utf8').trim().split(/\n/);
+              for (const l of lines) {
+                const m = JSON.parse(l);
+                if (m.MetricName === 'MedianQueueWaitSeconds') metrics.queue.push(m.Value);
+                if (m.MetricName === 'QueuedJobs') metrics.queued += m.Value;
+                if (m.MetricName === 'StartedJobs') metrics.started += m.Value;
+                if (m.MetricName === 'SuiteTestCount' && m.Value === 0) metrics.zero++;
+              }
+            }
+            const p95 = arr => arr.length ? arr.sort((a,b)=>a-b)[Math.floor(arr.length*0.95)] : 0;
+            const q95 = p95(metrics.queue);
+            const startRate = metrics.queued ? (metrics.started/metrics.queued*100) : 0;
+            const breaches = [];
+            if (q95 > parseInt(process.env.X)) breaches.push(`Queue wait P95 ${q95}s > ${process.env.X}s`);
+            if (startRate < parseInt(process.env.Y)) breaches.push(`Start rate ${startRate.toFixed(1)}% < ${process.env.Y}%`);
+            if (metrics.zero > 0) breaches.push(`${metrics.zero} zero-test suites`);
+            core.setOutput('breach', breaches.length ? '1' : '0');
+            core.setOutput('summary', breaches.join('\n'));
+      - name: Open issue on breach
+        if: steps.eval.outputs.breach == '1'
+        uses: actions/github-script@v7
+        env:
+          SUMMARY: ${{ steps.eval.outputs.summary }}
+        with:
+          script: |
+            const {owner, repo} = context.repo;
+            const title = 'ci-slo-breach';
+            const body = `SLO breach detected\n\n${process.env.SUMMARY}`;
+            const issues = await github.paginate(github.rest.issues.listForRepo, {owner, repo, state: 'open'});
+            let issue = issues.find(i => i.title === title);
+            if (issue) {
+              await github.rest.issues.update({owner, repo, issue_number: issue.number, body});
+            } else {
+              await github.rest.issues.create({owner, repo, title, body});
+            }
