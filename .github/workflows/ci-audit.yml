@@ -1,21 +1,22 @@
-name: CI Auditor
-on:
-  push:
-    branches: [dev, 00000production]
-  pull_request:
-    branches: [dev, 00000production]
-
+name: CI Workflow Coverage Auditor
+on: [pull_request, push]
 jobs:
   audit:
     runs-on: ubuntu-latest
     steps:
-      - id: audit
-        uses: GrantBirki/auditor-action@v4.4.2
-        continue-on-error: true
-      - name: Publish summary
-        if: always()
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node --version
+      - name: Run audit
         run: |
-          echo "${{ steps.audit.outputs.summary }}" >> "$GITHUB_STEP_SUMMARY"
-          if echo "${{ steps.audit.outputs.likely_skipped }}" | grep -Eiq '(lint|test|build|e2e)'; then
-            echo "::warning::Likely skipped workflows: ${{ steps.audit.outputs.likely_skipped }}"
-          fi
+          node scripts/ci-audit.ts
+      - name: Upload audit artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-coverage-audit
+          path: ci/coverage-audit.json
