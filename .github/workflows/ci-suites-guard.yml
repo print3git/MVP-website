@@ -1,0 +1,97 @@
+name: CI Suites Guard
+on:
+  push:
+    branches: [dev, 00000production]
+  pull_request:
+
+permissions:
+  actions: read
+  checks: read
+  contents: read
+  pull-requests: write
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.3.0
+      - id: verify
+        name: Check expected suites
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            const text = fs.readFileSync(path.join(process.env.GITHUB_WORKSPACE, 'ci/expected-suites.yml'), 'utf8');
+            const expected = [...text.matchAll(/-\s*(\S+)/g)].map(m => m[1]);
+            const { owner, repo } = context.repo;
+            const sha = context.payload.pull_request ? context.payload.pull_request.head.sha : context.sha;
+            const checkRuns = await github.paginate(github.rest.checks.listForRef, { owner, repo, ref: sha, per_page: 100 });
+            const registered = new Set(checkRuns.map(r => r.name));
+            const table = expected.map(name => ({ suite: name, present: registered.has(name), cause: registered.has(name) ? '' : 'did not run' }));
+            console.table(table);
+            core.summary.addHeading('CI Suites Guard');
+            core.summary.addTable([
+              [{ data: 'Suite', header: true }, { data: 'Present', header: true }, { data: 'Likely cause', header: true }],
+              ...table.map(t => [t.suite, String(t.present), t.cause])
+            ]);
+            await core.summary.write();
+            core.setOutput('table', JSON.stringify(table));
+            const missing = table.filter(t => !t.present);
+            if (missing.length) {
+              core.setFailed('Missing suites: ' + missing.map(m => m.suite).join(', '));
+            }
+      - id: merge
+        name: Merge ci-test-inventory artifacts
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            const { execSync } = require('child_process');
+            const { owner, repo } = context.repo;
+            const sha = context.payload.pull_request ? context.payload.pull_request.head.sha : context.sha;
+            const runs = await github.paginate(github.rest.actions.listWorkflowRunsForRepo, { owner, repo, per_page: 100 });
+            const inventories = [];
+            for (const run of runs.filter(r => r.head_sha === sha && r.id !== context.runId)) {
+              const artifacts = await github.paginate(github.rest.actions.listWorkflowRunArtifacts, { owner, repo, run_id: run.id });
+              const inv = artifacts.find(a => a.name === 'ci-test-inventory');
+              if (inv) {
+                const download = await github.rest.actions.downloadArtifact({ owner, repo, artifact_id: inv.id, archive_format: 'zip' });
+                const tmpDir = fs.mkdtempSync(path.join(require('os').tmpdir(), 'inv-'));
+                const zipPath = path.join(tmpDir, 'artifact.zip');
+                fs.writeFileSync(zipPath, Buffer.from(download.data));
+                try {
+                  execSync(`unzip -qq ${zipPath} -d ${tmpDir}`);
+                  const file = path.join(tmpDir, 'ci-test-inventory.json');
+                  if (fs.existsSync(file)) {
+                    inventories.push(JSON.parse(fs.readFileSync(file, 'utf8')));
+                  }
+                } catch (err) {
+                  core.warning(`Failed to extract inventory from run ${run.name}: ${err.message}`);
+                }
+              }
+            }
+            const merged = inventories.reduce((acc, cur) => Object.assign(acc, cur), {});
+            fs.writeFileSync('ci-test-inventory.json', JSON.stringify(merged));
+      - uses: actions/upload-artifact@v4.3.1
+        if: always()
+        with:
+          name: ci-test-inventory
+          path: ci-test-inventory.json
+      - name: Post checklist comment
+        if: ${{ always() && github.event_name == 'pull_request' }}
+        uses: actions/github-script@v7
+        env:
+          TABLE: ${{ steps.verify.outputs.table }}
+        with:
+          script: |
+            const table = JSON.parse(process.env.TABLE);
+            const body = table.map(t => `- [${t.present ? 'x' : ' '}] ${t.suite}`).join('\n');
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: `### CI Suites\n${body}`
+            });

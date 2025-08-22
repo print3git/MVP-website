@@ -1,0 +1,13 @@
+expected:
+  - backend-unit
+  - backend-integration
+  - frontend-jest
+  - frontend-typecheck
+  - playwright-e2e
+  - lint
+  - coverage
+  - codeql
+  - audit
+  - size-limit
+  - secrets
+  - ci-sanity
