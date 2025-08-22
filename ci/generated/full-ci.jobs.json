@@ -1,0 +1,1100 @@
+[
+  {
+    "name": "backend-dalle_server:test",
+    "command": "npm run test --prefix backend/dalle_server",
+    "paths": [
+      "backend/dalle_server"
+    ],
+    "needs": []
+  },
+  {
+    "name": "backend:test",
+    "command": "npm run test --prefix backend",
+    "paths": [
+      "backend"
+    ],
+    "needs": []
+  },
+  {
+    "name": "backend:test-ci",
+    "command": "npm run test-ci --prefix backend",
+    "paths": [
+      "backend"
+    ],
+    "needs": []
+  },
+  {
+    "name": "backend:test:unit",
+    "command": "npm run test:unit --prefix backend",
+    "paths": [
+      "backend"
+    ],
+    "needs": []
+  },
+  {
+    "name": "frontend:test",
+    "command": "npm run test --prefix frontend",
+    "paths": [
+      "frontend"
+    ],
+    "needs": []
+  },
+  {
+    "name": "root:test:structure",
+    "command": "npm run test:structure",
+    "paths": [
+      "."
+    ],
+    "needs": []
+  },
+  {
+    "name": "root:test",
+    "command": "npm run test",
+    "paths": [
+      "."
+    ],
+    "needs": []
+  },
+  {
+    "name": "root:test:ci",
+    "command": "npm run test:ci",
+    "paths": [
+      "."
+    ],
+    "needs": []
+  },
+  {
+    "name": "root:test:update-threshold",
+    "command": "npm run test:update-threshold",
+    "paths": [
+      "."
+    ],
+    "needs": []
+  },
+  {
+    "name": "root:test:cf-readiness",
+    "command": "npm run test:cf-readiness",
+    "paths": [
+      "."
+    ],
+    "needs": []
+  },
+  {
+    "name": "root:test:stability",
+    "command": "npm run test:stability",
+    "paths": [
+      "."
+    ],
+    "needs": []
+  },
+  {
+    "name": "root:test:e2e",
+    "command": "npm run test:e2e",
+    "paths": [
+      "."
+    ],
+    "needs": []
+  },
+  {
+    "name": "root:test:unit",
+    "command": "npm run test:unit",
+    "paths": [
+      "."
+    ],
+    "needs": []
+  },
+  {
+    "name": "root:test:all",
+    "command": "npm run test:all",
+    "paths": [
+      "."
+    ],
+    "needs": []
+  },
+  {
+    "name": "root:test:changed",
+    "command": "npm run test:changed",
+    "paths": [
+      "."
+    ],
+    "needs": []
+  },
+  {
+    "name": "root:test:a11y",
+    "command": "npm run test:a11y",
+    "paths": [
+      "."
+    ],
+    "needs": []
+  },
+  {
+    "name": "root:test:ui",
+    "command": "npm run test:ui",
+    "paths": [
+      "."
+    ],
+    "needs": []
+  },
+  {
+    "name": "root:test:generate",
+    "command": "npm run test:generate",
+    "paths": [
+      "."
+    ],
+    "needs": []
+  },
+  {
+    "name": "root:test:webhook",
+    "command": "npm run test:webhook",
+    "paths": [
+      "."
+    ],
+    "needs": []
+  },
+  {
+    "name": "root:test:backend:regression",
+    "command": "npm run test:backend:regression",
+    "paths": [
+      "."
+    ],
+    "needs": []
+  },
+  {
+    "name": "root:test:frontend:regression",
+    "command": "npm run test:frontend:regression",
+    "paths": [
+      "."
+    ],
+    "needs": []
+  },
+  {
+    "name": "root:test:ci:regression",
+    "command": "npm run test:ci:regression",
+    "paths": [
+      "."
+    ],
+    "needs": []
+  },
+  {
+    "name": "root:test:e2e:regression",
+    "command": "npm run test:e2e:regression",
+    "paths": [
+      "."
+    ],
+    "needs": []
+  },
+  {
+    "name": "root:test:regression",
+    "command": "npm run test:regression",
+    "paths": [
+      "."
+    ],
+    "needs": []
+  },
+  {
+    "name": "jest:backend",
+    "command": "npm test",
+    "paths": [
+      "backend/jest.config.js"
+    ],
+    "needs": []
+  },
+  {
+    "name": "jest:frontend",
+    "command": "npm test",
+    "paths": [
+      "frontend/jest.config.js"
+    ],
+    "needs": []
+  },
+  {
+    "name": "jest:.",
+    "command": "npm test",
+    "paths": [
+      "jest.config.js"
+    ],
+    "needs": []
+  },
+  {
+    "name": "playwright:.",
+    "command": "npx playwright test",
+    "paths": [
+      "playwright.config.js"
+    ],
+    "needs": []
+  },
+  {
+    "name": "jest:tests/backend",
+    "command": "npm test",
+    "paths": [
+      "tests/backend/jest.config.js"
+    ],
+    "needs": []
+  },
+  {
+    "name": "jest:tests/ci",
+    "command": "npm test",
+    "paths": [
+      "tests/ci/jest.config.js"
+    ],
+    "needs": []
+  },
+  {
+    "name": "jest:tests/frontend",
+    "command": "npm test",
+    "paths": [
+      "tests/frontend/jest.config.js"
+    ],
+    "needs": []
+  },
+  {
+    "name": "playwright:tests/full-stack",
+    "command": "npx playwright test",
+    "paths": [
+      "tests/full-stack/playwright.config.js"
+    ],
+    "needs": []
+  },
+  {
+    "name": "jest:tests",
+    "command": "npm test",
+    "paths": [
+      "tests/jest.config.js"
+    ],
+    "needs": []
+  },
+  {
+    "name": "workflow_call",
+    "command": "echo \"historical job workflow_call\"",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "build",
+    "command": "corepack enable",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "labels",
+    "command": "echo \"historical job labels\"",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "run",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "push",
+    "command": "echo \"historical job push\"",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "pull_request",
+    "command": "echo \"historical job pull_request\"",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "actionlint",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "affected-builds",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "check",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "build-artifacts",
+    "command": "npm ci",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "rebase",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "merge-queue",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "workflow_dispatch",
+    "command": "echo \"historical job workflow_dispatch\"",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "health",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "workflow_run",
+    "command": "echo \"historical job workflow_run\"",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "preflight",
+    "command": "echo \"historical job preflight\"",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "backend-tests",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "changed-tests",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "full-suite",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "scan",
+    "command": "scripts/guard/binary-scan.sh origin/${{ github.event.pull_request.base.ref }}",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "frontend",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "backend",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "root-cache",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "backend-cache",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "frontend-cache",
+    "command": "npm ci --prefix frontend",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "validate",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "schedule",
+    "command": "echo \"historical job schedule\"",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "deploy",
+    "command": "npm ci",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "preview",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "watch",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "safety",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "manifest",
+    "command": "echo \"event=${{ github.event_name }} ref=${{ github.ref }} sha=${{ github.sha }}\"",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "audit",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "versions",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "summarize",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "gate",
+    "command": "echo \"historical job gate\"",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "verify-checks",
+    "command": "echo \"sha=${{ github.event.workflow_run.head_sha }}\" >> $GITHUB_OUTPUT",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "monitor",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "coverage",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "e2e",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "timings",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "selfhosted",
+    "command": "echo \"historical job selfhosted\"",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "ubuntu",
+    "command": "echo \"historical job ubuntu\"",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "sanity",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "secrets",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "setup",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "list-tests",
+    "command": "corepack enable || true",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "guard-nonzero",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "frontend-unit",
+    "command": "corepack enable || true",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "frontend-build",
+    "command": "corepack enable || true",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "test-backend",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "test-frontend",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "test-integration",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "coverage-merge",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "toolchain-debug",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "analyze",
+    "command": "echo \"historical job analyze\"",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "collect-logs",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "commitlint",
+    "command": "echo \"historical job commitlint\"",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "upload",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "backup",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "debug",
+    "command": "echo \"I ran on ${{ runner.os }} with job id ${{ github.run_id }}\"",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "dependency-review",
+    "command": "echo \"historical job dependency-review\"",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "pages-disabled",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "destroy",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "lint",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "stripe_cloudflare",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "diff",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "docker",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "prune",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "automerge",
+    "command": "echo \"historical job automerge\"",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "probe",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "boot_check",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "env-parity",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "eslint",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "dry-build",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "notify",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "merge_group",
+    "command": "echo \"historical job merge_group\"",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "unit-tests",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "e2e-tests",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "guardrails",
+    "command": "npm ci",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "snapshot",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "selfcheck",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "jest-open-handles",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "json-validate",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "label",
+    "command": "echo \"historical job label\"",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "select",
+    "command": "echo \"historical job select\"",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "large-file-guard",
+    "command": "bash scripts/guard/large-file-guard.sh",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "lfs",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "deployment_status",
+    "command": "echo \"historical job deployment_status\"",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "lighthouse",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "load",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "lockfile-drift",
+    "command": "node scripts/check-lockfile-drift.js",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "md-link-check",
+    "command": "echo \"historical job md-link-check\"",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "nightly-cache-warmup",
+    "command": "npx turbo run build --cache-dir=.turbo",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "nock-report",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "nx",
+    "command": "echo \"nx.json not found, skipping\"",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "report",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "package",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "comment",
+    "command": "echo \"url=$(cat artifact/pages-url.txt)\" >> \"$GITHUB_OUTPUT\"",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "deadlock",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "smoke_test",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "cache-browsers",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "install",
+    "command": "corepack enable",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "sync",
+    "command": "corepack enable",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "sentinel",
+    "command": "echo \"historical job sentinel\"",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "fail-test",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "lint-typecheck",
+    "command": "pnpm install --no-frozen-lockfile",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "changed",
+    "command": "echo \"historical job changed\"",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "remind",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "lint-fast",
+    "command": "npm ci",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "smoke-api",
+    "command": "npm ci",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "provision",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "watchdog",
+    "command": "echo \"historical job watchdog\"",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "guard",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "backend-unit",
+    "command": "npm ci",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "backend-integration",
+    "command": "npm ci",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "cicd-selftest",
+    "command": "npm ci",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "summary",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "update_release_draft",
+    "command": "echo \"historical job update_release_draft\"",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "reset",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "stop",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "start",
+    "command": "aws ec2 start-instances --instance-ids \"$RUNNER_INSTANCE_ID\"",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "probe-selfhosted",
+    "command": "echo '${{ toJSON(runner) }}'",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "timeout-notice",
+    "command": "echo \"Self-hosted runner not available. Run 'terraform apply' to provision.\" >> \"$GITHUB_STEP_SUMMARY\"",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "size",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "skip-heavy",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "db-seed",
+    "command": "npm ci --prefix backend",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "backend-smoke",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "changes",
+    "command": "echo \"historical job changes\"",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "frontend-artifact-check",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "codespell",
+    "command": "echo \"historical job codespell\"",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "verify-submodules",
+    "command": "git submodule status",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "test",
+    "command": "echo \"dir=$(pnpm store path)\" >> $GITHUB_OUTPUT",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "turbo",
+    "command": "npm ci",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "typecheck",
+    "command": "npx tsc --noEmit",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "update",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "verify",
+    "command": "|",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "lockfile-diff",
+    "command": "corepack enable",
+    "paths": [],
+    "needs": []
+  },
+  {
+    "name": "yamllint",
+    "command": "pip install yamllint",
+    "paths": [],
+    "needs": []
+  }
+]
