@@ -5,7 +5,16 @@ async function main() {
   const pkg = JSON.parse(
     await readFile(new URL("../package.json", import.meta.url)),
   );
-  const thresholds = pkg.coverageThreshold || {};
+  const thresholds = process.env.COVERAGE_THRESHOLDS_PATH
+    ? JSON.parse(
+        await readFile(
+          new URL(
+            `../${process.env.COVERAGE_THRESHOLDS_PATH}`,
+            import.meta.url,
+          ),
+        ),
+      )
+    : pkg.coverageThreshold || {};
   const lcov = await readFile(
     new URL("../coverage/lcov.info", import.meta.url),
     "utf8",
