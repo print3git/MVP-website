@@ -1,0 +1,26 @@
+name: guard pnpm monorepo install
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: |
+            pnpm-lock.yaml
+            frontend/pnpm-lock.yaml
+            backend/pnpm-lock.yaml
+      - run: corepack enable
+        shell: bash
+      - uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+      - run: node tests/ci-guard/pnpm-monorepo-install/discover.test.js
+        shell: bash
