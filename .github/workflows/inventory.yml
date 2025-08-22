@@ -7,7 +7,28 @@ on:
 
 jobs:
   inventory:
-    uses: ./.github/workflows/reusable-test-job.yml
-    with:
-      suite: inventory
-      command: npm run test:inventory
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: |
+            package-lock.json
+            backend/package-lock.json
+            frontend/package-lock.json
+      - name: Corepack enable (safe)
+        run: corepack enable || true
+      - run: npm ci
+      - name: Guard inventory scripts exist
+        shell: bash
+        run: |
+          set -euo pipefail
+          node -e "const p=require('./package.json'); const s=p.scripts||{}; if(!('gen:test-inventory' in s || 'gen:test-inventory:ci' in s)){console.error('Missing gen:test-inventory script'); process.exit(2)} if(!('test:inventory' in s)){console.error('Missing test:inventory script'); process.exit(2)}"
+      - name: Run inventory tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run gen:test-inventory || npm run gen:test-inventory:ci || true
+          npm run test:inventory
