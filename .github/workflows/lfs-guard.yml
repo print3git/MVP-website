@@ -6,15 +6,6 @@ jobs:
     steps:
       - uses: actions/checkout@v5.0.0
         with: { fetch-depth: 0 }
-      - name: Fail if non-pointer binaries found in img/
+      - name: Audit LFS pointers
+        run: ci/lfs/audit.sh
         shell: bash
-        run: |
-          set -euo pipefail
-          bad=0
-          for f in $(git ls-files img/**/* 2>/dev/null || true); do
-            if [ -f "$f" ] && ! grep -q "version https://git-lfs.github.com/spec" "$f" 2>/dev/null; then
-              echo "::error title=Not an LFS pointer::$f should be stored via git-lfs"
-              bad=1
-            fi
-          done
-          exit $bad
