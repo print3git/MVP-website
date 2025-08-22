@@ -18,6 +18,7 @@ jobs:
     timeout-minutes: 60
     permissions:
       contents: read
+      issues: write
       pull-requests: write
     steps:
       - name: Heartbeat
@@ -74,17 +75,21 @@ jobs:
         if: github.event.pull_request.number
         uses: actions/github-script@v7.0.1
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ github.token }}
           script: |
             const fs = require('fs');
             const diff = fs.readFileSync('coverage/diff.txt', 'utf8');
             const pr = context.payload.pull_request.number;
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: pr,
-              body: `Coverage diff:\n\n\`\`\`\n${diff}\n\`\`\``
-            });
+            try {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr,
+                body: `Coverage diff:\n\n\`\`\`\n${diff}\n\`\`\``
+              });
+            } catch (e) {
+              core.warning("Comment skipped: insufficient permissions (" + e.message + ")");
+            }
       - name: Upload coverage artifacts
         uses: actions/upload-artifact@v4.3.1
         with:

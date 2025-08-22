@@ -6,13 +6,14 @@ on:
     workflows: ["Full CI Aggregate / all-suites"]
     types: [completed]
 
-permissions:
-  pull-requests: write
-  actions: read
-
 jobs:
   comment:
     runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      issues: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
       - name: Download test inventory artifact
@@ -30,6 +31,7 @@ jobs:
       - name: Comment with suite inventory
         uses: actions/github-script@v7
         with:
+          github-token: ${{ github.token }}
           script: |
             const fs = require('fs');
             const marker = '<!-- ci-inventory-comment -->';
@@ -96,10 +98,14 @@ jobs:
               issue_number: prNumber
             });
             const existing = comments.find(c => c.body.includes(marker));
-            if (existing) {
-              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
-            } else {
-              await github.rest.issues.createComment({ owner, repo, issue_number: prNumber, body });
+            try {
+              if (existing) {
+                await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+              } else {
+                await github.rest.issues.createComment({ owner, repo, issue_number: prNumber, body });
+              }
+            } catch (e) {
+              core.warning("Comment skipped: insufficient permissions (" + e.message + ")");
             }
 
             return;

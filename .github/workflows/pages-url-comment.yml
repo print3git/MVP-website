@@ -18,6 +18,7 @@ jobs:
       - ubuntu-latest
     permissions:
       contents: read
+      issues: write
       pull-requests: write
     steps:
       - name: Download Pages URL
@@ -38,7 +39,7 @@ jobs:
         env:
           URL: ${{ steps.read.outputs.url }}
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ github.token }}
           script: |
             const pr = context.payload.workflow_run.pull_requests[0];
             if (!pr) {
@@ -46,9 +47,13 @@ jobs:
               return;
             }
             const body = `Cloudflare Pages preview: ${process.env.URL}`;
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: pr.number,
-              body
-            });
+            try {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                body
+              });
+            } catch (e) {
+              core.warning("Comment skipped: insufficient permissions (" + e.message + ")");
+            }
