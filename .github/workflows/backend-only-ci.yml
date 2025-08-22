@@ -31,7 +31,7 @@ jobs:
       needs.preflight.outputs.run_backend == 'true'
     runs-on:
       - [self-hosted, linux, aws]
-      - ubuntu-latest
+      - [self-hosted, linux, x64, ci-small]
     continue-on-error: true
     strategy:
       fail-fast: true

@@ -22,7 +22,7 @@ jobs:
     if: github.event_name != 'pull_request'
     runs-on:
       - [self-hosted, linux, aws]
-      - ubuntu-latest
+      - [self-hosted, linux, x64, ci-small]
     timeout-minutes: 5
     continue-on-error: true
     steps:
@@ -45,7 +45,7 @@ jobs:
     if: github.event_name != 'pull_request'
     runs-on:
       - [self-hosted, linux, aws]
-      - ubuntu-latest
+      - [self-hosted, linux, x64, ci-small]
     timeout-minutes: 5
     continue-on-error: true
     steps:
@@ -70,7 +70,7 @@ jobs:
     if: github.event_name != 'pull_request'
     runs-on:
       - [self-hosted, linux, aws]
-      - ubuntu-latest
+      - [self-hosted, linux, x64, ci-small]
     timeout-minutes: 5
     continue-on-error: true
     env:

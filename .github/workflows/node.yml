@@ -32,7 +32,7 @@ jobs:
   build:
     runs-on:
       - [self-hosted, linux, aws]
-      - ubuntu-latest
+      - [self-hosted, linux, x64, ci-small]
     env:
       PORT: 3000
       CI_REQUIRE_EXTERNAL: '0'

@@ -18,7 +18,7 @@ jobs:
   lint-fast:
     runs-on:
       - [self-hosted, linux, aws]
-      - ubuntu-latest
+      - [self-hosted, linux, x64, ci-small]
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v5
@@ -38,7 +38,7 @@ jobs:
   smoke-api:
     runs-on:
       - [self-hosted, linux, aws]
-      - ubuntu-latest
+      - [self-hosted, linux, x64, ci-small]
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v5
@@ -58,7 +58,7 @@ jobs:
     name: Gate
     runs-on:
       - [self-hosted, linux, aws]
-      - ubuntu-latest
+      - [self-hosted, linux, x64, ci-small]
     needs: [lint-fast, smoke-api]
     if: ${{ always() }}
     steps:

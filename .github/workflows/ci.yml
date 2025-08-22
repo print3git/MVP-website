@@ -37,7 +37,7 @@ jobs:
     timeout-minutes: 15
     runs-on:
       - [self-hosted, linux, aws]
-      - ubuntu-latest
+      - [self-hosted, linux, x64, ci-small]
     defaults:
       run:
         working-directory: frontend
@@ -90,7 +90,7 @@ jobs:
     timeout-minutes: 15
     runs-on:
       - [self-hosted, linux, aws]
-      - ubuntu-latest
+      - [self-hosted, linux, x64, ci-small]
     strategy:
       fail-fast: true
       max-parallel: 2
@@ -166,7 +166,7 @@ jobs:
     timeout-minutes: 15
     runs-on:
       - [self-hosted, linux, aws]
-      - ubuntu-latest
+      - [self-hosted, linux, x64, ci-small]
     strategy:
       fail-fast: true
       max-parallel: 2
@@ -239,7 +239,7 @@ jobs:
     if: github.event_name == 'push'
     runs-on:
       - [self-hosted, linux, aws]
-      - ubuntu-latest
+      - [self-hosted, linux, x64, ci-small]
     steps:
       - name: Heartbeat
         id: heartbeat
@@ -298,7 +298,7 @@ jobs:
     if: github.event_name == 'push'
     runs-on:
       - [self-hosted, linux, aws]
-      - ubuntu-latest
+      - [self-hosted, linux, x64, ci-small]
     needs:
       - test-backend
       - test-frontend
@@ -373,7 +373,7 @@ jobs:
   toolchain-debug:
     runs-on:
       - [self-hosted, linux, aws]
-      - ubuntu-latest
+      - [self-hosted, linux, x64, ci-small]
     strategy:
       matrix:
         tool: [pnpm, vite, eslint, jest, tsc, wrangler, aws, docker]

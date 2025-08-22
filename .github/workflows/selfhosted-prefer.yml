@@ -3,7 +3,7 @@ on:
   workflow_call:
     inputs:
       label: { required: false, type: string, default: "aws-spot-x64" }
-      fallback: { required: false, type: string, default: "ubuntu-latest" }
+      fallback: { required: false, type: string, default: "self-hosted" }
 jobs:
   choose:
     runs-on: ${{ inputs.fallback }}

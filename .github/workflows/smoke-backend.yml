@@ -27,7 +27,7 @@ jobs:
     needs: preflight
     runs-on:
       - [self-hosted, linux, aws]
-      - ubuntu-latest
+      - [self-hosted, linux, x64, ci-small]
     services:
       postgres:
         image: postgres:15
@@ -71,7 +71,7 @@ jobs:
     if: needs.preflight.outputs.run_backend == 'true'
     runs-on:
       - [self-hosted, linux, aws]
-      - ubuntu-latest
+      - [self-hosted, linux, x64, ci-small]
     timeout-minutes: 5
     services:
       postgres:

@@ -9,7 +9,7 @@ on:
 jobs:
   deploy:
     name: Deploy Pages
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64, ci-small]
     steps:
       - uses: actions/checkout@v4.1.7
         with:

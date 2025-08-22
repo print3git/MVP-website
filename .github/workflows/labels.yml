@@ -21,7 +21,7 @@ jobs:
     timeout-minutes: 15
     runs-on:
       - [self-hosted, linux, aws]
-      - ubuntu-latest
+      - [self-hosted, linux, x64, ci-small]
     outputs:
       runs_on: ${{ steps.choose.outputs.runs_on }}
     steps:
@@ -31,7 +31,7 @@ jobs:
           script: |
             const useSelf = Boolean(inputs.use_self_hosted);
             if (!useSelf) {
-              core.setOutput('runs_on', 'ubuntu-latest');
+              core.setOutput('runs_on', '["self-hosted","linux","x64","ci-small"]');
               return;
             }
             const runners = await github.paginate(github.rest.actions.listSelfHostedRunnersForRepo, {
@@ -39,5 +39,5 @@ jobs:
               repo: context.repo.repo,
             });
             const hasAws = runners.some(r => r.status === 'online' && r.labels.some(l => l.name === 'aws'));
-            core.setOutput('runs_on', hasAws ? '["self-hosted","aws"]' : 'ubuntu-latest');
+            core.setOutput('runs_on', hasAws ? '["self-hosted","aws"]' : '["self-hosted","linux","x64","ci-small"]');
 

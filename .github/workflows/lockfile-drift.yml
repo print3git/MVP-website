@@ -12,7 +12,7 @@ jobs:
   lockfile-drift:
     runs-on:
       - [self-hosted, linux, aws, small]
-      - ubuntu-latest
+      - [self-hosted, linux, x64, ci-small]
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v5.0.0

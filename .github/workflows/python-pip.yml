@@ -10,7 +10,7 @@ jobs:
   install:
     runs-on:
       - [self-hosted, linux, aws]
-      - ubuntu-latest
+      - [self-hosted, linux, x64, ci-small]
     strategy:
       matrix:
         python-version: ["3.10", "3.11"]

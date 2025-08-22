@@ -1,0 +1,69 @@
+name: Self-hosted run
+
+on:
+  workflow_call:
+    inputs:
+      name:
+        type: string
+        required: true
+      wd:
+        type: string
+        required: true
+      cmd:
+        type: string
+        required: true
+      labels:
+        type: string
+        default: ci-small
+      timeout-min:
+        type: number
+        default: 30
+      shards:
+        type: number
+        default: 1
+
+jobs:
+  run:
+    runs-on: [self-hosted, linux, x64, ${{ inputs.labels }}]
+    timeout-minutes: ${{ inputs.timeout-min }}
+    strategy:
+      matrix:
+        shard: [1,2,3,4]
+    steps:
+      - name: Skip extra shards
+        if: ${{ matrix.shard > inputs.shards }}
+        run: exit 0
+      - uses: actions/checkout@v5
+      - name: Enable Corepack
+        run: corepack enable
+      - id: pm
+        run: |
+          if [ -f pnpm-lock.yaml ]; then
+            echo "pm=pnpm" >> $GITHUB_OUTPUT
+            echo "lock=pnpm-lock.yaml" >> $GITHUB_OUTPUT
+          else
+            echo "pm=npm" >> $GITHUB_OUTPUT
+            echo "lock=package-lock.json" >> $GITHUB_OUTPUT
+          fi
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: ${{ steps.pm.outputs.pm }}
+          cache-dependency-path: ${{ steps.pm.outputs.lock }}
+      - name: Use package manager
+        run: corepack use ${{ steps.pm.outputs.pm }}
+      - name: Set shard env
+        if: ${{ inputs.shards > 1 }}
+        run: |
+          echo "TEST_TOTAL_SHARDS=${{ inputs.shards }}" >> $GITHUB_ENV
+          echo "TEST_SHARD_INDEX=${{ matrix.shard }}" >> $GITHUB_ENV
+      - name: Run command
+        working-directory: ${{ inputs.wd }}
+        run: ${{ inputs.cmd }}
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.name }}-logs
+          path: artifacts/${{ inputs.name }}-logs

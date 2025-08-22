@@ -18,7 +18,7 @@ jobs:
     if: github.event_name == 'pull_request'
     runs-on:
       - [self-hosted, linux, aws]
-      - ubuntu-latest
+      - [self-hosted, linux, x64, ci-small]
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v5
@@ -41,7 +41,7 @@ jobs:
     if: github.ref_name == '00000production'
     runs-on:
       - [self-hosted, linux, aws]
-      - ubuntu-latest
+      - [self-hosted, linux, x64, ci-small]
     strategy:
       fail-fast: true
       matrix:

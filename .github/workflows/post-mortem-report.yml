@@ -11,7 +11,7 @@ jobs:
   fail-test:
     runs-on:
       - [self-hosted, linux, aws]
-      - ubuntu-latest
+      - [self-hosted, linux, x64, ci-small]
     timeout-minutes: 40
     steps:
       - name: Intentionally fail

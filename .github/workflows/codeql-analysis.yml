@@ -15,7 +15,7 @@ jobs:
   analyze:
     runs-on:
       - [self-hosted, linux, aws]
-      - ubuntu-latest
+      - [self-hosted, linux, x64, ci-small]
     strategy:
       fail-fast: false
       matrix:

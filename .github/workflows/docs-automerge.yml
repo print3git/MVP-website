@@ -11,7 +11,7 @@ jobs:
   automerge:
     runs-on:
       - [self-hosted, linux, aws]
-      - ubuntu-latest
+      - [self-hosted, linux, x64, ci-small]
     permissions:
       contents: write
       pull-requests: write

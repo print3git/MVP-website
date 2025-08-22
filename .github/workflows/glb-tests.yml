@@ -29,7 +29,7 @@ jobs:
     timeout-minutes: 15
     runs-on:
       - [self-hosted, linux, aws]
-      - ubuntu-latest
+      - [self-hosted, linux, x64, ci-small]
     steps:
       - name: Heartbeat
         run: |
@@ -55,7 +55,7 @@ jobs:
     needs: unit-tests
     runs-on:
       - [self-hosted, linux, aws]
-      - ubuntu-latest
+      - [self-hosted, linux, x64, ci-small]
     env:
       PORT: 3000
       DB_URL: postgres://user:pass@localhost:5432/testdb

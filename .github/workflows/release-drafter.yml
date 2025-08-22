@@ -9,7 +9,7 @@ jobs:
   update_release_draft:
     runs-on:
       - [self-hosted, linux, aws]
-      - ubuntu-latest
+      - [self-hosted, linux, x64, ci-small]
     steps:
       - uses: release-drafter/release-drafter@v5
         env:

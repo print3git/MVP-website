@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   safety:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64, ci-small]
     steps:
       - uses: actions/checkout@v4
       - name: Ensure core workflows present
@@ -23,7 +23,7 @@ jobs:
           done
           [ $missing -eq 0 ] || { echo "❌ Missing required workflows"; exit 1; }
   manifest:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64, ci-small]
     needs: safety
     steps:
       - name: Print trigger context

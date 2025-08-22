@@ -1,0 +1,28 @@
+name: CI Fast Lane
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  lint:
+    uses: ./.github/workflows/reusable-selfhosted.yml
+    with:
+      name: lint
+      wd: .
+      cmd: npm run lint
+      labels: ci-small
+  unit:
+    uses: ./.github/workflows/reusable-selfhosted.yml
+    with:
+      name: unit
+      wd: .
+      cmd: npm test
+      labels: ci-medium
+  build:
+    uses: ./.github/workflows/reusable-selfhosted.yml
+    with:
+      name: build
+      wd: .
+      cmd: npm run build
+      labels: ci-medium

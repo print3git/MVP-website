@@ -27,7 +27,7 @@ jobs:
   ubuntu:
     needs: selfhosted
     if: needs.selfhosted.result == 'failure' || needs.selfhosted.outcome == 'cancelled'
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64, ci-small]
     steps:
       - uses: actions/checkout@v5
       - uses: ./.github/actions/frontend-build

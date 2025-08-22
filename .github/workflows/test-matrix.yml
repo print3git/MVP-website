@@ -5,13 +5,7 @@ on:
 
 jobs:
   test:
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-
+    runs-on: [self-hosted, linux, x64, ci-small]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

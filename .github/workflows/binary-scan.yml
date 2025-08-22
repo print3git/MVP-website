@@ -12,7 +12,7 @@ jobs:
   scan:
     runs-on:
       - [self-hosted, linux, aws]
-      - ubuntu-latest
+      - [self-hosted, linux, x64, ci-small]
     steps:
       - uses: actions/checkout@v4
         with:

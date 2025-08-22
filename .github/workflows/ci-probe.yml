@@ -6,7 +6,7 @@ on:
 
 jobs:
   verify-checks:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64, ci-small]
     permissions:
       checks: read
       statuses: read

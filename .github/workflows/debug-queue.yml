@@ -18,6 +18,6 @@ jobs:
     timeout-minutes: 15
     runs-on:
       - [self-hosted, linux, aws]
-      - ubuntu-latest
+      - [self-hosted, linux, x64, ci-small]
     steps:
       - run: echo "I ran on ${{ runner.os }} with job id ${{ github.run_id }}"

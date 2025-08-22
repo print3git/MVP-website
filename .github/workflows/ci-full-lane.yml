@@ -1,0 +1,29 @@
+name: CI Full Lane
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  backend:
+    uses: ./.github/workflows/reusable-selfhosted.yml
+    with:
+      name: backend
+      wd: backend
+      cmd: npm test
+      labels: ci-medium
+  frontend:
+    uses: ./.github/workflows/reusable-selfhosted.yml
+    with:
+      name: frontend
+      wd: frontend
+      cmd: npm test
+      labels: ci-medium
+  e2e:
+    uses: ./.github/workflows/reusable-selfhosted.yml
+    with:
+      name: e2e
+      wd: e2e
+      cmd: npm test
+      labels: ci-large
+      shards: 4

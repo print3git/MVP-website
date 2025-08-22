@@ -20,7 +20,7 @@ jobs:
     if: ${{ inputs.build-frontend }}
     runs-on:
       - [self-hosted, linux, aws, small]
-      - ubuntu-latest
+      - [self-hosted, linux, x64, ci-small]
     steps:
       - name: Heartbeat
         run: |
@@ -39,7 +39,7 @@ jobs:
     if: ${{ inputs.build-backend }}
     runs-on:
       - [self-hosted, linux, aws, small]
-      - ubuntu-latest
+      - [self-hosted, linux, x64, ci-small]
     steps:
       - name: Heartbeat
         run: |

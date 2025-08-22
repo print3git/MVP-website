@@ -13,7 +13,7 @@ jobs:
         (github.event.action == 'labeled' && github.event.label.name == 'sync-lock') ||
         (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'sync-lock'))
       ))
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64, ci-small]
     env:
       HUSKY: 0
     steps:

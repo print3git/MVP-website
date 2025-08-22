@@ -18,7 +18,7 @@ jobs:
     if: ${{ false }}
     runs-on:
       - [self-hosted, linux, aws]
-      - ubuntu-latest
+      - [self-hosted, linux, x64, ci-small]
     steps:
       - name: Stop runner service
         run: |
@@ -34,7 +34,7 @@ jobs:
     if: ${{ false }}
     runs-on:
       - [self-hosted, linux, aws]
-      - ubuntu-latest
+      - [self-hosted, linux, x64, ci-small]
     steps:
       - name: Start instance
         run: aws ec2 start-instances --instance-ids "$RUNNER_INSTANCE_ID"

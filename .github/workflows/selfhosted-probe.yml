@@ -37,7 +37,7 @@ jobs:
   timeout-notice:
     if: ${{ needs.probe-selfhosted.result != 'success' }}
     needs: probe-selfhosted
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64, ci-small]
     steps:
       - name: No runner available
         run: echo "Self-hosted runner not available. Run 'terraform apply' to provision." >> "$GITHUB_STEP_SUMMARY"
