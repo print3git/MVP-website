@@ -16,17 +16,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5.0.0
-      - name: prevent mixed package managers
+      - name: Guard single lockfile
+        shell: bash
         run: |
+          set -euo pipefail
           if [ -f package-lock.json ] && [ -f pnpm-lock.yaml ]; then
-            echo "Error: both package-lock.json and pnpm-lock.yaml exist." >&2
-            exit 1
+            echo "::error::Both npm and pnpm lockfiles present"; exit 1
           fi
-      - name: enable corepack
-        run: corepack enable
-      - uses: pnpm/action-setup@v4.1.0
+      - uses: actions/setup-node@v4
         with:
-          version: 9
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+      - run: corepack enable
+      - uses: pnpm/action-setup@v4
+        with:
           run_install: false
-      - name: install dependencies
-        run: pnpm install --no-frozen-lockfile
+      - run: pnpm install --frozen-lockfile

@@ -3,6 +3,13 @@ description: Prepare Node environment and pnpm
 runs:
   using: composite
   steps:
+    - name: Guard single lockfile
+      shell: bash
+      run: |
+        set -euo pipefail
+        if [ -f package-lock.json ] && [ -f pnpm-lock.yaml ]; then
+          echo "::error::Both npm and pnpm lockfiles present"; exit 1
+        fi
     - name: Setup env aliases
       shell: bash
       run: echo "BASH_ENV=$GITHUB_WORKSPACE/scripts/env/aliases.sh" >> "$GITHUB_ENV"
@@ -12,12 +19,9 @@ runs:
         corepack enable
         echo "PNPM_HOME=$HOME/.local/share/pnpm" >> $GITHUB_ENV
         echo "$HOME/.local/share/pnpm" >> $GITHUB_PATH
-    - name: Ensure pnpm
-      shell: bash
-      run: |
-        if ! command -v pnpm >/dev/null 2>&1; then
-          corepack prepare pnpm@latest --activate
-        fi
+    - uses: pnpm/action-setup@v4
+      with:
+        run_install: false
     - name: Refresh lockfile if needed
       shell: bash
       run: |
