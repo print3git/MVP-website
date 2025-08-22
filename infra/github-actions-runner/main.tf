@@ -77,7 +77,7 @@ resource "aws_iam_instance_profile" "runner" {
 
 resource "aws_launch_template" "runner" {
   name_prefix   = "gha-runner-"
-  image_id      = data.aws_ami.al2023.id
+  image_id      = var.runner_ami_id != "" ? var.runner_ami_id : data.aws_ami.al2023.id
   instance_type = var.instance_type
 
   iam_instance_profile {

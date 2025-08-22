@@ -43,3 +43,9 @@ variable "queue_length_metric_name" {
   type    = string
   default = "QueuedJobs"
 }
+
+variable "runner_ami_id" {
+  type        = string
+  description = "AMI ID for GitHub Actions runner; leave empty to use latest Amazon Linux 2023."
+  default     = ""
+}
