@@ -24,3 +24,5 @@ coverage/**
 package-lock.json
 js/model-viewer.min.js
 scripts/ci_watchdog.js
+.github/actions/ci-metrics-emit/action.yml
+tests/ci-guard/metrics-action-yaml/fixtures/missing-colon.yml
