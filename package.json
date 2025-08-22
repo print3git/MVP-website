@@ -102,6 +102,7 @@
     "test:ci:regression": "node scripts/run-jest.js --config tests/jest.config.js --selectProjects ci",
     "test:e2e:regression": "playwright test --config tests/playwright.config.ts",
     "test:regression": "npm run test:backend:regression && npm run test:frontend:regression && npm run test:ci:regression && npm run test:e2e:regression",
+    "test:workspace": "vitest run tests/workspace -t workspace",
     "ci:probe": "bash -O globstar -c 'env -u npm_config_prefix node --test tests/ci/**/*.test.js'",
     "ci:summary": "node scripts/ci/print-suite-summary.js"
   },
@@ -186,6 +187,7 @@
     "tsconfig-strictest": "^1.0.0-beta.1",
     "tslib": "^2.8.1",
     "typescript": "^5.8.3",
+    "vitest": "^3.2.4",
     "wait-on": "^8.0.3",
     "yaml": "^2.8.0"
   },
