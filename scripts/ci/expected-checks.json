@@ -1,0 +1,13 @@
+{
+  "checks": [
+    "CI Full Lane / lint",
+    "CI Full Lane / typecheck",
+    "CI Full Lane / unit",
+    "CI Full Lane / backend",
+    "CI Full Lane / frontend",
+    "CI Full Lane / e2e",
+    "CI Full Lane / docs",
+    "CI Full Lane / infra",
+    "CodeQL / analyze"
+  ]
+}

@@ -1,40 +1,42 @@
 name: CI Watchdog
 
-env:
-  HUSKY: 0
-
 on:
   workflow_run:
-    workflows: ["CI", "build", "test"]
+    workflows: ["CI Full Lane"]
     types: [completed]
-  schedule:
-    - cron:  '0 */3 * * *'
 
 permissions:
-  contents: write
-  issues: write
-  pull-requests: write
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  actions: read
+  checks: read
+  contents: read
 
 jobs:
-  scan:
-    timeout-minutes: 15
-    if: ${{ github.repository_owner == 'print3git' }}
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+  verify:
+    runs-on: ubuntu-latest
     steps:
-      - name: Heartbeat
-        run: |
-          while true; do date; sleep 120; done &
       - uses: actions/checkout@v5
-      - uses: actions/setup-node@v4
+      - name: Ensure required checks ran
+        uses: actions/github-script@v7
         with:
-          node-version: 20
-      - run: npm install --no-audit --no-fund
-      - run: node scripts/ci_watchdog.js
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const expected = JSON.parse(fs.readFileSync('scripts/ci/expected-checks.json', 'utf8')).checks;
+            const run_id = context.payload.workflow_run.id;
+            const run = await github.rest.actions.getWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id
+            });
+            const sha = run.data.head_sha;
+            const { data: { check_runs } } = await github.rest.checks.listForRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: sha,
+              per_page: 100
+            });
+            const names = check_runs.map(c => c.name);
+            const missing = expected.filter(n => !names.includes(n));
+            const skipped = check_runs.filter(c => expected.includes(c.name) && c.conclusion === 'skipped').map(c => c.name);
+            if (missing.length || skipped.length) {
+              core.setFailed(`Missing checks: ${missing.join(', ')}. Skipped checks: ${skipped.join(', ')}`);
+            }

@@ -202,6 +202,12 @@
     "*.ts": [
       "eslint --fix",
       "prettier --log-level warn --write"
+    ],
+    "scripts/ci/expected-checks.json": [
+      "node scripts/ci/update-expected-checks.js --check"
+    ],
+    ".github/workflows/ci-full-lane.yml": [
+      "node scripts/ci/update-expected-checks.js --check"
     ]
   },
   "dependencies": {
