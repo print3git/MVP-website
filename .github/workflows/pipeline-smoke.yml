@@ -15,8 +15,49 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  frontend-build:
+    timeout-minutes: 15
+    runs-on:
+      - [self-hosted, linux, aws]
+      - ubuntu-latest
+    steps:
+      - name: Heartbeat
+        run: |
+          while true; do date; sleep 120; done &
+      - uses: actions/checkout@v5
+      # >>> BEGIN MANAGED BLOCK: ci-guard:frontend-smoke-artifact
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - run: corepack enable
+        shell: bash
+      - uses: pnpm/action-setup@v4
+        with: { run_install: false }
+      - name: Install deps (frontend)
+        working-directory: frontend
+        run: pnpm install --frozen-lockfile
+        shell: bash
+      - name: Build frontend
+        working-directory: frontend
+        run: pnpm run build
+        shell: bash
+      - name: Verify build artifact
+        run: |
+          set -euo pipefail
+          test -f frontend/dist/index.html || { echo "::error::frontend/dist/index.html missing"; exit 2; }
+        shell: bash
+      - name: Upload frontend artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
+      # <<< END MANAGED BLOCK: ci-guard:frontend-smoke-artifact
+
   smoke_test:
     timeout-minutes: 15
+    needs: frontend-build
     runs-on:
       - [self-hosted, linux, aws]
       - ubuntu-latest
@@ -40,6 +81,16 @@ jobs:
           while true; do date; sleep 120; done &
       - name: Checkout code
         uses: actions/checkout@v5
+      # >>> BEGIN MANAGED BLOCK: ci-guard:frontend-smoke-artifact
+      - name: Download frontend artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
+      - name: Re-verify artifact
+        run: test -f frontend/dist/index.html
+        shell: bash
+      # <<< END MANAGED BLOCK: ci-guard:frontend-smoke-artifact
 
       - name: Load Stripe env
         run: node scripts/ci-env-preflight.js
@@ -52,13 +103,7 @@ jobs:
         with:
           node-version: 20
       - name: Install dependencies
-        run: |
-          npm ci
-          npm ci --prefix frontend
-          npm run build --prefix frontend
-
-      - name: Ensure frontend build output exists
-        run: test -f frontend/dist/index.html
+        run: npm ci
 
       - name: Run smoke tests
         run: npm run smoke

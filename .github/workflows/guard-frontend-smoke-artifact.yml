@@ -1,0 +1,21 @@
+name: Frontend Smoke Artifact Guard
+
+on:
+  pull_request:
+  push:
+    branches:
+      - dev
+      - "00000production"
+
+jobs:
+  verify:
+    runs-on:
+      - [self-hosted, linux, aws]
+      - ubuntu-latest
+    steps:
+      - name: Heartbeat
+        run: |
+          while true; do date; sleep 120; done &
+      - uses: actions/checkout@v5
+      - name: Verify artifact block
+        run: node scripts/ci-guard/frontend-smoke-artifact/verify.js
