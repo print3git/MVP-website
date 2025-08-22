@@ -1,0 +1,16 @@
+name: diag usage audit
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.1.7
+      - uses: actions/setup-node@v4.0.2
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npm run ci:diag-audit

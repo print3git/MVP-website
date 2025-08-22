@@ -1,0 +1,20 @@
+name: Collect Diagnostics
+description: Gather logs and repo snapshot robustly.
+runs:
+  using: "composite"
+  steps:
+    - shell: bash
+      run: |
+        set -euo pipefail
+        mkdir -p ci/diag
+        if command -v dmesg >/dev/null 2>&1; then dmesg | tail -n 200 > ci/diag/dmesg.txt 2>/dev/null || true; fi
+        if command -v journalctl >/dev/null 2>&1; then journalctl -xe --no-pager | tail -n 400 > ci/diag/journal.txt 2>/dev/null || true; fi
+        git log -n 5 --oneline > ci/diag/gitlog.txt 2>/dev/null || true
+        for d in frontend backend; do [ -d "$d" ] && cp -R "$d" "ci/diag/$d" 2>/dev/null || true; done
+    - uses: actions/upload-artifact@v4.4.0
+      if: always()
+      with:
+        name: diag-${{ github.job }}-${{ github.run_id }}
+        path: |
+          ci/diag
+          !ci/diag/**/node_modules/**

@@ -1,0 +1,4 @@
+jobs:
+  test:
+    steps:
+      - uses: ./.github/actions/collect-diag
