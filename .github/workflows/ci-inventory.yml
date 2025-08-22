@@ -12,9 +12,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.1.6
+      # >>> BEGIN MANAGED BLOCK: ci-guard:workflow-map-yaml-dep
       - uses: actions/setup-node@v4.0.2
         with:
           node-version: 20
+          cache: pnpm
+      - run: corepack enable
+        shell: bash
+      - uses: pnpm/action-setup@v4.1.0
+        with:
+          run_install: false
+      - name: Install dev deps
+        run: pnpm install --frozen-lockfile
+        shell: bash
+      # <<< END MANAGED BLOCK: ci-guard:workflow-map-yaml-dep
       - run: node scripts/ci/inventory-tests.js > ci-test-inventory.json
       - run: node scripts/ci/map-workflows.js > ci-workflow-map.json
       - id: compare

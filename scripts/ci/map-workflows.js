@@ -1,7 +1,15 @@
 #!/usr/bin/env node
 const fs = require("fs");
 const path = require("path");
-const yaml = require("yaml");
+let YAML;
+try {
+  YAML = require("yaml");
+} catch (e) {
+  console.error(
+    'Missing "yaml" module. Ensure devDependencies are installed before running this script.',
+  );
+  process.exit(2);
+}
 
 const repoRoot = path.resolve(__dirname, "..", "..");
 const workflowsDir = path.join(repoRoot, ".github", "workflows");
@@ -29,7 +37,7 @@ for (const file of fs.readdirSync(workflowsDir)) {
   if (!file.endsWith(".yml") && !file.endsWith(".yaml")) continue;
   let doc;
   try {
-    doc = yaml.parse(fs.readFileSync(path.join(workflowsDir, file), "utf8"));
+    doc = YAML.parse(fs.readFileSync(path.join(workflowsDir, file), "utf8"));
   } catch {
     continue;
   }
