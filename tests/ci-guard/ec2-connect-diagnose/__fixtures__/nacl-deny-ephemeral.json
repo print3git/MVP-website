@@ -1,0 +1,14 @@
+{
+  "statusChecks": true,
+  "publicIp": "1.2.3.4",
+  "eicEndpoint": true,
+  "securityGroup": { "id": "sg-123", "inbound": [22] },
+  "nacl": { "id": "acl-1", "deniesEphemeral": true, "entry": "100" },
+  "routeTable": { "id": "rtb-1", "hasInternet": true },
+  "ssm": { "online": true, "logs": "" },
+  "os": { "distro": "ubuntu", "hasEicPackage": true },
+  "disk": {
+    "full": false,
+    "df": "Filesystem Size Used Avail Use% Mounted on\n/dev/xvda1 8G 1G 7G 14% /"
+  }
+}
