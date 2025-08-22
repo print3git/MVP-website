@@ -1,0 +1,40 @@
+name: Workflow lint
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "**/*.yml"
+      - "**/*.yaml"
+  pull_request:
+    paths:
+      - "**/*.yml"
+      - "**/*.yaml"
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: actionlint
+        uses: rhysd/actionlint@v1.7.7
+      - name: yamllint
+        uses: reviewdog/action-yamllint@v1.21.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          yamllint_flags: "-c .yamllint.yml ."
+          reporter: github-pr-check
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Prettier check
+        id: prettier
+        run: npx prettier@3.5.3 --check "**/*.yml" "**/*.yaml"
+        continue-on-error: true
+      - name: Annotate Prettier issues
+        if: steps.prettier.outcome == 'failure'
+        run: |
+          for file in $(npx prettier@3.5.3 --list-different "**/*.yml" "**/*.yaml"); do
+            echo "::error file=$file::Prettier formatting issues"
+          done
+          exit 1
