@@ -1,0 +1,32 @@
+name: Node setup
+runs:
+  using: composite
+  steps:
+    - name: Enable Corepack and set PNPM_HOME
+      shell: bash
+      run: |
+        corepack enable
+        echo "PNPM_HOME=$HOME/.local/share/pnpm" >> $GITHUB_ENV
+        echo "$HOME/.local/share/pnpm" >> $GITHUB_PATH
+    - name: Ensure pnpm
+      shell: bash
+      run: |
+        if ! command -v pnpm >/dev/null 2>&1; then
+          corepack prepare pnpm@latest --activate
+        fi
+    - name: Refresh lockfile if needed
+      shell: bash
+      run: |
+        if ! pnpm install --frozen-lockfile --lockfile-only >/dev/null 2>&1; then
+          echo 'pnpm-lock.yaml is out of sync with package.json. Running pnpm install --no-frozen-lockfile.'
+          pnpm install --no-frozen-lockfile
+        fi
+    - name: Ensure vite in frontend devDependencies
+      shell: bash
+      run: |
+        if [ -f frontend/package.json ]; then
+          if ! node -e "const pkg=require('./frontend/package.json'); process.exit(pkg.devDependencies && pkg.devDependencies.vite ? 0 : 1);"; then
+            echo '::error::frontend workspace missing devDependency "vite". Run "npm i -D vite" in frontend' >&2
+            exit 1
+          fi
+        fi
