@@ -1,0 +1,12 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ci-audit suite > ci-audit: logs structured summary without stack traces 1`] = `
+"| Package | Discovered Tests | CI Jobs covering it |
+| --- | --- | --- |
+| root | yes | good/test |
+
+Missing packages: none
+Disabled items: none
+Missing required checks: none
+"
+`;

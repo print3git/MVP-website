@@ -70,3 +70,9 @@ jobs:
     with:
       suite: infra
       command: npm test -- --infra
+  ci-audit:
+    uses: ./.github/workflows/reusable-test-job.yml
+    needs: impact
+    with:
+      suite: ci-audit
+      command: npm run test:ci-audit

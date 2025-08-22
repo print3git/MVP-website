@@ -73,6 +73,11 @@ jobs:
     with:
       suite: infra
       command: npm test -- --infra
+  ci-audit:
+    uses: ./.github/workflows/reusable-test-job.yml
+    with:
+      suite: ci-audit
+      command: npm run test:ci-audit
   pnpm-sentinel:
     name: pnpm sentinel
     runs-on: ubuntu-latest
