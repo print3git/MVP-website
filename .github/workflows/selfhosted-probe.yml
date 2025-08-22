@@ -6,6 +6,9 @@ on:
   schedule:
     - cron: "*/15 * * * *"
 
+env:
+  MIN_RUNNERS: ${{ vars.MIN_SELF_HOSTED_RUNNERS || 1 }}
+
 jobs:
   probe-selfhosted:
     name: Probe self-hosted runner
@@ -16,6 +19,32 @@ jobs:
     steps:
       - name: Runner context
         run: echo '${{ toJSON(runner) }}'
+      - name: Verify self-hosted capacity
+        id: capacity
+        uses: actions/github-script@v7.0.1
+        env:
+          required: ${{ env.MIN_RUNNERS }}
+        with:
+          script: |
+            const required = parseInt(process.env.required || '1', 10);
+            const runners = await github.paginate(
+              github.rest.actions.listSelfHostedRunnersForRepo,
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+              }
+            );
+            const online = runners.filter(
+              (r) =>
+                r.status === 'online' &&
+                r.labels.some((l) => l.name === 'mvp-runner')
+            ).length;
+            core.info(`Online mvp-runner runners: ${online}`);
+            if (online < required) {
+              core.setFailed(
+                `Only ${online} self-hosted runners online; need at least ${required}.`
+              );
+            }
       - name: Node version
         run: node -v
       - name: npm version
