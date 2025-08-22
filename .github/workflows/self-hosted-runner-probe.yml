@@ -1,0 +1,25 @@
+name: self-hosted runner probe
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: list runners
+        uses: actions/github-script@v7.0.1
+        with:
+          script: |
+            const runners = await github.paginate(
+              github.rest.actions.listSelfHostedRunnersForRepo,
+              {owner: context.repo.owner, repo: context.repo.repo}
+            );
+            const online = runners.filter(r => r.labels.some(l => l.name === 'aws') && r.status === 'online');
+            if (online.length === 0) {
+              core.setFailed('no aws runners online');
+            } else {
+              core.info(`aws runners online: ${online.length}`);
+            }
