@@ -1,0 +1,63 @@
+name: Scale in self-hosted runners when idle
+
+on:
+  workflow_dispatch:
+    inputs:
+      idle_minutes:
+        description: Minutes to consider idle
+        required: false
+        default: 15
+        type: number
+  schedule:
+    - cron: "*/15 * * * *"
+
+env:
+  CONFIG_FILE: .github/ci/selfhosted-config.yml
+  AWS_ROLE_TO_ASSUME: ${{ vars.AWS_ROLE_TO_ASSUME || env.AWS_ROLE_TO_ASSUME }}
+
+jobs:
+  scale-in:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Read config
+        id: cfg
+        run: |
+          ASG_NAME=$(grep '^asg_name:' "$CONFIG_FILE" | awk '{print $2}')
+          REGION=$(grep '^aws_region:' "$CONFIG_FILE" | awk '{print $2}')
+          echo "asg_name=$ASG_NAME" >> "$GITHUB_OUTPUT"
+          echo "region=$REGION" >> "$GITHUB_OUTPUT"
+      - name: Configure AWS
+        uses: aws-actions/configure-aws-credentials@v4.0.1
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ steps.cfg.outputs.region }}
+      - name: Check recent activity
+        id: active
+        uses: actions/github-script@v7.0.1
+        env:
+          MINUTES: ${{ inputs.idle_minutes || 15 }}
+        with:
+          script: |
+            const minutes = parseInt(process.env.MINUTES, 10);
+            const since = new Date(Date.now() - minutes*60*1000).toISOString();
+            const runs = await github.paginate(github.rest.actions.listWorkflowRunsForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 100,
+              status: 'in_progress'
+            });
+            const active = runs.some(r => new Date(r.created_at) > since);
+            core.setOutput('active', active);
+      - name: Scale in if idle
+        if: steps.active.outputs.active != 'true'
+        run: |
+          ASG=${{ steps.cfg.outputs.asg_name }}
+          REGION=${{ steps.cfg.outputs.region }}
+          MIN_SIZE=$(aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names "$ASG" --query 'AutoScalingGroups[0].MinSize' --region "$REGION" --output text)
+          TARGET=$(( MIN_SIZE>0 ? MIN_SIZE : 0 ))
+          echo "Setting desired capacity to $TARGET"
+          aws autoscaling set-desired-capacity --auto-scaling-group-name "$ASG" --desired-capacity "$TARGET" --region "$REGION" || echo "Scale-in skipped"
+      - name: Skip scale in
+        if: steps.active.outputs.active == 'true'
+        run: echo "Workflows active, keeping capacity"
