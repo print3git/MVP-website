@@ -2,6 +2,7 @@ name: Pages Deploy
 
 env:
   HUSKY: 0
+  BASH_ENV: scripts/env/aliases.sh
 
 on:
   push:

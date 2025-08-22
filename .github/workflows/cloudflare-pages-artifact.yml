@@ -5,6 +5,9 @@ on:
     branches: [dev]
   pull_request:
 
+env:
+  BASH_ENV: scripts/env/aliases.sh
+
 jobs:
   build:
     runs-on: ubuntu-latest

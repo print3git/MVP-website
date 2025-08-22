@@ -2,6 +2,9 @@ name: Setup pnpm
 runs:
   using: composite
   steps:
+    - name: Setup env aliases
+      shell: bash
+      run: echo "BASH_ENV=$GITHUB_WORKSPACE/scripts/env/aliases.sh" >> "$GITHUB_ENV"
     - run: corepack enable
       shell: bash
     - run: corepack prepare pnpm@9.0.0 --activate
