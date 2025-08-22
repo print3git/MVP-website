@@ -22,3 +22,5 @@ coverage:
   workflow: coverage.yml
 e2e-smoke:
   workflow: smoke_test.yml
+inventory:
+  workflow: inventory.yml

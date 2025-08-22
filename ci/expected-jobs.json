@@ -8,6 +8,7 @@
     "e2e:smoke",
     "codeql:analyze",
     "coverage",
-    "size-limit"
+    "size-limit",
+    "inventory:inventory"
   ]
 }
