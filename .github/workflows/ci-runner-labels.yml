@@ -1,9 +1,13 @@
 name: Runner Label Guard
-on: { workflow_dispatch: {} }
+on:
+  push:
+  pull_request:
+  workflow_dispatch: {}
 jobs:
   guard:
     runs-on: [self-hosted, linux, x64, aws-runner]
     steps:
+      - uses: actions/checkout@v4
       - name: Print labels
         run: |
           echo "Labels: $RUNNER_LABELS"
