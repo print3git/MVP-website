@@ -1,0 +1,22 @@
+name: diag-shell-fix guard
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npx ts-node --transpile-only scripts/ci-guard/diag-shell-fix/audit.ts
+      - run: node scripts/run-jest.js tests/ci-guard/diag-shell-fix/audit.test.ts
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: diag-shell-fix-audit
+          path: diag-shell-fix-audit-summary.json
