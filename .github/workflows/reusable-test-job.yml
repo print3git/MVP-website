@@ -20,6 +20,9 @@ jobs:
       run:
         shell: bash -euo pipefail
     steps:
+      - name: Diagnostic shell check
+        run: echo "diag shell ok: $(bash --version | head -1)"
+        shell: bash
       - name: Preflight (print context)
         env:
           GITHUB_REF: ${{ github.ref }}
@@ -72,17 +75,20 @@ jobs:
         if: ${{ inputs.suite != 'e2e' || !cancelled() }}
         run: ${{ inputs.command }}
       - name: Bundle lane diagnostics
-        if: ${{ failure() || cancelled() }}
+        if: always()
+        shell: bash
         run: |
+          set -euo pipefail
           mkdir -p ci/diag
-          dmesg | tail -n 200 > ci/diag/dmesg.txt 2>/dev/null || true
-          journalctl -xe --no-pager | tail -n 400 > ci/diag/journal.txt 2>/dev/null || true
-          git log -n 5 --oneline > ci/diag/gitlog.txt
-          cp -r frontend  ci/diag/frontend 2>/dev/null || true
-          cp -r backend   ci/diag/backend  2>/dev/null || true
+          # OS checks; best-effort commands guarded
+          if command -v dmesg >/dev/null 2>&1; then dmesg | tail -n 200 > ci/diag/dmesg.txt 2>/dev/null || true; fi
+          if command -v journalctl >/dev/null 2>&1; then journalctl -xe --no-pager | tail -n 400 > ci/diag/journal.txt 2>/dev/null || true; fi
+          git log -n 5 --oneline > ci/diag/gitlog.txt 2>/dev/null || true
+          for d in frontend backend; do [ -d "$d" ] && cp -R "$d" "ci/diag/$d" 2>/dev/null || true; done
       - uses: actions/upload-artifact@v4
-        if: ${{ failure() || cancelled() }}
+        if: always()
         with:
-          name: lane-diag-${{ github.job }}
-          path: ci/diag
-          retention-days: 7
+          name: diag-${{ github.job }}-${{ github.run_id }}
+          path: |
+            ci/diag
+            !ci/diag/**/node_modules/**
