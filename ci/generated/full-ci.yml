@@ -290,7 +290,7 @@ jobs:
           - name: fail-test
             command: |
           - name: lint-typecheck
-            command: pnpm install --no-frozen-lockfile
+            command: pnpm -v && pnpm -C frontend install --frozen-lockfile && pnpm -C frontend build
           - name: changed
             command: echo "historical job changed"
           - name: remind

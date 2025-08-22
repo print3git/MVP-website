@@ -2,265 +2,199 @@
   {
     "name": "backend-dalle_server:test",
     "command": "npm run test --prefix backend/dalle_server",
-    "paths": [
-      "backend/dalle_server"
-    ],
+    "paths": ["backend/dalle_server"],
     "needs": []
   },
   {
     "name": "backend:test",
     "command": "npm run test --prefix backend",
-    "paths": [
-      "backend"
-    ],
+    "paths": ["backend"],
     "needs": []
   },
   {
     "name": "backend:test-ci",
     "command": "npm run test-ci --prefix backend",
-    "paths": [
-      "backend"
-    ],
+    "paths": ["backend"],
     "needs": []
   },
   {
     "name": "backend:test:unit",
     "command": "npm run test:unit --prefix backend",
-    "paths": [
-      "backend"
-    ],
+    "paths": ["backend"],
     "needs": []
   },
   {
     "name": "frontend:test",
     "command": "npm run test --prefix frontend",
-    "paths": [
-      "frontend"
-    ],
+    "paths": ["frontend"],
     "needs": []
   },
   {
     "name": "root:test:structure",
     "command": "npm run test:structure",
-    "paths": [
-      "."
-    ],
+    "paths": ["."],
     "needs": []
   },
   {
     "name": "root:test",
     "command": "npm run test",
-    "paths": [
-      "."
-    ],
+    "paths": ["."],
     "needs": []
   },
   {
     "name": "root:test:ci",
     "command": "npm run test:ci",
-    "paths": [
-      "."
-    ],
+    "paths": ["."],
     "needs": []
   },
   {
     "name": "root:test:update-threshold",
     "command": "npm run test:update-threshold",
-    "paths": [
-      "."
-    ],
+    "paths": ["."],
     "needs": []
   },
   {
     "name": "root:test:cf-readiness",
     "command": "npm run test:cf-readiness",
-    "paths": [
-      "."
-    ],
+    "paths": ["."],
     "needs": []
   },
   {
     "name": "root:test:stability",
     "command": "npm run test:stability",
-    "paths": [
-      "."
-    ],
+    "paths": ["."],
     "needs": []
   },
   {
     "name": "root:test:e2e",
     "command": "npm run test:e2e",
-    "paths": [
-      "."
-    ],
+    "paths": ["."],
     "needs": []
   },
   {
     "name": "root:test:unit",
     "command": "npm run test:unit",
-    "paths": [
-      "."
-    ],
+    "paths": ["."],
     "needs": []
   },
   {
     "name": "root:test:all",
     "command": "npm run test:all",
-    "paths": [
-      "."
-    ],
+    "paths": ["."],
     "needs": []
   },
   {
     "name": "root:test:changed",
     "command": "npm run test:changed",
-    "paths": [
-      "."
-    ],
+    "paths": ["."],
     "needs": []
   },
   {
     "name": "root:test:a11y",
     "command": "npm run test:a11y",
-    "paths": [
-      "."
-    ],
+    "paths": ["."],
     "needs": []
   },
   {
     "name": "root:test:ui",
     "command": "npm run test:ui",
-    "paths": [
-      "."
-    ],
+    "paths": ["."],
     "needs": []
   },
   {
     "name": "root:test:generate",
     "command": "npm run test:generate",
-    "paths": [
-      "."
-    ],
+    "paths": ["."],
     "needs": []
   },
   {
     "name": "root:test:webhook",
     "command": "npm run test:webhook",
-    "paths": [
-      "."
-    ],
+    "paths": ["."],
     "needs": []
   },
   {
     "name": "root:test:backend:regression",
     "command": "npm run test:backend:regression",
-    "paths": [
-      "."
-    ],
+    "paths": ["."],
     "needs": []
   },
   {
     "name": "root:test:frontend:regression",
     "command": "npm run test:frontend:regression",
-    "paths": [
-      "."
-    ],
+    "paths": ["."],
     "needs": []
   },
   {
     "name": "root:test:ci:regression",
     "command": "npm run test:ci:regression",
-    "paths": [
-      "."
-    ],
+    "paths": ["."],
     "needs": []
   },
   {
     "name": "root:test:e2e:regression",
     "command": "npm run test:e2e:regression",
-    "paths": [
-      "."
-    ],
+    "paths": ["."],
     "needs": []
   },
   {
     "name": "root:test:regression",
     "command": "npm run test:regression",
-    "paths": [
-      "."
-    ],
+    "paths": ["."],
     "needs": []
   },
   {
     "name": "jest:backend",
     "command": "npm test",
-    "paths": [
-      "backend/jest.config.js"
-    ],
+    "paths": ["backend/jest.config.js"],
     "needs": []
   },
   {
     "name": "jest:frontend",
     "command": "npm test",
-    "paths": [
-      "frontend/jest.config.js"
-    ],
+    "paths": ["frontend/jest.config.js"],
     "needs": []
   },
   {
     "name": "jest:.",
     "command": "npm test",
-    "paths": [
-      "jest.config.js"
-    ],
+    "paths": ["jest.config.js"],
     "needs": []
   },
   {
     "name": "playwright:.",
     "command": "npx playwright test",
-    "paths": [
-      "playwright.config.js"
-    ],
+    "paths": ["playwright.config.js"],
     "needs": []
   },
   {
     "name": "jest:tests/backend",
     "command": "npm test",
-    "paths": [
-      "tests/backend/jest.config.js"
-    ],
+    "paths": ["tests/backend/jest.config.js"],
     "needs": []
   },
   {
     "name": "jest:tests/ci",
     "command": "npm test",
-    "paths": [
-      "tests/ci/jest.config.js"
-    ],
+    "paths": ["tests/ci/jest.config.js"],
     "needs": []
   },
   {
     "name": "jest:tests/frontend",
     "command": "npm test",
-    "paths": [
-      "tests/frontend/jest.config.js"
-    ],
+    "paths": ["tests/frontend/jest.config.js"],
     "needs": []
   },
   {
     "name": "playwright:tests/full-stack",
     "command": "npx playwright test",
-    "paths": [
-      "tests/full-stack/playwright.config.js"
-    ],
+    "paths": ["tests/full-stack/playwright.config.js"],
     "needs": []
   },
   {
     "name": "jest:tests",
     "command": "npm test",
-    "paths": [
-      "tests/jest.config.js"
-    ],
+    "paths": ["tests/jest.config.js"],
     "needs": []
   },
   {
@@ -901,7 +835,7 @@
   },
   {
     "name": "lint-typecheck",
-    "command": "pnpm install --no-frozen-lockfile",
+    "command": "pnpm -v && pnpm -C frontend install --frozen-lockfile && pnpm -C frontend build",
     "paths": [],
     "needs": []
   },
