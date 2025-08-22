@@ -1,39 +1,25 @@
-const test = require("node:test");
-const assert = require("node:assert/strict");
-const fs = require("node:fs");
+const { spawnSync } = require("node:child_process");
 const path = require("node:path");
 
-function parseToml(str) {
-  try {
-    const toml = require("toml");
-    return toml.parse(str);
-  } catch {
-    const out = {};
-    str.split(/\n+/).forEach((line) => {
-      const m = line.match(/^\s*([^#=]+)\s*=\s*"?([^"#]+)"?/);
-      if (m) out[m[1].trim()] = m[2].trim();
-    });
-    return out;
-  }
-}
-
-const wranglerPath = path.join(process.cwd(), "wrangler.toml");
-
-test("wrangler.toml pages config", () => {
-  if (!fs.existsSync(wranglerPath)) {
-    test.skip("no wrangler.toml");
-    return;
-  }
-  const config = parseToml(fs.readFileSync(wranglerPath, "utf8"));
-  const errors = [];
-  if ("build" in config)
-    errors.push('remove "build" (Pages uses pages_build_output_dir)');
-  if (!config.name) errors.push("missing name");
-  if (!config.pages_build_output_dir)
-    errors.push("missing pages_build_output_dir");
-  if (errors.length) {
-    assert.fail(
-      `wrangler.toml invalid: ${errors.join(", ")}. See Cloudflare Pages docs for fixes.`,
+describe("wrangler.toml pages config", () => {
+  test("config valid", () => {
+    const script = path.join(
+      __dirname,
+      "..",
+      "..",
+      "scripts",
+      "cf",
+      "validate-wrangler.ts",
     );
-  }
+    const res = spawnSync(
+      "npx",
+      ["-y", "ts-node", "--transpile-only", script],
+      {
+        encoding: "utf8",
+      },
+    );
+    if (res.status !== 0) {
+      throw new Error((res.stdout + res.stderr).trim());
+    }
+  });
 });
