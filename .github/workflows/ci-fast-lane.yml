@@ -1,0 +1,72 @@
+name: CI Fast Lane
+on:
+  pull_request:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  impact:
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.map.outputs.backend }}
+      frontend: ${{ steps.map.outputs.frontend }}
+      e2e: ${{ steps.map.outputs.e2e }}
+      docs: ${{ steps.map.outputs.docs }}
+      infra: ${{ steps.map.outputs.infra }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: map
+        uses: ./.github/actions/ci-impact-map
+  lint:
+    uses: ./.github/workflows/reusable-test-job.yml
+    needs: impact
+    with:
+      suite: lint
+      command: npm run lint
+  typecheck:
+    uses: ./.github/workflows/reusable-test-job.yml
+    needs: impact
+    with:
+      suite: typecheck
+      command: npm run typecheck
+  unit:
+    uses: ./.github/workflows/reusable-test-job.yml
+    needs: impact
+    with:
+      suite: unit
+      command: npm test
+  backend:
+    if: needs.impact.outputs.backend == 'true'
+    uses: ./.github/workflows/reusable-test-job.yml
+    needs: impact
+    with:
+      suite: backend
+      command: npm test -- --backend
+  frontend:
+    if: needs.impact.outputs.frontend == 'true'
+    uses: ./.github/workflows/reusable-test-job.yml
+    needs: impact
+    with:
+      suite: frontend
+      command: npm test -- --frontend
+  e2e:
+    if: needs.impact.outputs.e2e == 'true'
+    uses: ./.github/workflows/reusable-test-job.yml
+    needs: impact
+    with:
+      suite: e2e
+      command: npm run test:e2e
+  docs:
+    if: needs.impact.outputs.docs == 'true'
+    uses: ./.github/workflows/reusable-test-job.yml
+    needs: impact
+    with:
+      suite: docs
+      command: npm test -- --docs
+  infra:
+    if: needs.impact.outputs.infra == 'true'
+    uses: ./.github/workflows/reusable-test-job.yml
+    needs: impact
+    with:
+      suite: infra
+      command: npm test -- --infra

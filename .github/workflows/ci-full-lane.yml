@@ -1,0 +1,53 @@
+name: CI Full Lane
+on:
+  pull_request:
+  push:
+    branches:
+      - dev
+      - '00000production'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  lint:
+    uses: ./.github/workflows/reusable-test-job.yml
+    with:
+      suite: lint
+      command: npm run lint
+  typecheck:
+    uses: ./.github/workflows/reusable-test-job.yml
+    with:
+      suite: typecheck
+      command: npm run typecheck
+  unit:
+    uses: ./.github/workflows/reusable-test-job.yml
+    with:
+      suite: unit
+      command: npm test
+  backend:
+    uses: ./.github/workflows/reusable-test-job.yml
+    with:
+      suite: backend
+      command: npm test -- --backend
+      use-self-hosted: true
+  frontend:
+    uses: ./.github/workflows/reusable-test-job.yml
+    with:
+      suite: frontend
+      command: npm test -- --frontend
+  e2e:
+    uses: ./.github/workflows/reusable-test-job.yml
+    with:
+      suite: e2e
+      command: npm run test:e2e
+      use-self-hosted: true
+  docs:
+    uses: ./.github/workflows/reusable-test-job.yml
+    with:
+      suite: docs
+      command: npm test -- --docs
+  infra:
+    uses: ./.github/workflows/reusable-test-job.yml
+    with:
+      suite: infra
+      command: npm test -- --infra

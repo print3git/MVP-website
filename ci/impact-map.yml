@@ -1,0 +1,16 @@
+backend:
+  - backend/**
+frontend:
+  - frontend/**
+  - src/**
+  - js/**
+e2e:
+  - e2e/**
+  - tests/**
+docs:
+  - docs/**
+  - README.md
+infra:
+  - .github/**
+  - ci/**
+  - scripts/**
