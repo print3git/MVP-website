@@ -4,15 +4,22 @@ name: Skip heavy
 # Heavy jobs should use `if: "! contains(github.event.pull_request.labels.*.name, 'skip-heavy')"` to honor the label.
 
 on:
+  push:
+    branches:
+      - dev
+      - 00000production
   pull_request:
+    branches:
+      - dev
+      - 00000production
 
 jobs:
   skip-heavy:
-    if: contains(github.event.pull_request.labels.*.name, 'skip-heavy')
     runs-on:
       - [self-hosted, linux, aws]
       - ubuntu-latest
     steps:
-      - run: |
+      - if: contains(github.event.pull_request.labels.*.name, 'skip-heavy')
+        run: |
           echo "skip-heavy label present, skipping heavy workflows"
           exit 0
