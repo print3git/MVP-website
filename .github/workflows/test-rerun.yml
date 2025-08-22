@@ -16,6 +16,7 @@ jobs:
           node-version: 20
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
+      - uses: ./.github/actions/node-setup
       - uses: ./.github/actions/install-deps
       - name: Install dependencies
         run: |
