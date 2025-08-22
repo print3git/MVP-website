@@ -8,15 +8,14 @@ on:
 env:
   HUSKY: 0
 
-permissions:
-  actions: write
-  contents: read
-  issues: write
-  pull-requests: write
-
 jobs:
   record:
     runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: read
+      issues: write
+      pull-requests: write
     steps:
       - name: Heartbeat
         run: |
@@ -68,6 +67,7 @@ jobs:
           PRS: ${{ steps.record.outputs.prs }}
           SUMMARY: ${{ steps.record.outputs.summary }}
         with:
+          github-token: ${{ github.token }}
           script: |
             const prs = JSON.parse(process.env.PRS);
             const {owner, repo} = context.repo;
@@ -82,5 +82,9 @@ jobs:
                   throw e;
                 }
               }
-              await github.rest.issues.createComment({owner, repo, issue_number: pr.number, body: `@example/devops\n${process.env.SUMMARY}`});
+              try {
+                await github.rest.issues.createComment({owner, repo, issue_number: pr.number, body: `@example/devops\n${process.env.SUMMARY}`});
+              } catch (e) {
+                core.warning("Comment skipped: insufficient permissions (" + e.message + ")");
+              }
             }

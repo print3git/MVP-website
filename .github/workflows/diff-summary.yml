@@ -14,6 +14,7 @@ jobs:
       - ubuntu-latest
     permissions:
       contents: read
+      issues: write
       pull-requests: write
     steps:
       - uses: actions/checkout@v5.0.0
@@ -43,12 +44,16 @@ jobs:
           ADDED: ${{ steps.diff.outputs.added }}
           REMOVED: ${{ steps.diff.outputs.removed }}
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ github.token }}
           script: |
             const body = `Lines added: ${process.env.ADDED}, removed: ${process.env.REMOVED}`;
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body
-            });
+            try {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body
+              });
+            } catch (e) {
+              core.warning("Comment skipped: insufficient permissions (" + e.message + ")");
+            }

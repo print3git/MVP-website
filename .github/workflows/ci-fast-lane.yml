@@ -5,68 +5,138 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 jobs:
-  impact:
+  changes:
+    name: Detect changed areas
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     outputs:
-      backend: ${{ steps.map.outputs.backend }}
-      frontend: ${{ steps.map.outputs.frontend }}
-      e2e: ${{ steps.map.outputs.e2e }}
-      docs: ${{ steps.map.outputs.docs }}
-      infra: ${{ steps.map.outputs.infra }}
+      backend: ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+      docs: ${{ steps.filter.outputs.docs }}
+      e2e: ${{ steps.filter.outputs.e2e }}
+      infra: ${{ steps.filter.outputs.infra }}
+      lint: ${{ steps.filter.outputs.lint }}
+      typecheck: ${{ steps.filter.outputs.typecheck }}
+      unit: ${{ steps.filter.outputs.unit }}
+      _any: ${{ steps.any.outputs._any }}
+      _reason: ${{ steps.reason.outputs.msg }}
     steps:
       - uses: actions/checkout@v4
-      - id: map
-        uses: ./.github/actions/ci-impact-map
+        with:
+          fetch-depth: 0
+      - id: filter
+        uses: dorny/paths-filter@v3
+        continue-on-error: true
+        with:
+          base: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || 'HEAD~1' }}
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || 'HEAD' }}
+          filters: |
+            backend:
+              - 'backend/**'
+            frontend:
+              - 'frontend/**'
+            docs:
+              - 'docs/**'
+            e2e:
+              - 'e2e/**'
+            infra:
+              - '.github/**'
+              - 'infra/**'
+            lint:
+              - '**/*'
+            typecheck:
+              - '**/*'
+            unit:
+              - '**/*'
+      - id: any
+        name: Compute _any with safe fallback
+        shell: bash
+        run: |
+          js='${{ toJson(steps.filter.outputs) }}'
+          if [[ "$js" == "null" || -z "$js" ]]; then
+            echo "_any=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          any=false
+          for k in backend frontend docs e2e infra lint typecheck unit; do
+            v=$(jq -r --arg k "$k" '.[$k]' <<<"$js")
+            [[ "$v" == "true" ]] && any=true
+          done
+          echo "_any=$any" >> "$GITHUB_OUTPUT"
+      - id: reason
+        run: |
+          echo "msg=paths-filter computed: ${{ toJson(steps.filter.outputs) }}; _any=${{ steps.any.outputs._any }}" >> "$GITHUB_OUTPUT"
+      - name: Summary
+        run: |
+          {
+            echo "### CI Fast Lane – change detection"
+            echo ""
+            echo "**outputs:** `${{ toJson(steps.filter.outputs) }}`"
+            echo ""
+            echo "**_any:** `${{ steps.any.outputs._any }}`"
+            echo ""
+            echo "**reason:** ${{ steps.reason.outputs.msg }}"
+          } >> "$GITHUB_STEP_SUMMARY"
   lint:
     uses: ./.github/workflows/reusable-test-job.yml
-    needs: impact
+    needs: changes
+    if: ${{ needs.changes.result == 'success' && (needs.changes.outputs.lint == 'true' || needs.changes.outputs._any == 'true') }}
     with:
       suite: lint
       command: npm run lint
   typecheck:
     uses: ./.github/workflows/reusable-test-job.yml
-    needs: impact
+    needs: changes
+    if: ${{ needs.changes.result == 'success' && (needs.changes.outputs.typecheck == 'true' || needs.changes.outputs._any == 'true') }}
     with:
       suite: typecheck
       command: npm run typecheck
   unit:
     uses: ./.github/workflows/reusable-test-job.yml
-    needs: impact
+    needs: changes
+    if: ${{ needs.changes.result == 'success' && (needs.changes.outputs.unit == 'true' || needs.changes.outputs._any == 'true') }}
     with:
       suite: unit
       command: JEST_RETRIES=2 npm test -- --config scripts/ci/jest.config.ci.ts
   backend:
-    if: needs.impact.outputs.backend == 'true'
+    needs: changes
+    if: ${{ needs.changes.result == 'success' && (needs.changes.outputs.backend == 'true' || needs.changes.outputs._any == 'true') }}
     uses: ./.github/workflows/reusable-test-job.yml
-    needs: impact
     with:
       suite: backend
       command: npm test -- --backend
   frontend:
-    if: needs.impact.outputs.frontend == 'true'
+    needs: changes
+    if: ${{ needs.changes.result == 'success' && (needs.changes.outputs.frontend == 'true' || needs.changes.outputs._any == 'true') }}
     uses: ./.github/workflows/reusable-test-job.yml
-    needs: impact
     with:
       suite: frontend
       command: npm test -- --frontend
   e2e:
-    if: needs.impact.outputs.e2e == 'true'
+    needs: changes
+    if: ${{ needs.changes.result == 'success' && (needs.changes.outputs.e2e == 'true' || needs.changes.outputs._any == 'true') }}
     uses: ./.github/workflows/reusable-test-job.yml
-    needs: impact
     with:
       suite: e2e
       command: npm run test:e2e
   docs:
-    if: needs.impact.outputs.docs == 'true'
+    needs: changes
+    if: ${{ needs.changes.result == 'success' && (needs.changes.outputs.docs == 'true' || needs.changes.outputs._any == 'true') }}
     uses: ./.github/workflows/reusable-test-job.yml
-    needs: impact
     with:
       suite: docs
       command: npm test -- --docs
   infra:
-    if: needs.impact.outputs.infra == 'true'
+    needs: changes
+    if: ${{ needs.changes.result == 'success' && (needs.changes.outputs.infra == 'true' || needs.changes.outputs._any == 'true') }}
     uses: ./.github/workflows/reusable-test-job.yml
-    needs: impact
     with:
       suite: infra
       command: npm test -- --infra
+  inventory:
+    uses: ./.github/workflows/reusable-test-job.yml
+    needs: impact
+    with:
+      suite: inventory
+      command: npm run test:inventory

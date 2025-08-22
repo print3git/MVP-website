@@ -1,0 +1,13 @@
+name: Inventory tests
+
+on:
+  push:
+    branches: [main, dev, 00000production]
+  pull_request:
+
+jobs:
+  inventory:
+    uses: ./.github/workflows/reusable-test-job.yml
+    with:
+      suite: inventory
+      command: npm run test:inventory

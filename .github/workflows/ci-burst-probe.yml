@@ -1,5 +1,7 @@
 name: CI Burst Probe
 on:
+  push:
+  pull_request:
   workflow_dispatch:
     inputs:
       size:
@@ -11,11 +13,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        i: [1,2,3,4]
+        i: [1, 2, 3, 4]
     if: ${{ github.event.inputs.size == '' || fromJSON('['+github.event.inputs.size+']')[0] >= matrix.i }}
     runs-on: [self-hosted, linux, x64, aws-runner]
     timeout-minutes: 6
     steps:
+      - uses: actions/checkout@v4
       - name: Queue watchdog (3 min)
         id: qw
         shell: bash

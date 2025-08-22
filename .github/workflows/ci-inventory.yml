@@ -1,73 +1,15 @@
-name: CI test inventory
-
+name: CI Inventory
 on:
   pull_request:
-
-permissions:
-  contents: read
-  pull-requests: write
-
+  push:
+    branches: [00000production]
 jobs:
   inventory:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.6
-      - uses: actions/setup-node@v4.0.2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: node scripts/ci/inventory-tests.js > ci-test-inventory.json
-      - run: node scripts/ci/map-workflows.js > ci-workflow-map.json
-      - id: compare
-        run: |
-          node - <<'NODE'
-          const fs = require('fs');
-          const inv = JSON.parse(fs.readFileSync('ci-test-inventory.json', 'utf8'));
-          const map = JSON.parse(fs.readFileSync('ci-workflow-map.json', 'utf8'));
-          const patterns = [...new Set(map.jobs.flatMap(j => j.globs))];
-          const match = (f, p) => {
-            const esc = s => s.replace(/[.+^${}()|[\\]\\]/g, '\\$&');
-            const rx = new RegExp('^' + esc(p).replace(/\\*\\*/g, '.*').replace(/\\*/g, '[^/]*') + '$');
-            return rx.test(f);
-          };
-          const uncovered = inv.files.filter(f => !patterns.some(p => match(f, p)));
-          const jobsNoFiles = map.jobs
-            .filter(j => j.globs.length && !inv.files.some(f => j.globs.some(p => match(f, p))))
-            .map(j => j.name);
-          fs.writeFileSync('ci-inventory-diff.json', JSON.stringify({ uncovered, jobsNoFiles }, null, 2));
-          if (uncovered.length || jobsNoFiles.length) process.exit(1);
-          NODE
-        continue-on-error: true
-      - if: steps.compare.outcome == 'failure'
-        uses: actions/github-script@v7.0.1
-        with:
-          script: |
-            const fs = require('fs');
-            const diff = JSON.parse(fs.readFileSync('ci-inventory-diff.json', 'utf8'));
-            const lines = [];
-            if (diff.uncovered.length) {
-              lines.push('**Uncovered tests:**');
-              lines.push(diff.uncovered.join('\n'));
-            }
-            if (diff.jobsNoFiles.length) {
-              lines.push('**Jobs with no files:**');
-              lines.push(diff.jobsNoFiles.join('\n'));
-            }
-            if (lines.length) {
-              github.rest.issues.createComment({
-                ...context.repo,
-                issue_number: context.issue.number,
-                body: lines.join('\n\n')
-              });
-            }
-      - if: steps.compare.outcome == 'failure'
-        run: exit 1
-      - if: always()
-        uses: actions/upload-artifact@v4.3.1
-        with:
-          name: ci-test-inventory
-          path: ci-test-inventory.json
-      - if: always()
-        uses: actions/upload-artifact@v4.3.1
-        with:
-          name: ci-workflow-map
-          path: ci-workflow-map.json
+      - run: npm ci || pnpm install || yarn install
+      - run: npm run test:ci-inventory
