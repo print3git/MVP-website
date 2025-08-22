@@ -1,0 +1,13 @@
+name: guard / lfs-migrate-enforce
+on: [pull_request, push]
+jobs:
+  lfs-migrate-enforce:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5.0.0
+        with:
+          fetch-depth: 0
+      - name: Run audit
+        run: npx -y tsx scripts/ci-guard/lfs-migrate-enforce/audit.ts
+      - name: Run tests
+        run: npx -y vitest run tests/ci-guard/lfs-migrate-enforce
