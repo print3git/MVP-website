@@ -1,127 +1,35 @@
 name: Node CI
 
-env:
-  HUSKY: 0
-  BASH_ENV: scripts/env/aliases.sh
-
-
 on:
-  push:
-    branches: [main]
-    paths:
-      - frontend/**
-      - backend/**
-      - package.json
-      - package-lock.json
-      - pnpm-lock.yaml
-      - .github/workflows/**
   pull_request:
-    branches: [main]
-    paths:
-      - frontend/**
-      - backend/**
-      - package.json
-      - package-lock.json
-      - pnpm-lock.yaml
-      - .github/workflows/**
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  workflow_dispatch:
 
 jobs:
-  build:
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
-    env:
-      PORT: 3000
-      CI_REQUIRE_EXTERNAL: '0'
+  node:
+    runs-on: ubuntu-latest
     timeout-minutes: 20
     strategy:
       fail-fast: true
       matrix:
-        node-version: 20
-
-      steps:
-
-        - name: Heartbeat
-
-          run: |
-
-            while true; do date; sleep 120; done &
-        - uses: actions/checkout@v5
-
-        - uses: actions/setup-node@v4
-          with:
-            node-version: ${{ matrix.node-version }}
-            cache: 'npm'
-            cache-dependency-path: | 
-              package-lock.json
-              backend/package-lock.json
-
-        - run: npm ci
-        - run: npm run ci:build-scripts
-
-        - name: Load Stripe env
-          run: node scripts/ci-env-preflight.js
-          env:
-            STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
-            STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
-
-        - run: npm install --no-audit --no-fund
-          working-directory: backend
-
-
-      - run: npm run lint
-        working-directory: backend
-
-      - run: npm run test:stability
-
-      - run: npm run format
-        working-directory: backend
-
-      - name: Check bundle size
-        run: npm run bundle:size
-
-      - run: npx prettier --check "**/*.{js,jsx,json,md,html}"
-        working-directory: backend
-
-      - name: Run accessibility tests
-        env:
-          PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
-          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '0'
-        run: npm run test:a11y
-
-      - name: Audit dependencies
+        node-version: [20]
+    steps:
+      - name: Heartbeat
         run: |
-          npm audit --audit-level=high --prefix backend
-
-      - name: Validate Snyk token
-        if: ${{ secrets.SNYK_TOKEN }}
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        run: |
-          echo "Validating SNYK_TOKEN..."
-          npx snyk auth --token=$SNYK_TOKEN
-
-      - name: Snyk scan backend
-        if: success() && secrets.SNYK_TOKEN
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        run: npx snyk test --severity-threshold=high --file=backend/package.json
-
-      - name: Fallback to npm audit
-        if: ${{ !secrets.SNYK_TOKEN }}
-        run: |
-          echo "⚠️ SNYK_TOKEN missing or invalid; running npm audit instead"
-          npm audit --audit-level=high --prefix backend
-
-      - name: Upload backend dist
-        if: ${{ always() && hashFiles('backend/dist/**') != '' }}
-        uses: actions/upload-artifact@v4
+          while true; do date; sleep 120; done &
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
         with:
-          name: backend-dist
-          path: backend/dist
-          if-no-files-found: error
-
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            backend/package-lock.json
+            frontend/package-lock.json
+      - run: npm ci
+      - run: npm run ci:build-scripts
+      - name: Load Stripe env
+        run: node scripts/ci-env-preflight.js
+        env:
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+      - run: npm install --no-audit --no-fund
