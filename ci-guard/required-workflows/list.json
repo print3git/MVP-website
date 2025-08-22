@@ -1,0 +1,11 @@
+{
+  "mode": "warn",
+  "paths": [
+    "codeql.yml",
+    "cloudflare.yml",
+    "tests.yml",
+    "backend.yml",
+    "frontend.yml",
+    "aws-runner-probe.yml"
+  ]
+}
