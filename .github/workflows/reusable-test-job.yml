@@ -1,4 +1,5 @@
 name: Reusable Test Job
+
 on:
   workflow_call:
     inputs:
@@ -8,47 +9,80 @@ on:
       command:
         required: true
         type: string
-      working-directory:
-        required: false
-        type: string
-        default: "."
-      use-self-hosted:
-        required: false
-        type: boolean
-        default: false
-      shard-total:
-        required: false
-        type: number
-      retry-flaky:
-        required: false
-        type: boolean
-        default: false
+
 jobs:
   test:
     name: ${{ inputs.suite }}
-    runs-on: ${{ inputs.use-self-hosted && 'self-hosted' || 'ubuntu-latest' }}
-    strategy:
-      fail-fast: false
-    timeout-minutes: 30
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
-      cancel-in-progress: true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        shell: bash -euo pipefail
     steps:
+      - name: Preflight (print context)
+        env:
+          GITHUB_REF: ${{ github.ref }}
+          GITHUB_SHA: ${{ github.sha }}
+          NODE_VERSION: 20
+        run: |
+          set -x
+          echo "Actor=${GITHUB_ACTOR:-unset} Ref=$GITHUB_REF SHA=$GITHUB_SHA"
+          echo "Matrix node=${NODE_VERSION}"
+          echo "Repo files snapshot:"
+          git status --porcelain=v1 || true
+          ls -la || true
+          command -v node || true
+          command -v npm || true
+          command -v pnpm || true
+          printenv | sort | sed -n '1,120p'
       - uses: actions/checkout@v4
-      - id: toolbox
-        uses: ./.github/actions/ci-toolbox
+      - uses: actions/setup-node@v4
         with:
-          shard-index: ${{ matrix.shard || '' }}
-          shard-total: ${{ inputs.shard-total || '' }}
-      - name: Run tests
-        uses: ./.github/actions/with-test-telemetry
+          node-version: 20
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            backend/package-lock.json
+            frontend/package-lock.json
+      - name: Corepack enable (safe)
+        run: corepack enable || true
+      - name: Lane Guard (required files)
+        run: |
+          set -e
+          check() { [ -e "$1" ] || { echo "::error::Missing $1"; exit 86; }; }
+          if [[ "${{ inputs.suite }}" == 'backend' ]]; then
+            check package.json
+            check backend/package.json
+          fi
+          if [[ "${{ inputs.suite }}" == 'frontend' ]]; then
+            check package.json
+            check frontend/package.json
+          fi
+          if [[ "${{ inputs.suite }}" == 'docs' ]]; then
+            check docs || check documentation || true
+          fi
+          if [[ "${{ inputs.suite }}" == 'e2e' ]]; then
+            test -f playwright.config.* || echo "::warning::No playwright config found (skipping host deps)"
+          fi
+      - name: Enable step debug
+        if: ${{ always() }}
+        run: echo "ACTIONS_STEP_DEBUG=true" >> $GITHUB_ENV
+      - name: Run lane command
+        if: ${{ inputs.suite != 'e2e' || !cancelled() }}
+        run: ${{ inputs.command }}
+      - name: Bundle lane diagnostics
+        if: ${{ failure() || cancelled() }}
+        run: |
+          mkdir -p ci/diag
+          dmesg | tail -n 200 > ci/diag/dmesg.txt 2>/dev/null || true
+          journalctl -xe --no-pager | tail -n 400 > ci/diag/journal.txt 2>/dev/null || true
+          git log -n 5 --oneline > ci/diag/gitlog.txt
+          cp -r frontend  ci/diag/frontend 2>/dev/null || true
+          cp -r backend   ci/diag/backend  2>/dev/null || true
+      - uses: actions/upload-artifact@v4
+        if: ${{ failure() || cancelled() }}
         with:
-          command: ${{ inputs.command }}
-          working-directory: ${{ inputs.working-directory }}
-          retry: ${{ inputs.retry-flaky }}
-      - name: Upload junit
-        if: ${{ always() && hashFiles('junit.xml') != '' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: junit-${{ inputs.suite }}
-          path: junit.xml
+          name: lane-diag-${{ github.job }}
+          path: ci/diag
+          retention-days: 7

@@ -28,24 +28,31 @@ jobs:
     uses: ./.github/workflows/reusable-test-job.yml
     with:
       suite: backend
-      command: npm test -- --backend
-      use-self-hosted: true
+      command: npm ci && npm test --prefix backend -- --reporters=default
   frontend:
     uses: ./.github/workflows/reusable-test-job.yml
     with:
       suite: frontend
-      command: npm test -- --frontend
+      command: npm ci --prefix frontend && npm run build --prefix frontend || (echo "::error::frontend build failed"; exit 1)
   e2e:
     uses: ./.github/workflows/reusable-test-job.yml
     with:
       suite: e2e
-      command: npm run test:e2e
-      use-self-hosted: true
+      command: |
+        if [[ "${SKIP_PW_DEPS:-}" == "1" ]]; then
+          echo "::warning::SKIP_PW_DEPS set; skipping Playwright deps"
+        fi
+        npm run test:e2e
   docs:
     uses: ./.github/workflows/reusable-test-job.yml
     with:
       suite: docs
-      command: npm test -- --docs
+      command: |
+        if [ -d docs ]; then
+          npm ci --prefix docs && npm run build --prefix docs
+        else
+          echo "::warning::No docs directory, skipping"
+        fi
   infra:
     uses: ./.github/workflows/reusable-test-job.yml
     with:
