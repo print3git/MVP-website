@@ -1,0 +1,45 @@
+name: CI Workflow Recovery
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Restore deleted workflows
+        run: |
+          set -euo pipefail
+          deleted=$(git log --since="90 days ago" --diff-filter=D --name-only --pretty="" -- .github/workflows | sort -u)
+          if [ -z "$deleted" ]; then
+            echo "No workflows to recover"
+            exit 0
+          fi
+          mkdir -p ci/recovered
+          for f in $deleted; do
+            base=$(basename "$f")
+            if [ -f "$f" ] || [ -f "ci/recovered/$base" ]; then
+              continue
+            fi
+            commit=$(git rev-list -n 1 HEAD -- "$f")
+            echo "# NOTE: Recovered from $f (commit $commit). Review before re-enabling." > "ci/recovered/$base"
+            git show "${commit}^:$f" >> "ci/recovered/$base"
+          done
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7.0.8
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "ci: recover deleted workflows"
+          branch: ci-workflow-recovery/${{ github.run_id }}
+          title: "ci: recover deleted workflows"
+          body: |
+            Restores workflow files removed in the last 90 days under `ci/recovered/`.
+            These workflows are not enabled. Review and move them back to `.github/workflows` if still required.
+          base: main
