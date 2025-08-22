@@ -2,10 +2,24 @@
 // @ts-check
 const fs = require("fs");
 const path = require("path");
-const yaml = require("yaml");
+let yaml;
+try {
+  yaml = require("yaml");
+} catch (err) {
+  console.error(
+    'ci-audit: missing required dependency "yaml". Did you run `npm ci`?',
+  );
+  process.exit(2);
+}
 
 const repoRoot = path.resolve(__dirname, "..");
 const workflowsDir = path.join(repoRoot, ".github", "workflows");
+if (!fs.existsSync(workflowsDir)) {
+  console.error(
+    "ci-audit: .github/workflows directory not found; cannot audit CI coverage.",
+  );
+  process.exit(2);
+}
 const ciDir = path.join(repoRoot, "ci");
 const TEST_KEYWORDS = [
   "jest",

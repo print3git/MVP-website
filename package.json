@@ -103,7 +103,8 @@
     "test:e2e:regression": "playwright test --config tests/playwright.config.ts",
     "test:regression": "npm run test:backend:regression && npm run test:frontend:regression && npm run test:ci:regression && npm run test:e2e:regression",
     "ci:probe": "bash -O globstar -c 'env -u npm_config_prefix node --test tests/ci/**/*.test.js'",
-    "ci:summary": "node scripts/ci/print-suite-summary.js"
+    "ci:summary": "node scripts/ci/print-suite-summary.js",
+    "ci:audit": "tsx scripts/ci-audit.ts"
   },
   "babel": {
     "presets": [
@@ -187,7 +188,7 @@
     "tslib": "^2.8.1",
     "typescript": "^5.8.3",
     "wait-on": "^8.0.3",
-    "yaml": "^2.8.0"
+    "tsx": "^4.19.0"
   },
   "husky": {
     "hooks": {
@@ -210,6 +211,7 @@
     "react-dom": "^18.2.0",
     "react-places-autocomplete": "^7.3.0",
     "winston": "^3.17.0",
-    "winston-format": "^1.0.1"
+    "winston-format": "^1.0.1",
+    "yaml": "^2.8.0"
   }
 }

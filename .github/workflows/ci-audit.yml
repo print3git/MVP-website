@@ -9,11 +9,12 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: "20"
+          cache: "npm"
       - run: node --version
+      - run: npm ci
       - name: Run audit
-        run: |
-          node scripts/ci-audit.ts
+        run: npm run ci:audit
       - name: Upload audit artifact
         if: always()
         uses: actions/upload-artifact@v4
