@@ -1,0 +1,11 @@
+name: diag shell fix guard
+
+on:
+  pull_request:
+
+jobs:
+  diag-shell-fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: scripts/ci-guard/diag-shell-fix/scan.sh
