@@ -51,3 +51,29 @@ jobs:
     with:
       suite: infra
       command: npm test -- --infra
+  pnpm-sentinel:
+    name: pnpm sentinel
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: Ensure pnpm
+        uses: ./.github/actions/ensure-pnpm
+      - name: pnpm install
+        run: pnpm install --ignore-scripts
+      - name: Check lockfile
+        id: lock
+        run: |
+          if git diff --quiet -- pnpm-lock.yaml; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "pnpm-lock.yaml unchanged"
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "::warning::pnpm-lock.yaml changed during install"
+          fi
+      - name: Upload updated lockfile
+        if: steps.lock.outputs.changed == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: pnpm-lock.yaml
+          path: pnpm-lock.yaml
