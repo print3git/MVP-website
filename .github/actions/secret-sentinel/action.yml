@@ -2,20 +2,29 @@ name: Secret Sentinel
 description: Fails if required secrets/vars are missing
 inputs:
   vars:
-    description: "Space-delimited list of env var names to check"
+    description: "Whitespace/comma separated secret names"
     required: true
 runs:
   using: "composite"
   steps:
-    - name: Check required environment variables
+    # >>> BEGIN MANAGED BLOCK: ci-guard:secret-sentinel
+    - name: Secret sentinel
       shell: bash
+      env:
+        VARS_RAW: ${{ inputs.vars || vars.SECRET_SENTINEL_VARS || '' }}
       run: |
+        set -euo pipefail
         python - <<'PY'
-        import os, json, sys
-        names = "${{ inputs.vars }}".split()
+        import os, sys
+        raw = os.environ.get("VARS_RAW","")
+        # Accept newline/space/comma separated names
+        tokens = [t.strip() for part in raw.splitlines() for t in part.replace(',', ' ').split()]
+        names = [n for n in tokens if n]
         missing = [n for n in names if not os.getenv(n)]
         if missing:
             print("Missing required environment variables:", ", ".join(missing))
             sys.exit(1)
         print("All required environment variables are present.")
         PY
+        || { echo "See missing list above" >> "$GITHUB_STEP_SUMMARY" || true; exit 1; }
+    # <<< END MANAGED BLOCK: ci-guard:secret-sentinel
