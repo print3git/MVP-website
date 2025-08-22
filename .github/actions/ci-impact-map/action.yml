@@ -1,0 +1,39 @@
+name: CI Impact Map
+description: Determine impacted test suites
+inputs:
+  base-ref:
+    description: Base ref for diff
+    required: false
+  head-ref:
+    description: Head ref for diff
+    required: false
+outputs:
+  backend:
+    value: ${{ steps.map.outputs.backend }}
+  frontend:
+    value: ${{ steps.map.outputs.frontend }}
+  e2e:
+    value: ${{ steps.map.outputs.e2e }}
+  docs:
+    value: ${{ steps.map.outputs.docs }}
+  infra:
+    value: ${{ steps.map.outputs.infra }}
+runs:
+  using: composite
+  steps:
+    - name: Determine git range
+      id: range
+      shell: bash
+      run: |
+        base="${{ inputs.base-ref || github.event.pull_request.base.sha || github.base_ref || 'origin/main' }}"
+        head="${{ inputs.head-ref || github.sha }}"
+        echo "BASE_SHA=$base" >> "$GITHUB_ENV"
+        echo "HEAD_SHA=$head" >> "$GITHUB_ENV"
+    - id: map
+      shell: bash
+      run: |
+        node scripts/ci/impact-map.js > out.txt
+        cat out.txt
+        while IFS='=' read -r k v; do
+          echo "$k=$v" >> "$GITHUB_OUTPUT"
+        done < out.txt

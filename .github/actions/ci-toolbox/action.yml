@@ -1,0 +1,82 @@
+name: CI Toolbox
+description: Common setup for CI jobs
+inputs:
+  shard-index:
+    description: Optional shard index
+    required: false
+  shard-total:
+    description: Optional shard total
+    required: false
+outputs:
+  step-timeout-min:
+    value: ${{ steps.defaults.outputs.timeout }}
+  fail-fast:
+    value: ${{ steps.defaults.outputs.fail-fast }}
+  concurrency-group:
+    value: ${{ steps.defaults.outputs.group }}
+  package-manager:
+    value: ${{ steps.pm.outputs.manager }}
+runs:
+  using: composite
+  steps:
+    - id: defaults
+      shell: bash
+      run: |
+        echo "CI_STEP_TIMEOUT_MIN=30" >> "$GITHUB_ENV"
+        echo "timeout=30" >> "$GITHUB_OUTPUT"
+        echo "fail-fast=false" >> "$GITHUB_OUTPUT"
+        echo "group=${{ github.workflow }}-${{ github.ref }}" >> "$GITHUB_OUTPUT"
+    - id: pm
+      name: Detect package manager
+      shell: bash
+      run: |
+        corepack enable
+        if [ -f pnpm-lock.yaml ]; then
+          if ! command -v pnpm >/dev/null 2>&1; then
+            corepack prepare pnpm@latest --activate
+          fi
+          echo "manager=pnpm" >> "$GITHUB_OUTPUT"
+        elif [ -f yarn.lock ]; then
+          echo "manager=yarn" >> "$GITHUB_OUTPUT"
+        else
+          echo "manager=npm" >> "$GITHUB_OUTPUT"
+        fi
+    - name: Cache node modules
+      uses: actions/cache@v4
+      with:
+        path: |
+          node_modules
+          backend/node_modules
+          frontend/node_modules
+        key: ${{ steps.pm.outputs.manager }}-${{ hashFiles('**/pnpm-lock.yaml', '**/package-lock.json', '**/yarn.lock') }}-${{ runner.os }}
+    - name: Cache Playwright browsers
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/ms-playwright
+        key: playwright-${{ hashFiles('**/pnpm-lock.yaml', '**/package-lock.json', '**/yarn.lock') }}-${{ runner.os }}
+    - name: Restore failed test artifacts
+      uses: actions/cache/restore@v4
+      with:
+        path: |
+          jest-failed.json
+          playwright-failed.txt
+        key: failed-${{ github.job }}-${{ github.run_id }}
+        restore-keys: failed-${{ github.job }}-
+    - name: Save failed test artifacts
+      if: always()
+      uses: actions/cache/save@v4
+      with:
+        path: |
+          jest-failed.json
+          playwright-failed.txt
+        key: failed-${{ github.job }}-${{ github.run_id }}
+    - name: Compute shard variables
+      shell: bash
+      run: |
+        idx="${{ inputs.shard-index }}"
+        total="${{ inputs.shard-total }}"
+        if [ -z "$idx" ]; then idx="${{ env.TEST_SHARD_INDEX:-1 }}"; fi
+        if [ -z "$total" ]; then total="${{ env.TEST_SHARD_TOTAL:-1 }}"; fi
+        echo "TEST_SHARD_INDEX=$idx" >> "$GITHUB_ENV"
+        echo "TEST_SHARD_TOTAL=$total" >> "$GITHUB_ENV"
+        echo "Shard $idx/$total"

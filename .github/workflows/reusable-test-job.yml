@@ -1,0 +1,48 @@
+name: Reusable Test Job
+on:
+  workflow_call:
+    inputs:
+      suite:
+        required: true
+        type: string
+      command:
+        required: true
+        type: string
+      working-directory:
+        required: false
+        type: string
+        default: '.'
+      use-self-hosted:
+        required: false
+        type: boolean
+        default: false
+      shard-total:
+        required: false
+        type: number
+      retry-flaky:
+        required: false
+        type: boolean
+        default: false
+jobs:
+  test:
+    name: ${{ inputs.suite }}
+    runs-on: ${{ inputs.use-self-hosted && 'self-hosted' || 'ubuntu-latest' }}
+    strategy:
+      fail-fast: false
+    timeout-minutes: 30
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@v4
+      - id: toolbox
+        uses: ./.github/actions/ci-toolbox
+        with:
+          shard-index: ${{ matrix.shard || '' }}
+          shard-total: ${{ inputs.shard-total || '' }}
+      - name: Run tests
+        uses: ./.github/actions/with-test-telemetry
+        with:
+          command: ${{ inputs.command }}
+          working-directory: ${{ inputs.working-directory }}
+          retry: ${{ inputs.retry-flaky }}
