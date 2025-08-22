@@ -1,0 +1,85 @@
+name: Nightly Full CI
+
+on:
+  schedule:
+    - cron: '0 4 * * *'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  HUSKY: 0
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5.0.0
+      - name: Setup Node
+        uses: actions/setup-node@v4.4.0
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install root dependencies
+        run: npm ci
+      - name: Install backend dependencies
+        run: npm ci --prefix backend
+      - name: Install frontend dependencies
+        run: npm ci --prefix frontend
+      - name: Run full test suite
+        run: npm run test:regression
+      - name: Aggregate test inventory and update baseline
+        id: inventory
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ci/baseline
+          backend=$(cd backend && npx --yes jest --listTests | wc -l || echo 0)
+          frontend=$(cd frontend && npx --yes jest --listTests | wc -l || echo 0)
+          ci=$(find tests/ci -name "*.test.*" | wc -l || echo 0)
+          e2e=$(npx --yes playwright list-files --config=tests/playwright.config.ts | wc -l || echo 0)
+          jq -n --argjson backend "$backend" --argjson frontend "$frontend" --argjson ci "$ci" --argjson e2e "$e2e" '{backend:$backend,frontend:$frontend,ci:$ci,e2e:$e2e}' > ci-test-inventory.json
+          base=ci/baseline/ci-baseline.json
+          now=$(date -u +%FT%TZ)
+          if [ -f "$base" ]; then
+            cp "$base" baseline-old.json
+          else
+            jq -n '{}' > baseline-old.json
+          fi
+          reg=0
+          msg=""
+          for suite in backend frontend ci e2e; do
+            count=$(jq -r ".$suite" ci-test-inventory.json)
+            prev=$(jq -r ".$suite.min // 1" baseline-old.json)
+            if [ "$count" -eq 0 ] || [ "$count" -lt "$prev" ]; then
+              reg=1
+              msg+="$suite count $count below baseline $prev\n"
+            fi
+          done
+          printf "%s" "$msg" > ci-regression.txt
+          echo "regressed=$reg" >> "$GITHUB_OUTPUT"
+          jq -n --slurpfile old baseline-old.json --argjson backend "$backend" --argjson frontend "$frontend" --argjson ci "$ci" --argjson e2e "$e2e" --arg now "$now" '($old[0] // {}) as $b | {backend:{min:([$backend, $b.backend.min // $backend] | min), last:$backend, updatedAt:$now}, frontend:{min:([$frontend, $b.frontend.min // $frontend] | min), last:$frontend, updatedAt:$now}, ci:{min:([$ci, $b.ci.min // $ci] | min), last:$ci, updatedAt:$now}, e2e:{min:([$e2e, $b.e2e.min // $e2e] | min), last:$e2e, updatedAt:$now}}' > "$base"
+      - name: Upload inventory
+        uses: actions/upload-artifact@v4.3.4
+        with:
+          name: ci-test-inventory
+          path: ci-test-inventory.json
+      - name: Upload baseline
+        uses: actions/upload-artifact@v4.3.4
+        with:
+          name: ci-baseline
+          path: ci/baseline/ci-baseline.json
+      - name: Open regression issue
+        if: steps.inventory.outputs.regressed == '1'
+        uses: actions/github-script@v7.0.1
+        with:
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('ci-regression.txt', 'utf8') || 'Test count regression detected.';
+            const { owner, repo } = context.repo;
+            const title = 'ci-regression';
+            const existing = await github.rest.issues.listForRepo({ owner, repo, state: 'open', per_page: 100 });
+            if (!existing.data.find(issue => issue.title === title)) {
+              await github.rest.issues.create({ owner, repo, title, body });
+            }

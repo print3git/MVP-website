@@ -1,0 +1,6 @@
+{
+  "backend": { "min": 1, "last": 1, "updatedAt": "1970-01-01T00:00:00.000Z" },
+  "frontend": { "min": 1, "last": 1, "updatedAt": "1970-01-01T00:00:00.000Z" },
+  "ci": { "min": 1, "last": 1, "updatedAt": "1970-01-01T00:00:00.000Z" },
+  "e2e": { "min": 1, "last": 1, "updatedAt": "1970-01-01T00:00:00.000Z" }
+}
