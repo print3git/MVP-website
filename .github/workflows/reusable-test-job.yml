@@ -18,14 +18,17 @@ jobs:
       contents: read
     defaults:
       run:
-        shell: bash -euo pipefail
+        shell: bash
     steps:
+      - run: echo "Shell=ok"
+        shell: bash
       - name: Preflight (print context)
         env:
           GITHUB_REF: ${{ github.ref }}
           GITHUB_SHA: ${{ github.sha }}
           NODE_VERSION: 20
         run: |
+          set -euo pipefail
           set -x
           echo "Actor=${GITHUB_ACTOR:-unset} Ref=$GITHUB_REF SHA=$GITHUB_SHA"
           echo "Matrix node=${NODE_VERSION}"
@@ -46,10 +49,12 @@ jobs:
             backend/package-lock.json
             frontend/package-lock.json
       - name: Corepack enable (safe)
-        run: corepack enable || true
+        run: |
+          set -euo pipefail
+          corepack enable || true
       - name: Lane Guard (required files)
         run: |
-          set -e
+          set -euo pipefail
           check() { [ -e "$1" ] || { echo "::error::Missing $1"; exit 86; }; }
           if [[ "${{ inputs.suite }}" == 'backend' ]]; then
             check package.json
@@ -67,13 +72,18 @@ jobs:
           fi
       - name: Enable step debug
         if: ${{ always() }}
-        run: echo "ACTIONS_STEP_DEBUG=true" >> $GITHUB_ENV
+        run: |
+          set -euo pipefail
+          echo "ACTIONS_STEP_DEBUG=true" >> $GITHUB_ENV
       - name: Run lane command
         if: ${{ inputs.suite != 'e2e' || !cancelled() }}
-        run: ${{ inputs.command }}
+        run: |
+          set -euo pipefail
+          ${{ inputs.command }}
       - name: Bundle lane diagnostics
         if: ${{ failure() || cancelled() }}
         run: |
+          set -euo pipefail
           mkdir -p ci/diag
           dmesg | tail -n 200 > ci/diag/dmesg.txt 2>/dev/null || true
           journalctl -xe --no-pager | tail -n 400 > ci/diag/journal.txt 2>/dev/null || true

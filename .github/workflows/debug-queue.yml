@@ -20,4 +20,6 @@ jobs:
       - [self-hosted, linux, aws]
       - ubuntu-latest
     steps:
+      - run: echo "Shell=ok"
+        shell: bash
       - run: echo "I ran on ${{ runner.os }} with job id ${{ github.run_id }}"

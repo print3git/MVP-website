@@ -26,6 +26,8 @@ jobs:
     timeout-minutes: 5
     continue-on-error: true
     steps:
+      - run: echo "Shell=ok"
+        shell: bash
       - name: Heartbeat
         run: |
           while true; do date; sleep 120; done &
@@ -49,6 +51,8 @@ jobs:
     timeout-minutes: 5
     continue-on-error: true
     steps:
+      - run: echo "Shell=ok"
+        shell: bash
       - name: Heartbeat
         run: |
           while true; do date; sleep 120; done &
@@ -76,6 +80,8 @@ jobs:
     env:
       CI_REQUIRE_EXTERNAL: "0"
     steps:
+      - run: echo "Shell=ok"
+        shell: bash
       - name: Heartbeat
         run: |
           while true; do date; sleep 120; done &
