@@ -1,0 +1,42 @@
+name: CI Queue Metrics
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+env:
+  HUSKY: 0
+
+jobs:
+  record:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Gather queue metrics
+        id: gather
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const runners = await github.paginate(
+              github.rest.actions.listSelfHostedRunnersForRepo,
+              { owner, repo }
+            );
+            const spotOnline = runners.filter(r =>
+              r.status === 'online' && r.labels.some(l => l.name === 'aws-spot-x64')
+            ).length;
+            const { data: runs } = await github.rest.actions.listWorkflowRunsForRepo({
+              owner,
+              repo,
+              per_page: 100,
+              status: 'in_progress'
+            });
+            const fallbackUsage = runs.filter(r => (r.runner_name || '').includes('GitHub')).length;
+            core.setOutput('spot_online', spotOnline);
+            core.setOutput('fallback_usage', fallbackUsage);
+      - name: Emit metrics
+        run: |
+          echo "spot_online=${{ steps.gather.outputs.spot_online }}" >> $GITHUB_STEP_SUMMARY
+          echo "fallback_usage=${{ steps.gather.outputs.fallback_usage }}" >> $GITHUB_STEP_SUMMARY

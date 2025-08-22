@@ -7,7 +7,8 @@ on:
     - cron: "*/15 * * * *"
 
 env:
-  MIN_RUNNERS: ${{ vars.MIN_SELF_HOSTED_RUNNERS || 1 }}
+  # Ensure at least two warm runners are always online
+  MIN_RUNNERS: ${{ vars.MIN_SELF_HOSTED_RUNNERS || 2 }}
 
 jobs:
   probe-selfhosted:

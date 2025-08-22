@@ -7,8 +7,27 @@ on:
 jobs:
   choose:
     runs-on: ${{ inputs.fallback }}
+    timeout-minutes: 2
     steps:
+      - name: Check spot runners
+        id: check
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const runners = await github.paginate(
+              github.rest.actions.listSelfHostedRunnersForRepo,
+              { owner: context.repo.owner, repo: context.repo.repo }
+            );
+            const available = runners.some(r =>
+              r.status === 'online' && r.labels.some(l => l.name === inputs.label)
+            );
+            core.setOutput('available', available);
       - id: decide
-        run: echo "label=${{ inputs.label }}" >> $GITHUB_OUTPUT
+        run: |
+          if [[ "${{ steps.check.outputs.available }}" == "true" ]]; then
+            echo "label=${{ inputs.label }}" >> $GITHUB_OUTPUT
+          else
+            echo "label=${{ inputs.fallback }}" >> $GITHUB_OUTPUT
+          fi
     outputs:
       label: ${{ steps.decide.outputs.label }}
