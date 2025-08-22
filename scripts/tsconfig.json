@@ -15,6 +15,7 @@
     "ci_watchdog.ts",
     "gh-runner-token.ts",
     "ci/scale-signal.ts",
-    "ci/check-lfs.ts"
+    "ci/check-lfs.ts",
+    "list-tests.ts"
   ]
 }
