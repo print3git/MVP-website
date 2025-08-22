@@ -1,8 +1,5 @@
 name: Frontend build
 
-env:
-  HUSKY: 0
-
 on:
   pull_request:
     paths:
@@ -10,15 +7,23 @@ on:
       - "!docs/**"
       - "pnpm-lock.yaml"
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
-  build:
-    runs-on:
-      - [self-hosted, linux, aws, small]
-      - ubuntu-latest
+  fastlane:
+    uses: ./.github/workflows/_aws-fastlane.yml
+    secrets: inherit
+    with:
+      script: |
+        cd frontend
+        pnpm install --no-frozen-lockfile
+        pnpm run build
+        test -d dist
+        node ../scripts/assert-frontend-dist.js
+      artifact-name: frontend-dist
+      artifact-path: frontend/dist
+
+  fallback:
+    if: failure()
+    runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: frontend
@@ -39,4 +44,3 @@ jobs:
         with:
           name: frontend-dist
           path: dist
-    timeout-minutes: 15
