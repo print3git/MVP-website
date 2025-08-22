@@ -1,0 +1,74 @@
+name: CI Trigger Auditor
+
+on:
+  push:
+    paths:
+      - '.github/workflows/**'
+  pull_request:
+    paths:
+      - '.github/workflows/**'
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.6
+      - name: Set up Python
+        uses: actions/setup-python@v5.0.0
+        with:
+          python-version: '3.x'
+      - name: Install dependencies
+        run: pip install pyyaml==6.0.1
+      - name: Lint workflow triggers
+        run: |
+          python - <<'PY'
+          import glob, sys
+          from pathlib import Path
+          import yaml
+
+          suppressions = []
+          files = glob.glob('.github/workflows/*.yml') + glob.glob('.github/workflows/*.yaml')
+          for file in files:
+              if Path(file).name == 'ci-trigger-auditor.yml':
+                  continue
+              with open(file) as f:
+                  data = yaml.safe_load(f)
+              on = data.get('on', {})
+              if isinstance(on, list):
+                  on = {event: {} for event in on}
+              issues = []
+              pr = on.get('pull_request')
+              if pr is None:
+                  issues.append("- missing pull_request trigger\n+ add pull_request:\n+   branches:\n+     - dev\n+     - 00000production\n")
+              else:
+                  pr_branches = pr.get('branches') or []
+                  required = {'dev', '00000production'}
+                  if not required.issubset(set(pr_branches)):
+                      issues.append(f"- pull_request.branches: {pr_branches}\n+ include branches: ['dev', '00000production']\n")
+                  if 'paths' in pr or 'paths-ignore' in pr:
+                      issues.append("- pull_request uses paths or paths-ignore\n+ remove path filters\n")
+              push = on.get('push')
+              if push is None:
+                  issues.append("- missing push trigger\n+ add push:\n+   branches:\n+     - dev\n+     - 00000production\n")
+              else:
+                  push_branches = push.get('branches') or []
+                  required = {'dev', '00000production'}
+                  if not required.issubset(set(push_branches)):
+                      issues.append(f"- push.branches: {push_branches}\n+ include branches: ['dev', '00000production']\n")
+                  if 'paths' in push or 'paths-ignore' in push:
+                      issues.append("- push uses paths or paths-ignore\n+ remove path filters\n")
+              jobs = data.get('jobs', {})
+              for name, job in jobs.items():
+                  if isinstance(job, dict) and 'if' in job:
+                      expr = str(job['if'])
+                      if 'github.event.pull_request.draft' in expr or 'github.event.pull_request.labels' in expr:
+                          issues.append(f"- job '{name}' has if: {expr}\n+ move draft/label checks to step-level if\n")
+              if issues:
+                  suppressions.append(f"--- a/{file}\n+++ b/{file}\n@@\n" + ''.join(issues))
+          if suppressions:
+              print('\n'.join(suppressions))
+              sys.exit(1)
+          else:
+              print('All workflows have required triggers and no suppressors found.')
+          PY
