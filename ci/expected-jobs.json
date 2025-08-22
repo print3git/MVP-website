@@ -6,6 +6,8 @@
     "backend:test",
     "types:check",
     "e2e:smoke",
-    "codeql:analyze"
+    "codeql:analyze",
+    "coverage",
+    "size-limit"
   ]
 }
