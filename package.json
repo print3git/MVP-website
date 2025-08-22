@@ -103,7 +103,9 @@
     "test:e2e:regression": "playwright test --config tests/playwright.config.ts",
     "test:regression": "npm run test:backend:regression && npm run test:frontend:regression && npm run test:ci:regression && npm run test:e2e:regression",
     "ci:probe": "bash -O globstar -c 'env -u npm_config_prefix node --test tests/ci/**/*.test.js'",
-    "ci:summary": "node scripts/ci/print-suite-summary.js"
+    "ci:summary": "node scripts/ci/print-suite-summary.js",
+    "ci-gate:audit": "npx -y tsx scripts/ci-gate/audit.ts",
+    "test:ci-gate": "npx -y vitest run tests/ci-gate"
   },
   "babel": {
     "presets": [
