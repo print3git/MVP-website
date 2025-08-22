@@ -25,11 +25,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  routing:
+    uses: ./.github/workflows/ci-routing.yml
+    with:
+      use-self-hosted: true
   unit-tests:
     timeout-minutes: 15
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Heartbeat
         run: |
@@ -52,10 +54,8 @@ jobs:
 
   e2e-tests:
     timeout-minutes: 15
-    needs: unit-tests
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    needs: [unit-tests, routing]
+    runs-on: ${{ fromJSON(needs.routing.outputs.runs-on) }}
     env:
       PORT: 3000
       DB_URL: postgres://user:pass@localhost:5432/testdb
