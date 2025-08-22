@@ -1,0 +1,8 @@
+name: nested
+permissions:
+  contents: read
+jobs:
+  bad:
+    runs-on:
+      - [self-hosted, linux]
+      - ubuntu-latest

@@ -1,0 +1,9 @@
+name: conc
+permissions:
+  contents: read
+concurrency:
+  group: a
+  wrong: true
+jobs:
+  t:
+    runs-on: ubuntu-latest

@@ -1,0 +1,9 @@
+name: stray
+permissions:
+  contents: read
+jobs:
+  t:
+    runs-on: ubuntu-latest
+python <<'PY'
+print('hi')
+PY

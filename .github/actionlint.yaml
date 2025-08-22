@@ -1,0 +1,13 @@
+runner-labels:
+  - aws
+  - aws-ec2
+  - aws-ephemeral
+  - aws-runner
+  - gha
+  - linux
+  - mvp-fleet
+  - mvp-gh-runner
+  - mvp-runner
+  - self-hosted
+  - ubuntu-latest
+  - x64

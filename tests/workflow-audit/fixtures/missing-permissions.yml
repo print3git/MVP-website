@@ -1,0 +1,4 @@
+name: noperms
+jobs:
+  t:
+    runs-on: ubuntu-latest

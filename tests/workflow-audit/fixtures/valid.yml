@@ -1,0 +1,13 @@
+name: valid
+permissions:
+  contents: read
+concurrency:
+  group: test
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      FOO: ${{ secrets.BAR }}
+    steps:
+      - run: echo ok

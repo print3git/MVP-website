@@ -1,0 +1,7 @@
+name: reuse
+permissions:
+  contents: read
+jobs:
+  call:
+    uses: owner/repo/.github/workflows/work.yml@v1
+    runs-on: ubuntu-latest

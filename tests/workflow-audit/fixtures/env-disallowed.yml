@@ -1,0 +1,8 @@
+name: env
+permissions:
+  contents: read
+env:
+  BAD: ${{ env.X }}
+jobs:
+  t:
+    runs-on: ubuntu-latest

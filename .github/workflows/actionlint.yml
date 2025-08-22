@@ -15,9 +15,7 @@ concurrency:
 
 jobs:
   actionlint:
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Heartbeat
         run: |
@@ -30,3 +28,14 @@ jobs:
               | sudo tar -xz -C /usr/local/bin actionlint
           fi
       - run: actionlint
+
+  workflow-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npm run lint:workflow
+      - run: npm run test:workflow

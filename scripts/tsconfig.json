@@ -16,6 +16,7 @@
     "gh-runner-token.ts",
     "ci/scale-signal.ts",
     "ci/check-lfs.ts",
-    "list-tests.ts"
+    "list-tests.ts",
+    "ci/workflow-audit.ts"
   ]
 }

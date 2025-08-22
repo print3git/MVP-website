@@ -1,0 +1,9 @@
+name: single
+permissions:
+  contents: read
+jobs:
+  t:
+    runs-on: ubuntu-latest
+    steps:
+      # prettier-ignore
+      - run: 'echo ${{ github.ref }}'

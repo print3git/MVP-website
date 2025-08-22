@@ -1,0 +1,6 @@
+name: custom
+permissions:
+  contents: read
+jobs:
+  t:
+    runs-on: not-listed
