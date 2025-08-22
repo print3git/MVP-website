@@ -1,0 +1,32 @@
+name: pnpm policy
+
+on:
+  push:
+    branches:
+      - dev
+      - 00000production
+  pull_request:
+    branches:
+      - dev
+      - 00000production
+  workflow_call:
+
+jobs:
+  enforce:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5.0.0
+      - name: prevent mixed package managers
+        run: |
+          if [ -f package-lock.json ] && [ -f pnpm-lock.yaml ]; then
+            echo "Error: both package-lock.json and pnpm-lock.yaml exist." >&2
+            exit 1
+          fi
+      - name: enable corepack
+        run: corepack enable
+      - uses: pnpm/action-setup@v4.1.0
+        with:
+          version: 9
+          run_install: false
+      - name: install dependencies
+        run: pnpm install --no-frozen-lockfile
