@@ -1,1 +1,9 @@
+name = "print2"
 pages_build_output_dir = "frontend/dist"
+compatibility_date = "2025-08-22"
+
+[env.preview]
+name = "print2"
+
+[env.production]
+name = "print2"
