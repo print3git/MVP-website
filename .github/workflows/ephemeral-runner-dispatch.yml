@@ -1,0 +1,66 @@
+name: Ephemeral runner dispatch
+
+on:
+  workflow_call:
+
+jobs:
+  setup:
+    name: Launch ephemeral runner
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    outputs:
+      instance-id: ${{ steps.launch.outputs.instance_id }}
+    steps:
+      - id: reg
+        name: Get runner registration token
+        env:
+          GH_TOKEN: ${{ secrets.RUNNER_BOT_PAT }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TOKEN=${GH_TOKEN:-$GITHUB_TOKEN}
+          token=$(curl -s -X POST \
+            -H "Authorization: Bearer $TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/${{ github.repository }}/actions/runners/registration-token | jq -r .token)
+          echo "token=$token" >> "$GITHUB_OUTPUT"
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4.0.2
+        with:
+          role-to-assume: ${{ secrets.EPHEMERAL_RUNNER_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+      - id: launch
+        name: Invoke launcher
+        run: |
+          aws lambda invoke \
+            --function-name infra-ephemeral-launcher \
+            --payload '{"token":"${{ steps.reg.outputs.token }}","labels":"ci-ephemeral"}' \
+            --cli-binary-format raw-in-base64-out \
+            /tmp/launch.json
+          cat /tmp/launch.json
+          instance=$(jq -r '.instance_id // empty' /tmp/launch.json)
+          echo "instance_id=$instance" >> "$GITHUB_OUTPUT"
+
+  teardown:
+    if: ${{ always() }}
+    name: Terminate ephemeral runner
+    needs: setup
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4.0.2
+        with:
+          role-to-assume: ${{ secrets.EPHEMERAL_RUNNER_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+      - name: Invoke terminator
+        if: needs.setup.outputs.instance-id != ''
+        run: |
+          aws lambda invoke \
+            --function-name infra-ephemeral-terminator \
+            --payload '{"instance_id":"${{ needs.setup.outputs.instance-id }}"}' \
+            --cli-binary-format raw-in-base64-out \
+            /tmp/term.json
+          cat /tmp/term.json
