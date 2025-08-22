@@ -1,0 +1,18 @@
+name: Guard pnpm monorepo install
+on: [pull_request, push]
+
+jobs:
+  pnpm-monorepo-install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.1.7
+      - uses: actions/setup-node@v4.4.0
+        with:
+          node-version: 20
+      - run: corepack enable
+      - uses: pnpm/action-setup@v4.1.0
+        with:
+          version: 10.11.0
+      - run: pnpm install --frozen-lockfile
+      - run: node scripts/ci-guard/pnpm-monorepo-install/audit.ts
+      - run: node scripts/run-jest.js tests/ci-guard/pnpm-monorepo-install/audit.test.ts
