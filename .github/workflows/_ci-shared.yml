@@ -1,0 +1,34 @@
+name: Shared CI runner with fallback
+
+on:
+  workflow_call:
+    inputs:
+      run:
+        description: Script to run
+        required: false
+        type: string
+        default: echo "heartbeat"
+
+jobs:
+  try-self-hosted:
+    runs-on: [self-hosted, linux, x64, mvp-gh-runner]
+    timeout-minutes: ${{ vars.MAX_QUEUE_MINUTES || 5 }}
+    continue-on-error: true
+    outputs:
+      started: ${{ steps.started.outputs.ok || '' }}
+    steps:
+      - name: Heartbeat
+        id: started
+        run: |
+          echo "ok=true" >> "$GITHUB_OUTPUT"
+          ${{ inputs.run }}
+      - name: Using self-hosted
+        run: echo "✅ used self-hosted runner" >> "$GITHUB_STEP_SUMMARY"
+  fallback:
+    needs: try-self-hosted
+    if: needs.try-self-hosted.outputs.started != 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - run: ${{ inputs.run }}
+      - name: Using fallback
+        run: echo "⚠️ self-hosted unavailable, ran on ubuntu-latest" >> "$GITHUB_STEP_SUMMARY"

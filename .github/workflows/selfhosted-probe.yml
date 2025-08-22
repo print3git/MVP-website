@@ -63,6 +63,13 @@ jobs:
           name: probe-${{ github.run_id }}
           path: latency.txt
 
+  probe-mvp-gh-runner:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: [self-hosted, linux, x64, mvp-gh-runner]
+    steps:
+      - name: Runner context
+        run: echo '${{ toJSON(runner) }}'
+
   timeout-notice:
     if: ${{ needs.probe-selfhosted.result != 'success' }}
     needs: probe-selfhosted

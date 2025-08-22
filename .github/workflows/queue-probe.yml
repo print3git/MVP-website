@@ -3,7 +3,6 @@ name: Queue Probe
 env:
   HUSKY: 0
 
-
 on:
   pull_request:
   workflow_dispatch:
@@ -16,13 +15,6 @@ permissions: {}
 
 jobs:
   probe:
-    runs-on:
-      - [self-hosted, linux, aws]
-      - ubuntu-latest
-    continue-on-error: true
-    timeout-minutes: 5
-    steps:
-      - name: Heartbeat
-        run: |
-          while true; do date; sleep 120; done &
-      - run: echo "hello $GITHUB_RUN_ID"
+    uses: ./.github/workflows/_ci-shared.yml
+    with:
+      run: echo "hello $GITHUB_RUN_ID"

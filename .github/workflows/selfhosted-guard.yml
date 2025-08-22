@@ -1,0 +1,26 @@
+name: Self-hosted workflow guard
+
+on:
+  pull_request:
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Lint workflows for self-hosted usage
+        run: |
+          violations=()
+          for f in .github/workflows/*.yml; do
+            if grep -qE 'name:.*Full (CI|Lane)' "$f"; then
+              if ! grep -q '_ci-shared.yml' "$f" && ! grep -q 'mvp-gh-runner' "$f"; then
+                violations+=("$f")
+              fi
+            fi
+          done
+          if [ ${#violations[@]} -gt 0 ]; then
+            echo "Missing self-hosted reference in: ${violations[*]}" >&2
+            exit 1
+          else
+            echo "Workflows OK"
+          fi
