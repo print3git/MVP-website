@@ -1,0 +1,20 @@
+name: CI Trigger Auditor
+
+on:
+  push:
+    branches: [dev, 00000production]
+  pull_request:
+    branches: [dev, 00000production]
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.1.7
+      - uses: actions/setup-node@v4.0.3
+        with:
+          node-version: 20
+      - name: Install deps
+        run: npm install --no-save --no-package-lock yaml@2
+      - name: Audit workflows
+        run: node scripts/ci-trigger-auditor.mjs
