@@ -31,14 +31,14 @@ runs:
         median_queue=$(jq '[.[] | select(.queued_at and .started_at) | ((.started_at | fromdate) - (.queued_at | fromdate))] | sort | if length>0 then .[length/2] else 0 end' "$timings" 2>/dev/null || echo 0)
 
         cat > ci/metrics/series.ndjson <<EOF
-{"MetricName":"QueuedJobs","Value":$queued_jobs}
-{"MetricName":"StartedJobs","Value":$started_jobs}
-{"MetricName":"SucceededJobs","Value":$succeeded_jobs}
-{"MetricName":"FailedJobs","Value":$failed_jobs}
-{"MetricName":"MedianQueueSeconds","Value":$median_queue}
-{"MetricName":"SuiteTests","Value":$suite_tests}
-{"MetricName":"SuiteFailures","Value":$suite_failures}
-EOF
+        {"MetricName":"QueuedJobs","Value":$queued_jobs}
+        {"MetricName":"StartedJobs","Value":$started_jobs}
+        {"MetricName":"SucceededJobs","Value":$succeeded_jobs}
+        {"MetricName":"FailedJobs","Value":$failed_jobs}
+        {"MetricName":"MedianQueueSeconds","Value":$median_queue}
+        {"MetricName":"SuiteTests","Value":$suite_tests}
+        {"MetricName":"SuiteFailures","Value":$suite_failures}
+        EOF
 
     - name: Upload metrics artifact
       uses: actions/upload-artifact@v4
