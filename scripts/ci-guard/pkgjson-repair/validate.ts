@@ -1,9 +1,10 @@
 #!/usr/bin/env node
-const fs = require('node:fs');
-const path = require('node:path');
+const fs = require("node:fs");
+const path = require("node:path");
 
 function parseJsonWithErrors(filePath) {
-  const src = fs.readFileSync(filePath, 'utf8');
+  let src = fs.readFileSync(filePath, "utf8");
+  if (src.charCodeAt(0) === 0xfeff) src = src.slice(1);
   try {
     return { data: JSON.parse(src), src };
   } catch (err) {
@@ -26,18 +27,21 @@ function collectWorkflowScripts(dir) {
   for (const file of fs.readdirSync(dir)) {
     const full = path.join(dir, file);
     if (fs.statSync(full).isFile()) {
-      const txt = fs.readFileSync(full, 'utf8');
+      const txt = fs.readFileSync(full, "utf8");
       let m;
       while ((m = runRe.exec(txt))) {
         const name = m[1];
-        if (!name.startsWith('-')) scripts.add(name);
+        if (!name.startsWith("-")) scripts.add(name);
       }
     }
   }
   return scripts;
 }
 
-function validate(pkgPath, workflowsDir = path.resolve(process.cwd(), '.github', 'workflows')) {
+function validate(
+  pkgPath,
+  workflowsDir = path.resolve(process.cwd(), ".github", "workflows"),
+) {
   const errors = [];
   const warnings = [];
   let pkg;
@@ -49,29 +53,42 @@ function validate(pkgPath, workflowsDir = path.resolve(process.cwd(), '.github',
     return { errors, warnings };
   }
 
-  if (typeof pkg.name !== 'string') errors.push('package.json missing required string field "name"');
-  if (typeof pkg.private !== 'boolean') errors.push('package.json missing required boolean field "private"');
-  if (!pkg.scripts || typeof pkg.scripts !== 'object') errors.push('package.json missing required object field "scripts"');
+  if (typeof pkg.name !== "string")
+    errors.push('package.json missing required string field "name"');
+  if (typeof pkg.private !== "boolean")
+    errors.push('package.json missing required boolean field "private"');
+  if (!pkg.scripts || typeof pkg.scripts !== "object")
+    errors.push('package.json missing required object field "scripts"');
 
-  if (pkg.version && typeof pkg.version !== 'string') errors.push('package.json optional field "version" must be string');
-  if (pkg.packageManager && typeof pkg.packageManager !== 'string') errors.push('package.json optional field "packageManager" must be string');
-  if (pkg.workspaces && !Array.isArray(pkg.workspaces)) errors.push('package.json optional field "workspaces" must be array of strings');
+  if (pkg.version && typeof pkg.version !== "string")
+    errors.push('package.json optional field "version" must be string');
+  if (pkg.packageManager && typeof pkg.packageManager !== "string")
+    errors.push('package.json optional field "packageManager" must be string');
+  if (pkg.workspaces && !Array.isArray(pkg.workspaces))
+    errors.push(
+      'package.json optional field "workspaces" must be array of strings',
+    );
 
   const referenced = collectWorkflowScripts(workflowsDir);
-  const missing = Array.from(referenced).filter((s) => !pkg.scripts || !(s in pkg.scripts));
-  if (missing.length) warnings.push(`Missing scripts referenced in workflows: ${missing.join(', ')}`);
+  const missing = Array.from(referenced).filter(
+    (s) => !pkg.scripts || !(s in pkg.scripts),
+  );
+  if (missing.length)
+    warnings.push(
+      `Missing scripts referenced in workflows: ${missing.join(", ")}`,
+    );
 
   return { errors, warnings };
 }
 
 if (require.main === module) {
-  const pkgPath = path.resolve(process.cwd(), 'package.json');
+  const pkgPath = path.resolve(process.cwd(), "package.json");
   const res = validate(pkgPath);
   if (res.errors.length) {
     for (const e of res.errors) console.error(e);
     process.exit(1);
   }
-  for (const w of res.warnings) console.warn('WARN:', w);
+  for (const w of res.warnings) console.warn("WARN:", w);
 }
 
 module.exports = { validate };

@@ -1,0 +1,6 @@
+{
+  "name": "demo",
+  "private": true,
+  "scripts": {},
+  "packageManager": "pnpm@1.2.3"
+}
