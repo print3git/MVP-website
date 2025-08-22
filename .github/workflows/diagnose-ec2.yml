@@ -1,0 +1,66 @@
+name: EC2 diagnose
+
+on:
+  workflow_dispatch:
+    inputs:
+      instance-id:
+        description: 'EC2 instance ID'
+        required: false
+      tag:
+        description: 'Tag query key=value'
+        required: false
+      region:
+        description: 'AWS region'
+        required: true
+  schedule:
+    - cron: '0 6 * * *'
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.1.6
+      - uses: aws-actions/configure-aws-credentials@v4.0.2
+        with:
+          role-to-assume: ${{ secrets.EC2_DIAGNOSE_ROLE_ARN }}
+          aws-region: ${{ inputs.region }}
+      - id: run
+        run: scripts/ec2-diagnose/run.sh
+        env:
+          INSTANCE_ID: ${{ inputs["instance-id"] }}
+          TAG: ${{ inputs.tag }}
+          REGION: ${{ inputs.region }}
+      - uses: actions/upload-artifact@v4.3.1
+        with:
+          name: ec2-diagnose
+          path: ec2-diagnose.md
+      - name: Comment or issue on failure
+        if: failure()
+        uses: actions/github-script@v7.0.1
+        with:
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('ec2-diagnose.md','utf8');
+            if (context.eventName === 'pull_request') {
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: 'EC2 diagnose failure',
+                body
+              });
+            }
+      - name: SSM guardrail
+        if: ${{ steps.run.outputs.ssm_online == 'yes' && steps.run.outputs.ssh_pass != 'PASS' }}
+        run: echo "::warning::SSM is available; prefer Session Manager over SSH."
