@@ -1,0 +1,58 @@
+name: runner-ssm-bootstrap
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * *'
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.1.1
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4.0.2
+        with:
+          aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_RUNNER_ROLE }}
+      - name: Get runner token
+        id: token
+        uses: actions/github-script@v7.0.1
+        with:
+          script: |
+            const res = await github.rest.actions.createRegistrationTokenForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            });
+            core.setOutput('token', res.data.token);
+      - name: Install runner via SSM
+        run: |
+          aws ssm send-command \
+            --document-name AWS-RunShellScript \
+            --instance-ids "${{ secrets.RUNNER_INSTANCE_ID }}" \
+            --comment "bootstrap github runner" \
+            --parameters commands="/usr/local/bin/install.sh $TOKEN"
+        env:
+          TOKEN: ${{ steps.token.outputs.token }}
+      - name: Health check
+        run: |
+          aws ssm describe-instance-information --filters "Key=InstanceIds,Values=${{ secrets.RUNNER_INSTANCE_ID }}"
+          curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/runners" | jq '.'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Recreate service if offline
+        run: |
+          online=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/runners" | jq -r '.runners[] | select(.labels[].name=="mvp-gh-runner") | .status')
+          if [ "$online" != "online" ]; then
+            aws ssm send-command \
+              --document-name AWS-RunShellScript \
+              --instance-ids "${{ secrets.RUNNER_INSTANCE_ID }}" \
+              --comment "restart github runner" \
+              --parameters commands="/usr/local/bin/install.sh $TOKEN"
+          fi
+        env:
+          TOKEN: ${{ steps.token.outputs.token }}
+          GITHUB_TOKEN: ${{ github.token }}
+

@@ -1,0 +1,39 @@
+name: runner-ssm-health
+
+on:
+  schedule:
+    - cron: '30 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      online: ${{ steps.check.outputs.online }}
+    steps:
+      - id: check
+        uses: actions/github-script@v7.0.1
+        with:
+          script: |
+            const res = await github.rest.actions.listSelfHostedRunnersForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            });
+            const online = res.data.runners.filter(r =>
+              r.labels.some(l => l.name === 'mvp-gh-runner') && r.status === 'online'
+            ).length;
+            core.setOutput('online', online);
+      - name: Open issue if runner missing
+        if: steps.check.outputs.online == '0'
+        uses: peter-evans/create-issue@v4.2.0
+        with:
+          title: Self-hosted runner offline
+          body: Runner with label `mvp-gh-runner` is offline.
+          labels: infrastructure
+  canary:
+    needs: check
+    if: needs.check.outputs.online != '0'
+    runs-on: [self-hosted, linux, x64, mvp-gh-runner]
+    steps:
+      - run: echo "runner online"
+
