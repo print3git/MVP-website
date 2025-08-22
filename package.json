@@ -104,7 +104,8 @@
     "test:regression": "npm run test:backend:regression && npm run test:frontend:regression && npm run test:ci:regression && npm run test:e2e:regression",
     "ci:probe": "bash -O globstar -c 'env -u npm_config_prefix node --test tests/ci/**/*.test.js'",
     "ci:summary": "node scripts/ci/print-suite-summary.js",
-    "test:inventory": "vitest run -t test-inventory"
+    "test:inventory": "vitest run -t test-inventory",
+    "test:lfs": "vitest run -t lfs"
   },
   "babel": {
     "presets": [
