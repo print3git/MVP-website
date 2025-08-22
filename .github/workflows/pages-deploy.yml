@@ -1,110 +1,31 @@
+# >>> BEGIN MANAGED BLOCK: ci-guard:cf-pages-build
 name: Pages Deploy
-
-env:
-  HUSKY: 0
-  BASH_ENV: scripts/env/aliases.sh
-
-on:
-  push:
-    branches: ["00000production"]
-  workflow_dispatch:
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
+on: [push, pull_request]
 jobs:
-  validate:
-    timeout-minutes: 15
-    name: Pages config validate
-    runs-on: [self-hosted, linux, aws]
-    env:
-      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CF_PAGES_API_TOKEN }}
-      CF_PAGES_PROJECT: ${{ secrets.CF_PAGES_PROJECT }}
-    steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - uses: ./.github/actions/install-deps
-      - run: npm ci && npm run build --prefix frontend
-      - name: ban dist symlinks
-        run: |
-          if find frontend/dist -type l | grep -q .; then
-            echo "Symlinks found in dist; replacing with copies";
-            while IFS= read -r -d '' l; do
-              tgt="$(readlink -f "$l")"; rm "$l"; cp -R "$tgt" "$l";
-            done < <(find frontend/dist -type l -print0)
-          fi
-      - name: Validate config
-        run: npx -y wrangler pages config validate --project-name "$CF_PAGES_PROJECT"
-
   deploy:
-    timeout-minutes: 15
-    needs: validate
-    runs-on: [self-hosted, linux, aws]
-    env:
-      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CF_PAGES_API_TOKEN }}
-      CF_PAGES_PROJECT: ${{ secrets.CF_PAGES_PROJECT }}
+    runs-on: ubuntu-latest
     steps:
-      - name: Heartbeat
-        run: |
-          while true; do date; sleep 120; done &
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: true
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
-          cache-dependency-path: |
-            package-lock.json
-            frontend/package-lock.json
-      - uses: ./.github/actions/install-deps
-      - run: npm ci && npm run build --prefix frontend
-      - name: ban dist symlinks
-        run: |
-          if find frontend/dist -type l | grep -q .; then
-            echo "Symlinks found in dist; replacing with copies";
-            while IFS= read -r -d '' l; do
-              tgt="$(readlink -f "$l")"; rm "$l"; cp -R "$tgt" "$l";
-            done < <(find frontend/dist -type l -print0)
-          fi
-      - name: verify build
-        run: |
-          if [ ! -f frontend/dist/index.html ]; then
-            echo "frontend/dist/index.html is missing"
-            if command -v tree >/dev/null; then
-              tree frontend/dist
-            else
-              find frontend/dist -maxdepth 2 -print
-            fi
-            exit 1
-          fi
-      - name: copy dist
-        run: cp -a frontend/dist/. pages_dist/
-      - name: Show env vars
-        run: |
-          echo "CLOUDFLARE_ACCOUNT_ID=${CLOUDFLARE_ACCOUNT_ID:+***}"
-          echo "CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN:+***}"
-          echo "CF_PAGES_PROJECT=${CF_PAGES_PROJECT:+***}"
-      - name: Deploy to Cloudflare Pages
-        id: deploy
-        run: |
-          url=$(npx -y wrangler pages deploy pages_dist --project-name "$CF_PAGES_PROJECT" --branch production | tee /tmp/deploy.log | grep -Eo 'https://[^ ]+\.pages\.dev' | tail -n 1)
-          echo "$url" > deploy-url.txt
-          echo "url=$url" >> "$GITHUB_OUTPUT"
-      - name: Job summary
-        if: steps.deploy.outputs.url
-        run: echo "Deployed to ${{ steps.deploy.outputs.url }}" >> "$GITHUB_STEP_SUMMARY"
-      - uses: actions/upload-artifact@v4
-        if: steps.deploy.outputs.url
+          cache: 'pnpm'
+      - run: corepack enable
+        shell: bash
+      - name: Build (parity with wrangler)
+        run: pnpm -C frontend install --frozen-lockfile && pnpm -C frontend build
+        shell: bash
+      - name: Verify artifact
+        run: test -f frontend/dist/index.html
+        shell: bash
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
         with:
-          name: pages-deploy-url
-          path: deploy-url.txt
-      - uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: pages-dist
-          path: pages_dist
-          if-no-files-found: ignore
+          apiToken: ${{ secrets.CF_PAGES_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID || secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy --project-name "${{ vars.CF_PAGES_PROJECT }}" --branch "${{ github.ref_name }}"
+# <<< END MANAGED BLOCK: ci-guard:cf-pages-build
+# The Wrangler-side build still runs for dashboard builds; workflow gives parity on CI.

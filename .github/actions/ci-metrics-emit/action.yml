@@ -12,32 +12,32 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Generate metrics
-      shell: bash
-      run: |
-        set -euo pipefail
-        mkdir -p ci/metrics
-        timings="${{ inputs.timings }}"
-        inventory="${{ inputs.inventory }}"
-        suite_tests=$(jq '[.suites[]? .tests?[]] | length' "$inventory" 2>/dev/null || echo 0)
-        suite_failures=$(jq '[.suites[]? .tests?[] | select(.outcome and .outcome != "success")] | length' "$inventory" 2>/dev/null || echo 0)
-        queued_jobs=$(jq '[.[]] | length' "$timings" 2>/dev/null || echo 0)
-        started_jobs=$(jq '[.[] | select(.started_at != null)] | length' "$timings" 2>/dev/null || echo 0)
-        failed_jobs=$(jq '[.[] | select(.conclusion == "failure")] | length' "$timings" 2>/dev/null || echo 0)
-        succeeded_jobs=$(jq '[.[] | select(.conclusion == "success")] | length' "$timings" 2>/dev/null || echo 0)
-        median_queue=$(jq '[.[] | select(.queued_at and .started_at) | ((.started_at | fromdate) - (.queued_at | fromdate))] | sort | if length>0 then .[length/2] else 0 end' "$timings" 2>/dev/null || echo 0)
-        cat > ci/metrics/series.ndjson <<EOF
-        {"MetricName":"QueuedJobs","Value":$queued_jobs}
-        {"MetricName":"StartedJobs","Value":$started_jobs}
-        {"MetricName":"FailedJobs","Value":$failed_jobs}
-        {"MetricName":"SucceededJobs","Value":$succeeded_jobs}
-        {"MetricName":"MedianQueueSeconds","Value":$median_queue}
-        {"MetricName":"SuiteTests","Value":$suite_tests}
-        {"MetricName":"SuiteFailures","Value":$suite_failures}
-        EOF
-    - name: Upload metrics artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: ci-metrics
-        path: ci/metrics/series.ndjson
+  - name: Generate metrics
+    shell: bash
+    run: |
+      set -euo pipefail
+      mkdir -p ci/metrics
+      timings="${{ inputs.timings }}"
+      inventory="${{ inputs.inventory }}"
+      suite_tests=$(jq '[.suites[]? .tests?[]] | length' "$inventory" 2>/dev/null || echo 0)
+      suite_failures=$(jq '[.suites[]? .tests?[] | select(.outcome and .outcome != "success")] | length' "$inventory" 2>/dev/null || echo 0)
+      queued_jobs=$(jq '[.[]] | length' "$timings" 2>/dev/null || echo 0)
+      started_jobs=$(jq '[.[] | select(.started_at != null)] | length' "$timings" 2>/dev/null || echo 0)
+      failed_jobs=$(jq '[.[] | select(.conclusion == "failure")] | length' "$timings" 2>/dev/null || echo 0)
+      succeeded_jobs=$(jq '[.[] | select(.conclusion == "success")] | length' "$timings" 2>/dev/null || echo 0)
+      median_queue=$(jq '[.[] | select(.queued_at and .started_at) | ((.started_at | fromdate) - (.queued_at | fromdate))] | sort | if length>0 then .[length/2] else 0 end' "$timings" 2>/dev/null || echo 0)
+      cat > ci/metrics/series.ndjson <<EOF
+      {"MetricName":"QueuedJobs","Value":$queued_jobs}
+      {"MetricName":"StartedJobs","Value":$started_jobs}
+      {"MetricName":"FailedJobs","Value":$failed_jobs}
+      {"MetricName":"SucceededJobs","Value":$succeeded_jobs}
+      {"MetricName":"MedianQueueSeconds","Value":$median_queue}
+      {"MetricName":"SuiteTests","Value":$suite_tests}
+      {"MetricName":"SuiteFailures","Value":$suite_failures}
+      EOF
+  - name: Upload metrics artifact
+    uses: actions/upload-artifact@v4
+    with:
+      name: ci-metrics
+      path: ci/metrics/series.ndjson
 # <<< END MANAGED BLOCK: ci-guard:metrics-action-yaml
