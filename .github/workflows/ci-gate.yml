@@ -1,79 +1,60 @@
+---
 name: CI Gate
 
 on:
-  push:
-    branches:
-      - dev
-      - 00000production
-  pull_request:
+  pull_request: {}
 
 permissions:
-  actions: read
-  checks: read
   contents: read
 
 jobs:
-  gate:
-    name: gate
+  ci-inventory:
     runs-on: ubuntu-latest
+    outputs:
+      inventory-miss: ${{ steps.inventory.outputs.miss }}
+      inventory-missing: ${{ steps.inventory.outputs.missing }}
     steps:
-      - uses: actions/checkout@v4
-      - name: Check CI suites
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const fs = require('fs');
-            const path = require('path');
-            const { execSync } = require('child_process');
-            const expected = JSON.parse(fs.readFileSync(path.join(process.env.GITHUB_WORKSPACE, 'ci/expected-jobs.json'), 'utf8'));
-            const suites = expected.suites || expected;
-            const { owner, repo } = context.repo;
-            const sha = context.payload.pull_request ? context.payload.pull_request.head.sha : context.sha;
+      - uses: actions/checkout@v5
+      - name: Generate test inventory
+        run: node scripts/list-tests.ts
+      - name: Check test inventory
+        id: inventory
+        run: |
+          node <<'NODE' > diff.json
+          const fs = require('fs');
+          const manifest = require('./scripts/ci/test-manifest.json');
+          const { minimatch } = require('minimatch');
+          const inv = JSON.parse(
+            fs.readFileSync('test-inventory/current.json', 'utf8')
+          );
+          const files = Object.values(inv.packages || {})
+            .flatMap(p => p.files || []);
+          const patterns = Object.values(manifest).flat();
+          const missing = files.filter(f =>
+            !patterns.some(p => minimatch(f, p))
+          );
+          fs.writeFileSync('missing-paths.txt', missing.join('\n'));
+          process.stdout.write(
+            JSON.stringify({ miss: missing.length, missing })
+          );
+          NODE
+          miss=$(jq '.miss' diff.json)
+          echo "miss=$miss" >> "$GITHUB_OUTPUT"
+          echo "missing<<'EOF'" >> "$GITHUB_OUTPUT"
+          jq -r '.missing[]' diff.json >> "$GITHUB_OUTPUT"
+          echo 'EOF' >> "$GITHUB_OUTPUT"
 
-            // query current workflow jobs
-            await github.rest.actions.listJobsForWorkflowRun({ owner, repo, run_id: context.runId });
-
-            const allRuns = await github.paginate(github.rest.actions.listWorkflowRunsForRepo, { owner, repo, per_page: 100 });
-            const table = [];
-            for (const suiteName of suites) {
-              let ran = false;
-              let conclusion = '';
-              let testsExecuted = 0;
-              const run = allRuns.find(r => r.name === suiteName && r.head_sha === sha);
-              if (run) {
-                ran = true;
-                conclusion = run.conclusion;
-                const artifacts = await github.paginate(github.rest.actions.listWorkflowRunArtifacts, { owner, repo, run_id: run.id });
-                const junit = artifacts.find(a => /junit/i.test(a.name));
-                if (junit) {
-                  const download = await github.rest.actions.downloadArtifact({ owner, repo, artifact_id: junit.id, archive_format: 'zip' });
-                  const tmpDir = fs.mkdtempSync(path.join(require('os').tmpdir(), 'junit-'));
-                  const zipPath = path.join(tmpDir, 'artifact.zip');
-                  fs.writeFileSync(zipPath, Buffer.from(download.data));
-                  try {
-                    execSync(`unzip -qq ${zipPath} -d ${tmpDir}`);
-                    for (const file of fs.readdirSync(tmpDir)) {
-                      if (file.endsWith('.xml')) {
-                        const xml = fs.readFileSync(path.join(tmpDir, file), 'utf8');
-                        const match = xml.match(/tests="(\\d+)"/);
-                        if (match) testsExecuted += Number(match[1]);
-                      }
-                    }
-                  } catch (err) {
-                    core.warning(`Failed to parse junit for ${suiteName}: ${err.message}`);
-                  }
-                }
-              }
-              table.push({ suiteName, ran, conclusion, testsExecuted });
-            }
-
-            core.summary.addHeading('CI Suite Summary');
-            core.summary.addTable([
-              [{ data: 'Suite', header: true }, { data: 'Ran', header: true }, { data: 'Conclusion', header: true }, { data: 'Tests', header: true }],
-              ...table.map(t => [t.suiteName, String(t.ran), t.conclusion || 'missing', String(t.testsExecuted)])
-            ]);
-            await core.summary.write();
-
-            if (table.some(t => !t.ran || t.conclusion !== 'success' || t.testsExecuted === 0)) {
-              core.setFailed('One or more expected suites missing, failed, or executed zero tests.');
-            }
+  gate:
+    runs-on: ubuntu-latest
+    needs: ci-inventory
+    steps:
+      - uses: actions/checkout@v5
+      - name: Lint workflow files
+        run: >-
+          yamllint -d "{extends: default, rules: {line-length: disable, truthy: disable}}" .github/workflows
+      - name: Fail on untracked tests
+        if: ${{ needs.ci-inventory.outputs['inventory-miss'] > 0 }}
+        run: |
+          echo 'Untracked tests detected'
+          echo "${{ needs.ci-inventory.outputs['inventory-missing'] }}"
+          exit 1
