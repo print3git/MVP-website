@@ -104,7 +104,9 @@
     "test:regression": "npm run test:backend:regression && npm run test:frontend:regression && npm run test:ci:regression && npm run test:e2e:regression",
     "ci:probe": "bash -O globstar -c 'env -u npm_config_prefix node --test tests/ci/**/*.test.js'",
     "ci:summary": "node scripts/ci/print-suite-summary.js",
-    "test:inventory": "vitest run -t test-inventory"
+    "test:inventory": "vitest run -t test-inventory",
+    "ci:skip-audit": "tsx scripts/ci/skip-detection-audit.ts",
+    "test:skip-audit": "vitest run -t skip-detection-audit"
   },
   "babel": {
     "presets": [
@@ -189,7 +191,8 @@
     "typescript": "^5.8.3",
     "vitest": "^2.1.1",
     "wait-on": "^8.0.3",
-    "yaml": "^2.8.0"
+    "yaml": "^2.8.0",
+    "tsx": "^4.19.0"
   },
   "husky": {
     "hooks": {
