@@ -1,0 +1,40 @@
+name: Self-hosted Runner Regression Guard
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/**"
+      - "infra/**"
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check recent feature test
+        id: check
+        uses: actions/github-script@v7.0.1
+        with:
+          script: |
+            const {owner, repo} = context.repo;
+            const since = new Date(Date.now() - 24*60*60*1000).toISOString();
+            const runs = await github.rest.actions.listWorkflowRuns({
+              owner,
+              repo,
+              workflow_id: 'selfhosted-featuretest.yml',
+              per_page: 50,
+              status: 'completed'
+            });
+            const recent = runs.data.workflow_runs.find(r => r.conclusion === 'success' && r.created_at > since);
+            core.setOutput('recent', recent ? 'true' : 'false');
+      - name: Comment if missing
+        if: steps.check.outputs.recent == 'false'
+        uses: actions/github-script@v7.0.1
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: 'Self-hosted runner feature test has not succeeded in the last 24h. Trigger it via the Actions tab (Self-hosted Runner Feature Test > Run workflow).'
+            });
+            core.setFailed('feature test missing');
