@@ -27,6 +27,12 @@ This module provisions an ephemeral self-hosted GitHub Actions runner on a singl
    make destroy
    ```
 
+## Metrics and scaling
+
+- A Lambda function (`queue-metric`) polls the repository every minute and pushes a CloudWatch metric `QueuedJobs`.
+- The autoscaling group applies a target tracking policy on this metric: it scales out when queued jobs are present and scales in after 10 minutes of zero queued jobs.
+- Instances are tagged with `runner=gha` for safe identification.
+
 ## Variables
 
 See [`variables.tf`](variables.tf) for customization options including VPC creation, instance type, labels and scheduling.

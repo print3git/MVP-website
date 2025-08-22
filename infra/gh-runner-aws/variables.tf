@@ -54,3 +54,8 @@ variable "off_hours" {
   default     = false
   description = "Scale the ASG to zero overnight"
 }
+
+variable "github_token" {
+  type        = string
+  description = "GitHub token for queue metrics lambda"
+}

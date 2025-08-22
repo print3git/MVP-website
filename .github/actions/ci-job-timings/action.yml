@@ -1,0 +1,31 @@
+name: CI Job Timings
+description: Emit per-job queue and run timings as NDJSON
+inputs:
+  timings:
+    description: "Path to job timings JSON"
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Generate per-job metrics
+      shell: bash
+      run: |
+        set -euo pipefail
+        timings="${{ inputs.timings }}"
+        mkdir -p ci/metrics
+        jq -c '.[] | select(.queued_at and .started_at and .completed_at)' "$timings" |
+        while read -r job; do
+          name=$(echo "$job" | jq -r .name | tr ' /' '__')
+          queued=$(( $(echo "$job" | jq -r '.started_at | fromdate') - $(echo "$job" | jq -r '.queued_at | fromdate') ))
+          runtime=$(( $(echo "$job" | jq -r '.completed_at | fromdate') - $(echo "$job" | jq -r '.started_at | fromdate') ))
+          echo "{\"job\":\"$name\",\"queued_seconds\":$queued,\"run_seconds\":$runtime}" > "ci/metrics/$name.ndjson"
+        done
+        echo "job metrics written to ci/metrics/*.ndjson"
+    - name: Verify metrics
+      shell: bash
+      run: test -n "$(ls ci/metrics/*.ndjson 2>/dev/null)"
+    - name: Upload job metrics
+      uses: actions/upload-artifact@v4
+      with:
+        name: ci-job-metrics
+        path: ci/metrics/*.ndjson
