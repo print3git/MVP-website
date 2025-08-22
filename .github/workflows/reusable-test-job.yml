@@ -16,6 +16,10 @@ on:
         required: false
         type: boolean
         default: false
+      runner-labels:
+        required: false
+        type: string
+        default: ''
       shard-total:
         required: false
         type: number
@@ -26,7 +30,7 @@ on:
 jobs:
   test:
     name: ${{ inputs.suite }}
-    runs-on: ${{ inputs.use-self-hosted && 'self-hosted' || 'ubuntu-latest' }}
+    runs-on: ${{ (inputs.use-self-hosted || contains(inputs.runner-labels, 'self-hosted')) && fromJson('["self-hosted","linux","aws"]') || 'ubuntu-latest' }}
     strategy:
       fail-fast: false
     timeout-minutes: 30

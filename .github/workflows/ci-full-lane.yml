@@ -9,6 +9,16 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 jobs:
+  probe:
+    runs-on: ubuntu-latest
+    outputs:
+      labels: ${{ steps.probe.outputs.labels }}
+    steps:
+      - name: Probe self-hosted runners
+        id: probe
+        run: |
+          gh api repos/${{ github.repository }}/actions/runners --jq '.runners[].labels[].name' > labels.txt
+          echo "labels=$(tr '\n' ' ' < labels.txt)" >> "$GITHUB_OUTPUT"
   lint:
     uses: ./.github/workflows/reusable-test-job.yml
     with:
@@ -20,10 +30,12 @@ jobs:
       suite: typecheck
       command: npm run typecheck
   unit:
+    needs: probe
     uses: ./.github/workflows/reusable-test-job.yml
     with:
       suite: unit
       command: npm test
+      runner-labels: ${{ needs.probe.outputs.labels }}
   backend:
     uses: ./.github/workflows/reusable-test-job.yml
     with:
@@ -31,21 +43,26 @@ jobs:
       command: npm test -- --backend
       use-self-hosted: true
   frontend:
+    needs: probe
     uses: ./.github/workflows/reusable-test-job.yml
     with:
       suite: frontend
       command: npm test -- --frontend
+      runner-labels: ${{ needs.probe.outputs.labels }}
   e2e:
+    needs: probe
     uses: ./.github/workflows/reusable-test-job.yml
     with:
       suite: e2e
       command: npm run test:e2e
-      use-self-hosted: true
+      runner-labels: ${{ needs.probe.outputs.labels }}
   docs:
+    needs: probe
     uses: ./.github/workflows/reusable-test-job.yml
     with:
       suite: docs
       command: npm test -- --docs
+      runner-labels: ${{ needs.probe.outputs.labels }}
   infra:
     uses: ./.github/workflows/reusable-test-job.yml
     with:
