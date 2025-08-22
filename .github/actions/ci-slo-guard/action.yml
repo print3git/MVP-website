@@ -1,0 +1,53 @@
+name: CI SLO Guard
+description: Manage CI SLO breach issue
+inputs:
+  start_rate:
+    required: true
+  summary:
+    required: true
+  comment:
+    required: true
+  cooldown_minutes:
+    default: 180
+runs:
+  using: composite
+  steps:
+    - uses: actions/github-script@v7
+      env:
+        START_RATE: ${{ inputs.start_rate }}
+        SUMMARY: ${{ inputs.summary }}
+        COMMENT: ${{ inputs.comment }}
+        COOLDOWN: ${{ inputs.cooldown_minutes }}
+      with:
+        script: |
+          const {owner, repo} = context.repo;
+          const title = 'ci-slo-breach';
+          const startRate = parseFloat(process.env.START_RATE);
+          const cooldown = parseInt(process.env.COOLDOWN, 10);
+          const now = new Date();
+          const issues = await github.paginate(github.rest.issues.listForRepo, {owner, repo, state: 'all'});
+          let issue = issues.find(i => i.title === title);
+          if (startRate < 95) {
+            const body = `SLO breach detected\n\n${process.env.SUMMARY}\n\nOK_COUNT:0`;
+            if (issue) {
+              await github.rest.issues.update({owner, repo, issue_number: issue.number, body, state: 'open'});
+            } else {
+              issue = (await github.rest.issues.create({owner, repo, title, body})).data;
+            }
+            await github.rest.issues.addLabels({owner, repo, issue_number: issue.number, labels: ['ci-observability', 'severity: warning']});
+            const comments = await github.rest.issues.listComments({owner, repo, issue_number: issue.number});
+            const last = comments.data[comments.data.length-1];
+            if (!last || (now - new Date(last.created_at)) / 60000 > cooldown) {
+              await github.rest.issues.createComment({owner, repo, issue_number: issue.number, body: process.env.COMMENT});
+            }
+          } else if (issue && issue.state === 'open') {
+            const match = /OK_COUNT:(\d+)/.exec(issue.body || '');
+            const ok = match ? parseInt(match[1],10) + 1 : 1;
+            const newBody = (issue.body || '').replace(/OK_COUNT:\d+/, `OK_COUNT:${ok}`);
+            if (ok >= 2) {
+              await github.rest.issues.createComment({owner, repo, issue_number: issue.number, body: 'recovered'});
+              await github.rest.issues.update({owner, repo, issue_number: issue.number, body: newBody, state: 'closed'});
+            } else {
+              await github.rest.issues.update({owner, repo, issue_number: issue.number, body: newBody});
+            }
+          }
