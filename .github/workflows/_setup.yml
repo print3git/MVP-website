@@ -42,9 +42,10 @@ jobs:
             package-lock.json
             backend/package-lock.json
             frontend/package-lock.json
-        - run: npm ci
-        - run: npm run ci:build-scripts
-        - run: npm ci --prefix frontend
-        - run: npm ci --prefix backend
-      - run: ${{ inputs.run }}
+      - run: npm ci
+      - run: npm run ci:build-scripts
+      - run: npm ci --prefix frontend
+      - run: npm ci --prefix backend
+      - name: Execute caller command
+        run: ${{ inputs.run }}
     timeout-minutes: 15
