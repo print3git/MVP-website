@@ -34,6 +34,10 @@ These guidelines apply to all automated agents (e.g. the Codex agent) working on
 19. **Avoid committing binary files** – Codex cannot generate patches for binary changes. Do not modify images, audio, or other binary assets. If adding new ones, update `.gitattributes` so they are treated as binary.
 20. **Pin GitHub Action versions** – use explicit tags instead of broad majors to prevent resolution errors (e.g. `aquasecurity/tfsec-action@v1.0.3`).
 
+## Test file naming
+
+All new test files in `tests/`, `test/`, `__tests__/`, `ci-guard/`, or similar directories **must append a unique 16–20 character random alphanumeric suffix** before the file extension. Example: `audit.test.h3298mx894uz3m03mx1.ts`. Use a different random string for each run and update any imports accordingly. This avoids filename collisions between concurrent Codex runs and CI jobs.
+
 ## Troubleshooting
 
 If `npm run ci` outputs messages like `1 interrupted` or `2 did not run` during the Playwright tests, the browsers were likely not installed. You may also see errors such as `browser.newContext: Test ended`, `page.evaluate: Test ended`, or `Test was interrupted` in `/tmp/ci.log`:

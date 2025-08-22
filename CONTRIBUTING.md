@@ -24,6 +24,7 @@ Thank you for helping improve this project! Please follow these steps to keep ou
 ## Tests
 
 - All new code should include appropriate tests.
+- New test files must append a unique 16–20 character random alphanumeric suffix before the file extension (e.g. `feature.test.h3298mx894uz3m03mx1.ts`) to avoid collisions across concurrent runs.
 - CI runs `npm run ci` and `npm test`; please ensure these succeed locally.
 - If Playwright dependencies are already installed you can set `SKIP_PW_DEPS=1` when running setup or CI to skip the lengthy install step.
 - Mock all external HTTP calls in tests. Only `localhost` traffic is permitted; any other network access must be stubbed with tools like [nock](https://github.com/nock/nock).
