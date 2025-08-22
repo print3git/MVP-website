@@ -1,0 +1,25 @@
+[Unit]
+Description=GitHub Actions Runner
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/actions-runner
+EnvironmentFile=/opt/actions-runner/.env
+ExecStart=/opt/actions-runner/run.sh
+Restart=always
+
+ExecStop=/bin/bash -c '
+  TOKEN="";
+  if [ -n "$SSM_TOKEN_PATH" ]; then
+    TOKEN=$(aws ssm get-parameter --name "$SSM_TOKEN_PATH" --with-decryption --query Parameter.Value --output text 2>/dev/null || true);
+  elif [ -n "$GITHUB_PAT" ]; then
+    TOKEN=$(curl -fs -X POST -H "Authorization: token $GITHUB_PAT" \
+      "https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/actions/runners/registration-token" | jq -r .token 2>/dev/null || true);
+  fi;
+  [[ -n "$TOKEN" ]] && /opt/actions-runner/config.sh remove --token "$TOKEN" || true
+'
+
+[Install]
+WantedBy=multi-user.target
