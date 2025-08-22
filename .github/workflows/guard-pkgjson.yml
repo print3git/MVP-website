@@ -1,0 +1,25 @@
+# >>> BEGIN MANAGED BLOCK: ci-guard:pkgjson-repair
+name: Guard package.json
+on: [push, pull_request]
+jobs:
+  pkgjson:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: corepack enable
+        shell: bash
+      - run: node scripts/ci-guard/pkgjson-repair/validate.ts
+        shell: bash
+      - run: |
+          {
+            echo '```json'
+            head -n 15 package.json
+            echo '...'
+            tail -n 15 package.json
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+        shell: bash
+# <<< END MANAGED BLOCK: ci-guard:pkgjson-repair
