@@ -9,6 +9,21 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 jobs:
+  provision:
+    uses: ./.github/workflows/aws-ec2-runner.yml
+    secrets: inherit
+
+  tests:
+    needs: provision
+    runs-on: [self-hosted, linux, aws-ec2]
+    steps:
+      - uses: actions/checkout@v4.1.6
+      - uses: actions/setup-node@v4.0.3
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm test
   lint:
     uses: ./.github/workflows/reusable-test-job.yml
     with:
