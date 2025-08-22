@@ -1,0 +1,34 @@
+name: AWS CI Sanity
+on:
+  schedule: [{ cron: "0 * * * *" }]
+  workflow_dispatch: {}
+jobs:
+  sanity:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check OIDC wiring
+        id: gate
+        run: |
+          if [[ -z "${{ vars.AWS_ROLE_TO_ASSUME || '' }}" ]]; then
+            echo "no_role=1" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Skip if no role
+        if: steps.gate.outputs.no_role == '1'
+        run: echo "Skipping: AWS role not configured."
+      - name: Configure AWS
+        if: steps.gate.outputs.no_role != '1'
+        uses: aws-actions/configure-aws-credentials@v4.3.1
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
+      - name: Assert ASG exists (soft)
+        if: steps.gate.outputs.no_role != '1'
+        shell: bash
+        run: |
+          set -euo pipefail
+          ASG="${{ vars.ASG_NAME || 'MVP-GH-Runners' }}"
+          aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names "$ASG" >/dev/null || {
+            echo "::warning::ASG '$ASG' not found (skipping)."
+            exit 0
+          }
+          echo "ASG $ASG found."
