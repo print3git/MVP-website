@@ -7,11 +7,30 @@ jobs:
   test:
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
 
     steps:
       - uses: actions/checkout@v4
+# >>> BEGIN MANAGED BLOCK: ci-guard:windows-cancel-guard
+      - name: Setup Node (Windows)
+        if: startsWith(runner.os, 'Windows')
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+      - name: Enable Corepack (Windows)
+        if: startsWith(runner.os, 'Windows')
+        shell: pwsh
+        run: corepack enable
+      - name: Ensure pnpm (Windows fallback)
+        if: startsWith(runner.os, 'Windows')
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+# <<< END MANAGED BLOCK: ci-guard:windows-cancel-guard
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -36,3 +55,13 @@ jobs:
           run: >-
             pnpm test -- --json --outputFile=test-results.json
           results-file: test-results.json
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ runner.os }}
+          path: test-results.json
+      - name: Cancellation probe
+        if: always()
+        shell: bash
+        run: echo "job.status=${{ job.status }} conclusion=${{ job.conclusion }}"
