@@ -14,14 +14,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Ensure core workflows present
+# >>> BEGIN MANAGED BLOCK: ci-guard:required-workflows
+      - name: Validate required workflows
+        shell: bash
         run: |
-          missing=0
-          # List is non-blocking; only fails if truly missing. Adjust freely; this doesn’t run tests.
-          for f in codeql.yml cloudflare.yml lfs-guard.yml tests.yml backend.yml frontend.yml aws-runner-probe.yml; do
-            test -f ".github/workflows/$f" || { echo "Missing .github/workflows/$f"; missing=1; }
-          done
-          [ $missing -eq 0 ] || { echo "❌ Missing required workflows"; exit 1; }
+          set -euo pipefail
+          node - <<'JS'
+          const fs=require('fs'), path=require('path');
+          const cfg=JSON.parse(fs.readFileSync('ci-guard/required-workflows/list.json','utf8'));
+          const base='.github/workflows';
+          const missing=cfg.paths.filter(p=>!fs.existsSync(path.join(base,p)));
+          if(missing.length){
+            console.log('Missing workflow files:', missing.join(', '));
+            if(cfg.mode==='fail'){ process.exit(1); }
+          } else { console.log('All required workflows present.'); }
+          JS
+# <<< END MANAGED BLOCK: ci-guard:required-workflows
   manifest:
     runs-on: ubuntu-latest
     needs: safety
