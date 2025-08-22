@@ -1,0 +1,51 @@
+name: AWS runner heartbeat
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+jobs:
+  decide:
+    name: Determine runner
+    runs-on: ubuntu-latest
+    outputs:
+      runner: ${{ steps.set-runner.outputs.runner }}
+      online: ${{ steps.set-runner.outputs.online }}
+    steps:
+      - id: set-runner
+        uses: actions/github-script@v7.0.1
+        with:
+          script: |
+            const {data} = await github.rest.actions.listSelfHostedRunnersForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 100
+            });
+            const online = data.runners.filter(r => r.status === 'online').length;
+            core.info(`Online self-hosted runners: ${online}`);
+            core.setOutput('online', String(online));
+            const runner = online > 0 ? '["self-hosted","linux","aws"]' : 'ubuntu-latest';
+            core.setOutput('runner', runner);
+
+  heartbeat:
+    needs: decide
+    runs-on: ${{ fromJSON(needs.decide.outputs.runner) }}
+    steps:
+      - name: Run heartbeat
+        uses: actions/github-script@v7.0.1
+        with:
+          script: |
+            const online = Number('${{ needs.decide.outputs.online }}');
+            core.info(`Online self-hosted runners: ${online}`);
+            await new Promise(r => setTimeout(r, 5000));
+            if (online === 0) {
+              const {data: labels} = await github.rest.issues.listLabelsForRepo({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                per_page: 100
+              });
+              if (labels.some(l => l.name === 'require-self-hosted')) {
+                core.setFailed('No self-hosted runners online and repo is labeled require-self-hosted');
+              }
+            }
