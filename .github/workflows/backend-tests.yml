@@ -29,13 +29,12 @@ jobs:
       - name: Setup pnpm
         uses: ./.github/actions/setup-pnpm
       - name: Run changed tests
-        run: |
-          corepack enable
-          pnpm i --frozen-lockfile --ignore-scripts
-          pnpm jest --ci --runInBand --reporters=default \
-            --silent --noStackTrace \
-            --changedSince=origin/00000production \
-            --passWithNoTests
+        uses: ./.github/actions/with-test-telemetry
+        with:
+          package-manager: pnpm
+          run: >-
+            pnpm jest --ci --runInBand --reporters=default --silent --noStackTrace --changedSince=origin/00000production --passWithNoTests --json --outputFile=test-results.json
+          results-file: test-results.json
 
   full-suite:
     if: github.ref_name == '00000production'
@@ -77,9 +76,17 @@ jobs:
               sleep $((2**attempt))
             fi
           done
-      - name: Run backend tests
+      - name: Prepare test files
         run: |
           node scripts/run-jest.js backend --listTests | split -n l/3 - test-files-
-          TEST_FILES=$(cat test-files-${{ matrix.shard }} | tr '\n' ' ')
-          node scripts/run-jest.js --runTestsByPath $TEST_FILES --ci --coverage
+          echo "TEST_FILES=$(cat test-files-${{ matrix.shard }} | tr '\n' ' ')" >> $GITHUB_ENV
+      - name: Run backend tests
+        uses: ./.github/actions/with-test-telemetry
+        env:
+          TEST_FILES: ${{ env.TEST_FILES }}
+        with:
+          package-manager: npm
+          run: >-
+            node scripts/run-jest.js --runTestsByPath $TEST_FILES --ci --coverage --json --outputFile=test-results.json
+          results-file: test-results.json
     timeout-minutes: 15
