@@ -1,0 +1,41 @@
+name: Canary Latency
+description: Measure queued->start latency for this job and assert SLO
+inputs:
+  threshold_seconds:
+    description: Max allowed queued->start latency
+    required: true
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: |
+        set -euo pipefail
+        RUN_ID="${GITHUB_RUN_ID}"
+        REPO="${GITHUB_REPOSITORY}"
+        PAGE=1
+        tmp="$(mktemp)"
+        # Fetch jobs for this run
+        gh api -H "Accept: application/vnd.github+json" \
+          "/repos/${REPO}/actions/runs/${RUN_ID}/jobs?per_page=100" > "$tmp"
+        # Identify *this* job by name/id
+        this_id="${{ github.job }}"
+        # Best effort: pick the job with the same name first; fallback to first job
+        jq '.jobs[0] as $first
+            | (.jobs[] | select(.name == env.this_id)) // $first' \
+            "$tmp" > "$tmp.job"
+        queued_at=$(jq -r '.queued_at // empty' "$tmp.job")
+        started_at=$(jq -r '.started_at // empty' "$tmp.job")
+        if [[ -z "${queued_at}" || -z "${started_at}" ]]; then
+          echo "No timing data yet; treating as high latency."
+          echo "latency_seconds=9999" >> "$GITHUB_OUTPUT"
+          exit 1
+        fi
+        q=$(date -u -d "$queued_at" +%s)
+        s=$(date -u -d "$started_at" +%s)
+        latency=$(( s - q ))
+        echo "latency_seconds=$latency" >> "$GITHUB_OUTPUT"
+        echo "Latency: $latency s (threshold ${{ inputs.threshold_seconds }} s)"
+        if (( latency > ${{ inputs.threshold_seconds }} )); then
+          echo "Latency SLO breached"
+          exit 1
+        fi
