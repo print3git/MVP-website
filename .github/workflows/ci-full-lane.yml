@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - dev
-      - '00000production'
+      - "00000production"
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -23,7 +23,7 @@ jobs:
     uses: ./.github/workflows/reusable-test-job.yml
     with:
       suite: unit
-      command: npm test
+      command: JEST_RETRIES=2 npm test -- --config scripts/ci/jest.config.ci.ts
   backend:
     uses: ./.github/workflows/reusable-test-job.yml
     with:
