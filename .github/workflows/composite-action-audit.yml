@@ -1,0 +1,22 @@
+name: Composite action audit
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npm run ci:action-audit
+      - run: npm run test:action-audit
+      - name: Upload audit summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: composite-action-audit
+          path: composite-action-audit-summary.json
