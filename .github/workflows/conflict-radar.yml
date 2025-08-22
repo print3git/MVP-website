@@ -1,0 +1,80 @@
+name: conflict-radar
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  radar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.6
+      - name: Run conflict radar
+        id: radar
+        uses: actions/github-script@v7.0.1
+        with:
+          script: |
+            const since = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString();
+            const closed = await github.graphql(
+              `query($owner:String!,$repo:String!){
+                 repository(owner:$owner,name:$repo){
+                   pullRequests(states:CLOSED,orderBy:{field:UPDATED_AT,direction:DESC},first:100){
+                     nodes{
+                       number
+                       title
+                       url
+                       closedAt
+                       mergedAt
+                       files(first:100){nodes{path}}
+                     }
+                   }
+                 }
+               }`,
+              {owner: context.repo.owner, repo: context.repo.repo}
+            );
+            const recent = closed.repository.pullRequests.nodes.filter(pr => !pr.mergedAt && new Date(pr.closedAt) > new Date(since));
+            const report = recent.map(pr => ({
+              number: pr.number,
+              title: pr.title,
+              url: pr.url,
+              files: pr.files.nodes.map(f => f.path)
+            }));
+            const fs = require('fs');
+            fs.writeFileSync('conflict-radar.json', JSON.stringify(report, null, 2));
+            if (report.length) {
+              const open = await github.graphql(
+                `query($owner:String!,$repo:String!){
+                   repository(owner:$owner,name:$repo){
+                     pullRequests(states:OPEN,orderBy:{field:CREATED_AT,direction:DESC},first:1){
+                       nodes{number}
+                     }
+                   }
+                 }`,
+                {owner: context.repo.owner, repo: context.repo.repo}
+              );
+              const target = open.repository.pullRequests.nodes[0];
+              if (target) {
+                let body = '### You probably missed these\n';
+                for (const pr of report) {
+                  const files = pr.files.map(f => `\`${f}\``).join(', ');
+                  body += `- [ ] [#${pr.number}](${pr.url}) ${pr.title} - ${files}\n`;
+                }
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: target.number,
+                  body
+                });
+              }
+            }
+      - name: Upload audit file
+        uses: actions/upload-artifact@v4.3.1
+        with:
+          name: conflict-radar
+          path: conflict-radar.json
