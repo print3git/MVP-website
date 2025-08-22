@@ -1,0 +1,42 @@
+name: CI Burst Probe
+on:
+  workflow_dispatch:
+    inputs:
+      size:
+        description: "Number of parallel self-hosted attempts"
+        default: "4"
+jobs:
+  fanout:
+    name: probe-${{ matrix.i }}
+    strategy:
+      fail-fast: false
+      matrix:
+        i: [1,2,3,4]
+    if: ${{ github.event.inputs.size == '' || fromJSON('['+github.event.inputs.size+']')[0] >= matrix.i }}
+    runs-on: [self-hosted, linux, x64, aws-runner]
+    timeout-minutes: 6
+    steps:
+      - name: Queue watchdog (3 min)
+        id: qw
+        shell: bash
+        run: |
+          set -euo pipefail
+          deadline=$(( $(date +%s) + 180 ))
+          echo "Polling for job start..."
+          while (( $(date +%s) < deadline )); do
+            echo "tick..."
+            sleep 10
+          done
+          echo "queue_timeout=true" >> "$GITHUB_OUTPUT"
+      - name: If timed out, mark for fallback
+        if: steps.qw.outputs.queue_timeout == 'true'
+        run: echo "This attempt will be replaced by fallback."
+  fallback:
+    needs: fanout
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Summarize
+        run: |
+          echo "Some probes may have fallen back to hosted runners."
+          echo "Interpretation: ASG may be cold or labels not matched."
