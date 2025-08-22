@@ -4,11 +4,14 @@ env:
   HUSKY: 0
 
 on:
+  push:
+    branches:
+      - dev
+      - 00000production
   pull_request:
-    paths:
-      - 'frontend/**'
-      - '!docs/**'
-      - 'package.json'
+    branches:
+      - dev
+      - 00000production
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -19,8 +22,6 @@ jobs:
     runs-on:
       - [self-hosted, linux, aws]
       - ubuntu-latest
-    if: ${{ matrix.node != 22 || contains(github.event.pull_request.labels.*.name,
-      'full-matrix') }}
     continue-on-error: ${{ matrix.node == 22 }}
     defaults:
       run:
@@ -32,21 +33,29 @@ jobs:
         shard: [ 1, 2, 3 ]
     steps:
       - name: Heartbeat
+        if: ${{ matrix.node != 22 || contains(github.event.pull_request.labels.*.name, 'full-matrix') }}
         run: |
           while true; do date; sleep 120; done &
       - uses: actions/checkout@v4
+        if: ${{ matrix.node != 22 || contains(github.event.pull_request.labels.*.name, 'full-matrix') }}
       - uses: actions/setup-node@v4
+        if: ${{ matrix.node != 22 || contains(github.event.pull_request.labels.*.name, 'full-matrix') }}
         with:
           node-version: ${{ matrix.node }}
           cache: npm
           cache-dependency-path: frontend/package-lock.json
       - run: npm ci
+        if: ${{ matrix.node != 22 || contains(github.event.pull_request.labels.*.name, 'full-matrix') }}
       - run: npm run lint
-        if: ${{ matrix.shard == 1 }}
+        if: ${{ (matrix.node != 22 || contains(github.event.pull_request.labels.*.name, 'full-matrix')) && matrix.shard == 1 }}
       - run: npm run build -- --ssr.split=${{ matrix.shard }}/3
+        if: ${{ matrix.node != 22 || contains(github.event.pull_request.labels.*.name, 'full-matrix') }}
       - run: test -d dist
+        if: ${{ matrix.node != 22 || contains(github.event.pull_request.labels.*.name, 'full-matrix') }}
       - run: node ../scripts/assert-frontend-dist.js
+        if: ${{ matrix.node != 22 || contains(github.event.pull_request.labels.*.name, 'full-matrix') }}
       - uses: actions/upload-artifact@v4
+        if: ${{ matrix.node != 22 || contains(github.event.pull_request.labels.*.name, 'full-matrix') }}
         with:
           name: frontend-dist-${{ matrix.node }}-${{ matrix.shard }}
           path: frontend/dist
