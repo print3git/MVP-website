@@ -1,0 +1,24 @@
+backend-unit:
+  workflow: backend-tests.yml
+backend-integration:
+  workflow: backend-tests.yml
+frontend-jest:
+  workflow: ci.yml
+playwright:
+  workflow: ci.yml
+audit:
+  workflow: ci-audit.yml
+secrets:
+  workflow: secret-scan.yml
+lint:
+  workflow: lint.yml
+typecheck:
+  workflow: typecheck.yml
+size-limit:
+  workflow: size-monitor.yml
+codeql:
+  workflow: codeql-analysis.yml
+coverage:
+  workflow: coverage.yml
+e2e-smoke:
+  workflow: smoke_test.yml
