@@ -1,0 +1,9 @@
+suites:
+  - backend-unit
+  - frontend-jest
+  - playwright
+  - lint
+  - typecheck
+  - size-limit
+  - audit
+  - secrets
