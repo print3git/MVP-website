@@ -144,10 +144,37 @@ async function main() {
   }
 }
 
-if (require.main === module) {
-  main().catch((e) => {
-    console.error(e);
-    process.exit(1);
-  });
+async function runCi({ input, summary, out }) {
+  void summary; // summary currently unused
+  const data = JSON.parse(await fs.readFile(input, "utf8"));
+  await fs.mkdir(out, { recursive: true });
+  const first = data.failing_jobs?.[0]?.name || "unknown job";
+  const suggestion = `Investigate failing job: ${first}`;
+  await fs.writeFile(path.join(out, "suggestion.md"), suggestion);
+  return suggestion;
 }
-module.exports = { main };
+
+if (require.main === module) {
+  const args = process.argv.slice(2);
+  const getArg = (flag) => {
+    const idx = args.indexOf(flag);
+    return idx >= 0 ? args[idx + 1] : undefined;
+  };
+  const mode = getArg("--mode");
+  if (mode === "ci") {
+    runCi({
+      input: getArg("--input"),
+      summary: getArg("--summary"),
+      out: getArg("--out"),
+    }).catch((e) => {
+      console.error(e);
+      process.exit(1);
+    });
+  } else {
+    main().catch((e) => {
+      console.error(e);
+      process.exit(1);
+    });
+  }
+}
+module.exports = { main, runCi };
