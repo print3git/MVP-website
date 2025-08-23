@@ -12,7 +12,7 @@ env:
 jobs:
   probe-selfhosted:
     name: Probe self-hosted runner
-    runs-on: [self-hosted, linux, aws, mvp-runner]
+    runs-on: [self-hosted, linux, aws, mvp-gh-runner]
     timeout-minutes: 5
     outputs:
       queue_latency: ${{ steps.latency.outputs.queue_latency }}
@@ -37,9 +37,9 @@ jobs:
             const online = runners.filter(
               (r) =>
                 r.status === 'online' &&
-                r.labels.some((l) => l.name === 'mvp-runner')
+                r.labels.some((l) => l.name === 'mvp-gh-runner')
             ).length;
-            core.info(`Online mvp-runner runners: ${online}`);
+            core.info(`Online mvp-gh-runner runners: ${online}`);
             if (online < required) {
               core.setFailed(
                 `Only ${online} self-hosted runners online; need at least ${required}.`

@@ -6,7 +6,7 @@ on:
 jobs:
   health:
     name: AWS runner health
-    runs-on: [self-hosted, linux, aws, mvp-runner]
+    runs-on: [self-hosted, linux, aws, mvp-gh-runner]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5.0.0

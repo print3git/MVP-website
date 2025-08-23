@@ -15,7 +15,7 @@ variable "repo" {
 
 variable "runner_labels" {
   type        = list(string)
-  default     = ["self-hosted", "linux", "aws", "mvp-runner"]
+  default     = ["self-hosted", "linux", "aws", "mvp-gh-runner"]
   description = "Labels to apply to the GitHub runner"
 }
 

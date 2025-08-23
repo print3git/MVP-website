@@ -15,17 +15,19 @@ if [[ -f .env ]]; then
 fi
 
 banner() {
-  echo -e "\n==============================\n$1\n==============================";
+  printf '\n==============================\n%s\n==============================\n' "$1"
 }
 
 timings=()
 time_stage() {
   local name=$1
   shift
-  local start=$(date +%s)
+  local start
+  start=$(date +%s)
   "$@"
   local status=$?
-  local end=$(date +%s)
+  local end
+  end=$(date +%s)
   timings+=("$name:$((end-start))")
   return $status
 }
@@ -41,7 +43,7 @@ SERVER_PID=$!
 trap 'kill $SERVER_PID' EXIT
 
 echo "Waiting for port 3000..."
-for i in {1..30}; do
+for _ in {1..30}; do
   if nc -z localhost 3000; then break; fi
   sleep 1
 done
