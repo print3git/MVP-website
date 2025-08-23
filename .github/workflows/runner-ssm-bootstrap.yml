@@ -3,23 +3,29 @@ name: Runner SSM Bootstrap
 on:
   workflow_dispatch:
     inputs:
-      instance-id:
+      instance_id:
         description: EC2 instance ID
-        required: false
-      tag:
-        description: Target tag in the form Key=Value
-        required: false
+        required: true
+        type: string
       region:
         description: AWS region
-        required: true
+        default: us-east-1
+        type: string
       labels:
         description: Runner labels
-        default: mvp-gh-runner
-        required: false
+        default: self-hosted,linux,x64,mvp-gh-runner
+        type: string
+      runner_user:
+        description: Username for the runner
+        default: actions-runner
+        type: string
+      runner_version:
+        description: GitHub Actions runner version
+        default: latest
+        type: string
 
 permissions:
   actions: write
-  id-token: write
   contents: read
 
 jobs:
@@ -27,8 +33,9 @@ jobs:
     # >>> BEGIN MANAGED BLOCK: ci-guard:ssm-runner
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - name: Get registration token
-        id: token
+        id: reg
         uses: actions/github-script@v7
         with:
           script: |
@@ -38,40 +45,54 @@ jobs:
             });
             core.setSecret(data.token);
             return {token: data.token};
-      - name: Configure AWS credentials
+      - name: Configure AWS credentials (OIDC)
+        id: aws-oidc
+        if: secrets.AWS_ROLE_TO_ASSUME != ''
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ vars.AWS_SSM_RUNNER_ROLE }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           aws-region: ${{ inputs.region }}
-      - name: Install runner
+      - name: Configure AWS credentials (static)
+        id: aws-static
+        if: steps.aws-oidc.outcome == 'skipped' && secrets.AWS_ACCESS_KEY_ID != '' && secrets.AWS_SECRET_ACCESS_KEY != ''
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION || inputs.region }}
+      - name: Missing AWS credentials
+        if: steps.aws-oidc.outcome == 'skipped' && steps.aws-static.outcome == 'skipped'
+        run: |
+          echo 'AWS credentials not found. Provide AWS_ROLE_TO_ASSUME or AWS_ACCESS_KEY_ID/AWS_SECRET_ACCESS_KEY.' >&2
+          exit 1
+      - name: Bootstrap runner
+        id: ssm
+        env:
+          INSTANCE_ID: ${{ inputs.instance_id }}
+          REGION: ${{ inputs.region }}
+          RUNNER_TOKEN: ${{ steps.reg.outputs.token }}
+          LABELS: ${{ inputs.labels }}
+          RUNNER_USER: ${{ inputs.runner_user }}
+          RUNNER_VERSION: ${{ inputs.runner_version }}
+          REPO_URL: https://github.com/${{ github.repository }}
         run: |
           set -euo pipefail
-          if [ -n "${{ inputs.instance-id }}" ]; then
-            TARGET="--instance-ids ${{ inputs.instance-id }}"
-          elif [ -n "${{ inputs.tag }}" ]; then
-            KEY="${{ inputs.tag }}"
-            TARGET="--targets Key=tag:${KEY%%=*},Values=${KEY#*=}"
-          else
-            echo "instance-id or tag required" >&2
-            exit 1
-          fi
-          aws ssm send-command $TARGET \
-            --region "${{ inputs.region }}" \
+          script_b64=$(base64 -w0 .github/scripts/ssm-install-runner.sh)
+          cmd="echo $script_b64 | base64 -d >/tmp/ssm-install.sh && chmod +x /tmp/ssm-install.sh && RUNNER_TOKEN='$RUNNER_TOKEN' LABELS='$LABELS' RUNNER_USER='$RUNNER_USER' RUNNER_VERSION='$RUNNER_VERSION' REPO_URL='$REPO_URL' bash /tmp/ssm-install.sh"
+          params=$(jq -n --arg c "$cmd" '{commands: [$c]}')
+          aws ssm send-command \
+            --comment GitHubRunnerBootstrap \
             --document-name AWS-RunShellScript \
-            --parameters commands="curl -fsSL https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/scripts/ssm-runner/install.sh -o /tmp/install.sh; chmod +x /tmp/install.sh; GITHUB_OWNER=${{ github.repository_owner }} GITHUB_REPO=${{ github.event.repository.name }} GH_TOKEN=${{ steps.token.outputs.token }} /tmp/install.sh" >/tmp/ssm.json
-      - name: Verify registration
-        id: verify
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const runners = await github.paginate(github.rest.actions.listSelfHostedRunnersForRepo, {
-              owner: context.repo.owner,
-              repo: context.repo.repo
-            });
-            const r = runners.find(r => r.name === 'mvp-gh-runner');
-            if (!r) core.setFailed('Runner not found');
-            else core.setOutput('labels', r.labels.map(l=>l.name).join(','));
+            --instance-ids "$INSTANCE_ID" \
+            --region "$REGION" \
+            --parameters "$params" \
+            --output json >command.json
+          command_id=$(jq -r '.Command.CommandId' command.json)
+          aws ssm wait command-executed --command-id "$command_id" --instance-id "$INSTANCE_ID" --region "$REGION" --max-wait-seconds 600
+          aws ssm get-command-invocation --command-id "$command_id" --instance-id "$INSTANCE_ID" --region "$REGION" | tee invocation.json
+          echo "command_id=$command_id" >>"$GITHUB_OUTPUT"
       - name: Summary
-        if: steps.verify.outcome == 'success'
-        run: echo "Runner mvp-gh-runner online with labels: ${{ steps.verify.outputs.labels }}" >> "$GITHUB_STEP_SUMMARY"
+        run: |
+          echo "SSM command ${{ steps.ssm.outputs.command_id }} executed." >> "$GITHUB_STEP_SUMMARY"
+          echo 'Check Settings → Actions → Runners for the new runner then run self-hosted-runner-probe.' >> "$GITHUB_STEP_SUMMARY"
     # <<< END MANAGED BLOCK: ci-guard:ssm-runner
