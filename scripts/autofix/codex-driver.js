@@ -1,180 +1,172 @@
-const fs = require("fs").promises;
-const path = require("path");
-const { execSync } = require("child_process");
+import fs from 'fs/promises';
+import path from 'path';
+import { exec } from 'child_process';
+import { promisify } from 'util';
+import { generateFixAndGuard, generateHiFiTests } from './hf-llm.js';
+import { summarizeRepo, loadSnippetsForHints } from './repo-context.js';
+import { slugFromSignature, ensureBranch, commitFiles, openPR, findExistingPR } from './pr-tools.js';
 
-const outDir = path.join("ci", "autofix", "out");
-const statePath = path.join("ci", "autofix", "state.json");
+const execP = promisify(exec);
+const STATE_FILE = path.join('.autofix', 'state.json');
+const AUTOFIX_MAX_GROUPS = Number(process.env.AUTOFIX_MAX_GROUPS || 2);
 
-async function main() {
-  const files = await fs.readdir(outDir).catch(() => []);
-  if (files.length === 0) return;
-  const [owner, repo] = (process.env.GITHUB_REPOSITORY || "").split("/");
-  if (!owner || !repo) throw new Error("GITHUB_REPOSITORY not set");
-  const ghHeaders = {
-    Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
-    "User-Agent": "codex-driver",
-    "Content-Type": "application/json",
-  };
-
-  for (const file of files) {
-    if (!file.endsWith(".md")) continue;
-    const slug = path.basename(file, ".md");
-    const promptPath = path.join(outDir, file);
-    const prompt = await fs.readFile(promptPath, "utf8");
-    await fs.unlink(promptPath);
-
-    const codexRes = await fetch(process.env.CODEX_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.CODEX_API_KEY}`,
-      },
-      body: JSON.stringify({ repo: process.env.GITHUB_REPOSITORY, prompt }),
-    }).then((r) => r.json());
-
-    const repoInfo = await fetch(
-      `https://api.github.com/repos/${owner}/${repo}`,
-      {
-        headers: ghHeaders,
-      },
-    ).then((r) => r.json());
-    const base = repoInfo.default_branch;
-    const baseRef = await fetch(
-      `https://api.github.com/repos/${owner}/${repo}/git/ref/heads/${base}`,
-      { headers: ghHeaders },
-    ).then((r) => r.json());
-    const baseSha = baseRef.object.sha;
-    const commitData = await fetch(
-      `https://api.github.com/repos/${owner}/${repo}/git/commits/${baseSha}`,
-      { headers: ghHeaders },
-    ).then((r) => r.json());
-    const baseTree = commitData.tree.sha;
-
-    if (codexRes.patch) {
-      execSync("git apply --whitespace=nowarn", { input: codexRes.patch });
-    } else if (codexRes.branchTarball) {
-      const tmp = await fs.mkdtemp(path.join(process.cwd(), "autofix-"));
-      const tarPath = path.join(tmp, "branch.tar");
-      await fs.writeFile(
-        tarPath,
-        Buffer.from(codexRes.branchTarball, "base64"),
-      );
-      execSync(`tar -xf ${tarPath} -C ${tmp}`);
-      execSync(`cp -R ${tmp}/* ${process.cwd()}`);
-    } else {
-      console.error("Codex response missing patch or branchTarball");
-      continue;
-    }
-
-    const changed = execSync("git status --porcelain", { encoding: "utf8" })
-      .split("\n")
-      .filter(Boolean)
-      .map((l) => l.slice(3));
-    const tree = [];
-    for (const filePath of changed) {
-      const content = await fs.readFile(filePath, "utf8");
-      const blob = await fetch(
-        `https://api.github.com/repos/${owner}/${repo}/git/blobs`,
-        {
-          method: "POST",
-          headers: ghHeaders,
-          body: JSON.stringify({ content, encoding: "utf-8" }),
-        },
-      ).then((r) => r.json());
-      tree.push({
-        path: filePath,
-        mode: "100644",
-        type: "blob",
-        sha: blob.sha,
-      });
-    }
-
-    const newTree = await fetch(
-      `https://api.github.com/repos/${owner}/${repo}/git/trees`,
-      {
-        method: "POST",
-        headers: ghHeaders,
-        body: JSON.stringify({ base_tree: baseTree, tree }),
-      },
-    ).then((r) => r.json());
-
-    const commit = await fetch(
-      `https://api.github.com/repos/${owner}/${repo}/git/commits`,
-      {
-        method: "POST",
-        headers: ghHeaders,
-        body: JSON.stringify({
-          message: `autofix: ${slug}`,
-          tree: newTree.sha,
-          parents: [baseSha],
-        }),
-      },
-    ).then((r) => r.json());
-
-    const branch = `autofix/${slug}`;
-    await fetch(`https://api.github.com/repos/${owner}/${repo}/git/refs`, {
-      method: "POST",
-      headers: ghHeaders,
-      body: JSON.stringify({ ref: `refs/heads/${branch}`, sha: commit.sha }),
-    });
-
-    const pr = await fetch(
-      `https://api.github.com/repos/${owner}/${repo}/pulls`,
-      {
-        method: "POST",
-        headers: ghHeaders,
-        body: JSON.stringify({ title: slug, head: branch, base }),
-      },
-    ).then((r) => r.json());
-
-    await fetch(
-      `https://api.github.com/repos/${owner}/${repo}/issues/${pr.number}/labels`,
-      {
-        method: "POST",
-        headers: ghHeaders,
-        body: JSON.stringify({ labels: ["autofix"] }),
-      },
-    );
-
-    execSync("git reset --hard", { stdio: "ignore" });
-    const state = await fs.readFile(statePath, "utf8").catch(() => "{}");
-    const json = JSON.parse(state);
-    json[slug] = { pr: pr.number, branch };
-    await fs.writeFile(statePath, JSON.stringify(json, null, 2));
+async function loadState() {
+  try {
+    return JSON.parse(await fs.readFile(STATE_FILE, 'utf8'));
+  } catch {
+    return {};
   }
 }
 
-async function runCi({ input, summary, out }) {
-  void summary; // summary currently unused
-  const data = JSON.parse(await fs.readFile(input, "utf8"));
-  await fs.mkdir(out, { recursive: true });
-  const first = data.failing_jobs?.[0]?.name || "unknown job";
-  const suggestion = `Investigate failing job: ${first}`;
-  await fs.writeFile(path.join(out, "suggestion.md"), suggestion);
-  return suggestion;
+async function saveState(st) {
+  await fs.mkdir(path.dirname(STATE_FILE), { recursive: true });
+  await fs.writeFile(STATE_FILE, JSON.stringify(st, null, 2));
 }
 
-if (require.main === module) {
-  const args = process.argv.slice(2);
-  const getArg = (flag) => {
-    const idx = args.indexOf(flag);
-    return idx >= 0 ? args[idx + 1] : undefined;
-  };
-  const mode = getArg("--mode");
-  if (mode === "ci") {
-    runCi({
-      input: getArg("--input"),
-      summary: getArg("--summary"),
-      out: getArg("--out"),
-    }).catch((e) => {
-      console.error(e);
-      process.exit(1);
-    });
-  } else {
-    main().catch((e) => {
-      console.error(e);
-      process.exit(1);
+async function readGroups() {
+  const dir = path.join('ci', 'autofix', 'inbox');
+  const files = await fs.readdir(dir).catch(() => []);
+  const groups = [];
+  for (const f of files) {
+    if (!f.endsWith('.json')) continue;
+    const data = JSON.parse(await fs.readFile(path.join(dir, f), 'utf8'));
+    groups.push({
+      signature: data.error_hash || f.replace(/\.json$/, ''),
+      sampleLog: (data.snippets || [])[0] || '',
+      runs: data.run || [],
+      jobs: data.job || [],
+      hints: data.files || [],
     });
   }
+  return groups;
 }
-module.exports = { main, runCi };
+
+function countTests(files) {
+  let n = 0;
+  for (const f of files) {
+    n += (f.contents.match(/\b(it|test)\s*\(/g) || []).length;
+  }
+  return n;
+}
+
+async function runTests() {
+  try {
+    const { stdout, stderr } = await execP('npm -s run test:ci || npm -s test || true', {
+      maxBuffer: 1024 * 1024,
+    });
+    return stdout + stderr;
+  } catch (e) {
+    return String(e);
+  }
+}
+
+let diagnosticOpened = false;
+async function openDiagnosticPR() {
+  if (diagnosticOpened) return;
+  diagnosticOpened = true;
+  const branch = 'autofix/setup-hf-token';
+  try {
+    ensureBranch(branch, 'main');
+    await openPR({
+      branch,
+      base: 'main',
+      title: 'Autofix setup: add HF_TOKEN',
+      body: 'HuggingFace API denied unauthenticated requests. Add HF_TOKEN secret.',
+      labels: ['autofix'],
+    });
+  } catch (e) {
+    console.error('diagnostic PR failed', e);
+  }
+}
+
+async function processGroup(group, repoSummary, state) {
+  const slug = slugFromSignature(group.signature);
+  if (state[slug]) return;
+  if (await findExistingPR(slug)) return;
+
+  const snippets = await loadSnippetsForHints(group.hints);
+  const fixRes = await generateFixAndGuard({
+    signature: group.signature,
+    sampleLog: group.sampleLog,
+    repoSummary,
+    fileSnippets: snippets,
+  });
+
+  if (fixRes.diagnostic === 'unauthorized') {
+    await openDiagnosticPR();
+    return;
+  }
+
+  if (fixRes.files && fixRes.files.length) {
+    const branch = `autofix/${slug}-fix`;
+    ensureBranch(branch, 'main');
+    commitFiles(fixRes.files, `autofix: fix for ${slug}`);
+    const testLog = await runTests();
+    const body = [
+      `Signature: ${group.signature}`,
+      '',
+      '```',
+      group.sampleLog,
+      '```',
+      '',
+      '```',
+      testLog,
+      '```',
+    ].join('\n');
+    await openPR({
+      branch,
+      base: 'main',
+      title: `autofix: ${slug}`,
+      body,
+      labels: ['autofix', 'autofix-fix'],
+    });
+  }
+
+  const testRes = await generateHiFiTests({
+    signature: group.signature,
+    sampleLog: group.sampleLog,
+    repoSummary,
+  });
+
+  if (testRes.files && countTests(testRes.files) >= 10) {
+    const branch = `autofix/${slug}-hf-tests`;
+    ensureBranch(branch, 'main');
+    commitFiles(testRes.files, `autofix tests for ${slug}`);
+    const body = [
+      `Signature: ${group.signature}`,
+      '',
+      '```',
+      group.sampleLog,
+      '```',
+    ].join('\n');
+    await openPR({
+      branch,
+      base: 'main',
+      title: `autofix tests: ${slug}`,
+      body,
+      labels: ['autofix', 'autofix-tests'],
+    });
+  }
+
+  state[slug] = true;
+  await saveState(state);
+}
+
+export async function main() {
+  const groups = await readGroups();
+  if (!groups.length) return;
+  const state = await loadState();
+  const repoSummary = await summarizeRepo();
+  let count = 0;
+  for (const g of groups) {
+    if (count >= AUTOFIX_MAX_GROUPS) break;
+    await processGroup(g, repoSummary, state);
+    count++;
+  }
+}
+
+if (import.meta.url === `file://${process.argv[1]}`) {
+  main().catch((e) => {
+    console.error(e);
+  });
+}
