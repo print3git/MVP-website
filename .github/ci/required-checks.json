@@ -1,3 +1,5 @@
 {
-  "required": ["CI Gate / gate"]
+  "required": [
+    "CI Gate / gate"
+  ]
 }

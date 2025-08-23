@@ -1,17 +1,33 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:base"],
-  "schedule": ["before 6am on monday"],
+  "extends": [
+    "config:base"
+  ],
+  "schedule": [
+    "before 6am on monday"
+  ],
   "timezone": "UTC",
   "packageRules": [
     {
-      "matchManagers": ["npm", "pnpm", "github-actions"],
-      "matchUpdateTypes": ["minor", "patch"],
+      "matchManagers": [
+        "npm",
+        "pnpm",
+        "github-actions"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
       "automerge": true
     },
     {
-      "matchPackageNames": ["wrangler"],
-      "matchUpdateTypes": ["minor", "patch"],
+      "matchPackageNames": [
+        "wrangler"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
       "automerge": true
     }
   ]
