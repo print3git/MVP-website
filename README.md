@@ -9,6 +9,11 @@
 [![Coverage Status](https://coveralls.io/repos/github/OWNER/REPO/badge.svg?branch=main)](https://coveralls.io/github/OWNER/REPO?branch=main)
 [![Frontend Coverage](https://github.com/OWNER/REPO/actions/workflows/coverage.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/coverage.yml)
 
+## Runner Health
+
+[![Heartbeat](https://github.com/OWNER/REPO/actions/workflows/aws-runner-heartbeat.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/aws-runner-heartbeat.yml)
+[![Canary](https://github.com/OWNER/REPO/actions/workflows/ci-start-latency.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/ci-start-latency.yml)
+
 ## CI policy
 
 Only two GitHub Action jobs are required to merge changes:
