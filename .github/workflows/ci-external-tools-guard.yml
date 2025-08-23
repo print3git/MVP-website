@@ -1,0 +1,28 @@
+name: "CI: external tool dependency guard"
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/**/*.yml"
+      - ".github/actions/**"
+      - "scripts/ci-guards/**"
+      - "tests/ci-guards/**"
+
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci || npm i
+      - run: node scripts/ci-guards/check-external-tools.js
+      - run: npm test -- --reporters=default
+      - uses: actions/upload-artifact@v4
+        with:
+          name: external-tools-report
+          path: ci/guards/external-tools-report.json
