@@ -1,0 +1,7 @@
+{
+  "maxOpenAutofixPRs": 5,
+  "allowedPaths": [".github/workflows", "scripts/ci-*", "tests/ci-*"],
+  "forbiddenPaths": ["src/runtime/**", "secrets/**"],
+  "requireTestsForA": true,
+  "minTestsForB": 10
+}
