@@ -1,0 +1,256 @@
+name: AWS self-hosted runner diagnostics
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "*/15 * * * *"
+
+jobs:
+  api_probe:
+    runs-on: ubuntu-latest
+    outputs:
+      has_label: ${{ steps.probe.outputs.has_label }}
+      is_online: ${{ steps.probe.outputs.is_online }}
+      is_busy: ${{ steps.probe.outputs.is_busy }}
+      timestamp: ${{ steps.probe.outputs.timestamp }}
+    steps:
+      - name: Inspect runners
+        id: probe
+        uses: actions/github-script@v7.0.1
+        with:
+          script: |
+            const fs = require('fs');
+            const dir = 'ci/runner';
+            fs.mkdirSync(dir, {recursive: true});
+            const {data} = await github.rest.actions.listSelfHostedRunnersForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            });
+            fs.writeFileSync(`${dir}/registry.json`, JSON.stringify(data, null, 2));
+            const required = ['self-hosted', 'linux', 'x64', 'mvp-gh-runner'];
+            const runner = data.runners.find(r => required.every(l => r.labels.some(x => x.name === l)));
+            if (!runner) {
+              core.setOutput('has_label', 'false');
+              core.setOutput('is_online', 'false');
+              core.setOutput('is_busy', 'false');
+              core.setFailed('required runner not found');
+              return;
+            }
+            core.setOutput('has_label', 'true');
+            core.setOutput('is_online', String(runner.status === 'online'));
+            core.setOutput('is_busy', String(runner.busy));
+            core.setOutput('timestamp', String(Date.now()));
+
+  self_test:
+    runs-on: [self-hosted, linux, x64, mvp-gh-runner]
+    needs: api_probe
+    outputs:
+      artifact_ok: ${{ steps.artifact_verify.outputs.ok }}
+    steps:
+      - name: Record start
+        id: start
+        run: |
+          start_ms=$(date +%s%3N)
+          echo "start_ms=$start_ms" >> $GITHUB_OUTPUT
+          echo "start_latency_ms=$((start_ms - ${{ needs.api_probe.outputs.timestamp }}))" >> $GITHUB_OUTPUT
+          mkdir -p ci/runner
+          : > ci/runner/checks.ndjson
+
+      - name: Runner identity
+        run: |
+          ok=true
+          if [ "$RUNNER_OS" != "Linux" ] || [ "$RUNNER_ARCH" != "X64" ]; then ok=false; fi
+          details="name=$RUNNER_NAME os=$RUNNER_OS arch=$RUNNER_ARCH id=$RUNNER_TRACKING_ID"
+          printf '%s\n' "{\"name\":\"runner_identity\",\"ok\":$ok,\"details\":\"$details\"}" >> ci/runner/checks.ndjson
+
+      - name: Labels echo
+        run: |
+          labels=${GITHUB_RUNNER_LABELS:-$(cat /opt/actions-runner/.runner 2>/dev/null)}
+          if echo "$labels" | grep -q mvp-gh-runner; then ok=true; else ok=false; fi
+          details=$(echo "$labels" | tr '\n' ',' | sed 's/,$//')
+          printf '%s\n' "{\"name\":\"labels\",\"ok\":$ok,\"details\":\"$details\"}" >> ci/runner/checks.ndjson
+
+      - name: Start latency
+        run: |
+          printf '%s\n' "{\"name\":\"start_latency_ms\",\"ok\":true,\"details\":${{ steps.start.outputs.start_latency_ms }} }" >> ci/runner/checks.ndjson
+
+      - name: Disk space
+        id: disk
+        run: |
+          free=$(df -BG / | awk 'NR==2 {gsub("G","",$4);print $4}')
+          if [ "$free" -gt 5 ]; then ok=true; else ok=false; fi
+          details=$(df -h / | tail -n 1 | tr -s ' ')
+          printf '%s\n' "{\"name\":\"disk_space\",\"ok\":$ok,\"details\":\"$details\"}" >> ci/runner/checks.ndjson
+          echo "free_gb=$free" >> $GITHUB_OUTPUT
+
+      - name: CPU & mem
+        run: |
+          cpu=$(grep -m1 'model name' /proc/cpuinfo | cut -d: -f2- | xargs)
+          mem=$(free -m | awk '/Mem:/ {print $2}')
+          details="cpu=$cpu mem_total_mb=$mem"
+          printf '%s\n' "{\"name\":\"cpu_mem\",\"ok\":true,\"details\":\"$details\"}" >> ci/runner/checks.ndjson
+
+      - name: Network egress
+        id: net
+        run: |
+          s1=$(curl -sI https://api.github.com | head -n 1)
+          s2=$(curl -sI https://registry.npmjs.org | head -n 1)
+          if echo "$s1" | grep -E '200|301' && echo "$s2" | grep -E '200|301'; then ok=true; else ok=false; fi
+          printf '%s\n' "{\"name\":\"network\",\"ok\":$ok,\"details\":\"$s1;$s2\"}" >> ci/runner/checks.ndjson
+          echo "net_ok=$ok" >> $GITHUB_OUTPUT
+
+      - name: Docker
+        id: docker
+        run: |
+          if command -v docker >/dev/null 2>&1; then
+            set +e
+            docker --version
+            docker run --rm hello-world >/tmp/hello.log 2>&1
+            rc=$?
+            set -e
+            details=$(tail -n 1 /tmp/hello.log)
+            ok=$([ $rc -eq 0 ] && echo true || echo false)
+          else
+            ok=false
+            details="docker not found"
+          fi
+          printf '%s\n' "{\"name\":\"docker\",\"ok\":$ok,\"details\":\"$details\"}" >> ci/runner/checks.ndjson
+          echo "docker_ok=$ok" >> $GITHUB_OUTPUT
+
+      - name: Node toolchain
+        id: node
+        run: |
+          node_ver=$(node -v)
+          major=${node_ver#v}; major=${major%%.*}
+          if [ "$major" -ge 20 ]; then ok=true; else ok=false; fi
+          if command -v pnpm >/dev/null 2>&1; then
+            pkg_ver=$(pnpm -v)
+          else
+            pkg_ver=$(npm -v)
+          fi
+          printf '%s\n' "{\"name\":\"node\",\"ok\":$ok,\"details\":\"node=$node_ver pkg=$pkg_ver\"}" >> ci/runner/checks.ndjson
+          echo "node_ver=$node_ver" >> $GITHUB_OUTPUT
+          echo "pkg_ver=$pkg_ver" >> $GITHUB_OUTPUT
+
+      - name: Artifact roundtrip - create
+        run: echo hello > ping.txt
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4.3.1
+        with:
+          name: ping
+          path: ping.txt
+      - name: Download artifact
+        uses: actions/download-artifact@v4.1.0
+        with:
+          name: ping
+      - name: Verify artifact
+        id: artifact_verify
+        run: |
+          content=$(cat ping.txt)
+          if [ "$content" = "hello" ]; then ok=true; else ok=false; fi
+          printf '%s\n' "{\"name\":\"artifact_roundtrip\",\"ok\":$ok,\"details\":\"$content\"}" >> ci/runner/checks.ndjson
+          echo "ok=$ok" >> $GITHUB_OUTPUT
+
+      - name: SSM agent presence
+        id: ssm
+        run: |
+          if pgrep -x amazon-ssm-agent >/dev/null 2>&1 || systemctl is-active --quiet amazon-ssm-agent; then
+            ok=true; details=active
+          else
+            ok=false; details=missing
+          fi
+          printf '%s\n' "{\"name\":\"ssm\",\"ok\":$ok,\"details\":\"$details\"}" >> ci/runner/checks.ndjson
+          echo "ssm_ok=$ok" >> $GITHUB_OUTPUT
+
+      - name: Concurrency probe
+        id: parallel
+        run: |
+          for i in 1 2 3; do (date +%s%3N > t$i & sleep 5) & done
+          wait
+          times=$(paste -sd' ' t1 t2 t3)
+          read a b c <<<"$times"
+          diff=$((b - a))
+          par=1
+          if [ $diff -lt 4000 ]; then par=2; fi
+          printf '%s\n' "{\"name\":\"concurrency\",\"ok\":true,\"details\":\"started=$times\"}" >> ci/runner/checks.ndjson
+          echo "parallel=$par" >> $GITHUB_OUTPUT
+
+      - name: Cancellation handling
+        run: |
+          (sleep 60 & echo $! > pid)&
+          sleep 2
+          pkill -f "sleep 60"
+          if ps -p $(cat pid) >/dev/null 2>&1; then ok=false; else ok=true; fi
+          printf '%s\n' "{\"name\":\"cancel\",\"ok\":$ok,\"details\":\"pid=$(cat pid)\"}" >> ci/runner/checks.ndjson
+
+      - name: Collect metrics
+        run: |
+          jq -n \
+            --arg queue_ms "${{ steps.start.outputs.start_latency_ms }}" \
+            --arg start_latency_ms "${{ steps.start.outputs.start_latency_ms }}" \
+            --arg online "${{ needs.api_probe.outputs.is_online }}" \
+            --arg busy "${{ needs.api_probe.outputs.is_busy }}" \
+            --arg disk_free_gb "${{ steps.disk.outputs.free_gb }}" \
+            --arg docker_ok "${{ steps.docker.outputs.docker_ok }}" \
+            --arg node_ver "${{ steps.node.outputs.node_ver }}" \
+            --arg pnpm_ver "${{ steps.node.outputs.pkg_ver }}" \
+            --arg ssm_ok "${{ steps.ssm.outputs.ssm_ok }}" \
+            --arg parallelism "${{ steps.parallel.outputs.parallel }}" \
+            --arg network_ok "${{ steps.net.outputs.net_ok }}" \
+            '{queue_ms: ($queue_ms|tonumber), start_latency_ms: ($start_latency_ms|tonumber), online: ($online=="true"), busy: ($busy=="true"), disk_free_gb: ($disk_free_gb|tonumber), docker_ok: ($docker_ok=="true"), node_ver: $node_ver, pnpm_ver: $pnpm_ver, ssm_ok: ($ssm_ok=="true"), parallelism_estimate: ($parallelism|tonumber), network_ok: ($network_ok=="true")}' > ci/runner/metrics.json
+
+      - name: Upload diagnostics
+        uses: actions/upload-artifact@v4.3.1
+        if: always()
+        with:
+          name: runner-diagnostics
+          path: |
+            ci/runner/registry.json
+            ci/runner/checks.ndjson
+            ci/runner/metrics.json
+
+      - name: Summary
+        run: |
+          echo '| Check | Result | Details |' >> $GITHUB_STEP_SUMMARY
+          echo '| --- | --- | --- |' >> $GITHUB_STEP_SUMMARY
+          while read -r line; do
+            name=$(echo "$line" | jq -r '.name')
+            ok=$(echo "$line" | jq -r '.ok')
+            details=$(echo "$line" | jq -r '.details')
+            emoji=$([ "$ok" = "true" ] && echo "🟢" || echo "🔴")
+            echo "| $name | $emoji | $details |" >> $GITHUB_STEP_SUMMARY
+          done < ci/runner/checks.ndjson
+
+  thresholds:
+    runs-on: ubuntu-latest
+    needs: self_test
+    steps:
+      - uses: actions/download-artifact@v4.1.0
+        with:
+          name: runner-diagnostics
+          path: diag
+      - name: Evaluate
+        run: |
+          m=diag/ci/runner/metrics.json
+          online=$(jq -r '.online' "$m")
+          start=$(jq -r '.start_latency_ms' "$m")
+          network=$(jq -r '.network_ok' "$m")
+          node=$(jq -r '.node_ver' "$m" | sed 's/^v//;s/\..*//')
+          parallel=$(jq -r '.parallelism_estimate' "$m")
+          artifact_ok=${{ needs.self_test.outputs.artifact_ok }}
+          fail=0
+          if [ "$online" != "true" ]; then echo 'runner offline'; fail=1; fi
+          if [ "$start" -ge 60000 ]; then echo 'start latency >=60000ms'; fail=1; fi
+          if [ "$artifact_ok" != "true" ]; then echo 'artifact roundtrip failed'; fail=1; fi
+          echo '| Metric | Value |' >> $GITHUB_STEP_SUMMARY
+          echo '| --- | --- |' >> $GITHUB_STEP_SUMMARY
+          echo "| online | $online |" >> $GITHUB_STEP_SUMMARY
+          echo "| start_latency_ms | $start |" >> $GITHUB_STEP_SUMMARY
+          echo "| network_ok | $network |" >> $GITHUB_STEP_SUMMARY
+          echo "| node_ver | $node |" >> $GITHUB_STEP_SUMMARY
+          echo "| parallelism_estimate | $parallel |" >> $GITHUB_STEP_SUMMARY
+          if [ "$network" != "true" ]; then echo 'network not ok' >> $GITHUB_STEP_SUMMARY; fi
+          if [ "$node" -lt 20 ]; then echo 'node < 20' >> $GITHUB_STEP_SUMMARY; fi
+          if [ "$parallel" -lt 2 ]; then echo 'warning: parallelism <2' >> $GITHUB_STEP_SUMMARY; fi
+          if [ "$start" -ge 20000 ]; then echo 'warning: start latency >=20000ms' >> $GITHUB_STEP_SUMMARY; fi
+          if [ $fail -ne 0 ]; then exit 1; fi
