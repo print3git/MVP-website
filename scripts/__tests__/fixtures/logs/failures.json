@@ -1,0 +1,5 @@
+{
+  "repo": "test/repo",
+  "workflow_run": { "name": "ci", "id": 1, "conclusion": "failure" },
+  "failing_jobs": [{ "name": "lint", "conclusion": "failure" }]
+}
