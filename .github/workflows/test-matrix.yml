@@ -29,6 +29,7 @@ jobs:
         if: startsWith(runner.os, 'Windows')
         uses: pnpm/action-setup@v4
         with:
+          version: 10.11.0
           run_install: false
 # <<< END MANAGED BLOCK: ci-guard:windows-cancel-guard
 # >>> BEGIN MANAGED BLOCK: ci-guard:corepack-pnpm-windows
@@ -65,6 +66,7 @@ jobs:
         if: startsWith(runner.os, 'Windows')
         uses: pnpm/action-setup@v4
         with:
+          version: 10.11.0
           run_install: false
 
       - name: Verify pnpm (Windows)
@@ -72,6 +74,9 @@ jobs:
         shell: pwsh
         run: pnpm -v
 # <<< END MANAGED BLOCK: ci-guard:corepack-pnpm-windows
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.11.0
       - uses: actions/setup-node@v4
         with:
           node-version: 20

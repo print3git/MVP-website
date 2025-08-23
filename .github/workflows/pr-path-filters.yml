@@ -11,6 +11,9 @@ jobs:
     runs-on: [self-hosted, linux, aws]
     steps:
       - uses: actions/checkout@v5.0.0
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.11.0
       - uses: actions/setup-node@v4
         with:
           node-version: 20
