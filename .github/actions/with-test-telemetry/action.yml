@@ -46,8 +46,14 @@ runs:
       shell: bash
       run: |
         file='${{ inputs.results-file }}'
-        tests=$(node -pe "require('./$file').numTotalTests || 0")
-        failures=$(node -pe "require('./$file').numFailedTests || 0")
+        if [ -f "$file" ]; then
+          tests=$(node -pe "require('./$file').numTotalTests || 0")
+          failures=$(node -pe "require('./$file').numFailedTests || 0")
+        else
+          echo "Warning: test results file '$file' not found" >&2
+          tests=0
+          failures=0
+        fi
         duration=${{ steps.run.outputs.duration_ms }}
         cat <<JSON > test-telemetry.json
         {
