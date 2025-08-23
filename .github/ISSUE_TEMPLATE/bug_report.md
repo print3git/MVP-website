@@ -3,7 +3,6 @@ name: Bug Report
 title: "[Bug]: "
 labels: bug
 ---
-
 **Describe the bug**
 A clear and concise description of what the bug is.
 
