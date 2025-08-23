@@ -1,0 +1,59 @@
+name: CI start latency
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    outputs:
+      runner: ${{ steps.pick.outputs.runner }}
+    steps:
+      - id: pick
+        uses: actions/github-script@v7.0.1
+        with:
+          script: |
+            const {data} = await github.rest.actions.listSelfHostedRunnersForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 100
+            });
+            const online = data.runners.filter(r => r.status === 'online').length;
+            const runner = online > 0 ? '["self-hosted","linux","aws"]' : '"ubuntu-latest"';
+            core.setOutput('runner', runner);
+
+  canary:
+    needs: probe
+    runs-on: ${{ fromJSON(needs.probe.outputs.runner) }}
+    permissions:
+      actions: read
+      contents: read
+    env:
+      MAX_LATENCY: ${{ vars.MAX_RUNNER_LATENCY || '60' }}
+    outputs:
+      latency_sec: ${{ steps.calc.outputs.latency_sec }}
+    steps:
+      - name: Measure latency
+        id: calc
+        run: |
+          run_id=${GITHUB_RUN_ID}
+          repo=${GITHUB_REPOSITORY}
+          gh api /repos/$repo/actions/runs/$run_id/jobs --jq '.jobs[] | select(.name=="${{ github.job }}") | {queued_at:.queued_at,started_at:.started_at}' > t.json
+          queued=$(jq -r '.queued_at' t.json)
+          started=$(jq -r '.started_at' t.json)
+          q=$(date -u -d "$queued" +%s)
+          s=$(date -u -d "$started" +%s)
+          latency=$((s - q))
+          echo '{"queued":"'$queued'","started":"'$started'","latency_sec":'$latency'}' > latency.ndjson
+          echo "latency_sec=$latency" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v4.3.1
+        with:
+          name: latency
+          path: latency.ndjson
+      - name: Check threshold
+        run: |
+          if [ ${{ steps.calc.outputs.latency_sec }} -gt $MAX_LATENCY ]; then
+            echo "Latency ${{ steps.calc.outputs.latency_sec }} exceeds limit $MAX_LATENCY"; exit 1; 
+          fi
