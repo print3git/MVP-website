@@ -24,9 +24,9 @@ jobs:
           blockers=0
 
           echo "#### CI Runners" >> "$REPORT"
-          oidc=$(rg -l "id-token" .github/workflows || true)
-          self_hosted=$(rg -n "runs-on: *.*self-hosted" -g "*.yml" .github/workflows || true)
-          ubuntu_latest=$(rg -l "runs-on: ubuntu-latest" .github/workflows || true)
+          oidc=$(node scripts/ci-tools/scan-workflows.js --id-token | jq -r '.[]?')
+          self_hosted=$(node scripts/ci-tools/scan-workflows.js --self-hosted | jq -r '.[]?')
+          ubuntu_latest=$(node scripts/ci-tools/scan-workflows.js --ubuntu-latest | jq -r '.[]?')
           if [ -n "$oidc" ]; then echo "- [x] OIDC role present" >> "$REPORT"; else echo "- [ ] OIDC role present" >> "$REPORT"; blockers=$((blockers+1)); fi
           if [ -n "$self_hosted" ]; then echo "- self-hosted labels present" >> "$REPORT"; echo "\n\`\`\`\n$self_hosted\n\`\`\`" >> "$REPORT"; else echo "- self-hosted labels missing" >> "$REPORT"; fi
           if [ -n "$ubuntu_latest" ]; then echo "- [ ] Workflows use runs-on: ubuntu-latest" >> "$REPORT"; echo "\n\`\`\`\n$ubuntu_latest\n\`\`\`" >> "$REPORT"; blockers=$((blockers+1)); else echo "- [x] No ubuntu-latest workflows" >> "$REPORT"; fi
@@ -35,43 +35,43 @@ jobs:
           echo "#### Images" >> "$REPORT"
           if [ -f frontend/Dockerfile ]; then echo "- [x] frontend Dockerfile" >> "$REPORT"; else echo "- [ ] frontend Dockerfile" >> "$REPORT"; blockers=$((blockers+1)); fi
           if [ -f backend/Dockerfile ]; then echo "- [x] backend Dockerfile" >> "$REPORT"; else echo "- [ ] backend Dockerfile" >> "$REPORT"; blockers=$((blockers+1)); fi
-          ecr=$(rg -i "ecr" -l || true)
+          ecr=$(node scripts/ci-tools/scan-workflows.js --grep ecr | jq -r '.[]?')
           if [ -n "$ecr" ]; then echo "- [x] ECR references present" >> "$REPORT"; else echo "- [ ] ECR references present" >> "$REPORT"; fi
           echo >> "$REPORT"
 
           echo "#### Deploy" >> "$REPORT"
-          deploy=$(rg -i "ecs|eks|fargate" -l || true)
-          alb=$(rg -i "alb|targetgroup|route53|acm" -l || true)
+          deploy=$(node scripts/ci-tools/scan-workflows.js --grep 'ecs|eks|fargate' | jq -r '.[]?')
+          alb=$(node scripts/ci-tools/scan-workflows.js --grep 'alb|targetgroup|route53|acm' | jq -r '.[]?')
           if [ -n "$deploy" ]; then echo "- [x] ECS/EKS/Fargate references" >> "$REPORT"; else echo "- [ ] ECS/EKS/Fargate references" >> "$REPORT"; blockers=$((blockers+1)); fi
           if [ -n "$alb" ]; then echo "- [x] ALB/TargetGroup/Route53/ACM references" >> "$REPORT"; else echo "- [ ] ALB/TargetGroup/Route53/ACM references" >> "$REPORT"; fi
           echo >> "$REPORT"
 
           echo "#### Frontend" >> "$REPORT"
-          s3=$(rg -i "s3" -l || true)
-          cf=$(rg -i "cloudfront" -l || true)
+          s3=$(node scripts/ci-tools/scan-workflows.js --grep s3 | jq -r '.[]?')
+          cf=$(node scripts/ci-tools/scan-workflows.js --grep cloudfront | jq -r '.[]?')
           if [ -n "$s3" ]; then echo "- [x] S3 references" >> "$REPORT"; else echo "- [ ] S3 references" >> "$REPORT"; blockers=$((blockers+1)); fi
           if [ -n "$cf" ]; then echo "- [x] CloudFront references" >> "$REPORT"; else echo "- [ ] CloudFront references" >> "$REPORT"; fi
           echo >> "$REPORT"
 
           echo "#### Secrets" >> "$REPORT"
-          secrets=$(rg -o "secrets\.[A-Z0-9_\-]+" -h .github/workflows | sort -u)
+          secrets=$(node scripts/ci-tools/scan-workflows.js --secrets | jq -r '.[]?')
           if [ -n "$secrets" ]; then echo "Referenced secrets:" >> "$REPORT"; echo "$secrets" | sed 's/^/  - /' >> "$REPORT"; else echo "No secrets referenced" >> "$REPORT"; fi
           echo >> "$REPORT"
 
           echo "#### Datastores" >> "$REPORT"
-          rds=$(rg -i "rds" -l || true)
-          elasticache=$(rg -i "elasticache" -l || true)
+          rds=$(node scripts/ci-tools/scan-workflows.js --grep rds | jq -r '.[]?')
+          elasticache=$(node scripts/ci-tools/scan-workflows.js --grep elasticache | jq -r '.[]?')
           if [ -n "$rds" ]; then echo "- [x] RDS references" >> "$REPORT"; else echo "- [ ] RDS references" >> "$REPORT"; fi
           if [ -n "$elasticache" ]; then echo "- [x] ElastiCache references" >> "$REPORT"; else echo "- [ ] ElastiCache references" >> "$REPORT"; fi
           echo >> "$REPORT"
 
           echo "#### Credentials" >> "$REPORT"
-          creds=$(rg -n "AKIA[0-9A-Z]{16}" || true)
+          creds=$(node scripts/ci-tools/scan-workflows.js --awskeys | jq -r '.[]?')
           if [ -n "$creds" ]; then echo "- [ ] Hardcoded AWS credentials found" >> "$REPORT"; echo "\n\`\`\`\n$creds\n\`\`\`" >> "$REPORT"; blockers=$((blockers+1)); else echo "- [x] No hardcoded AWS credentials" >> "$REPORT"; fi
           echo >> "$REPORT"
 
           echo "#### Post-deploy smoke tests" >> "$REPORT"
-          smoke=$(rg -l "post-deploy" .github/workflows || true)
+          smoke=$(node scripts/ci-tools/scan-workflows.js --postdeploy | jq -r '.[]?')
           if [ -n "$smoke" ]; then echo "- [x] Post-deploy smoke tests present" >> "$REPORT"; else echo "- [ ] Post-deploy smoke tests present" >> "$REPORT"; blockers=$((blockers+1)); fi
           echo >> "$REPORT"
 
