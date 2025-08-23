@@ -32,7 +32,8 @@ jobs:
           key: ${{ runner.os }}-playwright-${{ github.head_ref }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-playwright-${{ github.head_ref }}-
-      - run: echo "Cache key: ${{ steps.cache-playwright.outputs.cache-primary-key }}"
+      - run: |
+          echo "Cache hit: ${{ steps.cache-playwright.outputs.cache-hit }}"
 
       - name: Install Playwright browsers
         if: runner.os == 'Linux'

@@ -13,12 +13,6 @@ on:
       - 'backend/src/pipeline/generateModel.*'
       - 'backend/tests/glb/**'
   merge_group:
-    branches: [main, dev]
-    paths:
-      - 'backend/src/lib/**glb**'
-      - 'backend/src/lib/**/*glb*.ts'
-      - 'backend/src/pipeline/generateModel.*'
-      - 'backend/tests/glb/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -86,7 +80,8 @@ jobs:
           key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-playwright-
-      - run: echo "Cache key: ${{ steps.cache-playwright.outputs.cache-primary-key }}"
+      - run: |
+          echo "Cache hit: ${{ steps.cache-playwright.outputs.cache-hit }}"
       - name: Install Playwright browsers
         env:
           PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
