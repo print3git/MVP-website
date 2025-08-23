@@ -7,14 +7,24 @@
     "noImplicitAny": true,
     "strictNullChecks": true,
     "noEmit": true,
-    "lib": ["ESNext", "DOM"],
+    "lib": [
+      "ESNext",
+      "DOM"
+    ],
     "skipLibCheck": true,
-    "types": ["node"]
+    "types": [
+      "node"
+    ]
   },
   "include": [
     "backend/utils/generateTitle.js",
     "tests/utils/reaper.ts",
     "tests/utils/testEnv.ts"
   ],
-  "exclude": ["node_modules", "img", "models", "uploads"]
+  "exclude": [
+    "node_modules",
+    "img",
+    "models",
+    "uploads"
+  ]
 }
