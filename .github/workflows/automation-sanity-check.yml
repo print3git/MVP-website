@@ -1,0 +1,79 @@
+name: Automation Sanity Check
+
+on:
+  push:
+
+jobs:
+  sanity:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: read
+      pull-requests: read
+    steps:
+      - name: Wait for CI
+        uses: fountainhead/action-wait-for-check@v1.2.0
+        with:
+          token: ${{ github.token }}
+          checkName: CI
+      - name: Automation sanity checks
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            const assert = require('assert');
+            const {owner, repo} = context.repo;
+            const sha = context.sha;
+
+            function evaluate({ciRun, jobs, harvesters, prs}) {
+              if (!ciRun) throw new Error('CI workflow missing');
+              if (jobs.length === 0) throw new Error('No CI jobs');
+              if (jobs.some(j => j.status === 'skipped')) throw new Error('Job skipped');
+              if (jobs.some(j => !j.steps || j.steps.length === 0)) throw new Error('Job has no steps');
+              if (ciRun.conclusion === 'cancelled') throw new Error('Run cancelled');
+              const harvester = harvesters.find(r => /error harvester/i.test(r.name));
+              if (!harvester && ciRun.conclusion !== 'success') throw new Error('Harvester did not fire');
+              if (harvester && harvester.status !== 'completed') throw new Error('Harvester running');
+              const codexPRs = prs.filter(pr => /\[codex\]/i.test(pr.title) && pr.state === 'open' && pr.labels.some(l => l.name === 'codex'));
+              if (prs.some(pr => /\[codex\]/i.test(pr.title) && pr.state !== 'open')) throw new Error('Conflicting PR state');
+              if (prs.some(pr => /\[codex\]/i.test(pr.title) && !pr.labels.some(l => l.name === 'codex'))) throw new Error('Wrong labels');
+              if (ciRun.conclusion !== 'success' && codexPRs.length === 0) throw new Error('Codex PRs missing');
+              return {jobs: jobs.length, harvester: !!harvester, codexPRs: codexPRs.length};
+            }
+
+            (function runAssertions(){
+              const job = {status:'completed', steps:[{}]};
+              const run = {conclusion:'failure'};
+              const harv = [{name:'Error Harvester', status:'completed'}];
+              const pr = [{title:'[codex] fix', state:'open', labels:[{name:'codex'}]}];
+              assert.throws(() => evaluate({ciRun:null, jobs:[job], harvesters:harv, prs:pr}), /CI workflow missing/); // missing workflows
+              assert.throws(() => evaluate({ciRun:run, jobs:[{status:'skipped', steps:[{}]}], harvesters:harv, prs:pr}), /Job skipped/); // skipped jobs
+              assert.throws(() => evaluate({ciRun:run, jobs:[{status:'completed', steps:[] }], harvesters:harv, prs:pr}), /Job has no steps/); // zero steps
+              assert.doesNotThrow(() => evaluate({ciRun:{conclusion:'success'}, jobs:[job], harvesters:[], prs:[] })); // CI success but no harvester
+              assert.throws(() => evaluate({ciRun:run, jobs:[job], harvesters:harv, prs:[]}), /Codex PRs missing/); // CI failure but no Codex PR
+              assert.throws(() => evaluate({ciRun:run, jobs:[job], harvesters:harv, prs:[{title:'[codex] fix', state:'closed', labels:[{name:'codex'}]}]}), /Conflicting PR state/); // conflicting PR state
+              assert.doesNotThrow(() => evaluate({ciRun:run, jobs:[job], harvesters:harv, prs:[pr[0], pr[0]]})); // multiple Codex PRs
+              assert.throws(() => evaluate({ciRun:run, jobs:[job], harvesters:[{name:'Error Harvester', status:'in_progress'}], prs:pr}), /Harvester running/); // timing issues
+              assert.throws(() => evaluate({ciRun:run, jobs:[job], harvesters:harv, prs:[{title:'[codex] fix', state:'open', labels:[]}] }), /Wrong labels/); // wrong labels
+              assert.throws(() => evaluate({ciRun:{conclusion:'cancelled'}, jobs:[job], harvesters:harv, prs:pr}), /Run cancelled/); // run cancelled mid-way
+            })();
+
+            const ciRuns = await github.rest.actions.listWorkflowRuns({owner, repo, workflow_id:'ci.yml', head_sha: sha});
+            const ciRun = ciRuns.data.workflow_runs[0];
+            const jobs = ciRun ? (await github.rest.actions.listJobsForWorkflowRun({owner, repo, run_id: ciRun.id})).data.jobs : [];
+            const allRuns = (await github.rest.actions.listWorkflowRunsForRepo({owner, repo, head_sha: sha, per_page: 100})).data.workflow_runs;
+            const harvesters = allRuns.filter(r => /error harvester/i.test(r.name));
+            const prs = (await github.rest.repos.listPullRequestsAssociatedWithCommit({owner, repo, commit_sha: sha})).data;
+
+            try {
+              const result = evaluate({ciRun, jobs, harvesters, prs});
+              console.log(`✅ Sanity check passed\nCI jobs: ${result.jobs}\nError Harvester: found\nCodex PRs: ${result.codexPRs}`);
+            } catch (err) {
+              if (/Harvester/.test(err.message) && !/running/.test(err.message)) {
+                core.setFailed('::error::Harvester did not fire');
+              } else if (/Codex PRs missing/.test(err.message)) {
+                core.setFailed('::error::Codex PRs missing');
+              } else {
+                core.setFailed(err.message);
+              }
+            }
