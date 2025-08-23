@@ -3,12 +3,11 @@ name: Update Locks
 env:
   HUSKY: 0
 
-
 on:
   push:
     branches: [main]
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: "*/5 * * * *"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -25,9 +24,9 @@ jobs:
       - uses: actions/checkout@v5
         with:
           persist-credentials: true
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
+          python-version: "3.x"
       - name: Install dependencies
         run: pip install requests
       - name: Run update_locks

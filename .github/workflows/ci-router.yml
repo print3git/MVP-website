@@ -6,11 +6,11 @@ on:
       port:
         required: false
         type: string
-        default: '3000'
+        default: "3000"
       ci_require_external:
         required: false
         type: string
-        default: '0'
+        default: "0"
 
 env:
   PORT: ${{ inputs.port }}
@@ -18,7 +18,7 @@ env:
 
 jobs:
   selfhosted:
-    runs-on: [self-hosted, linux, aws, mvp-runner]
+    runs-on: [self-hosted, linux, aws, mvp-gh-runner]
     continue-on-error: true
     steps:
       - uses: actions/checkout@v5

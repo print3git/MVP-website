@@ -20,7 +20,7 @@ This module provisions an ephemeral self-hosted GitHub Actions runner on a singl
 3. **Verify the runner** – it should appear under your repository's self-hosted runners with the labels configured in `runner_labels`.
 4. **Use the labels in workflows**
    ```yaml
-   runs-on: [self-hosted, linux, aws, mvp-runner]
+   runs-on: [self-hosted, linux, aws, mvp-gh-runner]
    ```
 5. **Costs & teardown** – the default `t3.small` incurs hourly charges. Enable `use_spot` or `off_hours` to reduce cost. Destroy the runner when finished:
    ```bash
