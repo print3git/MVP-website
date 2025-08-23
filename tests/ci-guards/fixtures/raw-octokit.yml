@@ -1,0 +1,19 @@
+name: bad
+on: push
+permissions:
+  actions: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            try {
+              const octokit = new Octokit();
+              core.notice(octokit);
+            } catch (error) {
+              core.setFailed(error.message);
+            }
