@@ -1,0 +1,15 @@
+name: bad
+on: push
+permissions:
+  actions: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            await github.rest.repos.get({ owner, repo });
