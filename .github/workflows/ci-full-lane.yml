@@ -80,7 +80,7 @@ jobs:
       - name: Ensure pnpm
         uses: ./.github/actions/ensure-pnpm
       - name: pnpm install
-        run: pnpm install --ignore-scripts
+        run: pnpm install --no-frozen-lockfile --ignore-scripts
       - name: Check lockfile
         id: lock
         run: |
