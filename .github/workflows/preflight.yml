@@ -30,12 +30,21 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  probe_runner:
+    uses: ./.github/workflows/_runner-probe.yml
+
   changed:
+    needs: [probe_runner]
     timeout-minutes: 15
-    runs-on: [self-hosted, linux, aws]
+    runs-on: ${{ fromJSON(steps.resolve.outputs.value) }}
     outputs:
       backend: ${{ steps.filter.outputs.backend }}
     steps:
+      - name: Resolve runner choice
+        id: resolve
+        uses: ./.github/actions/resolve-runs-on
+        with:
+          online: ${{ needs.probe_runner.outputs.online }}
       - uses: actions/checkout@v5
         with:
           fetch-depth: 2

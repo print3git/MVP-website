@@ -1,8 +1,17 @@
 name: Backend
 on: [push, pull_request]
 jobs:
+  probe_runner:
+    uses: ./.github/workflows/_runner-probe.yml
+
   noop:
-    runs-on: ubuntu-latest
+    needs: [probe_runner]
+    runs-on: ${{ fromJSON(steps.resolve.outputs.value) }}
     steps:
+      - name: Resolve runner choice
+        id: resolve
+        uses: ./.github/actions/resolve-runs-on
+        with:
+          online: ${{ needs.probe_runner.outputs.online }}
       - run: echo "Stub workflow — replace with real steps"
         shell: bash
