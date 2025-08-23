@@ -113,7 +113,8 @@
     "test:inventory": "vitest run -t test-inventory",
     "test:ci-inventory": "vitest run tests/ci-inventory/ci-inventory.test.ts -t ci-inventory",
     "ci:skip-audit": "tsx scripts/ci/skip-detection-audit.ts",
-    "test:skip-audit": "vitest run --config tests/ci/vitest.skip-detection.config.ts -t skip-detection-audit"
+    "test:skip-audit": "vitest run --config tests/ci/vitest.skip-detection.config.ts -t skip-detection-audit",
+    "autofix:gen": "node scripts/autofix/generate-prompts.js"
   },
   "babel": {
     "presets": [
