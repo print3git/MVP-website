@@ -1,0 +1,44 @@
+name: CI Capacity Burst
+
+on:
+  workflow_dispatch:
+
+jobs:
+  burst:
+    runs-on: [self-hosted, linux, x64, mvp-gh-runner]
+    strategy:
+      matrix:
+        idx: [1,2,3,4,5,6]
+    steps:
+      - name: Record start
+        run: |
+          start=$(date +%s)
+          echo $start > start.txt
+          sleep 10
+      - uses: actions/upload-artifact@v4.3.1
+        with:
+          name: start-${{ matrix.idx }}
+          path: start.txt
+
+  report:
+    runs-on: ubuntu-22.04
+    needs: burst
+    steps:
+      - uses: actions/download-artifact@v4.1.8
+        with:
+          pattern: start-*
+          path: starts
+          merge-multiple: true
+      - name: Summarize
+        run: |
+          starts=($(cat starts/start-*))
+          IFS=$'\n' sorted=($(sort -n <<<"${starts[*]}"))
+          earliest=${sorted[0]}
+          latest=${sorted[${#sorted[@]}-1]}
+          duration=$((latest-earliest+10))
+          total=$((6*10))
+          parallel=$(( total / duration ))
+          echo "Effective parallelism: $parallel" >> "$GITHUB_STEP_SUMMARY"
+          if [ $parallel -lt 2 ]; then
+            echo 'Warning: capacity below 2' >> "$GITHUB_STEP_SUMMARY"
+          fi
