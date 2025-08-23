@@ -53,6 +53,18 @@ function runJest(args) {
 
   let jestArgs = [...args];
 
+  let outputFile;
+  const outputIdx = jestArgs.findIndex(
+    (a) => a === "--outputFile" || a.startsWith("--outputFile="),
+  );
+  if (outputIdx !== -1) {
+    if (jestArgs[outputIdx] === "--outputFile") {
+      outputFile = jestArgs[outputIdx + 1];
+    } else {
+      outputFile = jestArgs[outputIdx].split("=")[1];
+    }
+  }
+
   const fileArgs = jestArgs.filter((arg) => !arg.startsWith("-"));
   const runFromRoot = fileArgs.some((arg) => {
     const abs = path.resolve(repoRoot, arg);
@@ -65,6 +77,15 @@ function runJest(args) {
       const abs = path.resolve(repoRoot, arg);
       return path.relative(backendDir, abs);
     });
+
+    if (outputFile && !path.isAbsolute(outputFile)) {
+      const resolved = path.join(repoRoot, outputFile);
+      if (jestArgs[outputIdx] === "--outputFile") {
+        jestArgs[outputIdx + 1] = resolved;
+      } else {
+        jestArgs[outputIdx] = `--outputFile=${resolved}`;
+      }
+    }
   }
 
   const env = { ...process.env };
