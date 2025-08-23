@@ -14,6 +14,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 # >>> BEGIN MANAGED BLOCK: ci-guard:windows-cancel-guard
+      - name: Ensure pnpm (Windows)
+        if: startsWith(runner.os, 'Windows')
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.11.0
+          run_install: false
       - name: Setup Node (Windows)
         if: startsWith(runner.os, 'Windows')
         uses: actions/setup-node@v4
@@ -25,14 +31,14 @@ jobs:
         if: startsWith(runner.os, 'Windows')
         shell: pwsh
         run: corepack enable
-      - name: Ensure pnpm (Windows fallback)
+# <<< END MANAGED BLOCK: ci-guard:windows-cancel-guard
+# >>> BEGIN MANAGED BLOCK: ci-guard:corepack-pnpm-windows
+      - name: Setup pnpm (Windows)
         if: startsWith(runner.os, 'Windows')
         uses: pnpm/action-setup@v4
         with:
           version: 10.11.0
           run_install: false
-# <<< END MANAGED BLOCK: ci-guard:windows-cancel-guard
-# >>> BEGIN MANAGED BLOCK: ci-guard:corepack-pnpm-windows
       - name: Setup Node (Windows)
         if: startsWith(runner.os, 'Windows')
         uses: actions/setup-node@v4
@@ -61,13 +67,6 @@ jobs:
           } else {
             corepack prepare pnpm@10 --activate
           }
-
-      - name: "Fallback: pnpm/action-setup (Windows)"
-        if: startsWith(runner.os, 'Windows')
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.11.0
-          run_install: false
 
       - name: Verify pnpm (Windows)
         if: startsWith(runner.os, 'Windows')
