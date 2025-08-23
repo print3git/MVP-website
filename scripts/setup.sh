@@ -85,10 +85,10 @@ fi
 remove_modules() {
   local target="$1"
   for i in {1..3}; do
-    if sudo npx --yes rimraf@5 "$target" >/dev/null 2>&1; then
+    if npx --yes rimraf@5 "$target" >/dev/null 2>&1; then
       break
     fi
-    sudo rm -rf "$target" >/dev/null 2>&1 || true
+    rm -rf "$target" >/dev/null 2>&1 || true
     if [ ! -d "$target" ]; then
       break
     fi
