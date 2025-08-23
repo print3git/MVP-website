@@ -8,14 +8,18 @@ on:
         description: "Number of parallel self-hosted attempts"
         default: "4"
 jobs:
+  prepare-runner:
+    uses: ./.github/workflows/_prepare-runner.yml
+
   fanout:
     name: probe-${{ matrix.i }}
+    needs: prepare-runner
+    if: needs.prepare-runner.outputs.use_self_hosted == 'true' && (github.event.inputs.size == '' || fromJSON('['+github.event.inputs.size+']')[0] >= matrix.i)
     strategy:
       fail-fast: false
       matrix:
         i: [1, 2, 3, 4]
-    if: ${{ github.event.inputs.size == '' || fromJSON('['+github.event.inputs.size+']')[0] >= matrix.i }}
-    runs-on: [self-hosted, linux, x64, aws-runner]
+    runs-on: [self-hosted, linux, x64, mvp-gh-runner]
     timeout-minutes: 6
     steps:
       - uses: actions/checkout@v4
@@ -34,8 +38,23 @@ jobs:
       - name: If timed out, mark for fallback
         if: steps.qw.outputs.queue_timeout == 'true'
         run: echo "This attempt will be replaced by fallback."
+
+  fanout-gh:
+    name: probe-${{ matrix.i }}-gh
+    needs: prepare-runner
+    if: needs.prepare-runner.outputs.use_self_hosted != 'true' && (github.event.inputs.size == '' || fromJSON('['+github.event.inputs.size+']')[0] >= matrix.i)
+    strategy:
+      fail-fast: false
+      matrix:
+        i: [1, 2, 3, 4]
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Hosted fallback
+        run: echo "Hosted runner probe ${{ matrix.i }}"
+
   fallback:
-    needs: fanout
+    needs: [fanout, fanout-gh]
     runs-on: ubuntu-latest
     if: always()
     steps:
