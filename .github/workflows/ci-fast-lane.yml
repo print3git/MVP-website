@@ -80,62 +80,144 @@ jobs:
             echo ""
             echo "**reason:** ${{ steps.reason.outputs.msg }}"
           } >> "$GITHUB_STEP_SUMMARY"
+  prepare-runner:
+    uses: ./.github/workflows/_prepare-runner.yml
   lint:
+    needs: [changes, prepare-runner]
+    if: needs.changes.result == 'success' && (needs.changes.outputs.lint == 'true' || needs.changes.outputs._any == 'true') && needs.prepare-runner.outputs.use_self_hosted == 'true'
     uses: ./.github/workflows/reusable-test-job.yml
-    needs: changes
-    if: ${{ needs.changes.result == 'success' && (needs.changes.outputs.lint == 'true' || needs.changes.outputs._any == 'true') }}
     with:
       suite: lint
       command: npm run lint
-  typecheck:
+      runner: '["self-hosted","linux","x64","mvp-gh-runner"]'
+
+  lint-gh:
+    needs: [changes, prepare-runner]
+    if: needs.changes.result == 'success' && (needs.changes.outputs.lint == 'true' || needs.changes.outputs._any == 'true') && needs.prepare-runner.outputs.use_self_hosted != 'true'
     uses: ./.github/workflows/reusable-test-job.yml
-    needs: changes
-    if: ${{ needs.changes.result == 'success' && (needs.changes.outputs.typecheck == 'true' || needs.changes.outputs._any == 'true') }}
+    with:
+      suite: lint
+      command: npm run lint
+      runner: '"ubuntu-latest"'
+  typecheck:
+    needs: [changes, prepare-runner]
+    if: needs.changes.result == 'success' && (needs.changes.outputs.typecheck == 'true' || needs.changes.outputs._any == 'true') && needs.prepare-runner.outputs.use_self_hosted == 'true'
+    uses: ./.github/workflows/reusable-test-job.yml
     with:
       suite: typecheck
       command: npm run typecheck
-  unit:
+      runner: '["self-hosted","linux","x64","mvp-gh-runner"]'
+
+  typecheck-gh:
+    needs: [changes, prepare-runner]
+    if: needs.changes.result == 'success' && (needs.changes.outputs.typecheck == 'true' || needs.changes.outputs._any == 'true') && needs.prepare-runner.outputs.use_self_hosted != 'true'
     uses: ./.github/workflows/reusable-test-job.yml
-    needs: changes
-    if: ${{ needs.changes.result == 'success' && (needs.changes.outputs.unit == 'true' || needs.changes.outputs._any == 'true') }}
+    with:
+      suite: typecheck
+      command: npm run typecheck
+      runner: '"ubuntu-latest"'
+  unit:
+    needs: [changes, prepare-runner]
+    if: needs.changes.result == 'success' && (needs.changes.outputs.unit == 'true' || needs.changes.outputs._any == 'true') && needs.prepare-runner.outputs.use_self_hosted == 'true'
+    uses: ./.github/workflows/reusable-test-job.yml
     with:
       suite: unit
       command: JEST_RETRIES=2 npm test -- --config scripts/ci/jest.config.ci.ts
+      runner: '["self-hosted","linux","x64","mvp-gh-runner"]'
+
+  unit-gh:
+    needs: [changes, prepare-runner]
+    if: needs.changes.result == 'success' && (needs.changes.outputs.unit == 'true' || needs.changes.outputs._any == 'true') && needs.prepare-runner.outputs.use_self_hosted != 'true'
+    uses: ./.github/workflows/reusable-test-job.yml
+    with:
+      suite: unit
+      command: JEST_RETRIES=2 npm test -- --config scripts/ci/jest.config.ci.ts
+      runner: '"ubuntu-latest"'
   backend:
-    needs: changes
-    if: ${{ needs.changes.result == 'success' && (needs.changes.outputs.backend == 'true' || needs.changes.outputs._any == 'true') }}
+    needs: [changes, prepare-runner]
+    if: needs.changes.result == 'success' && (needs.changes.outputs.backend == 'true' || needs.changes.outputs._any == 'true') && needs.prepare-runner.outputs.use_self_hosted == 'true'
     uses: ./.github/workflows/reusable-test-job.yml
     with:
       suite: backend
       command: npm test -- --backend
+      runner: '["self-hosted","linux","x64","mvp-gh-runner"]'
+
+  backend-gh:
+    needs: [changes, prepare-runner]
+    if: needs.changes.result == 'success' && (needs.changes.outputs.backend == 'true' || needs.changes.outputs._any == 'true') && needs.prepare-runner.outputs.use_self_hosted != 'true'
+    uses: ./.github/workflows/reusable-test-job.yml
+    with:
+      suite: backend
+      command: npm test -- --backend
+      runner: '"ubuntu-latest"'
   frontend:
-    needs: changes
-    if: ${{ needs.changes.result == 'success' && (needs.changes.outputs.frontend == 'true' || needs.changes.outputs._any == 'true') }}
+    needs: [changes, prepare-runner]
+    if: needs.changes.result == 'success' && (needs.changes.outputs.frontend == 'true' || needs.changes.outputs._any == 'true') && needs.prepare-runner.outputs.use_self_hosted == 'true'
     uses: ./.github/workflows/reusable-test-job.yml
     with:
       suite: frontend
       command: npm test -- --frontend
+      runner: '["self-hosted","linux","x64","mvp-gh-runner"]'
+
+  frontend-gh:
+    needs: [changes, prepare-runner]
+    if: needs.changes.result == 'success' && (needs.changes.outputs.frontend == 'true' || needs.changes.outputs._any == 'true') && needs.prepare-runner.outputs.use_self_hosted != 'true'
+    uses: ./.github/workflows/reusable-test-job.yml
+    with:
+      suite: frontend
+      command: npm test -- --frontend
+      runner: '"ubuntu-latest"'
   e2e:
-    needs: changes
-    if: ${{ needs.changes.result == 'success' && (needs.changes.outputs.e2e == 'true' || needs.changes.outputs._any == 'true') }}
+    needs: [changes, prepare-runner]
+    if: needs.changes.result == 'success' && (needs.changes.outputs.e2e == 'true' || needs.changes.outputs._any == 'true') && needs.prepare-runner.outputs.use_self_hosted == 'true'
     uses: ./.github/workflows/reusable-test-job.yml
     with:
       suite: e2e
       command: npm run test:e2e
+      runner: '["self-hosted","linux","x64","mvp-gh-runner"]'
+
+  e2e-gh:
+    needs: [changes, prepare-runner]
+    if: needs.changes.result == 'success' && (needs.changes.outputs.e2e == 'true' || needs.changes.outputs._any == 'true') && needs.prepare-runner.outputs.use_self_hosted != 'true'
+    uses: ./.github/workflows/reusable-test-job.yml
+    with:
+      suite: e2e
+      command: npm run test:e2e
+      runner: '"ubuntu-latest"'
   docs:
-    needs: changes
-    if: ${{ needs.changes.result == 'success' && (needs.changes.outputs.docs == 'true' || needs.changes.outputs._any == 'true') }}
+    needs: [changes, prepare-runner]
+    if: needs.changes.result == 'success' && (needs.changes.outputs.docs == 'true' || needs.changes.outputs._any == 'true') && needs.prepare-runner.outputs.use_self_hosted == 'true'
     uses: ./.github/workflows/reusable-test-job.yml
     with:
       suite: docs
       command: npm test -- --docs
+      runner: '["self-hosted","linux","x64","mvp-gh-runner"]'
+
+  docs-gh:
+    needs: [changes, prepare-runner]
+    if: needs.changes.result == 'success' && (needs.changes.outputs.docs == 'true' || needs.changes.outputs._any == 'true') && needs.prepare-runner.outputs.use_self_hosted != 'true'
+    uses: ./.github/workflows/reusable-test-job.yml
+    with:
+      suite: docs
+      command: npm test -- --docs
+      runner: '"ubuntu-latest"'
   infra:
-    needs: changes
-    if: ${{ needs.changes.result == 'success' && (needs.changes.outputs.infra == 'true' || needs.changes.outputs._any == 'true') }}
+    needs: [changes, prepare-runner]
+    if: needs.changes.result == 'success' && (needs.changes.outputs.infra == 'true' || needs.changes.outputs._any == 'true') && needs.prepare-runner.outputs.use_self_hosted == 'true'
     uses: ./.github/workflows/reusable-test-job.yml
     with:
       suite: infra
       command: npm test -- --infra
+      runner: '["self-hosted","linux","x64","mvp-gh-runner"]'
+
+  infra-gh:
+    needs: [changes, prepare-runner]
+    if: needs.changes.result == 'success' && (needs.changes.outputs.infra == 'true' || needs.changes.outputs._any == 'true') && needs.prepare-runner.outputs.use_self_hosted != 'true'
+    uses: ./.github/workflows/reusable-test-job.yml
+    with:
+      suite: infra
+      command: npm test -- --infra
+      runner: '"ubuntu-latest"'
   inventory:
     needs: impact
     runs-on: ubuntu-latest
