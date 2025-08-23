@@ -17,6 +17,10 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       # >>> BEGIN MANAGED BLOCK: ci-guard:pnpm-monorepo-install
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.11.0
+          run_install: false
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -27,9 +31,6 @@ jobs:
             backend/pnpm-lock.yaml
       - run: corepack enable
         shell: bash
-      - uses: pnpm/action-setup@v4
-        with:
-          run_install: false
       - name: Discover package roots
         id: cg-pkg-roots
         shell: bash
