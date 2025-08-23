@@ -7,14 +7,23 @@ on:
       - 00000production
 
 jobs:
+  probe_runner:
+    uses: ./.github/workflows/_runner-probe.yml
+
   provision:
+    needs: [probe_runner]
     uses: ./.github/workflows/aws-ec2-runner.yml
     secrets: inherit
 
   tests:
-    needs: provision
-    runs-on: [self-hosted, linux, aws-ec2]
+    needs: [probe_runner, provision]
+    runs-on: ${{ fromJSON(steps.resolve.outputs.value) }}
     steps:
+      - name: Resolve runner choice
+        id: resolve
+        uses: ./.github/actions/resolve-runs-on
+        with:
+          online: ${{ needs.probe_runner.outputs.online }}
       - uses: actions/checkout@v4.1.6
       - uses: actions/setup-node@v4.0.3
         with:
@@ -22,7 +31,9 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm test
+
   fastlane:
+    needs: [probe_runner]
     uses: ./.github/workflows/_aws-fastlane.yml
     secrets: inherit
     with:
@@ -36,12 +47,18 @@ jobs:
         node scripts/run-jest.js --runTestsByPath $TEST_FILES --ci --coverage
 
   fallback:
+    needs: [probe_runner]
     if: failure()
-    runs-on: ubuntu-latest
+    runs-on: ${{ fromJSON(steps.resolve.outputs.value) }}
     strategy:
       matrix:
         shard: [aa, ab, ac]
     steps:
+      - name: Resolve runner choice
+        id: resolve
+        uses: ./.github/actions/resolve-runs-on
+        with:
+          online: ${{ needs.probe_runner.outputs.online }}
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
         with:

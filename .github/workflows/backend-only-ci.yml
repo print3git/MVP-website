@@ -5,11 +5,10 @@ env:
 
 on:
   workflow_run:
-    workflows: [ "Preflight" ]
+    workflows: ["Preflight"]
     types:
       - completed
   workflow_dispatch:
-
 
 concurrency: repo-ci
 
@@ -17,23 +16,32 @@ permissions:
   contents: read
 
 jobs:
+  probe_runner:
+    uses: ./.github/workflows/_runner-probe.yml
+
   preflight:
+    needs: [probe_runner]
     if: ${{ github.event_name != 'workflow_run' ||
       github.event.workflow_run.conclusion == 'success' }}
     uses: ./.github/workflows/preflight.yml
     timeout-minutes: 15
 
   backend-tests:
-    needs: preflight
+    needs: [probe_runner, preflight]
     if: github.event_name == 'workflow_dispatch' ||
       needs.preflight.outputs.run_backend == 'true'
-    runs-on: [self-hosted, linux, x64, gha]
+    runs-on: ${{ fromJSON(steps.resolve.outputs.value) }}
     continue-on-error: true
     strategy:
       fail-fast: true
       matrix:
-        shard: [ aa, ab, ac ]
+        shard: [aa, ab, ac]
     steps:
+      - name: Resolve runner choice
+        id: resolve
+        uses: ./.github/actions/resolve-runs-on
+        with:
+          online: ${{ needs.probe_runner.outputs.online }}
       - name: Heartbeat
         run: |
           while true; do date; sleep 120; done &

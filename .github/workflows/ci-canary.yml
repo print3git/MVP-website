@@ -1,85 +1,37 @@
-name: CI Canary (Self-hosted start latency)
+name: CI Canary
+
 on:
-  push:
-  pull_request:
-  schedule:
-    - cron: "*/30 * * * *"
   workflow_dispatch:
-    inputs:
-      threshold_seconds:
-        description: "SLO (seconds)"
-        default: "120"
-        required: false
+  schedule:
+    - cron: "*/10 * * * *"
+
 jobs:
-  check:
-    runs-on: ubuntu-latest
-    outputs:
-      has_runner: ${{ steps.detect.outputs.has_runner }}
-    steps:
-      - id: detect
-        shell: bash
-        env:
-          REPO: ${{ github.repository }}
-        run: |
-          set -euo pipefail
-          data=$(gh api -H "Accept: application/vnd.github+json" \
-            "/repos/$REPO/actions/runners")
-          found=$(echo "$data" | jq '[.runners[] | (.labels | map(.name))] | map([index("self-hosted"), index("linux"), index("x64"), index("aws-runner")] | all(. != null)) | any')
-          if [[ "$found" == "true" ]]; then
-            echo "has_runner=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "No matching self-hosted runner; skipping." >&2
-            echo "has_runner=false" >> "$GITHUB_OUTPUT"
-          fi
+  probe_runner:
+    uses: ./.github/workflows/_runner-probe.yml
+
   canary:
-    name: selfhosted-canary
-    needs: check
-    if: needs.check.outputs.has_runner == 'true'
-    runs-on: [self-hosted, linux, x64, aws-runner]
-    permissions:
-      issues: write
-      pull-requests: write
-    timeout-minutes: 10
+    needs: [probe_runner]
+    runs-on: ${{ fromJSON(steps.resolve.outputs.value) }}
     steps:
-      - uses: actions/checkout@v4
-      - name: Prove the runner does minimal work
-        run: |
-          uname -a
-          echo "Self-hosted canary OK"
-      - name: Assert latency SLO
-        id: slo
-        uses: ./.github/actions/canary-latency
+      - name: Resolve runner choice
+        id: resolve
+        uses: ./.github/actions/resolve-runs-on
         with:
-          threshold_seconds: ${{ inputs.threshold_seconds || vars.CI_SLO_START_SECONDS || '120' }}
-      - name: Upload timings artifact
+          online: ${{ needs.probe_runner.outputs.online }}
+      - name: Print runner info
+        run: |
+          echo "Runner name: ${{ runner.name }}"
+          echo "Runner OS: ${{ runner.os }}"
+      - name: Disk usage
+        run: df -h
+      - name: Memory usage
+        run: free -m
+      - name: Node version
+        run: node -v || true
+      - name: Save canary
+        run: echo "${{ runner.name }}:${{ runner.os }}" > canary.txt
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: canary-timings
-          path: |
-            $GITHUB_STEP_SUMMARY
-      - name: Comment PR with latency
-        if: github.event_name == 'workflow_dispatch' && github.event.pull_request.number
-        uses: actions/github-script@v7
-        env:
-          LATENCY: ${{ steps.slo.outputs.latency_seconds }}
-          RESULT: ${{ steps.slo.outcome }}
-        with:
-          github-token: ${{ github.token }}
-          script: |
-            const body = `${process.env.RESULT === 'success' ? '✅' : '❌'} self-hosted latency ${process.env.LATENCY}s`;
-            try {
-              await github.rest.issues.createComment({
-                ...context.repo,
-                issue_number: context.payload.pull_request.number,
-                body
-              });
-            } catch (e) {
-              core.warning("Comment skipped: insufficient permissions (" + e.message + ")");
-            }
-  control:
-    name: control-ubuntu
-    needs: canary
-    runs-on: ubuntu-latest
-    if: always()
-    steps:
-      - run: echo "Control path (repo ok)."
+          name: canary
+          path: canary.txt

@@ -18,8 +18,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  probe_runner:
+    uses: ./.github/workflows/_runner-probe.yml
+
   build:
-    runs-on: [self-hosted, linux, aws]
+    needs: [probe_runner]
+    runs-on: ${{ fromJSON(steps.resolve.outputs.value) }}
     continue-on-error: ${{ matrix.node == 22 }}
     defaults:
       run:
@@ -27,9 +31,14 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        node: [ 20, 22 ]
-        shard: [ 1, 2, 3 ]
+        node: [20, 22]
+        shard: [1, 2, 3]
     steps:
+      - name: Resolve runner choice
+        id: resolve
+        uses: ./.github/actions/resolve-runs-on
+        with:
+          online: ${{ needs.probe_runner.outputs.online }}
       - name: Heartbeat
         if: ${{ matrix.node != 22 || contains(github.event.pull_request.labels.*.name, 'full-matrix') }}
         run: |
