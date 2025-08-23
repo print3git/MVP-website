@@ -61,7 +61,7 @@ jobs:
             corepack prepare pnpm@10 --activate
           }
 
-      - name: Fallback: pnpm/action-setup (Windows)
+      - name: "Fallback: pnpm/action-setup (Windows)"
         if: startsWith(runner.os, 'Windows')
         uses: pnpm/action-setup@v4
         with:
@@ -105,4 +105,4 @@ jobs:
       - name: Cancellation probe
         if: always()
         shell: bash
-        run: echo "job.status=${{ job.status }} conclusion=${{ job.conclusion }}"
+        run: echo "job.status=${{ job.status }}"
