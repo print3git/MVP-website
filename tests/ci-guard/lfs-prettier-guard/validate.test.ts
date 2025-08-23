@@ -94,4 +94,20 @@ describe("lfs-prettier-guard", () => {
     const res = await validate(dir);
     expect(res.ok).toBe(true);
   });
+
+  test("t11 single line array triggers false positive", async () => {
+    const dir = tmpdir();
+    copy("single-line-array.json", path.join(dir, "data.json"));
+    const res = await validate(dir);
+    expect(res.ok).toBe(false);
+    expect(res.errors[0]).toMatch(/prettier: data.json/);
+    expect(res.errors[0]).toMatch(/\+\s+"config:base"/);
+  });
+
+  test("t12 node_modules ignored", async () => {
+    const dir = tmpdir();
+    copy("misformatted.js", path.join(dir, "node_modules", "bad.js"));
+    const res = await validate(dir);
+    expect(res.ok).toBe(true);
+  });
 });
