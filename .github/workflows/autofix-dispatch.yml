@@ -5,11 +5,23 @@ on:
   schedule:
     - cron: "*/15 * * * *"
 
+permissions:
+  contents: write
+  pull-requests: write
+  checks: read
+  actions: read
+
+concurrency:
+  group: autofix-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  HF_TOKEN: ${{ secrets.HF_TOKEN }}
+  AUTOFIX_MAX_GROUPS: "2"
+  AUTOFIX_MAX_PRS_PER_GROUP: "2"
+
 jobs:
-  dispatch:
-    permissions:
-      contents: write
-      pull-requests: write
+  autofix:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
