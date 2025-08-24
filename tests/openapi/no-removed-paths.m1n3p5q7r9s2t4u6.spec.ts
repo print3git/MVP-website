@@ -4,9 +4,11 @@ import YAML from "yaml";
 
 describe("openapi contract", () => {
   test("does not list /api/generate-model", () => {
-    const specPath = path.join(__dirname, "../../docs/openapi.yaml");
+    const jsonPath = path.join(__dirname, "../../docs/openapi.json");
+    const yamlPath = path.join(__dirname, "../../docs/openapi.yaml");
+    const specPath = fs.existsSync(jsonPath) ? jsonPath : yamlPath;
     const raw = fs.readFileSync(specPath, "utf8");
-    const spec = YAML.parse(raw);
+    const spec = specPath.endsWith(".json") ? JSON.parse(raw) : YAML.parse(raw);
     expect(spec.paths["/api/generate-model"]).toBeUndefined();
   });
 });
