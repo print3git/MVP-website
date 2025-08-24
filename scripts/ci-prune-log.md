@@ -1,0 +1,96 @@
+- removed \_aws-fastlane.yml: AWS Fastlane
+- removed \_runner-probe.yml: Runner probe
+- removed action-validators.yml: action validators
+- removed actionlint.yml: Actionlint
+- removed actions-ci-lint.yml: actions-ci-lint
+- removed affected.yml: affected-builds
+- removed artifact-guard.yml: backend-dist artifact guard
+- removed artifacts.yml: build-artifacts
+- removed auto_rebase_merge_queue.yml: Auto Rebase and Merge Queue
+- removed autofix-guard.yml: autofix-guard
+- removed automation-sanity-check.yml: Automation Sanity Check
+- removed aws-ec2-runner.yml: AWS Ephemeral EC2 Runner
+- removed aws-gap-report.yml: AWS Gap Report
+- removed aws-runner-diagnostics.yml: AWS self-hosted runner diagnostics
+- removed aws-runner-health.yml: AWS runner health check
+- removed aws-runner-heartbeat.yml: AWS runner heartbeat
+- removed aws-runner-probe.yml: AWS Runner Probe
+- removed aws-ssm-smoke.yml: AWS SSM smoke
+- removed binary-scan.yml: binary scan
+- removed build-and-artifacts.yml: Build and Artifacts
+- removed cache-primer.yml: Cache primer
+- removed check-watchdog.yml: Check Watchdog
+- removed ci-aggregate.yml: Full CI Aggregate
+- removed ci-aws-oidc-check.yml: ci-aws-oidc-check
+- removed ci-aws-sanity.yml: AWS CI Sanity
+- removed ci-canary.yml: CI Canary
+- removed ci-duration-guard.yml: ci-duration-guard
+- removed ci-external-tools-guard.yml: CI: external tool dependency guard
+- removed ci-gate-audit.yml: CI Gate Audit
+- removed ci-gate.yml: CI Gate
+- removed ci-github-script-lint.yml: CI: github-script lint suite
+- removed ci-guard-lfs-pages.yml: guard / ci-guard-lfs-pages
+- removed ci-inventory-comment.yml: CI Inventory Comment
+- removed ci-inventory.yml: CI Inventory
+- removed ci-metrics-emit-smoke.yml: CI Metrics Emit Smoke
+- removed ci-parity-guard.yml: CI parity guard
+- removed ci-pnpm-guard.yml: CI: pnpm guard
+- removed ci-pnpm-smoke.yml: CI: pnpm install smoke
+- removed ci-runner-labels.yml: Runner Label Guard
+- removed ci-sanity.yml: CI Sanity Guard
+- removed ci-secrets-audit.yml: CI Secrets Audit
+- removed ci-start-latency.yml: CI start latency
+- removed ci-suites-guard.yml: CI Suites Guard
+- removed codeql-analysis.yml: CodeQL analysis
+- removed codeql.yml: CodeQL
+- removed debug-queue.yml: Debug Queue
+- removed dependency-review.yml: Dependency Review
+- removed docs-automerge.yml: Docs automerge
+- removed ensure_server_boots_185ecc2b50.yml: Ensure Server Boots
+- removed frontend-dry-build.yml: Frontend dry build
+- removed full-lane-sentry.yml: Full Lane Sentry
+- removed go-cache.yml: Go CI with cache
+- removed guard-cf-pages-build.yml: cf-pages-build guard
+- removed guard-corepack-pnpm-path.yml: guard corepack pnpm path
+- removed guard-corepack-pnpm-windows.yml: guard corepack pnpm windows
+- removed guard-diag-shell-fix.yml: diag-shell-fix guard
+- removed guard-ec2-diagnose-tests.yml: ec2 connect diagnose tests
+- removed guard-format-tests.yml: prettier scan-format tests
+- removed guard-frontend-smoke-artifact.yml: frontend smoke artifact guard
+- removed guard-github-script-requires.yml: Guard: github-script requires
+- removed guard-lfs-prettier-guard.yml: guard / lfs-prettier-guard
+- removed guard-lfs-tests.yml: guard / lfs-migrate-enforce
+- removed guard-metrics-action-yaml-tests.yml: guard-metrics-action-yaml-tests
+- removed guard-metrics-action-yaml.yml: Guard metrics action YAML
+- removed guard-pkgjson-tests.yml: guard-pkgjson-tests
+- removed guard-pkgjson.yml: Guard package.json
+- removed guard-pnpm-bootstrap.yml: guard pnpm bootstrap
+- removed guard-pnpm-monorepo-install.yml: guard pnpm monorepo install
+- removed guard-required-workflows.yml: Guard required workflows
+- removed guard-secret-sentinel.yml: guard-secret-sentinel
+- removed guard-smoke-artifact.yml: smoke artifact guard
+- removed guard-ssm-gh-runner.yml: guard ssm gh runner
+- removed guard-ssm-runner.yml: guard-ssm-runner
+- removed guard-windows-cancel-guard.yml: guard windows cancel guard
+- removed guard-workflow-map-yaml-dep.yml: Guard workflow map yaml dep
+- removed guardrails.yml: guardrails
+- removed iac-validate.yml: Terraform validate
+- removed large-file-guard.yml: Large File Guard
+- removed lfs-guard.yml: LFS guard / lfs-guard
+- removed pages-artifact-deploy.yml: Deploy Pages artifact
+- removed pipeline-smoke.yml: Full Pipeline Smoke Test
+- removed pnpm-guard.yml: pnpm guard
+- removed prod-env-guard.yml: Prod Env Guard
+- removed regression-guard.yml: regression-guard
+- removed runner-parity-guard.yml: Runner parity guard
+- removed runner-parity.yml: Runner parity check
+- removed runner-probe.yml: Runner probe
+- removed self-hosted-runner-probe.yml: Self-hosted runner probe
+- removed selfhosted-guard.yml: Self-hosted workflow guard
+- removed selfhosted-probe.yml: Self-hosted runner probe
+- removed selfhosted-regression-guard.yml: Self-hosted Runner Regression Guard
+- removed test-census.yml: Test Census & Drift Auditor
+- removed test-manifest-guard.yml: Test manifest guard
+- removed test-timeout.yml: Test Timeout Guard
+- removed web-matrix.yml: web-matrix
+- removed workflow-structure-guard.yml: Workflow structure guard
