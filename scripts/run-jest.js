@@ -52,6 +52,9 @@ function runJest(args) {
   const jestBin = path.join(backendDir, "node_modules", ".bin", "jest");
 
   let jestArgs = [...args];
+  if (jestArgs[0] === "--") {
+    jestArgs.shift();
+  }
 
   let outputFile;
   const outputIdx = jestArgs.findIndex(
