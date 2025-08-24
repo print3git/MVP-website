@@ -328,10 +328,12 @@
           />
 
           <!-- 3-D Astronaut (always visible) -->
-          <div
-            id="viewer"
-            style="width: 100%; height: 100%; display: block"
-          ></div>
+          <div data-testid="primary-model">
+            <div
+              id="viewer"
+              style="width: 100%; height: 100%; display: block"
+            ></div>
+          </div>
 
           <!-- loader -->
           <div
@@ -577,9 +579,10 @@
       <p>🛡 Money-Back Guarantee</p>
       <p>🚚 Free UK Shipping</p>
     </div>
+    <script src="js/model-ready-hook.js"></script>
     <script type="module">
       import { loadModel } from "./src/js/loadModel.js";
-      loadModel("models/bag.glb", "viewer");
+      loadModel("models/bag.glb", "viewer", "index");
     </script>
     <!-- ▸▸▸ SCRIPTS ------------------------------------------------------ -->
     <script src="js/modelViewerTouchFix.js" defer></script>
