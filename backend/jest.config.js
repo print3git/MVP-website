@@ -21,6 +21,10 @@ module.exports = {
   reporters: ["default", "jest-junit"],
   coverageDirectory: "coverage",
   coverageReporters: ["text", "lcov", "json-summary"],
+  moduleNameMapper: {
+    "^stripe$": "<rootDir>/tests/stripe/__mocks__/stripe.ts",
+    "^../../db$": "<rootDir>/tests/__mocks__/db.ts",
+  },
 };
 
 module.exports = {
