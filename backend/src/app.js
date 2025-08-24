@@ -1,5 +1,6 @@
 const express = require("express");
 const modelsRouter = require("./routes/models");
+const itemsRouter = require("./routes/items").default;
 const checkoutRouter = require("./routes/checkout").default;
 const stripeWebhookRouter = require("./routes/stripeWebhook").default;
 const stripeCheckoutRouter = require("./routes/stripeCheckout").default;
@@ -10,6 +11,7 @@ const app = express();
 app.use(stripeWebhookRouter);
 app.use(express.json());
 app.use(modelsRouter);
+app.use(itemsRouter);
 app.use(checkoutRouter);
 app.use(stripeCheckoutRouter);
 
