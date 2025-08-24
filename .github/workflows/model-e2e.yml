@@ -1,0 +1,19 @@
+name: Model E2E & Visual
+on: [push, pull_request]
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.1.7
+      - uses: actions/setup-node@v4.0.3
+        with:
+          node-version: "lts/*"
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: |
+          nohup npm run start &>/tmp/app.log & disown
+          npx wait-on http://localhost:3000
+      - run: npx playwright test tests/e2e/model-loading.hf.spec.ts tests/e2e/model-visual.spec.ts tests/e2e/model-fallbacks.spec.ts
+    env:
+      CI: "true"
+      MODEL_LOAD_BUDGET_MS: "5000"
