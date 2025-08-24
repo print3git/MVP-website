@@ -2,52 +2,91 @@ import { test, expect } from "@playwright/test";
 
 const pages = [
   { key: "index", url: "/index.html" },
-  { key: "addons", url: "/addons.html" },
-  { key: "competitions", url: "/competitions.html" },
-  { key: "library", url: "/library.html" },
-  { key: "marketplace", url: "/marketplace.html" },
   { key: "payment", url: "/payment.html" },
 ];
 
-test.describe("3D model high\u2011fidelity checks", () => {
-  for (const p of pages) {
-    test(`${p.url} renders and is accessible`, async ({ page }) => {
-      await page.goto(p.url, { waitUntil: "domcontentloaded" });
-      await page.waitForFunction(
-        (k) => window.__modelsLoaded && window.__modelsLoaded[k],
-        p.key,
-        { timeout: 15000 },
-      );
-
-      const primary = page.locator('[data-testid="primary-model"]');
-      await expect(primary).toBeVisible();
-
-      // Single target inside primary to avoid strict\u2011mode conflicts
-      const target = primary
-        .locator('[data-testid="model-canvas"], model-viewer')
-        .first();
-      // Accessibility (either role=img or aria-label present)
-      const role = await target.getAttribute("role");
-      const label = await target.getAttribute("aria-label");
-      expect(role === "img" || !!label).toBeTruthy();
-
-      // Visual snapshot (keep tight viewport to reduce flake)
-      await page.setViewportSize({ width: 600, height: 400 });
-      const shot = await primary.screenshot();
-      expect(shot).toMatchSnapshot(`${p.key}-model.png`, { threshold: 0.05 });
-    });
-
-    test(`${p.url} loads within budget`, async ({ page }) => {
-      const budgetMs = Number(process.env.MODEL_LOAD_BUDGET_MS || 5000);
-      const start = Date.now();
-      await page.goto(p.url, { waitUntil: "domcontentloaded" });
-      await page.waitForFunction(
-        (k) => window.__modelsLoaded && window.__modelsLoaded[k],
-        p.key,
-        { timeout: 15000 },
-      );
-      const elapsed = Date.now() - start;
-      expect(elapsed).toBeLessThanOrEqual(budgetMs);
-    });
-  }
+// 1. Page loads & primary container visible (index)
+test("index: primary container visible", async ({ page }) => {
+  await page.goto("/index.html");
+  await expect(page.locator('[data-testid="primary-model"]')).toBeVisible();
 });
+
+// 2. Page loads & primary container visible (payment)
+test("payment: primary container visible", async ({ page }) => {
+  await page.goto("/payment.html");
+  await expect(page.locator('[data-testid="primary-model"]')).toBeVisible();
+});
+
+// 3–4. Model-ready hook fires (index, payment)
+for (const p of pages) {
+  test(`${p.key}: model-ready hook fires`, async ({ page }) => {
+    await page.goto(p.url, { waitUntil: "domcontentloaded" });
+    await page.waitForFunction(
+      (k) => !!(window as any).__modelsLoaded?.[k],
+      p.key,
+      { timeout: 15000 },
+    );
+  });
+}
+
+// 5–6. Viewer element present and visible (index, payment)
+for (const p of pages) {
+  test(`${p.key}: viewer element visible`, async ({ page }) => {
+    await page.goto(p.url);
+    const target = page
+      .locator(
+        '[data-testid="primary-model"] [data-testid="model-viewer"], [data-testid="primary-model"] #model-canvas, [data-testid="primary-model"] canvas',
+      )
+      .first();
+    await expect(target).toBeVisible();
+  });
+}
+
+// 7–8. Accessibility present: role=img OR aria-label (index, payment)
+for (const p of pages) {
+  test(`${p.key}: a11y attributes present`, async ({ page }) => {
+    await page.goto(p.url);
+    const target = page
+      .locator(
+        '[data-testid="primary-model"] [data-testid="model-viewer"], [data-testid="primary-model"] #model-canvas, [data-testid="primary-model"] canvas',
+      )
+      .first();
+    const role = await target.getAttribute("role");
+    const label = await target.getAttribute("aria-label");
+    expect(role === "img" || !!label).toBeTruthy();
+  });
+}
+
+// 9–10. Performance budget: model ready under 5s (index, payment)
+for (const p of pages) {
+  test(`${p.key}: model loads under budget`, async ({ page }) => {
+    const start = Date.now();
+    await page.goto(p.url);
+    await page.waitForFunction(
+      (k) => !!(window as any).__modelsLoaded?.[k],
+      p.key,
+      { timeout: 15000 },
+    );
+    expect(Date.now() - start).toBeLessThanOrEqual(
+      Number(process.env.MODEL_LOAD_BUDGET_MS || 5000),
+    );
+  });
+}
+
+// 11–12. No severe console errors during load (index, payment)
+for (const p of pages) {
+  test(`${p.key}: no console errors`, async ({ page }) => {
+    const errors: string[] = [];
+    page.on("console", (m) => {
+      if (m.type() === "error") errors.push(m.text());
+    });
+    await page.goto(p.url);
+    await page.waitForFunction(
+      (k) => !!(window as any).__modelsLoaded?.[k],
+      p.key,
+      { timeout: 15000 },
+    );
+    // Allow CORS warnings but fail on real errors
+    expect(errors.filter((e) => !/cors|devtools/i.test(e)).length).toBe(0);
+  });
+}

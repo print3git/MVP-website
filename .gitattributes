@@ -1,4 +1,6 @@
 # Treat common asset types as binary to avoid patching issues
+
+
 *.png filter=lfs diff=lfs merge=lfs -text
 *.jpg filter=lfs diff=lfs merge=lfs -text
 *.jpeg filter=lfs diff=lfs merge=lfs -text
@@ -35,6 +37,11 @@ frontend/public/** -filter=lfs -diff=lfs -merge=lfs
 # CI test fixtures must not use Git LFS because Pages doesn't fetch LFS objects
 tests/** -filter=lfs -text
 tests/ci-guard/lfs-prettier-guard/fixtures/** -filter=lfs -text
+
+# LFS issues
+tests/**/__image_snapshots__/* -filter -diff -merge
+tests/**/__screenshots__/* -filter -diff -merge
+
 
 # 3D assets
 *.glb filter=lfs diff=lfs merge=lfs -text
