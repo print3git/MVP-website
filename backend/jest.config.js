@@ -3,7 +3,7 @@ module.exports = {
   rootDir: ".",
   setupFiles: ["<rootDir>/tests/setupGlobals.js"],
   setupFilesAfterEnv: [
-    "<rootDir>/../tests/utils/testEnv.ts",
+    "<rootDir>/tests/utils/testEnv.ts",
     "<rootDir>/tests/setup.js",
   ],
   globalTeardown: "<rootDir>/tests/globalTeardown.js",
@@ -11,7 +11,7 @@ module.exports = {
   transform: {
     "^.+\\.[tj]s$": "babel-jest",
   },
-  testMatch: ["**/?(*.)+(spec|test).[jt]s?(x)"],
+  testMatch: ["<rootDir>/tests/**/?(*.)+(spec|test)*.[jt]s?(x)"],
   moduleFileExtensions: ["ts", "js", "json"],
   testTimeout: 20000,
   maxWorkers: "50%",
