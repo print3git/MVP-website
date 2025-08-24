@@ -24,4 +24,11 @@ describe("run-jest CLI", () => {
     const output = result.stdout + result.stderr;
     expect(output).toMatch(/Test file not found/);
   });
+
+  test("runs root tests without backend deps", () => {
+    const result = run([
+      "tests/openapi/no-removed-paths.m1n3p5q7r9s2t4u6.spec.ts",
+    ]);
+    expect(result.status).toBe(0);
+  });
 });

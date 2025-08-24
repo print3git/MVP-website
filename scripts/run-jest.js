@@ -16,15 +16,25 @@ if (!process.env.SKIP_ROOT_DEPS_CHECK) {
   }
 }
 
-try {
-  require.resolve("nodemailer", {
-    paths: [path.join(__dirname, "..", "backend")],
+const cliArgs = process.argv.slice(2);
+const repoRoot = path.resolve(__dirname, "..");
+const backendDir = path.join(repoRoot, "backend");
+const requiresBackendDeps = cliArgs
+  .filter((a) => !a.startsWith("-"))
+  .some((arg) => {
+    const abs = path.resolve(repoRoot, arg);
+    return abs.startsWith(backendDir);
   });
-} catch {
-  console.error(
-    "Missing backend dependencies. Run 'npm run setup' before running tests.",
-  );
-  process.exit(1);
+
+if (requiresBackendDeps) {
+  try {
+    require.resolve("nodemailer", { paths: [backendDir] });
+  } catch {
+    console.error(
+      "Missing backend dependencies. Run 'npm run setup' before running tests.",
+    );
+    process.exit(1);
+  }
 }
 
 function verifyFiles(args) {
