@@ -3,6 +3,8 @@ import request from "supertest";
 process.env.NODE_ENV = "test";
 const app = require("../../../backend/server");
 
+const EXPECT = Number(process.env.EXPECT_REMOVED_STATUS || 410);
+
 afterAll(() => {
   global.__servers?.forEach((s: any) => s.close());
 });
@@ -18,11 +20,9 @@ describe("API smoke", () => {
     expect(res.status).toBe(200);
   });
 
-  it("POST /api/generate-model is unavailable", async () => {
-    const res = await request(app)
-      .post("/api/generate-model")
-      .set("Content-Type", "application/json")
-      .send({});
-    expect([400, 410]).toContain(res.status);
+  it("POST /api/generate-model returns expected removal status", async () => {
+    const res = await request(app).post("/api/generate-model").send({});
+    expect([EXPECT]).toContain(res.status);
+    if (EXPECT === 410) expect(res.body && res.body.error).toBe("removed");
   });
 });
