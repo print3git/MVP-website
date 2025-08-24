@@ -336,6 +336,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for our branch and commit conventions.
 `npm run setup` in the repository root to install all dependencies, then ensure `npm test` runs
 clean before submitting.
 Run `npm run test-ci` for the same tests using a single process, which matches the CI configuration.
+Use `npm run test:ci-guard` to execute the LFS/Pages guard suite ensuring test assets avoid Git LFS.
 Run `npm run format` in `backend/` to apply Prettier formatting before committing.
 For significant changes, please open an issue first to discuss what you would like to change. Be sure to follow the code style enforced by Prettier.
 
