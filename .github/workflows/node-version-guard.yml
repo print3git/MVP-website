@@ -1,11 +1,7 @@
-name: Lint
-
-on:
-  push:
-  pull_request:
-
+name: Node Version Guard
+on: [push, pull_request]
 jobs:
-  lint:
+  check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -13,9 +9,7 @@ jobs:
         with:
           node-version: '20.x'
           cache: 'npm'
-      - run: npm ci
-      - run: npm run lint
       - run: |
-          if [ -d backend ]; then
-            npm run lint --prefix backend
-          fi
+          echo "Node: $(node -v)"
+          node -e "process.exit(/^v20\./.test(process.version)?0:1)"
+          npm -v

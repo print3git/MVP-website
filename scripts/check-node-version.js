@@ -14,6 +14,9 @@ if (major !== requiredMajor) {
     console.error(
       `Run 'mise use -g node@${requiredMajor}' to install the correct version.`,
     );
+    console.error(
+      `Use: nvm install ${requiredMajor} && nvm use ${requiredMajor} or asdf install nodejs ${requiredMajor} && asdf global nodejs ${requiredMajor}`,
+    );
   }
   process.exit(1);
 }

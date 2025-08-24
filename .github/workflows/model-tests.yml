@@ -6,9 +6,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5.0.0
-      - uses: actions/setup-node@v4.4.0
+      - uses: actions/setup-node@v4
         with:
-          node-version: "lts/*"
+          node-version: '20.x'
+          cache: 'npm'
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: |
@@ -23,15 +24,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5.0.0
-      - uses: actions/setup-node@v4.4.0
+      - uses: actions/setup-node@v4
         with:
-          node-version: "lts/*"
+          node-version: '20.x'
+          cache: 'npm'
       - run: npm ci
       - run: npx lhci autorun --config=lighthouserc-model.json
 
       - uses: actions/checkout@v5.0.0
-      - uses: actions/setup-node@v4.4.0
-        with: { node-version: "lts/*" }
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: |
