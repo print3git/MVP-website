@@ -84,6 +84,7 @@ const validateStl = require("./utils/validateStl");
 const syncMailingList = require("./scripts/sync-mailing-list");
 const runScalingEngine = require("./scalingEngine");
 const { capture } = require("./src/lib/logger");
+const { removedEndpoints } = require("./src/middleware/removedEndpoints");
 
 const AUTH_SECRET = process.env.AUTH_SECRET || "secret";
 const s3 = new S3Client({ region: process.env.AWS_REGION });
@@ -170,6 +171,7 @@ function saveGeneratedAds() {
 }
 
 const app = express();
+app.set("trust proxy", true);
 const analyticsLimiter = rateLimit({
   windowMs: 60 * 1000,
   max: 20,
@@ -192,6 +194,7 @@ app.use(
   }),
 );
 app.use(bodyParser.json());
+app.use(removedEndpoints);
 const openapiPath = path.join(__dirname, "..", "docs", "openapi.yaml");
 const swaggerSpec = YAML.parse(fs.readFileSync(openapiPath, "utf8"));
 app.get("/api-docs", (req, res) => {
@@ -318,9 +321,6 @@ app.post("/api/dalle", async (req, res) => {
   }
 });
 
-app.all("/api/generate-model", (_req, res) => {
-  res.status(410).json({ error: "removed" });
-});
 
 app.post("/api/login", async (req, res) => {
   const { username, password } = req.body;
