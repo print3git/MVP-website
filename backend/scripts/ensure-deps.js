@@ -189,7 +189,7 @@ if (!fs.existsSync(jestPath)) {
       process.exit(1);
     }
   }
-}
+};
 
 // Verify Playwright host dependencies so tests don't fail with missing library errors
 try {
@@ -198,4 +198,4 @@ try {
 } catch (_err) {
   console.error("Failed to verify Playwright host dependencies:", _err.message);
   process.exit(1);
-}
+};

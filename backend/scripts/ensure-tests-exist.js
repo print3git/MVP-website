@@ -11,4 +11,4 @@ try {
 } catch (err) {
   console.error("Failed to list tests; ensure Jest is installed.");
   process.exit(1);
-}
+};

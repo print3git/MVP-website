@@ -1,7 +1,10 @@
 {
   "overrides": [
     {
-      "files": ["**/*.js", "**/*.ts"],
+      "files": [
+        "**/*.js",
+        "**/*.ts"
+      ],
       "rules": {
         "jsdoc/require-param": "off"
       }

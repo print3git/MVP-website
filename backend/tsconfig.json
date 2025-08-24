@@ -10,8 +10,17 @@
     "verbatimModuleSyntax": false,
     "esModuleInterop": true,
     "noEmit": true,
-    "types": ["node"]
+    "types": [
+      "node"
+    ]
   },
-  "include": ["src/**/*", "global.d.ts"],
-  "exclude": ["coverage", "node_modules", "tests"]
+  "include": [
+    "src/**/*",
+    "global.d.ts"
+  ],
+  "exclude": [
+    "coverage",
+    "node_modules",
+    "tests"
+  ]
 }

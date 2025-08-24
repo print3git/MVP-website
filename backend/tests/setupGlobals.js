@@ -94,4 +94,4 @@ for (const key of [
   "npm_config_https_proxy",
 ]) {
   delete process.env[key];
-}
+};
