@@ -1,0 +1,18 @@
+name: No LFS in Tests
+on: [push, pull_request]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { lfs: false }
+      - name: Fail if any LFS pointer exists under tests/**
+        run: |
+          set -euo pipefail
+          BAD=$(git grep -l "version https://git-lfs.github.com/spec" -- tests || true)
+          if [ -n "$BAD" ]; then
+            echo "❌ LFS pointers found under tests/:"
+            echo "$BAD"
+            exit 1
+          fi
+          echo "✅ No LFS pointers under tests/"
