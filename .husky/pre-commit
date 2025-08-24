@@ -1,5 +1,13 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+BAD=$(git diff --cached --name-only | xargs -I{} sh -c 'grep -q "version https://git-lfs.github.com/spec" "{}" && echo "{}"' || true)
+if [ -n "$BAD" ]; then
+  echo "❌ You are trying to commit LFS pointers under tests/:"
+  echo "$BAD"
+  echo "Please remove LFS from these files (tests should not use LFS)."
+  exit 1
+fi
+echo "✅ pre-commit: no LFS pointers under tests/"
 
 npm audit --audit-level=high
 npm run validate-env
