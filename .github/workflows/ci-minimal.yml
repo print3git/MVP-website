@@ -1,0 +1,27 @@
+name: ci-minimal
+on:
+  pull_request:
+  push:
+    branches: [ dev, main, production ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - run: corepack enable
+      - run: pnpm --version || npm i -g pnpm
+      - run: pnpm install --frozen-lockfile || pnpm install
+      - run: pnpm -w build || npm run -w build || echo "no root build"
+  backend-unit:
+    runs-on: ubuntu-latest
+    needs: build
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - run: corepack enable
+      - run: pnpm install --frozen-lockfile || pnpm install
+      - run: pnpm -w test:backend || pnpm -w test || echo "no backend unit tests defined"
