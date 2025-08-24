@@ -31,3 +31,7 @@ upload/* binary
 
 frontend/** -filter=lfs -diff=lfs -merge=lfs
 frontend/public/** -filter=lfs -diff=lfs -merge=lfs
+
+# CI test fixtures must not use Git LFS because Pages doesn't fetch LFS objects
+tests/** -filter=lfs -text
+tests/ci-guard/lfs-prettier-guard/fixtures/** -filter=lfs -text
