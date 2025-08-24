@@ -1,12 +1,8 @@
 # Git LFS
 
-Use Git Large File Storage to keep large images out of the repository. After installing git-lfs, convert existing files to pointers with:
-
-```bash
+Run `git lfs install` once locally. Large assets (GLB, snapshots) are tracked via .gitattributes.
+If you see “repository state corruption” or failed commits for snapshots, run:
 git lfs install
-git lfs track "img/*"
-git add .gitattributes
-git add img/<file>
-git commit -m "fix(lfs): convert pointer"
-git push
-```
+git add -A
+git commit -m "Normalize LFS pointers"
+CI checks LFS via `.github/workflows/lfs-guard.yml`.
