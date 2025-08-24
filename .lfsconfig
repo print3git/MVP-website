@@ -1,0 +1,3 @@
+[lfs]
+  fetchinclude = "*.glb,*.gltf,*.png,*.jpg,*.jpeg,*.webp"
+  fetchexclude = ""
