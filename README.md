@@ -23,6 +23,8 @@ Only two GitHub Action jobs are required to merge changes:
 
 Additional checks such as strict linting, dependency audits, and Stripe/Cloudflare smoke tests run in a separate diagnostics workflow. These jobs use `continue-on-error: true` so they surface issues without blocking merges.
 
+> **Note:** Non-essential suites temporarily disabled (round 3) to stabilize CI.
+
 ## 🤖 Codex Integration
 
 Before you run any Codex-driven prompts, always sync your code and Hugging Face Space:

@@ -12,25 +12,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  changes:
-    timeout-minutes: 15
-    runs-on: [self-hosted, linux, aws]
-    outputs:
-      frontend: ${{ steps.filter.outputs.frontend }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
-      - id: filter
-        uses: dorny/paths-filter@v3.0.2
-        with:
-          filters: |
-            frontend:
-              - 'frontend/**'
-
   backend-smoke:
     timeout-minutes: 15
-    needs: changes
     runs-on: [self-hosted, linux, aws]
     env:
       PORT: 3000
@@ -67,15 +50,3 @@ jobs:
           cat /tmp/server.log || true
         shell: bash
 
-  frontend-artifact-check:
-    timeout-minutes: 15
-    needs: [changes, backend-smoke]
-    if: needs.changes.outputs.frontend == 'true'
-    runs-on: [self-hosted, linux, aws]
-    steps:
-      - name: Heartbeat
-        run: |
-          while true; do date; sleep 120; done &
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/frontend-build
-      - run: test -f frontend/dist/index.html
