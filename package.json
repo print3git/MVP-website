@@ -99,6 +99,7 @@
     "prepush": "npm run lint && npm run typecheck && npm run test:changed",
     "check:code-scanning": "node scripts/check-code-scanning.js",
     "commitlint": "commitlint --from=HEAD~1",
+    "ci:nuke-guards-batch2": "node scripts/ci/nuke-guards-batch2.mjs",
     "lint:md": "markdownlint-cli2 \"**/*.md\"",
     "test:backend:regression": "node scripts/run-jest.js --config tests/jest.config.js --selectProjects backend",
     "test:frontend:regression": "node scripts/run-jest.js --config tests/jest.config.js --selectProjects frontend",
