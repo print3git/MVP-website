@@ -1,13 +1,17 @@
 const express = require("express");
 const modelsRouter = require("./routes/models");
 const checkoutRouter = require("./routes/checkout").default;
+const stripeWebhookRouter = require("./routes/stripeWebhook").default;
+const stripeCheckoutRouter = require("./routes/stripeCheckout").default;
 const { capture } = require("./lib/logger");
 const logger = require("../../src/logger");
 
 const app = express();
+app.use(stripeWebhookRouter);
 app.use(express.json());
 app.use(modelsRouter);
 app.use(checkoutRouter);
+app.use(stripeCheckoutRouter);
 
 app.use((err, req, res, _next) => {
   const context = {
