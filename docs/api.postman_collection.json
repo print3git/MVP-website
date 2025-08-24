@@ -137,50 +137,6 @@
           "event": []
         },
         {
-          "id": "c6918a39-1abc-4b4e-a793-4c68a8774d22",
-          "name": "/api/generate-model",
-          "request": {
-            "name": "/api/generate-model",
-            "description": {},
-            "url": {
-              "path": ["api", "generate-model"],
-              "host": ["{{baseUrl}}"],
-              "query": [],
-              "variable": []
-            },
-            "method": "POST",
-            "auth": null
-          },
-          "response": [
-            {
-              "id": "be842777-453c-4559-b63c-38e5abd2a070",
-              "name": "OK",
-              "originalRequest": {
-                "url": {
-                  "path": ["api", "generate-model"],
-                  "host": ["{{baseUrl}}"],
-                  "query": [],
-                  "variable": []
-                },
-                "method": "POST",
-                "body": {}
-              },
-              "status": "OK",
-              "code": 200,
-              "header": [
-                {
-                  "key": "Content-Type",
-                  "value": "text/plain"
-                }
-              ],
-              "body": "",
-              "cookie": [],
-              "_postman_previewlanguage": "text"
-            }
-          ],
-          "event": []
-        },
-        {
           "id": "78fbbef6-fd0c-44d5-a654-7c331b929101",
           "name": "/api/login",
           "request": {
