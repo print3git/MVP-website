@@ -923,24 +923,6 @@ test("POST /api/dalle requires prompt", async () => {
   expect(res.status).toBe(400);
 });
 
-test("POST /api/generate-model returns placeholder", async () => {
-  const warn = jest.spyOn(console, "warn").mockImplementation(() => {});
-  const res = await request(app)
-    .post("/api/generate-model")
-    .send({ prompt: "cat" });
-  expect(res.status).toBe(200);
-  expect(res.body).toEqual({ success: true, modelId: "placeholder-id" });
-  expect(warn).toHaveBeenCalledWith(
-    expect.stringContaining("/api/generate-model is deprecated"),
-  );
-  warn.mockRestore();
-});
-
-test("POST /api/generate-model requires prompt", async () => {
-  const res = await request(app).post("/api/generate-model").send({});
-  expect(res.status).toBe(400);
-});
-
 test("GET /api/dashboard returns aggregated info", async () => {
   const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   db.query

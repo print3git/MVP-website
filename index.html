@@ -5,10 +5,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>print2</title>
     <meta
       name="description"
@@ -104,6 +101,21 @@
         min-height: 100%;
         margin: 0;
       }
+      html, body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden; /* avoids initial “zoomy” feel from accidental overflow */
+      }
+      * { box-sizing: border-box; }
+
+      /* Safety rails: avoid 100vw causing overflow with scrollbars */
+      img, canvas, video, svg {
+        max-width: 100%;
+      }
+
+      /* If you have any top-level wrappers using 100vw, prefer 100% + max-width: 100% */
       .transition-shape {
         transition:
           border-radius 0.2s ease,
@@ -684,5 +696,21 @@
       </filter>
     </svg>
     <script type="module" src="js/trackingPixel.js"></script>
+    <script>
+      (function normalizeInitialScale() {
+        const apply = () => {
+          const vv = window.visualViewport;
+          const scale = vv && typeof vv.scale === 'number' ? vv.scale : 1;
+          // Normalize REM‑based layouts if the browser remembered a zoom
+          if (scale !== 1) {
+            document.documentElement.style.fontSize = (100 / scale) + '%';
+          } else {
+            document.documentElement.style.fontSize = '';
+          }
+        };
+        window.addEventListener('load', apply, { once: true });
+        window.addEventListener('resize', apply);
+      })();
+    </script>
   </body>
 </html>
