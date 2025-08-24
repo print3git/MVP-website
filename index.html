@@ -328,16 +328,10 @@
           />
 
           <!-- 3-D Astronaut (always visible) -->
-          <model-viewer
+          <div
             id="viewer"
-            src="models/bag.glb"
-            alt="3D model preview"
-            environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
-            camera-controls
-            auto-rotate
-            crossOrigin="anonymous"
             style="width: 100%; height: 100%; display: block"
-          ></model-viewer>
+          ></div>
 
           <!-- loader -->
           <div
@@ -583,6 +577,10 @@
       <p>🛡 Money-Back Guarantee</p>
       <p>🚚 Free UK Shipping</p>
     </div>
+    <script type="module">
+      import { loadModel } from "./src/js/loadModel.js";
+      loadModel("models/bag.glb", "viewer");
+    </script>
     <!-- ▸▸▸ SCRIPTS ------------------------------------------------------ -->
     <script src="js/modelViewerTouchFix.js" defer></script>
     <script type="module" src="js/wizard.js" defer></script>
