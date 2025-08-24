@@ -29,6 +29,7 @@
       src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js"
     ></script>
     <script src="js/modelViewerTouchFix.js"></script>
+    <script src="js/model-ready-hook.js"></script>
     <script
       nomodule
       src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer-legacy.js"
@@ -114,14 +115,27 @@
       <section
         class="bg-[#2A2A2E] p-4 rounded-xl flex items-center space-x-4 border border-white/10"
       >
-        <model-viewer
-          src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
-          alt="Contest winner"
-          environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
-          camera-controls
-          auto-rotate
-          class="w-24 h-24 rounded-full"
-        ></model-viewer>
+        <div data-testid="primary-model">
+          <model-viewer
+            src="models/bag.glb"
+            alt="Contest winner"
+            environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
+            camera-controls
+            auto-rotate
+            class="w-24 h-24 rounded-full"
+            data-testid="model-viewer"
+            role="img"
+            aria-label="3D model preview"
+          ></model-viewer>
+        </div>
+        <script>
+          document
+            .querySelector('[data-testid="model-viewer"]')
+            ?.addEventListener('load', () => window.markModelLoaded('competitions'));
+          document
+            .querySelector('#model-modal model-viewer')
+            ?.addEventListener('load', () => window.markModelLoaded('competitions'));
+        </script>
         <div>
           <p>
             <a href="signup.html" class="font-bold text-[#30D5C8]">Sign Up</a>
