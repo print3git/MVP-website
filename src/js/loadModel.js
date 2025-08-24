@@ -3,7 +3,7 @@
  * @param {string} url path to the .glb file
  * @param {string} containerId id of the element to host the canvas
  */
-export async function loadModel(url, containerId) {
+export async function loadModel(url, containerId, key = "default") {
   const container = document.getElementById(containerId);
   if (!container) {
     throw new Error(`Container #${containerId} not found`);
@@ -45,24 +45,25 @@ export async function loadModel(url, containerId) {
   light.position.set(1, 1, 1);
   scene.add(light);
 
-  const loader = new GLTFLoader();
-  try {
-    await new Promise((resolve, reject) => {
-      loader.load(
-        url,
-        (gltf) => {
-          scene.add(gltf.scene);
-          resolve();
-        },
-        undefined,
-        reject,
-      );
-    });
-  } catch (err) {
-    console.error("GLTF load failed", err);
-    container.textContent = "model not available";
-    return;
-  }
+const loader = new GLTFLoader();
+try {
+  await new Promise((resolve, reject) => {
+    loader.load(
+      url,
+      gltf => {
+        scene.add(gltf.scene);
+        window.markModelLoaded(key);
+        resolve();
+      },
+      undefined,
+      reject
+    );
+  });
+} catch (err) {
+  console.error('GLTF load failed', err);
+  container.textContent = 'model not available';
+  return;
+}
 
   window.__viewerFrames = 0;
   function animate() {
