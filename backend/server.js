@@ -318,17 +318,8 @@ app.post("/api/dalle", async (req, res) => {
   }
 });
 
-/**
- * POST /api/generate-model
- * Placeholder endpoint that returns a fake model id
- */
-app.post("/api/generate-model", (req, res) => {
-  console.warn(
-    "[DEPRECATED] /api/generate-model is deprecated; use /api/generate instead",
-  );
-  const { prompt } = req.body || {};
-  if (!prompt) return res.status(400).json({ error: "Prompt required" });
-  res.json({ success: true, modelId: "placeholder-id" });
+app.all("/api/generate-model", (_req, res) => {
+  res.status(410).json({ error: "removed" });
 });
 
 app.post("/api/login", async (req, res) => {
