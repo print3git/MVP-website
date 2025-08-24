@@ -1,4 +1,4 @@
-function applyTouchFix() {
+export function applyTouchFix() {
   function setTouchNone(el) {
     el.style.touchAction = "none";
   }
