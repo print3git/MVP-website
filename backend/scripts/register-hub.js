@@ -19,7 +19,7 @@ async function registerHub() {
     const { data } = await axios.post(
       `${argv.api}/admin/hubs`,
       { name: argv.name, location: argv.location, operator: argv.operator },
-      { headers: { "x-admin-token": process.env.ADMIN_TOKEN || "" } },
+      { headers: { "x-admin-token": process.env.ADMIN_TOKEN || "" } }
     );
     console.log("Created hub", data);
   } catch (err) {

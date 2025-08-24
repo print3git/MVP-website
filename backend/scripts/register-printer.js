@@ -21,13 +21,13 @@ async function registerPrinter() {
       { serial: argv.serial },
       {
         headers: { "x-admin-token": process.env.ADMIN_TOKEN || "" },
-      },
+      }
     );
     console.log("Registered printer", res.data);
   } catch (err) {
     console.error(
       "Failed to register printer",
-      err.response?.data || err.message,
+      err.response?.data || err.message
     );
     process.exit(1);
   }

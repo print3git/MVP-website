@@ -9,7 +9,7 @@ if (!process.env.SKIP_NODE_CHECK) {
     "..",
     "..",
     "scripts",
-    "check-node-version.js",
+    "check-node-version.js"
   );
   try {
     execFileSync("node", [nodeCheck], { stdio: "inherit" });
@@ -32,16 +32,20 @@ try {
 const expressPath = path.join(repoRoot, "node_modules", "express");
 const pwPath = path.join(repoRoot, "node_modules", "@playwright", "test");
 const setupFlag = path.join(repoRoot, ".setup-complete");
-const { runNpmCi } = require(
-  path.join(__dirname, "..", "..", "scripts", "run-npm-ci.js"),
-);
+const { runNpmCi } = require(path.join(
+  __dirname,
+  "..",
+  "..",
+  "scripts",
+  "run-npm-ci.js"
+));
 
 const networkCheck = path.join(
   __dirname,
   "..",
   "..",
   "scripts",
-  "network-check.js",
+  "network-check.js"
 );
 
 const aptCheck = path.join(__dirname, "..", "..", "scripts", "check-apt.js");
@@ -56,7 +60,7 @@ function runNetworkCheck() {
   } catch {
     if (!process.env.SKIP_PW_DEPS) {
       console.warn(
-        "Network check failed. Retrying with SKIP_PW_DEPS=1 in case the Playwright CDN is blocked.",
+        "Network check failed. Retrying with SKIP_PW_DEPS=1 in case the Playwright CDN is blocked."
       );
       process.env.SKIP_PW_DEPS = "1";
       try {
@@ -70,7 +74,7 @@ function runNetworkCheck() {
       }
     }
     console.error(
-      "Network check failed. Ensure access to the npm registry and Playwright CDN.",
+      "Network check failed. Ensure access to the npm registry and Playwright CDN."
     );
     process.exit(1);
   }
@@ -82,7 +86,7 @@ function canReachRegistry() {
     return true;
   } catch {
     console.error(
-      "Unable to reach the npm registry. Check network connectivity or proxy settings.",
+      "Unable to reach the npm registry. Check network connectivity or proxy settings."
     );
     return false;
   }
@@ -102,7 +106,7 @@ function runSetup() {
       execFileSync("node", [aptCheck], { stdio: "inherit" });
     } catch {
       console.warn(
-        "APT repositories unreachable. Falling back to SKIP_PW_DEPS=1",
+        "APT repositories unreachable. Falling back to SKIP_PW_DEPS=1"
       );
       env.SKIP_PW_DEPS = "1";
     }
@@ -112,13 +116,13 @@ function runSetup() {
   } catch {
     if (env.SKIP_PW_DEPS) {
       console.warn(
-        "Setup failed with SKIP_PW_DEPS, retrying without it to install browsers",
+        "Setup failed with SKIP_PW_DEPS, retrying without it to install browsers"
       );
       delete env.SKIP_PW_DEPS;
       execSync("npm run setup", { stdio: "inherit", cwd: repoRoot, env });
     } else {
       console.warn(
-        "Setup failed, retrying with SKIP_PW_DEPS=1 to skip Playwright dependencies",
+        "Setup failed, retrying with SKIP_PW_DEPS=1 to skip Playwright dependencies"
       );
       env.SKIP_PW_DEPS = "1";
       env.PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD =
@@ -166,7 +170,7 @@ if (!fs.existsSync(jestPath)) {
     execSync("npm ping", { stdio: "ignore" });
   } catch {
     console.error(
-      "Unable to reach the npm registry. Check network connectivity or proxy settings.",
+      "Unable to reach the npm registry. Check network connectivity or proxy settings."
     );
     process.exit(1);
   }
@@ -175,7 +179,7 @@ if (!fs.existsSync(jestPath)) {
   } catch (err) {
     console.warn(
       "npm ci failed, retrying after cleaning node_modules:",
-      err.message,
+      err.message
     );
     try {
       fs.rmSync("node_modules", { recursive: true, force: true });
@@ -198,4 +202,4 @@ try {
 } catch (_err) {
   console.error("Failed to verify Playwright host dependencies:", _err.message);
   process.exit(1);
-}
+};

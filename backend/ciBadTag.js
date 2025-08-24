@@ -1,1 +1,1 @@
-/**\n * @ciOnly\n */
+/**\n * @ciOnly\n */;
