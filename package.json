@@ -37,7 +37,8 @@
     "typecheck": "tsc --noEmit",
     "validate-env": "bash scripts/validate-env.sh",
     "setup": "bash scripts/setup.sh",
-    "build": "echo build && exit 0 || true",
+    "build": "vite build",
+    "preview": "vite preview --port 4173",
     "start:backend": "npm start --prefix backend"
   },
   "babel": {
