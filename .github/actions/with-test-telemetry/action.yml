@@ -55,6 +55,9 @@ runs:
           failures=0
         fi
         duration=${{ steps.run.outputs.duration_ms }}
+        if [ -z "$duration" ]; then
+          duration=0
+        fi
         cat <<JSON > test-telemetry.json
         {
           "job": "$GITHUB_JOB",
