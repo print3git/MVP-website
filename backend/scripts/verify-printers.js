@@ -38,4 +38,4 @@ async function verify() {
 
 if (require.main === module) {
   verify();
-}
+};

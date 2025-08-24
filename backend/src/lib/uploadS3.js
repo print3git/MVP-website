@@ -38,4 +38,4 @@ async function uploadFile(filePath, contentType) {
     }),
   );
   return `https://${domain}/${key}`;
-}
+};
