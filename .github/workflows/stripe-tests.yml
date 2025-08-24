@@ -1,0 +1,26 @@
+name: Stripe Endpoint Tests
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+      - run: npm ci
+      - name: Run Stripe tests
+        env:
+          STRIPE_SECRET_KEY: sk_test_dummy
+          STRIPE_WEBHOOK_SECRET: whsec_dummy
+          FRONTEND_SUCCESS_URL: http://localhost/success
+          FRONTEND_CANCEL_URL: http://localhost/cancel
+        run: npm test -- --coverage=false --runTestsByPath \
+             backend/tests/stripe/webhook.valid-signature.spec.ts \
+             backend/tests/stripe/webhook.invalid-signature.spec.ts \
+             backend/tests/stripe/webhook.idempotency.spec.ts \
+             backend/tests/stripe/webhook.event-types.spec.ts \
+             backend/tests/stripe/webhook.performance.spec.ts \
+             backend/tests/stripe/webhook.logging.spec.ts \
+             backend/tests/stripe/checkout.session.success.spec.ts \
+             backend/tests/stripe/checkout.session.errors.spec.ts
