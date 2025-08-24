@@ -4,6 +4,7 @@ const path = require("path");
 const {
   validate,
 } = require("../../../scripts/ci-guard/lfs-prettier-guard/validate");
+const { writePng } = require("../../../scripts/tests/make-fixture");
 
 function tmpdir() {
   return fs.mkdtempSync(path.join(os.tmpdir(), "lpg-"));
@@ -25,7 +26,10 @@ describe("lfs-prettier-guard", () => {
 
   test("t2 raw image fails", async () => {
     const dir = tmpdir();
-    copy("raw-image.png", path.join(dir, "img", "bad.png"));
+    const bad = path.join(dir, "img", "bad.png");
+    writePng(bad);
+    const header = fs.readFileSync(bad, "utf8").slice(0, 40);
+    expect(header.startsWith("version https://git-lfs")).toBe(false);
     const res = await validate(dir);
     expect(res.ok).toBe(false);
     expect(res.errors[0]).toMatch(/non-pointer asset/);

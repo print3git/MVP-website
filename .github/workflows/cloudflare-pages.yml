@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.3.0
+      - run: echo "LFS intentionally disabled for tests"
       - run: corepack enable || true
       - run: (pnpm -v) || npm i -g pnpm@9
       - run: cd frontend && pnpm install --no-frozen-lockfile && pnpm build

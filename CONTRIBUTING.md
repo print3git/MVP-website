@@ -20,6 +20,7 @@ Thank you for helping improve this project! Please follow these steps to keep ou
 3. Execute `npm test` and, if possible, `npm run smoke` before opening the PR.
 4. Open a PR against the `dev` branch and request review.
 5. Do not use Git LFS for files under `frontend/`. Commit real assets or host large files externally (e.g., S3/CDN).
+6. Test fixtures may not use Git LFS; use generated fixtures or commit tiny files. See `.gitattributes` and the `lfs-prevent-pointers` workflow.
 
 ## Tests
 

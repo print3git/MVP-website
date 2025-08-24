@@ -1,0 +1,19 @@
+name: lfs-prevent-pointers
+on:
+  push:
+  pull_request:
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.3.0
+      - name: check for LFS pointers in tests
+        run: |
+          set -e
+          matches=$(git ls-files -z | xargs -0 grep -IlZ "version https://git-lfs.github.com/spec" | tr -d '\0' | grep '^tests/' || true)
+          if [ -n "$matches" ]; then
+            echo "LFS pointer files found in tests: $matches"
+            exit 1
+          fi
+          git check-attr filter -- tests | grep -E ": filter: lfs$" && { echo "LFS filter attribute found in tests"; exit 1; }
+      - run: echo "LFS intentionally disabled for tests"
