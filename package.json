@@ -39,7 +39,8 @@
     "setup": "bash scripts/setup.sh",
     "build": "vite build",
     "preview": "vite preview --port 4173",
-    "start:backend": "npm start --prefix backend"
+    "start:backend": "npm start --prefix backend",
+    "smoke": "npm test -- --maxWorkers=2 --runTestsByPath tests/config/package-scripts.smoke.*.spec.ts tests/smoke/healthcheck.*.spec.ts"
   },
   "babel": {
     "presets": [
