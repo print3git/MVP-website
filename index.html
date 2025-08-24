@@ -311,7 +311,6 @@
       class="flex-1 flex flex-col items-center justify-start gap-4 px-4 lg:px-16"
       style="margin-top: -4rem"
     >
-      <div id="gen-app" class="my-4 w-full max-w-md"></div>
       <!-- 3-D preview ---------------------------------------------------- -->
       <div class="relative flex justify-center w-full max-w-lg">
         <section
@@ -611,7 +610,7 @@
         const info = document.getElementById("print-run-info");
         const checkout = document.getElementById("checkout-button");
         const error = document.getElementById("gen-error");
-        const logo = document.querySelector('img[alt="print3 cube"]');
+        const logo = document.querySelector('img[alt="print2 cube"]');
         if (!quote || !checkout) return;
 
         // bounding rectangles relative to the viewport
@@ -679,7 +678,6 @@
     </div>
     <script></script>
     <script type="module" src="js/printclub.js"></script>
-    <script type="module" src="js/modelGenerator.js"></script>
     <script type="module" src="js/rewardBadge.js"></script>
     <script type="module" src="js/basket.js" defer></script>
     <div

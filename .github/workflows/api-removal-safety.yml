@@ -37,6 +37,8 @@ jobs:
           node-version: 20
       - run: npm ci
       - run: npm run smoke
+        env:
+          EXPECT_REMOVED_STATUS: '410'
 
   openapi-check:
     runs-on: ubuntu-latest
