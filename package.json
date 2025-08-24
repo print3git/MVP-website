@@ -110,6 +110,7 @@
     "test:lfs": "vitest run -t lfs",
     "ci-gate:audit": "npx -y tsx scripts/ci-gate/audit.ts",
     "test:ci-gate": "npx -y vitest run tests/ci-gate",
+    "test:ci-guard": "vitest run --config tests/ci-guard/vitest.ci-guard.config.ts",
     "test:inventory": "vitest run -t test-inventory",
     "test:ci-inventory": "vitest run tests/ci-inventory/ci-inventory.test.ts -t ci-inventory",
     "ci:skip-audit": "tsx scripts/ci/skip-detection-audit.ts",
@@ -222,6 +223,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.2.0",
     "react-places-autocomplete": "^7.3.0",
+    "vite": "^5.4.3",
     "winston": "^3.17.0",
     "winston-format": "^1.0.1"
   }
