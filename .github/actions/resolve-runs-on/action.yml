@@ -1,0 +1,26 @@
+name: Resolve runs-on
+description: Choose self-hosted runner or fallback
+inputs:
+  prefer-labels:
+    description: JSON array of preferred labels
+    default: '["self-hosted","linux","x64","mvp-gh-runner"]'
+  fallback:
+    description: Fallback runner label
+    default: ubuntu-latest
+  online:
+    description: "'true' if preferred runner online"
+    required: true
+outputs:
+  value:
+    description: Resolved runs-on value
+runs:
+  using: composite
+  steps:
+    - id: choose
+      shell: bash
+      run: |
+        if [[ "${{ inputs.online }}" == "true" ]]; then
+          echo "value=${{ inputs.prefer-labels }}" >> "$GITHUB_OUTPUT"
+        else
+          echo "value=${{ inputs.fallback }}" >> "$GITHUB_OUTPUT"
+        fi

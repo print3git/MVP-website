@@ -16,7 +16,8 @@ if (ticker && supabaseUrl && supabaseKey) {
       .limit(20);
     if (data) {
       queue = data.map(
-        (o) => `\uD83D\uDDA8\uFE0F ${o.customer_name} (${o.country}) just printed the ${o.model_name}!`,
+        (o) =>
+          `\uD83D\uDDA8\uFE0F ${o.customer_name} (${o.country}) just printed the ${o.model_name}!`,
       );
     }
   }

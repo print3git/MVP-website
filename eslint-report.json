@@ -1,0 +1,3 @@
+{
+  "error": "Dependencies not installed; run 'npm run setup' at the repository root."
+}

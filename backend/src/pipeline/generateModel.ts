@@ -2,8 +2,8 @@ import { textToImage } from '../lib/textToImage';
 import { imageToText } from '../lib/imageToText';
 import { prepareImage } from '../lib/prepareImage';
 import { generateGlb } from '../lib/sparc3dClient';
+import { preserveColors } from '../lib/preserveColors';
 import { storeGlb } from '../lib/storeGlb';
-import { capture } from '../lib/logger';
 
 export interface GenerateModelParams {
   prompt?: string;
@@ -31,7 +31,8 @@ export async function generateModel({ prompt, image }: GenerateModelParams): Pro
   }
 
   const glbData = await generateGlb({ prompt, imageURL });
-  const url = await storeGlb(glbData);
+  const colored = await preserveColors(glbData);
+  const url = await storeGlb(colored);
   console.timeEnd('pipeline');
   return url;
 }

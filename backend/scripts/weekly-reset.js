@@ -1,8 +1,10 @@
-require('dotenv').config();
-const { Client } = require('pg');
+require("dotenv").config();
+const { Client } = require("pg");
 
 function startOfWeek(d = new Date()) {
-  const date = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+  const date = new Date(
+    Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()),
+  );
   const day = date.getUTCDay();
   const diff = date.getUTCDate() - day;
   return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), diff));
@@ -19,7 +21,7 @@ async function resetCredits() {
        SELECT user_id, $1, 2 FROM subscriptions
        WHERE status='active'
        ON CONFLICT (user_id, week_start) DO NOTHING`,
-      [weekStr]
+      [weekStr],
     );
   } finally {
     await client.end();

@@ -1,8 +1,11 @@
-require('dotenv').config();
-const { Client } = require('pg');
-const { sendMail } = require('../mail');
+require("dotenv").config();
+const { Client } = require("pg");
+const { sendMail } = require("../mail");
 
-const DELAY_HOURS = parseInt(process.env.PURCHASE_REMINDER_DELAY_HOURS || '24', 10);
+const DELAY_HOURS = parseInt(
+  process.env.PURCHASE_REMINDER_DELAY_HOURS || "24",
+  10,
+);
 
 async function sendPurchaseReminders() {
   const client = new Client({ connectionString: process.env.DB_URL });
@@ -16,18 +19,21 @@ async function sendPurchaseReminders() {
        WHERE j.status='complete'
          AND o.job_id IS NULL
          AND j.reminder_sent=FALSE
-         AND j.created_at < NOW() - INTERVAL '${DELAY_HOURS} hours'`
+         AND j.created_at < NOW() - INTERVAL '${DELAY_HOURS} hours'`,
     );
     for (const row of rows) {
       try {
         await sendMail(
           row.email,
-          'Complete Your Purchase',
-          'You generated a model but never purchased a print. Act now!'
+          "Complete Your Purchase",
+          "You generated a model but never purchased a print. Act now!",
         );
-        await client.query('UPDATE jobs SET reminder_sent=TRUE WHERE job_id=$1', [row.job_id]);
+        await client.query(
+          "UPDATE jobs SET reminder_sent=TRUE WHERE job_id=$1",
+          [row.job_id],
+        );
       } catch (err) {
-        console.error('Failed to send reminder for', row.job_id, err);
+        console.error("Failed to send reminder for", row.job_id, err);
       }
     }
   } finally {

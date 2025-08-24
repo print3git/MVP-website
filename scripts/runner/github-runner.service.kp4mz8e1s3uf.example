@@ -1,0 +1,14 @@
+# Example systemd unit for GitHub runner
+[Unit]
+Description=GitHub Actions Runner
+After=network.target
+
+[Service]
+User=github-runner
+WorkingDirectory=/opt/github-runner
+ExecStart=/opt/github-runner/run.sh
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

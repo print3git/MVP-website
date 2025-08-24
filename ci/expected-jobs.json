@@ -1,0 +1,14 @@
+{
+  "expected": [
+    "frontend:lint",
+    "frontend:build",
+    "frontend:test",
+    "backend:test",
+    "types:check",
+    "e2e:smoke",
+    "codeql:analyze",
+    "coverage",
+    "size-limit",
+    "inventory:inventory"
+  ]
+}

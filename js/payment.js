@@ -1,11 +1,46 @@
+import { track } from "./analytics.js";
+
+(() => {
+  try {
+    const map = {
+      print3Basket: "print2Basket",
+      print3Model: "print2Model",
+      print3JobId: "print2JobId",
+      print3Material: "print2Material",
+      print3Color: "print2Color",
+      print3EtchName: "print2EtchName",
+      print3Email: "print2Email",
+      print3ShipName: "print2ShipName",
+      print3ShipAddress: "print2ShipAddress",
+      print3ShipCity: "print2ShipCity",
+      print3ShipZip: "print2ShipZip",
+      print3DiscountCode: "print2DiscountCode",
+      print3CheckoutItems: "print2CheckoutItems",
+      print3Prompt: "print2Prompt",
+      print3Images: "print2Images",
+      print3Saved: "print2Saved",
+      print3CommunityOpen: "print2CommunityOpen",
+      print3CommunityState: "print2CommunityState",
+    };
+    for (const [oldKey, newKey] of Object.entries(map)) {
+      const val = localStorage.getItem(oldKey);
+      if (val !== null && localStorage.getItem(newKey) === null) {
+        localStorage.setItem(newKey, val);
+        localStorage.removeItem(oldKey);
+      }
+    }
+  } catch {
+    // ignore
+  }
+})();
+
 // Initialize Stripe after the library loads to avoid breaking the rest of the
 // page if the network request for Stripe fails. This variable will be assigned
 // once the DOM content is ready.
 let stripe = null;
 
 // Use a lightweight fallback model and upgrade to the high detail version after load.
-const FALLBACK_GLB_LOW =
-  "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
+const FALLBACK_GLB_LOW = "models/bag.glb";
 const FALLBACK_GLB_HIGH = FALLBACK_GLB_LOW;
 const FALLBACK_GLB = FALLBACK_GLB_LOW;
 const PRICES = {
@@ -47,12 +82,20 @@ const PRINT_CLUB_ANNUAL_PRICE = Math.round(
 let selectedPrice = PRICES.multi;
 const SINGLE_BORDER_COLOR = "#60a5fa";
 const API_BASE = (window.API_ORIGIN || "") + "/api";
-// Time zone used to reset local purchase counts at 1 AM Eastern
+// Time zone used to reset local purchase counts at 1 AM Eastern
 const TZ = "America/New_York";
 let flashTimerId = null;
 let flashSale = null;
 let checkoutItems = [];
 let currentIndex = 0;
+
+function sanitizeUrl(url) {
+  try {
+    return new URL(url, window.location.origin).href;
+  } catch {
+    return "";
+  }
+}
 
 function computeDiscountFor(material, qty) {
   const price = PRICES[material] || PRICES.single;
@@ -114,12 +157,12 @@ async function fetchPaymentInit() {
 }
 
 // Restore previously selected material option and colour
-let storedMaterial = localStorage.getItem("print3Material");
-let storedColor = localStorage.getItem("print3Color");
+let storedMaterial = localStorage.getItem("print2Material");
+let storedColor = localStorage.getItem("print2Color");
 const personalise = qs("personalise");
 if (personalise !== null) {
   storedMaterial = "multi";
-  localStorage.setItem("print3Material", storedMaterial);
+  localStorage.setItem("print2Material", storedMaterial);
 }
 if (storedMaterial && PRICES[storedMaterial]) {
   selectedPrice = PRICES[storedMaterial];
@@ -146,8 +189,15 @@ function updateFlashSaleBanner() {
     flashBanner.hidden = true;
     return;
   }
-  flashBanner.innerHTML = `Flash sale! <span id="flash-timer">5:00</span> left - ${flashSale.discount_percent}% off`;
-  const timerEl = flashBanner.querySelector("#flash-timer");
+  flashBanner.textContent = "Flash sale! ";
+  const timerSpan = document.createElement("span");
+  timerSpan.id = "flash-timer";
+  timerSpan.textContent = "5:00";
+  flashBanner.appendChild(timerSpan);
+  flashBanner.appendChild(
+    document.createTextNode(` left - ${flashSale.discount_percent}% off`),
+  );
+  const timerEl = timerSpan;
   const update = () => {
     const diff = end - Date.now();
     if (diff <= 0 || selectedMaterialValue() !== flashSale.product_type) {
@@ -260,11 +310,9 @@ function recordPurchase() {
   const sessionId = localStorage.getItem("adSessionId");
   const subreddit = localStorage.getItem("adSubreddit");
   if (sessionId && subreddit) {
-    fetch(`${API_BASE}/track/checkout`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ sessionId, subreddit, step: "complete" }),
-    }).catch(() => {});
+    track("checkout", { sessionId, subreddit, step: "complete" }).catch(
+      () => {},
+    );
   }
 }
 
@@ -367,7 +415,7 @@ async function createCheckout(
   etchName,
   useCredit,
 ) {
-  const jobId = localStorage.getItem("print3JobId");
+  const jobId = localStorage.getItem("print2JobId");
   const res = await fetch(`${API_BASE}/create-order`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -495,13 +543,13 @@ async function initPaymentPage() {
     "discount-code",
   ];
   const persistMap = {
-    "ship-name": "print3ShipName",
-    "etch-name": "print3EtchName",
-    "checkout-email": "print3Email",
-    "ship-address": "print3ShipAddress",
-    "ship-city": "print3ShipCity",
-    "ship-zip": "print3ShipZip",
-    "discount-code": "print3DiscountCode",
+    "ship-name": "print2ShipName",
+    "etch-name": "print2EtchName",
+    "checkout-email": "print2Email",
+    "ship-address": "print2ShipAddress",
+    "ship-city": "print2ShipCity",
+    "ship-zip": "print2ShipZip",
+    "discount-code": "print2DiscountCode",
   };
   const highlightValid = (el) => {
     if (!el) return;
@@ -674,7 +722,7 @@ async function initPaymentPage() {
         checkoutItems[currentIndex].etchName = "";
         saveCheckoutItems();
       }
-      localStorage.removeItem("print3EtchName");
+      localStorage.removeItem("print2EtchName");
       etchInput.classList.add("cursor-not-allowed");
       etchInput.classList.add(
         "border-[#30D5C8]",
@@ -797,7 +845,7 @@ async function initPaymentPage() {
       if (r.checked) {
         selectedPrice = PRICES[r.value] || PRICES.single;
         storedMaterial = r.value;
-        localStorage.setItem("print3Material", r.value);
+        localStorage.setItem("print2Material", r.value);
         if (checkoutItems[currentIndex]) {
           checkoutItems[currentIndex].material = r.value;
           if (r.value !== "single") {
@@ -818,7 +866,7 @@ async function initPaymentPage() {
             }
             if (originalColor) applyModelColor(originalColor, true);
             storedColor = null;
-            localStorage.removeItem("print3Color");
+            localStorage.removeItem("print2Color");
           }
         }
         updatePayButton();
@@ -841,12 +889,28 @@ async function initPaymentPage() {
     const showGiftTwo =
       !path.endsWith("minis-checkout.html") &&
       !path.endsWith("luckybox-payment.html");
-    bulkMsg.innerHTML =
-      '<span class="text-gray-400">Popular: keep one, gift one – </span>' +
-      `<span class="text-white">save ${amount}</span>` +
-      (showGiftTwo
-        ? '<br><span class="invisible">Popular: keep one, </span><span class="text-gray-400">gift two – </span><span class="text-white">save £22.00</span>'
-        : "");
+    bulkMsg.textContent = "";
+    const span1 = document.createElement("span");
+    span1.className = "text-gray-400";
+    span1.textContent = "Popular: keep one, gift one – ";
+    const span2 = document.createElement("span");
+    span2.className = "text-white";
+    span2.textContent = `save ${amount}`;
+    bulkMsg.appendChild(span1);
+    bulkMsg.appendChild(span2);
+    if (showGiftTwo) {
+      bulkMsg.appendChild(document.createElement("br"));
+      const invis = document.createElement("span");
+      invis.className = "invisible";
+      invis.textContent = "Popular: keep one, ";
+      const gray = document.createElement("span");
+      gray.className = "text-gray-400";
+      gray.textContent = "gift two – ";
+      const white = document.createElement("span");
+      white.className = "text-white";
+      white.textContent = "save £22.00";
+      bulkMsg.append(invis, gray, white);
+    }
     bulkMsg.classList.remove("hidden");
   }
 
@@ -900,8 +964,8 @@ async function initPaymentPage() {
       if (factor) applyModelColor(factor);
       storedColor = color;
       storedMaterial = "single";
-      localStorage.setItem("print3Color", color);
-      localStorage.setItem("print3Material", "single");
+      localStorage.setItem("print2Color", color);
+      localStorage.setItem("print2Material", "single");
       if (checkoutItems[currentIndex]) {
         checkoutItems[currentIndex].material = "single";
         checkoutItems[currentIndex].color = color;
@@ -935,18 +999,19 @@ async function initPaymentPage() {
     if (viewer) {
       const tag = viewer.tagName.toLowerCase();
       if (tag === "img") {
-        if (item.snapshot) viewer.src = item.snapshot;
+        if (item.snapshot) viewer.src = sanitizeUrl(item.snapshot);
       } else {
-        viewer.src = item.modelUrl || storedModel || FALLBACK_GLB;
+        const src = sanitizeUrl(item.modelUrl);
+        viewer.src = src || storedModel || FALLBACK_GLB;
       }
     }
-    if (item.jobId) localStorage.setItem("print3JobId", item.jobId);
-    else localStorage.removeItem("print3JobId");
+    if (item.jobId) localStorage.setItem("print2JobId", item.jobId);
+    else localStorage.removeItem("print2JobId");
     storedMaterial = item.material || "multi";
     storedColor = item.color || null;
-    localStorage.setItem("print3Material", storedMaterial);
-    if (storedColor) localStorage.setItem("print3Color", storedColor);
-    else localStorage.removeItem("print3Color");
+    localStorage.setItem("print2Material", storedMaterial);
+    if (storedColor) localStorage.setItem("print2Color", storedColor);
+    else localStorage.removeItem("print2Color");
     const radio = document.querySelector(
       `#material-options input[value="${storedMaterial}"]`,
     );
@@ -960,7 +1025,7 @@ async function initPaymentPage() {
     }
     if (etchInput) {
       etchInput.value = item.etchName || "";
-      localStorage.setItem("print3EtchName", item.etchName || "");
+      localStorage.setItem("print2EtchName", item.etchName || "");
       highlightValid(etchInput);
     }
     if (storedMaterial === "single") {
@@ -1014,10 +1079,10 @@ async function initPaymentPage() {
     checkoutItems.splice(idx, 1);
     saveCheckoutItems();
     try {
-      const basket = JSON.parse(localStorage.getItem("print3Basket")) || [];
+      const basket = JSON.parse(localStorage.getItem("print2Basket")) || [];
       if (idx >= 0 && idx < basket.length) {
         basket.splice(idx, 1);
-        localStorage.setItem("print3Basket", JSON.stringify(basket));
+        localStorage.setItem("print2Basket", JSON.stringify(basket));
       }
     } catch {}
     if (checkoutItems.length) {
@@ -1150,13 +1215,13 @@ async function initPaymentPage() {
   } else {
     loader.hidden = false;
     // Assign the model source only after the load/error listeners are in place
-    const storedModel = localStorage.getItem("print3Model");
+    const storedModel = sanitizeUrl(localStorage.getItem("print2Model"));
     if (viewer) viewer.src = storedModel || FALLBACK_GLB;
   }
   // Load saved basket items unless this is the Luckybox page
   if (!window.location.pathname.endsWith("luckybox-payment.html")) {
     try {
-      const arr = JSON.parse(localStorage.getItem("print3CheckoutItems"));
+      const arr = JSON.parse(localStorage.getItem("print2CheckoutItems"));
       if (Array.isArray(arr) && arr.length) {
         if (
           arr.length === 1 &&
@@ -1172,14 +1237,14 @@ async function initPaymentPage() {
       }
     } catch {}
   } else {
-    localStorage.removeItem("print3CheckoutItems");
+    localStorage.removeItem("print2CheckoutItems");
   }
 
   // Sync checkout items with the current basket in case this page was
   // opened directly and the stored list is stale.
   if (!window.location.pathname.endsWith("luckybox-payment.html")) {
     try {
-      const basket = JSON.parse(localStorage.getItem("print3Basket")) || [];
+      const basket = JSON.parse(localStorage.getItem("print2Basket")) || [];
       if (
         basket.length &&
         (basket.length !== checkoutItems.length ||
@@ -1197,11 +1262,11 @@ async function initPaymentPage() {
             snapshot: it.snapshot || prev.snapshot || "",
             material:
               prev.material ||
-              localStorage.getItem("print3Material") ||
+              localStorage.getItem("print2Material") ||
               "multi",
             color: prev.color || null,
             etchName:
-              prev.etchName || localStorage.getItem("print3EtchName") || "",
+              prev.etchName || localStorage.getItem("print2EtchName") || "",
             qty: (() => {
               let q = prev.qty ?? it.quantity;
               if (basket.length === 1 && (q == null || parseInt(q, 10) === 1)) {
@@ -1213,7 +1278,7 @@ async function initPaymentPage() {
           };
         });
         localStorage.setItem(
-          "print3CheckoutItems",
+          "print2CheckoutItems",
           JSON.stringify(checkoutItems),
         );
       }
@@ -1226,7 +1291,7 @@ async function initPaymentPage() {
     });
     try {
       localStorage.setItem(
-        "print3CheckoutItems",
+        "print2CheckoutItems",
         JSON.stringify(checkoutItems),
       );
     } catch {}
@@ -1234,7 +1299,7 @@ async function initPaymentPage() {
   function saveCheckoutItems() {
     try {
       localStorage.setItem(
-        "print3CheckoutItems",
+        "print2CheckoutItems",
         JSON.stringify(checkoutItems),
       );
     } catch {}
@@ -1248,10 +1313,10 @@ async function initPaymentPage() {
     updateNavButtons();
   } else {
     const first = checkoutItems[0];
-    if (first.jobId) localStorage.setItem("print3JobId", first.jobId);
-    else localStorage.removeItem("print3JobId");
+    if (first.jobId) localStorage.setItem("print2JobId", first.jobId);
+    else localStorage.removeItem("print2JobId");
     storedMaterial = first.material || storedMaterial;
-    localStorage.setItem("print3Material", storedMaterial);
+    localStorage.setItem("print2Material", storedMaterial);
     showItem(0);
     if (removeBtn) {
       if (checkoutItems.length > 1) removeBtn.classList.remove("hidden");
@@ -1335,7 +1400,7 @@ async function initPaymentPage() {
       }
 
       nextBtn.addEventListener("click", () => {
-        localStorage.setItem("print3Prompt", suggestion);
+        localStorage.setItem("print2Prompt", suggestion);
         window.location.href = "index.html";
       });
       nextModal.classList.remove("hidden");
@@ -1465,11 +1530,9 @@ async function initPaymentPage() {
     const sessionId = localStorage.getItem("adSessionId");
     const subreddit = localStorage.getItem("adSubreddit");
     if (sessionId && subreddit) {
-      fetch(`${API_BASE}/track/checkout`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionId, subreddit, step: "start" }),
-      }).catch(() => {});
+      track("checkout", { sessionId, subreddit, step: "start" }).catch(
+        () => {},
+      );
     }
     const qty = Math.max(
       1,
@@ -1495,7 +1558,7 @@ async function initPaymentPage() {
       ? checkoutItems
       : [
           {
-            jobId: localStorage.getItem("print3JobId"),
+            jobId: localStorage.getItem("print2JobId"),
             material: selectedMaterialValue(),
             etchName: etchName || "",
             qty,
@@ -1506,7 +1569,7 @@ async function initPaymentPage() {
     let bulkApplied = false;
     for (const item of items) {
       const q = Math.max(1, parseInt(item.qty || qty, 10));
-      if (item.jobId) localStorage.setItem("print3JobId", item.jobId);
+      if (item.jobId) localStorage.setItem("print2JobId", item.jobId);
       selectedPrice = PRICES[item.material] || PRICES.single;
       let discount = computeDiscountFor(item.material, q);
       if (!bulkApplied && bulk > 0) {
@@ -1621,15 +1684,18 @@ async function initPaymentPage() {
               etchInput && !etchInput.disabled ? etchInput.value.trim() : "",
           },
         ];
-    summaryEl.innerHTML =
-      "<div class='flex flex-wrap justify-center gap-2'>" +
-      items
-        .map((it) => {
-          const src = it.snapshot || it.modelUrl || "";
-          return `<img src='${src}' alt='print' class='w-12 h-12 object-cover rounded' />`;
-        })
-        .join("") +
-      "</div>";
+    summaryEl.textContent = "";
+    const wrap = document.createElement("div");
+    wrap.className = "flex flex-wrap justify-center gap-2";
+    items.forEach((it) => {
+      const src = sanitizeUrl(it.snapshot || it.modelUrl || "");
+      const img = document.createElement("img");
+      img.src = src;
+      img.alt = "print";
+      img.className = "w-12 h-12 object-cover rounded";
+      wrap.appendChild(img);
+    });
+    summaryEl.appendChild(wrap);
   }
 
   payBtn?.addEventListener("mouseenter", () => {
@@ -1674,7 +1740,7 @@ window.addEventListener("pageshow", (e) => {
 
 // Refresh the page if basket contents change in another tab
 window.addEventListener("storage", (e) => {
-  if (e.key === "print3CheckoutItems") {
+  if (e.key === "print2CheckoutItems") {
     window.location.reload();
   }
 });

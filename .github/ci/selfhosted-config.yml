@@ -1,0 +1,4 @@
+aws_region: us-east-1
+asg_name: MVP-GH-Runners
+target_labels: [self-hosted, linux, x64, mvp-gh-runner]
+max_queue_minutes: 5

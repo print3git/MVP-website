@@ -73,7 +73,7 @@ async function init() {
 
   const API_BASE = (window.API_ORIGIN || "") + "/api";
   const fallbackAdvertModels = [
-    "https://modelviewer.dev/shared-assets/models/Astronaut.glb",
+    "models/bag.glb",
     "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF-Binary/Avocado.glb",
     "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/DamagedHelmet/glTF-Binary/DamagedHelmet.glb",
   ];

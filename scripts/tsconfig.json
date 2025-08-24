@@ -3,7 +3,19 @@
     "target": "ES2022",
     "module": "CommonJS",
     "esModuleInterop": true,
-    "types": ["node"]
+    "types": ["node"],
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "skipLibCheck": true,
+    "noEmitOnError": false,
+    "moduleResolution": "node"
   },
-  "files": ["ci_watchdog.ts"]
+  "files": [
+    "ci_watchdog.ts",
+    "gh-runner-token.ts",
+    "ci/scale-signal.ts",
+    "ci/check-lfs.ts",
+    "list-tests.ts"
+  ]
 }

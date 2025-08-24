@@ -97,7 +97,7 @@ test("Stripe webhook awards seller credit", async () => {
 test("POST /api/credits/redeem deducts credit", async () => {
   db.getSaleCredit.mockResolvedValue(600);
   db.adjustSaleCredit.mockResolvedValue(100);
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .post("/api/credits/redeem")
     .set("authorization", `Bearer ${token}`)
@@ -109,7 +109,7 @@ test("POST /api/credits/redeem deducts credit", async () => {
 
 test("GET /api/credits returns credit balance", async () => {
   db.getSaleCredit.mockResolvedValue(800);
-  const token = jwt.sign({ id: "u1" }, "secret");
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .get("/api/credits")
     .set("authorization", `Bearer ${token}`);

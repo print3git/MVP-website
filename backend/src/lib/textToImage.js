@@ -46,4 +46,4 @@ async function textToImage(prompt) {
   } finally {
     fs_1.default.unlink(tmpPath, () => {});
   }
-}
+};

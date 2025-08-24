@@ -1,1 +1,2 @@
-export * from './logger.js';
+const { capture } = require("./logger.js");
+export { capture };

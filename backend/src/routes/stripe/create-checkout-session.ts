@@ -1,27 +1,72 @@
-import { Router } from 'express';
-import Stripe from 'stripe';
-import db from '../../db';
+import {
+  Router,
+  type NextFunction,
+  type Request,
+  type Response,
+} from "express";
+import Stripe from "stripe";
+import db from "../../db.js";
+
+interface CheckoutSessionBody {
+  price: number;
+  qty?: number;
+  metadata?: Record<string, string>;
+  userId?: string;
+}
 
 const router = Router();
-const stripe = new Stripe(process.env.STRIPE_KEY as string, { apiVersion: '2022-11-15' });
+const stripe = new Stripe(process.env["STRIPE_KEY"] as string, {
+  apiVersion: "2025-06-30.basil",
+});
 
-router.post('/api/create-checkout-session', async (req, res) => {
-  const { price, qty = 1, metadata = {} } = req.body;
+router.post(
+  "/api/create-checkout-session",
+  async (
+    req: Request<{}, any, CheckoutSessionBody>,
+    res: Response,
+    next: NextFunction,
+  ) => {
   try {
-    const session = await stripe.checkout.sessions.create({
-      mode: 'payment',
-      payment_method_types: ['card'],
+    const { price, qty = 1, metadata = {}, userId } = req.body;
+
+    let unitAmount = price;
+    if (userId) {
+      const { rows } = await db.query(
+        "SELECT COUNT(*) FROM orders WHERE user_id=$1",
+        [userId],
+      );
+      const orderCount = parseInt(rows[0].count, 10) || 0;
+      if (orderCount === 0) {
+        unitAmount = Math.floor(unitAmount * 0.9);
+      }
+    }
+
+    const sessionParams: Stripe.Checkout.SessionCreateParams = {
+      mode: "payment",
+      payment_method_types: ["card"],
       line_items: [
-        { price_data: { currency: 'usd', unit_amount: price, product_data: { name: 'Print Job' } }, quantity: qty },
+        {
+          price_data: {
+            currency: "usd",
+            unit_amount: unitAmount,
+            product_data: { name: "Print Job" },
+          },
+          quantity: qty,
+        },
       ],
       metadata,
-      success_url: 'https://example.com/success',
-      cancel_url: 'https://example.com/cancel',
-    });
-    await db.query('INSERT INTO orders(session_id,status) VALUES($1,$2)', [session.id, 'created']);
+      success_url: "https://example.com/success",
+      cancel_url: "https://example.com/cancel",
+    };
+
+    const session = await stripe.checkout.sessions.create(sessionParams);
+    await db.query("INSERT INTO orders(session_id,status) VALUES($1,$2)", [
+      session.id,
+      "created",
+    ]);
     res.json({ id: session.id, url: session.url });
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 });
 

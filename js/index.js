@@ -1,11 +1,45 @@
 "use strict";
 import { shareOn } from "./share.js";
+import { track } from "./analytics.js";
+
+(() => {
+  try {
+    const map = {
+      print3Basket: "print2Basket",
+      print3Model: "print2Model",
+      print3JobId: "print2JobId",
+      print3Material: "print2Material",
+      print3Color: "print2Color",
+      print3EtchName: "print2EtchName",
+      print3Email: "print2Email",
+      print3ShipName: "print2ShipName",
+      print3ShipAddress: "print2ShipAddress",
+      print3ShipCity: "print2ShipCity",
+      print3ShipZip: "print2ShipZip",
+      print3DiscountCode: "print2DiscountCode",
+      print3CheckoutItems: "print2CheckoutItems",
+      print3Prompt: "print2Prompt",
+      print3Images: "print2Images",
+      print3Saved: "print2Saved",
+      print3CommunityOpen: "print2CommunityOpen",
+      print3CommunityState: "print2CommunityState",
+    };
+    for (const [oldKey, newKey] of Object.entries(map)) {
+      const val = localStorage.getItem(oldKey);
+      if (val !== null && localStorage.getItem(newKey) === null) {
+        localStorage.setItem(newKey, val);
+        localStorage.removeItem(oldKey);
+      }
+    }
+  } catch {
+    // ignore
+  }
+})();
 
 const API_BASE = (window.API_ORIGIN || "") + "/api";
 const TZ = "America/New_York";
 // Local fallback model used when generation fails or the viewer hasn't loaded a model yet.
-const FALLBACK_GLB_LOW =
-  "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
+const FALLBACK_GLB_LOW = "models/bag.glb";
 const FALLBACK_GLB_HIGH = FALLBACK_GLB_LOW;
 const FALLBACK_GLB = FALLBACK_GLB_LOW;
 const LOW_POLY_GLB = FALLBACK_GLB_LOW;
@@ -36,20 +70,18 @@ const LOW_POLY_GLB = FALLBACK_GLB_LOW;
       sessionId =
         typeof crypto?.randomUUID === "function"
           ? crypto.randomUUID()
-          : Math.random().toString(36).slice(2);
+          : Array.from(crypto.getRandomValues(new Uint8Array(16)))
+              .map((b) => b.toString(16).padStart(2, "0"))
+              .join("");
       localStorage.setItem("adSessionId", sessionId);
     }
     const subreddit = localStorage.getItem("adSubreddit");
-    fetch(`${API_BASE}/track/page`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        sessionId,
-        subreddit,
-        utmSource: localStorage.getItem("utm_source") || undefined,
-        utmMedium: localStorage.getItem("utm_medium") || undefined,
-        utmCampaign: localStorage.getItem("utm_campaign") || undefined,
-      }),
+    track("page", {
+      sessionId,
+      subreddit,
+      utmSource: localStorage.getItem("utm_source") || undefined,
+      utmMedium: localStorage.getItem("utm_medium") || undefined,
+      utmCampaign: localStorage.getItem("utm_campaign") || undefined,
     }).catch(() => {});
   } catch {
     /* ignore */
@@ -82,15 +114,13 @@ const LOW_POLY_GLB = FALLBACK_GLB_LOW;
         sessionId =
           typeof crypto?.randomUUID === "function"
             ? crypto.randomUUID()
-            : Math.random().toString(36).slice(2);
+            : Array.from(crypto.getRandomValues(new Uint8Array(16)))
+                .map((b) => b.toString(16).padStart(2, "0"))
+                .join("");
         localStorage.setItem("adSessionId", sessionId);
       }
       localStorage.setItem("adSubreddit", sr);
-      fetch(`${API_BASE}/track/ad-click`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ subreddit: sr, sessionId }),
-      }).catch(() => {});
+      track("ad-click", { subreddit: sr, sessionId }).catch(() => {});
     }
   } catch {
     /* ignore errors */
@@ -99,8 +129,8 @@ const LOW_POLY_GLB = FALLBACK_GLB_LOW;
 
 function resetMaterialSelection() {
   try {
-    if (!localStorage.getItem("print3Material")) {
-      localStorage.setItem("print3Material", "multi");
+    if (!localStorage.getItem("print2Material")) {
+      localStorage.setItem("print2Material", "multi");
     }
   } catch {
     /* ignore quota errors */
@@ -128,29 +158,50 @@ function ensureModelViewerLoaded() {
   ) {
     return Promise.resolve();
   }
+
   const cdnUrl =
     "https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js";
   const localUrl = "js/model-viewer.min.js";
-  return new Promise((resolve) => {
-    const script = document.createElement("script");
-    script.type = "module";
-    script.src = cdnUrl;
-    script.onload = resolve;
-    script.onerror = () => {
-      script.remove();
-      const fallback = document.createElement("script");
-      fallback.type = "module";
-      fallback.src = localUrl;
-      fallback.onload = resolve;
-      fallback.onerror = resolve;
-      document.head.appendChild(fallback);
-    };
-    document.head.appendChild(script);
-    setTimeout(() => {
-      if (!window.customElements?.get("model-viewer")) {
-        script.onerror();
+
+  function loadScript(src, done) {
+    const s = document.createElement("script");
+    s.type = "module";
+    s.src = src;
+    s.onload = done;
+    s.onerror = done;
+    document.head.appendChild(s);
+  }
+
+  return new Promise((resolve, reject) => {
+    const finalize = (attemptedLocal) => {
+      if (window.customElements?.get("model-viewer")) {
+        resolve();
+      } else if (!attemptedLocal) {
+        window.modelViewerSource = "local";
+        loadScript(localUrl, () => finalize(true));
+      } else {
+        reject(new Error("model-viewer failed to load"));
       }
-    }, 3000);
+    };
+
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 3000);
+
+    fetch(cdnUrl, {
+      method: "HEAD",
+      mode: "no-cors",
+      signal: controller.signal,
+    })
+      .then(() => {
+        clearTimeout(timer);
+        window.modelViewerSource = "cdn";
+        loadScript(cdnUrl, () => finalize(false));
+      })
+      .catch(() => {
+        clearTimeout(timer);
+        window.modelViewerSource = "local";
+        loadScript(localUrl, () => finalize(true));
+      });
   });
 }
 
@@ -237,6 +288,7 @@ function setStep(name) {
 window.shareOn = shareOn;
 let uploadedFiles = [];
 let previewUrls = [];
+const BLOCKED_SCHEMES = new Set(["javascript:", "data:", "vbscript:"]);
 let lastJobId = null;
 
 let savedProfile = null;
@@ -472,6 +524,9 @@ const hideAll = () => {
   if (typeof refs.viewer.pause === "function") {
     refs.viewer.pause();
   }
+  if (globalThis.document) {
+    delete document.body.dataset.viewerReady;
+  }
 };
 const showLoader = (withProgress = true) => {
   // Keep the viewer visible while showing the loader so the fallback model
@@ -494,6 +549,10 @@ const showModel = () => {
   refs.viewer.style.pointerEvents = "auto";
   if (typeof refs.viewer.play === "function") {
     refs.viewer.play();
+  }
+
+  if (globalThis.document) {
+    document.body.dataset.viewerReady = "true";
   }
 
   stopProgress();
@@ -525,7 +584,7 @@ async function fetchProfile() {
 async function buyNow() {
   if (!userProfile) return;
   if (window.setWizardStage) window.setWizardStage("purchase");
-  const jobId = localStorage.getItem("print3JobId");
+  const jobId = localStorage.getItem("print2JobId");
   const res = await fetch("/api/create-order", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -659,13 +718,21 @@ function renderThumbnails(arr) {
     // dimensions. This avoids oversized previews in Safari on iPad.
     wrap.className = "thumbnail-wrapper relative w-full h-full overflow-hidden";
     const img = document.createElement("img");
-    img.src = url;
+    try {
+      const parsed = new URL(url, window.location.href);
+      if (BLOCKED_SCHEMES.has(parsed.protocol)) throw new Error("invalid url");
+      img.src = parsed.href;
+    } catch {
+      img.src = "";
+    }
     img.className = "w-full h-full rounded-md shadow-md";
     wrap.appendChild(img);
 
     const btn = document.createElement("button");
     btn.type = "button";
-    btn.innerHTML = '<i class="fas fa-times"></i>';
+    const icon = document.createElement("i");
+    icon.className = "fas fa-times";
+    btn.appendChild(icon);
     // Position the remove button fully inside the preview box so it
     // isn't clipped when the container has overflow-hidden.
     // Keep the remove button inside the rounded corner so it isn't
@@ -680,7 +747,7 @@ function renderThumbnails(arr) {
         previewUrls = [...arr];
       }
       try {
-        localStorage.setItem("print3Images", JSON.stringify(arr));
+        localStorage.setItem("print2Images", JSON.stringify(arr));
       } catch {
         /* ignore storage errors */
       }
@@ -741,7 +808,7 @@ async function processFiles(files) {
   schedule(async () => {
     const thumbs = await Promise.all(uploadedFiles.map((f) => getThumbnail(f)));
     try {
-      localStorage.setItem("print3Images", JSON.stringify(thumbs));
+      localStorage.setItem("print2Images", JSON.stringify(thumbs));
     } catch {
       /* ignore storage errors */
     }
@@ -810,12 +877,12 @@ refs.submitBtn.addEventListener("click", async () => {
   if (window.setWizardStage) window.setWizardStage("building");
 
   try {
-    localStorage.setItem("print3Prompt", prompt);
+    localStorage.setItem("print2Prompt", prompt);
     localStorage.setItem("hasGenerated", "true");
 
     const url = await fetchGlb(prompt, uploadedFiles);
-    localStorage.setItem("print3Model", url);
-    localStorage.setItem("print3JobId", lastJobId);
+    localStorage.setItem("print2Model", url);
+    localStorage.setItem("print2JobId", lastJobId);
 
     editsPending = false;
 
@@ -824,10 +891,17 @@ refs.submitBtn.addEventListener("click", async () => {
     showModel();
     if (window.addAutoItem) {
       let snapshot = refs.previewImg?.src;
+      const host = (() => {
+        try {
+          return snapshot ? new URL(snapshot).hostname : "";
+        } catch {
+          return "";
+        }
+      })();
       if (
         !snapshot ||
         snapshot.includes("placehold.co") ||
-        snapshot.includes("images.unsplash.com")
+        host === "images.unsplash.com"
       ) {
         snapshot = await captureModelSnapshot(url);
       }
@@ -849,7 +923,14 @@ refs.submitBtn.addEventListener("click", async () => {
 });
 
 async function init() {
-  await ensureModelViewerLoaded();
+  try {
+    await ensureModelViewerLoaded();
+  } catch (err) {
+    console.error("Failed to load model-viewer", err);
+    if (globalThis.document) {
+      document.body.dataset.viewerReady = "error";
+    }
+  }
   if (window.customElements?.whenDefined) {
     try {
       await customElements.whenDefined("model-viewer");
@@ -899,13 +980,13 @@ async function init() {
       } else if (refs.viewer.src === FALLBACK_GLB && hiStart !== null) {
         const t = Math.round(performance.now() - hiStart);
         console.log("Model load time", t, "ms");
-        localStorage.setItem("print3Model", FALLBACK_GLB);
+        localStorage.setItem("print2Model", FALLBACK_GLB);
         refs.viewer.removeEventListener("load", handleLoad);
       }
     };
     refs.viewer.addEventListener("load", handleLoad);
     refs.viewer.src = LOW_POLY_GLB;
-    localStorage.removeItem("print3JobId");
+    localStorage.removeItem("print2JobId");
     refs.viewer.addEventListener(
       "load",
       () => {
@@ -960,8 +1041,8 @@ async function init() {
     }
   });
 
-  const prompt = localStorage.getItem("print3Prompt");
-  const thumbs = JSON.parse(localStorage.getItem("print3Images") || "[]");
+  const prompt = localStorage.getItem("print2Prompt");
+  const thumbs = JSON.parse(localStorage.getItem("print2Images") || "[]");
 
   const oldPlaceholders = [
     "Describe your 3D print request…",
@@ -977,7 +1058,7 @@ async function init() {
       refs.promptInput.dispatchEvent(new Event("input"));
       usePlaceholder = false;
     } else {
-      localStorage.removeItem("print3Prompt");
+      localStorage.removeItem("print2Prompt");
     }
   }
   if (usePlaceholder) {
@@ -1010,12 +1091,12 @@ async function init() {
   // Ensure checkout uses the model currently shown in the viewer
   refs.checkoutBtn?.addEventListener("click", () => {
     if (refs.viewer?.src) {
-      localStorage.setItem("print3Model", refs.viewer.src);
+      localStorage.setItem("print2Model", refs.viewer.src);
     }
     if (lastJobId) {
-      localStorage.setItem("print3JobId", lastJobId);
+      localStorage.setItem("print2JobId", lastJobId);
     } else {
-      localStorage.removeItem("print3JobId");
+      localStorage.removeItem("print2JobId");
     }
     try {
       const items = [
@@ -1025,8 +1106,8 @@ async function init() {
           snapshot: lastSnapshot || "",
         },
       ];
-      localStorage.setItem("print3CheckoutItems", JSON.stringify(items));
-      localStorage.removeItem("print3Basket");
+      localStorage.setItem("print2CheckoutItems", JSON.stringify(items));
+      localStorage.removeItem("print2Basket");
     } catch {}
     if (window.setWizardStage) window.setWizardStage("purchase");
   });
@@ -1034,10 +1115,17 @@ async function init() {
   refs.addBasketBtn?.addEventListener("click", async () => {
     if (!window.addToBasket || !refs.viewer?.src) return;
     let snapshot = refs.previewImg?.src;
+    const host = (() => {
+      try {
+        return snapshot ? new URL(snapshot).hostname : "";
+      } catch {
+        return "";
+      }
+    })();
     if (
       !snapshot ||
       snapshot.includes("placehold.co") ||
-      snapshot.includes("images.unsplash.com")
+      host === "images.unsplash.com"
     ) {
       snapshot = await captureModelSnapshot(refs.viewer.src);
     }
@@ -1056,10 +1144,10 @@ async function init() {
     const sessionId = localStorage.getItem("adSessionId");
     const subreddit = localStorage.getItem("adSubreddit");
     if (sessionId && subreddit && item.jobId) {
-      fetch(`${API_BASE}/track/cart`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionId, modelId: item.jobId, subreddit }),
+      track("cart", {
+        sessionId,
+        modelId: item.jobId,
+        subreddit,
       }).catch(() => {});
     }
     // Animation and sound handled in basket.js
@@ -1087,7 +1175,13 @@ async function init() {
         prints = await computeDailyPrintsSold();
       }
     }
-    el.innerHTML = `<i class="fas fa-fire mr-1"></i> ${prints} prints sold<br>in last 24 hrs`;
+    el.textContent = "";
+    const icon = document.createElement("i");
+    icon.className = "fas fa-fire mr-1";
+    el.appendChild(icon);
+    el.appendChild(document.createTextNode(` ${prints} prints sold`));
+    el.appendChild(document.createElement("br"));
+    el.appendChild(document.createTextNode("in last 24 hrs"));
   }
 
   setInterval(updateStats, 3600000);
@@ -1240,3 +1334,8 @@ if (document.readyState !== "loading") {
   start();
 }
 window.addEventListener("DOMContentLoaded", start);
+
+if (typeof module !== "undefined") {
+  module.exports = { renderThumbnails };
+}
+export { renderThumbnails };

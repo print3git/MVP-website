@@ -37,8 +37,37 @@ describe("generateAdCopy", () => {
     process.env.LLM_API_URL = "http://api";
     axios.post.mockRejectedValue(new Error("fail"));
     Math.random = jest.fn(() => 0);
-    console.error.mockImplementation(() => {});
+    jest.spyOn(console, "error").mockImplementation(() => {});
     const text = await generateAdCopy("baz");
     expect(text).toBe("Ad for baz");
+  });
+
+  test("falls back to template on 5xx response", async () => {
+    process.env.LLM_API_URL = "http://api";
+    const error = new Error("boom");
+    error.response = { status: 503 };
+    axios.post.mockRejectedValue(error);
+    Math.random = jest.fn(() => 0);
+    jest.spyOn(console, "error").mockImplementation(() => {});
+    const text = await generateAdCopy("oops");
+    expect(text).toBe("Ad for oops");
+  });
+
+  test("uses template when API response missing text", async () => {
+    process.env.LLM_API_URL = "http://api";
+    axios.post.mockResolvedValue({ data: {} });
+    Math.random = jest.fn(() => 0);
+    const text = await generateAdCopy("qux");
+    expect(text).toBe("Ad for qux");
+  });
+
+  test("handles undefined context", async () => {
+    process.env.LLM_API_URL = "http://api";
+    axios.post.mockResolvedValue({ data: { text: "Res" } });
+    const text = await generateAdCopy("sub");
+    expect(axios.post).toHaveBeenCalledWith("http://api", {
+      prompt: "Write a short advert for r/sub. Context: ",
+    });
+    expect(text).toBe("Res");
   });
 });

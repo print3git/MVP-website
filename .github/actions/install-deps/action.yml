@@ -1,0 +1,29 @@
+name: Install deps
+description: Install global CLI dependencies
+runs:
+  using: composite
+  steps:
+    - name: Ensure pnpm
+      shell: bash
+      run: |
+        if ! command -v pnpm >/dev/null 2>&1; then
+          npm install -g pnpm
+        fi
+    - name: Ensure vite
+      shell: bash
+      run: |
+        if ! command -v vite >/dev/null 2>&1; then
+          npm install -g vite
+        fi
+    - name: Ensure husky
+      shell: bash
+      run: |
+        if ! command -v husky >/dev/null 2>&1; then
+          npm install -g husky
+        fi
+    - name: Ensure wrangler
+      shell: bash
+      run: |
+        if ! command -v wrangler >/dev/null 2>&1; then
+          npm install -g wrangler
+        fi

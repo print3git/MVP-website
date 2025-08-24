@@ -1,7 +1,12 @@
 module.exports = {
+  parser: '@typescript-eslint/parser',
+  parserOptions: {
+    project: ['../tsconfig.eslint.json'],
+    tsconfigRootDir: __dirname,
+  },
   extends: ['eslint:recommended', 'prettier'],
   env: { node: true, jest: true },
-  plugins: ['promise'],
+  plugins: ['promise', '@typescript-eslint'],
   rules: {
     'no-restricted-syntax': [
       'error',
@@ -28,6 +33,5 @@ module.exports = {
       'error',
       { argsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' },
     ],
-
   },
 };

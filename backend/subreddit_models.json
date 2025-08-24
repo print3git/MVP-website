@@ -1,32 +1,32 @@
 {
   "default": {
     "subreddit": "subreddit",
-    "glb": "https://modelviewer.dev/shared-assets/models/Astronaut.glb",
+    "glb": "models/bag.glb",
     "quote": "Feels like<br />magic"
   },
   "art": {
     "subreddit": "art",
     "glb": "models/reddit_art.glb",
-    "quote": "Create artistic masterpieces<br />with print3!"
+    "quote": "Create artistic masterpieces<br />with print2!"
   },
   "3dprinting": {
     "subreddit": "3dprinting",
     "glb": "models/reddit_3dprinting.glb",
-    "quote": "Turn your CAD files into reality<br />with print3!"
+    "quote": "Turn your CAD files into reality<br />with print2!"
   },
   "gamedev": {
     "subreddit": "gamedev",
     "glb": "models/reddit_gamedev.glb",
-    "quote": "Bring your game ideas to life<br />with print3!"
+    "quote": "Bring your game ideas to life<br />with print2!"
   },
   "mechanicalkeyboards": {
     "subreddit": "mechanicalkeyboards",
     "glb": "models/reddit_mk.glb",
-    "quote": "Craft custom keyboard parts<br />using print3!"
+    "quote": "Craft custom keyboard parts<br />using print2!"
   },
   "magic": {
     "subreddit": "magic",
-    "glb": "https://modelviewer.dev/shared-assets/models/Astronaut.glb",
+    "glb": "models/bag.glb",
     "quote": "It feels like<br />magic"
   }
 }

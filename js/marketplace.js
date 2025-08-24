@@ -1,3 +1,37 @@
+(() => {
+  try {
+    const map = {
+      print3Basket: "print2Basket",
+      print3Model: "print2Model",
+      print3JobId: "print2JobId",
+      print3Material: "print2Material",
+      print3Color: "print2Color",
+      print3EtchName: "print2EtchName",
+      print3Email: "print2Email",
+      print3ShipName: "print2ShipName",
+      print3ShipAddress: "print2ShipAddress",
+      print3ShipCity: "print2ShipCity",
+      print3ShipZip: "print2ShipZip",
+      print3DiscountCode: "print2DiscountCode",
+      print3CheckoutItems: "print2CheckoutItems",
+      print3Prompt: "print2Prompt",
+      print3Images: "print2Images",
+      print3Saved: "print2Saved",
+      print3CommunityOpen: "print2CommunityOpen",
+      print3CommunityState: "print2CommunityState",
+    };
+    for (const [oldKey, newKey] of Object.entries(map)) {
+      const val = localStorage.getItem(oldKey);
+      if (val !== null && localStorage.getItem(newKey) === null) {
+        localStorage.setItem(newKey, val);
+        localStorage.removeItem(oldKey);
+      }
+    }
+  } catch {
+    // ignore
+  }
+})();
+
 const API_BASE = (window.API_ORIGIN || "") + "/api";
 
 function createCard(item) {
@@ -6,8 +40,8 @@ function createCard(item) {
     "model-card relative h-32 bg-[#2A2A2E] border border-white/10 rounded-xl flex items-center justify-center";
   div.innerHTML = `<model-viewer src="${item.file_path}" alt="Model" environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr" camera-controls auto-rotate loading="lazy" crossOrigin="anonymous" class="w-full h-full bg-[#2A2A2E] rounded-xl"></model-viewer>\n<progress max="100" value="${item.royalty_percent || 0}" class="absolute left-1 bottom-1 w-16 h-2"></progress>\n<button class="buy absolute bottom-1 right-1 font-bold text-lg py-1.5 px-4 rounded-full shadow-md transition border-2 border-black" style="background-color:#30D5C8;color:#1A1A1D;transform:scale(0.78);transform-origin:right bottom;">Buy</button>`;
   div.querySelector(".buy").addEventListener("click", () => {
-    localStorage.setItem("print3Model", item.file_path);
-    if (item.job_id) localStorage.setItem("print3JobId", item.job_id);
+    localStorage.setItem("print2Model", item.file_path);
+    if (item.job_id) localStorage.setItem("print2JobId", item.job_id);
     sessionStorage.setItem("fromMarketplace", "1");
     window.location.href = "payment.html";
   });

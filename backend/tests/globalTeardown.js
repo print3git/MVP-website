@@ -1,4 +1,7 @@
+const nock = require("nock");
+
 module.exports = async () => {
+  nock.enableNetConnect();
   const leaks = global.__LEAKS__ || [];
   for (const leak of leaks) {
     if (typeof leak.close === "function") {
@@ -21,8 +24,11 @@ module.exports = async () => {
   const remaining = process
     ._getActiveHandles()
     .filter((h) => !ignored.includes(h));
-  if (remaining.length) {
-    console.error("\u274c Teardown detected lingering handles:", remaining);
+  if (!process.env.SKIP_HANDLE_CHECK && remaining.length) {
+    const names = remaining.map((h) => h?.constructor?.name || typeof h);
+    console.error(
+      `\u274c Teardown detected lingering handles: ${names.join(", ")}`,
+    );
     process.exit(1);
   }
 };

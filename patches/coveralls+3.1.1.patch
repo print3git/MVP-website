@@ -1,0 +1,34 @@
+*** Begin Patch
+*** Update File: node_modules/coveralls/lib/convertLcovToCoveralls.js
+@@
+-  lcovParse(input, (err, parsed) => {
+-    if (err) {
+-      logger.error('error from lcovParse: ', err);
+-      logger.error('input: ', input);
+-      return cb(err);
+-    }
++  try {
++    lcovParse(input, (err, parsed) => {
++      if (err) {
++        const snippet = String(input).slice(0, 200);
++        logger.error(
++          `${new Date().toISOString()} lcovParse error for ${filepath}:`,
++          err,
++        );
++        logger.error('snippet: ', snippet);
++        return cb(err);
++      }
+@@
+-  });
++    });
++  } catch (e) {
++    const snippet = String(input).slice(0, 200);
++    logger.error(
++      `${new Date().toISOString()} lcovParse threw for ${filepath}:`,
++      e,
++    );
++    logger.error('snippet: ', snippet);
++    return cb(e);
++  }
+ };
+*** End Patch

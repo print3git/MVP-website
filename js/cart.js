@@ -1,5 +1,40 @@
-const API_BASE = (window.API_ORIGIN || "") + "/api";
 import { getBasket, removeFromBasket } from "./basket.js";
+
+(() => {
+  try {
+    const map = {
+      print3Basket: "print2Basket",
+      print3Model: "print2Model",
+      print3JobId: "print2JobId",
+      print3Material: "print2Material",
+      print3Color: "print2Color",
+      print3EtchName: "print2EtchName",
+      print3Email: "print2Email",
+      print3ShipName: "print2ShipName",
+      print3ShipAddress: "print2ShipAddress",
+      print3ShipCity: "print2ShipCity",
+      print3ShipZip: "print2ShipZip",
+      print3DiscountCode: "print2DiscountCode",
+      print3CheckoutItems: "print2CheckoutItems",
+      print3Prompt: "print2Prompt",
+      print3Images: "print2Images",
+      print3Saved: "print2Saved",
+      print3CommunityOpen: "print2CommunityOpen",
+      print3CommunityState: "print2CommunityState",
+    };
+    for (const [oldKey, newKey] of Object.entries(map)) {
+      const val = localStorage.getItem(oldKey);
+      if (val !== null && localStorage.getItem(newKey) === null) {
+        localStorage.setItem(newKey, val);
+        localStorage.removeItem(oldKey);
+      }
+    }
+  } catch {
+    // ignore
+  }
+})();
+
+const API_BASE = (window.API_ORIGIN || "") + "/api";
 
 function render() {
   const list = document.getElementById("cart-items");
@@ -25,7 +60,7 @@ function render() {
       const q = parseInt(input.value, 10) || 1;
       const items = getBasket();
       items[idx].quantity = q;
-      localStorage.setItem("print3Basket", JSON.stringify(items));
+      localStorage.setItem("print2Basket", JSON.stringify(items));
       if (it.serverId) {
         const token = localStorage.getItem("token");
         if (token)

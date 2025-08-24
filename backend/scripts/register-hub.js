@@ -30,4 +30,4 @@ async function registerHub() {
 
 if (require.main === module) {
   registerHub();
-}
+};

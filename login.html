@@ -9,7 +9,7 @@
       property="og:description"
       content="Access your print3 account to manage models and orders."
     />
-    <meta property="og:image" content="img/boxlogo.png" />
+    <meta property="og:image" content="img/box%20logo.png" />
     <script src="js/applyColorScheme.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link
@@ -198,6 +198,9 @@
             !ref.pathname.endsWith("signup.html")
           ) {
             target = ref.href;
+          }
+          if (target.includes("signup.html")) {
+            target = "index.html";
           }
         } catch {
           if (from === "1") target = "CommunityCreations.html";

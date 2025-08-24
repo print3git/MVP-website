@@ -1,71 +1,73 @@
 function getToken() {
-  return localStorage.getItem('adminToken') || localStorage.getItem('token') || '';
+  return (
+    localStorage.getItem("adminToken") || localStorage.getItem("token") || ""
+  );
 }
 
 function setToken(token) {
-  localStorage.setItem('adminToken', token);
+  localStorage.setItem("adminToken", token);
 }
 
-import { API_BASE, authHeaders } from './api.js';
+import { API_BASE, authHeaders } from "./api.js";
 
 async function load() {
-  const list = document.getElementById('list');
-  list.textContent = 'Loading...';
+  const list = document.getElementById("list");
+  list.textContent = "Loading...";
   const res = await fetch(`${API_BASE}/competitions/active`, {
     headers: authHeaders(),
   });
   if (!res.ok) {
-    list.textContent = 'Failed to load competitions';
+    list.textContent = "Failed to load competitions";
     return;
   }
   const comps = await res.json();
-  list.innerHTML = '';
+  list.innerHTML = "";
   comps.forEach((c) => {
-    const div = document.createElement('div');
-    div.className = 'bg-[#2A2A2E] p-4 rounded space-y-2 border border-white/10';
+    const div = document.createElement("div");
+    div.className = "bg-[#2A2A2E] p-4 rounded space-y-2 border border-white/10";
     div.innerHTML = `
       <h2 class="text-lg font-semibold">${c.name}</h2>
       <label class="block text-sm">Prize Description
-        <input class="prize w-full mt-1 p-2 rounded bg-[#1A1A1D] border border-white/10" value="${c.prize_description || ''}">
+        <input class="prize w-full mt-1 p-2 rounded bg-[#1A1A1D] border border-white/10" value="${c.prize_description || ""}">
       </label>
       <label class="block text-sm">Theme
-        <input class="theme w-full mt-1 p-2 rounded bg-[#1A1A1D] border border-white/10" value="${c.theme || ''}">
+        <input class="theme w-full mt-1 p-2 rounded bg-[#1A1A1D] border border-white/10" value="${c.theme || ""}">
       </label>
       <label class="block text-sm">Winner Model ID
-        <input class="winner w-full mt-1 p-2 rounded bg-[#1A1A1D] border border-white/10" value="${c.winner_model_id || ''}">
+        <input class="winner w-full mt-1 p-2 rounded bg-[#1A1A1D] border border-white/10" value="${c.winner_model_id || ""}">
       </label>
       <button class="save bg-[#30D5C8] text-[#1A1A1D] px-3 py-1 rounded">Save</button>`;
     list.appendChild(div);
-    div.querySelector('.save').addEventListener('click', async () => {
+    div.querySelector(".save").addEventListener("click", async () => {
       const body = {
         name: c.name,
         start_date: c.start_date,
         end_date: c.end_date,
-        prize_description: div.querySelector('.prize').value,
-        theme: div.querySelector('.theme').value,
-        winner_model_id: div.querySelector('.winner').value || null,
+        prize_description: div.querySelector(".prize").value,
+        theme: div.querySelector(".theme").value,
+        winner_model_id: div.querySelector(".winner").value || null,
       };
       const resp = await fetch(`${API_BASE}/admin/competitions/${c.id}`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           ...authHeaders(),
         },
         body: JSON.stringify(body),
       });
       if (resp.ok) {
-        alert('Saved');
+        alert("Saved");
       } else {
-        alert('Failed to save');
+        alert("Failed to save");
       }
     });
   });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  const tokenInput = document.getElementById('token');
-  tokenInput.value = localStorage.getItem('adminToken') || '';
-  document.getElementById('set-token').addEventListener('click', () => {
+document.addEventListener("DOMContentLoaded", () => {
+  const tokenInput = document.getElementById("token");
+  tokenInput.value = localStorage.getItem("adminToken") || "";
+  document.getElementById("set-token").addEventListener("click", () => {
     setToken(tokenInput.value.trim());
     load();
   });

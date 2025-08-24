@@ -1,0 +1,21 @@
+name: pnpm safe install
+description: Install dependencies with corepack pnpm
+runs:
+  using: composite
+  steps:
+    - run: corepack enable
+      shell: bash
+    - run: corepack prepare pnpm@latest --activate
+      shell: bash
+    - run: |
+        echo "PNPM_HOME=$HOME/.local/share/pnpm" >> $GITHUB_ENV
+        echo "$HOME/.local/share/pnpm" >> $GITHUB_PATH
+      shell: bash
+    - name: Install dependencies
+      shell: bash
+      run: |
+        if [ -f pnpm-lock.yaml ]; then
+          pnpm install --no-frozen-lockfile
+        else
+          echo "pnpm-lock.yaml not found, skipping pnpm install"
+        fi

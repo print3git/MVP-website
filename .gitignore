@@ -8,6 +8,7 @@ uploads/
 reports/
 backend/coverage/
 coverage/
+!backend/tests/coverage/
 # ignore compiled and binary files
 *.exe
 *.dll
@@ -21,6 +22,7 @@ coverage/
 *.png
 *.pdf
 .setup-complete
+.prettiercache
 
 # Terraform local files
 infra/.terraform/
@@ -32,3 +34,14 @@ infra/.terraform/
 infra/*.tfstate*
 infra/AWSCLIV2.pkg
 infra/awscliv2.zip
+test-results/
+
+.artifacts/
+
+# build artifacts
+dist/
+.out/
+.turbo/
+.cache/
+.eslintcache
+.prettiercache

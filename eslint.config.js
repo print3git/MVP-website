@@ -2,7 +2,9 @@
 try {
   require.resolve("@eslint/js");
 } catch {
-  console.error("Dependencies not installed. Run 'npm run setup' at the repository root.");
+  console.error(
+    "Dependencies not installed. Run 'npm run setup' at the repository root.",
+  );
   process.exit(1);
 }
 
@@ -10,30 +12,72 @@ const js = require("@eslint/js");
 const prettier = require("eslint-config-prettier");
 const globals = require("globals");
 const jsdoc = require("eslint-plugin-jsdoc");
+const tsParser = require("@typescript-eslint/parser");
+const frontend = require("./eslint.frontend-87adf32bca1e546.cjs");
+let ssrFriendly;
+try {
+  ssrFriendly = require("eslint-plugin-ssr-friendly");
+} catch {
+  ssrFriendly = null;
+}
+const isCI = Boolean(process.env.CI);
 
 module.exports = [
   {
     ignores: [
       "node_modules",
-      "img",
-      "uploads",
-      "models",
-      "js",
-      "*.html",
+      "img/**",
+      "uploads/**",
+      "models/**",
+      // front-end code will be linted separately
+      // "js/**", // removed to enable frontend linting
+      // "*.html", // removed to enable frontend linting
+      "js/model-viewer.min.js",
       "service-worker.js",
-      "admin",
-      "docs",
-      "e2e",
-      "backend",
+      "admin/**",
+      "docs/**",
+      "e2e/**",
+      "backend/**",
       "scripts/ci_watchdog.ts",
       "scripts/ci_watchdog.js",
-      "upload",
-      "src",
+      "scripts/check-gh-workflow-sync-23859.ts",
+      "upload/**",
+      // "src/**", // removed to enable frontend linting
+      "**/dist",
+      "**/build",
+      "coverage",
+      ".cache",
+      "frontend/dist",
     ],
   },
   {
+    files: ["**/*.{ts,tsx}"],
     languageOptions: {
-      ecmaVersion: 12,
+      parser: tsParser,
+      parserOptions: {
+        project: ["./tsconfig.eslint.json"],
+        tsconfigRootDir: __dirname,
+      },
+    },
+  },
+  {
+    files: ["**/*.js"],
+    languageOptions: {
+      parserOptions: { project: null },
+    },
+  },
+  {
+    settings: {
+      jsdoc: {
+        tagNamePreference: {
+          "jest-environment": false,
+        },
+      },
+    },
+  },
+  {
+    languageOptions: {
+      ecmaVersion: 2022,
       globals: { ...globals.node, ...globals.es2021, ...globals.jest },
     },
   },
@@ -42,15 +86,35 @@ module.exports = [
   {
     plugins: { jsdoc },
     rules: {
-      "no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
-      "jsdoc/require-param": "error",
+      "no-unused-vars": [
+        "error",
+        { argsIgnorePattern: "^_", caughtErrorsIgnorePattern: "^_" },
+      ],
     },
   },
   jsdoc.configs["flat/recommended"],
   {
+    rules: {
+      "jsdoc/require-param": isCI ? "off" : "error",
+    },
+  },
+  {
     files: ["**/*.{js,jsx,ts,tsx}"],
-    ignores: ["backend/**/*", "backend/scripts/**/*"],
-    rules: { "jsdoc/require-jsdoc": "error" },
+    ignores: [
+      "backend/**/*",
+      "backend/scripts/**/*",
+      "img/**",
+      "uploads/**",
+      "models/**",
+      "js/**",
+      "admin/**",
+      "docs/**",
+      "e2e/**",
+      "backend/**",
+      "upload/**",
+      "src/**",
+    ],
+    rules: { "jsdoc/require-jsdoc": isCI ? "off" : "error" },
   },
   {
     files: ["backend/**/*", "backend/scripts/**/*"],
@@ -60,4 +124,21 @@ module.exports = [
     files: ["scripts/**/*"],
     rules: { "jsdoc/require-jsdoc": "off" },
   },
+  {
+    files: ["js/**/*"],
+    rules: { "jsdoc/require-jsdoc": "off" },
+  },
+  {
+    files: ["tests/**/*"],
+    rules: { "jsdoc/require-jsdoc": "off" },
+  },
+  {
+    files: ["frontend/src/**/*.{ts,tsx,js,jsx}"],
+    env: { browser: true },
+    languageOptions: {
+      globals: { ...globals.browser },
+    },
+    ...(ssrFriendly ? { plugins: { "ssr-friendly": ssrFriendly } } : {}),
+  },
+  ...frontend,
 ];

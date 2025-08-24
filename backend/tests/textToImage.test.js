@@ -72,6 +72,8 @@ describe("textToImage", () => {
     process.env.AWS_REGION = "us-east-1";
     process.env.S3_BUCKET = "bucket";
     process.env.CLOUDFRONT_DOMAIN = "cdn.test";
+    process.env.AWS_ACCESS_KEY_ID = "test";
+    process.env.AWS_SECRET_ACCESS_KEY = "secret";
     delete process.env.http_proxy;
     delete process.env.https_proxy;
     delete process.env.HTTP_PROXY;
@@ -85,6 +87,8 @@ describe("textToImage", () => {
     nock_1.default.cleanAll();
     nock_1.default.enableNetConnect();
     jest.restoreAllMocks();
+    delete process.env.AWS_ACCESS_KEY_ID;
+    delete process.env.AWS_SECRET_ACCESS_KEY;
   });
   test("uploads generated image and returns url", async () => {
     const png = Buffer.from("png");
@@ -94,5 +98,37 @@ describe("textToImage", () => {
     const url = await (0, textToImage_1.textToImage)("hello");
     expect(url).toBe("https://cdn.test/image.png");
     expect(s3.uploadFile).toHaveBeenCalledWith(expect.any(String), "image/png");
+  });
+  test("works without AWS credentials when uploadFile is mocked", async () => {
+    delete process.env.AWS_ACCESS_KEY_ID;
+    delete process.env.AWS_SECRET_ACCESS_KEY;
+    const png = Buffer.from("png");
+    (0, nock_1.default)(endpoint)
+      .post("/v2beta/stable-image/generate/core")
+      .reply(200, png, { "Content-Type": "image/png" });
+    const url = await (0, textToImage_1.textToImage)("hello again");
+    expect(url).toBe("https://cdn.test/image.png");
+    expect(s3.uploadFile).toHaveBeenCalledWith(expect.any(String), "image/png");
+  });
+  test("returns unique url with real uploadFile", async () => {
+    jest.resetModules();
+    jest.unmock("../src/lib/uploadS3");
+    const s3Actual = require("../src/lib/uploadS3");
+    jest
+      .spyOn(s3Actual, "uploadFile")
+      .mockResolvedValue("https://cdn.test/image.png");
+    const {
+      textToImage: textToImageActual,
+    } = require("../src/lib/textToImage.js");
+    const png = Buffer.from("png");
+    (0, nock_1.default)(endpoint)
+      .post("/v2beta/stable-image/generate/core")
+      .reply(200, png, { "Content-Type": "image/png" });
+    const url = await textToImageActual("unique");
+    expect(url).toBe("https://cdn.test/image.png");
+    expect(s3Actual.uploadFile).toHaveBeenCalledWith(
+      expect.any(String),
+      "image/png",
+    );
   });
 });

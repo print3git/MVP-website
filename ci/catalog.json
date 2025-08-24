@@ -1,0 +1,25 @@
+{
+  "suites": [
+    {
+      "id": "frontend:lint",
+      "type": "lint",
+      "paths": ["frontend/**"],
+      "junit": "frontend/reports/junit.xml"
+    },
+    {
+      "id": "frontend:test",
+      "type": "unit",
+      "paths": ["frontend/**"],
+      "junit": "frontend/reports/junit.xml"
+    },
+    {
+      "id": "backend:test",
+      "type": "unit",
+      "paths": ["backend/**"],
+      "junit": "backend/junit.xml"
+    },
+    { "id": "types:check", "type": "types" },
+    { "id": "e2e:smoke", "type": "e2e", "reportDir": "playwright-report" },
+    { "id": "codeql:analyze", "type": "sast" }
+  ]
+}

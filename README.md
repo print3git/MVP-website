@@ -1,8 +1,34 @@
 # MVP Website
 
+[![Build](https://github.com/OWNER/REPO/actions/workflows/build-frontend.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/build-frontend.yml)
+[![Lint](https://github.com/OWNER/REPO/actions/workflows/lint.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/lint.yml)
+[![Tests](https://github.com/OWNER/REPO/actions/workflows/backend-tests.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/backend-tests.yml)
+[![CI](https://github.com/OWNER/REPO/actions/workflows/ci.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/ci.yml)
+[![CI Suites Guard](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/OWNER/REPO/dev/ci/suites-badge.json)](https://github.com/OWNER/REPO/actions/workflows/ci-gate.yml?query=branch%3Adev)
+[![npm version](https://img.shields.io/npm/v/mvp-website.svg)](https://www.npmjs.com/package/mvp-website)
+[![Coverage Status](https://coveralls.io/repos/github/OWNER/REPO/badge.svg?branch=main)](https://coveralls.io/github/OWNER/REPO?branch=main)
+[![Frontend Coverage](https://github.com/OWNER/REPO/actions/workflows/coverage.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/coverage.yml)
+
+## Runner Health
+
+[![Heartbeat](https://github.com/OWNER/REPO/actions/workflows/aws-runner-heartbeat.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/aws-runner-heartbeat.yml)
+[![Canary](https://github.com/OWNER/REPO/actions/workflows/ci-start-latency.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/ci-start-latency.yml)
+
+## CI policy
+
+Only two GitHub Action jobs are required to merge changes:
+
+- **Production build** – runs the exact build command that ships to users.
+- **Intent/behavior tests** – exercises the application to verify user flows.
+
+Additional checks such as strict linting, dependency audits, and Stripe/Cloudflare smoke tests run in a separate diagnostics workflow. These jobs use `continue-on-error: true` so they surface issues without blocking merges.
+
+> **Note:** Non-essential suites temporarily disabled (round 3) to stabilize CI.
+
 ## 🤖 Codex Integration
 
 Before you run any Codex-driven prompts, always sync your code and Hugging Face Space:
+
 ```bash
 bash scripts/sync-space.sh
 ```
@@ -16,6 +42,7 @@ This repository contains the early MVP code for print2's website and backend.
 
 - The backend communicates with the Sparc3D API service.
 - The `img/` folder is now reserved strictly for image assets.
+- Image files are tracked with Git LFS. Existing history won't be rewritten; re-add any affected images through LFS in new commits.
 - HTML files in the `uploads/` directory should use the `.links` extension to avoid being served as plain text.
 
 ## Quick Start
@@ -25,16 +52,28 @@ Run `docker compose up` to start the API and Postgres services.
 ## Local Setup
 
 1. Copy `.env.example` to `.env` in the repository root and update the values:
-
    - `DB_URL` – connection string for your PostgreSQL database.
 
-  - `STRIPE_TEST_KEY` – test secret key for Stripe.
-  - `STRIPE_LIVE_KEY` – live secret key for Stripe.
-  - `STRIPE_PUBLISHABLE_KEY` – publishable key for Stripe.js on the frontend.
-  - `STRIPE_WEBHOOK_SECRET` – signing secret for Stripe webhooks.
-  - `HUNYUAN_API_KEY` – key for the Sparc3D API.
+- `STRIPE_TEST_KEY` – test secret key for Stripe.
+- `STRIPE_LIVE_KEY` – live secret key for Stripe.
+- `STRIPE_PUBLISHABLE_KEY` – publishable key for Stripe.js on the frontend.
+- `STRIPE_WEBHOOK_SECRET` – signing secret for Stripe webhooks.
+- `HUNYUAN_API_KEY` – key for the Sparc3D API.
+- `HF_TOKEN` – Hugging Face access token used by scripts like `setup_space.sh`.
+- `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` – credentials for S3 uploads.
 
 The server uses `STRIPE_LIVE_KEY` when `NODE_ENV=production`; otherwise `STRIPE_TEST_KEY` is used.
+
+- If `STRIPE_TEST_KEY` isn't set, `npm run setup` generates a temporary dummy key
+  so local installs don't fail.
+- The repository uses `mise` for toolchain management. The included `.mise.toml` enables
+  automatic Node version detection via `.nvmrc`. If you don't have `mise` installed,
+  run `bash scripts/install-mise.sh` before continuing. After cloning, run `mise trust`
+  if you see warnings about untrusted config files. The setup script also configures
+  `mise settings add idiomatic_version_file_enable_tools node` to remove the
+  `deprecated [idiomatic_version_file_enable_tools]` message. If the warning
+  persists, run that command manually.
+  Run `mise env node@20` to activate Node 20 for local commands.
 - `SENDGRID_API_KEY` – API key for sending email via SendGrid.
 - `SENTRY_DSN` – connection string for sending errors to Sentry.
 - `EMAIL_FROM` – address used for the "from" field in outgoing mail.
@@ -49,22 +88,38 @@ The server uses `STRIPE_LIVE_KEY` when `NODE_ENV=production`; otherwise `STRIPE_
    npm run setup
    ```
 
-
    This script runs `npm ci` in the root and `backend/`, then downloads the browsers
    required for the end-to-end tests. Set `SKIP_PW_DEPS=1` to skip the
    Playwright dependency installation when the browsers are already available.
+   If the dependencies are missing, the script installs them even when
+   `SKIP_PW_DEPS` is set so new environments don't fail.
    It also installs the Husky git hooks used for pre-commit checks. If the hooks
    are missing, run `npx husky install` manually.
-Ensure your environment can reach `https://registry.npmjs.org` and `https://cdn.playwright.dev`. The setup script downloads packages and browsers from these domains, so network restrictions may cause it to fail.
+   If `npm ci` fails with an `EUSAGE` error complaining about missing lock file entries,
+   run `npm install` in the affected directory and re-run this setup step.
+   Ensure your environment can reach `https://registry.npmjs.org`,
+   `https://cdn.playwright.dev`, and `http://archive.ubuntu.com`. The setup
+   script downloads packages, browsers, and system libraries from these domains,
+   so network restrictions may cause it to fail.
 
-3. Initialize the database:
+3. Verify your environment and test pipeline:
+
+   ```bash
+   npm run diagnose
+   ```
+
+   This starts the dev server, runs a sample generation through `/api/generate`,
+   and executes the Jest suite. Use it if setup succeeds but subsequent commands
+   fail.
+
+4. Initialize the database:
 
    ```bash
    cd ..
    npm run init-db
    ```
 
-4. Create an admin user (optional):
+5. Create an admin user (optional):
 
    Set `ADMIN_USERNAME` and `ADMIN_PASSWORD` in your `.env` file or as environment
    variables, then run:
@@ -73,36 +128,36 @@ Ensure your environment can reach `https://registry.npmjs.org` and `https://cdn.
    npm run create-admin  # inside backend/
    ```
 
-5. Configure the admin token used by protected endpoints:
+6. Configure the admin token used by protected endpoints:
 
    Add `ADMIN_TOKEN=yoursecret` to `.env`. You can authenticate either by sending
    this token in the `x-admin-token` header or by logging in with the admin
    account and including the returned JWT in the `Authorization` header.
 
-6. Start the servers in separate terminals:
+7. Start the servers in separate terminals:
 
    ```bash
    npm start            # inside backend/
    cd dalle_server && npm start  # inside backend/dalle_server/
    ```
 
-7. (Optional) Run the purchase reminder job periodically:
+8. (Optional) Run the purchase reminder job periodically:
 
    ```bash
    npm run send-reminders  # inside backend/
    ```
 
-8. (Optional) Send discount offers to abandoned checkouts:
+9. (Optional) Send discount offers to abandoned checkouts:
 
    ```bash
    npm run send-abandoned-offers  # inside backend/
    ```
 
-9. (Optional) Clean up expired password reset tokens periodically:
+10. (Optional) Clean up expired password reset tokens periodically:
 
-   ```bash
-   npm run cleanup-tokens  # inside backend/
-   ```
+```bash
+npm run cleanup-tokens  # inside backend/
+```
 
 ## Development Container
 
@@ -279,9 +334,11 @@ column of the `jobs` table.
 ## Contributing
 
 We welcome pull requests! Please fork the repo and create a topic branch. Run
-`npm ci` inside `backend/` to install dependencies, then ensure `npm test` runs
+See [CONTRIBUTING.md](CONTRIBUTING.md) for our branch and commit conventions.
+`npm run setup` in the repository root to install all dependencies, then ensure `npm test` runs
 clean before submitting.
 Run `npm run test-ci` for the same tests using a single process, which matches the CI configuration.
+Use `npm run test:ci-guard` to execute the LFS/Pages guard suite ensuring test assets avoid Git LFS.
 Run `npm run format` in `backend/` to apply Prettier formatting before committing.
 For significant changes, please open an issue first to discuss what you would like to change. Be sure to follow the code style enforced by Prettier.
 
@@ -291,9 +348,12 @@ We sometimes rely on automated agents (such as the Codex agent) to make small
 changes. Agents must follow the steps in [AGENTS.md](AGENTS.md) before opening a
 pull request:
 
-1. Install dependencies with `npm ci` inside `backend/`.
+1. Install dependencies with `npm run setup` in the repository root.
 2. Run `npm run format` in `backend/`.
 3. Run `npm test` in `backend/` and include the results in the PR description.
+   If tests fail because Playwright or other dependencies are missing (for
+   example `assertSetupBackendDeps.test.js` fails), rerun `npm run setup` in the
+   repository root to install them before running tests again.
 
 4. Check your diff with `git status --short` to verify no unrelated files were
    modified.
@@ -310,6 +370,10 @@ Install dependencies and Playwright browsers:
 npm run setup
 ```
 
+If `npm run ci` fails with messages like `TAR_ENTRY_ERROR` or missing files in
+`node_modules`, rerun `npm run setup`. The setup script cleans the npm cache and
+reinstalls packages to recover from corrupted installs.
+
 If the browsers are missing, the CI scripts will automatically invoke this
 command for you. Running it manually first speeds up subsequent test runs.
 
@@ -325,6 +389,36 @@ For a quick end-to-end sanity check, run:
 npm run smoke
 ```
 
+If port 3000 is in use, stop the other process before running this.
+
+Run the backend unit tests alone:
+
+```bash
+npm run test:unit
+```
+
+Run the Playwright end-to-end suite:
+
+```bash
+npm run test:e2e
+```
+
+To run Jest directly from the repository root, use:
+
+```bash
+npm run jest -- --runInBand --silent
+```
+
+`npm test` uses the helper script below to ensure the environment is prepared.
+You can also invoke it directly to debug issues. It sets Node 20, validates the
+environment and saves output to `/tmp/test.log`:
+
+```bash
+./scripts/test-backend.sh
+```
+
+This script automatically runs Jest in `backend/`, so passing `--prefix` is unnecessary.
+
 ### Pre-commit Hook
 
 Husky installs a pre-commit hook that runs lint-staged. Staged `*.js`, `*.ts`,
@@ -333,6 +427,46 @@ with ESLint, and Jest runs against related tests.
 
 Avoid calling `npx playwright test` directly. Missing browsers can cause
 `"Playwright Test did not expect test() to be called here"` errors.
+
+### Coverage Reports
+
+Run coverage after installing dependencies:
+
+```bash
+npm run setup
+npm run coverage
+
+cat coverage/lcov.info | npx coveralls
+```
+
+The `check-coverage` script writes a baseline to `tests/coverageBaseline.json`
+the first time coverage falls below the required thresholds. Commit this file
+after the initial run so future merges will fail when coverage regresses.
+
+Using `npx coveralls` ensures the CLI runs even if it's not installed globally.
+By piping the generated `lcov.info` file instead of test output we avoid
+`Failed to parse string` errors from Coveralls when console logs appear.
+Running coverage without installing dependencies or omitting `npx` may lead to
+`coveralls: command not found` or `jest: not found` errors.
+
+#### Troubleshooting
+
+If Coveralls fails with an `lcovParse` error, the `lcov.info` report may contain
+ANSI color codes. Strip them before uploading:
+
+```bash
+npx strip-ansi coverage/lcov.info > cleaned.info
+cat cleaned.info | npx coveralls
+```
+
+Verify the file includes `SF:` entries to confirm it's valid:
+
+```bash
+grep '^SF:' coverage/lcov.info | head
+```
+
+Missing `SF:` lines usually mean the report was truncated. Re-run `npm run coverage`
+to regenerate the file.
 
 ## Printer Service
 
@@ -411,6 +545,15 @@ run `netlify deploy` as usual once the preflight passes.
 
 The Terraform configuration sets up a budget that emails you if monthly AWS spend exceeds $20. Set `COST_ALERT_EMAIL` before running `terraform apply` to receive these notifications.
 
+## Scheduler
+
+Hugging Face Spaces spin down after periods of inactivity. To keep the backend warm for instant responses, enable the built-in scheduler:
+
+1. Open the Space in your browser and navigate to **Settings → Runtime**.
+2. Toggle **Enable scheduler** so the Space wakes up on a schedule.
+
+When the scheduler is on, users avoid cold starts because the service periodically runs and stays ready. The trade‑off is cost: scheduled wake-ups consume your allotted compute time even when no one is using the Space. Leave the scheduler disabled if occasional startup delays are acceptable and you want to minimize spend.
+
 ## Troubleshooting
 
 ### dpkg was interrupted
@@ -441,6 +584,12 @@ The `npm run setup` script now performs this cleanup before and after installing
 dependencies, so new clones shouldn't hit this error. If you still encounter it,
 re-run `npm run setup` to ensure the cache directory is cleared.
 
+### TAR_ENTRY_ERROR or ENOENT during `npm ci`
+
+If `npm run format` exits with errors like `TAR_ENTRY_ERROR` or `ENOENT`, the
+package cache may be corrupted. Running `npm run setup` in the repository root
+cleans the cache and reinstalls dependencies, usually resolving these failures.
+
 ### Playwright host validation warnings
 
 If Playwright prints a message like `Host system is missing dependencies to run browsers`,
@@ -452,8 +601,34 @@ CI=1 npx playwright install --with-deps
 
 This fetches the missing libraries via `apt` so the browsers can start correctly.
 
+### Linting test output missing
+
+If `npm run coverage --prefix backend` fails with only LCOV data shown, run:
+
+```bash
+npm run lint:debug
+```
+
+to execute the linting test directly and view ESLint errors.
+
 ## Contributing
 
 ⚠️ **Note:** this project uses OpenAI Codex to generate PRs;
 binary files (images, compiled objects, etc.) will cause errors.
 Please remove or exclude any binary assets before opening a PR.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for details on our workflow.
+
+## Performance
+
+### Performance Testing
+
+We include a simple load-test script:
+
+```bash
+npm run perf-events
+
+This will fire 1,000 requests at /v2/events with 50 concurrent connections; adjust parameters in scripts/perf-events.js.
+```
+
+Temporary note to trigger actions concurrency test.
+Second commit to further test actions concurrency.

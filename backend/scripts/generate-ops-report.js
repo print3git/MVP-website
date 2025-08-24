@@ -1,5 +1,5 @@
-require('dotenv').config();
-const { Client } = require('pg');
+require("dotenv").config();
+const { Client } = require("pg");
 
 async function generateOpsReport() {
   const client = new Client({ connectionString: process.env.DB_URL });
@@ -11,7 +11,9 @@ async function generateOpsReport() {
         LEFT JOIN printers p ON p.hub_id=h.id
        GROUP BY h.id, h.name
        ORDER BY h.id`);
-    const orderRes = await client.query('SELECT status, COUNT(*) FROM orders GROUP BY status');
+    const orderRes = await client.query(
+      "SELECT status, COUNT(*) FROM orders GROUP BY status",
+    );
     const orders = orderRes.rows.reduce((acc, r) => {
       acc[r.status] = parseInt(r.count, 10);
       return acc;

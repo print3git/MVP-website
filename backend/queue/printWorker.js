@@ -3,6 +3,7 @@ const { Client } = require("pg");
 const axios = require("axios");
 const { getPrinterStatus } = require("../printers/octoprint");
 const { selectHub } = require("../utils/routing");
+const logger = require("../../src/logger");
 
 const DEFAULT_PRINTER_URL =
   process.env.PRINTER_API_URL || "http://localhost:5000/print";
@@ -126,7 +127,7 @@ async function run(interval = POLL_INTERVAL_MS) {
   const client = new Client({ connectionString: process.env.DB_URL });
   await client.connect();
   setInterval(() => {
-    processNextJob(client).catch((err) => console.error("Worker error", err));
+    processNextJob(client).catch((err) => logger.error("Worker error", err));
   }, interval);
 }
 

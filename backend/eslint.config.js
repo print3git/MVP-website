@@ -27,9 +27,19 @@ module.exports = [
     },
   },
   prettier,
+  {
+    files: ["lib/**/*.js", "pipeline/**/*.js"],
+    rules: { "jsdoc/require-param": "off" },
+  },
   // Disable JSDoc requirement for existing backend files
   {
     files: ["**/*", "scripts/**/*"],
     rules: { "jsdoc/require-jsdoc": "off" },
+  },
+  // TODO: add docs for legacy lib modules
+  // Temporarily disable param checks until JSDoc is written
+  {
+    files: ["lib/**/*.js", "lib/pipeline/**/*.js"],
+    rules: { "jsdoc/require-param": "off" },
   },
 ];

@@ -1,5 +1,5 @@
 // backend/db.js
-require("dotenv").config();
+require("dotenv").config({ override: false });
 const { Pool } = require("pg");
 const { v4: uuidv4 } = require("uuid");
 const { dbUrl } = require("./config");
@@ -469,15 +469,15 @@ async function getRewardOptions() {
 }
 
 async function getRewardOption(points) {
-  const { rows } = await query(
+  const { rows } = await module.exports.query(
     "SELECT amount_cents FROM reward_options WHERE points=$1",
     [points],
   );
-  if (rows[0]) return rows[0];
-  if (points === 50) return { amount_cents: 500 };
-  if (points === 100) return { amount_cents: 1000 };
-  if (points >= 1 && points <= 200) return { amount_cents: points * 5 };
-  return null;
+  if (rows[0]) return rows[0].amount_cents;
+  if (points === 50) return 500;
+  if (points === 100) return 1000;
+  if (points >= 1 && points <= 200) return points * 5;
+  throw new Error(`No reward option found for points: ${points}`);
 }
 
 async function insertAdSpend(subreddit, date, spendCents) {
@@ -930,6 +930,39 @@ async function clearCart(userId) {
   await query("DELETE FROM cart_items WHERE user_id=$1", [userId]);
 }
 
+async function insertGenerationLog({
+  prompt,
+  startTime,
+  finishTime,
+  source,
+  costCents = 0,
+}) {
+  const { rows } = await query(
+    `INSERT INTO generation_logs(prompt, start_time, finish_time, source, cost_cents)
+     VALUES($1,$2,$3,$4,$5) RETURNING *`,
+    [prompt, startTime, finishTime, source, costCents],
+  );
+  return rows[0];
+}
+
+async function listGenerationLogs(limit = 50) {
+  const { rows } = await query(
+    `SELECT * FROM generation_logs ORDER BY start_time DESC LIMIT $1`,
+    [limit],
+  );
+  return rows;
+}
+
+async function getGenerationStats() {
+  const { rows } = await query(
+    `SELECT COUNT(*)::int AS total,
+            AVG(EXTRACT(EPOCH FROM (finish_time - start_time))) AS avg_duration,
+            SUM(cost_cents)::int AS total_cost
+       FROM generation_logs`,
+  );
+  return rows[0];
+}
+
 async function insertModel(originalFilename, s3Key) {
   const { rows } = await query(
     "INSERT INTO models(original_filename, s3_key) VALUES($1,$2) RETURNING *",
@@ -1146,6 +1179,9 @@ module.exports = {
   deleteCartItem,
   getCartItems,
   clearCart,
+  insertGenerationLog,
+  listGenerationLogs,
+  getGenerationStats,
   insertModel,
   insertOrderItems,
   getOrderItems,

@@ -5,10 +5,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>print2</title>
     <meta
       name="description"
@@ -19,18 +16,18 @@
       property="og:description"
       content="Describe your idea or upload images and print3 turns them into 3D models you can print."
     />
-    <meta property="og:image" content="img/boxlogo.png" />
+    <meta property="og:image" content="img/box%20logo.png" />
 
     <!-- Preload hero images -->
     <link
       rel="preload"
-      href="img/textlogo.png"
+      href="img/text%20logo.png"
       as="image"
       fetchpriority="high"
     />
     <link
       rel="preload"
-      href="img/boxlogo.png"
+      href="img/box%20logo.png"
       as="image"
       fetchpriority="high"
     />
@@ -104,6 +101,21 @@
         min-height: 100%;
         margin: 0;
       }
+      html, body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden; /* avoids initial “zoomy” feel from accidental overflow */
+      }
+      * { box-sizing: border-box; }
+
+      /* Safety rails: avoid 100vw causing overflow with scrollbars */
+      img, canvas, video, svg {
+        max-width: 100%;
+      }
+
+      /* If you have any top-level wrappers using 100vw, prefer 100% + max-width: 100% */
       .transition-shape {
         transition:
           border-radius 0.2s ease,
@@ -189,7 +201,7 @@
 
     <header class="relative flex items-center justify-between py-4 px-6">
       <div class="flex flex-col items-start">
-        <img src="img/textlogo.png" alt="print3" class="h-10 w-auto" />
+        <img src="img/text%20logo.png" alt="print2" class="h-10 w-auto" />
         <div class="mt-1 flex flex-col text-sm opacity-90">
           <p class="text-gray-400">
             <span class="text-white">5400+</span> prints
@@ -299,6 +311,7 @@
       class="flex-1 flex flex-col items-center justify-start gap-4 px-4 lg:px-16"
       style="margin-top: -4rem"
     >
+      <div id="gen-app" class="my-4 w-full max-w-md"></div>
       <!-- 3-D preview ---------------------------------------------------- -->
       <div class="relative flex justify-center w-full max-w-lg">
         <section
@@ -437,8 +450,8 @@
       <section id="prompt-section" class="w-full max-w-xl">
         <div class="flex flex-col items-center text-center">
           <img
-            src="img/boxlogo.png"
-            alt="print3 cube"
+            src="img/box%20logo.png"
+            alt="print2 cube"
             class="w-32 h-auto mb-4"
           />
           <h1 class="text-2xl font-semibold mb-4">
@@ -666,6 +679,7 @@
     </div>
     <script></script>
     <script type="module" src="js/printclub.js"></script>
+    <script type="module" src="js/modelGenerator.js"></script>
     <script type="module" src="js/rewardBadge.js"></script>
     <script type="module" src="js/basket.js" defer></script>
     <div
@@ -682,5 +696,21 @@
       </filter>
     </svg>
     <script type="module" src="js/trackingPixel.js"></script>
+    <script>
+      (function normalizeInitialScale() {
+        const apply = () => {
+          const vv = window.visualViewport;
+          const scale = vv && typeof vv.scale === 'number' ? vv.scale : 1;
+          // Normalize REM‑based layouts if the browser remembered a zoom
+          if (scale !== 1) {
+            document.documentElement.style.fontSize = (100 / scale) + '%';
+          } else {
+            document.documentElement.style.fontSize = '';
+          }
+        };
+        window.addEventListener('load', apply, { once: true });
+        window.addEventListener('resize', apply);
+      })();
+    </script>
   </body>
 </html>

@@ -32,6 +32,8 @@ async function generateGlb({ prompt, imageURL }) {
         headers: { Authorization: `Bearer ${token}` },
         responseType: "arraybuffer",
         validateStatus: () => true,
+        // Disable proxy usage so tests are unaffected by environment settings
+        proxy: false,
       },
     );
     if (res.status >= 400) {
@@ -48,4 +50,4 @@ async function generateGlb({ prompt, imageURL }) {
   } catch (err) {
     throw new Error(`SPARC3D request failed: ${err.message}`);
   }
-}
+};

@@ -1,0 +1,17 @@
+name: Ensure pnpm
+description: Ensure pnpm and Node caching
+inputs:
+  cache-dependency-path:
+    description: Optional path to lockfile for caching
+    required: false
+runs:
+  using: composite
+  steps:
+    - uses: pnpm/action-setup@v4
+      with:
+        version: 9
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: pnpm
+        cache-dependency-path: ${{ inputs.cache-dependency-path }}

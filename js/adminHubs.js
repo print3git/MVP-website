@@ -1,4 +1,4 @@
-import { API_BASE, authHeaders } from './api.js';
+import { API_BASE, authHeaders } from "./api.js";
 
 async function load() {
   const app = document.getElementById("app");

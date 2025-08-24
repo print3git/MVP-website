@@ -1,0 +1,58 @@
+name: 'secret-sync'
+description: 'Sync GitHub secrets to AWS SSM Parameter Store or Secrets Manager'
+inputs:
+  force:
+    description: 'Set to true to write secrets. Defaults to dry run.'
+    required: false
+    default: 'false'
+  ssm-prefix:
+    description: 'Base path for SSM parameters'
+    required: false
+    default: '/mvp'
+  ssm:
+    description: 'Space separated list of SSM secret names (relative to prefix)'
+    required: false
+    default: ''
+  secrets-manager:
+    description: 'Space separated list of Secrets Manager secret names (relative to prefix)'
+    required: false
+    default: ''
+runs:
+  using: 'composite'
+  steps:
+    - name: Sync SSM parameters
+      shell: bash
+      run: |
+        set -euo pipefail
+        for name in ${{ inputs.ssm }}; do
+          value="${!name:-}"
+          path="${{ inputs.ssm-prefix }}/$name"
+          if aws ssm get-parameter --name "$path" >/dev/null 2>&1; then
+            echo "SSM parameter $path exists"
+            continue
+          fi
+          if [[ "${{ inputs.force }}" == "true" ]]; then
+            echo "Creating $path"
+            aws ssm put-parameter --name "$path" --type SecureString --value "$value"
+          else
+            echo "Dry run: would create $path"
+          fi
+        done
+    - name: Sync Secrets Manager
+      shell: bash
+      run: |
+        set -euo pipefail
+        for name in ${{ inputs['secrets-manager'] }}; do
+          value="${!name:-}"
+          full="${{ inputs.ssm-prefix }}/$name"
+          if aws secretsmanager describe-secret --secret-id "$full" >/dev/null 2>&1; then
+            echo "Secrets Manager $full exists"
+            continue
+          fi
+          if [[ "${{ inputs.force }}" == "true" ]]; then
+            echo "Creating $full"
+            aws secretsmanager create-secret --name "$full" --secret-string "$value"
+          else
+            echo "Dry run: would create $full"
+          fi
+        done

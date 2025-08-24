@@ -1,37 +1,37 @@
-import { captureSnapshots } from './snapshot.js';
+import { captureSnapshots } from "./snapshot.js";
 
-const API_BASE = (window.API_ORIGIN || '') + '/api';
+const API_BASE = (window.API_ORIGIN || "") + "/api";
 
 function createCard(model) {
-  const div = document.createElement('div');
+  const div = document.createElement("div");
   div.className =
-    'model-card relative h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape flex items-center justify-center cursor-pointer';
+    "model-card relative h-32 bg-[#2A2A2E] border border-white/10 rounded-xl hover:bg-[#3A3A3E] transition-shape flex items-center justify-center cursor-pointer";
   div.dataset.model = model.model_url;
   div.dataset.job = model.job_id;
   div.dataset.id = model.id;
 
-  div.innerHTML = `\n    <img src="${model.snapshot || ''}" alt="Model" loading="lazy" fetchpriority="low" class="w-full h-full object-contain pointer-events-none" />\n    <span class="sr-only">${model.title || 'Model'}</span>\n    <button class="delete absolute bottom-1 right-1 text-xs bg-red-600 px-1 rounded">Delete</button>`;
+  div.innerHTML = `\n    <img src="${model.snapshot || ""}" alt="Model" loading="lazy" fetchpriority="low" class="w-full h-full object-contain pointer-events-none" />\n    <span class="sr-only">${model.title || "Model"}</span>\n    <button class="delete absolute bottom-1 right-1 text-xs bg-red-600 px-1 rounded">Delete</button>`;
 
-  div.addEventListener('click', () => {
-    const modal = document.getElementById('model-modal');
-    const viewer = modal.querySelector('model-viewer');
-    const copyBtn = document.getElementById('modal-copy-link');
+  div.addEventListener("click", () => {
+    const modal = document.getElementById("model-modal");
+    const viewer = modal.querySelector("model-viewer");
+    const copyBtn = document.getElementById("modal-copy-link");
     viewer.src = model.model_url;
     if (copyBtn) {
       copyBtn.dataset.id = model.id;
     }
-    modal.classList.remove('hidden');
-    document.body.classList.add('overflow-hidden');
+    modal.classList.remove("hidden");
+    document.body.classList.add("overflow-hidden");
   });
 
-  const delBtn = div.querySelector('.delete');
-  delBtn.addEventListener('click', async (e) => {
+  const delBtn = div.querySelector(".delete");
+  delBtn.addEventListener("click", async (e) => {
     e.stopPropagation();
-    if (!confirm('Delete this creation?')) return;
-    const token = localStorage.getItem('token');
+    if (!confirm("Delete this creation?")) return;
+    const token = localStorage.getItem("token");
     if (!token) return;
     const res = await fetch(`${API_BASE}/community/${model.id}`, {
-      method: 'DELETE',
+      method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     });
     if (res.ok) {
@@ -46,9 +46,9 @@ const state = { offset: 0, done: false, loading: false };
 
 async function loadMore() {
   if (state.loading || state.done) return;
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   if (!token) {
-    window.location.href = 'login.html';
+    window.location.href = "login.html";
     return;
   }
   state.loading = true;
@@ -61,7 +61,7 @@ async function loadMore() {
     return;
   }
   const models = await res.json();
-  const grid = document.getElementById('mine-grid');
+  const grid = document.getElementById("mine-grid");
   models.forEach((m) => grid.appendChild(createCard(m)));
   await captureSnapshots(grid);
   state.offset += models.length;
@@ -70,7 +70,7 @@ async function loadMore() {
 }
 
 function createObserver() {
-  const sentinel = document.getElementById('mine-sentinel');
+  const sentinel = document.getElementById("mine-sentinel");
   if (!sentinel) return;
   const observer = new IntersectionObserver((entries) => {
     if (entries[0].isIntersecting) loadMore();
@@ -78,42 +78,42 @@ function createObserver() {
   observer.observe(sentinel);
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  const modal = document.getElementById('model-modal');
-  const closeBtn = document.getElementById('close-modal');
-  const copyBtn = document.getElementById('modal-copy-link');
-  const copyMsg = document.getElementById('modal-copy-msg');
-  const help = document.getElementById('modal-copy-help');
-  const tooltip = document.getElementById('modal-copy-tooltip');
+document.addEventListener("DOMContentLoaded", () => {
+  const modal = document.getElementById("model-modal");
+  const closeBtn = document.getElementById("close-modal");
+  const copyBtn = document.getElementById("modal-copy-link");
+  const copyMsg = document.getElementById("modal-copy-msg");
+  const help = document.getElementById("modal-copy-help");
+  const tooltip = document.getElementById("modal-copy-tooltip");
   function close() {
-    modal.classList.add('hidden');
-    document.body.classList.remove('overflow-hidden');
+    modal.classList.add("hidden");
+    document.body.classList.remove("overflow-hidden");
   }
-  closeBtn.addEventListener('click', close);
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') close();
+  closeBtn.addEventListener("click", close);
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") close();
   });
-  copyBtn?.addEventListener('click', () => {
+  copyBtn?.addEventListener("click", () => {
     const id = copyBtn.dataset.id;
     if (!id) return;
     const url = `${window.location.origin}/community/model/${id}`;
     navigator.clipboard.writeText(url).then(() => {
       if (copyMsg) {
-        copyMsg.classList.remove('opacity-0');
-        copyMsg.classList.add('opacity-100');
+        copyMsg.classList.remove("opacity-0");
+        copyMsg.classList.add("opacity-100");
         setTimeout(() => {
-          copyMsg.classList.add('opacity-0');
-          copyMsg.classList.remove('opacity-100');
+          copyMsg.classList.add("opacity-0");
+          copyMsg.classList.remove("opacity-100");
         }, 2000);
       }
     });
   });
   if (help && tooltip) {
-    ['mouseenter', 'focus'].forEach((ev) =>
-      help.addEventListener(ev, () => tooltip.classList.remove('hidden'))
+    ["mouseenter", "focus"].forEach((ev) =>
+      help.addEventListener(ev, () => tooltip.classList.remove("hidden")),
     );
-    ['mouseleave', 'blur'].forEach((ev) =>
-      help.addEventListener(ev, () => tooltip.classList.add('hidden'))
+    ["mouseleave", "blur"].forEach((ev) =>
+      help.addEventListener(ev, () => tooltip.classList.add("hidden")),
     );
   }
   createObserver();

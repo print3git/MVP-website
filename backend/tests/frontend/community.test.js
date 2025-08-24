@@ -1,18 +1,20 @@
 /** @jest-environment node */
-const fs = require('fs');
-const path = require('path');
-const { JSDOM } = require('jsdom');
+const fs = require("fs");
+const path = require("path");
+const { JSDOM } = require("jsdom");
 
 function setup() {
-  const dom = new JSDOM('<!doctype html><html><body></body></html>', { runScripts: 'dangerously' });
+  const dom = new JSDOM("<!doctype html><html><body></body></html>", {
+    runScripts: "dangerously",
+  });
   global.window = dom.window;
   global.document = dom.window.document;
 
   // Read and sanitize the script
   let script = fs
-    .readFileSync(path.join(__dirname, '../../../js/community.js'), 'utf8')
-    .replace(/import[^;]+;\n/, '')
-    .replace(/export \{[^}]+\};?/, '');
+    .readFileSync(path.join(__dirname, "../../../js/community.js"), "utf8")
+    .replace(/import[^;]+;\n/, "")
+    .replace(/export \{[^}]+\};?/, "");
 
   // Attach helpers to window BEFORE eval
   const mockGlobals = `
@@ -40,24 +42,24 @@ function setup() {
     window.fetchCreations = fetchCreations;
   `;
 
-  script = mockGlobals + '\n' + script;
+  script = mockGlobals + "\n" + script;
   dom.window.eval(script);
 
   return dom;
 }
 
-describe('community helpers', () => {
-  test('getFallbackModels returns 6 items', () => {
+describe("community helpers", () => {
+  test("getFallbackModels returns 6 items", () => {
     const dom = setup();
     const list = dom.window.getFallbackModels();
     expect(list).toHaveLength(6);
-    expect(list[0]).toHaveProperty('model_url');
+    expect(list[0]).toHaveProperty("model_url");
   });
 
-  test('fetchCreations returns empty on error', async () => {
+  test("fetchCreations returns empty on error", async () => {
     const dom = setup();
-    dom.window.fetch = jest.fn(() => Promise.reject(new Error('fail')));
-    const data = await dom.window.fetchCreations('recent');
+    dom.window.fetch = jest.fn(() => Promise.reject(new Error("fail")));
+    const data = await dom.window.fetchCreations("recent");
     expect(data).toEqual([]);
   });
 });

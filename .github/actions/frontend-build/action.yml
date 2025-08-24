@@ -1,0 +1,43 @@
+name: Frontend Build
+description: Build frontend and upload dist artifact
+inputs:
+  frontend-dir:
+    description: Path to the frontend project
+    default: frontend
+  build-script:
+    description: NPM script to build the frontend
+    default: build
+outputs:
+  dist-exists:
+    description: "true if dist/index.html exists"
+    value: ${{ steps.check-dist.outputs.dist-exists }}
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: "20"
+        cache: pnpm
+        cache-dependency-path: ${{ inputs.frontend-dir }}/pnpm-lock.yaml
+    - uses: ./.github/actions/setup-pnpm
+    - name: Install deps
+      shell: bash
+      run: pnpm install --no-frozen-lockfile
+      working-directory: ${{ inputs.frontend-dir }}
+    - name: Build
+      shell: bash
+      run: npm run ${{ inputs.build-script }} --prefix ${{ inputs.frontend-dir }}
+    - id: check-dist
+      name: Check dist
+      shell: bash
+      run: |
+        if [ -f "${{ inputs.frontend-dir }}/dist/index.html" ]; then
+          echo "dist-exists=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "dist-exists=false" >> "$GITHUB_OUTPUT"
+        fi
+    - uses: actions/upload-artifact@v4
+      if: steps.check-dist.outputs.dist-exists == 'true'
+      with:
+        name: frontend-dist
+        path: ${{ inputs.frontend-dir }}/dist

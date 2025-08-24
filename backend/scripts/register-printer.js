@@ -35,4 +35,4 @@ async function registerPrinter() {
 
 if (require.main === module) {
   registerPrinter();
-}
+};

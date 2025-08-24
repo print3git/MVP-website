@@ -1,93 +1,156 @@
 {
   "name": "mvp-website",
   "version": "1.0.0",
+  "private": true,
+  "nyc": {
+    "reporter": [
+      "lcov",
+      "text",
+      "json-summary"
+    ],
+    "report-dir": "coverage",
+    "check-coverage": true,
+    "branches": 70,
+    "functions": 75,
+    "lines": 80,
+    "statements": 80
+  },
+  "coverageThreshold": {
+    "branches": 70,
+    "functions": 75,
+    "lines": 80,
+    "statements": 80
+  },
   "description": "This repository contains the early MVP code for print2's website and backend.",
   "main": "index.js",
   "directories": {
     "doc": "docs"
   },
   "scripts": {
-    "lhci": "lhci autorun",
-    "prepare": "husky install && tsc -p scripts/tsconfig.json",
-    "format": "prettier --write \"**/*.{js,jsx,json,md,html}\"",
-    "format:check": "prettier --check \"**/*.{js,jsx,json,md,html}\"",
-    "lint": "npm run check-conflicts && eslint . --max-warnings=0 && npm run lint --prefix backend",
-    "lint:fix": "eslint . --fix",
-    "check-conflicts": "! grep -R --include=*.js --include=*.jsx --include=*.ts --include=*.tsx '^(<{7}|={7}|>{7})' .",
-    "test": "npm test --prefix backend",
-    "coverage": "npm run coverage --prefix backend",
+    "preinstall": "corepack enable && node scripts/check-node-version.js",
+    "preformat": "cross-env SKIP_NET_CHECKS=1 SKIP_PW_DEPS=1 node scripts/assert-setup.js",
+    "preformat:check": "cross-env SKIP_NET_CHECKS=1 SKIP_PW_DEPS=1 node scripts/assert-setup.js",
+    "format": "prettier -w .",
+    "format:check": "prettier -c .",
+    "lint": "npm run lint --prefix frontend && npm run lint --prefix backend",
+    "test": "node scripts/run-jest.js",
     "typecheck": "tsc --noEmit",
-    "i18n:lint": "node scripts/i18n-lint.js",
-    "ci": "node scripts/assert-setup.js && npm run format && npm run lint && npm run typecheck && npm run i18n:lint && npm run test:ci && npm run test:a11y",
-    "test:ci": "cross-env JEST_CI=true npm run test-ci --prefix backend",
-    "test:update-threshold": "node scripts/update-coverage-threshold.js",
-    "test:stability": "node scripts/test-stability.js",
-    "deps:check": "npx -y lockfile-diff HEAD package-lock.json && npx -y lockfile-diff HEAD backend/package-lock.json && npx -y lockfile-diff HEAD backend/hunyuan_server/package-lock.json",
-    "deps:dedupe": "npm dedupe",
-    "deps:dedupe-check": "npm dedupe --dry-run",
-    "bundle:size": "size-limit",
-    "dev": "node backend/server.js",
     "validate-env": "bash scripts/validate-env.sh",
-    "setup": "scripts/setup.sh",
-    "e2e": "playwright test",
-    "smoke": "NODE_NO_WARNINGS=1 SKIP_PW_DEPS=1 npm run setup && NODE_NO_WARNINGS=1 npx playwright test e2e/smoke.test.js",
-    "load": "artillery run tests/load/models.yml",
-    "visual-test": "percy exec -- npm run e2e",
-    "test:a11y": "node scripts/assert-setup.js && bash scripts/install-playwright.sh chromium && playwright test e2e/a11y.test.js",
-    "a11y": "jest --runTestsByPath tests/a11y",
-    "netlify:deploy": "scripts/netlify-preflight.sh && netlify deploy",
-    "diagnose": "bash scripts/diagnose.sh",
-    "test:generate": "node scripts/test-generate.js"
+    "setup": "bash scripts/setup.sh",
+    "build": "vite build",
+    "preview": "vite preview --port 4173",
+    "start:backend": "npm start --prefix backend",
+    "ci": "if [ \"$SKIP_PW_DEPS\" = \"1\" ]; then npm ci --ignore-scripts; else npm ci; fi && npm run build --workspaces=false && npm test"
+    "smoke": "npm test -- --maxWorkers=2 --runTestsByPath tests/config/package-scripts.smoke.*.spec.ts tests/smoke/healthcheck.*.spec.ts"
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-env",
+      "@babel/preset-react",
+      "@babel/preset-typescript"
+    ]
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "engines": {
+    "node": ">=20 <21"
+  },
   "type": "commonjs",
+  "packageManager": "pnpm@10.11.0",
   "prettier": {},
   "devDependencies": {
+    "@actions/core": "^1.11.1",
+    "@aws-sdk/client-cloudwatch": "^3.873.0",
     "@axe-core/cli": "^4.10.2",
     "@axe-core/playwright": "^4.10.2",
+    "@babel/plugin-syntax-typescript": "^7.24.1",
+    "@babel/plugin-transform-modules-commonjs": "^7.27.1",
+    "@babel/plugin-transform-react-jsx": "^7.27.1",
+    "@babel/preset-env": "^7.28.0",
+    "@babel/preset-react": "^7.27.1",
+    "@babel/preset-typescript": "^7.27.1",
+    "@babel/register": "^7.27.1",
     "@commitlint/cli": "^19.2.1",
     "@commitlint/config-conventional": "^19.2.1",
     "@eslint-community/eslint-utils": "^4.7.0",
     "@eslint/js": "^9.30.1",
+    "@html-eslint/eslint-plugin": "0.42.0",
+    "@html-eslint/parser": "^0.42.0",
     "@lhci/cli": "^0.15.0",
     "@octokit/action": "^6",
     "@percy/cli": "^1.31.0",
     "@percy/playwright": "^1.0.8",
     "@playwright/test": "^1.53.1",
     "@size-limit/file": "^11.2.0",
-    "@types/jest": "^30.0.0",
+    "@testing-library/jest-dom": "^6.8.0",
+    "@testing-library/react": "^14.2.1",
     "@types/node": "^24.0.10",
-    "@typescript-eslint/eslint-plugin": "^8.34.1",
+    "@typescript-eslint/eslint-plugin": "8.34.1",
     "@typescript-eslint/parser": "^8.36.0",
+    "concurrently": "^9.2.0",
+    "coveralls": "^3.1.1",
     "cross-env": "^7.0.3",
-    "eslint": "^9.29.0",
+    "eslint": "^9.31.0",
     "eslint-config-prettier": "^10.1.5",
-    "eslint-plugin-jsdoc": "^51.1.1",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^7.2.1",
+    "eslint-plugin-jsdoc": "51.1.1",
+    "eslint-plugin-jsx-a11y": "6.10.2",
+    "eslint-plugin-no-inline-styles": "1.0.5",
+    "eslint-plugin-node": "11.1.0",
+    "eslint-plugin-promise": "7.2.1",
+    "eslint-plugin-react": "7.37.5",
+    "eslint-plugin-ssr-friendly": "^1.3.0",
+    "execa": "^9.6.0",
+    "express": "^4.21.2",
+    "gltf-validator": "^2.0.0-dev.3.10",
     "http-server": "^14.1.1",
     "husky": "^9.1.7",
     "i18next-parser": "^9.3.0",
+    "jest": "^29.x",
+    "jest-environment-jsdom": "^30.0.5",
+    "jest-junit": "^16.0.0",
+    "kill-port": "^2.0.1",
     "lint-staged": "^16.1.2",
     "lockfile-diff": "^0.1.0",
+    "markdownlint-cli2": "^0.10.0",
+    "nock": "^13.5.6",
+    "playwright": "^1.54.1",
     "prettier": "^3.5.3",
+    "selfsigned": "^2.3.2",
     "size-limit": "^11.2.0",
+    "stripe": "^14.25.0",
+    "supertest": "^7.1.4",
+    "toml": "^3.0.0",
     "tsconfig-strictest": "^1.0.0-beta.1",
     "tslib": "^2.8.1",
+    "tsx": "^4.20.4",
     "typescript": "^5.8.3",
-    "wait-on": "^8.0.3"
+    "vitest": "^2.1.1",
+    "wait-on": "^8.0.3",
+    "yaml": "^2.8.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   },
   "lint-staged": {
-    "*.{js,ts,json}": "prettier --write",
-    "backend/**/*.js": "eslint --fix",
-    "*.{js,ts}": "jest --bail --findRelatedTests"
+    "*.js": [
+      "eslint --fix",
+      "prettier --log-level warn --write"
+    ],
+    "*.ts": [
+      "eslint --fix",
+      "prettier --log-level warn --write"
+    ]
   },
   "dependencies": {
     "axios": "^1.10.0",
     "react": "^18.3.1",
     "react-dom": "^18.2.0",
-    "react-places-autocomplete": "^7.3.0"
+    "react-places-autocomplete": "^7.3.0",
+    "vite": "^5.4.3",
+    "winston": "^3.17.0",
+    "winston-format": "^1.0.1"
   }
 }

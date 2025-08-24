@@ -1,6 +1,6 @@
-require('dotenv').config();
-const { Client } = require('pg');
-const db = require('../db');
+require("dotenv").config();
+const { Client } = require("pg");
+const db = require("../db");
 
 const PRODUCT_HOURS = {
   single: 1,
@@ -10,9 +10,16 @@ const PRODUCT_HOURS = {
 
 function getYesterdayRange() {
   const now = new Date();
-  const start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 1));
-  const end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
-  return { start: start.toISOString().slice(0, 10), end: end.toISOString().slice(0, 10) };
+  const start = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 1),
+  );
+  const end = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
+  );
+  return {
+    start: start.toISOString().slice(0, 10),
+    end: end.toISOString().slice(0, 10),
+  };
 }
 
 async function summarize() {
@@ -25,12 +32,12 @@ async function summarize() {
          FROM orders
         WHERE status='paid' AND created_at>= $1 AND created_at < $2
         GROUP BY state, product_type`,
-      [start, end]
+      [start, end],
     );
 
     const map = {};
     for (const row of res.rows) {
-      const state = row.state || 'unknown';
+      const state = row.state || "unknown";
       const qty = parseInt(row.qty, 10) || 0;
       const hours = PRODUCT_HOURS[row.product_type] || 1;
       if (!map[state]) map[state] = { count: 0, hours: 0 };
@@ -39,7 +46,12 @@ async function summarize() {
     }
 
     for (const state of Object.keys(map)) {
-      await db.upsertOrderLocationSummary(start, state, map[state].count, map[state].hours);
+      await db.upsertOrderLocationSummary(
+        start,
+        state,
+        map[state].count,
+        map[state].hours,
+      );
     }
   } finally {
     await client.end();

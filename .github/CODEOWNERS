@@ -1,11 +1,20 @@
-* @print3git
+# Default owner for all files
+* @example/owners
 
 # Frontend HTML files
-/*.html @web-team
+/*.html @example/frontend
 
 # Backend code
-/backend/ @backend-team
+/backend/* @example/backend
 
+# Frontend source code
+/frontend/* @example/frontend
 
 # GitHub workflows
-.github/workflows/ @devops-team
+/.github/workflows/** @example/devops
+
+# CI scripts
+/scripts/ci/** @example/devops
+
+# CI configuration
+/ci/** @example/devops

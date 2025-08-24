@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+require("pgsql-ast-parser");
 const { newDb } = require("pg-mem");
 
 test("models table has expected columns", async () => {
