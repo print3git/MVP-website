@@ -1,9 +1,4 @@
-import express, {
-  Router,
-  type NextFunction,
-  type Request,
-  type Response,
-} from "express";
+import express, { Router, type Request, type Response } from "express";
 import Stripe from "stripe";
 import db from "../../db.js";
 import { enqueuePrint } from "../../queue/printQueue.js";
@@ -17,40 +12,42 @@ const stripe = new Stripe(process.env["STRIPE_KEY"] as string, {
 router.post(
   "/api/webhook/stripe",
   express.raw({ type: "application/json" }),
-  async (
-    req: Request<any, any, Buffer>,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> => {
-    try {
-      const sig = req.headers["stripe-signature"] as string;
-      const event = stripe.webhooks.constructEvent(
-        req.body,
-        sig,
-        process.env["STRIPE_WEBHOOK_SECRET"] as string,
-      );
-      if (event.type === "checkout.session.completed") {
-        const session = event.data.object as Stripe.Checkout.Session;
-        await db.query("UPDATE orders SET status=$1 WHERE session_id=$2", [
-          "paid",
-          session.id,
-        ]);
-        const jobId = session.metadata?.["jobId"];
-        if (jobId) {
-          await enqueueDbPrint(jobId, session.id, {}, null, null);
-          enqueuePrint(jobId);
-        }
-      }
-      res.sendStatus(200);
+  async (req: Request<any, any, Buffer>, res: Response): Promise<void> => {
+    const sig = req.headers["stripe-signature"] as string | undefined;
+    const secret = process.env.STRIPE_WEBHOOK_SECRET;
+    if (!sig || !secret) {
+      console.warn("Stripe webhook missing signature or secret");
+      res.status(400).json({ error: "invalid_signature" });
       return;
-    } catch (err: any) {
-      if (err.message) {
-        console.error("Webhook Error:", err.message);
-        res.status(400).send("Webhook Error");
-        return;
-      }
-      next(err);
     }
+
+    const rawBody = Buffer.isBuffer(req.body)
+      ? req.body
+      : Buffer.from(req.body);
+
+    let event: Stripe.Event;
+    try {
+      event = stripe.webhooks.constructEvent(rawBody, sig, secret);
+    } catch (err) {
+      console.warn("Stripe webhook signature verification failed", err);
+      res.status(400).json({ error: "invalid_signature" });
+      return;
+    }
+
+    if (event.type === "checkout.session.completed") {
+      const session = event.data.object as Stripe.Checkout.Session;
+      await db.query("UPDATE orders SET status=$1 WHERE session_id=$2", [
+        "paid",
+        session.id,
+      ]);
+      const jobId = session.metadata?.["jobId"];
+      if (jobId) {
+        await enqueueDbPrint(jobId, session.id, {}, null, null);
+        enqueuePrint(jobId);
+      }
+    }
+
+    res.status(200).json({ received: true });
   },
 );
 
