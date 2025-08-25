@@ -54,6 +54,14 @@ Run `docker compose up` to start the API and Postgres services.
 1. Copy `.env.example` to `.env` in the repository root and update the values:
    - `DB_URL` – connection string for your PostgreSQL database.
 
+   To start a local Postgres instance you can run:
+
+   ```bash
+   docker run --rm -e POSTGRES_PASSWORD=postgres -p 5432:5432 postgres
+   ```
+
+   Set `DB_URL` to point at your server before continuing.
+
 - `STRIPE_TEST_KEY` – test secret key for Stripe.
 - `STRIPE_LIVE_KEY` – live secret key for Stripe.
 - `STRIPE_PUBLISHABLE_KEY` – publishable key for Stripe.js on the frontend.
@@ -112,11 +120,11 @@ The server uses `STRIPE_LIVE_KEY` when `NODE_ENV=production`; otherwise `STRIPE_
    and executes the Jest suite. Use it if setup succeeds but subsequent commands
    fail.
 
-4. Initialize the database:
+4. Run database migrations and verify the connection:
 
    ```bash
-   cd ..
-   npm run init-db
+   npm run db:migrate
+   npm run db:check
    ```
 
 5. Create an admin user (optional):

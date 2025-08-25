@@ -129,6 +129,7 @@ describe("stripe route type checks", () => {
     assertProp(checker, bodyType, "currency", "string | undefined");
     assertProp(checker, bodyType, "idempotencyKey", "string | undefined");
     expect(isAssignableToReadableStream(checker, bodyType)).toBe(false);
+    
     const resType = checker.getTypeAtLocation(resParam);
     expect(hasCallable(checker, resType, "json")).toBe(true);
     expect(hasCallable(checker, resType, "status")).toBe(true);

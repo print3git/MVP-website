@@ -29,12 +29,12 @@ describe("webhook idempotency", () => {
     const payload = makePayload("evt1", "sess1");
     const { header } = sign(payload, process.env.STRIPE_WEBHOOK_SECRET!);
     await request(app)
-      .post("/api/stripe/webhook")
+      .post("/stripe/webhook")
       .set("stripe-signature", header)
       .set("Content-Type", "application/json")
       .send(payload);
     await request(app)
-      .post("/api/stripe/webhook")
+      .post("/stripe/webhook")
       .set("stripe-signature", header)
       .set("Content-Type", "application/json")
       .send(payload);
@@ -46,14 +46,14 @@ describe("webhook idempotency", () => {
     const payload1 = makePayload("evt2", "sess2");
     const { header: h1 } = sign(payload1, process.env.STRIPE_WEBHOOK_SECRET!);
     await request(app)
-      .post("/api/stripe/webhook")
+      .post("/stripe/webhook")
       .set("stripe-signature", h1)
       .set("Content-Type", "application/json")
       .send(payload1);
     const payload2 = makePayload("evt1", "sess2");
     const { header: h2 } = sign(payload2, process.env.STRIPE_WEBHOOK_SECRET!);
     await request(app)
-      .post("/api/stripe/webhook")
+      .post("/stripe/webhook")
       .set("stripe-signature", h2)
       .set("Content-Type", "application/json")
       .send(payload2);
@@ -68,12 +68,12 @@ describe("webhook idempotency", () => {
     const { header: h1 } = sign(p1, process.env.STRIPE_WEBHOOK_SECRET!);
     const { header: h2 } = sign(p2, process.env.STRIPE_WEBHOOK_SECRET!);
     await request(app)
-      .post("/api/stripe/webhook")
+      .post("/stripe/webhook")
       .set("stripe-signature", h1)
       .set("Content-Type", "application/json")
       .send(p1);
     await request(app)
-      .post("/api/stripe/webhook")
+      .post("/stripe/webhook")
       .set("stripe-signature", h2)
       .set("Content-Type", "application/json")
       .send(p2);

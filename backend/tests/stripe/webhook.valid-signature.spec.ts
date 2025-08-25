@@ -26,7 +26,7 @@ describe("webhook valid signature", () => {
     });
     const { header } = sign(payload, process.env.STRIPE_WEBHOOK_SECRET!);
     const res = await request(app)
-      .post("/api/stripe/webhook")
+      .post("/stripe/webhook")
       .set("stripe-signature", header)
       .set("Content-Type", "application/json")
       .send(payload);
@@ -43,7 +43,7 @@ describe("webhook valid signature", () => {
     });
     const { header } = sign(payload, process.env.STRIPE_WEBHOOK_SECRET!);
     await request(app)
-      .post("/api/stripe/webhook")
+      .post("/stripe/webhook")
       .set("stripe-signature", header)
       .set("Content-Type", "application/json")
       .send(payload);
