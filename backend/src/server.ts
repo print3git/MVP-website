@@ -3,19 +3,23 @@ config();
 
 import { app } from "./app";
 
-const PORT = Number(process.env.PORT) || 3000;
+const port = Number.parseInt(process.env.PORT || "3000", 10);
+const PORT = Number.isNaN(port) || port < 1 || port > 65535 ? 3000 : port;
 
-async function start() {
+export let server: ReturnType<typeof app.listen>;
+
+(async () => {
   if (process.env.RUN_MIGRATIONS_ON_BOOT === "1") {
     const { migrate } = await import("../scripts/migrate");
     await migrate();
   }
-  app.listen(PORT, () => {
+  server = app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);
   });
-}
-
-start().catch((err) => {
+  module.exports = server;
+  module.exports.server = server;
+})().catch((err) => {
   console.error(err);
-  process.exit(1);
 });
+
+export default server;
