@@ -8,6 +8,7 @@ import itemsRouter from "./routes/items";
 import checkoutRouter from "./routes/checkout";
 import stripeWebhookRouter from "./routes/stripeWebhook";
 import stripeCheckoutRouter from "./routes/stripe/create-checkout-session";
+import modelsRouter from "./routes/models";
 import { capture } from "./lib/logger";
 import logger from "../../src/logger.js";
 
@@ -19,6 +20,7 @@ app.use(healthRouter);
 app.use(itemsRouter);
 app.use(checkoutRouter);
 app.use(stripeCheckoutRouter);
+app.use("/api/models", modelsRouter);
 
 app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
   const context = { method: req.method, url: req.originalUrl, body: req.body };

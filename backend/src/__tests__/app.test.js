@@ -17,10 +17,10 @@ afterEach(() => {
 
 test("POST /api/models returns 201 when insert succeeds", async () => {
   mPool.query.mockResolvedValueOnce({
-    rows: [{ id: 1, prompt: "p", url: "u" }],
+    rows: [{ id: 1, prompt: "p", s3_key: "f", cloudfront_url: "u" }],
   });
   const res = await request(app)
     .post("/api/models")
-    .send({ prompt: "p", fileKey: "f" });
+    .send({ prompt: "p", s3_key: "f" });
   expect(res.status).toBe(201);
 });

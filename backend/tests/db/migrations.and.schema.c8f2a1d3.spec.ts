@@ -117,14 +117,14 @@ describe("061_create_items.sql", () => {
     const res = await client.query(
       "INSERT INTO items (name, price_cents, images) VALUES ('imgs',1,'[\"a\",\"b\"]') RETURNING images",
     );
-    expect(JSON.parse(res.rows[0].images)).toEqual(["a", "b"]);
+    expect(res.rows[0].images).toEqual(["a", "b"]);
   });
 
   test("metadata persists object", async () => {
     const res = await client.query(
       "INSERT INTO items (name, price_cents, metadata) VALUES ('obj',1,'{\"a\":1}') RETURNING metadata",
     );
-    expect(JSON.parse(res.rows[0].metadata)).toEqual({ a: 1 });
+    expect(res.rows[0].metadata).toEqual({ a: 1 });
   });
 
   test("description omitted => NULL", async () => {
