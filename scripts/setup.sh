@@ -1,6 +1,12 @@
 #!/bin/bash
 set -e
 
+# Skip heavy Playwright and apt dependencies when requested
+if [ "$SKIP_PW_DEPS" = "1" ] || [ "$PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD" = "1" ]; then
+  echo 'Skipping Playwright/apt deps'
+  exit 0
+fi
+
 # Ensure mise is available for toolchain management. If installation fails,
 # continue without mise and skip related steps.
 SKIP_MISE_TOOLS=0
