@@ -1,10 +1,18 @@
-const createMock = jest.fn(async (_args: any, _opts?: any) => ({ id: "cs_test_123" }));
+const createMock = jest.fn(async (_args: any, _opts?: any) => ({
+  id: "cs_test_123",
+}));
 
-class Stripe {
-  checkout = { sessions: { create: createMock } } as any;
-  constructor(_key: string, _opts?: any) {}
-  static __mocks = { createMock };
-}
+const Stripe = jest.fn().mockImplementation((_key: string, _opts?: any) => ({
+  checkout: { sessions: { create: createMock } },
+  webhooks: {
+    constructEvent: jest.fn(),
+    generateTestHeaderString: jest.fn(() => "test"),
+  },
+}));
 
-export default Stripe;
+(Stripe as any).__mocks = { createMock };
+(Stripe as any).webhooks = {
+  generateTestHeaderString: jest.fn(() => "test"),
+};
 
+export = Stripe;
