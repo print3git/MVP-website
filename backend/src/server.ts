@@ -1,6 +1,8 @@
 import { config } from "dotenv";
 config();
 
+import { app } from "./app";
+
 const PORT = Number(process.env.PORT) || 3000;
 
 async function start() {
@@ -8,7 +10,6 @@ async function start() {
     const { migrate } = await import("../scripts/migrate");
     await migrate();
   }
-  const { app } = await import("./app");
   app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);
   });

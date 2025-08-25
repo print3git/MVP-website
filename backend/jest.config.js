@@ -11,7 +11,7 @@ module.exports = {
   transform: {
     "^.+\\.[tj]s$": "babel-jest",
   },
-  testMatch: ["<rootDir>/tests/**/?(*.)+(spec|test)*.[jt]s?(x)"],
+  testMatch: ["**/?(*.)+(spec|test).[tj]s?(x)"],
   moduleFileExtensions: ["ts", "js", "json"],
   testTimeout: 20000,
   maxWorkers: "50%",
