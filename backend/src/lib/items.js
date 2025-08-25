@@ -3,16 +3,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.insertItem = exports.insertItemSchema = void 0;
 const zod_1 = require("zod");
 exports.insertItemSchema = zod_1.z.object({
-  name: zod_1.z.string().min(1).max(120),
+  name: zod_1.z.string().trim().min(1).max(120),
   description: zod_1.z.string().max(2000).optional(),
-  priceCents: zod_1.z.number().int().min(1),
+  priceCents: zod_1.z.number().int().min(1).max(1_000_000_000),
   currency: zod_1.z.string().default("USD"),
   images: zod_1.z
     .array(
       zod_1.z
         .string()
         .url()
-        .refine((u) => u.startsWith("http://") || u.startsWith("https://"), "invalid url"),
+        .refine(
+          (u) => u.startsWith("http://") || u.startsWith("https://"),
+          "invalid url",
+        ),
     )
     .default([]),
   metadata: zod_1.z.record(zod_1.z.any()).default({}),

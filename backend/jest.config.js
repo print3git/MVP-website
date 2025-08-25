@@ -9,6 +9,9 @@ module.exports = {
   ],
   globalTeardown: "<rootDir>/tests/globalTeardown.js",
   testEnvironment: "node",
+  transform: {
+    "^.+\\.[tj]s$": "ts-jest",
+  },
   testMatch: ["**/?(*.)+(spec|test).[tj]s?(x)"],
   moduleFileExtensions: ["ts", "js", "json"],
   testTimeout: 20000,

@@ -8,7 +8,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const pg_1 = require("pg");
 const validate_js_1 = __importDefault(require("../../middleware/validate.js"));
-const logger_js_1 = __importDefault(require("../../../src/logger.js"));
+const logger_js_1 = __importDefault(require("../logger.js"));
 const items_1 = require("../lib/items");
 const router = (0, express_1.Router)();
 const pool = new pg_1.Pool({

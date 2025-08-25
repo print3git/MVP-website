@@ -405,6 +405,12 @@ Run the backend unit tests alone:
 npm run test:unit
 ```
 
+Run backend CI locally:
+
+```bash
+SKIP_PW_DEPS=1 npm run --prefix backend ci
+```
+
 Run the Playwright end-to-end suite:
 
 ```bash

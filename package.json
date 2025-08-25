@@ -41,6 +41,7 @@
     "preview": "vite preview --port 4173",
     "start:backend": "npm start --prefix backend",
     "ci": "if [ \"$SKIP_PW_DEPS\" = \"1\" ]; then npm ci --ignore-scripts; else npm ci; fi && npm run build --workspaces=false && npm test",
+    "backend:ci": "npm run --prefix backend ci",
     "smoke": "npm test -- --maxWorkers=2 --runTestsByPath tests/config/package-scripts.smoke.*.spec.ts tests/smoke/healthcheck.*.spec.ts",
     "db:migrate": "npm run migrate --prefix backend",
     "db:check": "npm run db:check --prefix backend",

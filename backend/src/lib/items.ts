@@ -2,9 +2,9 @@ import type { Pool } from "pg";
 import { z } from "zod";
 
 export const insertItemSchema = z.object({
-  name: z.string().min(1).max(120),
+  name: z.string().trim().min(1).max(120),
   description: z.string().max(2000).optional(),
-  priceCents: z.number().int().min(1),
+  priceCents: z.number().int().min(1).max(1_000_000_000),
   currency: z.string().default("USD"),
   images: z
     .array(
