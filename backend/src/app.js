@@ -1,35 +1,78 @@
 const express = require("express");
-const healthRouter = require("./routes/health").default;
-const itemsRouter = require("./routes/items").default;
-const checkoutRouter = require("./routes/checkout").default;
-const stripeWebhookRouter = require("./routes/stripeWebhook").default;
-const stripeCheckoutRouter =
-  require("./routes/stripe/create-checkout-session").default;
-const modelsRouter = require("./routes/models").default;
+const legacyRouter = require("./legacyServerBridge");
 const { capture } = require("./lib/logger");
-const logger = require("../../src/logger");
-const { removedEndpoints } = require("./middleware/removedEndpoints");
+const logger = require("../../src/logger.js");
 
 const app = express();
-app.use(stripeWebhookRouter);
+module.exports = app;
+module.exports.app = app;
+module.exports.default = app;
+
+try {
+  (() => {
+    const r = require("./routes/stripeWebhook");
+    app.use(r.default || r);
+  })();
+} catch (err) {
+  console.error("Failed to load stripe webhook router", err);
+}
+
 app.use(express.json());
-app.use(removedEndpoints);
-app.use(healthRouter);
-app.use(itemsRouter);
-app.use(checkoutRouter);
-app.use(stripeCheckoutRouter);
-app.use("/api/models", modelsRouter);
+
+try {
+  (() => {
+    const r = require("./routes/health");
+    app.use(r.default || r);
+  })();
+} catch (err) {
+  console.error("Failed to load health router", err);
+}
+
+try {
+  (() => {
+    const r = require("./routes/items");
+    app.use(r.default || r);
+  })();
+} catch (err) {
+  console.error("Failed to load items router", err);
+}
+
+try {
+  (() => {
+    const r = require("./routes/checkout");
+    app.use(r.default || r);
+  })();
+} catch (err) {
+  console.error("Failed to load checkout router", err);
+}
+
+try {
+  (() => {
+    const r = require("./routes/stripe/create-checkout-session");
+    app.use(r.default || r);
+  })();
+} catch (err) {
+  console.error("Failed to load stripe checkout router", err);
+}
+
+try {
+  (() => {
+    const r = require("./routes/models");
+    app.use("/api/models", r.default || r);
+  })();
+} catch (err) {
+  console.error("Failed to load models router", err);
+}
+
+app.use(legacyRouter);
 
 app.use((err, req, res, _next) => {
   const context = { method: req.method, url: req.originalUrl, body: req.body };
   try {
     logger.error("Error handling request", context, err);
-  } catch (_logErr) {
+  } catch {
     // ignore logging failures
   }
   capture(err);
   res.status(500).json({ error: "Internal Server Error" });
 });
-
-module.exports = app;
-module.exports.app = app;
