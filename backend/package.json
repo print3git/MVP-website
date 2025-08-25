@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "main": "server.js",
+  "main": "src/server.js",
   "scripts": {
     "test": "node scripts/ensure-tests-exist.js && jest --passWithNoTests=false",
     "test-ci": "node scripts/ensure-tests-exist.js && jest --ci --passWithNoTests=false",
@@ -9,7 +9,8 @@
     "test:backend": "jest --runInBand",
     "ci": "npm run validate-env && cross-env SKIP_PW_DEPS=1 PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm test",
     "validate-env": "npm run validate-env --prefix ..",
-    "start": "node server.js",
+    "start": "node src/server.js",
+    "dev": "node src/server.js",
     "init-db": "node scripts/init-db.js",
     "migrate": "node scripts/migrate.js",
     "db:check": "node scripts/check-db.js",

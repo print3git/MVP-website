@@ -1,34 +1,56 @@
-import express, {
-  type NextFunction,
-  type Request,
-  type Response,
-} from "express";
-import healthRouter from "./routes/health";
-import itemsRouter from "./routes/items";
-import checkoutRouter from "./routes/checkout";
-import stripeWebhookRouter from "./routes/stripeWebhook";
-import stripeCheckoutRouter from "./routes/stripe/create-checkout-session";
-import modelsRouter from "./routes/models";
+import express, { type NextFunction, type Request, type Response } from "express";
+import legacyRouter from "./legacyServerBridge";
 import { capture } from "./lib/logger";
 import logger from "../../src/logger.js";
-import { removedEndpoints } from "./middleware/removedEndpoints";
 
-export const app = express();
+const app = express();
+export { app };
 
-app.use(stripeWebhookRouter);
+try {
+  (() => { const r = require("./routes/stripeWebhook"); app.use(r.default || r); })();
+} catch (err) {
+  console.error("Failed to load stripe webhook router", err);
+}
+
 app.use(express.json());
-app.use(removedEndpoints);
-app.use(healthRouter);
-app.use(itemsRouter);
-app.use(checkoutRouter);
-app.use(stripeCheckoutRouter);
-app.use("/api/models", modelsRouter);
+
+try {
+  (() => { const r = require("./routes/health"); app.use(r.default || r); })();
+} catch (err) {
+  console.error("Failed to load health router", err);
+}
+
+try {
+  (() => { const r = require("./routes/items"); app.use(r.default || r); })();
+} catch (err) {
+  console.error("Failed to load items router", err);
+}
+
+try {
+  (() => { const r = require("./routes/checkout"); app.use(r.default || r); })();
+} catch (err) {
+  console.error("Failed to load checkout router", err);
+}
+
+try {
+  (() => { const r = require("./routes/stripe/create-checkout-session"); app.use(r.default || r); })();
+} catch (err) {
+  console.error("Failed to load stripe checkout router", err);
+}
+
+try {
+  (() => { const r = require("./routes/models"); app.use("/api/models", r.default || r); })();
+} catch (err) {
+  console.error("Failed to load models router", err);
+}
+
+app.use(legacyRouter);
 
 app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
   const context = { method: req.method, url: req.originalUrl, body: req.body };
   try {
     logger.error("Error handling request", context, err);
-  } catch (_logErr) {
+  } catch {
     // ignore logging failures
   }
   capture(err);
