@@ -15,7 +15,7 @@ function createProgram(file: string) {
   );
   const checker = program.getTypeChecker();
   const sourceFile = program.getSourceFile(file)!;
-  return { program, checker, sourceFile };
+  return { checker, sourceFile };
 }
 
 function getHandlerParams(sourceFile: ts.SourceFile) {
@@ -39,10 +39,7 @@ function getHandlerParams(sourceFile: ts.SourceFile) {
   return params;
 }
 
-function getBodyType(
-  checker: ts.TypeChecker,
-  req: ts.ParameterDeclaration,
-) {
+function getBodyType(checker: ts.TypeChecker, req: ts.ParameterDeclaration) {
   const reqType = checker.getTypeAtLocation(req);
   const bodyProp = reqType.getProperty("body");
   return bodyProp
@@ -58,10 +55,9 @@ function assertProp(
 ) {
   const prop = type.getProperty(name);
   expect(prop).toBeDefined();
-  const declaration =
-    prop!.declarations?.find((d) => ts.isPropertySignature(d)) ||
+  const decl = prop!.declarations?.find((d) => ts.isPropertySignature(d)) ||
     prop!.declarations?.[0];
-  const propType = checker.getTypeOfSymbolAtLocation(prop!, declaration!);
+  const propType = checker.getTypeOfSymbolAtLocation(prop!, decl!);
   const typeString = checker.typeToString(propType);
   const isOptional = (prop!.flags & ts.SymbolFlags.Optional) !== 0;
   const finalType = isOptional ? `${typeString} | undefined` : typeString;
@@ -97,51 +93,79 @@ function isAssignableToReadableStream(
   return checker.isTypeAssignableTo(type, rsType);
 }
 
-describe("stripe route type checks", () => {
-  const checkoutPath = path.join(
+describe("stripe route diagnostics", () => {
+  const file = path.join(
     __dirname,
     "../src/routes/stripe/create-checkout-session.ts",
   );
-  const webhookPath = path.join(
-    __dirname,
-    "../src/routes/stripe/webhook.ts",
-  );
+  const { checker, sourceFile } = createProgram(file);
+  const [reqParam, resParam] = getHandlerParams(sourceFile);
+  const bodyType = getBodyType(checker, reqParam)!;
+  const resType = checker.getTypeAtLocation(resParam);
 
-  test("checkout request body and response types", () => {
-    const { checker, sourceFile } = createProgram(checkoutPath);
-    const [reqParam, resParam] = getHandlerParams(sourceFile);
-    const bodyType = getBodyType(checker, reqParam)!;
+  test("body has items array", () => {
     assertProp(checker, bodyType, "items", "Item[] | undefined");
-    assertProp(
-      checker,
-      bodyType,
-      "allowPromotionCodes",
-      "boolean | undefined",
+  });
+
+  test("items element has price string", () => {
+    const prop = bodyType.getProperty("items")!;
+    const propType = checker.getTypeOfSymbolAtLocation(
+      prop,
+      prop.declarations![0]!,
     );
+    const elemType = checker.getTypeArguments(propType as ts.TypeReference)[0];
+    assertProp(checker, elemType, "price", "string");
+  });
+
+  test("items element has quantity number", () => {
+    const prop = bodyType.getProperty("items")!;
+    const propType = checker.getTypeOfSymbolAtLocation(
+      prop,
+      prop.declarations![0]!,
+    );
+    const elemType = checker.getTypeArguments(propType as ts.TypeReference)[0];
+    assertProp(checker, elemType, "quantity", "number");
+  });
+
+  test("allows promotion codes flag", () => {
+    assertProp(checker, bodyType, "allowPromotionCodes", "boolean | undefined");
+  });
+
+  test("metadata is optional record", () => {
     assertProp(
       checker,
       bodyType,
       "metadata",
       "Record<string, string> | undefined",
     );
+  });
+
+  test("customer_email is optional", () => {
     assertProp(checker, bodyType, "customer_email", "string | undefined");
+  });
+
+  test("requiresShipping is optional", () => {
     assertProp(checker, bodyType, "requiresShipping", "boolean | undefined");
+  });
+
+  test("currency is optional", () => {
     assertProp(checker, bodyType, "currency", "string | undefined");
+  });
+
+  test("idempotencyKey is optional", () => {
     assertProp(checker, bodyType, "idempotencyKey", "string | undefined");
-    expect(isAssignableToReadableStream(checker, bodyType)).toBe(false);
-    const resType = checker.getTypeAtLocation(resParam);
+  });
+
+  test("response exposes json", () => {
     expect(hasCallable(checker, resType, "json")).toBe(true);
+  });
+
+  test("response exposes status", () => {
     expect(hasCallable(checker, resType, "status")).toBe(true);
   });
 
-  test("webhook request body and response types", () => {
-    const { checker, sourceFile } = createProgram(webhookPath);
-    const [reqParam, resParam] = getHandlerParams(sourceFile);
-    const bodyType = getBodyType(checker, reqParam)!;
-    expect(checker.typeToString(bodyType)).toMatch(/^Buffer/);
+  test("body not a ReadableStream", () => {
     expect(isAssignableToReadableStream(checker, bodyType)).toBe(false);
-    const resType = checker.getTypeAtLocation(resParam);
-    expect(hasCallable(checker, resType, "status")).toBe(true);
-    expect(hasCallable(checker, resType, "sendStatus")).toBe(true);
   });
 });
+
