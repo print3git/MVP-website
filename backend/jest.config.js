@@ -1,6 +1,7 @@
 // backend/jest.config.js
 module.exports = {
   rootDir: ".",
+  preset: "ts-jest",
   setupFiles: ["<rootDir>/tests/setupGlobals.js"],
   setupFilesAfterEnv: [
     "<rootDir>/tests/utils/testEnv.ts",
@@ -9,7 +10,7 @@ module.exports = {
   globalTeardown: "<rootDir>/tests/globalTeardown.js",
   testEnvironment: "node",
   transform: {
-    "^.+\\.[tj]s$": "babel-jest",
+    "^.+\\.[tj]s$": "ts-jest",
   },
   testMatch: ["**/?(*.)+(spec|test).[tj]s?(x)"],
   moduleFileExtensions: ["ts", "js", "json"],
@@ -24,6 +25,7 @@ module.exports = {
   moduleNameMapper: {
     "^stripe$": "<rootDir>/tests/stripe/__mocks__/stripe.ts",
     "^../../db$": "<rootDir>/tests/__mocks__/db.ts",
+    "^pg$": "<rootDir>/tests/db/__mocks__/pg.ts",
   },
 };
 
