@@ -1,5 +1,16 @@
 # Backend Library
 
+## Database setup
+
+1. Start a Postgres instance locally (e.g. with `docker run --rm -e POSTGRES_PASSWORD=postgres -p 5432:5432 postgres`) or use an external database.
+2. Set `DB_URL` in `.env` to point at your database.
+3. Apply migrations:
+
+   ```bash
+   npm run db:migrate
+   npm run db:check
+   ```
+
 ## Sparc3D Client
 
 Example usage:

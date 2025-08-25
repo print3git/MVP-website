@@ -1,5 +1,19 @@
-const { app } = require("./app");
+const { config } = require("dotenv");
+config();
+
 const PORT = parseInt(process.env.PORT || "3000", 10);
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
+
+async function start() {
+  if (process.env.RUN_MIGRATIONS_ON_BOOT === "1") {
+    await require("../scripts/migrate").migrate();
+  }
+  const { app } = require("./app");
+  app.listen(PORT, () => {
+    console.log(`Server listening on port ${PORT}`);
+  });
+}
+
+start().catch((err) => {
+  console.error(err);
+  process.exit(1);
 });
