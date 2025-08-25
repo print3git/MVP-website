@@ -25,7 +25,7 @@ describe("webhook invalid signature", () => {
 
   test("missing signature header returns 500", async () => {
     const res = await request(app)
-      .post("/api/stripe/webhook")
+      .post("/stripe/webhook")
       .set("Content-Type", "application/json")
       .send(payload);
     expect(res.status).toBe(500);
@@ -34,7 +34,7 @@ describe("webhook invalid signature", () => {
   test("wrong secret signature returns 500", async () => {
     const { header } = sign(payload, "wrong");
     const res = await request(app)
-      .post("/api/stripe/webhook")
+      .post("/stripe/webhook")
       .set("stripe-signature", header)
       .set("Content-Type", "application/json")
       .send(payload);
