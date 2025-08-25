@@ -11,6 +11,14 @@
    npm run db:check
    ```
 
+## DB tests (pg-mem)
+
+```bash
+npm run --prefix backend test:db
+```
+
+These tests mock `pg` and register `gen_random_uuid` for UUID generation.
+
 ## Sparc3D Client
 
 Example usage:
