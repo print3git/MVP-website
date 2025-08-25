@@ -25,7 +25,7 @@ describe("webhook event types", () => {
     });
     const { header } = sign(payload, process.env.STRIPE_WEBHOOK_SECRET!);
     const res = await request(app)
-      .post("/api/stripe/webhook")
+      .post("/stripe/webhook")
       .set("stripe-signature", header)
       .set("Content-Type", "application/json")
       .send(payload);
@@ -41,7 +41,7 @@ describe("webhook event types", () => {
     });
     const { header } = sign(payload, process.env.STRIPE_WEBHOOK_SECRET!);
     const res = await request(app)
-      .post("/api/stripe/webhook")
+      .post("/stripe/webhook")
       .set("stripe-signature", header)
       .set("Content-Type", "application/json")
       .send(payload);
@@ -52,7 +52,7 @@ describe("webhook event types", () => {
     const payload = '{"id":"evt3"';
     const { header } = sign(payload, process.env.STRIPE_WEBHOOK_SECRET!);
     const res = await request(app)
-      .post("/api/stripe/webhook")
+      .post("/stripe/webhook")
       .set("stripe-signature", header)
       .set("Content-Type", "application/json")
       .send(payload);

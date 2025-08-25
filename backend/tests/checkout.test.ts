@@ -38,7 +38,7 @@ test("POST /api/checkout creates session", async () => {
   expect(res.body.checkoutUrl).toBe("http://checkout");
 });
 
-test("POST /api/stripe/webhook marks paid and emails", async () => {
+test("POST /stripe/webhook marks paid and emails", async () => {
   orders.set("cs_test", { slug: "m1", email: "a@a.com" });
   const payload = JSON.stringify({
     id: "evt",
@@ -47,7 +47,7 @@ test("POST /api/stripe/webhook marks paid and emails", async () => {
   });
   stripeMock.webhooks.constructEvent.mockReturnValueOnce(JSON.parse(payload));
   const res = await request(app)
-    .post("/api/stripe/webhook")
+    .post("/stripe/webhook")
     .set("stripe-signature", "sig")
     .send(payload);
   expect(res.status).toBe(200);
@@ -61,7 +61,7 @@ test("POST /api/checkout validates required fields", async () => {
   expect(orders.size).toBe(0);
 });
 
-test("POST /api/stripe/webhook ignores unknown sessions", async () => {
+test("POST /stripe/webhook ignores unknown sessions", async () => {
   const payload = JSON.stringify({
     id: "evt",
     type: "checkout.session.completed",
@@ -69,7 +69,7 @@ test("POST /api/stripe/webhook ignores unknown sessions", async () => {
   });
   stripeMock.webhooks.constructEvent.mockReturnValueOnce(JSON.parse(payload));
   const res = await request(app)
-    .post("/api/stripe/webhook")
+    .post("/stripe/webhook")
     .set("stripe-signature", "sig")
     .send(payload);
   expect(res.status).toBe(200);

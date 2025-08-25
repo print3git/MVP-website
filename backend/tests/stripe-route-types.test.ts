@@ -111,15 +111,16 @@ describe("stripe route type checks", () => {
     const { checker, sourceFile } = createProgram(checkoutPath);
     const [reqParam, resParam] = getHandlerParams(sourceFile);
     const bodyType = getBodyType(checker, reqParam)!;
-    assertProp(checker, bodyType, "price", "number");
-    assertProp(checker, bodyType, "qty", "number | undefined");
+    assertProp(checker, bodyType, "items", "Item[] | undefined");
+    assertProp(checker, bodyType, "allowPromotionCodes", "boolean | undefined");
     assertProp(
       checker,
       bodyType,
       "metadata",
       "Record<string, string> | undefined",
     );
-    assertProp(checker, bodyType, "userId", "string | undefined");
+    assertProp(checker, bodyType, "customer_email", "string | undefined");
+    assertProp(checker, bodyType, "currency", "string | undefined");
     expect(isAssignableToReadableStream(checker, bodyType)).toBe(false);
     const resType = checker.getTypeAtLocation(resParam);
     expect(hasCallable(checker, resType, "json")).toBe(true);

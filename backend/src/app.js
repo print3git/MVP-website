@@ -1,26 +1,22 @@
 const express = require("express");
-const modelsRouter = require("./routes/models");
+const healthRouter = require("./routes/health").default;
 const itemsRouter = require("./routes/items").default;
 const checkoutRouter = require("./routes/checkout").default;
 const stripeWebhookRouter = require("./routes/stripeWebhook").default;
-const stripeCheckoutRouter = require("./routes/stripeCheckout").default;
+const stripeCheckoutRouter = require("./routes/stripe/create-checkout-session").default;
 const { capture } = require("./lib/logger");
 const logger = require("../../src/logger");
 
 const app = express();
 app.use(stripeWebhookRouter);
 app.use(express.json());
-app.use(modelsRouter);
+app.use(healthRouter);
 app.use(itemsRouter);
 app.use(checkoutRouter);
 app.use(stripeCheckoutRouter);
 
 app.use((err, req, res, _next) => {
-  const context = {
-    method: req.method,
-    url: req.originalUrl,
-    body: req.body,
-  };
+  const context = { method: req.method, url: req.originalUrl, body: req.body };
   try {
     logger.error("Error handling request", context, err);
   } catch (_logErr) {
@@ -31,3 +27,4 @@ app.use((err, req, res, _next) => {
 });
 
 module.exports = app;
+module.exports.app = app;
