@@ -1,9 +1,9 @@
 const { spawnSync } = require("child_process");
 const path = require("path");
 
-const file = path.join(__dirname, "..", "src", "routes", "models.js");
+const file = path.join(__dirname, "..", "src", "routes", "models.ts");
 
-test("src/routes/models.js lints cleanly", () => {
+test("src/routes/models.ts lints cleanly", () => {
   const res = spawnSync("npx", ["eslint", file], { encoding: "utf8" });
   if (res.status !== 0) {
     throw new Error(`ESLint failed for ${file}\n${res.stdout}${res.stderr}`);
