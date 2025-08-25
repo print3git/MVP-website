@@ -11,11 +11,13 @@ import stripeCheckoutRouter from "./routes/stripe/create-checkout-session";
 import modelsRouter from "./routes/models";
 import { capture } from "./lib/logger";
 import logger from "../../src/logger.js";
+import { removedEndpoints } from "./middleware/removedEndpoints";
 
 export const app = express();
 
 app.use(stripeWebhookRouter);
 app.use(express.json());
+app.use(removedEndpoints);
 app.use(healthRouter);
 app.use(itemsRouter);
 app.use(checkoutRouter);
@@ -34,3 +36,5 @@ app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
 });
 
 export default app;
+module.exports = app;
+module.exports.app = app;
