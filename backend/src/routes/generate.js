@@ -1,6 +1,6 @@
 const { Router } = require("express");
 const multer = require("multer");
-const db = require("../../db.js");
+const db = require("../db.js");
 const { userIdFromAuth } = require("../lib/auth.js");
 const { generateModel } = require("../lib/generateModel.js");
 const { preserveColors } = require("../lib/preserveColors.js");
