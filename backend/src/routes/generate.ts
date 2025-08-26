@@ -1,12 +1,9 @@
 import { Router, type Request } from "express";
 import multer from "multer";
-import * as db from "../db.js";
 import { userIdFromAuth } from "../lib/auth";
-import { generateModel } from "../lib/generateModel";
-import { preserveColors } from "../lib/preserveColors";
-import { uploadS3 } from "../lib/uploadS3";
 import { logError } from "../lib/logError";
 import logger from "../logger.js";
+import { enqueue, onComplete, onFail } from "../queue/generation";
 
 const upload = multer();
 const router = Router();
@@ -29,7 +26,8 @@ function throwValidation(code: string, status = 400): never {
 
 function validateInput(req: Request): ValidationResult {
   if (req.is("application/json")) {
-    const raw = typeof req.body?.prompt === "string" ? req.body.prompt.trim() : "";
+    const raw =
+      typeof req.body?.prompt === "string" ? req.body.prompt.trim() : "";
     if (!raw) throwValidation("missing_or_ambiguous_input");
     if (raw.length < 1 || raw.length > 400) throwValidation("invalid_prompt");
     return { prompt: raw, source: "prompt" };
@@ -40,19 +38,22 @@ function validateInput(req: Request): ValidationResult {
       throwValidation("payload_too_large", 413);
     }
     if (!req.file) throwValidation("missing_or_ambiguous_input");
-    const raw = typeof req.body?.prompt === "string" ? req.body.prompt.trim() : undefined;
-    if (raw && (raw.length < 1 || raw.length > 400)) throwValidation("invalid_prompt");
-    // If both prompt and image are provided, prefer image as the source and pass prompt metadata.
-    return { prompt: raw, image: req.file.buffer.toString("base64"), source: "image" };
+    const raw =
+      typeof req.body?.prompt === "string" ? req.body.prompt.trim() : undefined;
+    if (raw && (raw.length < 1 || raw.length > 400))
+      throwValidation("invalid_prompt");
+    return {
+      prompt: raw,
+      image: req.file.buffer.toString("base64"),
+      source: "image",
+    };
   }
   throwValidation("unsupported_media_type", 415);
 }
 
 router.post("/generate", upload.single("image"), async (req, res) => {
-  const userId = userIdFromAuth(req) || null;
-  const start = Date.now();
+  const userId = userIdFromAuth(req) || "";
   let jobId: string | undefined;
-  let s3Key: string | undefined;
   let parsed: ValidationResult;
 
   try {
@@ -75,58 +76,41 @@ router.post("/generate", upload.single("image"), async (req, res) => {
   const { prompt, image, source } = parsed;
 
   try {
-    if (typeof (db as any).createJob === "function") {
-      const job = await (db as any).createJob({
-        user_id: userId,
-        prompt,
-        source,
-        created_at: new Date(start).toISOString(),
-      });
-      jobId = job?.id || job?.job_id || job?.jobId;
-    }
-
-    let model = await generateModel({ prompt, image });
-    model = await preserveColors(model);
-    const uploadResult = await uploadS3(model);
-    const { url, key } = uploadResult;
-    s3Key = key;
-
-    if (jobId && typeof (db as any).linkModelToJob === "function") {
-      await (db as any).linkModelToJob(jobId, key);
-    }
-    if (typeof (db as any).insertGenerationLog === "function") {
-      await (db as any).insertGenerationLog({
-        jobId,
-        userId,
-        prompt: prompt ?? "image",
-        source,
-        startTime: new Date(start).toISOString(),
-        finishTime: new Date().toISOString(),
-        s3Key: key,
-        url,
-      });
-    }
-
-    logger.info("generate_success", { jobId, userId, source, s3Key: key });
-    res.json({ jobId, url });
+    const queued = await enqueue(userId, { prompt, image, source });
+    jobId = queued.jobId;
+    const result = await new Promise<{ url: string; s3Key?: string }>(
+      (resolve, reject) => {
+        const timer = setTimeout(() => {
+          const err = new Error("timeout");
+          (err as any).code = "timeout";
+          reject(err);
+        }, 30_000);
+        onComplete(jobId!, (r) => {
+          clearTimeout(timer);
+          resolve(r);
+        });
+        onFail(jobId!, (r) => {
+          clearTimeout(timer);
+          const err = new Error(r.error);
+          (err as any).code = r.error;
+          reject(err);
+        });
+      },
+    );
+    logger.info("generate_success", {
+      jobId,
+      userId,
+      source,
+      s3Key: result.s3Key,
+    });
+    res.json({ jobId, url: result.url });
   } catch (err) {
-    const stage = s3Key ? "upload" : "generation";
-    const code = stage === "upload" ? "upload_failed" : "model_error";
-    logger.error("generate_failed", { stage, userId, code: (err as any).code });
+    const code = (err as any).code || "model_error";
+    logger.error("generate_failed", { stage: "queue", userId, code });
     logError(err);
     if (process.env.CI_REQUIRE_EXTERNAL === "true") {
       res.status(502).json({ error: code });
       return;
-    }
-    if (typeof (db as any).insertGenerationLog === "function") {
-      await (db as any).insertGenerationLog({
-        jobId,
-        userId,
-        prompt: prompt ?? "image",
-        source,
-        startTime: new Date(start).toISOString(),
-        finishTime: new Date().toISOString(),
-      });
     }
     res.json({ jobId: jobId || FALLBACK_JOB_ID, url: "/fallback.glb" });
   }
