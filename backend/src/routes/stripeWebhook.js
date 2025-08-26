@@ -7,13 +7,8 @@ var __importDefault =
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const stripe_1 = __importDefault(require("stripe"));
-const checkout_1 = require("./checkout");
-const mail_1 = require("../../mail");
-const db = require("../../db.js");
-const secretKey =
-  process.env.NODE_ENV === "production"
-    ? process.env.STRIPE_LIVE_KEY || process.env.STRIPE_SECRET_KEY
-    : process.env.STRIPE_TEST_KEY || process.env.STRIPE_SECRET_KEY;
+const db_1 = require("../db");
+const secretKey = process.env.STRIPE_SECRET_KEY;
 if (!secretKey) {
   throw new Error("Stripe key not configured");
 }
@@ -21,44 +16,55 @@ const stripe = new stripe_1.default(secretKey, {
   apiVersion: "2025-06-30.basil",
 });
 const router = express_1.default.Router();
-const handler = async (req, res, next) => {
-  try {
+router.post(
+  "/api/stripe/webhook",
+  express_1.default.raw({ type: "application/json" }),
+  async (req, res) => {
     const sig = req.headers["stripe-signature"];
-    const event = stripe.webhooks.constructEvent(
-      req.body,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET || "",
-    );
-    if (event.type === "checkout.session.completed") {
-      const session = event.data.object;
-      const order = checkout_1.orders.get(session.id);
-      if (order && !order.paid) {
-        order.paid = true;
-        const link = process.env.CLOUDFRONT_MODEL_DOMAIN
-          ? `https://${process.env.CLOUDFRONT_MODEL_DOMAIN}/${order.slug}.glb`
-          : order.slug;
-        await (0, mail_1.sendMail)(order.email, "Your model is ready", link);
-      }
-      if (session.metadata && session.metadata.jobId) {
-        await db.adjustSaleCredit("seller", 500);
-      }
+    let event;
+    try {
+      event = stripe.webhooks.constructEvent(
+        req.body,
+        sig,
+        process.env.STRIPE_WEBHOOK_SECRET || "",
+      );
+    } catch (_a) {
+      res.status(400).json({ error: "invalid_signature" });
+      return;
     }
-    res.sendStatus(200);
-  } catch (err) {
-    if (err && err.message && err.message.includes("Webhook Error")) {
-      return res.sendStatus(400);
+    if (event.type === "payment_intent.succeeded") {
+      const pi = event.data.object;
+      const processed = await (0, db_1.markPaymentProcessed)(pi.id);
+      if (!processed) {
+        res.json({ ok: true });
+        return;
+      }
+      const amount = pi.amount_received ?? pi.amount ?? 0;
+      const email =
+        (pi.charges &&
+          pi.charges.data &&
+          pi.charges.data[0] &&
+          pi.charges.data[0].receipt_email) ||
+        pi.receipt_email;
+      const metadata = pi.metadata || {};
+      const userId = metadata.userId;
+      const orderId = metadata.orderId;
+      const qty = metadata.qty;
+      const modelUrl = metadata.modelUrl;
+      await (0, db_1.upsertOrderPaid)({
+        userId,
+        orderId,
+        intentId: pi.id,
+        amountCents: amount,
+        currency: pi.currency,
+        email,
+        quantity: qty ? Number(qty) : undefined,
+        modelUrl,
+      });
+      res.json({ ok: true });
+      return;
     }
-    next(err);
-  }
-};
-router.post(
-  "/stripe/webhook",
-  express_1.default.raw({ type: "application/json" }),
-  handler,
-);
-router.post(
-  "/api/webhook/stripe",
-  express_1.default.raw({ type: "application/json" }),
-  handler,
+    res.json({ received: true });
+  },
 );
 exports.default = router;

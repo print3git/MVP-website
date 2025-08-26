@@ -13,6 +13,8 @@ function close() {
 
 const jobs = new Map();
 const generationLogs = [];
+const processedPayments = new Map();
+const inMemoryOrders = new Map();
 
 async function createJob(input) {
   const id = "j_" + Date.now();
@@ -37,10 +39,75 @@ async function insertGenerationLog(log) {
     generationLogs.push(log);
   }
 }
+
+async function markPaymentProcessed(intentId) {
+  try {
+    const result = await pool.query(
+      "INSERT INTO processed_payments(intent_id) VALUES($1) ON CONFLICT (intent_id) DO NOTHING RETURNING intent_id",
+      [intentId],
+    );
+    if (result.rowCount && result.rowCount > 0) {
+      return true;
+    }
+    return false;
+  } catch {
+    if (processedPayments.has(intentId)) {
+      return false;
+    }
+    processedPayments.set(intentId, true);
+    return true;
+  }
+}
+
+async function upsertOrderPaid(input) {
+  const {
+    orderId,
+    userId,
+    intentId,
+    amountCents,
+    currency,
+    email,
+    quantity,
+    modelUrl,
+  } = input;
+  try {
+    await pool.query(
+      `INSERT INTO orders (order_id, user_id, intent_id, amount_cents, currency, email, quantity, model_url, paid, paid_at)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,true,NOW())
+       ON CONFLICT (order_id) DO UPDATE SET user_id=$2, intent_id=$3, amount_cents=$4, currency=$5, email=$6, quantity=$7, model_url=$8, paid=true, paid_at=NOW()`,
+      [
+        orderId || intentId,
+        userId,
+        intentId,
+        amountCents,
+        currency,
+        email,
+        quantity,
+        modelUrl,
+      ],
+    );
+  } catch {
+    const key = orderId || intentId;
+    inMemoryOrders.set(key, {
+      user_id: userId,
+      order_id: orderId,
+      intent_id: intentId,
+      amount_cents: amountCents,
+      currency,
+      email,
+      quantity,
+      model_url: modelUrl,
+      paid: true,
+      paid_at: new Date().toISOString(),
+    });
+  }
+}
 module.exports = {
   pool,
   close,
   createJob,
   linkModelToJob,
   insertGenerationLog,
+  markPaymentProcessed,
+  upsertOrderPaid,
 };
