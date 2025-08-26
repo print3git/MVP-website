@@ -47,15 +47,6 @@ try {
 
 try {
   (() => {
-    const r = require("./routes/stripeCheckout");
-    app.use(r.default || r);
-  })();
-} catch (err) {
-  console.error("Failed to load stripe checkout router", err);
-}
-
-try {
-  (() => {
     const r = require("./routes/models");
     app.use("/api/models", r.default || r);
   })();
@@ -106,15 +97,6 @@ try {
   })();
 } catch (err) {
   console.error("Failed to load subscription router", err);
-}
-
-try {
-  (() => {
-    const r = require("./routes/legacy");
-    app.use(r.default || r);
-  })();
-} catch (err) {
-  console.error("Failed to load legacy router", err);
 }
 
 try {
