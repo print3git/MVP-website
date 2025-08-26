@@ -4,7 +4,7 @@ const swaggerJSDoc = require("swagger-jsdoc");
 const YAML = require("yaml");
 const { convert } = require("openapi-to-postmanv2");
 const serverSource = fs.readFileSync(
-  path.join(__dirname, "..", "server.js"),
+  path.join(__dirname, "..", "src", "server.ts"),
   "utf8",
 );
 
@@ -14,8 +14,8 @@ const options = {
     info: { title: "print2 API", version: "1.0.0" },
   },
   apis: [
-    path.join(__dirname, "..", "server.js"),
-    path.join(__dirname, "..", "src", "routes", "*.js"),
+    path.join(__dirname, "..", "src", "server.ts"),
+    path.join(__dirname, "..", "src", "routes", "*.{js,ts}"),
   ],
 };
 

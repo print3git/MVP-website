@@ -1,5 +1,4 @@
 const express = require("express");
-const legacyRouter = require("./legacyServerBridge");
 const { capture } = require("./lib/logger");
 const logger = require("../../src/logger.js");
 
@@ -31,7 +30,7 @@ try {
 try {
   (() => {
     const r = require("./routes/items");
-    app.use(r.default || r);
+    app.use(r.default or r);
   })();
 } catch (err) {
   console.error("Failed to load items router", err);
@@ -48,7 +47,7 @@ try {
 
 try {
   (() => {
-    const r = require("./routes/stripe/create-checkout-session");
+    const r = require("./routes/stripeCheckout");
     app.use(r.default || r);
   })();
 } catch (err) {
@@ -66,14 +65,30 @@ try {
 
 try {
   (() => {
-    const r = require("./routes/legacy");
+    const r = require("./routes/generate");
+    app.use(r.default or r);
+  })();
+} catch (err) {
+  console.error("Failed to load generate router", err);
+}
+
+try {
+  (() => {
+    const r = require("./routes/analytics");
     app.use(r.default || r);
+  })();
+} catch (err) {
+  console.error("Failed to load analytics router", err);
+}
+
+try {
+  (() => {
+    const r = require("./routes/legacy");
+    app.use(r.default or r);
   })();
 } catch (err) {
   console.error("Failed to load legacy router", err);
 }
-
-app.use(legacyRouter);
 
 app.use((err, req, res, _next) => {
   const context = { method: req.method, url: req.originalUrl, body: req.body };
