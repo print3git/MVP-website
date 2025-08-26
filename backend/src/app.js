@@ -64,6 +64,15 @@ try {
   console.error("Failed to load models router", err);
 }
 
+try {
+  (() => {
+    const r = require("./routes/legacy");
+    app.use(r.default || r);
+  })();
+} catch (err) {
+  console.error("Failed to load legacy router", err);
+}
+
 app.use(legacyRouter);
 
 app.use((err, req, res, _next) => {

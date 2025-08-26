@@ -26,6 +26,9 @@ module.exports = {
     "^stripe$": "<rootDir>/tests/stripe/__mocks__/stripe.ts",
     "^../../db$": "<rootDir>/tests/__mocks__/db.ts",
     "^pg$": "<rootDir>/tests/db/__mocks__/pg.ts",
+    "^\\./server(?:\\.js)?$": "<rootDir>/src/app",
+    "^\\.\\./server(?:\\.js)?$": "<rootDir>/src/app",
+    "^\\.\\./\\.\\./server(?:\\.js)?$": "<rootDir>/src/app",
   },
 };
 
