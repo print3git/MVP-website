@@ -1,35 +1,58 @@
 import { Router } from "express";
 import multer from "multer";
 import * as db from "../../db.js";
-import { generateModel } from "../pipeline/generateModel";
+import { userIdFromAuth } from "../lib/auth";
+import { generateModel } from "../lib/generateModel";
 import { preserveColors } from "../lib/preserveColors";
-import * as s3 from "../lib/uploadS3";
+import { uploadS3 } from "../lib/uploadS3";
 import { logError } from "../lib/logError";
 
 const upload = multer();
 const router = Router();
 
 router.post("/generate", upload.single("image"), async (req, res) => {
-  const prompt = req.body?.prompt as string | undefined;
+  const prompt =
+    typeof req.body?.prompt === "string" ? req.body.prompt : undefined;
   const image = req.file ? req.file.buffer.toString("base64") : undefined;
   if (!prompt && !image) {
-    res.status(400).json({ error: "prompt or image required" });
+    res.status(400).json({ error: "bad_request" });
     return;
   }
+
+  const userId = userIdFromAuth(req);
   let jobId: string | undefined;
+  const start = Date.now();
+
   try {
-    const job = await db.query(
-      "INSERT INTO jobs(prompt) VALUES($1) RETURNING id",
-      [prompt || ""],
-    );
-    jobId = job.rows?.[0]?.id;
-    const glb = await generateModel({ prompt, image });
-    const colored = await preserveColors(glb);
-    const uploadFn = (s3 as any).uploadS3 || (s3 as any).uploadFile;
-    const url = await uploadFn(colored);
-    if (typeof (db as any).insertGenerationLog === "function") {
-      await (db as any).insertGenerationLog(jobId, url);
+    if (typeof (db as any).createJob === "function") {
+      const job = await (db as any).createJob({
+        user_id: userId,
+        prompt,
+        source: image ? "image" : "prompt",
+        created_at: new Date(start).toISOString(),
+      });
+      jobId = job?.id || job?.job_id || job?.jobId;
     }
+
+    const model = await generateModel({ prompt, image });
+    const colored = await preserveColors(model);
+    const { url, key } = await uploadS3(colored);
+
+    if (jobId && typeof (db as any).linkModelToJob === "function") {
+      await (db as any).linkModelToJob(jobId, key);
+    }
+    if (typeof (db as any).insertGenerationLog === "function") {
+      await (db as any).insertGenerationLog({
+        jobId,
+        prompt,
+        source: image ? "image" : "prompt",
+        startTime: new Date(start).toISOString(),
+        finishTime: new Date().toISOString(),
+        s3Key: key,
+        url,
+      });
+    }
+
     res.json({ jobId, url });
   } catch (err) {
     logError(err);

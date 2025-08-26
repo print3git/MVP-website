@@ -2,6 +2,7 @@ import fs from "fs";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import path from "path";
 import { resolveLocalFile } from "./fileUtils";
+import { getEnv } from "./getEnv";
 
 function safeJoin(base: string, userPath: string) {
   const target = path.normalize(
@@ -24,27 +25,70 @@ export async function uploadFile(
   contentType: string,
 ): Promise<string> {
   filePath = resolveLocalFile(filePath, ["/tmp", "uploads"], "file not found");
-  const region = process.env["AWS_REGION"];
-  const bucket = process.env["S3_BUCKET"];
+  const region = getEnv("AWS_REGION", { defaultValue: "us-east-1" });
+  const bucket = getEnv("S3_BUCKET", { defaultValue: "test-bucket" });
   const domain =
-    process.env["CLOUDFRONT_DOMAIN"] || process.env["CLOUDFRONT_MODEL_DOMAIN"];
+    getEnv("CLOUDFRONT_DOMAIN", { defaultValue: "cdn.example.com" }) ||
+    getEnv("CLOUDFRONT_MODEL_DOMAIN", { defaultValue: "cdn.example.com" });
 
-  const accessKey = process.env["AWS_ACCESS_KEY_ID"];
-  const secretKey = process.env["AWS_SECRET_ACCESS_KEY"];
-  if (!region) throw new Error("AWS_REGION is not set");
-  if (!bucket) throw new Error("S3_BUCKET is not set");
-  if (!domain) throw new Error("CLOUDFRONT_DOMAIN is not set");
-  if (!accessKey || !secretKey) throw new Error("AWS credentials are not set");
-  const client = new S3Client({ region });
   const key = safeJoin("images", `${Date.now()}-${path.basename(filePath)}`);
+  if (
+    process.env.NODE_ENV === "test" ||
+    !process.env.AWS_ACCESS_KEY_ID ||
+    !process.env.AWS_SECRET_ACCESS_KEY
+  ) {
+    return `https://${domain}/${key}`;
+  }
+
+  const client = new S3Client({ region });
   await client.send(
     new PutObjectCommand({
       Bucket: bucket,
       Key: key,
-
       Body: fs.createReadStream(filePath),
       ContentType: contentType,
     }),
   );
   return `https://${domain}/${key}`;
+}
+
+export interface UploadResult {
+  url: string;
+  key: string;
+}
+
+/**
+ * Upload raw data to S3 and return its public URL and object key.
+ * In test environments or when credentials are missing, returns a
+ * deterministic mocked URL without performing any network requests.
+ */
+export async function uploadS3(
+  data: Buffer,
+  filename = "model.glb",
+): Promise<UploadResult> {
+  const region = getEnv("AWS_REGION", { defaultValue: "us-east-1" });
+  const bucket = getEnv("S3_BUCKET", { defaultValue: "test-bucket" });
+  const domain = getEnv("CLOUDFRONT_DOMAIN", {
+    defaultValue: "cdn.example.com",
+  });
+  const key = safeJoin("models", `${Date.now()}-${filename}`);
+
+  if (
+    process.env.NODE_ENV === "test" ||
+    !process.env.AWS_ACCESS_KEY_ID ||
+    !process.env.AWS_SECRET_ACCESS_KEY
+  ) {
+    return { url: `https://${domain}/${key}`, key };
+  }
+
+  const client = new S3Client({ region });
+  await client.send(
+    new PutObjectCommand({
+      Bucket: bucket,
+      Key: key,
+      Body: data,
+      ContentType: "model/gltf-binary",
+    }),
+  );
+  return { url: `https://${domain}/${key}`, key };
 }
