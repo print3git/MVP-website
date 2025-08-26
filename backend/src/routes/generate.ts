@@ -1,6 +1,6 @@
 import { Router, type Request } from "express";
 import multer from "multer";
-import * as db from "../../db.js";
+import * as db from "../db.js";
 import { userIdFromAuth } from "../lib/auth";
 import { generateModel } from "../lib/generateModel";
 import { preserveColors } from "../lib/preserveColors";
