@@ -23,7 +23,7 @@ const { createTimedCode } = require("../discountCodes");
 
 const jwt = require("jsonwebtoken");
 const request = require("supertest");
-const app = require("../server");
+const app = require("../src/app");
 
 beforeEach(() => {
   jest.clearAllMocks();

@@ -31,7 +31,7 @@ const stripeMock = { billingPortal: { sessions: { create: jest.fn() } } };
 Stripe.mockImplementation(() => stripeMock);
 
 const request = require("supertest");
-const app = require("../server");
+const app = require("../src/app");
 const jwt = require("jsonwebtoken");
 
 beforeEach(() => {
