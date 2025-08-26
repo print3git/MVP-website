@@ -1,4 +1,8 @@
-import express, { type NextFunction, type Request, type Response } from "express";
+import express, {
+  type NextFunction,
+  type Request,
+  type Response,
+} from "express";
 import { capture } from "./lib/logger";
 import logger from "../../src/logger.js";
 
@@ -41,15 +45,6 @@ try {
   })();
 } catch (err) {
   console.error("Failed to load checkout router", err);
-}
-
-try {
-  (() => {
-    const r = require("./routes/stripeCheckout");
-    app.use(r.default || r);
-  })();
-} catch (err) {
-  console.error("Failed to load stripe checkout router", err);
 }
 
 try {
@@ -104,15 +99,6 @@ try {
   })();
 } catch (err) {
   console.error("Failed to load subscription router", err);
-}
-
-try {
-  (() => {
-    const r = require("./routes/legacy");
-    app.use(r.default || r);
-  })();
-} catch (err) {
-  console.error("Failed to load legacy router", err);
 }
 
 try {
