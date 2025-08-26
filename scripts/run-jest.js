@@ -2,6 +2,7 @@
 const fs = require("fs");
 const { spawnSync } = require("child_process");
 const path = require("path");
+const os = require("os");
 
 if (!process.env.SKIP_ROOT_DEPS_CHECK) {
   require("./ensure-root-deps.js");
@@ -83,6 +84,30 @@ function runJest(args) {
     const abs = path.resolve(repoRoot, arg);
     return !abs.startsWith(backendDir);
   });
+  const hasExplicitPaths = fileArgs.length > 0;
+
+  let tempConfigPath;
+  if (hasExplicitPaths) {
+    const configPath = runFromRoot
+      ? path.join(repoRoot, "jest.config.js")
+      : path.join(backendDir, "jest.config.js");
+    const baseConfig = { ...require(configPath) };
+    delete baseConfig.coverageThreshold;
+    baseConfig.collectCoverage = false;
+    baseConfig.rootDir = runFromRoot ? repoRoot : backendDir;
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "jest-config-"));
+    tempConfigPath = path.join(tmpDir, "jest.config.js");
+    fs.writeFileSync(
+      tempConfigPath,
+      `module.exports = ${JSON.stringify(baseConfig)};`,
+    );
+    jestArgs.push(
+      "--config",
+      tempConfigPath,
+      "--coverage=false",
+      "--passWithNoTests",
+    );
+  }
 
   if (!runFromRoot) {
     jestArgs = jestArgs.map((arg) => {
@@ -126,6 +151,12 @@ function runJest(args) {
       ["test", "--prefix", "backend", ...jestArgs],
       options,
     );
+  }
+
+  if (tempConfigPath) {
+    try {
+      fs.unlinkSync(tempConfigPath);
+    } catch {}
   }
 
   if (result.status !== 0) process.exit(result.status || 1);
