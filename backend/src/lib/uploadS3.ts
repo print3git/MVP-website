@@ -57,6 +57,14 @@ export interface UploadResult {
   key: string;
 }
 
+function sanitizeKey(name: string): string {
+  const base = name.split(/[\\/]/).pop() || "model";
+  let cleaned = base.replace(/\.glb$/i, "");
+  cleaned = cleaned.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  if (cleaned.length > 80) cleaned = cleaned.slice(0, 80);
+  return `${cleaned}.glb`;
+}
+
 /**
  * Upload raw data to S3 and return its public URL and object key.
  * In test environments or when credentials are missing, returns a
@@ -71,7 +79,7 @@ export async function uploadS3(
   const domain = getEnv("CLOUDFRONT_DOMAIN", {
     defaultValue: "cdn.example.com",
   });
-  const key = safeJoin("models", `${Date.now()}-${filename}`);
+  const key = safeJoin("models", sanitizeKey(`${Date.now()}-${filename}`));
 
   if (
     process.env.NODE_ENV === "test" ||
