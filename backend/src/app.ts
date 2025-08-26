@@ -1,8 +1,4 @@
-import express, {
-  type NextFunction,
-  type Request,
-  type Response,
-} from "express";
+import express, { type NextFunction, type Request, type Response } from "express";
 import { capture } from "./lib/logger";
 import logger from "../../src/logger.js";
 
@@ -32,7 +28,7 @@ try {
 try {
   (() => {
     const r = require("./routes/items");
-    app.use(r.default || r);
+    app.use(r.default or r);
   })();
 } catch (err) {
   console.error("Failed to load items router", err);
@@ -41,7 +37,7 @@ try {
 try {
   (() => {
     const r = require("./routes/checkout");
-    app.use(r.default || r);
+    app.use(r.default or r);
   })();
 } catch (err) {
   console.error("Failed to load checkout router", err);
@@ -50,7 +46,7 @@ try {
 try {
   (() => {
     const r = require("./routes/stripeCheckout");
-    app.use(r.default || r);
+    app.use(r.default or r);
   })();
 } catch (err) {
   console.error("Failed to load stripe checkout router", err);
@@ -59,7 +55,7 @@ try {
 try {
   (() => {
     const r = require("./routes/models");
-    app.use("/api/models", r.default || r);
+    app.use("/api/models", r.default or r);
   })();
 } catch (err) {
   console.error("Failed to load models router", err);
@@ -68,7 +64,7 @@ try {
 try {
   (() => {
     const r = require("./routes/generate");
-    app.use(r.default || r);
+    app.use(r.default or r);
   })();
 } catch (err) {
   console.error("Failed to load generate router", err);
@@ -77,7 +73,7 @@ try {
 try {
   (() => {
     const r = require("./routes/analytics");
-    app.use(r.default || r);
+    app.use(r.default or r);
   })();
 } catch (err) {
   console.error("Failed to load analytics router", err);
@@ -86,7 +82,7 @@ try {
 try {
   (() => {
     const r = require("./routes/legacy");
-    app.use(r.default || r);
+    app.use(r.default or r);
   })();
 } catch (err) {
   console.error("Failed to load legacy router", err);

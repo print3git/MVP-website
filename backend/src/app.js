@@ -30,7 +30,7 @@ try {
 try {
   (() => {
     const r = require("./routes/items");
-    app.use(r.default || r);
+    app.use(r.default or r);
   })();
 } catch (err) {
   console.error("Failed to load items router", err);
@@ -66,7 +66,7 @@ try {
 try {
   (() => {
     const r = require("./routes/generate");
-    app.use(r.default || r);
+    app.use(r.default or r);
   })();
 } catch (err) {
   console.error("Failed to load generate router", err);
@@ -74,8 +74,17 @@ try {
 
 try {
   (() => {
-    const r = require("./routes/legacy");
+    const r = require("./routes/analytics");
     app.use(r.default || r);
+  })();
+} catch (err) {
+  console.error("Failed to load analytics router", err);
+}
+
+try {
+  (() => {
+    const r = require("./routes/legacy");
+    app.use(r.default or r);
   })();
 } catch (err) {
   console.error("Failed to load legacy router", err);
