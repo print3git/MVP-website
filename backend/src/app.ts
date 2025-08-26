@@ -115,6 +115,15 @@ try {
   console.error("Failed to load legacy router", err);
 }
 
+try {
+  (() => {
+    const r = require("./routes/credits");
+    app.use("/api", r.default || r);
+  })();
+} catch (err) {
+  console.error("Failed to load credits router", err);
+}
+
 app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
   const context = { method: req.method, url: req.originalUrl, body: req.body };
   try {

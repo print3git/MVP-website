@@ -1,6 +1,7 @@
 import { Router, type NextFunction, type Request, type Response } from "express";
 import Stripe from "stripe";
-import db from "../../db";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const db = require("../../db.js");
 import config from "../../config";
 import { authRequired, authOptional } from "../lib/auth";
 import { logError } from "../lib/logError";

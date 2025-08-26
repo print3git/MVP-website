@@ -1,6 +1,6 @@
 const { Router } = require("express");
 const Stripe = require("stripe");
-const db = require("../../db");
+const db = require("../../db.js");
 const config = require("../../config");
 const { authRequired, authOptional } = require("../lib/auth");
 const { logError } = require("../lib/logError");
