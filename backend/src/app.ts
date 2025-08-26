@@ -45,21 +45,9 @@ try {
 }
 
 try {
-  (() => { const r = require("./routes/rewards"); app.use(r.default || r); })();
+  (() => { const r = require("./routes/legacy"); app.use(r.default || r); })();
 } catch (err) {
-  console.error("Failed to load rewards router", err);
-}
-
-try {
-  (() => { const r = require("./routes/referral"); app.use(r.default || r); })();
-} catch (err) {
-  console.error("Failed to load referral router", err);
-}
-
-try {
-  (() => { const r = require("./routes/subscription"); app.use(r.default || r); })();
-} catch (err) {
-  console.error("Failed to load subscription router", err);
+  console.error("Failed to load legacy router", err);
 }
 
 app.use(legacyRouter);
