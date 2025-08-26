@@ -28,7 +28,7 @@ try {
 try {
   (() => {
     const r = require("./routes/items");
-    app.use(r.default or r);
+    app.use(r.default || r);
   })();
 } catch (err) {
   console.error("Failed to load items router", err);
@@ -37,7 +37,7 @@ try {
 try {
   (() => {
     const r = require("./routes/checkout");
-    app.use(r.default or r);
+    app.use(r.default || r);
   })();
 } catch (err) {
   console.error("Failed to load checkout router", err);
@@ -46,7 +46,7 @@ try {
 try {
   (() => {
     const r = require("./routes/stripeCheckout");
-    app.use(r.default or r);
+    app.use(r.default || r);
   })();
 } catch (err) {
   console.error("Failed to load stripe checkout router", err);
@@ -55,7 +55,7 @@ try {
 try {
   (() => {
     const r = require("./routes/models");
-    app.use("/api/models", r.default or r);
+    app.use("/api/models", r.default || r);
   })();
 } catch (err) {
   console.error("Failed to load models router", err);
@@ -64,7 +64,7 @@ try {
 try {
   (() => {
     const r = require("./routes/generate");
-    app.use(r.default or r);
+    app.use(r.default || r);
   })();
 } catch (err) {
   console.error("Failed to load generate router", err);
@@ -73,7 +73,7 @@ try {
 try {
   (() => {
     const r = require("./routes/analytics");
-    app.use(r.default or r);
+    app.use(r.default || r);
   })();
 } catch (err) {
   console.error("Failed to load analytics router", err);
@@ -81,8 +81,35 @@ try {
 
 try {
   (() => {
+    const r = require("./routes/referral");
+    app.use("/api", r.default || r);
+  })();
+} catch (err) {
+  console.error("Failed to load referral router", err);
+}
+
+try {
+  (() => {
+    const r = require("./routes/rewards");
+    app.use("/api", r.default || r);
+  })();
+} catch (err) {
+  console.error("Failed to load rewards router", err);
+}
+
+try {
+  (() => {
+    const r = require("./routes/subscription");
+    app.use("/api", r.default || r);
+  })();
+} catch (err) {
+  console.error("Failed to load subscription router", err);
+}
+
+try {
+  (() => {
     const r = require("./routes/legacy");
-    app.use(r.default or r);
+    app.use(r.default || r);
   })();
 } catch (err) {
   console.error("Failed to load legacy router", err);

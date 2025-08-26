@@ -1,23 +1,21 @@
-import { Router } from "express";
-import { authRequired, userIdFromAuth } from "../lib/auth";
-import { logError } from "../lib/logError";
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const db = require("../../db.js");
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { createTimedCode } = require("../../discountCodes.js");
+const { Router } = require("express");
+const db = require("../../db");
+const { createTimedCode } = require("../../discountCodes");
+const { authRequired } = require("../lib/auth");
+const { logError } = require("../lib/logError");
 
 const router = Router();
 
 router.get("/rewards", authRequired, async (req, res) => {
   try {
-    const userId = userIdFromAuth(req);
-    const points = await db.getRewardPoints(userId);
+    const points = await db.getRewardPoints(req.user.id);
     res.json({ points });
   } catch (err) {
     logError(err);
     res.status(500).json({ error: "Failed to fetch rewards" });
   }
 });
+
 router.post("/rewards/redeem", authRequired, async (req, res) => {
   const cost = parseInt(req.body?.points, 10);
   if (Number.isNaN(cost)) {
@@ -30,13 +28,12 @@ router.post("/rewards/redeem", authRequired, async (req, res) => {
       res.status(400).json({ error: "Invalid reward" });
       return;
     }
-    const userId = userIdFromAuth(req);
-    const current = await db.getRewardPoints(userId);
+    const current = await db.getRewardPoints(req.user.id);
     if (current < cost) {
       res.status(400).json({ error: "Insufficient points" });
       return;
     }
-    await db.adjustRewardPoints(userId, -cost);
+    await db.adjustRewardPoints(req.user.id, -cost);
     const code = await createTimedCode(opt.amount_cents, 168);
     res.json({ code });
   } catch (err) {
@@ -55,5 +52,5 @@ router.get("/rewards/options", async (_req, res) => {
   }
 });
 
-export default router;
-
+module.exports = router;
+module.exports.default = router;
