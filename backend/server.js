@@ -73,7 +73,6 @@ const {
   createTimedCode,
 } = require("./discountCodes");
 const { verifyTag } = require("./social");
-const QRCode = require("qrcode");
 const generateAdCopy = require("./utils/generateAdCopy");
 const generateShareCard = require("./utils/generateShareCard");
 const {
@@ -204,6 +203,23 @@ app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(healthzRouter);
 app.use("/api/models", modelsRouter);
 app.use("/api/users", usersRouter);
+
+try {
+  (() => {
+    const r = require("./src/routes/rewards");
+    app.use(r.default || r);
+  })();
+  (() => {
+    const r = require("./src/routes/referral");
+    app.use(r.default || r);
+  })();
+  (() => {
+    const r = require("./src/routes/subscription");
+    app.use(r.default || r);
+  })();
+} catch (err) {
+  console.error("Failed to load migrated routers", err);
+}
 const staticOptions = {
   setHeaders(res, filePath) {
     if (/\.(?:glb|hdr|js|css|png|jpe?g|gif|svg)$/i.test(filePath)) {
@@ -320,7 +336,6 @@ app.post("/api/dalle", async (req, res) => {
     res.status(500).json({ error: "Failed to generate image" });
   }
 });
-
 
 app.post("/api/login", async (req, res) => {
   const { username, password } = req.body;
@@ -946,45 +961,6 @@ app.post("/api/stripe/connect", authRequired, async (req, res) => {
   }
 });
 
-app.get("/api/subscription", authRequired, async (req, res) => {
-  try {
-    const sub = await db.getSubscription(req.user.id);
-    if (!sub) return res.json({ active: false });
-    res.json(sub);
-  } catch (err) {
-    logError(err);
-    res.status(500).json({ error: "Failed to fetch subscription" });
-  }
-});
-
-app.post("/api/subscription", authRequired, async (req, res) => {
-  const {
-    status,
-    current_period_start,
-    current_period_end,
-    customer_id,
-    subscription_id,
-    variant,
-    price_cents,
-  } = req.body;
-  try {
-    const sub = await db.upsertSubscription(
-      req.user.id,
-      status || "active",
-      current_period_start,
-      current_period_end,
-      customer_id,
-      subscription_id,
-    );
-    await db.ensureCurrentWeekCredits(req.user.id, 2);
-    await db.insertSubscriptionEvent(req.user.id, "join", variant, price_cents);
-    res.json(sub);
-  } catch (err) {
-    logError(err);
-    res.status(500).json({ error: "Failed to create subscription" });
-  }
-});
-
 app.post("/api/subscription/cancel", authRequired, async (req, res) => {
   try {
     const sub = await db.cancelSubscription(req.user.id);
@@ -1012,21 +988,6 @@ app.post("/api/subscription/portal", authRequired, async (req, res) => {
     res.status(500).json({ error: "Failed to create portal session" });
   }
 });
-
-app.get("/api/subscription/credits", authRequired, async (req, res) => {
-  try {
-    await db.ensureCurrentWeekCredits(req.user.id, 2);
-    const credits = await db.getCurrentWeekCredits(req.user.id);
-    res.json({
-      remaining: credits.total_credits - credits.used_credits,
-      total: credits.total_credits,
-    });
-  } catch (err) {
-    logError(err);
-    res.status(500).json({ error: "Failed to fetch credits" });
-  }
-});
-
 app.get("/api/subscription/summary", authRequired, async (req, res) => {
   try {
     await db.ensureCurrentWeekCredits(req.user.id, 2);
@@ -1103,16 +1064,6 @@ app.get("/api/dashboard", authRequired, async (req, res) => {
   }
 });
 
-app.get("/api/referral-link", authRequired, async (req, res) => {
-  try {
-    const code = await db.getOrCreateReferralLink(req.user.id);
-    res.json({ code });
-  } catch (err) {
-    logError(err);
-    res.status(500).json({ error: "Failed to fetch referral link" });
-  }
-});
-
 app.get("/api/orders/:id/referral-link", authRequired, async (req, res) => {
   const { id } = req.params;
   try {
@@ -1128,42 +1079,6 @@ app.get("/api/orders/:id/referral-link", authRequired, async (req, res) => {
   } catch (err) {
     logError(err);
     res.status(500).json({ error: "Failed to fetch referral link" });
-  }
-});
-
-app.get("/api/orders/:id/referral-qr", authRequired, async (req, res) => {
-  const { id } = req.params;
-  try {
-    const { rows } = await db.query(
-      "SELECT user_id FROM orders WHERE session_id=$1",
-      [id],
-    );
-    if (!rows.length || rows[0].user_id !== req.user.id) {
-      return res.status(404).json({ error: "Order not found" });
-    }
-    const code = await db.getOrCreateOrderReferralLink(id);
-    const base =
-      req.headers.origin || process.env.SITE_URL || "http://localhost:3000";
-    const url = `${base}?ref=${code}`;
-    const png = await QRCode.toBuffer(url, { width: 256 });
-    res.type("png").send(png);
-  } catch (err) {
-    logError(err);
-    res.status(500).json({ error: "Failed to generate QR code" });
-  }
-});
-
-app.post("/api/referral-click", async (req, res) => {
-  const { code } = req.body || {};
-  if (!code) return res.status(400).json({ error: "Missing code" });
-  try {
-    const referrer = await db.getUserIdForReferral(code);
-    if (!referrer) return res.status(404).json({ error: "Invalid code" });
-    await db.insertReferralEvent(referrer, "click");
-    res.json({ success: true });
-  } catch (err) {
-    logError(err);
-    res.status(500).json({ error: "Failed to record click" });
   }
 });
 
@@ -1236,16 +1151,6 @@ app.post(
   },
 );
 
-app.get("/api/rewards", authRequired, async (req, res) => {
-  try {
-    const points = await db.getRewardPoints(req.user.id);
-    res.json({ points });
-  } catch (err) {
-    logError(err);
-    res.status(500).json({ error: "Failed to fetch rewards" });
-  }
-});
-
 app.get("/api/rewards/options", async (req, res) => {
   try {
     const options = await db.getRewardOptions();
@@ -1253,31 +1158,6 @@ app.get("/api/rewards/options", async (req, res) => {
   } catch (err) {
     logError(err);
     res.status(500).json({ error: "Failed to fetch options" });
-  }
-});
-
-app.post("/api/rewards/redeem", authRequired, async (req, res) => {
-  const cost = parseInt(req.body.points, 10);
-  let discount = null;
-  try {
-    const opt = await db.getRewardOption(cost);
-    discount = opt ? opt.amount_cents : null;
-  } catch (err) {
-    logError(err);
-    return res.status(500).json({ error: "Failed to fetch reward options" });
-  }
-  if (!discount) return res.status(400).json({ error: "Invalid reward" });
-  try {
-    const current = await db.getRewardPoints(req.user.id);
-    if (current < cost) {
-      return res.status(400).json({ error: "Insufficient points" });
-    }
-    await db.adjustRewardPoints(req.user.id, -cost);
-    const code = await createTimedCode(discount, 168);
-    res.json({ code });
-  } catch (err) {
-    logError(err);
-    res.status(500).json({ error: "Failed to redeem reward" });
   }
 });
 
