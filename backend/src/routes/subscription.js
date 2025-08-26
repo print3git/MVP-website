@@ -1,16 +1,16 @@
-import { Router, type NextFunction, type Request, type Response } from "express";
-import Stripe from "stripe";
-import db from "../../db";
-import config from "../../config";
-import { authRequired, authOptional } from "../lib/auth";
-import { logError } from "../lib/logError";
+const { Router } = require("express");
+const Stripe = require("stripe");
+const db = require("../../db");
+const config = require("../../config");
+const { authRequired, authOptional } = require("../lib/auth");
+const { logError } = require("../lib/logError");
 
 const router = Router();
 const stripe = new Stripe(config.stripeKey, { apiVersion: "2025-06-30.basil" });
 
 router.get("/subscription", authRequired, async (req, res) => {
   try {
-    const sub = await db.getSubscription((req as any).user.id);
+    const sub = await db.getSubscription(req.user.id);
     if (!sub) {
       res.json({ active: false });
       return;
@@ -31,23 +31,18 @@ router.post("/subscription", authRequired, async (req, res) => {
     subscription_id,
     variant,
     price_cents,
-  } = req.body;
+  } = req.body || {};
   try {
     const sub = await db.upsertSubscription(
-      (req as any).user.id,
+      req.user.id,
       status || "active",
       current_period_start,
       current_period_end,
       customer_id,
       subscription_id,
     );
-    await db.ensureCurrentWeekCredits((req as any).user.id, 2);
-    await db.insertSubscriptionEvent(
-      (req as any).user.id,
-      "join",
-      variant,
-      price_cents,
-    );
+    await db.ensureCurrentWeekCredits(req.user.id, 2);
+    await db.insertSubscriptionEvent(req.user.id, "join", variant, price_cents);
     res.json(sub);
   } catch (err) {
     logError(err);
@@ -57,7 +52,7 @@ router.post("/subscription", authRequired, async (req, res) => {
 
 router.post("/subscription/portal", authRequired, async (req, res) => {
   try {
-    const sub = await db.getSubscription((req as any).user.id);
+    const sub = await db.getSubscription(req.user.id);
     if (!sub || !sub.stripe_customer_id) {
       res.status(404).json({ error: "Subscription not found" });
       return;
@@ -75,8 +70,8 @@ router.post("/subscription/portal", authRequired, async (req, res) => {
 
 router.get("/subscription/credits", authRequired, async (req, res) => {
   try {
-    await db.ensureCurrentWeekCredits((req as any).user.id, 2);
-    const credits = await db.getCurrentWeekCredits((req as any).user.id);
+    await db.ensureCurrentWeekCredits(req.user.id, 2);
+    const credits = await db.getCurrentWeekCredits(req.user.id);
     res.json({
       remaining: credits.total_credits - credits.used_credits,
       total: credits.total_credits,
@@ -89,11 +84,11 @@ router.get("/subscription/credits", authRequired, async (req, res) => {
 
 router.get("/subscription/summary", authRequired, async (req, res) => {
   try {
-    await db.ensureCurrentWeekCredits((req as any).user.id, 2);
+    await db.ensureCurrentWeekCredits(req.user.id, 2);
     const [sub, credits, months] = await Promise.all([
-      db.getSubscription((req as any).user.id),
-      db.getCurrentWeekCredits((req as any).user.id),
-      db.getSubscriptionDurationMonths((req as any).user.id),
+      db.getSubscription(req.user.id),
+      db.getCurrentWeekCredits(req.user.id),
+      db.getSubscriptionDurationMonths(req.user.id),
     ]);
     const milestone = months >= 12 ? 12 : months >= 6 ? 6 : months >= 3 ? 3 : 0;
     res.json({
@@ -111,9 +106,9 @@ router.get("/subscription/summary", authRequired, async (req, res) => {
   }
 });
 
-function adminCheck(req: Request, res: Response, next: NextFunction): void {
+function adminCheck(req, res, next) {
   authOptional(req, res, () => {
-    if (!(req as any).user || (req as any).user.isAdmin !== true) {
+    if (!req.user || req.user.isAdmin !== true) {
       res.status(401).json({ error: "Admin token required" });
       return;
     }
@@ -131,5 +126,5 @@ router.get("/admin/subscription-metrics", adminCheck, async (_req, res) => {
   }
 });
 
-export default router;
-
+module.exports = router;
+module.exports.default = router;

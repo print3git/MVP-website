@@ -1,18 +1,15 @@
-import { Router } from "express";
-import { authRequired, userIdFromAuth } from "../lib/auth";
-import { logError } from "../lib/logError";
-import { tinyPng } from "../lib/legacy/tinyPng";
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const db = require("../../db.js");
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { createTimedCode } = require("../../discountCodes.js");
+const { Router } = require("express");
+const QRCode = require("qrcode");
+const db = require("../../db");
+const { authRequired } = require("../lib/auth");
+const { logError } = require("../lib/logError");
+const { createTimedCode } = require("../../discountCodes");
 
 const router = Router();
 
 router.get("/referral-link", authRequired, async (req, res) => {
   try {
-    const userId = userIdFromAuth(req);
-    const code = await db.getOrCreateReferralLink(userId);
+    const code = await db.getOrCreateReferralLink(req.user.id);
     res.json({ code });
   } catch (err) {
     logError(err);
@@ -21,7 +18,7 @@ router.get("/referral-link", authRequired, async (req, res) => {
 });
 
 router.get("/referral-click", async (req, res) => {
-  const code = (req.query.code as string) || (req.body && (req.body as any).code);
+  const code = req.query.code || (req.body && req.body.code);
   if (!code) {
     res.status(400).json({ error: "Missing code" });
     return;
@@ -41,7 +38,7 @@ router.get("/referral-click", async (req, res) => {
 });
 
 router.post("/referral-signup", async (req, res) => {
-  const { code } = (req.body as any) || {};
+  const { code } = req.body || {};
   if (!code) {
     res.status(400).json({ error: "Missing code" });
     return;
@@ -67,7 +64,7 @@ router.post("/referral-signup", async (req, res) => {
 });
 
 router.post("/referral-post", authRequired, async (req, res) => {
-  const { url } = (req.body as any) || {};
+  const { url } = req.body || {};
   if (!url) {
     res.status(400).json({ error: "Missing url" });
     return;
@@ -90,9 +87,11 @@ router.post("/referral-post", authRequired, async (req, res) => {
 router.get("/orders/:id/referral-link", authRequired, async (req, res) => {
   const { id } = req.params;
   try {
-    const userId = userIdFromAuth(req);
-    const { rows } = await db.query("SELECT user_id FROM orders WHERE session_id=$1", [id]);
-    if (!rows.length || rows[0].user_id !== userId) {
+    const { rows } = await db.query(
+      "SELECT user_id FROM orders WHERE session_id=$1",
+      [id],
+    );
+    if (!rows.length || rows[0].user_id !== req.user.id) {
       res.status(404).json({ error: "Order not found" });
       return;
     }
@@ -107,17 +106,19 @@ router.get("/orders/:id/referral-link", authRequired, async (req, res) => {
 router.get("/orders/:id/referral-qr", authRequired, async (req, res) => {
   const { id } = req.params;
   try {
-    const userId = userIdFromAuth(req);
     const { rows } = await db.query(
       "SELECT user_id FROM orders WHERE session_id=$1",
       [id],
     );
-    if (!rows.length || rows[0].user_id !== userId) {
+    if (!rows.length || rows[0].user_id !== req.user.id) {
       res.status(404).json({ error: "Order not found" });
       return;
     }
-    await db.getOrCreateOrderReferralLink(id);
-    const png = tinyPng();
+    const code = await db.getOrCreateOrderReferralLink(id);
+    const base =
+      req.headers.origin || process.env.SITE_URL || "http://localhost:3000";
+    const url = `${base}?ref=${code}`;
+    const png = await QRCode.toBuffer(url, { width: 256 });
     res.type("png").send(png);
   } catch (err) {
     logError(err);
@@ -125,5 +126,5 @@ router.get("/orders/:id/referral-qr", authRequired, async (req, res) => {
   }
 });
 
-export default router;
-
+module.exports = router;
+module.exports.default = router;
