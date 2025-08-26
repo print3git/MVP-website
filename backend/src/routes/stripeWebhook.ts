@@ -1,18 +1,8 @@
-import express, {
-  type NextFunction,
-  type Request,
-  type Response,
-} from "express";
+import express from "express";
 import Stripe from "stripe";
-import { orders } from "./checkout";
-import { sendMail } from "../../mail.js";
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const db = require("../../db.js");
+import { upsertOrderPaid, markPaymentProcessed } from "../db";
 
-const secretKey =
-  process.env["NODE_ENV"] === "production"
-    ? process.env["STRIPE_LIVE_KEY"] || process.env["STRIPE_SECRET_KEY"]
-    : process.env["STRIPE_TEST_KEY"] || process.env["STRIPE_SECRET_KEY"];
+const secretKey = process.env.STRIPE_SECRET_KEY;
 if (!secretKey) {
   throw new Error("Stripe key not configured");
 }
@@ -20,45 +10,50 @@ const stripe = new Stripe(secretKey, { apiVersion: "2025-06-30.basil" });
 
 const router = express.Router();
 
-const handler = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
-  try {
+router.post(
+  "/api/stripe/webhook",
+  express.raw({ type: "application/json" }),
+  async (req, res) => {
     const sig = req.headers["stripe-signature"] as string;
-    const event = stripe.webhooks.constructEvent(
-      req.body,
-      sig,
-      process.env["STRIPE_WEBHOOK_SECRET"] || "",
-    );
-    if (event.type === "checkout.session.completed") {
-      const session = event.data.object as Stripe.Checkout.Session;
-      const order = orders.get(session.id);
-      if (order && !order.paid) {
-        order.paid = true;
-        const domain = process.env["CLOUDFRONT_MODEL_DOMAIN"];
-        const link = domain
-          ? `https://${domain}/${order.slug}.glb`
-          : order.slug;
-        await sendMail(order.email, "Your model is ready", link);
-      }
-      if (session.metadata?.jobId) {
-        await db.adjustSaleCredit("seller", 500);
-      }
-    }
-    res.sendStatus(200);
-    return;
-  } catch (err) {
-    if (err instanceof Error && err.message.includes("Webhook Error")) {
-      res.sendStatus(400);
+    let event: Stripe.Event;
+    try {
+      event = stripe.webhooks.constructEvent(
+        req.body,
+        sig,
+        process.env.STRIPE_WEBHOOK_SECRET || "",
+      );
+    } catch {
+      res.status(400).json({ error: "invalid_signature" });
       return;
     }
-    next(err);
-  }
-};
 
-router.post("/stripe/webhook", express.raw({ type: "application/json" }), handler);
-router.post("/api/webhook/stripe", express.raw({ type: "application/json" }), handler);
+    if (event.type === "payment_intent.succeeded") {
+      const pi = event.data.object as Stripe.PaymentIntent;
+      const processed = await markPaymentProcessed(pi.id);
+      if (!processed) {
+        res.json({ ok: true });
+        return;
+      }
+      const amount = pi.amount_received ?? pi.amount ?? 0;
+      const email =
+        pi.charges?.data?.[0]?.receipt_email || (pi as any).receipt_email;
+      const { userId, orderId, qty, modelUrl, ..._rest } = pi.metadata || {};
+      await upsertOrderPaid({
+        userId,
+        orderId,
+        intentId: pi.id,
+        amountCents: amount,
+        currency: pi.currency,
+        email,
+        quantity: qty ? Number(qty) : undefined,
+        modelUrl,
+      });
+      res.json({ ok: true });
+      return;
+    }
+
+    res.json({ received: true });
+  },
+);
 
 export default router;

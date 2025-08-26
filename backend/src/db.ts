@@ -51,3 +51,69 @@ export async function insertGenerationLog(log: {
     generationLogs.push(log);
   }
 }
+
+const processedPayments = new Map<string, true>();
+const inMemoryOrders = new Map<string, any>();
+
+export async function markPaymentProcessed(intentId: string): Promise<boolean> {
+  try {
+    const result = await pool.query(
+      "INSERT INTO processed_payments(intent_id) VALUES($1) ON CONFLICT (intent_id) DO NOTHING RETURNING intent_id",
+      [intentId],
+    );
+    if (result.rowCount && result.rowCount > 0) {
+      return true;
+    }
+    return false;
+  } catch {
+    if (processedPayments.has(intentId)) {
+      return false;
+    }
+    processedPayments.set(intentId, true);
+    return true;
+  }
+}
+
+export async function upsertOrderPaid(input: {
+  orderId?: string;
+  userId?: string;
+  intentId: string;
+  amountCents: number;
+  currency: string;
+  email?: string;
+  quantity?: number;
+  modelUrl?: string;
+}): Promise<void> {
+  const {
+    orderId,
+    userId,
+    intentId,
+    amountCents,
+    currency,
+    email,
+    quantity,
+    modelUrl,
+  } = input;
+  try {
+    await pool.query(
+      `INSERT INTO orders (order_id, user_id, intent_id, amount_cents, currency, email, quantity, model_url, paid, paid_at)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,true,NOW())
+       ON CONFLICT (order_id) DO UPDATE SET user_id=$2, intent_id=$3, amount_cents=$4, currency=$5, email=$6, quantity=$7, model_url=$8, paid=true, paid_at=NOW()`,
+      [orderId || intentId, userId, intentId, amountCents, currency, email, quantity, modelUrl],
+    );
+  } catch {
+    const key = orderId || intentId;
+    inMemoryOrders.set(key, {
+      user_id: userId,
+      order_id: orderId,
+      intent_id: intentId,
+      amount_cents: amountCents,
+      currency,
+      email,
+      quantity,
+      model_url: modelUrl,
+      paid: true,
+      paid_at: new Date().toISOString(),
+    });
+  }
+}
