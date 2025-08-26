@@ -57,7 +57,7 @@ try {
 try {
   (() => {
     const r = require("./routes/generate");
-    app.use(r.default || r);
+    app.use("/api", r.default || r);
   })();
 } catch (err) {
   console.error("Failed to load generate router", err);
