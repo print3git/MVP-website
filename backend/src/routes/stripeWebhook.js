@@ -7,6 +7,7 @@ var __importDefault =
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const stripe_1 = __importDefault(require("stripe"));
+const logger_js_1 = __importDefault(require("../logger.js"));
 const db_1 = require("../db");
 const secretKey = process.env.STRIPE_SECRET_KEY;
 if (!secretKey) {
@@ -51,16 +52,29 @@ router.post(
       const orderId = metadata.orderId;
       const qty = metadata.qty;
       const modelUrl = metadata.modelUrl;
-      await (0, db_1.upsertOrderPaid)({
-        userId,
-        orderId,
-        intentId: pi.id,
-        amountCents: amount,
-        currency: pi.currency,
-        email,
-        quantity: qty ? Number(qty) : undefined,
-        modelUrl,
-      });
+      const jobId = metadata.jobId;
+      const s3Key = metadata.s3Key;
+      try {
+        await (0, db_1.upsertOrderPaid)({
+          userId,
+          orderId,
+          intentId: pi.id,
+          amountCents: amount,
+          currency: pi.currency,
+          email,
+          quantity: qty ? Number(qty) : undefined,
+          modelUrl,
+          jobId,
+          s3Key,
+        });
+        if (jobId && s3Key) {
+          await (0, db_1.linkModelToJob)(jobId, s3Key);
+        }
+      } catch (err) {
+        logger_js_1.default.error("stripe_webhook_error", err);
+        res.status(500).json({ error: "server_error" });
+        return;
+      }
       res.json({ ok: true });
       return;
     }
