@@ -2,10 +2,15 @@ import express from "express";
 import Stripe from "stripe";
 import logger from "../logger.js";
 import { upsertOrderPaid, markPaymentProcessed, linkModelToJob } from "../db";
-import { getEnv } from "../env";
+import { getEnv, isTest } from "../env";
 
 const { STRIPE_SECRET_KEY } = getEnv();
-const stripe = new Stripe(STRIPE_SECRET_KEY, { apiVersion: "2025-06-30.basil" });
+const realStripe = new Stripe(STRIPE_SECRET_KEY, {
+  apiVersion: "2025-06-30.basil",
+});
+const stripe = isTest()
+  ? require("../../tests/utils/stripeMock").stripe
+  : realStripe;
 
 const router = express.Router();
 

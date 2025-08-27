@@ -1,6 +1,7 @@
 import { Router, type Request, type Response } from "express";
 import Stripe from "stripe";
 import db from "../../db"; // imported for tests
+import { isTest } from "../../env";
 
 interface Item {
   price: string;
@@ -18,9 +19,12 @@ interface CheckoutBody {
 }
 
 const router = Router();
-const stripe = new Stripe(process.env.STRIPE_TEST_KEY as string, {
+const realStripe = new Stripe(process.env.STRIPE_TEST_KEY as string, {
   apiVersion: "2025-06-30.basil",
 });
+const stripe = isTest()
+  ? require("../../../tests/utils/stripeMock").stripe
+  : realStripe;
 
 router.post(
   "/api/checkout/create",
