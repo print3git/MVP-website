@@ -4,17 +4,21 @@ const axios = require("axios");
 const { getPrinterStatus } = require("../printers/octoprint");
 const { selectHub } = require("../utils/routing");
 const logger = require("../../src/logger");
-const { getEnv } = require("../src/env");
+const { getEnv } = require("../utils/getEnv");
 
-const { PRINTER_API_URL, DB_URL } = getEnv();
-const DEFAULT_PRINTER_URL = PRINTER_API_URL || "http://localhost:5000/print";
-const PRINTER_URLS = (process.env.PRINTER_URLS || DEFAULT_PRINTER_URL)
+const PRINTER_API_URL = getEnv("PRINTER_API_URL", {
+  default: "http://localhost:5000/print",
+});
+const DB_URL = getEnv("DB_URL", { required: true });
+const PRINTER_URLS = getEnv("PRINTER_URLS", { default: PRINTER_API_URL })
   .split(",")
   .map((u) => u.trim())
   .filter(Boolean);
-const OCTOPRINT_API_KEY = process.env.OCTOPRINT_API_KEY || "";
+const OCTOPRINT_API_KEY = getEnv("OCTOPRINT_API_KEY", { default: "" });
 const POLL_INTERVAL_MS = 5000;
-const FILAMENT_GRAMS = parseFloat(process.env.FILAMENT_GRAMS_PER_PRINT || "25");
+const FILAMENT_GRAMS = parseFloat(
+  getEnv("FILAMENT_GRAMS_PER_PRINT", { default: "25" }),
+);
 
 let ready = false;
 
