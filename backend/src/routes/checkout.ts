@@ -1,68 +1,86 @@
-import express, {
-  type NextFunction,
-  type Request,
-  type Response,
-} from "express";
+import { Router } from "express";
 import Stripe from "stripe";
-import { PRODUCT } from "../pricing";
 
-export interface Order {
-  /** S3 object key (without `.glb`) returned from `storeGlb` */
-  slug: string;
-  email: string;
-  paid?: boolean;
-}
+const router = Router();
 
-export const orders = new Map<string, Order>();
+router.post("/checkout/create", async (req, res) => {
+  try {
+    const secretKey = process.env.STRIPE_SECRET_KEY;
+    const successUrl = process.env.FRONTEND_SUCCESS_URL;
+    const cancelUrl = process.env.FRONTEND_CANCEL_URL;
 
-const secretKey =
-  process.env["NODE_ENV"] === "production"
-    ? process.env["STRIPE_LIVE_KEY"] || process.env["STRIPE_SECRET_KEY"]
-    : process.env["STRIPE_TEST_KEY"] || process.env["STRIPE_SECRET_KEY"];
-if (!secretKey) {
-  throw new Error("Stripe key not configured");
-}
-const stripe = new Stripe(secretKey, { apiVersion: "2025-06-30.basil" });
+    if (!secretKey || !successUrl || !cancelUrl) {
+      res.status(500).json({ error: "server_misconfig" });
+      return;
+    }
 
-const router = express.Router();
-(router as any).orders = orders;
+    const {
+      items,
+      allowPromotionCodes,
+      requiresShipping,
+      customerEmail,
+      customer_email,
+      metadata,
+      currency,
+      idempotencyKey,
+    } = req.body || {};
 
-router.post(
-  "/api/checkout",
-  async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> => {
-    try {
-      const { slug, email } = req.body as Order;
-      if (!slug || !email) {
-        res.status(400).json({ error: "missing fields" });
+    const email = customerEmail ?? customer_email;
+
+    if (!Array.isArray(items) || items.length === 0) {
+      res.status(400).json({ error: "bad_request" });
+      return;
+    }
+
+    const normalized: { price: string; quantity: number }[] = [];
+    for (const item of items) {
+      if (typeof item.price !== "string") {
+        res.status(400).json({ error: "bad_request" });
         return;
       }
-      const sessionParams: Stripe.Checkout.SessionCreateParams = {
-        mode: "payment",
-        line_items: [
-          {
-            price_data: {
-              currency: PRODUCT.currency,
-              product_data: { name: PRODUCT.name },
-              unit_amount: PRODUCT.priceCents,
-            },
-            quantity: 1,
-          },
-        ],
-        metadata: { slug, email },
-        success_url: `${req.headers.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${req.headers.origin}/cancel`,
-      };
-      const session = await stripe.checkout.sessions.create(sessionParams);
-      orders.set(session.id, { slug, email, paid: false });
-      res.json({ checkoutUrl: session.url });
-    } catch (err) {
-      next(err);
+      const qty = item.quantity ?? 1;
+      if (typeof qty !== "number" || qty < 1 || qty > 99) {
+        res.status(400).json({ error: "bad_request" });
+        return;
+      }
+      normalized.push({ price: item.price, quantity: qty });
     }
-  },
-);
+
+    const stripe = new Stripe(secretKey, { apiVersion: "2025-06-30.basil" });
+
+    const metadataSanitized =
+      metadata &&
+      Object.fromEntries(
+        Object.entries(metadata).map(([k, v]) => [k, String(v)]),
+      );
+
+    try {
+      const session = await stripe.checkout.sessions.create(
+        {
+          mode: "payment",
+          payment_method_types: ["card"],
+          line_items: normalized,
+          success_url: successUrl,
+          cancel_url: cancelUrl,
+          allow_promotion_codes: !!allowPromotionCodes,
+          customer_email: email || undefined,
+          shipping_address_collection: requiresShipping
+            ? { allowed_countries: ["US", "GB", "CA", "AU", "EU"] }
+            : undefined,
+          currency: currency || "usd",
+          metadata: metadataSanitized || undefined,
+        },
+        {
+          idempotencyKey: idempotencyKey || undefined,
+        },
+      );
+      res.status(200).json({ id: session.id });
+    } catch {
+      res.status(502).json({ error: "stripe_error" });
+    }
+  } catch {
+    res.status(400).json({ error: "bad_request" });
+  }
+});
 
 export default router;

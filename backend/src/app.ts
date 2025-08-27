@@ -41,7 +41,7 @@ try {
 try {
   (() => {
     const r = require("./routes/checkout");
-    app.use(r.default || r);
+    app.use("/api", r.default || r);
   })();
 } catch (err) {
   console.error("Failed to load checkout router", err);
