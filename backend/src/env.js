@@ -8,6 +8,8 @@ function requireEnv(name) {
   return value;
 }
 
+const logger = require("./logger.js");
+
 function buildEnv() {
   const NODE_ENV = requireEnv("NODE_ENV");
   if (!["development", "test", "production"].includes(NODE_ENV)) {
@@ -17,7 +19,7 @@ function buildEnv() {
   const shouldWarn =
     NODE_ENV === "development" && process.env.QUIET_ENV_WARNINGS !== "1";
   const warn = (msg) => {
-    if (shouldWarn) console.warn(msg);
+    if (shouldWarn) logger.warn(msg);
   };
   const optional = (name) => {
     const value = process.env[name];

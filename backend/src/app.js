@@ -1,6 +1,6 @@
 const express = require("express");
-const { capture } = require("./lib/logger");
-const logger = require("../../src/logger.js");
+const logger = require("./logger.js");
+const errorHandler = require("./middleware/errorHandler.js");
 
 const app = express();
 module.exports = app;
@@ -13,7 +13,7 @@ try {
     app.use(r.default || r);
   })();
 } catch (err) {
-  console.error("Failed to load stripe webhook router", err);
+  logger.error("Failed to load stripe webhook router", err);
 }
 
 app.use(express.json());
@@ -24,7 +24,7 @@ try {
     app.use(r.default || r);
   })();
 } catch (err) {
-  console.error("Failed to load health router", err);
+  logger.error("Failed to load health router", err);
 }
 
 try {
@@ -33,7 +33,7 @@ try {
     app.use(r.default || r);
   })();
 } catch (err) {
-  console.error("Failed to load items router", err);
+  logger.error("Failed to load items router", err);
 }
 
 try {
@@ -42,7 +42,7 @@ try {
     app.use(r.default || r);
   })();
 } catch (err) {
-  console.error("Failed to load checkout router", err);
+  logger.error("Failed to load checkout router", err);
 }
 
 try {
@@ -51,7 +51,7 @@ try {
     app.use("/api/models", r.default || r);
   })();
 } catch (err) {
-  console.error("Failed to load models router", err);
+  logger.error("Failed to load models router", err);
 }
 
 try {
@@ -60,7 +60,7 @@ try {
     app.use("/api", r.default || r);
   })();
 } catch (err) {
-  console.error("Failed to load generate router", err);
+  logger.error("Failed to load generate router", err);
 }
 
 try {
@@ -69,7 +69,7 @@ try {
     app.use(r.default || r);
   })();
 } catch (err) {
-  console.error("Failed to load analytics router", err);
+  logger.error("Failed to load analytics router", err);
 }
 
 try {
@@ -78,7 +78,7 @@ try {
     app.use("/api", r.default || r);
   })();
 } catch (err) {
-  console.error("Failed to load referral router", err);
+  logger.error("Failed to load referral router", err);
 }
 
 try {
@@ -87,7 +87,7 @@ try {
     app.use("/api", r.default || r);
   })();
 } catch (err) {
-  console.error("Failed to load rewards router", err);
+  logger.error("Failed to load rewards router", err);
 }
 
 try {
@@ -96,7 +96,7 @@ try {
     app.use("/api", r.default || r);
   })();
 } catch (err) {
-  console.error("Failed to load subscription router", err);
+  logger.error("Failed to load subscription router", err);
 }
 
 try {
@@ -105,7 +105,7 @@ try {
     app.use("/api", r.default || r);
   })();
 } catch (err) {
-  console.error("Failed to load credits router", err);
+  logger.error("Failed to load credits router", err);
 }
 
 try {
@@ -114,7 +114,7 @@ try {
     app.use("/api", r.default || r);
   })();
 } catch (err) {
-  console.error("Failed to load payments router", err);
+  logger.error("Failed to load payments router", err);
 }
 
 try {
@@ -123,16 +123,7 @@ try {
     app.use("/api", r.default || r);
   })();
 } catch (err) {
-  console.error("Failed to load worker router", err);
+  logger.error("Failed to load worker router", err);
 }
 
-app.use((err, req, res, _next) => {
-  const context = { method: req.method, url: req.originalUrl, body: req.body };
-  try {
-    logger.error("Error handling request", context, err);
-  } catch {
-    // ignore logging failures
-  }
-  capture(err);
-  res.status(500).json({ error: "Internal Server Error" });
-});
+app.use(errorHandler);

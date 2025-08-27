@@ -1,4 +1,4 @@
-const { createLogger, format, transports } = require("winston");
+import { createLogger, format, transports } from "winston";
 
 const { combine, timestamp, json, colorize, printf } = format;
 
@@ -31,10 +31,13 @@ const baseLogger = createLogger({
 });
 
 const logger = {
-  info: (msg, meta) => baseLogger.info(msg, meta),
-  warn: (msg, meta) => baseLogger.warn(msg, meta),
-  error: (msg, meta) => baseLogger.error(msg, meta),
+  info: (msg: string, meta?: Record<string, unknown>) =>
+    baseLogger.info(msg, meta),
+  warn: (msg: string, meta?: Record<string, unknown>) =>
+    baseLogger.warn(msg, meta),
+  error: (msg: string, meta?: Record<string, unknown>) =>
+    baseLogger.error(msg, meta),
   transports: baseLogger.transports,
 };
 
-module.exports = logger;
+export default logger;
