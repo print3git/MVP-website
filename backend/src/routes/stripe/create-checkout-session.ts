@@ -2,6 +2,8 @@ import { Router, type Request, type Response } from "express";
 import Stripe from "stripe";
 import db from "../../db"; // imported for tests
 import { isTest } from "../../env";
+import logger from "../../logger.js";
+import { getEnv as getEnvVar } from "../../../utils/getEnv.js";
 
 interface Item {
   price: string;
@@ -19,7 +21,19 @@ interface CheckoutBody {
 }
 
 const router = Router();
-const realStripe = new Stripe(process.env.STRIPE_TEST_KEY as string, {
+let stripeKey: string;
+let successUrl: string;
+let cancelUrl: string;
+try {
+  stripeKey = getEnvVar("STRIPE_TEST_KEY", { required: true })!;
+  successUrl = getEnvVar("FRONTEND_SUCCESS_URL", { required: true })!;
+  cancelUrl = getEnvVar("FRONTEND_CANCEL_URL", { required: true })!;
+} catch (err) {
+  logger.error((err as Error).message);
+  process.exit(1);
+}
+
+const realStripe = new Stripe(stripeKey, {
   apiVersion: "2025-06-30.basil",
 });
 const stripe = isTest()
@@ -56,8 +70,8 @@ router.post(
       mode: "payment",
       payment_method_types: ["card"],
       line_items: items.map((i) => ({ price: i.price, quantity: i.quantity })),
-      success_url: process.env.FRONTEND_SUCCESS_URL as string,
-      cancel_url: process.env.FRONTEND_CANCEL_URL as string,
+      success_url: successUrl,
+      cancel_url: cancelUrl,
       currency,
     };
 

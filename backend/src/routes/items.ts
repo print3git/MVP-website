@@ -2,6 +2,7 @@ import { Router } from "express";
 import { Pool } from "pg";
 import validate from "../../middleware/validate.js";
 import logger from "../logger.js";
+import { capture } from "../lib/logger";
 import { insertItem, insertItemSchema } from "../lib/items";
 import { getEnv } from "../../utils/getEnv.js";
 
@@ -37,6 +38,7 @@ router.post("/api/items", validate(insertItemSchema), async (req, res) => {
       return;
     }
     logger.error("failed to insert item", err);
+    capture(err);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
