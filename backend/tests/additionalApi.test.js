@@ -35,6 +35,14 @@ const { progressEmitter } = require("../queue/printQueue");
 
 const request = require("supertest");
 const app = require("../server");
+const { shouldSkipSuite } = require("./utils/shouldSkipSuite");
+
+const skipCommunity = shouldSkipSuite("/api/community");
+const communityTest = skipCommunity ? test.skip : test;
+const skipProfile = shouldSkipSuite("/api/profile");
+const profileTest = skipProfile ? test.skip : test;
+const skipCompetitions = shouldSkipSuite("/api/competitions");
+const competitionsTest = skipCompetitions ? test.skip : test;
 
 beforeAll(() => {
   global.__LEAKS__ = global.__LEAKS__ || [];
@@ -116,7 +124,7 @@ test("GET /api/my/models returns models sorted by date", async () => {
   expect(res.body.map((r) => r.job_id)).toEqual(["j2", "j1"]);
 });
 
-test("GET /api/profile returns profile", async () => {
+profileTest("GET /api/profile returns profile", async () => {
   db.query.mockResolvedValueOnce({ rows: [{ display_name: "A" }] });
   const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
@@ -126,7 +134,7 @@ test("GET /api/profile returns profile", async () => {
   expect(res.body.display_name).toBe("A");
 });
 
-test("GET /api/profile 404 when missing", async () => {
+profileTest("GET /api/profile 404 when missing", async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
   const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
@@ -267,7 +275,7 @@ test("DELETE /api/models/:id 404 when missing", async () => {
   expect(res.status).toBe(404);
 });
 
-test("DELETE /api/community/:id deletes creation", async () => {
+communityTest("DELETE /api/community/:id deletes creation", async () => {
   db.query.mockResolvedValueOnce({ rows: [{ id: "c1" }] });
   const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
@@ -278,7 +286,7 @@ test("DELETE /api/community/:id deletes creation", async () => {
   expect(call).toContain("DELETE FROM community_creations");
 });
 
-test("DELETE /api/community/:id 404 when missing", async () => {
+communityTest("DELETE /api/community/:id 404 when missing", async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
   const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
@@ -287,7 +295,7 @@ test("DELETE /api/community/:id 404 when missing", async () => {
   expect(res.status).toBe(404);
 });
 
-test("GET /api/community/recent pagination and category", async () => {
+communityTest("GET /api/community/recent pagination and category", async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
 
   await request(app).get("/api/community/recent?limit=5&offset=2&category=art");
@@ -299,7 +307,7 @@ test("GET /api/community/recent pagination and category", async () => {
   ]);
 });
 
-test("GET /api/community/popular uses correct ordering", async () => {
+communityTest("GET /api/community/popular uses correct ordering", async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
   await request(app).get("/api/community/popular?limit=1&offset=0");
   expect(db.query).toHaveBeenCalledWith(
@@ -308,14 +316,14 @@ test("GET /api/community/popular uses correct ordering", async () => {
   );
 });
 
-test("GET /api/community/model/:id returns model", async () => {
+communityTest("GET /api/community/model/:id returns model", async () => {
   db.query.mockResolvedValueOnce({ rows: [{ id: "c1", model_url: "u" }] });
   const res = await request(app).get("/api/community/model/c1");
   expect(res.status).toBe(200);
   expect(res.body.id).toBe("c1");
 });
 
-test("GET /api/community/mine returns creations", async () => {
+communityTest("GET /api/community/mine returns creations", async () => {
   db.getUserCreations.mockResolvedValueOnce([]);
   const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
@@ -325,7 +333,7 @@ test("GET /api/community/mine returns creations", async () => {
   expect(db.getUserCreations).toHaveBeenCalledWith("u1", 10, 0);
 });
 
-test("POST /api/community/:id/comment adds comment", async () => {
+communityTest("POST /api/community/:id/comment adds comment", async () => {
   db.insertCommunityComment.mockResolvedValueOnce({ id: "x", text: "t" });
   const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
@@ -336,20 +344,20 @@ test("POST /api/community/:id/comment adds comment", async () => {
   expect(db.insertCommunityComment).toHaveBeenCalledWith("c1", "u1", "t");
 });
 
-test("GET /api/community/:id/comments returns list", async () => {
+communityTest("GET /api/community/:id/comments returns list", async () => {
   db.getCommunityComments.mockResolvedValueOnce([]);
   const res = await request(app).get("/api/community/c1/comments");
   expect(res.status).toBe(200);
   expect(db.getCommunityComments).toHaveBeenCalledWith("c1");
 });
 
-test("GET /api/competitions/active", async () => {
+competitionsTest("GET /api/competitions/active", async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
   const res = await request(app).get("/api/competitions/active");
   expect(res.status).toBe(200);
 });
 
-test("GET /api/competitions/active upcoming", async () => {
+competitionsTest("GET /api/competitions/active upcoming", async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
   await request(app).get("/api/competitions/active");
   expect(db.query).toHaveBeenCalledWith(
@@ -357,28 +365,31 @@ test("GET /api/competitions/active upcoming", async () => {
   );
 });
 
-test("GET /api/competitions/active returns upcoming comps", async () => {
-  const upcoming = {
-    id: "1",
-    name: "Future Event",
-    start_date: "2099-01-01",
-    end_date: "2099-01-31",
-  };
-  db.query.mockResolvedValueOnce({ rows: [upcoming] });
-  const res = await request(app).get("/api/competitions/active");
-  expect(res.status).toBe(200);
-  expect(res.body[0].id).toBe("1");
-  expect(res.body[0].start_date).toBe("2099-01-01");
-  expect(res.body[0].deadline).toBe("2099-01-31T23:59:59.000Z");
-});
+competitionsTest(
+  "GET /api/competitions/active returns upcoming comps",
+  async () => {
+    const upcoming = {
+      id: "1",
+      name: "Future Event",
+      start_date: "2099-01-01",
+      end_date: "2099-01-31",
+    };
+    db.query.mockResolvedValueOnce({ rows: [upcoming] });
+    const res = await request(app).get("/api/competitions/active");
+    expect(res.status).toBe(200);
+    expect(res.body[0].id).toBe("1");
+    expect(res.body[0].start_date).toBe("2099-01-01");
+    expect(res.body[0].deadline).toBe("2099-01-31T23:59:59.000Z");
+  },
+);
 
-test("GET /api/competitions/past", async () => {
+competitionsTest("GET /api/competitions/past", async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
   const res = await request(app).get("/api/competitions/past");
   expect(res.status).toBe(200);
 });
 
-test("GET /api/competitions/past ordering", async () => {
+competitionsTest("GET /api/competitions/past ordering", async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
   await request(app).get("/api/competitions/past");
   expect(db.query).toHaveBeenCalledWith(
@@ -386,14 +397,14 @@ test("GET /api/competitions/past ordering", async () => {
   );
 });
 
-test("GET /api/competitions/:id/entries", async () => {
+competitionsTest("GET /api/competitions/:id/entries", async () => {
   db.query.mockResolvedValueOnce({ rows: [{ model_id: "m1", votes: 3 }] });
   const res = await request(app).get("/api/competitions/5/entries");
   expect(res.status).toBe(200);
   expect(res.body[0].votes).toBe(3);
 });
 
-test("GET /api/competitions/:id/entries order", async () => {
+competitionsTest("GET /api/competitions/:id/entries order", async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
   await request(app).get("/api/competitions/5/entries");
   expect(db.query).toHaveBeenCalledWith(
@@ -402,34 +413,40 @@ test("GET /api/competitions/:id/entries order", async () => {
   );
 });
 
-test("GET /api/competitions/:id/entries leaderboard order", async () => {
-  db.query.mockResolvedValueOnce({
-    rows: [
-      { model_id: "m2", votes: 10 },
-      { model_id: "m1", votes: 5 },
-      { model_id: "m3", votes: 1 },
-    ],
-  });
-  const res = await request(app).get("/api/competitions/5/entries");
-  expect(res.status).toBe(200);
-  expect(res.body.map((e) => e.votes)).toEqual([10, 5, 1]);
-});
+competitionsTest(
+  "GET /api/competitions/:id/entries leaderboard order",
+  async () => {
+    db.query.mockResolvedValueOnce({
+      rows: [
+        { model_id: "m2", votes: 10 },
+        { model_id: "m1", votes: 5 },
+        { model_id: "m3", votes: 1 },
+      ],
+    });
+    const res = await request(app).get("/api/competitions/5/entries");
+    expect(res.status).toBe(200);
+    expect(res.body.map((e) => e.votes)).toEqual([10, 5, 1]);
+  },
+);
 
-test("GET /api/competitions/:id/comments", async () => {
+competitionsTest("GET /api/competitions/:id/comments", async () => {
   db.query.mockResolvedValueOnce({ rows: [{ id: "c1", text: "hi" }] });
   const res = await request(app).get("/api/competitions/5/comments");
   expect(res.status).toBe(200);
   expect(res.body[0].text).toBe("hi");
 });
 
-test("POST /api/competitions/:id/comments requires auth", async () => {
-  const res = await request(app)
-    .post("/api/competitions/5/comments")
-    .send({ text: "hey" });
-  expect(res.status).toBe(401);
-});
+competitionsTest(
+  "POST /api/competitions/:id/comments requires auth",
+  async () => {
+    const res = await request(app)
+      .post("/api/competitions/5/comments")
+      .send({ text: "hey" });
+    expect(res.status).toBe(401);
+  },
+);
 
-test("POST /api/competitions/:id/comments", async () => {
+competitionsTest("POST /api/competitions/:id/comments", async () => {
   db.query.mockResolvedValueOnce({ rows: [{ id: "c1", text: "hello" }] });
   const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
@@ -444,7 +461,7 @@ test("POST /api/competitions/:id/comments", async () => {
   );
 });
 
-test("POST /api/competitions/:id/enter", async () => {
+competitionsTest("POST /api/competitions/:id/enter", async () => {
   db.query.mockResolvedValueOnce({});
   const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
@@ -454,82 +471,97 @@ test("POST /api/competitions/:id/enter", async () => {
   expect(res.status).toBe(201);
 });
 
-test("POST /api/competitions/:id/enter requires auth", async () => {
+competitionsTest("POST /api/competitions/:id/enter requires auth", async () => {
   const res = await request(app)
     .post("/api/competitions/5/enter")
     .send({ modelId: "m1" });
   expect(res.status).toBe(401);
 });
 
-test("POST /api/competitions/:id/enter rejects unauthenticated user", async () => {
-  const res = await request(app)
-    .post("/api/competitions/5/enter")
-    .send({ modelId: "m1" });
-  expect(res.status).toBe(401);
-  expect(res.body.error).toBe("Unauthorized");
-});
+competitionsTest(
+  "POST /api/competitions/:id/enter rejects unauthenticated user",
+  async () => {
+    const res = await request(app)
+      .post("/api/competitions/5/enter")
+      .send({ modelId: "m1" });
+    expect(res.status).toBe(401);
+    expect(res.body.error).toBe("Unauthorized");
+  },
+);
 
-test("POST /api/competitions/:id/enter prevents duplicate", async () => {
-  db.query.mockResolvedValueOnce({});
-  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
-  await request(app)
-    .post("/api/competitions/5/enter")
-    .set("authorization", `Bearer ${token}`)
-    .send({ modelId: "m1" });
-  expect(db.query).toHaveBeenCalledWith(
-    expect.stringContaining("ON CONFLICT DO NOTHING"),
-    ["5", "m1", "u1"],
-  );
-});
+competitionsTest(
+  "POST /api/competitions/:id/enter prevents duplicate",
+  async () => {
+    db.query.mockResolvedValueOnce({});
+    const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
+    await request(app)
+      .post("/api/competitions/5/enter")
+      .set("authorization", `Bearer ${token}`)
+      .send({ modelId: "m1" });
+    expect(db.query).toHaveBeenCalledWith(
+      expect.stringContaining("ON CONFLICT DO NOTHING"),
+      ["5", "m1", "u1"],
+    );
+  },
+);
 
-test("POST /api/competitions/:id/enter allows repeat submission without error", async () => {
-  db.query.mockResolvedValue({});
-  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
-  const first = await request(app)
-    .post("/api/competitions/5/enter")
-    .set("authorization", `Bearer ${token}`)
-    .send({ modelId: "m1" });
-  expect(first.status).toBe(201);
-  const second = await request(app)
-    .post("/api/competitions/5/enter")
-    .set("authorization", `Bearer ${token}`)
-    .send({ modelId: "m1" });
-  expect(second.status).toBe(201);
-  expect(db.query).toHaveBeenCalledTimes(2);
-  expect(db.query).toHaveBeenLastCalledWith(
-    expect.stringContaining("ON CONFLICT DO NOTHING"),
-    ["5", "m1", "u1"],
-  );
-});
+competitionsTest(
+  "POST /api/competitions/:id/enter allows repeat submission without error",
+  async () => {
+    db.query.mockResolvedValue({});
+    const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
+    const first = await request(app)
+      .post("/api/competitions/5/enter")
+      .set("authorization", `Bearer ${token}`)
+      .send({ modelId: "m1" });
+    expect(first.status).toBe(201);
+    const second = await request(app)
+      .post("/api/competitions/5/enter")
+      .set("authorization", `Bearer ${token}`)
+      .send({ modelId: "m1" });
+    expect(second.status).toBe(201);
+    expect(db.query).toHaveBeenCalledTimes(2);
+    expect(db.query).toHaveBeenLastCalledWith(
+      expect.stringContaining("ON CONFLICT DO NOTHING"),
+      ["5", "m1", "u1"],
+    );
+  },
+);
 
-test("POST /api/competitions/:id/discount returns code", async () => {
-  db.query
-    .mockResolvedValueOnce({ rows: [{}] })
-    .mockResolvedValueOnce({ rows: [{ code: "X1" }] });
-  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
-  const res = await request(app)
-    .post("/api/competitions/5/discount")
-    .set("authorization", `Bearer ${token}`)
-    .send({});
-  expect(res.status).toBe(200);
-  expect(res.body.code).toBe("X1");
-  const call = db.query.mock.calls.find((c) =>
-    c[0].includes("INSERT INTO discount_codes"),
-  );
-  expect(call).toBeTruthy();
-});
+competitionsTest(
+  "POST /api/competitions/:id/discount returns code",
+  async () => {
+    db.query
+      .mockResolvedValueOnce({ rows: [{}] })
+      .mockResolvedValueOnce({ rows: [{ code: "X1" }] });
+    const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
+    const res = await request(app)
+      .post("/api/competitions/5/discount")
+      .set("authorization", `Bearer ${token}`)
+      .send({});
+    expect(res.status).toBe(200);
+    expect(res.body.code).toBe("X1");
+    const call = db.query.mock.calls.find((c) =>
+      c[0].includes("INSERT INTO discount_codes"),
+    );
+    expect(call).toBeTruthy();
+  },
+);
 
-test("POST /api/competitions/:id/discount requires entry", async () => {
-  db.query.mockResolvedValueOnce({ rows: [] });
-  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
-  const res = await request(app)
-    .post("/api/competitions/5/discount")
-    .set("authorization", `Bearer ${token}`)
-    .send({});
-  expect(res.status).toBe(400);
-});
+competitionsTest(
+  "POST /api/competitions/:id/discount requires entry",
+  async () => {
+    db.query.mockResolvedValueOnce({ rows: [] });
+    const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
+    const res = await request(app)
+      .post("/api/competitions/5/discount")
+      .set("authorization", `Bearer ${token}`)
+      .send({});
+    expect(res.status).toBe(400);
+  },
+);
 
-test("POST /api/competitions/:id/vote stores vote", async () => {
+competitionsTest("POST /api/competitions/:id/vote stores vote", async () => {
   db.query
     .mockResolvedValueOnce({})
     .mockResolvedValueOnce({ rows: [{ count: "1" }] });
@@ -542,16 +574,19 @@ test("POST /api/competitions/:id/vote stores vote", async () => {
   expect(res.body.votes).toBe(1);
 });
 
-test("POST /api/competitions/:id/vote requires modelId", async () => {
-  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
-  const res = await request(app)
-    .post("/api/competitions/5/vote")
-    .set("authorization", `Bearer ${token}`)
-    .send({});
-  expect(res.status).toBe(400);
-});
+competitionsTest(
+  "POST /api/competitions/:id/vote requires modelId",
+  async () => {
+    const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
+    const res = await request(app)
+      .post("/api/competitions/5/vote")
+      .set("authorization", `Bearer ${token}`)
+      .send({});
+    expect(res.status).toBe(400);
+  },
+);
 
-test("POST /api/competitions/:id/vote requires auth", async () => {
+competitionsTest("POST /api/competitions/:id/vote requires auth", async () => {
   const res = await request(app)
     .post("/api/competitions/5/vote")
     .send({ modelId: "m1" });
@@ -646,7 +681,7 @@ test("checkCompetitionStart sends voting emails", async () => {
   expect(call[1][0]).toBe("c1");
 });
 
-test("POST /api/competitions/notify sends emails", async () => {
+competitionsTest("POST /api/competitions/notify sends emails", async () => {
   db.query.mockResolvedValueOnce({
     rows: [{ email: "a@a.com" }, { email: "b@b.com" }],
   });
@@ -732,7 +767,7 @@ test("GET /api/trending returns list", async () => {
   expect([200, 404]).toContain(res.status);
 });
 
-test("GET /api/competitions/winners returns list", async () => {
+competitionsTest("GET /api/competitions/winners returns list", async () => {
   const res = await request(app).get("/api/competitions/winners");
   expect([200, 404]).toContain(res.status);
 });

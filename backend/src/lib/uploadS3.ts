@@ -2,7 +2,7 @@ import fs from "fs";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import path from "path";
 import { resolveLocalFile } from "./fileUtils";
-import { getEnv } from "./getEnv";
+import { getEnv } from "../env";
 
 function safeJoin(base: string, userPath: string) {
   const target = path.normalize(
@@ -25,15 +25,17 @@ export async function uploadFile(
   contentType: string,
 ): Promise<string> {
   filePath = resolveLocalFile(filePath, ["/tmp", "uploads"], "file not found");
-  const region = getEnv("AWS_REGION", { defaultValue: "us-east-1" });
-  const bucket = getEnv("S3_BUCKET", { defaultValue: "test-bucket" });
-  const domain =
-    getEnv("CLOUDFRONT_DOMAIN", { defaultValue: "cdn.example.com" }) ||
-    getEnv("CLOUDFRONT_MODEL_DOMAIN", { defaultValue: "cdn.example.com" });
+  const env = getEnv();
+  const region = env.AWS_REGION || "us-east-1";
+  const bucket = env.S3_BUCKET || "test-bucket";
+  const domain = env.CLOUDFRONT_MODEL_DOMAIN;
 
   const key = safeJoin("images", `${Date.now()}-${path.basename(filePath)}`);
+  if (env.NODE_ENV !== "production" && !domain) {
+    return "/models/test.glb";
+  }
   if (
-    process.env.NODE_ENV === "test" ||
+    env.NODE_ENV === "test" ||
     !process.env.AWS_ACCESS_KEY_ID ||
     !process.env.AWS_SECRET_ACCESS_KEY
   ) {
@@ -74,15 +76,17 @@ export async function uploadS3(
   data: Buffer,
   filename = "model.glb",
 ): Promise<UploadResult> {
-  const region = getEnv("AWS_REGION", { defaultValue: "us-east-1" });
-  const bucket = getEnv("S3_BUCKET", { defaultValue: "test-bucket" });
-  const domain = getEnv("CLOUDFRONT_DOMAIN", {
-    defaultValue: "cdn.example.com",
-  });
+  const env = getEnv();
+  const region = env.AWS_REGION || "us-east-1";
+  const bucket = env.S3_BUCKET || "test-bucket";
+  const domain = env.CLOUDFRONT_MODEL_DOMAIN;
   const key = safeJoin("models", sanitizeKey(`${Date.now()}-${filename}`));
 
+  if (env.NODE_ENV !== "production" && !domain) {
+    return { url: "/models/test.glb", key };
+  }
   if (
-    process.env.NODE_ENV === "test" ||
+    env.NODE_ENV === "test" ||
     !process.env.AWS_ACCESS_KEY_ID ||
     !process.env.AWS_SECRET_ACCESS_KEY
   ) {

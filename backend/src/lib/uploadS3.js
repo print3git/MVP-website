@@ -10,7 +10,7 @@ const fs_1 = __importDefault(require("fs"));
 const client_s3_1 = require("@aws-sdk/client-s3");
 const path_1 = __importDefault(require("path"));
 const fileUtils_1 = require("./fileUtils");
-const getEnv_1 = require("./getEnv");
+const env_1 = require("../env");
 function safeJoin(base, userPath) {
   const target = path_1.default.normalize(
     path_1.default.isAbsolute(userPath)
@@ -28,25 +28,19 @@ async function uploadFile(filePath, contentType) {
     ["/tmp", "uploads"],
     "file not found",
   );
-  const region = (0, getEnv_1.getEnv)("AWS_REGION", {
-    defaultValue: "us-east-1",
-  });
-  const bucket = (0, getEnv_1.getEnv)("S3_BUCKET", {
-    defaultValue: "test-bucket",
-  });
-  const domain =
-    (0, getEnv_1.getEnv)("CLOUDFRONT_DOMAIN", {
-      defaultValue: "cdn.example.com",
-    }) ||
-    (0, getEnv_1.getEnv)("CLOUDFRONT_MODEL_DOMAIN", {
-      defaultValue: "cdn.example.com",
-    });
+  const env = (0, env_1.getEnv)();
+  const region = env.AWS_REGION || "us-east-1";
+  const bucket = env.S3_BUCKET || "test-bucket";
+  const domain = env.CLOUDFRONT_MODEL_DOMAIN;
   const key = safeJoin(
     "images",
     `${Date.now()}-${path_1.default.basename(filePath)}`,
   );
+  if (env.NODE_ENV !== "production" && !domain) {
+    return "/models/test.glb";
+  }
   if (
-    process.env.NODE_ENV === "test" ||
+    env.NODE_ENV === "test" ||
     !process.env.AWS_ACCESS_KEY_ID ||
     !process.env.AWS_SECRET_ACCESS_KEY
   ) {
@@ -65,18 +59,16 @@ async function uploadFile(filePath, contentType) {
 }
 exports.uploadFile = uploadFile;
 async function uploadS3(data, filename = "model.glb") {
-  const region = (0, getEnv_1.getEnv)("AWS_REGION", {
-    defaultValue: "us-east-1",
-  });
-  const bucket = (0, getEnv_1.getEnv)("S3_BUCKET", {
-    defaultValue: "test-bucket",
-  });
-  const domain = (0, getEnv_1.getEnv)("CLOUDFRONT_DOMAIN", {
-    defaultValue: "cdn.example.com",
-  });
+  const env = (0, env_1.getEnv)();
+  const region = env.AWS_REGION || "us-east-1";
+  const bucket = env.S3_BUCKET || "test-bucket";
+  const domain = env.CLOUDFRONT_MODEL_DOMAIN;
   const key = safeJoin("models", `${Date.now()}-${filename}`);
+  if (env.NODE_ENV !== "production" && !domain) {
+    return { url: "/models/test.glb", key };
+  }
   if (
-    process.env.NODE_ENV === "test" ||
+    env.NODE_ENV === "test" ||
     !process.env.AWS_ACCESS_KEY_ID ||
     !process.env.AWS_SECRET_ACCESS_KEY
   ) {

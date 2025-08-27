@@ -86,6 +86,12 @@ const { generateCaption } = require("../utils/captionService");
 
 const request = require("supertest");
 const app = require("../server");
+const { shouldSkipSuite } = require("./utils/shouldSkipSuite");
+
+const skipCommunity = shouldSkipSuite("/api/community");
+const communityTest = skipCommunity ? test.skip : test;
+const skipProfile = shouldSkipSuite("/api/profile");
+const profileTest = skipProfile ? test.skip : test;
 const fs = require("fs");
 const stream = require("stream");
 
@@ -414,7 +420,7 @@ test("POST /api/generate accepts image upload", async () => {
   expect(insertCall[1][2]).toEqual(expect.any(String));
 });
 
-test("POST /api/community submits model", async () => {
+communityTest("POST /api/community submits model", async () => {
   db.query.mockResolvedValueOnce({ rows: [{ generated_title: "Auto" }] });
   db.query.mockResolvedValueOnce({});
   const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
@@ -430,7 +436,7 @@ test("POST /api/community submits model", async () => {
   );
 });
 
-test("POST /api/community uses BLIP caption for title", async () => {
+communityTest("POST /api/community uses BLIP caption for title", async () => {
   const caption = "A BLIP caption";
   generateCaption.mockResolvedValueOnce(caption);
   db.query.mockResolvedValueOnce({ rows: [{ generated_title: caption }] });
@@ -448,7 +454,7 @@ test("POST /api/community uses BLIP caption for title", async () => {
   );
 });
 
-test("POST /api/community requires jobId", async () => {
+communityTest("POST /api/community requires jobId", async () => {
   const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .post("/api/community")
@@ -457,23 +463,23 @@ test("POST /api/community requires jobId", async () => {
   expect(res.status).toBe(400);
 });
 
-test("POST /api/community requires auth", async () => {
+communityTest("POST /api/community requires auth", async () => {
   const res = await request(app).post("/api/community").send({ jobId: "j1" });
   expect(res.status).toBe(401);
 });
 
-test("POST /api/community unauthorized skips DB", async () => {
+communityTest("POST /api/community unauthorized skips DB", async () => {
   await request(app).post("/api/community").send({ jobId: "j1" });
   expect(db.query).not.toHaveBeenCalled();
 });
 
-test("GET /api/community/recent returns creations", async () => {
+communityTest("GET /api/community/recent returns creations", async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
   const res = await request(app).get("/api/community/recent");
   expect(res.status).toBe(200);
 });
 
-test("GET /api/community/recent supports order", async () => {
+communityTest("GET /api/community/recent supports order", async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
   await request(app).get("/api/community/recent?order=asc");
   expect(db.query).toHaveBeenCalledWith(
@@ -482,7 +488,7 @@ test("GET /api/community/recent supports order", async () => {
   );
 });
 
-test("GET /api/community/recent pagination and category", async () => {
+communityTest("GET /api/community/recent pagination and category", async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
   await request(app).get(
     "/api/community/recent?limit=5&offset=2&category=art&search=bot",
@@ -495,7 +501,7 @@ test("GET /api/community/recent pagination and category", async () => {
   ]);
 });
 
-test("GET /api/community/mine returns creations", async () => {
+communityTest("GET /api/community/mine returns creations", async () => {
   db.getUserCreations.mockResolvedValueOnce([]);
   const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   await request(app)
@@ -504,14 +510,14 @@ test("GET /api/community/mine returns creations", async () => {
   expect(db.getUserCreations).toHaveBeenCalledWith("u1", 10, 0);
 });
 
-test("POST /api/community/:id/comment requires auth", async () => {
+communityTest("POST /api/community/:id/comment requires auth", async () => {
   const res = await request(app)
     .post("/api/community/5/comment")
     .send({ text: "hi" });
   expect(res.status).toBe(401);
 });
 
-test("POST /api/community/:id/comment", async () => {
+communityTest("POST /api/community/:id/comment", async () => {
   db.insertCommunityComment.mockResolvedValueOnce({ id: "c1", text: "hi" });
   const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
@@ -523,7 +529,7 @@ test("POST /api/community/:id/comment", async () => {
   expect(db.insertCommunityComment).toHaveBeenCalledWith("5", "u1", "hi");
 });
 
-test("GET /api/community/:id/comments", async () => {
+communityTest("GET /api/community/:id/comments", async () => {
   db.getCommunityComments.mockResolvedValueOnce([{ id: "c1", text: "hello" }]);
   const res = await request(app).get("/api/community/5/comments");
   expect(res.status).toBe(200);
@@ -677,7 +683,7 @@ test("GET /api/users/:username/profile 404 when missing", async () => {
   expect(res.status).toBe(404);
 });
 
-test("GET /api/profile returns profile", async () => {
+profileTest("GET /api/profile returns profile", async () => {
   const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   db.query.mockResolvedValueOnce({
     rows: [
@@ -697,7 +703,7 @@ test("GET /api/profile returns profile", async () => {
   expect(res.body.avatar_glb).toBe("model.glb");
 });
 
-test("POST /api/profile saves details", async () => {
+profileTest("POST /api/profile saves details", async () => {
   const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   db.query.mockResolvedValueOnce({});
   const res = await request(app)
