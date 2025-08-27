@@ -2,14 +2,26 @@ import { Router } from "express";
 import { Pool } from "pg";
 import validate from "../../middleware/validate.js";
 import { z } from "zod";
-import { getEnv } from "../env";
+import logger from "../logger.js";
+import { getEnv as getEnvVar } from "../../utils/getEnv.js";
+import { getEnv as getEnvConfig } from "../env";
 
 const router = Router();
 
+let dbEndpoint: string;
+let dbPassword: string;
+try {
+  dbEndpoint = getEnvVar("DB_ENDPOINT", { required: true })!;
+  dbPassword = getEnvVar("DB_PASSWORD", { required: true })!;
+} catch (err) {
+  logger.error((err as Error).message);
+  process.exit(1);
+}
+
 const pool = new Pool({
-  connectionString: process.env.DB_ENDPOINT,
+  connectionString: dbEndpoint,
   user: "postgres",
-  password: process.env.DB_PASSWORD,
+  password: dbPassword,
   database: "postgres",
 });
 
@@ -23,7 +35,7 @@ export const createModelSchema = z.object({
 router.post("/", validate(createModelSchema), async (req, res) => {
   try {
     const { prompt, s3_key } = req.body as { prompt: string; s3_key: string };
-    const { CLOUDFRONT_DOMAIN } = getEnv();
+    const { CLOUDFRONT_DOMAIN } = getEnvConfig();
     const cloudfront_url = `https://${CLOUDFRONT_DOMAIN}/${s3_key}`;
     const result = await pool.query(
       "INSERT INTO models (prompt, s3_key, cloudfront_url) VALUES ($1, $2, $3) RETURNING id, prompt, s3_key, cloudfront_url",

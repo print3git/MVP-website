@@ -5,9 +5,20 @@ import { enqueuePrint } from "../../queue/printQueue.js";
 import { enqueuePrint as enqueueDbPrint } from "../../queue/dbPrintQueue.js";
 import logger from "../../logger.js";
 import { isTest } from "../../env.js";
+import { getEnv as getEnvVar } from "../../../utils/getEnv.js";
 
 const router = Router();
-const realStripe = new Stripe(process.env["STRIPE_KEY"] as string, {
+let stripeKey: string;
+let stripeWebhookSecret: string;
+try {
+  stripeKey = getEnvVar("STRIPE_KEY", { required: true })!;
+  stripeWebhookSecret = getEnvVar("STRIPE_WEBHOOK_SECRET", { required: true })!;
+} catch (err) {
+  logger.error((err as Error).message);
+  process.exit(1);
+}
+
+const realStripe = new Stripe(stripeKey, {
   apiVersion: "2025-06-30.basil",
 });
 const stripe = isTest()
@@ -19,9 +30,8 @@ router.post(
   express.raw({ type: "application/json" }),
   async (req: Request<any, any, Buffer>, res: Response): Promise<void> => {
     const sig = req.headers["stripe-signature"] as string | undefined;
-    const secret = process.env.STRIPE_WEBHOOK_SECRET;
-    if (!sig || !secret) {
-      logger.warn("Stripe webhook missing signature or secret");
+    if (!sig) {
+      logger.warn("Stripe webhook missing signature");
       res.status(400).json({ error: "invalid_signature" });
       return;
     }
@@ -32,7 +42,7 @@ router.post(
 
     let event: Stripe.Event;
     try {
-      event = stripe.webhooks.constructEvent(rawBody, sig, secret);
+      event = stripe.webhooks.constructEvent(rawBody, sig, stripeWebhookSecret);
     } catch (err) {
       logger.warn("Stripe webhook signature verification failed", err as Error);
       res.status(400).json({ error: "invalid_signature" });
