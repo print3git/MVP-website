@@ -3,7 +3,7 @@ import multer from "multer";
 import { userIdFromAuth } from "../lib/auth";
 import { logError } from "../lib/logError";
 import logger from "../logger.js";
-import { enqueue, getStatus } from "../queue/generation";
+import { enqueue } from "../queue/generation";
 
 const upload = multer();
 const router = Router();
@@ -85,15 +85,6 @@ router.post("/generate", upload.single("image"), async (req, res) => {
     logError(err);
     res.status(502).json({ error: code });
   }
-});
-
-router.get("/status/:id", (req, res) => {
-  const status = getStatus(req.params.id);
-  if (!status) {
-    res.status(404).json({ error: "not_found" });
-    return;
-  }
-  res.json(status);
 });
 
 export default router;
