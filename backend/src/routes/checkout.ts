@@ -1,20 +1,23 @@
 import { Router } from "express";
 import Stripe from "stripe";
-import { getEnv } from "../env";
+import logger from "../logger.js";
+import { getEnv } from "../../utils/getEnv.js";
+
+const secretKey = getEnv("STRIPE_SECRET_KEY");
+const successUrl = getEnv("FRONTEND_SUCCESS_URL");
+const cancelUrl = getEnv("FRONTEND_CANCEL_URL");
+
+if (!secretKey || !successUrl || !cancelUrl) {
+  logger.error(
+    "Missing STRIPE_SECRET_KEY, FRONTEND_SUCCESS_URL, or FRONTEND_CANCEL_URL",
+  );
+  process.exit(1);
+}
 
 const router = Router();
 
 router.post("/checkout/create", async (req, res) => {
   try {
-    const { STRIPE_SECRET_KEY: secretKey } = getEnv();
-    const successUrl = process.env.FRONTEND_SUCCESS_URL;
-    const cancelUrl = process.env.FRONTEND_CANCEL_URL;
-
-    if (!secretKey || !successUrl || !cancelUrl) {
-      res.status(500).json({ error: "server_misconfig" });
-      return;
-    }
-
     const {
       items,
       allowPromotionCodes,
