@@ -5,7 +5,7 @@ import ModelViewer from "./ModelViewer.js";
 
 export function GeneratorApp() {
   const [prompt, setPrompt] = useState("");
-  const { generate, loading, modelUrl } = useGenerateModel();
+  const { generate, loading, modelUrl, position } = useGenerateModel();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -47,6 +47,12 @@ export function GeneratorApp() {
           className:
             "animate-spin h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full",
         }),
+        position !== null &&
+          React.createElement(
+            "p",
+            { className: "mt-2" },
+            `Position: ${position}`,
+          ),
       ),
     modelUrl &&
       React.createElement(
