@@ -5,6 +5,12 @@ services:
     ports:
       - "3000:3000"
     env_file: .env
+  worker:
+    build: ./
+    depends_on:
+      - db
+    env_file: .env
+    command: ["npm","run","start:worker"]
   db:
     image: postgres:15
     environment:
