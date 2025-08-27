@@ -1,13 +1,11 @@
-import React, { useState } from "https://esm.sh/react@18";
+import React, { useState } from "react";
+import toast from "./toast.js";
 
 export default function useGenerateModel() {
   const [loading, setLoading] = useState(false);
   const [modelUrl, setModelUrl] = useState(null);
-  const [error, setError] = useState(null);
-
   const generate = async (prompt) => {
     setLoading(true);
-    setError(null);
     setModelUrl(null);
     try {
       const res = await fetch("/api/generate", {
@@ -17,13 +15,29 @@ export default function useGenerateModel() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Request failed");
-      setModelUrl(data.glb_url);
+
+      if (data.url) {
+        setModelUrl(data.url);
+      } else {
+        let state = "running";
+        let status;
+        while (state === "running") {
+          const resStatus = await fetch(`/api/status/${data.jobId}`);
+          status = await resStatus.json();
+          state = status.state;
+        }
+        if (state === "succeeded" && status.url) {
+          setModelUrl(status.url);
+        } else {
+          throw new Error("failed");
+        }
+      }
     } catch (err) {
-      setError(err.message || "Error generating model");
+      toast("Model generation failed. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  return { generate, loading, modelUrl, error };
+  return { generate, loading, modelUrl };
 }
