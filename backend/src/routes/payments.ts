@@ -1,6 +1,8 @@
 import { Router, type Request, type Response } from "express";
 import Stripe from "stripe";
-import { getEnv, isTest } from "../env";
+import { getEnv } from "../env";
+import logger from "../logger.js";
+import { capture } from "../lib/logger";
 
 interface Item {
   price: string;
@@ -35,17 +37,27 @@ router.post(
     try {
       const { items, currency = "usd", customer_email, metadata } = req.body;
       if (!Array.isArray(items) || items.length === 0) {
+        logger.warn("checkout_create_bad_request", { reason: "missing_items" });
         return res.status(400).json({ error: "bad_request" });
       }
 
       let amount = 0;
       let qtyTotal = 0;
       for (const item of items) {
-        if (typeof item.price !== "string" || typeof item.quantity !== "number") {
+        if (
+          typeof item.price !== "string" ||
+          typeof item.quantity !== "number"
+        ) {
+          logger.warn("checkout_create_bad_request", {
+            reason: "invalid_item",
+          });
           return res.status(400).json({ error: "bad_request" });
         }
         const unit = PRICE_MAP[item.price];
         if (!unit || item.quantity < 1 || item.quantity > 99) {
+          logger.warn("checkout_create_bad_request", {
+            reason: "invalid_quantity",
+          });
           return res.status(400).json({ error: "bad_request" });
         }
         amount += unit * item.quantity;
@@ -60,11 +72,16 @@ router.post(
           metadata: { ...metadata, qtyTotal, source: "custom_checkout" },
           receipt_email: customer_email,
         });
+        logger.info("payment_intent_created", { amount, currency, qtyTotal });
         res.json({ clientSecret: intent.client_secret });
       } catch (err) {
+        logger.error("stripe_payment_intent_failed");
+        capture(err);
         res.status(502).json({ error: "stripe_error" });
       }
     } catch (err) {
+      logger.error("checkout_create_failed");
+      capture(err);
       res.status(500).json({ error: "internal_error" });
     }
   },
