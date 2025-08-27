@@ -1,3 +1,5 @@
+import logger from "./logger.js";
+
 interface Env {
   DB_URL: string;
   STRIPE_SECRET_KEY: string;
@@ -26,7 +28,7 @@ function buildEnv(): Readonly<Env> {
   const shouldWarn =
     NODE_ENV === 'development' && process.env.QUIET_ENV_WARNINGS !== '1';
   const warn = (msg: string): void => {
-    if (shouldWarn) console.warn(msg);
+    if (shouldWarn) logger.warn(msg);
   };
   const optional = (name: string): string | undefined => {
     const value = process.env[name];

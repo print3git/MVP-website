@@ -3,6 +3,7 @@ import Stripe from "stripe";
 import db from "../../db.js";
 import { enqueuePrint } from "../../queue/printQueue.js";
 import { enqueuePrint as enqueueDbPrint } from "../../queue/dbPrintQueue.js";
+import logger from "../../logger.js";
 
 const router = Router();
 const stripe = new Stripe(process.env["STRIPE_KEY"] as string, {
@@ -16,7 +17,7 @@ router.post(
     const sig = req.headers["stripe-signature"] as string | undefined;
     const secret = process.env.STRIPE_WEBHOOK_SECRET;
     if (!sig || !secret) {
-      console.warn("Stripe webhook missing signature or secret");
+      logger.warn("Stripe webhook missing signature or secret");
       res.status(400).json({ error: "invalid_signature" });
       return;
     }
@@ -29,7 +30,7 @@ router.post(
     try {
       event = stripe.webhooks.constructEvent(rawBody, sig, secret);
     } catch (err) {
-      console.warn("Stripe webhook signature verification failed", err);
+      logger.warn("Stripe webhook signature verification failed", err as Error);
       res.status(400).json({ error: "invalid_signature" });
       return;
     }
