@@ -42,6 +42,15 @@ const jobs = new Map<string, InternalJob>();
 const inFlight = new Map<string, string>();
 const emitter = new EventEmitter();
 
+function emitStatus(job: InternalJob): void {
+  const status = getStatus(job.id);
+  if (status) emitter.emit(`progress:${job.id}`, status);
+}
+
+function broadcastQueue(): void {
+  for (const j of queue) emitStatus(j);
+}
+
 function processNext() {
   let index = queue.findIndex((j) => !inFlight.has(j.userId));
   while (index !== -1) {
@@ -49,6 +58,8 @@ function processNext() {
     inFlight.set(job.userId, job.id);
     job.state = "running";
     job.startedAt = new Date().toISOString();
+    emitStatus(job);
+    broadcastQueue();
 
     setImmediate(async () => {
       let s3Key: string | undefined;
@@ -122,7 +133,9 @@ function processNext() {
         logError(err);
         emitter.emit(`fail:${job.id}`, { jobId: job.id, error: code });
       } finally {
+        emitStatus(job);
         inFlight.delete(job.userId);
+        broadcastQueue();
         processNext();
       }
     });
@@ -139,6 +152,7 @@ export async function enqueue(
   const record: InternalJob = { userId, ...payload, id, state: "queued" };
   queue.push(record);
   jobs.set(id, record);
+  emitStatus(record);
   processNext();
   return { jobId: id };
 }
