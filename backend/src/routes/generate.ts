@@ -3,13 +3,12 @@ import multer from "multer";
 import { userIdFromAuth } from "../lib/auth";
 import { logError } from "../lib/logError";
 import logger from "../logger.js";
-import { enqueue, onComplete, onFail } from "../queue/generation";
+import { enqueue, getStatus } from "../queue/generation";
 
 const upload = multer();
 const router = Router();
 
 const MAX_IMAGE_SIZE = 6 * 1024 * 1024; // ~6MB
-const FALLBACK_JOB_ID = "00000000-0000-0000-0000-000000000000";
 
 interface ValidationResult {
   prompt?: string;
@@ -78,42 +77,23 @@ router.post("/generate", upload.single("image"), async (req, res) => {
   try {
     const queued = await enqueue(userId, { prompt, image, source });
     jobId = queued.jobId;
-    const result = await new Promise<{ url: string; s3Key?: string }>(
-      (resolve, reject) => {
-        const timer = setTimeout(() => {
-          const err = new Error("timeout");
-          (err as any).code = "timeout";
-          reject(err);
-        }, 30_000);
-        onComplete(jobId!, (r) => {
-          clearTimeout(timer);
-          resolve(r);
-        });
-        onFail(jobId!, (r) => {
-          clearTimeout(timer);
-          const err = new Error(r.error);
-          (err as any).code = r.error;
-          reject(err);
-        });
-      },
-    );
-    logger.info("generate_success", {
-      jobId,
-      userId,
-      source,
-      s3Key: result.s3Key,
-    });
-    res.json({ jobId, url: result.url });
+    logger.info("generate_queued", { jobId, userId, source });
+    res.json({ jobId });
   } catch (err) {
-    const code = (err as any).code || "model_error";
+    const code = (err as any).code || "queue_error";
     logger.error("generate_failed", { stage: "queue", userId, code });
     logError(err);
-    if (process.env.CI_REQUIRE_EXTERNAL === "true") {
-      res.status(502).json({ error: code });
-      return;
-    }
-    res.json({ jobId: jobId || FALLBACK_JOB_ID, url: "/fallback.glb" });
+    res.status(502).json({ error: code });
   }
+});
+
+router.get("/status/:id", (req, res) => {
+  const status = getStatus(req.params.id);
+  if (!status) {
+    res.status(404).json({ error: "not_found" });
+    return;
+  }
+  res.json(status);
 });
 
 export default router;

@@ -1,61 +1,89 @@
 const { Router } = require("express");
 const multer = require("multer");
-const db = require("../db.js");
 const { userIdFromAuth } = require("../lib/auth.js");
-const { generateModel } = require("../lib/generateModel.js");
-const { preserveColors } = require("../lib/preserveColors.js");
-const { uploadS3 } = require("../lib/uploadS3.js");
 const { logError } = require("../lib/logError.js");
+const logger = require("../logger.js");
+const { enqueue, getStatus } = require("../queue/generation");
+
 const upload = multer();
 const router = Router();
+
+const MAX_IMAGE_SIZE = 6 * 1024 * 1024; // ~6MB
+
+function throwValidation(code, status = 400) {
+  const err = new Error(code);
+  err.status = status;
+  err.code = code;
+  throw err;
+}
+
+function validateInput(req) {
+  if (req.is("application/json")) {
+    const raw =
+      typeof req.body?.prompt === "string" ? req.body.prompt.trim() : "";
+    if (!raw) throwValidation("missing_or_ambiguous_input");
+    if (raw.length < 1 || raw.length > 400) throwValidation("invalid_prompt");
+    return { prompt: raw, source: "prompt" };
+  }
+  if (req.is("multipart/form-data")) {
+    const length = Number(req.headers["content-length"] || 0);
+    if (!Number.isNaN(length) && length > MAX_IMAGE_SIZE) {
+      throwValidation("payload_too_large", 413);
+    }
+    if (!req.file) throwValidation("missing_or_ambiguous_input");
+    const raw =
+      typeof req.body?.prompt === "string" ? req.body.prompt.trim() : undefined;
+    if (raw && (raw.length < 1 || raw.length > 400))
+      throwValidation("invalid_prompt");
+    return {
+      prompt: raw,
+      image: req.file.buffer.toString("base64"),
+      source: "image",
+    };
+  }
+  throwValidation("unsupported_media_type", 415);
+}
+
 router.post("/generate", upload.single("image"), async (req, res) => {
-  const prompt =
-    typeof (req.body && req.body.prompt) === "string"
-      ? req.body.prompt
-      : undefined;
-  const image = req.file ? req.file.buffer.toString("base64") : undefined;
-  if (!prompt && !image) {
-    res.status(400).json({ error: "bad_request" });
+  const userId = userIdFromAuth(req) || "";
+  let parsed;
+  try {
+    parsed = validateInput(req);
+  } catch (err) {
+    const code = err.code;
+    const status = err.status || 400;
+    logger.error("generate_failed", { stage: "validation", userId, code });
+    logError(err);
+    if (code === "unsupported_media_type") {
+      res.status(415).json({ error: "unsupported_media_type" });
+    } else if (code === "payload_too_large") {
+      res.status(413).json({ error: "payload_too_large" });
+    } else {
+      res.status(400).json({ error: "bad_request", reason: code });
+    }
     return;
   }
-  const userId = userIdFromAuth(req);
-  let jobId;
-  const start = Date.now();
+
+  const { prompt, image, source } = parsed;
   try {
-    if (typeof db.createJob === "function") {
-      const job = await db.createJob({
-        user_id: userId,
-        prompt,
-        source: image ? "image" : "prompt",
-        created_at: new Date(start).toISOString(),
-      });
-      jobId = job && (job.id || job.job_id || job.jobId);
-    }
-    const model = await generateModel({ prompt, image });
-    const colored = await preserveColors(model);
-    const { url, key } = await uploadS3(colored);
-    if (jobId && typeof db.linkModelToJob === "function") {
-      await db.linkModelToJob(jobId, key);
-    }
-    if (typeof db.insertGenerationLog === "function") {
-      await db.insertGenerationLog({
-        jobId,
-        prompt,
-        source: image ? "image" : "prompt",
-        startTime: new Date(start).toISOString(),
-        finishTime: new Date().toISOString(),
-        s3Key: key,
-        url,
-      });
-    }
-    res.json({ jobId, url });
+    const queued = await enqueue(userId, { prompt, image, source });
+    logger.info("generate_queued", { jobId: queued.jobId, userId, source });
+    res.json({ jobId: queued.jobId });
   } catch (err) {
+    const code = err.code || "queue_error";
+    logger.error("generate_failed", { stage: "queue", userId, code });
     logError(err);
-    if (process.env.CI_REQUIRE_EXTERNAL) {
-      res.status(500).json({ error: "Generation failed" });
-      return;
-    }
-    res.json({ jobId, url: "/fallback.glb" });
+    res.status(502).json({ error: code });
   }
 });
+
+router.get("/status/:id", (req, res) => {
+  const status = getStatus(req.params.id);
+  if (!status) {
+    res.status(404).json({ error: "not_found" });
+    return;
+  }
+  res.json(status);
+});
+
 module.exports = router;
