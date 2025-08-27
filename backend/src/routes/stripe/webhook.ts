@@ -6,9 +6,20 @@ import { enqueuePrint as enqueueDbPrint } from "../../queue/dbPrintQueue.js";
 import logger from "../../logger.js";
 import { capture } from "../../lib/logger";
 import { isTest } from "../../env.js";
+import { getEnv as getEnvVar } from "../../../utils/getEnv.js";
 
 const router = Router();
-const realStripe = new Stripe(process.env["STRIPE_KEY"] as string, {
+let stripeKey: string;
+let stripeWebhookSecret: string;
+try {
+  stripeKey = getEnvVar("STRIPE_KEY", { required: true })!;
+  stripeWebhookSecret = getEnvVar("STRIPE_WEBHOOK_SECRET", { required: true })!;
+} catch (err) {
+  logger.error((err as Error).message);
+  process.exit(1);
+}
+
+const realStripe = new Stripe(stripeKey, {
   apiVersion: "2025-06-30.basil",
 });
 const stripe = isTest()
@@ -20,14 +31,14 @@ router.post(
   express.raw({ type: "application/json" }),
   async (req: Request<any, any, Buffer>, res: Response): Promise<void> => {
     const sig = req.headers["stripe-signature"] as string | undefined;
-    const secret = process.env.STRIPE_WEBHOOK_SECRET;
-    if (!sig || !secret) {
-      const err = new Error("stripe_webhook_missing_signature_or_secret");
-      logger.warn("stripe_webhook_missing_signature_or_secret");
+    if (!sig) {
+      const err = new Error("stripe_webhook_missing_signature");
+      logger.warn("stripe_webhook_missing_signature");
       capture(err);
       res.status(400).json({ error: "invalid_signature" });
       return;
     }
+
 
     const rawBody = Buffer.isBuffer(req.body)
       ? req.body
@@ -35,7 +46,7 @@ router.post(
 
     let event: Stripe.Event;
     try {
-      event = stripe.webhooks.constructEvent(rawBody, sig, secret);
+      event = stripe.webhooks.constructEvent(rawBody, sig, stripeWebhookSecret);
     } catch (err) {
       logger.warn("stripe_webhook_signature_verification_failed", err as Error);
       capture(err);
