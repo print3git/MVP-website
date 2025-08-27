@@ -3,7 +3,8 @@ const Stripe = require("stripe");
 const db = require("../../db.js");
 const config = require("../../config");
 const { authRequired, authOptional } = require("../lib/auth");
-const { logError } = require("../lib/logError");
+const logger = require("../logger.js");
+const { capture } = require("../lib/logger");
 const { isTest } = require("../env");
 
 const router = Router();
@@ -16,6 +17,7 @@ const stripe = isTest()
 
 router.get("/subscription", authRequired, async (req, res) => {
   try {
+    logger.info("Fetching subscription", { userId: req.user.id });
     const sub = await db.getSubscription(req.user.id);
     if (!sub) {
       res.json({ active: false });
@@ -23,7 +25,8 @@ router.get("/subscription", authRequired, async (req, res) => {
     }
     res.json(sub);
   } catch (err) {
-    logError(err);
+    logger.error(err);
+    capture(err);
     res.status(500).json({ error: "Failed to fetch subscription" });
   }
 });
@@ -39,6 +42,7 @@ router.post("/subscription", authRequired, async (req, res) => {
     price_cents,
   } = req.body || {};
   try {
+    logger.info("Creating subscription", { userId: req.user.id });
     const sub = await db.upsertSubscription(
       req.user.id,
       status || "active",
@@ -51,8 +55,21 @@ router.post("/subscription", authRequired, async (req, res) => {
     await db.insertSubscriptionEvent(req.user.id, "join", variant, price_cents);
     res.json(sub);
   } catch (err) {
-    logError(err);
+    logger.error(err);
+    capture(err);
     res.status(500).json({ error: "Failed to create subscription" });
+  }
+});
+
+router.delete("/subscription", authRequired, async (req, res) => {
+  try {
+    logger.info("Deleting subscription", { userId: req.user.id });
+    const sub = await db.cancelSubscription(req.user.id);
+    res.json(sub);
+  } catch (err) {
+    logger.error(err);
+    capture(err);
+    res.status(500).json({ error: "Failed to delete subscription" });
   }
 });
 
@@ -69,7 +86,8 @@ router.post("/subscription/portal", authRequired, async (req, res) => {
     });
     res.json({ url: session.url });
   } catch (err) {
-    logError(err);
+    logger.error(err);
+    capture(err);
     res.status(500).json({ error: "Failed to create portal session" });
   }
 });
@@ -83,7 +101,8 @@ router.get("/subscription/credits", authRequired, async (req, res) => {
       total: credits.total_credits,
     });
   } catch (err) {
-    logError(err);
+    logger.error(err);
+    capture(err);
     res.status(500).json({ error: "Failed to fetch credits" });
   }
 });
@@ -107,7 +126,8 @@ router.get("/subscription/summary", authRequired, async (req, res) => {
       milestone,
     });
   } catch (err) {
-    logError(err);
+    logger.error(err);
+    capture(err);
     res.status(500).json({ error: "Failed to fetch subscription summary" });
   }
 });
@@ -127,7 +147,8 @@ router.get("/admin/subscription-metrics", adminCheck, async (_req, res) => {
     const metrics = await db.getSubscriptionMetrics();
     res.json(metrics);
   } catch (err) {
-    logError(err);
+    logger.error(err);
+    capture(err);
     res.status(500).json({ error: "Failed to fetch metrics" });
   }
 });
