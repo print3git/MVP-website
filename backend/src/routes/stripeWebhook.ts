@@ -2,8 +2,11 @@ import express from "express";
 import Stripe from "stripe";
 import logger from "../logger.js";
 import { upsertOrderPaid, markPaymentProcessed, linkModelToJob } from "../db";
+import { isTest } from "../env";
+import { capture } from "../lib/logger";
 import { getEnv as getBackendEnv, isTest } from "../env";
 import { getEnv } from "../../utils/getEnv.js";
+
 
 const { STRIPE_SECRET_KEY } = getBackendEnv();
 const realStripe = new Stripe(STRIPE_SECRET_KEY, {
@@ -70,6 +73,7 @@ router.post(
         }
       } catch (err) {
         logger.error("stripe_webhook_error", err);
+        capture(err);
         res.status(500).json({ error: "server_error" });
         return;
       }
