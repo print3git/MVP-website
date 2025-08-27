@@ -1,6 +1,6 @@
 const { Router } = require("express");
 const Stripe = require("stripe");
-const { getEnv } = require("../env");
+const { getEnv, isTest } = require("../env");
 
 const PRICE_MAP = {
   print_multi: 3999,
@@ -8,9 +8,12 @@ const PRICE_MAP = {
 };
 
 const { STRIPE_SECRET_KEY } = getEnv();
-const stripe = new Stripe(STRIPE_SECRET_KEY, {
+const realStripe = new Stripe(STRIPE_SECRET_KEY, {
   apiVersion: "2025-06-30.basil",
 });
+const stripe = isTest()
+  ? require("../../tests/utils/stripeMock").stripe
+  : realStripe;
 
 const router = Router();
 

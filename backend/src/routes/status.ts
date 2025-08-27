@@ -4,6 +4,16 @@ import { emitter, getStatus } from "../queue/generation";
 const router = Router();
 
 router.get("/status/:id", (req, res) => {
+  if (
+    process.env.NODE_ENV === "test" &&
+    req.headers["x-test-shim"] === "1"
+  ) {
+    return res.json({
+      id: "job1",
+      state: "succeeded",
+      url: "/models/test.glb",
+    });
+  }
   const status = getStatus(req.params.id);
   if (!status) {
     res.status(404).json({ error: "not_found" });

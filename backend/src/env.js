@@ -57,4 +57,8 @@ function getEnv() {
   return ENV;
 }
 
-module.exports = { getEnv };
+function isTest() {
+  return ENV.NODE_ENV === "test";
+}
+
+module.exports = { getEnv, isTest };
