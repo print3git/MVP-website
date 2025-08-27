@@ -2,15 +2,27 @@ import express from "express";
 import Stripe from "stripe";
 import logger from "../logger.js";
 import { upsertOrderPaid, markPaymentProcessed, linkModelToJob } from "../db";
-import { getEnv, isTest } from "../env";
+import { isTest } from "../env";
+import { capture } from "../lib/logger";
+import { getEnv as getBackendEnv, isTest } from "../env";
+import { getEnv } from "../../utils/getEnv.js";
 
-const { STRIPE_SECRET_KEY } = getEnv();
+
+const { STRIPE_SECRET_KEY } = getBackendEnv();
 const realStripe = new Stripe(STRIPE_SECRET_KEY, {
   apiVersion: "2025-06-30.basil",
 });
 const stripe = isTest()
   ? require("../../tests/utils/stripeMock").stripe
   : realStripe;
+
+let stripeWebhookSecret: string;
+try {
+  stripeWebhookSecret = getEnv("STRIPE_WEBHOOK_SECRET", { required: true })!;
+} catch (err) {
+  logger.error((err as Error).message);
+  process.exit(1);
+}
 
 const router = express.Router();
 
@@ -24,7 +36,7 @@ router.post(
       event = stripe.webhooks.constructEvent(
         req.body,
         sig,
-        process.env.STRIPE_WEBHOOK_SECRET || "",
+        stripeWebhookSecret,
       );
     } catch {
       res.status(400).json({ error: "invalid_signature" });
@@ -61,6 +73,7 @@ router.post(
         }
       } catch (err) {
         logger.error("stripe_webhook_error", err);
+        capture(err);
         res.status(500).json({ error: "server_error" });
         return;
       }
