@@ -2,6 +2,8 @@ import { Router, type Request, type Response } from "express";
 import Stripe from "stripe";
 import db from "../../db"; // imported for tests
 import { isTest } from "../../env";
+import logger from "../../logger.js";
+import { capture } from "../../lib/logger";
 
 interface Item {
   price: string;
@@ -74,6 +76,16 @@ router.post(
       params.shipping_address_collection = { allowed_countries: ["US"] };
     }
 
+    logger.info("create_checkout_session", {
+      items,
+      allowPromotionCodes,
+      metadata,
+      customer_email,
+      requiresShipping,
+      currency,
+      idempotencyKey,
+    });
+
     try {
       const session = await stripe.checkout.sessions.create(
         params,
@@ -81,6 +93,8 @@ router.post(
       );
       res.json({ id: session.id });
     } catch (err) {
+      logger.error("create_checkout_session_failed", err as Error);
+      capture(err);
       res.status(502).json({ error: "stripe_error" });
     }
   },
