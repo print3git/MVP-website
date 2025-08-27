@@ -2,6 +2,7 @@ import { Router, type Request, type Response } from "express";
 import Stripe from "stripe";
 import logger from "../logger.js";
 import { getEnv, isTest } from "../env";
+import { capture } from "../lib/logger";
 import { getEnv as getEnvVar } from "../../utils/getEnv.js";
 
 const router = Router();
@@ -43,8 +44,11 @@ router.post(
         cancel_url: cancelUrl,
       });
 
+      logger.info("stripe_checkout_session_created", { sessionId: session.id });
       res.json({ id: session.id });
     } catch (err) {
+      logger.error("stripe_checkout_session_failed");
+      capture(err);
       res.status(500).json({ error: "Failed to create session" });
     }
   },
