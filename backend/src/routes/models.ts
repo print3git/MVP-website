@@ -2,6 +2,7 @@ import { Router } from "express";
 import { Pool } from "pg";
 import validate from "../../middleware/validate.js";
 import { z } from "zod";
+import { getEnv } from "../env";
 
 const router = Router();
 
@@ -22,7 +23,8 @@ export const createModelSchema = z.object({
 router.post("/", validate(createModelSchema), async (req, res) => {
   try {
     const { prompt, s3_key } = req.body as { prompt: string; s3_key: string };
-    const cloudfront_url = `https://${process.env.CLOUDFRONT_DOMAIN}/${s3_key}`;
+    const { CLOUDFRONT_DOMAIN } = getEnv();
+    const cloudfront_url = `https://${CLOUDFRONT_DOMAIN}/${s3_key}`;
     const result = await pool.query(
       "INSERT INTO models (prompt, s3_key, cloudfront_url) VALUES ($1, $2, $3) RETURNING id, prompt, s3_key, cloudfront_url",
       [prompt, s3_key, cloudfront_url],

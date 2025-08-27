@@ -1,12 +1,13 @@
 "use strict";
 const express = require("express");
 const Stripe = require("stripe");
+const { getEnv } = require("../env");
 
 const router = express.Router();
 
 router.post("/checkout/create", async (req, res) => {
   try {
-    const secretKey = process.env.STRIPE_SECRET_KEY;
+    const { STRIPE_SECRET_KEY: secretKey } = getEnv();
     const successUrl = process.env.FRONTEND_SUCCESS_URL;
     const cancelUrl = process.env.FRONTEND_CANCEL_URL;
     if (!secretKey || !successUrl || !cancelUrl) {

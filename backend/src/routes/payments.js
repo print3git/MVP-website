@@ -1,12 +1,14 @@
 const { Router } = require("express");
 const Stripe = require("stripe");
+const { getEnv } = require("../env");
 
 const PRICE_MAP = {
   print_multi: 3999,
   print_single: 2999,
 };
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+const { STRIPE_SECRET_KEY } = getEnv();
+const stripe = new Stripe(STRIPE_SECRET_KEY, {
   apiVersion: "2025-06-30.basil",
 });
 

@@ -1,9 +1,11 @@
 import { Router, type Request, type Response } from "express";
 import Stripe from "stripe";
+import { getEnv } from "../env";
 
 const router = Router();
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
+const { STRIPE_SECRET_KEY } = getEnv();
+const stripe = new Stripe(STRIPE_SECRET_KEY as string, {
   apiVersion: "2025-06-30.basil",
 });
 

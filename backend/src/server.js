@@ -3,6 +3,8 @@ config();
 
 const app =
   require("./app").app || require("./app").default || require("./app");
+const { getEnv } = require("./env");
+getEnv();
 const port = parseInt(process.env.PORT || "3000", 10);
 const PORT = isNaN(port) || port < 1 || port > 65535 ? 3000 : port;
 

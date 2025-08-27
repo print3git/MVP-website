@@ -31,7 +31,7 @@ async function uploadFile(filePath, contentType) {
   const env = (0, env_1.getEnv)();
   const region = env.AWS_REGION || "us-east-1";
   const bucket = env.S3_BUCKET || "test-bucket";
-  const domain = env.CLOUDFRONT_MODEL_DOMAIN;
+  const domain = env.CLOUDFRONT_DOMAIN;
   const key = safeJoin(
     "images",
     `${Date.now()}-${path_1.default.basename(filePath)}`,
@@ -62,7 +62,7 @@ async function uploadS3(data, filename = "model.glb") {
   const env = (0, env_1.getEnv)();
   const region = env.AWS_REGION || "us-east-1";
   const bucket = env.S3_BUCKET || "test-bucket";
-  const domain = env.CLOUDFRONT_MODEL_DOMAIN;
+  const domain = env.CLOUDFRONT_DOMAIN;
   const key = safeJoin("models", `${Date.now()}-${filename}`);
   if (env.NODE_ENV !== "production" && !domain) {
     return { url: "/models/test.glb", key };

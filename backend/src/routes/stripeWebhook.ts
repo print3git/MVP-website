@@ -2,12 +2,10 @@ import express from "express";
 import Stripe from "stripe";
 import logger from "../logger.js";
 import { upsertOrderPaid, markPaymentProcessed, linkModelToJob } from "../db";
+import { getEnv } from "../env";
 
-const secretKey = process.env.STRIPE_SECRET_KEY;
-if (!secretKey) {
-  throw new Error("Stripe key not configured");
-}
-const stripe = new Stripe(secretKey, { apiVersion: "2025-06-30.basil" });
+const { STRIPE_SECRET_KEY } = getEnv();
+const stripe = new Stripe(STRIPE_SECRET_KEY, { apiVersion: "2025-06-30.basil" });
 
 const router = express.Router();
 
