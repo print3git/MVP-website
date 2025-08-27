@@ -2,6 +2,8 @@
 const express = require("express");
 const Stripe = require("stripe");
 const { getEnv, isTest } = require("../env");
+const logger = require("../logger.js");
+const { capture } = require("../lib/logger");
 
 const router = express.Router();
 
@@ -26,17 +28,22 @@ router.post("/checkout/create", async (req, res) => {
     } = req.body || {};
     const email = customerEmail ?? customer_email;
     if (!Array.isArray(items) || items.length === 0) {
+      logger.warn("checkout_create_bad_request", { reason: "missing_items" });
       res.status(400).json({ error: "bad_request" });
       return;
     }
     const normalized = [];
     for (const item of items) {
       if (typeof item.price !== "string") {
+        logger.warn("checkout_create_bad_request", { reason: "invalid_item" });
         res.status(400).json({ error: "bad_request" });
         return;
       }
       const qty = item.quantity ?? 1;
       if (typeof qty !== "number" || qty < 1 || qty > 99) {
+        logger.warn("checkout_create_bad_request", {
+          reason: "invalid_quantity",
+        });
         res.status(400).json({ error: "bad_request" });
         return;
       }
@@ -71,11 +78,16 @@ router.post("/checkout/create", async (req, res) => {
         },
         { idempotencyKey: idempotencyKey || undefined },
       );
+      logger.info("checkout_session_created", { sessionId: session.id });
       res.status(200).json({ id: session.id });
     } catch (err) {
+      logger.error("stripe_checkout_session_failed");
+      capture(err);
       res.status(502).json({ error: "stripe_error" });
     }
   } catch (err) {
+    logger.error("checkout_create_failed");
+    capture(err);
     res.status(400).json({ error: "bad_request" });
   }
 });
