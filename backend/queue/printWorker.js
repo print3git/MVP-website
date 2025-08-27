@@ -132,6 +132,7 @@ async function run(interval = POLL_INTERVAL_MS) {
 }
 
 if (require.main === module) {
+  console.log("printWorker started");
   run();
 }
 
