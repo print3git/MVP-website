@@ -1,4 +1,4 @@
-FROM node:18-alpine
+FROM node:20-alpine
 COPY backend/ /app/backend/
 WORKDIR /app/backend
 RUN npm ci
