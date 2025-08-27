@@ -11,6 +11,7 @@ export default function usePayment() {
   const [error, setError] = useState(null);
   const [succeeded, setSucceeded] = useState(false);
   const [paymentIntentId, setPaymentIntentId] = useState(null);
+  const [status, setStatus] = useState(null);
 
   useEffect(() => {
     let active = true;
@@ -33,6 +34,9 @@ export default function usePayment() {
     if (!stripeRef.current || !cardElementRef.current) return;
     setPaying(true);
     setError(null);
+    setSucceeded(false);
+    setStatus(null);
+    setPaymentIntentId(null);
     try {
       const res = await fetch("/api/checkout/create", {
         method: "POST",
@@ -58,6 +62,7 @@ export default function usePayment() {
       } else if (result?.paymentIntent?.status === "succeeded") {
         setSucceeded(true);
         setPaymentIntentId(result.paymentIntent.id);
+        setStatus(result.paymentIntent.status);
       } else {
         setError("Payment failed");
       }
@@ -68,5 +73,5 @@ export default function usePayment() {
     }
   };
 
-  return { cardRef, pay, paying, error, succeeded, paymentIntentId };
+  return { cardRef, pay, paying, error, succeeded, paymentIntentId, status };
 }
