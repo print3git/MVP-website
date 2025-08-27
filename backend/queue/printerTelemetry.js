@@ -2,17 +2,23 @@ require("dotenv").config();
 const { Client } = require("pg");
 const { getPrinterInfo } = require("../printers/octoprint");
 const logger = require("../../src/logger");
-const { getEnv } = require("../src/env");
+const { getEnv: getEnvObject } = require("../src/env");
+const { getEnv } = require("../utils/getEnv");
 
-const OCTOPRINT_API_KEY = process.env.OCTOPRINT_API_KEY || "";
+const OCTOPRINT_API_KEY = getEnv("OCTOPRINT_API_KEY");
 const POLL_INTERVAL_MS = parseInt(
-  process.env.PRINTER_POLL_INTERVAL_MS || "60000",
+  getEnv("PRINTER_POLL_INTERVAL_MS") || "60000",
   10,
 );
-const PRINTER_URLS = (process.env.PRINTER_URLS || "")
+const PRINTER_URLS = (getEnv("PRINTER_URLS") || "")
   .split(",")
   .map((u) => u.trim())
   .filter(Boolean);
+
+if (!OCTOPRINT_API_KEY || PRINTER_URLS.length === 0) {
+  logger.error("Missing OCTOPRINT_API_KEY or PRINTER_URLS");
+  process.exit(1);
+}
 
 const lastStatus = {};
 
@@ -74,7 +80,7 @@ async function pollPrinters(client) {
 }
 
 async function run(interval = POLL_INTERVAL_MS) {
-  const { DB_URL } = getEnv();
+  const { DB_URL } = getEnvObject();
   const client = new Client({ connectionString: DB_URL });
   await client.connect();
   setInterval(() => {

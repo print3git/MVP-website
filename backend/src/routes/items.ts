@@ -3,13 +3,22 @@ import { Pool } from "pg";
 import validate from "../../middleware/validate.js";
 import logger from "../logger.js";
 import { insertItem, insertItemSchema } from "../lib/items";
+import { getEnv } from "../../utils/getEnv.js";
 
 const router = Router();
 
+const dbEndpoint = getEnv("DB_ENDPOINT");
+const dbPassword = getEnv("DB_PASSWORD");
+
+if (!dbEndpoint || !dbPassword) {
+  logger.error("Missing DB_ENDPOINT or DB_PASSWORD");
+  process.exit(1);
+}
+
 const pool = new Pool({
-  connectionString: process.env.DB_ENDPOINT,
+  connectionString: dbEndpoint,
   user: "postgres",
-  password: process.env.DB_PASSWORD,
+  password: dbPassword,
   database: "postgres",
 });
 
