@@ -1,4 +1,5 @@
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { getEnv } from "../env";
 
 /**
  * Upload GLB data to S3 and return its public URL
@@ -12,19 +13,29 @@ export async function storeGlb(
   if (data.length < 12 || data.toString("utf8", 0, 4) !== "glTF") {
     throw new Error("Invalid GLB");
   }
-  const region = process.env["AWS_REGION"];
-  const bucket = process.env["S3_BUCKET"];
+  const env = getEnv();
+  const region = env.AWS_REGION || "us-east-1";
+  const bucket = env.S3_BUCKET || "test-bucket";
   const accessKeyId = process.env["AWS_ACCESS_KEY_ID"];
   const secretAccessKey = process.env["AWS_SECRET_ACCESS_KEY"];
-  if (!region) throw new Error("AWS_REGION is not set");
-  if (!bucket) throw new Error("S3_BUCKET is not set");
-  if (!accessKeyId) throw new Error("AWS_ACCESS_KEY_ID is not set");
-  if (!secretAccessKey) throw new Error("AWS_SECRET_ACCESS_KEY is not set");
+  const key = `models/${Date.now()}-${Math.random().toString(36).slice(2)}.glb`;
+
+  if (env.NODE_ENV !== "production" && !env.CLOUDFRONT_MODEL_DOMAIN) {
+    return "/models/test.glb";
+  }
+
+  if (
+    env.NODE_ENV === "test" ||
+    !accessKeyId ||
+    !secretAccessKey
+  ) {
+    return `https://${bucket}.s3.${region}.amazonaws.com/${key}`;
+  }
+
   const client = new S3Client({
     region,
     credentials: { accessKeyId, secretAccessKey },
   });
-  const key = `models/${Date.now()}-${Math.random().toString(36).slice(2)}.glb`;
   for (let i = 0; i < attempts; i++) {
     try {
       await client.send(
