@@ -121,6 +121,15 @@ try {
 
 try {
   (() => {
+    const r = require("./routes/worker");
+    app.use("/api", r.default || r);
+  })();
+} catch (err) {
+  console.error("Failed to load worker router", err);
+}
+
+try {
+  (() => {
     const r = require("./routes/status");
     app.use("/api", r.default || r);
   })();
