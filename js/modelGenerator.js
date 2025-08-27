@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { createRoot } from "react-dom/client";
 import useGenerateModel from "./useGenerateModel.js";
 import ModelViewer from "./ModelViewer.js";
+import PaymentPanel from "./PaymentPanel.js";
 
 export function GeneratorApp() {
   const [prompt, setPrompt] = useState("");
@@ -56,9 +57,14 @@ export function GeneratorApp() {
       ),
     modelUrl &&
       React.createElement(
-        "div",
-        { "data-testid": "viewer" },
-        React.createElement(ModelViewer, { url: modelUrl }),
+        React.Fragment,
+        null,
+        React.createElement(
+          "div",
+          { "data-testid": "viewer" },
+          React.createElement(ModelViewer, { url: modelUrl }),
+        ),
+        React.createElement(PaymentPanel),
       ),
   );
 }
