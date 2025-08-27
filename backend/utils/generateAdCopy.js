@@ -1,12 +1,13 @@
 const axios = require("axios");
 const templates = require("../ad_templates.json");
+const { getEnv } = require("./getEnv");
 
 function pickTemplate() {
   return templates[Math.floor(Math.random() * templates.length)].template;
 }
 
 async function generateAdCopy(subreddit, context = "") {
-  const apiUrl = process.env.LLM_API_URL;
+  const apiUrl = getEnv("LLM_API_URL", { default: "" });
   if (apiUrl) {
     try {
       const { data } = await axios.post(apiUrl, {
