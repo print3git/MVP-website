@@ -1,10 +1,16 @@
-import { Router, type NextFunction, type Request, type Response } from "express";
+import {
+  Router,
+  type NextFunction,
+  type Request,
+  type Response,
+} from "express";
 import Stripe from "stripe";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const db = require("../../db.js");
 import config from "../../config";
 import { authRequired, authOptional } from "../lib/auth";
-import { logError } from "../lib/logError";
+import logger from "../logger.js";
+import { capture } from "../lib/logger";
 import { isTest } from "../env";
 
 const router = Router();
@@ -17,6 +23,7 @@ const stripe = isTest()
 
 router.get("/subscription", authRequired, async (req, res) => {
   try {
+    logger.info("Fetching subscription", { userId: (req as any).user.id });
     const sub = await db.getSubscription((req as any).user.id);
     if (!sub) {
       res.json({ active: false });
@@ -24,7 +31,8 @@ router.get("/subscription", authRequired, async (req, res) => {
     }
     res.json(sub);
   } catch (err) {
-    logError(err);
+    logger.error(err);
+    capture(err);
     res.status(500).json({ error: "Failed to fetch subscription" });
   }
 });
@@ -40,6 +48,7 @@ router.post("/subscription", authRequired, async (req, res) => {
     price_cents,
   } = req.body;
   try {
+    logger.info("Creating subscription", { userId: (req as any).user.id });
     const sub = await db.upsertSubscription(
       (req as any).user.id,
       status || "active",
@@ -57,8 +66,21 @@ router.post("/subscription", authRequired, async (req, res) => {
     );
     res.json(sub);
   } catch (err) {
-    logError(err);
+    logger.error(err);
+    capture(err);
     res.status(500).json({ error: "Failed to create subscription" });
+  }
+});
+
+router.delete("/subscription", authRequired, async (req, res) => {
+  try {
+    logger.info("Deleting subscription", { userId: (req as any).user.id });
+    const sub = await db.cancelSubscription((req as any).user.id);
+    res.json(sub);
+  } catch (err) {
+    logger.error(err);
+    capture(err);
+    res.status(500).json({ error: "Failed to delete subscription" });
   }
 });
 
@@ -75,7 +97,8 @@ router.post("/subscription/portal", authRequired, async (req, res) => {
     });
     res.json({ url: session.url });
   } catch (err) {
-    logError(err);
+    logger.error(err);
+    capture(err);
     res.status(500).json({ error: "Failed to create portal session" });
   }
 });
@@ -89,7 +112,8 @@ router.get("/subscription/credits", authRequired, async (req, res) => {
       total: credits.total_credits,
     });
   } catch (err) {
-    logError(err);
+    logger.error(err);
+    capture(err);
     res.status(500).json({ error: "Failed to fetch credits" });
   }
 });
@@ -113,7 +137,8 @@ router.get("/subscription/summary", authRequired, async (req, res) => {
       milestone,
     });
   } catch (err) {
-    logError(err);
+    logger.error(err);
+    capture(err);
     res.status(500).json({ error: "Failed to fetch subscription summary" });
   }
 });
@@ -133,10 +158,10 @@ router.get("/admin/subscription-metrics", adminCheck, async (_req, res) => {
     const metrics = await db.getSubscriptionMetrics();
     res.json(metrics);
   } catch (err) {
-    logError(err);
+    logger.error(err);
+    capture(err);
     res.status(500).json({ error: "Failed to fetch metrics" });
   }
 });
 
 export default router;
-
