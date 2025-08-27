@@ -1,5 +1,6 @@
 import { Router, type Request, type Response } from "express";
 import Stripe from "stripe";
+import { getEnv } from "../env";
 
 interface Item {
   price: string;
@@ -18,7 +19,8 @@ const PRICE_MAP: Record<string, number> = {
   print_single: 2999,
 };
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
+const { STRIPE_SECRET_KEY } = getEnv();
+const stripe = new Stripe(STRIPE_SECRET_KEY, {
   apiVersion: "2025-06-30.basil",
 });
 

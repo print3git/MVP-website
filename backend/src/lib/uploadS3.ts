@@ -28,7 +28,7 @@ export async function uploadFile(
   const env = getEnv();
   const region = env.AWS_REGION || "us-east-1";
   const bucket = env.S3_BUCKET || "test-bucket";
-  const domain = env.CLOUDFRONT_MODEL_DOMAIN;
+  const domain = env.CLOUDFRONT_DOMAIN;
 
   const key = safeJoin("images", `${Date.now()}-${path.basename(filePath)}`);
   if (env.NODE_ENV !== "production" && !domain) {
@@ -79,7 +79,7 @@ export async function uploadS3(
   const env = getEnv();
   const region = env.AWS_REGION || "us-east-1";
   const bucket = env.S3_BUCKET || "test-bucket";
-  const domain = env.CLOUDFRONT_MODEL_DOMAIN;
+  const domain = env.CLOUDFRONT_DOMAIN;
   const key = safeJoin("models", sanitizeKey(`${Date.now()}-${filename}`));
 
   if (env.NODE_ENV !== "production" && !domain) {

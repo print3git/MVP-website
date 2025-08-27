@@ -2,6 +2,7 @@ require("dotenv").config();
 const { Client } = require("pg");
 const { getPrinterInfo } = require("../printers/octoprint");
 const logger = require("../../src/logger");
+const { getEnv } = require("../src/env");
 
 const OCTOPRINT_API_KEY = process.env.OCTOPRINT_API_KEY || "";
 const POLL_INTERVAL_MS = parseInt(
@@ -73,7 +74,8 @@ async function pollPrinters(client) {
 }
 
 async function run(interval = POLL_INTERVAL_MS) {
-  const client = new Client({ connectionString: process.env.DB_URL });
+  const { DB_URL } = getEnv();
+  const client = new Client({ connectionString: DB_URL });
   await client.connect();
   setInterval(() => {
     pollPrinters(client).catch((err) =>

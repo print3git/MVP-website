@@ -9,11 +9,9 @@ const express_1 = __importDefault(require("express"));
 const stripe_1 = __importDefault(require("stripe"));
 const logger_js_1 = __importDefault(require("../logger.js"));
 const db_1 = require("../db");
-const secretKey = process.env.STRIPE_SECRET_KEY;
-if (!secretKey) {
-  throw new Error("Stripe key not configured");
-}
-const stripe = new stripe_1.default(secretKey, {
+const env_1 = require("../env");
+const { STRIPE_SECRET_KEY } = (0, env_1.getEnv)();
+const stripe = new stripe_1.default(STRIPE_SECRET_KEY, {
   apiVersion: "2025-06-30.basil",
 });
 const router = express_1.default.Router();

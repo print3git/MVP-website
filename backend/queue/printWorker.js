@@ -4,9 +4,10 @@ const axios = require("axios");
 const { getPrinterStatus } = require("../printers/octoprint");
 const { selectHub } = require("../utils/routing");
 const logger = require("../../src/logger");
+const { getEnv } = require("../src/env");
 
-const DEFAULT_PRINTER_URL =
-  process.env.PRINTER_API_URL || "http://localhost:5000/print";
+const { PRINTER_API_URL, DB_URL } = getEnv();
+const DEFAULT_PRINTER_URL = PRINTER_API_URL || "http://localhost:5000/print";
 const PRINTER_URLS = (process.env.PRINTER_URLS || DEFAULT_PRINTER_URL)
   .split(",")
   .map((u) => u.trim())
@@ -149,7 +150,7 @@ async function connectWithRetry(client) {
 
 async function run(interval = POLL_INTERVAL_MS) {
   logger.info("=== printWorker starting ===");
-  const client = new Client({ connectionString: process.env.DB_URL });
+  const client = new Client({ connectionString: DB_URL });
   await connectWithRetry(client);
   setInterval(() => {
     processNextJob(client).catch((err) => logger.error("Worker error", err));

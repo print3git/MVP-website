@@ -19,7 +19,7 @@ async function storeGlb(data, attempts = 3) {
   const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
   const key = `models/${Date.now()}-${Math.random().toString(36).slice(2)}.glb`;
 
-  if (env.NODE_ENV !== "production" && !env.CLOUDFRONT_MODEL_DOMAIN) {
+  if (env.NODE_ENV !== "production" && !env.CLOUDFRONT_DOMAIN) {
     return "/models/test.glb";
   }
 

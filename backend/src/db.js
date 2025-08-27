@@ -1,11 +1,9 @@
 const { Pool } = require("pg");
+const { getEnv } = require("./env");
 
-const dbUrl = process.env.DB_URL;
-if (!dbUrl) {
-  throw new Error("DB_URL is required");
-}
+const { DB_URL, NODE_ENV } = getEnv();
 
-const pool = new Pool({ connectionString: dbUrl });
+const pool = new Pool({ connectionString: DB_URL });
 
 function close() {
   return pool.end();
@@ -24,7 +22,7 @@ async function createJob(input) {
       [id, input.userId, input.url, input.title],
     );
   } catch {
-    if (process.env.NODE_ENV !== "production") {
+    if (NODE_ENV !== "production") {
       jobs.set(id, { id, ...input });
     }
   }
@@ -38,7 +36,7 @@ async function linkModelToJob(jobId, s3Key) {
       s3Key,
     ]);
   } catch {
-    if (process.env.NODE_ENV !== "production") {
+    if (NODE_ENV !== "production") {
       const job = jobs.get(jobId) || { id: jobId };
       job.s3Key = s3Key;
       jobs.set(jobId, job);
