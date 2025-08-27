@@ -3,8 +3,10 @@ import { Pool } from "pg";
 import validate from "../../middleware/validate.js";
 import { z } from "zod";
 import logger from "../logger.js";
+import { capture } from "../lib/logger";
 import { getEnv as getEnvVar } from "../../utils/getEnv.js";
 import { getEnv as getEnvConfig } from "../env";
+
 
 const router = Router();
 
@@ -41,8 +43,12 @@ router.post("/", validate(createModelSchema), async (req, res) => {
       "INSERT INTO models (prompt, s3_key, cloudfront_url) VALUES ($1, $2, $3) RETURNING id, prompt, s3_key, cloudfront_url",
       [prompt, s3_key, cloudfront_url],
     );
-    res.status(201).json(result.rows[0]);
-  } catch (_err) {
+    const model = result.rows[0];
+    logger.info("model_created", { id: model.id });
+    res.status(201).json(model);
+  } catch (err) {
+    logger.error("model_create_failed", err as Error);
+    capture(err);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
@@ -52,8 +58,11 @@ router.get("/", async (_req, res) => {
     const result = await pool.query(
       "SELECT id, prompt, s3_key, cloudfront_url FROM models ORDER BY id ASC",
     );
+    logger.info("models_listed", { count: result.rows.length });
     res.json(result.rows);
-  } catch (_err) {
+  } catch (err) {
+    logger.error("models_list_failed", err as Error);
+    capture(err);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
@@ -65,11 +74,16 @@ router.get("/:id", async (req, res) => {
       [req.params.id],
     );
     if (result.rows.length === 0) {
+      logger.warn("model_not_found", { id: req.params.id });
       res.status(404).json({ error: "Not Found" });
       return;
     }
-    res.json(result.rows[0]);
-  } catch (_err) {
+    const model = result.rows[0];
+    logger.info("model_retrieved", { id: model.id });
+    res.json(model);
+  } catch (err) {
+    logger.error("model_get_failed", { id: req.params.id });
+    capture(err);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });

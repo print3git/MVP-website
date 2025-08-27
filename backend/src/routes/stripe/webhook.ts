@@ -4,6 +4,7 @@ import db from "../../db.js";
 import { enqueuePrint } from "../../queue/printQueue.js";
 import { enqueuePrint as enqueueDbPrint } from "../../queue/dbPrintQueue.js";
 import logger from "../../logger.js";
+import { capture } from "../../lib/logger";
 import { isTest } from "../../env.js";
 import { getEnv as getEnvVar } from "../../../utils/getEnv.js";
 
@@ -31,10 +32,13 @@ router.post(
   async (req: Request<any, any, Buffer>, res: Response): Promise<void> => {
     const sig = req.headers["stripe-signature"] as string | undefined;
     if (!sig) {
-      logger.warn("Stripe webhook missing signature");
+      const err = new Error("stripe_webhook_missing_signature");
+      logger.warn("stripe_webhook_missing_signature");
+      capture(err);
       res.status(400).json({ error: "invalid_signature" });
       return;
     }
+
 
     const rawBody = Buffer.isBuffer(req.body)
       ? req.body
@@ -44,24 +48,43 @@ router.post(
     try {
       event = stripe.webhooks.constructEvent(rawBody, sig, stripeWebhookSecret);
     } catch (err) {
-      logger.warn("Stripe webhook signature verification failed", err as Error);
+      logger.warn("stripe_webhook_signature_verification_failed", err as Error);
+      capture(err);
       res.status(400).json({ error: "invalid_signature" });
       return;
     }
 
+    logger.info("stripe_webhook_received", { type: event.type });
+
     if (event.type === "checkout.session.completed") {
       const session = event.data.object as Stripe.Checkout.Session;
-      await db.query("UPDATE orders SET status=$1 WHERE session_id=$2", [
-        "paid",
-        session.id,
-      ]);
-      const jobId = session.metadata?.["jobId"];
-      if (jobId) {
-        await enqueueDbPrint(jobId, session.id, {}, null, null);
-        enqueuePrint(jobId);
+      try {
+        await db.query("UPDATE orders SET status=$1 WHERE session_id=$2", [
+          "paid",
+          session.id,
+        ]);
+        logger.info("order_paid", { sessionId: session.id });
+        const jobId = session.metadata?.["jobId"];
+        if (jobId) {
+          await enqueueDbPrint(jobId, session.id, {}, null, null);
+          enqueuePrint(jobId);
+          logger.info("print_enqueued", { jobId, sessionId: session.id });
+        } else {
+          logger.warn("stripe_webhook_missing_job_id", {
+            sessionId: session.id,
+          });
+        }
+      } catch (err) {
+        logger.error("stripe_webhook_processing_failed", {
+          sessionId: session.id,
+        });
+        capture(err);
+        res.status(500).json({ error: "processing_failed" });
+        return;
       }
     }
 
+    logger.info("stripe_webhook_processed", { type: event.type });
     res.status(200).json({ received: true });
   },
 );
