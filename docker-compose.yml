@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 services:
   api:
     build: ./
@@ -10,7 +10,13 @@ services:
     depends_on:
       - db
     env_file: .env
-    command: ["npm","run","start:worker"]
+    command: ["npm", "run", "start:worker"]
+  db-worker:
+    build: ./
+    depends_on:
+      - db
+    env_file: .env
+    command: ["npm", "run", "start:job-queue"]
   db:
     image: postgres:15
     environment:
