@@ -1,6 +1,6 @@
 import { Router } from "express";
 import Stripe from "stripe";
-import { getEnv } from "../env";
+import { getEnv, isTest } from "../env";
 
 const router = Router();
 
@@ -47,7 +47,12 @@ router.post("/checkout/create", async (req, res) => {
       normalized.push({ price: item.price, quantity: qty });
     }
 
-    const stripe = new Stripe(secretKey, { apiVersion: "2025-06-30.basil" });
+    const realStripe = new Stripe(secretKey, {
+      apiVersion: "2025-06-30.basil",
+    });
+    const stripe = isTest()
+      ? require("../../tests/utils/stripeMock").stripe
+      : realStripe;
 
     const metadataSanitized =
       metadata &&

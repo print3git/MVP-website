@@ -84,8 +84,7 @@ jest.mock(
 );
 const { generateCaption } = require("../utils/captionService");
 
-const request = require("supertest");
-const app = require("../server");
+const { req } = require("./utils/request");
 const { shouldSkipSuite } = require("./utils/shouldSkipSuite");
 
 const skipCommunity = shouldSkipSuite("/api/community");
@@ -120,14 +119,14 @@ afterEach(() => {
 
 test("POST /api/generate returns glb url", async () => {
   generateModel.mockResolvedValue("/models/test.glb");
-  const res = await request(app).post("/api/generate").send({ prompt: "test" });
+  const res = await req().post("/api/generate").send({ prompt: "test" });
   expect(res.status).toBe(200);
   expect(res.body.glb_url).toBe("/models/test.glb");
 });
 
 test("POST /api/generate returns string url", async () => {
   generateModel.mockResolvedValue("/models/test.glb");
-  const res = await request(app).post("/api/generate").send({ prompt: "test" });
+  const res = await req().post("/api/generate").send({ prompt: "test" });
   expect(res.status).toBe(200);
   expect(typeof res.body.glb_url).toBe("string");
 });
@@ -143,7 +142,7 @@ test("GET /api/status returns job", async () => {
       },
     ],
   });
-  const res = await request(app).get("/api/status/1");
+  const res = await req().get("/api/status/1");
   expect(res.status).toBe(200);
   expect(res.body.status).toBe("complete");
   expect(res.body.generated_title).toBe("Auto");
@@ -152,7 +151,7 @@ test("GET /api/status returns job", async () => {
 test("Stripe create-order flow", async () => {
   db.query.mockResolvedValueOnce({ rows: [{ job_id: "1", user_id: "u1" }] });
   db.query.mockResolvedValueOnce({});
-  const res = await request(app)
+  const res = await req()
     .post("/api/create-order")
     .send({ jobId: "1", price: 100, productType: "single" });
   expect(res.status).toBe(200);
@@ -162,7 +161,7 @@ test("Stripe create-order flow", async () => {
 test("create-order applies discount", async () => {
   db.query.mockResolvedValueOnce({ rows: [{ job_id: "1", user_id: "u1" }] });
   db.query.mockResolvedValueOnce({});
-  const res = await request(app).post("/api/create-order").send({
+  const res = await req().post("/api/create-order").send({
     jobId: "1",
     price: 100,
     qty: 2,
@@ -189,7 +188,7 @@ test("create-order applies discount", async () => {
 test("create-order quantity discount", async () => {
   db.query.mockResolvedValueOnce({ rows: [{ job_id: "1", user_id: "u1" }] });
   db.query.mockResolvedValueOnce({});
-  const res = await request(app)
+  const res = await req()
     .post("/api/create-order")
     .send({ jobId: "1", price: 100, qty: 2, productType: "single" });
   expect(res.status).toBe(200);
@@ -209,7 +208,7 @@ test("create-order applies first-order discount", async () => {
     .mockResolvedValueOnce({})
     .mockResolvedValueOnce({});
   const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
-  await request(app)
+  await req()
     .post("/api/create-order")
     .set("authorization", `Bearer ${token}`)
     .send({ jobId: "1", price: 100, qty: 1, productType: "single" });
@@ -231,7 +230,7 @@ test("create-order grants free print after three referrals", async () => {
     .mockResolvedValueOnce({});
   db.getUserIdForReferral.mockResolvedValue("u2");
 
-  const res = await request(app).post("/api/create-order").send({
+  const res = await req().post("/api/create-order").send({
     jobId: "1",
     price: 100,
     referral: "REFCODE",
@@ -251,15 +250,13 @@ test("create-order grants free print after three referrals", async () => {
 
 test("create-order rejects unknown job", async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
-  const res = await request(app)
-    .post("/api/create-order")
-    .send({ jobId: "bad" });
+  const res = await req().post("/api/create-order").send({ jobId: "bad" });
   expect(res.status).toBe(404);
 });
 
 test("create-order rejects prohibited destination", async () => {
   db.query.mockResolvedValueOnce({ rows: [{ job_id: "1", user_id: "u1" }] });
-  const res = await request(app)
+  const res = await req()
     .post("/api/create-order")
     .send({
       jobId: "1",
@@ -272,7 +269,7 @@ test("create-order rejects prohibited destination", async () => {
 
 test("POST /api/register returns token", async () => {
   db.query.mockResolvedValueOnce({ rows: [{ id: "u1", username: "alice" }] });
-  const res = await request(app).post("/api/register").send({
+  const res = await req().post("/api/register").send({
     username: "alice",
     email: "a@a.com",
     password: "p",
@@ -289,7 +286,7 @@ test("POST /api/login returns token", async () => {
       { id: "u1", username: "alice", password_hash: bcrypt.hashSync("p", 10) },
     ],
   });
-  const res = await request(app)
+  const res = await req()
     .post("/api/login")
     .send({ username: "alice", password: "p" });
   expect(res.status).toBe(200);
@@ -307,7 +304,7 @@ test("Stripe webhook updates order and awards badge", async () => {
     .mockResolvedValueOnce({ rows: [] })
     .mockResolvedValueOnce({});
   const payload = JSON.stringify({});
-  const res = await request(app)
+  const res = await req()
     .post("/api/webhook/stripe")
     .set("stripe-signature", "sig")
     .set("Content-Type", "application/json")
@@ -339,7 +336,7 @@ test("Stripe webhook awards weekly streak badge", async () => {
   db.updateWeeklyOrderStreak.mockResolvedValueOnce(4);
   db.query.mockResolvedValueOnce({ rows: [] }).mockResolvedValueOnce({});
   const payload = JSON.stringify({});
-  const res = await request(app)
+  const res = await req()
     .post("/api/webhook/stripe")
     .set("stripe-signature", "sig")
     .set("Content-Type", "application/json")
@@ -358,7 +355,7 @@ test("Stripe webhook invalid signature", async () => {
     throw new Error("bad sig");
   });
   const payload = JSON.stringify({});
-  const res = await request(app)
+  const res = await req()
     .post("/api/webhook/stripe")
     .set("stripe-signature", "bad")
     .set("Content-Type", "application/json")
@@ -372,7 +369,7 @@ test("Stripe webhook invalid signature does not process", async () => {
     throw new Error("bad sig");
   });
   const payload = JSON.stringify({});
-  await request(app)
+  await req()
     .post("/api/webhook/stripe")
     .set("stripe-signature", "bad")
     .set("Content-Type", "application/json")
@@ -406,7 +403,7 @@ test("POST /api/generate accepts image upload", async () => {
   jest.spyOn(fs, "unlink").mockImplementation((_, cb) => cb && cb());
 
   generateModel.mockResolvedValue("/models/test.glb");
-  const res = await request(app)
+  const res = await req()
     .post("/api/generate")
     .field("prompt", "img test")
     .attach("image", Buffer.from("fake"), "test.png");
@@ -424,7 +421,7 @@ communityTest("POST /api/community submits model", async () => {
   db.query.mockResolvedValueOnce({ rows: [{ generated_title: "Auto" }] });
   db.query.mockResolvedValueOnce({});
   const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
-  const res = await request(app)
+  const res = await req()
     .post("/api/community")
     .set("authorization", `Bearer ${token}`)
     .send({ jobId: "j1" });
@@ -442,7 +439,7 @@ communityTest("POST /api/community uses BLIP caption for title", async () => {
   db.query.mockResolvedValueOnce({ rows: [{ generated_title: caption }] });
   db.query.mockResolvedValueOnce({});
   const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
-  const res = await request(app)
+  const res = await req()
     .post("/api/community")
     .set("authorization", `Bearer ${token}`)
     .send({ jobId: "j1" });
@@ -456,7 +453,7 @@ communityTest("POST /api/community uses BLIP caption for title", async () => {
 
 communityTest("POST /api/community requires jobId", async () => {
   const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
-  const res = await request(app)
+  const res = await req()
     .post("/api/community")
     .set("authorization", `Bearer ${token}`)
     .send({});
@@ -464,24 +461,24 @@ communityTest("POST /api/community requires jobId", async () => {
 });
 
 communityTest("POST /api/community requires auth", async () => {
-  const res = await request(app).post("/api/community").send({ jobId: "j1" });
+  const res = await req().post("/api/community").send({ jobId: "j1" });
   expect(res.status).toBe(401);
 });
 
 communityTest("POST /api/community unauthorized skips DB", async () => {
-  await request(app).post("/api/community").send({ jobId: "j1" });
+  await req().post("/api/community").send({ jobId: "j1" });
   expect(db.query).not.toHaveBeenCalled();
 });
 
 communityTest("GET /api/community/recent returns creations", async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
-  const res = await request(app).get("/api/community/recent");
+  const res = await req().get("/api/community/recent");
   expect(res.status).toBe(200);
 });
 
 communityTest("GET /api/community/recent supports order", async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
-  await request(app).get("/api/community/recent?order=asc");
+  await req().get("/api/community/recent?order=asc");
   expect(db.query).toHaveBeenCalledWith(
     expect.stringContaining("ORDER BY c.created_at ASC"),
     [10, 0, null, null],
@@ -490,7 +487,7 @@ communityTest("GET /api/community/recent supports order", async () => {
 
 communityTest("GET /api/community/recent pagination and category", async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
-  await request(app).get(
+  await req().get(
     "/api/community/recent?limit=5&offset=2&category=art&search=bot",
   );
   expect(db.query).toHaveBeenCalledWith(expect.any(String), [
@@ -504,23 +501,21 @@ communityTest("GET /api/community/recent pagination and category", async () => {
 communityTest("GET /api/community/mine returns creations", async () => {
   db.getUserCreations.mockResolvedValueOnce([]);
   const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
-  await request(app)
+  await req()
     .get("/api/community/mine")
     .set("authorization", `Bearer ${token}`);
   expect(db.getUserCreations).toHaveBeenCalledWith("u1", 10, 0);
 });
 
 communityTest("POST /api/community/:id/comment requires auth", async () => {
-  const res = await request(app)
-    .post("/api/community/5/comment")
-    .send({ text: "hi" });
+  const res = await req().post("/api/community/5/comment").send({ text: "hi" });
   expect(res.status).toBe(401);
 });
 
 communityTest("POST /api/community/:id/comment", async () => {
   db.insertCommunityComment.mockResolvedValueOnce({ id: "c1", text: "hi" });
   const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
-  const res = await request(app)
+  const res = await req()
     .post("/api/community/5/comment")
     .set("authorization", `Bearer ${token}`)
     .send({ text: "hi" });
@@ -531,7 +526,7 @@ communityTest("POST /api/community/:id/comment", async () => {
 
 communityTest("GET /api/community/:id/comments", async () => {
   db.getCommunityComments.mockResolvedValueOnce([{ id: "c1", text: "hello" }]);
-  const res = await request(app).get("/api/community/5/comments");
+  const res = await req().get("/api/community/5/comments");
   expect(res.status).toBe(200);
   expect(res.body[0].text).toBe("hello");
   expect(db.getCommunityComments).toHaveBeenCalledWith("5");
@@ -539,7 +534,7 @@ communityTest("GET /api/community/:id/comments", async () => {
 
 test("Admin create competition", async () => {
   db.query.mockResolvedValueOnce({ rows: [{}] });
-  const res = await request(app)
+  const res = await req()
     .post("/api/admin/competitions")
     .set("x-admin-token", "admin")
     .send({ name: "Test", start_date: "2025-01-01", end_date: "2025-01-31" });
@@ -547,35 +542,35 @@ test("Admin create competition", async () => {
 });
 
 test("Admin create competition unauthorized", async () => {
-  const res = await request(app)
+  const res = await req()
     .post("/api/admin/competitions")
     .send({ name: "Test", start_date: "2025-01-01", end_date: "2025-01-31" });
   expect(res.status).toBe(401);
 });
 
 test("registration missing username", async () => {
-  const res = await request(app)
+  const res = await req()
     .post("/api/register")
     .send({ email: "a@a.com", password: "p" });
   expect(res.status).toBe(400);
 });
 
 test("registration missing email", async () => {
-  const res = await request(app)
+  const res = await req()
     .post("/api/register")
     .send({ username: "a", password: "p" });
   expect(res.status).toBe(400);
 });
 
 test("registration missing password", async () => {
-  const res = await request(app)
+  const res = await req()
     .post("/api/register")
     .send({ username: "a", email: "a@a.com" });
   expect(res.status).toBe(400);
 });
 
 test("registration invalid email", async () => {
-  const res = await request(app).post("/api/register").send({
+  const res = await req().post("/api/register").send({
     username: "a",
     email: "invalid",
     password: "p",
@@ -586,7 +581,7 @@ test("registration invalid email", async () => {
 test("registration duplicate username", async () => {
   jest.spyOn(console, "error").mockImplementation(() => {});
   db.query.mockRejectedValueOnce(new Error("duplicate key"));
-  const res = await request(app).post("/api/register").send({
+  const res = await req().post("/api/register").send({
     username: "a",
     email: "a@a.com",
     password: "p",
@@ -600,19 +595,19 @@ test("login invalid password", async () => {
       { id: "u1", username: "alice", password_hash: bcrypt.hashSync("p", 10) },
     ],
   });
-  const res = await request(app)
+  const res = await req()
     .post("/api/login")
     .send({ username: "alice", password: "wrong" });
   expect(res.status).toBe(401);
 });
 
 test("login missing fields", async () => {
-  const res = await request(app).post("/api/login").send({ username: "" });
+  const res = await req().post("/api/login").send({ username: "" });
   expect(res.status).toBe(400);
 });
 
 test("/api/generate 400 when no prompt or image", async () => {
-  const res = await request(app).post("/api/generate").send({});
+  const res = await req().post("/api/generate").send({});
   expect(res.status).toBe(400);
 });
 
@@ -620,7 +615,7 @@ test("/api/generate falls back on server failure", async () => {
   jest.spyOn(console, "error").mockImplementation(() => {});
   process.env.CI_REQUIRE_EXTERNAL = "0";
   generateModel.mockRejectedValueOnce(new Error("fail"));
-  const res = await request(app).post("/api/generate").send({ prompt: "t" });
+  const res = await req().post("/api/generate").send({ prompt: "t" });
   expect(res.status).toBe(200);
   expect(typeof res.body.glb_url).toBe("string");
   expect(res.body.fallback).toBe(true);
@@ -630,7 +625,7 @@ test("/api/generate falls back on server failure", async () => {
 test("/api/generate saves authenticated user id", async () => {
   generateModel.mockResolvedValueOnce("/m.glb");
   const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
-  await request(app)
+  await req()
     .post("/api/generate")
     .set("authorization", `Bearer ${token}`)
     .send({ prompt: "t" });
@@ -642,7 +637,7 @@ test("/api/generate saves authenticated user id", async () => {
 
 test("/api/generate inserts community row", async () => {
   generateModel.mockResolvedValueOnce("/m.glb");
-  await request(app).post("/api/generate").send({ prompt: "t" });
+  await req().post("/api/generate").send({ prompt: "t" });
   const communityCall = db.query.mock.calls.find((c) =>
     c[0].includes("INSERT INTO community_creations"),
   );
@@ -651,7 +646,7 @@ test("/api/generate inserts community row", async () => {
 
 test("/api/status supports limit and offset", async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
-  await request(app).get("/api/status?limit=5&offset=2");
+  await req().get("/api/status?limit=5&offset=2");
   expect(db.query).toHaveBeenCalledWith(
     "SELECT * FROM jobs ORDER BY created_at DESC LIMIT $1 OFFSET $2",
     [5, 2],
@@ -660,7 +655,7 @@ test("/api/status supports limit and offset", async () => {
 
 test("/api/status/:id returns 404 when missing", async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
-  const res = await request(app).get("/api/status/bad");
+  const res = await req().get("/api/status/bad");
   expect(res.status).toBe(404);
 });
 
@@ -670,7 +665,7 @@ test("GET /api/users/:username/profile returns profile", async () => {
       { display_name: "Alice", avatar_url: "a.png", avatar_glb: "model.glb" },
     ],
   });
-  const res = await request(app).get("/api/users/alice/profile");
+  const res = await req().get("/api/users/alice/profile");
   expect(res.status).toBe(200);
   expect(res.body.display_name).toBe("Alice");
   expect(res.body.avatar_url).toBe("a.png");
@@ -679,7 +674,7 @@ test("GET /api/users/:username/profile returns profile", async () => {
 
 test("GET /api/users/:username/profile 404 when missing", async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
-  const res = await request(app).get("/api/users/none/profile");
+  const res = await req().get("/api/users/none/profile");
   expect(res.status).toBe(404);
 });
 
@@ -695,7 +690,7 @@ profileTest("GET /api/profile returns profile", async () => {
       },
     ],
   });
-  const res = await request(app)
+  const res = await req()
     .get("/api/profile")
     .set("authorization", `Bearer ${token}`);
   expect(res.status).toBe(200);
@@ -706,7 +701,7 @@ profileTest("GET /api/profile returns profile", async () => {
 profileTest("POST /api/profile saves details", async () => {
   const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   db.query.mockResolvedValueOnce({});
-  const res = await request(app)
+  const res = await req()
     .post("/api/profile")
     .set("authorization", `Bearer ${token}`)
     .send({
@@ -727,7 +722,7 @@ test("POST /api/create-order saves user id", async () => {
     .mockResolvedValueOnce({ rows: [{ id: "o1" }] })
     .mockResolvedValueOnce({});
   const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
-  await request(app)
+  await req()
     .post("/api/create-order")
     .set("authorization", `Bearer ${token}`)
     .send({ jobId: "1", price: 100, productType: "single" });
@@ -741,7 +736,7 @@ test("POST /api/create-order saves etch name", async () => {
   db.query
     .mockResolvedValueOnce({ rows: [{ job_id: "1", user_id: "u1" }] })
     .mockResolvedValueOnce({});
-  await request(app)
+  await req()
     .post("/api/create-order")
     .send({ jobId: "1", price: 100, etchName: "Bob", productType: "single" });
   const call = db.query.mock.calls.find((c) =>
@@ -754,7 +749,7 @@ test("POST /api/create-order saves UTM params", async () => {
   db.query
     .mockResolvedValueOnce({ rows: [{ job_id: "1", user_id: null }] })
     .mockResolvedValueOnce({});
-  await request(app).post("/api/create-order").send({
+  await req().post("/api/create-order").send({
     jobId: "1",
     price: 100,
     productType: "single",
@@ -779,7 +774,7 @@ test("create-order inserts commission for marketplace sale", async () => {
     .mockResolvedValueOnce({});
   db.insertCommission.mockResolvedValueOnce({});
   const token = jwt.sign({ id: "buyer" }, process.env.AUTH_SECRET || "secret");
-  await request(app)
+  await req()
     .post("/api/create-order")
     .set("authorization", `Bearer ${token}`)
     .send({ jobId: "1", price: 100, productType: "single" });
@@ -802,7 +797,7 @@ test("create-order using credit deducts balance", async () => {
     used_credits: 1,
   });
   const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
-  const res = await request(app)
+  const res = await req()
     .post("/api/create-order")
     .set("authorization", `Bearer ${token}`)
     .send({ jobId: "1", useCredit: true, qty: 2, productType: "single" });
@@ -819,7 +814,7 @@ test("create-order using credit rejects odd quantity", async () => {
     used_credits: 0,
   });
   const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
-  const res = await request(app)
+  const res = await req()
     .post("/api/create-order")
     .set("authorization", `Bearer ${token}`)
     .send({ jobId: "1", useCredit: true, qty: 1, productType: "single" });
@@ -831,7 +826,7 @@ test("GET /api/my/orders returns orders", async () => {
     rows: [{ session_id: "s1", snapshot: "img", prompt: "p" }],
   });
   const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
-  const res = await request(app)
+  const res = await req()
     .get("/api/my/orders")
     .set("authorization", `Bearer ${token}`);
   expect(res.status).toBe(200);
@@ -841,12 +836,12 @@ test("GET /api/my/orders returns orders", async () => {
 });
 
 test("GET /api/my/orders requires auth", async () => {
-  const res = await request(app).get("/api/my/orders");
+  const res = await req().get("/api/my/orders");
   expect(res.status).toBe(401);
 });
 
 test("POST /api/shipping-estimate returns estimate", async () => {
-  const res = await request(app)
+  const res = await req()
     .post("/api/shipping-estimate")
     .send({ destination: { zip: "12345" }, model: { weight: 2 } });
   expect(res.status).toBe(200);
@@ -858,14 +853,14 @@ test("POST /api/shipping-estimate returns estimate", async () => {
 });
 
 test("POST /api/shipping-estimate validates input", async () => {
-  const res = await request(app).post("/api/shipping-estimate").send({});
+  const res = await req().post("/api/shipping-estimate").send({});
   expect(res.status).toBe(400);
 });
 
 test("POST /api/shipping-estimate returns mocked values and calls helper", async () => {
   getShippingEstimate.mockResolvedValueOnce({ cost: 20, etaDays: 4 });
   const body = { destination: { zip: "98765" }, model: { weight: 3 } };
-  const res = await request(app).post("/api/shipping-estimate").send(body);
+  const res = await req().post("/api/shipping-estimate").send(body);
   expect(res.status).toBe(200);
   expect(res.body.cost).toBe(20);
   expect(res.body.etaDays).toBe(4);
@@ -879,9 +874,7 @@ test("POST /api/discount-code returns discount", async () => {
   db.query.mockResolvedValueOnce({
     rows: [{ id: 1, code: "SAVE5", amount_cents: 500 }],
   });
-  const res = await request(app)
-    .post("/api/discount-code")
-    .send({ code: "SAVE5" });
+  const res = await req().post("/api/discount-code").send({ code: "SAVE5" });
   expect(res.status).toBe(200);
   expect(res.body.discount).toBe(500);
   expect(db.query).toHaveBeenCalledWith(
@@ -892,21 +885,19 @@ test("POST /api/discount-code returns discount", async () => {
 
 test("POST /api/discount-code invalid", async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
-  const res = await request(app)
-    .post("/api/discount-code")
-    .send({ code: "BAD" });
+  const res = await req().post("/api/discount-code").send({ code: "BAD" });
   expect(res.status).toBe(404);
 });
 
 test("POST /api/discount-code requires code", async () => {
-  const res = await request(app).post("/api/discount-code").send({});
+  const res = await req().post("/api/discount-code").send({});
   expect(res.status).toBe(400);
   expect(db.query).not.toHaveBeenCalled();
 });
 
 test("POST /api/generate-discount creates code", async () => {
   db.query.mockResolvedValueOnce({ rows: [{ code: "ABCD1234" }] });
-  const res = await request(app).post("/api/generate-discount").send({});
+  const res = await req().post("/api/generate-discount").send({});
   expect(res.status).toBe(200);
   expect(res.body.code).toBe("ABCD1234");
   const call = db.query.mock.calls.find((c) =>
@@ -919,13 +910,13 @@ test("POST /api/dalle returns image", async () => {
   axios.post.mockResolvedValueOnce({
     data: { image: "data:image/png;base64,aaa" },
   });
-  const res = await request(app).post("/api/dalle").send({ prompt: "cat" });
+  const res = await req().post("/api/dalle").send({ prompt: "cat" });
   expect(res.status).toBe(200);
   expect(res.body.image).toMatch(/^data:image\/png;base64,/);
 });
 
 test("POST /api/dalle requires prompt", async () => {
-  const res = await request(app).post("/api/dalle").send({});
+  const res = await req().post("/api/dalle").send({});
   expect(res.status).toBe(400);
 });
 
@@ -953,7 +944,7 @@ test("GET /api/dashboard returns aggregated info", async () => {
     total_credits: 2,
     used_credits: 1,
   });
-  const res = await request(app)
+  const res = await req()
     .get("/api/dashboard")
     .set("authorization", `Bearer ${token}`);
   expect(res.status).toBe(200);

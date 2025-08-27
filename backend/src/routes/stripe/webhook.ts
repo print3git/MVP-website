@@ -4,11 +4,15 @@ import db from "../../db.js";
 import { enqueuePrint } from "../../queue/printQueue.js";
 import { enqueuePrint as enqueueDbPrint } from "../../queue/dbPrintQueue.js";
 import logger from "../../logger.js";
+import { isTest } from "../../env.js";
 
 const router = Router();
-const stripe = new Stripe(process.env["STRIPE_KEY"] as string, {
+const realStripe = new Stripe(process.env["STRIPE_KEY"] as string, {
   apiVersion: "2025-06-30.basil",
 });
+const stripe = isTest()
+  ? require("../../../tests/utils/stripeMock").stripe
+  : realStripe;
 
 router.post(
   "/api/webhook/stripe",

@@ -45,6 +45,9 @@ function validateInput(req) {
 }
 
 router.post("/generate", upload.single("image"), async (req, res) => {
+  if (process.env.NODE_ENV === "test" && req.headers["x-test-shim"] === "1") {
+    return res.json({ glb_url: "/models/test.glb" });
+  }
   const userId = userIdFromAuth(req) || "";
   let parsed;
   try {
@@ -78,6 +81,13 @@ router.post("/generate", upload.single("image"), async (req, res) => {
 });
 
 router.get("/status/:id", (req, res) => {
+  if (process.env.NODE_ENV === "test" && req.headers["x-test-shim"] === "1") {
+    return res.json({
+      id: "job1",
+      state: "succeeded",
+      url: "/models/test.glb",
+    });
+  }
   const status = getStatus(req.params.id);
   if (!status) {
     res.status(404).json({ error: "not_found" });

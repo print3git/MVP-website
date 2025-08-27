@@ -11,9 +11,12 @@ const logger_js_1 = __importDefault(require("../logger.js"));
 const db_1 = require("../db");
 const env_1 = require("../env");
 const { STRIPE_SECRET_KEY } = (0, env_1.getEnv)();
-const stripe = new stripe_1.default(STRIPE_SECRET_KEY, {
+const realStripe = new stripe_1.default(STRIPE_SECRET_KEY, {
   apiVersion: "2025-06-30.basil",
 });
+const stripe = (0, env_1.isTest)()
+  ? require("../../tests/utils/stripeMock").stripe
+  : realStripe;
 const router = express_1.default.Router();
 router.post(
   "/api/stripe/webhook",
