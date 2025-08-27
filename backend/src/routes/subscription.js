@@ -4,9 +4,15 @@ const db = require("../../db.js");
 const config = require("../../config");
 const { authRequired, authOptional } = require("../lib/auth");
 const { logError } = require("../lib/logError");
+const { isTest } = require("../env");
 
 const router = Router();
-const stripe = new Stripe(config.stripeKey, { apiVersion: "2025-06-30.basil" });
+const realStripe = new Stripe(config.stripeKey, {
+  apiVersion: "2025-06-30.basil",
+});
+const stripe = isTest()
+  ? require("../../tests/utils/stripeMock").stripe
+  : realStripe;
 
 router.get("/subscription", authRequired, async (req, res) => {
   try {

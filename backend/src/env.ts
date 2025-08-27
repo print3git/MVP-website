@@ -67,5 +67,9 @@ export function getEnv(): Readonly<Env> {
   return ENV;
 }
 
+export function isTest(): boolean {
+  return ENV.NODE_ENV === 'test';
+}
+
 export type { Env };
 
