@@ -1,7 +1,8 @@
 "use strict";
 const express = require("express");
 const Stripe = require("stripe");
-const { getEnv, isTest } = require("../env");
+const { getEnv: getEnvVars, isTest } = require("../env");
+const { getEnv } = require("../lib/getEnv");
 const logger = require("../logger.js");
 const { capture } = require("../lib/logger");
 
@@ -9,10 +10,20 @@ const router = express.Router();
 
 router.post("/checkout/create", async (req, res) => {
   try {
-    const { STRIPE_SECRET_KEY: secretKey } = getEnv();
-    const successUrl = process.env.FRONTEND_SUCCESS_URL;
-    const cancelUrl = process.env.FRONTEND_CANCEL_URL;
-    if (!secretKey || !successUrl || !cancelUrl) {
+    const { STRIPE_SECRET_KEY: secretKey } = getEnvVars();
+    let successUrl;
+    let cancelUrl;
+    try {
+      successUrl = getEnv("FRONTEND_SUCCESS_URL", { required: true });
+      cancelUrl = getEnv("FRONTEND_CANCEL_URL", { required: true });
+    } catch (err) {
+      logger.error("checkout_missing_frontend_urls");
+      capture(err);
+      res.status(500).json({ error: "server_misconfig" });
+      return;
+    }
+    if (!secretKey) {
+      logger.error("checkout_missing_secret_key");
       res.status(500).json({ error: "server_misconfig" });
       return;
     }
