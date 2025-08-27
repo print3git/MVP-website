@@ -12,6 +12,7 @@
     "start": "node src/server.js",
     "start:api": "node src/server.js",
     "start:worker": "node -r dotenv/config queue/printWorker.js",
+    "start:job-queue": "node -r dotenv/config queue/jobQueue.js",
     "dev": "node src/server.js",
     "dev:worker": "NODE_ENV=development node -r dotenv/config queue/printWorker.js",
     "init-db": "node scripts/init-db.js",
