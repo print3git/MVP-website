@@ -1,10 +1,19 @@
 import { Router } from "express";
 import pkg from "../../package.json";
+import logger from "../logger.js";
+import { capture } from "../lib/logger";
 
 const router = Router();
 
 router.get("/healthz", (_req, res) => {
-  res.json({ ok: true, version: pkg.version });
+  logger.info("health_check");
+  try {
+    res.json({ ok: true, version: pkg.version });
+  } catch (err) {
+    logger.error("health_check_failed", err as Error);
+    capture(err);
+    res.status(500).json({ error: "unexpected_error" });
+  }
 });
 
 export default router;
