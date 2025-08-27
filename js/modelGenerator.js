@@ -7,6 +7,7 @@ import PaymentPanel from "./PaymentPanel.js";
 export function GeneratorApp() {
   const [prompt, setPrompt] = useState("");
   const { generate, loading, modelUrl, position } = useGenerateModel();
+  const [purchase, setPurchase] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -64,7 +65,13 @@ export function GeneratorApp() {
           { "data-testid": "viewer" },
           React.createElement(ModelViewer, { url: modelUrl }),
         ),
-        React.createElement(PaymentPanel),
+        purchase &&
+          React.createElement(
+            "p",
+            { className: "text-green-600", "data-testid": "purchase-status" },
+            `Status: ${purchase.status} (${purchase.paymentIntentId})`,
+          ),
+        React.createElement(PaymentPanel, { onSuccess: setPurchase }),
       ),
   );
 }
