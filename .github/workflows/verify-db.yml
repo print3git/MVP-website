@@ -1,0 +1,21 @@
+name: Verify DB connectivity
+
+on:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: [self-hosted, ec2-migrations]   # your EC2 runner label
+    steps:
+      - name: Install psql client (Amazon Linux)
+        run: sudo dnf -y install postgresql15
+      - name: Check DB_URL connects and metadata table exists
+        env:
+          DB_URL: ${{ secrets.DB_URL }}      # app_user URL
+        run: |
+          set -euo pipefail
+          echo "Testing connection..."
+          psql "$DB_URL" -v ON_ERROR_STOP=1 -c "SELECT current_user, current_database();"
+          echo "Checking metadata table..."
+          psql "$DB_URL" -v ON_ERROR_STOP=1 -c \
+            "SELECT to_regclass('public.metadata') AS table_exists;"
