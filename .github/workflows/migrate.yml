@@ -2,23 +2,21 @@ name: Run DB migrations
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ main ]
 
 jobs:
   migrate:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, ec2-migrations]   # use your EC2 runner
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install psql client
-        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+      - name: Install psql client (Amazon Linux)
+        run: sudo dnf -y install postgresql15
 
       - name: Apply migrations
         env:
-          DB_ADMIN_URL: ${{ secrets.DB_ADMIN_URL }}
+          DB_ADMIN_URL: ${{ secrets.DB_ADMIN_URL }}   # admin DB URL
         run: |
-          # run each .sql file in order; or list them explicitly
+          set -euo pipefail
           for f in $(ls -1 migrations/*.sql | sort); do
             echo "Applying $f"
             psql "$DB_ADMIN_URL" -v ON_ERROR_STOP=1 -f "$f"
