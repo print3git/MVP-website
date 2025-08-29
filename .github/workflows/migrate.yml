@@ -1,0 +1,25 @@
+name: Run DB migrations
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install psql client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      - name: Apply migrations
+        env:
+          DB_ADMIN_URL: ${{ secrets.DB_ADMIN_URL }}
+        run: |
+          # run each .sql file in order; or list them explicitly
+          for f in $(ls -1 migrations/*.sql | sort); do
+            echo "Applying $f"
+            psql "$DB_ADMIN_URL" -v ON_ERROR_STOP=1 -f "$f"
+          done
