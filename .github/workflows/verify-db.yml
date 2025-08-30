@@ -7,6 +7,16 @@ jobs:
   verify:
     runs-on: [self-hosted, ec2-migrations]   # your EC2 runner label
     steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+      - run: node scripts/ci-doctor.mjs
+        env:
+          STRIPE_SECRET_KEY: sk_test
+          STRIPE_WEBHOOK_SECRET: whsec_test
+          DB_URL: ${{ secrets.DB_URL }}
+          SKIP_PW_DEPS: "1"
       - name: Install psql client (Amazon Linux)
         run: sudo dnf -y install postgresql15
       - name: Check DB_URL connects and metadata table exists

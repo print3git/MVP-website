@@ -42,6 +42,12 @@ jobs:
           else
             npm ci
           fi
+      - run: npm run build --if-present
+      - run: node scripts/ci-doctor.mjs
+        env:
+          STRIPE_SECRET_KEY: sk_test
+          STRIPE_WEBHOOK_SECRET: whsec_test
+          DB_URL: postgres://postgres:postgres@localhost:5432/test
       - run: npm run db:migrate:test
         working-directory: backend
         env:

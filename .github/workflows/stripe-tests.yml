@@ -28,6 +28,12 @@ jobs:
           else
             npm ci
           fi
+      - run: npm run build --if-present
+      - run: node scripts/ci-doctor.mjs
+        env:
+          STRIPE_SECRET_KEY: sk_test_dummy
+          STRIPE_WEBHOOK_SECRET: whsec_dummy
+          DB_URL: postgres://postgres:postgres@localhost:5432/test
       - name: Run Stripe tests
         env:
           STRIPE_SECRET_KEY: sk_test_dummy
