@@ -366,17 +366,25 @@ function getCycleKey() {
 }
 
 function resetPurchaseCount() {
-  const key = getCycleKey();
-  if (localStorage.getItem("slotCycle") !== key) {
-    localStorage.setItem("slotCycle", key);
-    localStorage.setItem("slotPurchases", "0");
+  try {
+    const key = getCycleKey();
+    if (localStorage.getItem("slotCycle") !== key) {
+      localStorage.setItem("slotCycle", key);
+      localStorage.setItem("slotPurchases", "0");
+    }
+  } catch {
+    /* ignore storage errors */
   }
 }
 
 function getPurchaseCount() {
-  resetPurchaseCount();
-  const n = parseInt(localStorage.getItem("slotPurchases"), 10);
-  return Number.isInteger(n) && n > 0 ? n : 0;
+  try {
+    resetPurchaseCount();
+    const n = parseInt(localStorage.getItem("slotPurchases"), 10);
+    return Number.isInteger(n) && n > 0 ? n : 0;
+  } catch {
+    return 0;
+  }
 }
 
 function adjustedSlots(base) {
@@ -1338,12 +1346,24 @@ function start() {
     init();
   }
 }
-if (document.readyState !== "loading") {
-  start();
+if (typeof process === "undefined" || process.env.NODE_ENV !== "test") {
+  if (document.readyState !== "loading") {
+    start();
+  }
+  window.addEventListener("DOMContentLoaded", start);
 }
-window.addEventListener("DOMContentLoaded", start);
 
 if (typeof module !== "undefined") {
   module.exports = { renderThumbnails, computeDailyPrintsSold, updateStats };
 }
-export { renderThumbnails, computeDailyPrintsSold, updateStats };
+
+export {
+  renderThumbnails,
+  computeSlotsByTime,
+  computePrintRunHours,
+  adjustedSlots,
+  updatePrintRunInfo,
+  getPurchaseCount,
+  computeDailyPrintsSold
+  updateStats
+};
