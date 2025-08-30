@@ -41,12 +41,36 @@ runs:
         else
           echo "manager=npm" >> "$GITHUB_OUTPUT"
         fi
+    - id: backend
+      name: Resolve backend directory
+      shell: bash
+      run: |
+        node - <<'NODE' >> "$GITHUB_ENV"
+        const fs = require('fs');
+        const path = require('path');
+        function find(start) {
+          let dir = start;
+          while (true) {
+            const candidate = path.join(dir, 'backend', 'package.json');
+            if (fs.existsSync(candidate)) return path.dirname(candidate);
+            const parent = path.dirname(dir);
+            if (parent === dir) return null;
+            dir = parent;
+          }
+        }
+        const backend = find(process.cwd());
+        if (!backend) {
+          console.error('backend/package.json not found');
+          process.exit(1);
+        }
+        process.stdout.write(`BACKEND_DIR=${backend}`);
+        NODE
     - name: Cache node modules
       uses: actions/cache@v4
       with:
         path: |
           node_modules
-          backend/node_modules
+          ${{ env.BACKEND_DIR }}/node_modules
           frontend/node_modules
         key: ${{ steps.pm.outputs.manager }}-${{ hashFiles('**/pnpm-lock.yaml', '**/package-lock.json', '**/yarn.lock') }}-${{ runner.os }}
     - name: Cache Playwright browsers
