@@ -3,6 +3,7 @@ on: [push, pull_request]
 jobs:
   e2e:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     env:
       NPM_CONFIG_AUDIT: "false"
       NPM_CONFIG_FUND: "false"
@@ -34,10 +35,20 @@ jobs:
           npx playwright install --with-deps chromium
       - name: Start dev server
         run: |
-          nohup npm run start > /tmp/app.log 2>&1 &
-          npx wait-on http://localhost:3000 --timeout 180000
+          nohup npm run start:ci > /tmp/app.log 2>&1 &
+          if ! npx wait-on http://localhost:3000 --timeout 180000; then
+            cat /tmp/app.log
+            exit 1
+          fi
       - name: Run model-loading tests
         env:
           CI: "true"
         run: |
-          npx playwright test tests/e2e/model-loading.spec.ts
+          npx playwright test --trace on tests/e2e/model-loading.spec.ts
+      - name: Upload Playwright traces
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-traces
+          path: test-results
+          if-no-files-found: ignore
