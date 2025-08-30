@@ -142,13 +142,22 @@ function runJest(args) {
     env,
   };
 
+  const rootJestBin = path.join(repoRoot, "node_modules", ".bin", "jest");
   let result;
-  if (fs.existsSync(jestBin)) {
+  if (runFromRoot) {
+    if (!fs.existsSync(rootJestBin)) {
+      console.error(
+        "Missing root Jest binary. Run 'npm install' in the repo root first.",
+      );
+      process.exit(1);
+    }
+    result = spawnSync(rootJestBin, jestArgs, options);
+  } else if (fs.existsSync(jestBin)) {
     result = spawnSync(jestBin, jestArgs, options);
   } else {
     result = spawnSync(
       "npm",
-      ["test", "--prefix", "backend", ...jestArgs],
+      ["test", "--prefix", "backend", "--", ...jestArgs],
       options,
     );
   }
