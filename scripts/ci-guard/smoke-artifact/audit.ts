@@ -10,16 +10,11 @@ function readWrangler(summary: any) {
     const wranglerPath = path.join(process.cwd(), "wrangler.toml");
     const content = fs.readFileSync(wranglerPath, "utf8");
     const cfg = toml.parse(content);
-    const build = (cfg as any).build || {};
     const pages = (cfg as any).pages || {};
     const wSummary = { ok: true, errors: [] as string[] };
-    if (!build.command) {
+    if (!pages.pages_build_output_dir) {
       wSummary.ok = false;
-      wSummary.errors.push("missing [build].command");
-    }
-    if (!pages.build_output_dir) {
-      wSummary.ok = false;
-      wSummary.errors.push("missing [pages].build_output_dir");
+      wSummary.errors.push("missing [pages].pages_build_output_dir");
     }
     summary.wrangler = wSummary;
     if (!wSummary.ok) summary.ok = false;
@@ -149,6 +144,7 @@ function auditFiles(files: string[]) {
         (s) =>
           typeof s.run === "string" &&
           s.run.includes("frontend/dist/index.html") &&
+          s.run.includes("frontend/dist/models/boombox.glb") &&
           /test\s+-f/.test(s.run),
       );
       if (verifyIdx === -1 || verifyIdx < buildIdx) {

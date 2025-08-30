@@ -17,13 +17,9 @@ function auditRepo(root = process.cwd()) {
       wSummary.ok = false;
       wSummary.errors.push('missing managed block');
     }
-    if (!/\[build\][\s\S]*command\s*=\s*"bash -lc 'corepack enable && pnpm -C frontend install --frozen-lockfile && pnpm -C frontend build'"/.test(content)) {
+    if (!/\[pages\][\s\S]*pages_build_output_dir\s*=\s*"frontend\/dist"/.test(content)) {
       wSummary.ok = false;
-      wSummary.errors.push('missing build command');
-    }
-    if (!/\[pages\][\s\S]*build_output_dir\s*=\s*"frontend\/dist"/.test(content)) {
-      wSummary.ok = false;
-      wSummary.errors.push('missing pages build_output_dir');
+      wSummary.errors.push('missing pages pages_build_output_dir');
     }
   } catch (err) {
     wSummary.ok = false;
@@ -44,7 +40,7 @@ function auditRepo(root = process.cwd()) {
       wfSummary.ok = false;
       wfSummary.errors.push('missing build step');
     }
-    if (!content.includes('test -f frontend/dist/index.html')) {
+    if (!content.includes('test -f frontend/dist/index.html') || !content.includes('test -f frontend/dist/models/boombox.glb')) {
       wfSummary.ok = false;
       wfSummary.errors.push('missing verify step');
     }
