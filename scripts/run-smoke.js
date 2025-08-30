@@ -147,9 +147,13 @@ function main() {
   try {
     runValidateEnv();
     const artifact = path.join("frontend", "dist", "index.html");
-    if (process.env.NODE_ENV !== "test" && !fs.existsSync(artifact)) {
+    const model = path.join("frontend", "dist", "models", "boombox.glb");
+    if (
+      process.env.NODE_ENV !== "test" &&
+      (!fs.existsSync(artifact) || !fs.existsSync(model))
+    ) {
       console.error(
-        `Missing frontend build artifact: ${artifact}. Run 'npm run build' and retry`,
+        `Missing frontend build artifacts: ${artifact} or ${model}. Run 'npm run build' and retry`,
       );
       process.exit(1);
     }

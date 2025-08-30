@@ -8,9 +8,6 @@ compatibility_date = "2025-08-22"
   name = "print2"
 
 # >>> BEGIN MANAGED BLOCK: ci-guard:cf-pages-build
-[build]
-  # Use Corepack + pnpm to build the frontend
-  command = "bash -lc 'corepack enable && pnpm -C frontend install --frozen-lockfile && pnpm -C frontend build'"
 [pages]
-  build_output_dir = "frontend/dist"
+  pages_build_output_dir = "frontend/dist"
 # <<< END MANAGED BLOCK: ci-guard:cf-pages-build
