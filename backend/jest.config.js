@@ -12,7 +12,7 @@ module.exports = {
   transform: {
     "^.+\\.[tj]s$": "ts-jest",
   },
-  testMatch: ["**/?(*.)+(spec|test).[tj]s?(x)"],
+  testMatch: ["**/*.spec.ts", "**/*.test.ts", "**/*.spec.js", "**/*.test.js"],
   moduleFileExtensions: ["ts", "js", "json"],
   testTimeout: 20000,
   maxWorkers: "50%",
