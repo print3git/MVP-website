@@ -29,6 +29,15 @@ function findBackendRoot(start) {
 }
 
 const cliArgs = process.argv.slice(2);
+if (
+  process.env.SKIP_NET_CHECKS === "1" &&
+  !cliArgs.some((a) => a.startsWith("--maxWorkers"))
+) {
+  cliArgs.push("--maxWorkers=2");
+}
+if (process.env.SKIP_NET_CHECKS === "1" && !process.env.ALLOW_NET_TESTS) {
+  process.env.TEST_ENV_OFFLINE = "1";
+}
 const backendDir = findBackendRoot(process.cwd());
 if (!backendDir || !fs.existsSync(path.join(backendDir, "package.json"))) {
   console.error("backend/package.json not found");

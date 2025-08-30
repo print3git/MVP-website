@@ -2,6 +2,11 @@
 const { execSync, spawnSync } = require("child_process");
 const fs = require("fs");
 const path = require("path");
+const { EventEmitter } = require("events");
+EventEmitter.defaultMaxListeners = Math.max(
+  25,
+  EventEmitter.defaultMaxListeners || 10,
+);
 
 function freePort(port, envVars = process.env) {
   try {

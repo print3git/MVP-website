@@ -1,5 +1,10 @@
 #!/usr/bin/env node
 const { execSync } = require("child_process");
+const { EventEmitter } = require("events");
+EventEmitter.defaultMaxListeners = Math.max(
+  25,
+  EventEmitter.defaultMaxListeners || 10,
+);
 
 if (process.env.SKIP_NET_CHECKS) {
   console.log("Skipping network checks");
