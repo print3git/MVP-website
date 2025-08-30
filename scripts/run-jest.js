@@ -46,7 +46,7 @@ function verifyFiles(args) {
       checking = true;
       continue;
     }
-    if (checking || /\.test\.(js|ts)$/.test(arg)) {
+    if (checking || /\.(test|spec)\.(js|ts)$/.test(arg)) {
       const file = path.resolve(repoRoot, arg);
       if (!fs.existsSync(file)) {
         console.error(`Test file not found: ${arg}`);
@@ -152,15 +152,18 @@ function runJest(args) {
       process.exit(1);
     }
     result = spawnSync(rootJestBin, jestArgs, options);
-  } else if (fs.existsSync(jestBin)) {
-    result = spawnSync(jestBin, jestArgs, options);
-  } else {
-    result = spawnSync(
-      "npm",
-      ["test", "--prefix", "backend", "--", ...jestArgs],
-      options,
+} else if (fs.existsSync(jestBin)) {
+  result = spawnSync(jestBin, jestArgs, options);
+} else {
+  if (!fs.existsSync(rootJestBin)) {
+    console.error(
+      "Missing root Jest binary. Run 'npm install' in the repo root first.",
     );
+    process.exit(1);
   }
+  result = spawnSync(rootJestBin, jestArgs, options);
+}
+
 
   if (tempConfigPath) {
     try {
