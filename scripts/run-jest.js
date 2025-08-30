@@ -146,11 +146,10 @@ function runJest(args) {
   if (fs.existsSync(jestBin)) {
     result = spawnSync(jestBin, jestArgs, options);
   } else {
-    result = spawnSync(
-      "npm",
-      ["test", "--prefix", "backend", ...jestArgs],
-      options,
-    );
+    const npmArgs = runFromRoot
+      ? ["test", "--prefix", "backend", ...jestArgs]
+      : ["test", ...jestArgs];
+    result = spawnSync("npm", npmArgs, options);
   }
 
   if (tempConfigPath) {
