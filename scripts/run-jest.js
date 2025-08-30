@@ -46,7 +46,7 @@ function verifyFiles(args) {
       checking = true;
       continue;
     }
-    if (checking || /\.test\.(js|ts)$/.test(arg)) {
+    if (checking || /\.(test|spec)\.(js|ts)$/.test(arg)) {
       const file = path.resolve(repoRoot, arg);
       if (!fs.existsSync(file)) {
         console.error(`Test file not found: ${arg}`);
