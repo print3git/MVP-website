@@ -47,10 +47,10 @@ router.post("/checkout/create", async (req, res) => {
         receipt_email: customer_email,
       });
       res.json({ clientSecret: intent.client_secret });
-    } catch (err) {
+    } catch (_err) {
       res.status(502).json({ error: "stripe_error" });
     }
-  } catch (err) {
+  } catch (_err) {
     res.status(500).json({ error: "internal_error" });
   }
 });

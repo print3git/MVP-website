@@ -54,7 +54,6 @@ router.post("/generate", upload.single("image"), async (req, res) => {
     parsed = validateInput(req);
   } catch (err) {
     const code = err.code;
-    const status = err.status || 400;
     logger.error("generate_failed", { stage: "validation", userId, code });
     logError(err);
     if (code === "unsupported_media_type") {
