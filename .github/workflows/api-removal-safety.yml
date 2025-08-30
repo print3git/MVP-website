@@ -26,6 +26,11 @@ jobs:
             npm ci
           fi
       - run: npm run build --if-present
+      - run: node scripts/ci-doctor.mjs
+        env:
+          STRIPE_SECRET_KEY: sk_test
+          STRIPE_WEBHOOK_SECRET: whsec_test
+          DB_URL: postgres://postgres:postgres@localhost:5432/test
 
   unit:
     runs-on: ubuntu-latest
@@ -42,6 +47,12 @@ jobs:
           else
             npm ci
           fi
+      - run: npm run build --if-present
+      - run: node scripts/ci-doctor.mjs
+        env:
+          STRIPE_SECRET_KEY: sk_test
+          STRIPE_WEBHOOK_SECRET: whsec_test
+          DB_URL: postgres://postgres:postgres@localhost:5432/test
       - run: npm test
 
   smoke:
@@ -59,6 +70,12 @@ jobs:
           else
             npm ci
           fi
+      - run: npm run build --if-present
+      - run: node scripts/ci-doctor.mjs
+        env:
+          STRIPE_SECRET_KEY: sk_test
+          STRIPE_WEBHOOK_SECRET: whsec_test
+          DB_URL: postgres://postgres:postgres@localhost:5432/test
       - run: npm run smoke
         env:
           EXPECT_REMOVED_STATUS: "410"
@@ -78,6 +95,12 @@ jobs:
           else
             npm ci
           fi
+      - run: npm run build --if-present
+      - run: node scripts/ci-doctor.mjs
+        env:
+          STRIPE_SECRET_KEY: sk_test
+          STRIPE_WEBHOOK_SECRET: whsec_test
+          DB_URL: postgres://postgres:postgres@localhost:5432/test
       - run: node scripts/run-jest.js tests/openapi
 
   docs-check:
@@ -95,4 +118,10 @@ jobs:
           else
             npm ci
           fi
+      - run: npm run build --if-present
+      - run: node scripts/ci-doctor.mjs
+        env:
+          STRIPE_SECRET_KEY: sk_test
+          STRIPE_WEBHOOK_SECRET: whsec_test
+          DB_URL: postgres://postgres:postgres@localhost:5432/test
       - run: node scripts/run-jest.js tests/docs

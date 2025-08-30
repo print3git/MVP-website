@@ -31,6 +31,12 @@ jobs:
             npm ci
           fi
       - run: npx playwright install --with-deps chromium
+      - run: npm run build --if-present
+      - run: node scripts/ci-doctor.mjs
+        env:
+          STRIPE_SECRET_KEY: sk_test
+          STRIPE_WEBHOOK_SECRET: whsec_test
+          DB_URL: postgres://postgres:postgres@localhost:5432/test
       - run: |
           nohup npm run start > /tmp/app.log 2>&1 &
           npx wait-on http://localhost:3000 --timeout 180000
