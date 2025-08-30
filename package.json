@@ -39,6 +39,7 @@
     "setup": "bash scripts/setup.sh",
     "build": "vite build",
     "preview": "vite preview --port 4173",
+    "start": "node scripts/dev-server.js",
     "start:backend": "npm start --prefix backend",
     "ci": "if [ \"$SKIP_PW_DEPS\" = \"1\" ]; then npm ci --ignore-scripts; else npm ci; fi && npm run build --workspaces=false && npm test",
     "backend:ci": "npm run --prefix backend ci",
