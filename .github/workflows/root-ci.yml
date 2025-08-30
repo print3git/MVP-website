@@ -7,10 +7,57 @@ on:
 jobs:
   root-ci:
     runs-on: ubuntu-latest
+    env:
+      NPM_CONFIG_AUDIT: "false"
+      NPM_CONFIG_FUND: "false"
+      CI_NETWORK_OK: "1"
     steps:
       - uses: actions/checkout@v4.2.2
       - uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
-          cache: 'npm'
+          node-version: "20.x"
+          cache: "npm"
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+      - name: mode
+        run: |
+          echo "Mode: ${{ env.CI_NO_NET == '1' && 'Offline' || 'Online' }}"
+      - run: |
+          if [ "$CI_NO_NET" = '1' ] || [ "$SKIP_PW_DEPS" = '1' ]; then
+            npm ci --ignore-scripts --prefer-offline --no-audit --fund=false
+          else
+            npm ci
+          fi
       - run: SKIP_PW_DEPS=1 npm run ci
+
+  offline-simulation:
+    runs-on: ubuntu-latest
+    env:
+      CI_NO_NET: "1"
+      SKIP_PW_DEPS: "1"
+      SKIP_NET_CHECKS: "1"
+      NPM_CONFIG_AUDIT: "false"
+      NPM_CONFIG_FUND: "false"
+    steps:
+      - uses: actions/checkout@v4.2.2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          cache: "npm"
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+      - name: mode
+        run: |
+          echo "Mode: Offline"
+      - run: npm ci --ignore-scripts --prefer-offline
+      - run: npm run lint
+      - run: npm test -- --passWithNoTests=false
+      - run: npm run smoke

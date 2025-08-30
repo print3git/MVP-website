@@ -1,9 +1,18 @@
 #!/bin/bash
 set -e
 
-# Skip heavy Playwright and apt dependencies when requested
-if [ "$SKIP_PW_DEPS" = "1" ] || [ "$PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD" = "1" ]; then
+OFFLINE=0
+if node -e "import('./scripts/net-mode.mjs').then(m=>process.exit(m.isOfflineEnv()?0:1))" >/dev/null 2>&1; then
+  OFFLINE=1
+fi
+
+# Skip heavy Playwright and apt dependencies when requested or offline
+if [ "$SKIP_PW_DEPS" = "1" ] || [ "$PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD" = "1" ] || [ "$OFFLINE" = "1" ]; then
   echo 'Skipping Playwright/apt deps'
+  npm ci --ignore-scripts --prefer-offline --no-audit --fund=false
+  npm ci --ignore-scripts --prefer-offline --no-audit --fund=false --prefix backend
+  npm ci --ignore-scripts --prefer-offline --no-audit --fund=false --prefix backend/dalle_server
+  touch .setup-complete
   exit 0
 fi
 
