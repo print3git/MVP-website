@@ -9,7 +9,11 @@ function authOptional(req, _res, next) {
     req.user = { user_id: "u1" };
   } else if (authHeader && authHeader.startsWith("Bearer ")) {
     const token = authHeader.slice(7);
-    try { req.user = jwt.verify(token, AUTH_SECRET); } catch {}
+    try {
+      req.user = jwt.verify(token, AUTH_SECRET);
+    } catch {
+      /* TODO: handle auth verification errors */
+    }
   }
   next();
 }

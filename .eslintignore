@@ -1,0 +1,10 @@
+**/dist/
+**/build/
+**/coverage/
+frontend/scripts/**
+frontend/test/**
+**/*.glb
+**/*.png
+**/*.jpg
+**/*.webp
+**/*.zip

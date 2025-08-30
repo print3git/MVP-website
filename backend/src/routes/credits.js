@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const auth_1 = require("../lib/auth");
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const db = require("../../db.js");
 const router = (0, express_1.Router)();
 router.get("/credits", auth_1.authRequired, async (req, res) => {

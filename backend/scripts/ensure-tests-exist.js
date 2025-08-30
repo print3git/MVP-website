@@ -35,7 +35,7 @@ try {
     console.error("No tests discovered; failing to prevent silent skips.");
     process.exit(1);
   }
-} catch (err) {
+} catch (_err) {
   console.error("Failed to list tests; ensure Jest is installed.");
   process.exit(1);
 }

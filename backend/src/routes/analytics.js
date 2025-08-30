@@ -16,7 +16,9 @@ router.post("/api/track/ad-click", (req, res) => {
   store.adClicks.push({ subreddit, sessionId });
   try {
     db.insertAdClick && db.insertAdClick(subreddit, sessionId);
-  } catch {}
+  } catch {
+    /* TODO: log insertAdClick failure */
+  }
   res.json({ ok: true });
 });
 
@@ -25,7 +27,9 @@ router.post("/api/track/cart", (req, res) => {
   store.cartEvents.push({ sessionId, modelId, subreddit });
   try {
     db.insertCartEvent && db.insertCartEvent(sessionId, modelId, subreddit);
-  } catch {}
+  } catch {
+    /* TODO: log insertCartEvent failure */
+  }
   res.json({ ok: true });
 });
 
@@ -35,7 +39,9 @@ router.post("/api/track/checkout", (req, res) => {
   try {
     db.insertCheckoutEvent &&
       db.insertCheckoutEvent(sessionId, subreddit, step);
-  } catch {}
+  } catch {
+    /* TODO: log insertCheckoutEvent failure */
+  }
   res.json({ ok: true });
 });
 
@@ -44,7 +50,9 @@ router.post("/api/track/share", (req, res) => {
   store.shareEvents.push({ shareId, network });
   try {
     db.insertShareEvent && db.insertShareEvent(shareId, network);
-  } catch {}
+  } catch {
+    /* TODO: log insertShareEvent failure */
+  }
   res.json({ ok: true });
 });
 
@@ -67,7 +75,9 @@ router.post("/api/track/page", (req, res) => {
         utmMedium,
         utmCampaign,
       );
-  } catch {}
+  } catch {
+    /* TODO: log insertPageView failure */
+  }
   res.json({ ok: true });
 });
 
