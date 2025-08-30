@@ -17,9 +17,24 @@ if (!process.env.SKIP_ROOT_DEPS_CHECK) {
   }
 }
 
+function findBackendRoot(start) {
+  let dir = start;
+  while (true) {
+    const candidate = path.join(dir, "backend", "package.json");
+    if (fs.existsSync(candidate)) return path.dirname(candidate);
+    const parent = path.dirname(dir);
+    if (parent === dir) return null;
+    dir = parent;
+  }
+}
+
 const cliArgs = process.argv.slice(2);
-const repoRoot = path.resolve(__dirname, "..");
-const backendDir = path.join(repoRoot, "backend");
+const backendDir = findBackendRoot(process.cwd());
+if (!backendDir || !fs.existsSync(path.join(backendDir, "package.json"))) {
+  console.error("backend/package.json not found");
+  process.exit(1);
+}
+const repoRoot = path.dirname(backendDir);
 const requiresBackendDeps = cliArgs
   .filter((a) => !a.startsWith("-"))
   .some((arg) => {
@@ -39,7 +54,6 @@ if (requiresBackendDeps) {
 }
 
 function verifyFiles(args) {
-  const repoRoot = path.resolve(__dirname, "..");
   let checking = false;
   for (const arg of args) {
     if (arg === "--runTestsByPath") {
@@ -58,8 +72,6 @@ function verifyFiles(args) {
 
 function runJest(args) {
   verifyFiles(args);
-  const repoRoot = path.resolve(__dirname, "..");
-  const backendDir = path.join(repoRoot, "backend");
   const jestBin = path.join(backendDir, "node_modules", ".bin", "jest");
 
   let jestArgs = [...args];
@@ -152,18 +164,17 @@ function runJest(args) {
       process.exit(1);
     }
     result = spawnSync(rootJestBin, jestArgs, options);
-} else if (fs.existsSync(jestBin)) {
-  result = spawnSync(jestBin, jestArgs, options);
-} else {
-  if (!fs.existsSync(rootJestBin)) {
-    console.error(
-      "Missing root Jest binary. Run 'npm install' in the repo root first.",
-    );
-    process.exit(1);
+  } else if (fs.existsSync(jestBin)) {
+    result = spawnSync(jestBin, jestArgs, options);
+  } else {
+    if (!fs.existsSync(rootJestBin)) {
+      console.error(
+        "Missing root Jest binary. Run 'npm install' in the repo root first.",
+      );
+      process.exit(1);
+    }
+    result = spawnSync(rootJestBin, jestArgs, options);
   }
-  result = spawnSync(rootJestBin, jestArgs, options);
-}
-
 
   if (tempConfigPath) {
     try {
