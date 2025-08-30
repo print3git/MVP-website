@@ -239,11 +239,50 @@ function showThemeBanner() {
 async function computeDailyPrintsSold(date = new Date()) {
   const eastern = new Date(date.toLocaleString("en-US", { timeZone: TZ }));
   const dateStr = eastern.toISOString().slice(0, 10);
-  const data = new TextEncoder().encode(dateStr);
-  const hash = await crypto.subtle.digest("SHA-256", data);
-  const int = new DataView(hash).getUint32(0);
+  let int;
+  if (crypto?.subtle?.digest) {
+    const data = new TextEncoder().encode(dateStr);
+    const hash = await crypto.subtle.digest("SHA-256", data);
+    int = new DataView(hash).getUint32(0);
+  } else {
+    int = 0;
+    for (let i = 0; i < dateStr.length; i++) {
+      int = (int * 31 + dateStr.charCodeAt(i)) >>> 0;
+    }
+  }
   const rand = int / UINT32_MAX;
   return Math.floor(rand * (PRINTS_MAX - PRINTS_MIN + 1)) + PRINTS_MIN;
+}
+
+async function updateStats(initial) {
+  const el = document.getElementById("stats-ticker");
+  if (!el) return;
+  let prints;
+  if (initial && typeof initial.printsSold === "number") {
+    prints = initial.printsSold;
+  } else {
+    try {
+      const res = await fetch(`${API_BASE}/stats`);
+      if (res.ok) {
+        const data = await res.json();
+        prints =
+          typeof data?.printsSold === "number"
+            ? data.printsSold
+            : await computeDailyPrintsSold();
+      } else {
+        prints = await computeDailyPrintsSold();
+      }
+    } catch {
+      prints = await computeDailyPrintsSold();
+    }
+  }
+  el.textContent = "";
+  const icon = document.createElement("i");
+  icon.className = "fas fa-fire mr-1";
+  el.appendChild(icon);
+  el.appendChild(document.createTextNode(` ${prints} prints sold`));
+  el.appendChild(document.createElement("br"));
+  el.appendChild(document.createTextNode("in last 24 hrs"));
 }
 const $ = (id) => document.getElementById(id);
 const refs = {
@@ -1161,37 +1200,6 @@ async function init() {
     // Animation and sound handled in basket.js
   });
 
-  async function updateStats(initial) {
-    const el = document.getElementById("stats-ticker");
-    if (!el) return;
-    let prints;
-    if (initial && typeof initial.printsSold === "number") {
-      prints = initial.printsSold;
-    } else {
-      try {
-        const res = await fetch(`${API_BASE}/stats`);
-        if (res.ok) {
-          const data = await res.json();
-          prints =
-            typeof data?.printsSold === "number"
-              ? data.printsSold
-              : await computeDailyPrintsSold();
-        } else {
-          prints = await computeDailyPrintsSold();
-        }
-      } catch {
-        prints = await computeDailyPrintsSold();
-      }
-    }
-    el.textContent = "";
-    const icon = document.createElement("i");
-    icon.className = "fas fa-fire mr-1";
-    el.appendChild(icon);
-    el.appendChild(document.createTextNode(` ${prints} prints sold`));
-    el.appendChild(document.createElement("br"));
-    el.appendChild(document.createTextNode("in last 24 hrs"));
-  }
-
   setInterval(updateStats, 3600000);
 
   // Keep the wizard UI in sync with the payment page
@@ -1346,8 +1354,9 @@ if (typeof process === "undefined" || process.env.NODE_ENV !== "test") {
 }
 
 if (typeof module !== "undefined") {
-  module.exports = { renderThumbnails };
+  module.exports = { renderThumbnails, computeDailyPrintsSold, updateStats };
 }
+
 export {
   renderThumbnails,
   computeSlotsByTime,
@@ -1355,4 +1364,6 @@ export {
   adjustedSlots,
   updatePrintRunInfo,
   getPurchaseCount,
+  computeDailyPrintsSold
+  updateStats
 };
