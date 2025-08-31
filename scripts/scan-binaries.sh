@@ -4,10 +4,15 @@ set -euo pipefail
 # Usage:
 #   scripts/scan-binaries.sh [--diff BASE..HEAD] [--allow 'regex1|regex2']
 #
-# Exits non-zero and prints a table if any binaries are found outside the allowlist.
+# Prints a per-file table, plus two compact lists at the end:
+#  - "True binary files (all detected)"
+#  - "Binaries outside allowlist (will fail)"
+#
+# Exit code: non-zero if any binaries are outside the allowlist.
 
 ALLOW_RE='^$'  # default: allow nothing
 DIFF_RANGE=''
+
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --diff) DIFF_RANGE="$2"; shift 2 ;;
@@ -16,7 +21,7 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# File set: either changes in a range, or all tracked files
+# Candidate files: diff range or entire index
 if [[ -n "${DIFF_RANGE}" ]]; then
   mapfile -t CANDIDATES < <(git diff --name-only --diff-filter=AM "${DIFF_RANGE}")
 else
@@ -25,7 +30,7 @@ fi
 
 [[ ${#CANDIDATES[@]} -eq 0 ]] && { echo "No files to scan."; exit 0; }
 
-# Known binary extensions
+# Known-binary extensions (broad but safe)
 BINARY_EXT='
 3ds|7z|aac|aif|aiff|apk|avi|bin|bmp|class|db|dcm|dylib|eot|exe|flac|gif|glb|gltf|gz|
 ico|jar|jpeg|jpg|lockb|m4a|m4v|mid|mkv|mov|mp3|mp4|mpeg|mpg|o|obj|ogg|otf|pdf|png|
@@ -33,16 +38,20 @@ ppt|pptx|psd|rtf|so|sqlite|stl|tar|tif|tiff|ttf|wav|webm|webp|woff|woff2|xls|xls
 '
 BINARY_EXT_REGEX="\.(?:$(echo "$BINARY_EXT" | tr -d ' \n'))$"
 
-# Detect if a file is a Git LFS pointer (tiny text file, but represents a binary blob)
+# LFS pointer check: tiny text file that represents a binary blob
 is_lfs_pointer() {
   head -n3 -- "$1" 2>/dev/null | grep -q '^version https://git-lfs.github.com/spec/v1'
 }
 
-printf '%-8s  %-12s  %s\n' "BINARY?" "REASON" "PATH"
-printf '%0.s-' {1..80}; echo
+# Best-effort MIME (for display only; NOT a deciding factor)
+mime_of() {
+  file -bi -- "$1" 2>/dev/null || echo "unknown/unknown"
+}
+
+printf '%-8s  %-12s  %-24s  %s\n' "BINARY?" "REASON" "MIME" "PATH"
+printf '%0.s-' {1..120}; echo
 
 FOUND=0
-# For the final summaries
 BINARIES_ALL=()
 BINARIES_VIOLATIONS=()
 
@@ -51,6 +60,7 @@ for f in "${CANDIDATES[@]}"; do
 
   IS_BINARY=0
   REASON=""
+  MIME="$(mime_of "$f")"
 
   # 1) Extension
   if [[ "$f" =~ $BINARY_EXT_REGEX ]]; then
@@ -58,24 +68,24 @@ for f in "${CANDIDATES[@]}"; do
     REASON="ext"
   fi
 
-  # 2) Content heuristic (NUL bytes)
+  # 2) NUL-byte / binary heuristic (locale-agnostic)
   if [[ $IS_BINARY -eq 0 ]]; then
-    # grep -IL exits 0 for *text* files. If it doesn't, we treat as binary.
-    if ! grep -IL . -- "$f" >/dev/null 2>&1; then
+    if ! LC_ALL=C grep -qI . -- "$f"; then
       IS_BINARY=1
       REASON="${REASON:+$REASON,}nul"
     fi
   fi
 
-  # 3) Git LFS pointer (represents a binary tracked via LFS)
+  # 3) Git LFS pointer text file
   if [[ $IS_BINARY -eq 0 ]] && is_lfs_pointer "$f"; then
     IS_BINARY=1
     REASON="${REASON:+$REASON,}lfs"
   fi
 
-  printf '%-8s  %-12s  %s\n' \
+  printf '%-8s  %-12s  %-24s  %s\n' \
     "$([[ $IS_BINARY -eq 1 ]] && echo YES || echo no)" \
     "${REASON:--}" \
+    "$MIME" \
     "$f"
 
   if [[ $IS_BINARY -eq 1 ]]; then
