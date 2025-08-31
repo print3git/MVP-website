@@ -16,87 +16,67 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# File sets
+# File set: either changes in a range, or all tracked files
 if [[ -n "${DIFF_RANGE}" ]]; then
   mapfile -t CANDIDATES < <(git diff --name-only --diff-filter=AM "${DIFF_RANGE}")
 else
   mapfile -t CANDIDATES < <(git ls-files)
 fi
 
-# If repo is empty / no changes
 [[ ${#CANDIDATES[@]} -eq 0 ]] && { echo "No files to scan."; exit 0; }
 
-# Known-binary extensions (fallback)
-BINARY_EXT='(glb|gltf|bin|png|jpe?g|webp|gif|tiff?|ico|pdf|zip|tar|gz|bz2|7z|mp4|mov|avi|mpe?g|webm|mp3|wav|ogg|flac|woff2?|ttf|otf)$'
+# Known binary extensions
+BINARY_EXT='
+3ds|7z|aac|aif|aiff|apk|avi|bin|bmp|class|db|dcm|dylib|eot|exe|flac|gif|glb|gltf|gz|
+ico|jar|jpeg|jpg|lockb|m4a|m4v|mid|mkv|mov|mp3|mp4|mpeg|mpg|o|obj|ogg|otf|pdf|png|
+ppt|pptx|psd|rtf|so|sqlite|stl|tar|tif|tiff|ttf|wav|webm|webp|woff|woff2|xls|xlsx|zip
+'
+BINARY_EXT_REGEX="\.(?:$(echo "$BINARY_EXT" | tr -d ' \n'))$"
 
-# Consider these MIME types "text-like" even if they look odd (e.g., UTF-16)
-TEXTY_MIME_RE='^(text/|application/(json|javascript|xml)|image/svg\+xml)'
+# Detect if a file is an LFS pointer
+is_lfs_pointer() {
+  head -n3 -- "$1" 2>/dev/null \
+    | grep -q '^version https://git-lfs.github.com/spec/v1'
+}
 
-# Build an LFS map: any path with filter:lfs is treated as binary
-declare -A LFS_PATHS=()
-if [[ -s .gitattributes ]]; then
-  # git check-attr prints "path: filter: lfs" – we collect those paths
-  # This is best-effort for changed files; whole-tree is fine too.
-  while IFS= read -r p; do
-    LFS_PATHS["$p"]=1
-  done < <(
-    printf '%s\n' "${CANDIDATES[@]}" | git check-attr -a --stdin \
-      | awk '/: filter: lfs$/ {print $1}' | sed 's/:$//' | sort -u
-  )
-fi
-
-printf '%-8s  %-8s  %-40s  %s\n' "BINARY?" "REASON" "MIME" "PATH"
-printf '%0.s-' {1..100}; echo
+printf '%-8s  %-12s  %s\n' "BINARY?" "REASON" "PATH"
+printf '%0.s-' {1..80}; echo
 
 FOUND=0
 
 for f in "${CANDIDATES[@]}"; do
-  [[ ! -f "$f" ]] && continue  # skip deleted or directories
+  [[ ! -f "$f" ]] && continue
 
-  REASON=""; MIME=""; IS_BINARY=0
+  IS_BINARY=0
+  REASON=""
 
-  # 1) Extension check (fast)
-  if [[ "$f" =~ \.($BINARY_EXT) ]]; then
+  # 1) Extension
+  if [[ "$f" =~ $BINARY_EXT_REGEX ]]; then
     IS_BINARY=1
     REASON="ext"
   fi
 
-  # 2) Heuristic text check (NUL bytes): grep -Iq returns non-zero if binary
+  # 2) Content heuristic (NUL bytes)
   if [[ $IS_BINARY -eq 0 ]]; then
-    if ! grep -Iq . -- "$f"; then
+    if ! grep -IL . -- "$f" >/dev/null 2>&1; then
       IS_BINARY=1
       REASON="${REASON:+$REASON,}nul"
     fi
   fi
 
-  # 3) MIME sniff
-  MIME="$(file -bi -- "$f" 2>/dev/null || echo "unknown/unknown")"
-  if [[ $IS_BINARY -eq 0 ]]; then
-    if ! [[ "$MIME" =~ $TEXTY_MIME_RE ]]; then
-      # Many binaries will fall here (image/*, model/*, application/octet-stream, etc.)
-      IS_BINARY=1
-      REASON="${REASON:+$REASON,}mime"
-    fi
-  fi
-
-  # 4) LFS-marked?
-  if [[ -n "${LFS_PATHS[$f]:-}" ]]; then
+  # 3) Git LFS pointer
+  if [[ $IS_BINARY -eq 0 ]] && is_lfs_pointer "$f"; then
     IS_BINARY=1
     REASON="${REASON:+$REASON,}lfs"
   fi
 
-  # Print row
-  printf '%-8s  %-8s  %-40s  %s\n' \
+  printf '%-8s  %-12s  %s\n' \
     "$([[ $IS_BINARY -eq 1 ]] && echo YES || echo no)" \
     "${REASON:--}" \
-    "$MIME" \
     "$f"
 
-  # Fail if binary and not allowed
-  if [[ $IS_BINARY -eq 1 ]]; then
-    if ! [[ "$f" =~ $ALLOW_RE ]]; then
-      FOUND=$((FOUND+1))
-    fi
+  if [[ $IS_BINARY -eq 1 ]] && ! [[ "$f" =~ $ALLOW_RE ]]; then
+    FOUND=$((FOUND+1))
   fi
 done
 
