@@ -2,10 +2,9 @@ name: Binary & LFS Change Guard
 
 on:
   pull_request:
-    # adjust as you like
-    branches: [ dev, 00000production, "**" ]
+    branches: [dev, 00000production, "**"]
   push:
-    branches: [ dev ]
+    branches: [dev]
 
 permissions:
   contents: read
@@ -14,95 +13,105 @@ permissions:
 jobs:
   scan:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout (full history)
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0   # we need history to diff/merge-base
 
-      - name: Resolve base/head SHAs
-        id: shas
+      - name: Determine base and head
+        id: revs
         shell: bash
         run: |
           set -euo pipefail
-          case "${{ github.event_name }}" in
-            pull_request|pull_request_target)
-              echo "base=${{ github.event.pull_request.base.sha }}" >> "$GITHUB_OUTPUT"
-              echo "head=${{ github.event.pull_request.head.sha }}" >> "$GITHUB_OUTPUT"
-              ;;
-            push)
-              # previous commit before the push vs the new tip
-              echo "base=${{ github.event.before }}" >> "$GITHUB_OUTPUT"
-              echo "head=${{ github.sha }}" >> "$GITHUB_OUTPUT"
-              ;;
-            *)
-              # fallback for workflow_dispatch, etc.
-              # compare against previous commit if available
-              if git rev-parse HEAD^ >/dev/null 2>&1; then
-                echo "base=$(git rev-parse HEAD^)" >> "$GITHUB_OUTPUT"
-              else
-                echo "base=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-              fi
-              echo "head=${{ github.sha }}" >> "$GITHUB_OUTPUT"
-              ;;
-          esac
 
-      - name: Scan diff for binaries & LFS
+          EVENT="${{ github.event_name }}"
+          HEAD_SHA="${{ github.sha }}"
+
+          if [[ "$EVENT" == "pull_request" ]]; then
+            TARGET_REF="${{ github.event.pull_request.base.ref }}"
+            TARGET_SHA="${{ github.event.pull_request.base.sha }}"
+            # Fetch the PR base branch to compute a real merge-base
+            git fetch --no-tags --prune origin "$TARGET_REF":"origin/$TARGET_REF"
+            BASE_SHA="$(git merge-base "$HEAD_SHA" "origin/$TARGET_REF")"
+          else
+            # push to dev
+            TARGET_REF="dev"
+            BEFORE="${{ github.event.before }}"
+            # Best-effort: fetch dev and compute merge-base
+            git fetch --no-tags --prune origin "$TARGET_REF":"origin/$TARGET_REF" || true
+            BASE_SHA="$BEFORE"
+            # Fallbacks if BEFORE is empty or equals HEAD
+            if [[ -z "${BASE_SHA:-}" || "$BASE_SHA" == "$HEAD_SHA" ]]; then
+              if git rev-parse HEAD^ >/dev/null 2>&1; then
+                BASE_SHA="$(git rev-parse HEAD^)"
+              elif git rev-parse "origin/$TARGET_REF" >/dev/null 2>&1; then
+                BASE_SHA="$(git merge-base "$HEAD_SHA" "origin/$TARGET_REF")"
+              else
+                # last resort: compare the commit to itself to avoid crashing
+                BASE_SHA="$HEAD_SHA"
+              fi
+            fi
+          fi
+
+          echo "base=$BASE_SHA"   >> "$GITHUB_OUTPUT"
+          echo "head=$HEAD_SHA"   >> "$GITHUB_OUTPUT"
+          echo "target=$TARGET_REF" >> "$GITHUB_OUTPUT"
+          echo "Using diff: $BASE_SHA..$HEAD_SHA"
+
+      - name: Scan for binary and LFS-tracked changes
         id: scan
         shell: bash
         run: |
           set -euo pipefail
-          base="${{ steps.shas.outputs.base }}"
-          head="${{ steps.shas.outputs.head }}"
+          BASE="${{ steps.revs.outputs.base }}"
+          HEAD="${{ steps.revs.outputs.head }}"
+          echo "Diff: $BASE..$HEAD"
 
-          echo "Diff range: $base..$head"
-
-          # Changed files (added/modified only)
-          git diff --name-only --diff-filter=AM "$base" "$head" > changed.txt || true
-          echo "Changed files:"
-          cat changed.txt || true
-          echo
+          # List changed files (added/modified)
+          git diff --name-only --diff-filter=AM "$BASE" "$HEAD" > changed.txt || true
+          echo "Changed files:"; cat changed.txt || true
 
           # Files Git classifies as binary in this diff
-          git diff --numstat "$base" "$head" | awk '$1=="-" && $2=="-" {print $3}' > binaries.txt || true
+          git diff --numstat "$BASE" "$HEAD" | awk '$1=="-" && $2=="-" {print $3}' > binaries.txt || true
 
-          # LFS-tracked among the changed files (per .gitattributes)
+          # Files that are LFS-tracked (per .gitattributes) among the changed set
           : > lfs_changed.txt
           if [ -s changed.txt ]; then
-            # "git check-attr filter --stdin" prints: "<path>: filter: <value>"
-            git check-attr filter --stdin < changed.txt \
-              | awk -F': ' '$3=="lfs" {print $1}' > lfs_changed.txt || true
+            git check-attr -a --stdin < changed.txt | awk '
+              /^.*: filter: lfs$/ { print prev }
+              { prev=$1 }
+            ' | sed 's/:$//' | sort -u > lfs_changed.txt || true
           fi
 
-          echo "Binary-in-diff:"; cat binaries.txt || true; echo
-          echo "LFS-changed:";   cat lfs_changed.txt || true; echo
-
+          # Offenders = (binaries in diff) ∪ (LFS-tracked files changed)
           sort -u binaries.txt lfs_changed.txt > offending.txt || true
-          count=$(wc -l < offending.txt | tr -d ' ')
-          echo "Offenders ($count):"
-          sed 's/^/ - /' offending.txt || true
 
-          echo "count=$count" >> "$GITHUB_OUTPUT"
+          echo "Binary-in-diff:"; cat binaries.txt || true
+          echo "LFS-changed:";    cat lfs_changed.txt || true
+          echo "Offending:";      cat offending.txt || true
 
-          if [ "$count" -gt 0 ]; then
-            echo "::error::Binary/LFS files changed in this diff:"
-            sed 's/^/ - /' offending.txt
+          offenders=$(wc -l < offending.txt | tr -d ' ')
+          echo "offenders=$offenders" >> "$GITHUB_OUTPUT"
+          if [ "$offenders" -gt 0 ]; then
+            echo "::error::Binary/LFS files changed:\n$(cat offending.txt)"
             exit 1
           fi
 
-      - name: Comment on PR (summary)
-        if: ${{ github.event_name == 'pull_request' }}
+      - name: Comment summary (PRs only)
+        if: github.event_name == 'pull_request'
         uses: actions/github-script@v7
         with:
           script: |
-            const count = Number('${{ steps.scan.outputs.count }}');
-            const body = count > 0
-              ? `❌ Binary/LFS guard failed.\n\nChanged binary/LFS files:\n\`\`\`\n${{ steps.scan.outputs.count }} offenders (see logs)\n\`\`\``
-              : `✅ Binary/LFS guard passed. No binary/LFS changes in the diff.`;
-            github.rest.issues.createComment({
+            const offenders = Number(core.getInput('offenders'));
+            const body = offenders === 0
+              ? "✅ Binary & LFS Guard: **no binary/LFS file changes detected**."
+              : `❌ Binary & LFS Guard: ${offenders} offender(s). See job logs.`;
+            await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.payload.pull_request.number,
+              issue_number: context.issue.number,
               body
             });
+        env:
+          offenders: ${{ steps.scan.outputs.offenders }}
