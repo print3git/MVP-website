@@ -68,20 +68,28 @@ jobs:
           HEAD="${{ steps.revs.outputs.head }}"
           echo "Diff: $BASE..$HEAD"
 
-          # List changed files (added/modified)
-          git diff --name-only --diff-filter=AM "$BASE" "$HEAD" > changed.txt || true
-          echo "Changed files:"; cat changed.txt || true
+          # List changed files (added/modified). NUL-delimited to handle spaces and odd characters.
+          # Verified with a filename containing a space: "print2 logo.png"
+          git diff --diff-filter=AM --name-only -z "$BASE" "$HEAD" > changed.txt || true
+          echo "Changed files:"; tr '\0' '\n' < changed.txt || true
 
-          # Files Git classifies as binary in this diff
-          git diff --numstat "$BASE" "$HEAD" | awk '$1=="-" && $2=="-" {print $3}' > binaries.txt || true
+          # Files Git classifies as binary in this diff. --numstat -z emits added\0deleted\0path\0 records.
+          git diff --numstat -z "$BASE" "$HEAD" | \
+            while IFS= read -r -d '' added && IFS= read -r -d '' deleted && IFS= read -r -d '' path; do
+              if [[ "$added" == "-" && "$deleted" == "-" ]]; then
+                printf '%s\n' "$path"
+              fi
+            done > binaries.txt || true
 
-          # Files that are LFS-tracked (per .gitattributes) among the changed set
+          # Files that are LFS-tracked (per .gitattributes) among the changed set.
           : > lfs_changed.txt
           if [ -s changed.txt ]; then
-            git check-attr -a --stdin < changed.txt | awk '
-              /^.*: filter: lfs$/ { print prev }
-              { prev=$1 }
-            ' | sed 's/:$//' | sort -u > lfs_changed.txt || true
+            git check-attr -z --stdin filter < changed.txt | \
+              while IFS= read -r -d '' path && IFS= read -r -d '' attr && IFS= read -r -d '' value; do
+                if [[ "$attr" == "filter" && "$value" == "lfs" ]]; then
+                  printf '%s\n' "$path"
+                fi
+              done | sort -u > lfs_changed.txt || true
           fi
 
           # Offenders = (binaries in diff) ∪ (LFS-tracked files changed)
