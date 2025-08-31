@@ -33,16 +33,18 @@ ppt|pptx|psd|rtf|so|sqlite|stl|tar|tif|tiff|ttf|wav|webm|webp|woff|woff2|xls|xls
 '
 BINARY_EXT_REGEX="\.(?:$(echo "$BINARY_EXT" | tr -d ' \n'))$"
 
-# Detect if a file is an LFS pointer
+# Detect if a file is a Git LFS pointer (tiny text file, but represents a binary blob)
 is_lfs_pointer() {
-  head -n3 -- "$1" 2>/dev/null \
-    | grep -q '^version https://git-lfs.github.com/spec/v1'
+  head -n3 -- "$1" 2>/dev/null | grep -q '^version https://git-lfs.github.com/spec/v1'
 }
 
 printf '%-8s  %-12s  %s\n' "BINARY?" "REASON" "PATH"
 printf '%0.s-' {1..80}; echo
 
 FOUND=0
+# For the final summaries
+BINARIES_ALL=()
+BINARIES_VIOLATIONS=()
 
 for f in "${CANDIDATES[@]}"; do
   [[ ! -f "$f" ]] && continue
@@ -58,13 +60,14 @@ for f in "${CANDIDATES[@]}"; do
 
   # 2) Content heuristic (NUL bytes)
   if [[ $IS_BINARY -eq 0 ]]; then
+    # grep -IL exits 0 for *text* files. If it doesn't, we treat as binary.
     if ! grep -IL . -- "$f" >/dev/null 2>&1; then
       IS_BINARY=1
       REASON="${REASON:+$REASON,}nul"
     fi
   fi
 
-  # 3) Git LFS pointer
+  # 3) Git LFS pointer (represents a binary tracked via LFS)
   if [[ $IS_BINARY -eq 0 ]] && is_lfs_pointer "$f"; then
     IS_BINARY=1
     REASON="${REASON:+$REASON,}lfs"
@@ -75,10 +78,30 @@ for f in "${CANDIDATES[@]}"; do
     "${REASON:--}" \
     "$f"
 
-  if [[ $IS_BINARY -eq 1 ]] && ! [[ "$f" =~ $ALLOW_RE ]]; then
-    FOUND=$((FOUND+1))
+  if [[ $IS_BINARY -eq 1 ]]; then
+    BINARIES_ALL+=( "$f" )
+    if ! [[ "$f" =~ $ALLOW_RE ]]; then
+      BINARIES_VIOLATIONS+=( "$f" )
+      FOUND=$((FOUND+1))
+    fi
   fi
 done
+
+echo
+echo "=== True binary files (all detected) ==="
+if [[ ${#BINARIES_ALL[@]} -eq 0 ]]; then
+  echo "(none)"
+else
+  printf '%s\n' "${BINARIES_ALL[@]}"
+fi
+
+echo
+echo "=== Binaries outside allowlist (will fail) ==="
+if [[ ${#BINARIES_VIOLATIONS[@]} -eq 0 ]]; then
+  echo "(none)"
+else
+  printf '%s\n' "${BINARIES_VIOLATIONS[@]}"
+fi
 
 if [[ $FOUND -gt 0 ]]; then
   echo
