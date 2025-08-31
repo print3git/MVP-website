@@ -49,6 +49,13 @@ This repository contains the early MVP code for print2's website and backend.
 
 Run `docker compose up` to start the API and Postgres services.
 
+## Model fetching
+
+Set the following environment variables so the build can download model assets:
+
+- `GIT_LFS_SKIP_SMUDGE=1` – prevents Git LFS from automatically pulling large model files. Models are fetched separately during the build.
+- `MODEL_SOURCE_URL` **or** `MODEL_MANIFEST_JSON` – provide either a direct source URL or a JSON manifest describing the models to download.
+
 ## Local Setup
 
 1. Copy `.env.example` to `.env` in the repository root and update the values:
