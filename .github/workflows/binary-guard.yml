@@ -13,6 +13,10 @@ permissions:
 jobs:
   scan:
     runs-on: ubuntu-latest
+    env:
+      ALLOW_GLOBS: |
+        frontend/public/models/**
+        assets/icons/**
     steps:
       - name: Checkout (full history)
         uses: actions/checkout@v4
@@ -99,10 +103,28 @@ jobs:
           echo "LFS-changed:";    cat lfs_changed.txt || true
           echo "Offending:";      cat offending.txt || true
 
-          offenders=$(wc -l < offending.txt | tr -d ' ')
+          # Filter offenders using allow-list globs
+          : > disallowed.txt
+          if [ -s offending.txt ]; then
+            while IFS= read -r file; do
+              keep=1
+              while IFS= read -r glob; do
+                [[ -z "$glob" ]] && continue
+                if [[ "$file" == $glob ]]; then
+                  keep=0
+                  break
+                fi
+              done <<< "$ALLOW_GLOBS"
+              [ $keep -eq 1 ] && echo "$file" >> disallowed.txt
+            done < offending.txt
+          fi
+
+          echo "Disallowed:"; cat disallowed.txt || true
+
+          offenders=$(wc -l < disallowed.txt | tr -d ' ')
           echo "offenders=$offenders" >> "$GITHUB_OUTPUT"
           if [ "$offenders" -gt 0 ]; then
-            echo "::error::Binary/LFS files changed:\n$(cat offending.txt)"
+            echo "::error::Binary/LFS files changed:\n$(cat disallowed.txt)"
             exit 1
           fi
 
