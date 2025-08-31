@@ -37,6 +37,7 @@
     "typecheck": "tsc --noEmit",
     "validate-env": "bash scripts/validate-env.sh",
     "setup": "bash scripts/setup.sh",
+    "prebuild": "node scripts/fetch-boombox.mjs",
     "build": "vite build",
     "preview": "vite preview --port 4173",
     "start": "node scripts/dev-server.js",
