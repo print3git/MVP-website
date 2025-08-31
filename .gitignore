@@ -54,3 +54,5 @@ dist/
 .cache/
 .eslintcache
 .prettiercache
+
+frontend/public/models/boombox.glb

@@ -1,6 +1,9 @@
 name = "print2"
 compatibility_date = "2025-08-22"
 
+[build]
+command = "npm run build"
+
 [env.preview]
   name = "print2"
 
