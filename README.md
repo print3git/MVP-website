@@ -16,7 +16,7 @@
 
 ## CI policy
 
-Only two GitHub Action jobs are required to merge changes:
+Only two GitHub Action jobs are required to merge changes::
 
 - **Production build** – runs the exact build command that ships to users.
 - **Intent/behavior tests** – exercises the application to verify user flows.
