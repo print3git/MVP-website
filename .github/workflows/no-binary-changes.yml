@@ -1,0 +1,27 @@
+name: Preflight – No Binary Changes
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: List files changed
+        run: |
+          echo "Base: ${{ github.event.pull_request.base.sha }}"
+          echo "Head: ${{ github.sha }}"
+          git diff --name-status ${{ github.event.pull_request.base.sha }}...${{ github.sha }} | tee changed.txt
+      - name: Detect binary-like extensions
+        run: |
+          set -euo pipefail
+          grep -E '\.(glb|gltf|bin|png|jpe?g|gif|webp|ico|pdf|zip|mp4|mov|ogg|wav|wasm|ttf|otf|woff2?)$' changed.txt || true
+      - name: Fail if any binary files were added/modified
+        run: |
+          if git diff --name-only --diff-filter=AM ${{ github.event.pull_request.base.sha }}...${{ github.sha }} \
+            | grep -E '\.(glb|gltf|bin|png|jpe?g|gif|webp|ico|pdf|zip|mp4|mov|ogg|wav|wasm|ttf|otf|woff2?)$' ; then
+            echo "::error::Binary files changed in this PR. Codex cannot edit binaries. Use runtime download or keep binaries read-only."
+            exit 1
+          fi
