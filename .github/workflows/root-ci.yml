@@ -93,6 +93,15 @@ jobs:
       - name: Build
         run: npm run build --workspaces=false
 
+      - name: Normalize build output for ci-doctor
+        shell: bash
+        run: |
+          # If root 'dist' exists but frontend/dist does not, move it so doctor passes
+          if [ -d dist ] && [ ! -d frontend/dist ]; then
+            mkdir -p frontend
+            mv dist frontend/dist
+          fi
+
       - name: CI doctor
         run: node scripts/ci-doctor.mjs
         env:
