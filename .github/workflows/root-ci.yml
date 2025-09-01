@@ -18,6 +18,7 @@ jobs:
       CI_NETWORK_OK: "1"
       AWS_DEFAULT_REGION: eu-north-1
       AWS_REGION: eu-north-1
+
     steps:
       - uses: actions/checkout@v5
 
@@ -32,7 +33,7 @@ jobs:
           key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-playwright-
-            
+
       - name: Mode
         shell: bash
         run: |
@@ -41,7 +42,6 @@ jobs:
           else
             echo "Mode: Online"
           fi
-
 
       # --- AWS credentials (optional; workflow still runs without them) ---
       - name: Configure AWS via role (OIDC)
@@ -77,8 +77,9 @@ jobs:
           fi
 
       - name: Install deps
+        shell: bash
         run: |
-          if [ "${CI_NO_NET:-0}" = '1' ] || [ "${SKIP_PW_DEPS:-0}" = '1' ]; then
+          if [ "${CI_NO_NET:-0}" = "1" ] || [ "${SKIP_PW_DEPS:-0}" = "1" ]; then
             npm ci --ignore-scripts --prefer-offline --no-audit --fund=false
           else
             npm ci
@@ -105,6 +106,7 @@ jobs:
       SKIP_NET_CHECKS: "1"
       NPM_CONFIG_AUDIT: "false"
       NPM_CONFIG_FUND: "false"
+
     steps:
       - uses: actions/checkout@v5
 
@@ -123,16 +125,25 @@ jobs:
       - name: Mode
         run: echo "Mode: Offline"
 
-      - run: npm ci --ignore-scripts --prefer-offline
-      - run: npm run build --workspaces=false
+      - name: Install deps (offline)
+        run: npm ci --ignore-scripts --prefer-offline
 
-      - run: node scripts/ci-doctor.mjs
+      - name: Build (offline)
+        run: npm run build --workspaces=false
+
+      - name: CI doctor (offline)
+        run: node scripts/ci-doctor.mjs
         env:
           STRIPE_SECRET_KEY: sk_test
           STRIPE_WEBHOOK_SECRET: whsec_test
           DB_URL: postgres://postgres:postgres@localhost:5432/test
           SKIP_PW_DEPS: "1"
 
-      - run: npm run lint
-      - run: npm test -- --passWithNoTests=false
-      - run: npm run smoke
+      - name: Lint
+        run: npm run lint
+
+      - name: Test (offline)
+        run: npm test -- --passWithNoTests=false
+
+      - name: Smoke
+        run: npm run smoke
