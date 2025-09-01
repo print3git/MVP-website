@@ -1,46 +1,43 @@
-name: S3 bootstrap (two folders)
+name: S3 Bootstrap
 
 on:
-  workflow_dispatch:
+  workflow_dispatch: {}
 
 jobs:
   bootstrap:
     runs-on: ubuntu-latest
     permissions:
-      id-token: write     # for OIDC, if you use role assumption
+      id-token: write
       contents: read
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+    env:
+      # from repo secrets
+      AWS_REGION_S3: ${{ secrets.AWS_REGION_S3 }}
+      S3_BUCKET:     ${{ secrets.S3_BUCKET }}
+      # optional: if you use OIDC + role, set this secret; otherwise leave empty
+      AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
 
-      # --- Auth path 1: assume role via OIDC (preferred) ---
-      - name: Configure AWS (assume role)
-        if: ${{ secrets.AWS_ROLE_TO_ASSUME != '' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # Use role if provided
+      - name: Configure AWS via role (OIDC)
+        if: ${{ env.AWS_ROLE_TO_ASSUME != '' }}
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          aws-region: ${{ secrets.AWS_REGION_S3 }}
+          role-to-assume: ${{ env.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ env.AWS_REGION_S3 }}
 
-      # --- Auth path 2: fall back to access keys ---
-      - name: Configure AWS (access keys)
-        if: ${{ secrets.AWS_ROLE_TO_ASSUME == '' }}
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION_S3 }}
-        run: aws sts get-caller-identity
+      # Otherwise fall back to key pair
+      - name: Configure AWS via keys
+        if: ${{ env.AWS_ROLE_TO_ASSUME == '' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region:            ${{ env.AWS_REGION_S3 }}
 
-      - name: Bootstrap bucket and two prefixes
-        env:
-          AWS_REGION_S3: ${{ secrets.AWS_REGION_S3 }}          # e.g. eu-north-1
-          S3_BUCKET:    ${{ secrets.S3_BUCKET }}               # e.g. print2-repo-assets-dev
+      - name: Run S3 two-folder bootstrap
         run: |
           chmod +x scripts/s3-two-folder-setup.sh
-          scripts/s3-two-folder-setup.sh
-
-      - name: Show resulting layout
-        run: |
-          aws s3 ls "s3://${{ secrets.S3_BUCKET }}/"
-          aws s3 ls "s3://${{ secrets.S3_BUCKET }}/repo-assets/"
-          aws s3 ls "s3://${{ secrets.S3_BUCKET }}/user-models/"
+          ./scripts/s3-two-folder-setup.sh
