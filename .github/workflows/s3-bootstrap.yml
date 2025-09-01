@@ -1,67 +1,46 @@
-name: S3 two-folder bootstrap
+name: S3 bootstrap (two folders)
 
 on:
   workflow_dispatch:
-    inputs:
-      bucket:
-        description: "S3 bucket name"
-        required: true
-        default: print2-repo-assets-dev
-      region_s3:
-        description: "S3 region (bucket's region)"
-        required: true
-        default: eu-north-1
 
 jobs:
-  run-bootstrap:
+  bootstrap:
     runs-on: ubuntu-latest
     permissions:
-      id-token: write   # for OIDC (if using role assumption)
+      id-token: write     # for OIDC, if you use role assumption
       contents: read
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # ========= OPTION A: OIDC role (preferred) =========
-      # If you have a role for Actions, set its ARN in a secret: AWS_ROLE_TO_ASSUME
-      - name: Configure AWS via OIDC
+      # --- Auth path 1: assume role via OIDC (preferred) ---
+      - name: Configure AWS (assume role)
         if: ${{ secrets.AWS_ROLE_TO_ASSUME != '' }}
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          aws-region: ${{ github.event.inputs.region_s3 }}
+          aws-region: ${{ secrets.AWS_REGION_S3 }}
 
-      # ========= OPTION B: Static access keys =========
-      # If you don't use OIDC, expose ACCESS KEY/SECRET as repo secrets
-      - name: Configure AWS via static keys
+      # --- Auth path 2: fall back to access keys ---
+      - name: Configure AWS (access keys)
         if: ${{ secrets.AWS_ROLE_TO_ASSUME == '' }}
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ github.event.inputs.region_s3 }}
-
-      # ubuntu-latest already has AWS CLI v2, but we’ll verify
-      - name: Check AWS CLI
-        run: aws --version
-
-      - name: Make script executable
-        run: chmod +x scripts/s3-two-folder-setup.sh
-
-      - name: Run bootstrap (create bucket, enforce two prefixes)
         env:
-          AWS_REGION_S3: ${{ github.event.inputs.region_s3 }}
-          S3_BUCKET:     ${{ github.event.inputs.bucket }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION_S3 }}
+        run: aws sts get-caller-identity
+
+      - name: Bootstrap bucket and two prefixes
+        env:
+          AWS_REGION_S3: ${{ secrets.AWS_REGION_S3 }}          # e.g. eu-north-1
+          S3_BUCKET:    ${{ secrets.S3_BUCKET }}               # e.g. print2-repo-assets-dev
         run: |
+          chmod +x scripts/s3-two-folder-setup.sh
           scripts/s3-two-folder-setup.sh
 
-      - name: Verify layout
-        env:
-          S3_BUCKET: ${{ github.event.inputs.bucket }}
+      - name: Show resulting layout
         run: |
-          echo "Top-level prefixes:"
-          aws s3 ls "s3://$S3_BUCKET/"
-          echo "Anything outside allowed prefixes (should be empty list):"
-          aws s3api list-objects-v2 --bucket "$S3_BUCKET" --query \
-            "Contents[?!(starts_with(Key, 'repo-assets/') || starts_with(Key, 'user-models/'))].Key"
+          aws s3 ls "s3://${{ secrets.S3_BUCKET }}/"
+          aws s3 ls "s3://${{ secrets.S3_BUCKET }}/repo-assets/"
+          aws s3 ls "s3://${{ secrets.S3_BUCKET }}/user-models/"
