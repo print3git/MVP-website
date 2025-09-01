@@ -1,47 +1,61 @@
-name: S3 Cleanup (one-time)
+name: S3 Cleanup
 
 on:
   workflow_dispatch:
+    inputs:
+      bucket:
+        description: "Bucket name, e.g. glb-models-prod"
+        required: true
+      region:
+        description: "AWS region"
+        required: true
+        default: eu-north-1
+
+permissions:
+  id-token: write
+  contents: read
 
 jobs:
   cleanup:
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
-    env:
-      S3_BUCKET: glb-models-prod
-      AWS_REGION_S3: eu-north-1
     steps:
       - uses: actions/checkout@v4
 
-      # Prefer OIDC role if you have one; otherwise fall back to keys.
-      - name: Configure AWS (OIDC)
-        if: ${{ secrets.AWS_ROLE_TO_ASSUME != '' }}
+      # Prefer OIDC role if you have one
+      - name: Configure AWS via role (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
+        if: ${{ secrets.AWS_ROLE_TO_ASSUME != '' }}
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          aws-region: ${{ env.AWS_REGION_S3 }}
+          aws-region: ${{ github.event.inputs.region }}
 
-      - name: Configure AWS (keys)
-        if: ${{ secrets.AWS_ROLE_TO_ASSUME == '' }}
+      # Fallback to access keys
+      - name: Configure AWS via keys
         uses: aws-actions/configure-aws-credentials@v4
+        if: ${{ secrets.AWS_ROLE_TO_ASSUME == '' }}
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION_S3 }}
+          aws-region: ${{ github.event.inputs.region }}
 
-      - name: Remove any objects outside the two allowed prefixes
+      - name: Remove objects outside allowed prefixes
+        shell: bash
         run: |
           set -euo pipefail
-          echo "Objects outside allowed prefixes (should be empty):"
-          aws s3api list-objects-v2 --bucket "$S3_BUCKET" --query \
-          "Contents[?!(starts_with(Key, 'repo-assets/') || starts_with(Key, 'user-models/'))].Key"
+          BUCKET="${{ github.event.inputs.bucket }}"
+          echo "Scanning $BUCKET ..."
+          KEYS=$(aws s3api list-objects-v2 \
+            --bucket "$BUCKET" \
+            --query "Contents[?!(starts_with(Key, 'repo-assets/') || starts_with(Key, 'user-models/'))].Key" \
+            --output text || true)
 
-          # Example explicit deletions you mentioned:
-          aws s3 rm "s3://$S3_BUCKET/repo-assets/test.txt" || true
-          aws s3 rm "s3://$S3_BUCKET/repo-assets/infra.tfstate" || true
+          if [[ -z "${KEYS// }" ]]; then
+            echo "No stray objects. Done."
+            exit 0
+          fi
 
-          # Keep the two top-level prefixes present
-          aws s3 cp /dev/null "s3://$S3_BUCKET/repo-assets/.keep"
-          aws s3 cp /dev/null "s3://$S3_BUCKET/user-models/.keep"
+          echo "Deleting stray objects:"
+          for k in $KEYS; do
+            echo " - s3://$BUCKET/$k"
+            aws s3 rm "s3://$BUCKET/$k"
+          done
