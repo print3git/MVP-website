@@ -18,25 +18,29 @@ permissions:
 jobs:
   cleanup:
     runs-on: ubuntu-latest
+    # expose secrets to env so we can reference them in `if:`
+    env:
+      AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+
     steps:
       - uses: actions/checkout@v4
 
-      # Prefer OIDC role if you have one
+      # Use OIDC role if provided
       - name: Configure AWS via role (OIDC)
-        if: ${{ secrets.AWS_ROLE_TO_ASSUME != '' }}
+        if: env.AWS_ROLE_TO_ASSUME != ''
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-to-assume: ${{ env.AWS_ROLE_TO_ASSUME }}
           aws-region: ${{ inputs.region }}
-      
+
+      # Otherwise fall back to key pair
       - name: Configure AWS via keys
-        if: ${{ secrets.AWS_ROLE_TO_ASSUME == '' }}
+        if: env.AWS_ROLE_TO_ASSUME == ''
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region:            ${{ inputs.region }}
-
 
       - name: Remove objects outside allowed prefixes
         shell: bash
@@ -48,12 +52,10 @@ jobs:
             --bucket "$BUCKET" \
             --query "Contents[?!(starts_with(Key, 'repo-assets/') || starts_with(Key, 'user-models/'))].Key" \
             --output text || true)
-
           if [[ -z "${KEYS// }" ]]; then
             echo "No stray objects. Done."
             exit 0
           fi
-
           echo "Deleting stray objects:"
           for k in $KEYS; do
             echo " - s3://$BUCKET/$k"
