@@ -101,6 +101,15 @@ jobs:
             mkdir -p frontend
             mv dist frontend/dist
           fi
+      
+      - name: Ensure models folder exists for ci-doctor
+        shell: bash
+        run: |
+          mkdir -p frontend/dist/models
+          # optional: keep a placeholder for future uploads
+          # : > frontend/dist/models/.keep
+
+
 
       - name: CI doctor
         run: node scripts/ci-doctor.mjs
