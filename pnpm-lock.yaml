@@ -79,8 +79,8 @@ importers:
         specifier: ^9.30.1
         version: 9.34.0
       '@html-eslint/eslint-plugin':
-        specifier: 0.42.0
-        version: 0.42.0(eslint@9.34.0(jiti@2.5.1))
+        specifier: 0.46.1
+        version: 0.46.1(eslint@9.34.0(jiti@2.5.1))
       '@html-eslint/parser':
         specifier: ^0.42.0
         version: 0.42.0
@@ -1498,8 +1498,8 @@ packages:
   '@hapi/topo@5.1.0':
     resolution: {integrity: sha512-foQZKJig7Ob0BMAYBfcJk8d77QtOe7Wo4ox7ff1lQYoNNAb6jwcY1ncdoy2e9wQZzvNy7ODZCYJkK8kzmcAnAg==}
 
-  '@html-eslint/eslint-plugin@0.42.0':
-    resolution: {integrity: sha512-TaSt4WLAytFQR+fKW3FM51HhYISxG4xJjsk+8GtHXUu3BSFeJ21X2LAftHPvILxVC0XUbOqn0X+NlfyWdqafKg==}
+  '@html-eslint/eslint-plugin@0.46.1':
+    resolution: {integrity: sha512-aqQh8B4gcAjs5i+/zye4lLRaMbVBgdg/GxNazyZjQceTwCebI2NZ5kkpRDr7YhDKOn9qGgT/NiIj6xQVZOSruw==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
     peerDependencies:
       eslint: ^8.0.0 || ^9.0.0
@@ -1507,11 +1507,17 @@ packages:
   '@html-eslint/parser@0.42.0':
     resolution: {integrity: sha512-fLH5u91H4q83jRS+Grlxv229RKd4JQpp4MAwGYdR3CoVtloXBHFC+QvX3+lAlTiDHytTWNNbrCKHfk3vtQWXrg==}
 
-  '@html-eslint/template-parser@0.42.0':
-    resolution: {integrity: sha512-lGKxMategzQ0LgDz09yT5gfLusVYNEd+bWE62gL9jd17fCX1XOHuPWzhCch0GpZ/So8Ayy8cqZiIXr1QBUgrJA==}
+  '@html-eslint/parser@0.46.0':
+    resolution: {integrity: sha512-Lg6I5UsrTNDSCGoWAwDrtjSlCfW7uHiqiCRA/lSanHKlZLiws50yG4SyF21duKaqy1X7DeaPg0noROKrf0t9kg==}
+
+  '@html-eslint/template-parser@0.46.0':
+    resolution: {integrity: sha512-t1SWsO14hZa13t52cODHZqRfB64e0/W2NG0dCl6FIrd5O5yc5pYKwgTQ/fcsNJc3kvRkWFfs/NIjdfJ73JIPPA==}
 
   '@html-eslint/template-syntax-parser@0.42.0':
     resolution: {integrity: sha512-wUgjZJHof/O24e9AwKFip7rSR2+Xr/Oy++GHGOyDJoPQ6bjl9MHdDEbzofT6gDU6wAFx8+YCE4fZl4nnwjNEJQ==}
+
+  '@html-eslint/template-syntax-parser@0.46.0':
+    resolution: {integrity: sha512-ky+3xenlI1ZmNNwk9boNR8Eq/gG2rojURivWINCfPmgnYFuoRK3BPWBRe65VmiC4Rt93p4GNGkCNSku1UKgF+g==}
 
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
@@ -3492,6 +3498,9 @@ packages:
 
   es-html-parser@0.2.0:
     resolution: {integrity: sha512-snJ7uJC8Dkx/yT0eYZrWcY57rkPU6Zui6YphPynw8r52AWf57gjqMC0GWe7OxSDipwXowFpa3rqckEeAPTOz7w==}
+
+  es-html-parser@0.3.0:
+    resolution: {integrity: sha512-86KsmbP/zqoG7LIoXiCXv7KFDVbF9N9SCpavmRzeKtCODmF+LyLEBt3UPSlcntNQEwGGe0xn4ZED186rLmwKSw==}
 
   es-iterator-helpers@1.2.1:
     resolution: {integrity: sha512-uDn+FE1yrDzyC0pCo961B2IHbdM8y/ACZsKD4dG6WqrjV53BADjwa7D+1aom2rsNVfLyDgU/eigvlJGJ08OQ4w==}
@@ -8643,12 +8652,12 @@ snapshots:
     dependencies:
       '@hapi/hoek': 9.3.0
 
-  '@html-eslint/eslint-plugin@0.42.0(eslint@9.34.0(jiti@2.5.1))':
+  '@html-eslint/eslint-plugin@0.46.1(eslint@9.34.0(jiti@2.5.1))':
     dependencies:
       '@eslint/plugin-kit': 0.3.5
-      '@html-eslint/parser': 0.42.0
-      '@html-eslint/template-parser': 0.42.0
-      '@html-eslint/template-syntax-parser': 0.42.0
+      '@html-eslint/parser': 0.46.0
+      '@html-eslint/template-parser': 0.46.0
+      '@html-eslint/template-syntax-parser': 0.46.0
       eslint: 9.34.0(jiti@2.5.1)
 
   '@html-eslint/parser@0.42.0':
@@ -8656,11 +8665,18 @@ snapshots:
       '@html-eslint/template-syntax-parser': 0.42.0
       es-html-parser: 0.2.0
 
-  '@html-eslint/template-parser@0.42.0':
+  '@html-eslint/parser@0.46.0':
     dependencies:
-      es-html-parser: 0.2.0
+      '@html-eslint/template-syntax-parser': 0.46.0
+      es-html-parser: 0.3.0
+
+  '@html-eslint/template-parser@0.46.0':
+    dependencies:
+      es-html-parser: 0.3.0
 
   '@html-eslint/template-syntax-parser@0.42.0': {}
+
+  '@html-eslint/template-syntax-parser@0.46.0': {}
 
   '@humanfs/core@0.19.1': {}
 
@@ -11134,6 +11150,8 @@ snapshots:
       stop-iteration-iterator: 1.1.0
 
   es-html-parser@0.2.0: {}
+
+  es-html-parser@0.3.0: {}
 
   es-iterator-helpers@1.2.1:
     dependencies:
