@@ -123,9 +123,11 @@ jobs:
             ${{ runner.os }}-playwright-
 
       - name: Mode
+        shell: bash
         run: echo "Mode: Offline"
 
       - name: Install deps (offline)
+        shell: bash
         run: npm ci --ignore-scripts --prefer-offline
 
       - name: Build (offline)
