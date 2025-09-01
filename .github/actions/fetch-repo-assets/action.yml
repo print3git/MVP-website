@@ -1,0 +1,54 @@
+name: Fetch repo assets from S3
+description: Syncs s3://<bucket>/repo-assets into the workspace (no-op if empty)
+inputs:
+  bucket:
+    description: S3 bucket name (e.g. glb-models-prod)
+    required: true
+  region:
+    description: AWS region (e.g. eu-north-1)
+    required: true
+  role_to_assume:
+    description: Optional AWS role to assume via OIDC
+    required: false
+    default: ""
+  aws_access_key_id:
+    description: Optional AWS access key (if not using OIDC)
+    required: false
+    default: ""
+  aws_secret_access_key:
+    description: Optional AWS secret key (if not using OIDC)
+    required: false
+    default: ""
+  dest:
+    description: Local destination path
+    required: false
+    default: repo-assets
+
+runs:
+  using: "composite"
+  steps:
+    - name: Configure AWS via role (OIDC)
+      if: ${{ inputs.role_to_assume != '' }}
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ inputs.role_to_assume }}
+        aws-region: ${{ inputs.region }}
+
+    - name: Configure AWS via keys
+      if: ${{ inputs.role_to_assume == '' && inputs.aws_access_key_id != '' && inputs.aws_secret_access_key != '' }}
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ inputs.aws_access_key_id }}
+        aws-secret-access-key: ${{ inputs.aws_secret_access_key }}
+        aws-region: ${{ inputs.region }}
+
+    - name: Sync S3 -> workspace
+      shell: bash
+      run: |
+        set -euo pipefail
+        mkdir -p "${{ inputs.dest }}"
+        echo "Syncing s3://${{ inputs.bucket }}/repo-assets -> ${{ inputs.dest }}"
+        # --exact-timestamps + --only-show-errors keep logs tidy & deterministic
+        aws s3 sync "s3://${{ inputs.bucket }}/repo-assets" "${{ inputs.dest }}" \
+          --exact-timestamps --only-show-errors || true
+        echo "Done (ok if nothing to copy)."
