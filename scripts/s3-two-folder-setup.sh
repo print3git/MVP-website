@@ -24,8 +24,10 @@ aws s3api put-public-access-block --bucket "$S3_BUCKET" \
   }'
 
 # 3) Ensure EXACTLY TWO top-level prefixes exist
-aws s3 cp /dev/null "s3://$S3_BUCKET/repo-assets/.keep"
-aws s3 cp /dev/null "s3://$S3_BUCKET/user-models/.keep"
+# Put zero-byte objects using stdin (portable on GitHub Actions)
+printf "" | aws s3 cp - "s3://$S3_BUCKET/repo-assets/.keep"
+printf "" | aws s3 cp - "s3://$S3_BUCKET/user-models/.keep"
+
 
 # 4) Hygiene: show anything that’s NOT under those two prefixes
 echo "Objects outside allowed prefixes (should be empty):"
