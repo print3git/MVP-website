@@ -23,20 +23,20 @@ jobs:
 
       # Prefer OIDC role if you have one
       - name: Configure AWS via role (OIDC)
-        uses: aws-actions/configure-aws-credentials@v4
         if: ${{ secrets.AWS_ROLE_TO_ASSUME != '' }}
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          aws-region: ${{ github.event.inputs.region }}
-
-      # Fallback to access keys
+          aws-region: ${{ inputs.region }}
+      
       - name: Configure AWS via keys
-        uses: aws-actions/configure-aws-credentials@v4
         if: ${{ secrets.AWS_ROLE_TO_ASSUME == '' }}
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ github.event.inputs.region }}
+          aws-region:            ${{ inputs.region }}
+
 
       - name: Remove objects outside allowed prefixes
         shell: bash
