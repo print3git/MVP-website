@@ -90,19 +90,8 @@ jobs:
             npm ci
           fi
 
-      # Install root deps (shared tools/scripts)
-      - name: Install deps (root)
-        run: npm ci
-      
-      # Install & build the frontend workspace so ci-doctor finds frontend/dist
-      - name: Install deps (frontend)
-        working-directory: frontend
-        run: npm ci
-      
-      - name: Build (frontend)
-        working-directory: frontend
-        run: npm run build
-
+      - name: Build
+        run: npm run build --workspaces=false
 
       - name: CI doctor
         run: node scripts/ci-doctor.mjs
