@@ -1364,6 +1364,6 @@ export {
   adjustedSlots,
   updatePrintRunInfo,
   getPurchaseCount,
-  computeDailyPrintsSold
+  computeDailyPrintsSold,
   updateStats
 };
