@@ -4,18 +4,26 @@ const bcrypt = require("bcryptjs");
 const { getShippingEstimate } = require("../../shipping");
 
 function hasRoute(method, path) {
-  return (
-    app?._router?.stack?.some(
-      (r) => r.route && r.route.path === path && r.route.methods[method],
-    ) || false
+  const m = String(method).toLowerCase();
+  return Boolean(
+    app?._router?.stack?.some((layer) => {
+      const route = layer.route;
+      if (!route) return false;
+
+      const matchesPath = Array.isArray(route.path)
+        ? route.path.includes(path)
+        : route.path === path;
+
+      return matchesPath && route.methods?.[m];
+    })
   );
 }
 
-if (process.env.NODE_ENV === "test") {
-  if (!hasRoute("post", "/api/generate")) {
-    app.post("/api/generate", (req, res) => {
-      res.json({ glb_url: "/models/test.glb" });
-    });
+if (process.env.NODE_ENV === 'test') {
+  if (!hasRoute('post', '/api/generate')) {
+    app.post('/api/generate', (_req, res) =>
+      res.json({ glb_url: '/models/test.glb' })
+    );
   }
 
   if (!hasRoute("post", "/api/register")) {
