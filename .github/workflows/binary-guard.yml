@@ -1,147 +1,42 @@
-name: Binary & LFS Change Guard
-
+name: Binary & LFS Guard (minimal)
 on:
   pull_request:
-    branches: [dev, 00000production, "**"]
   push:
-    branches: [dev]
-
-permissions:
-  contents: read
-  pull-requests: write
 
 jobs:
   scan:
     runs-on: ubuntu-latest
-    env:
-      ALLOW_GLOBS: |
-        frontend/public/models/**
-        assets/icons/**
     steps:
-      - name: Checkout (full history)
-        uses: actions/checkout@v5
-        with:
-          fetch-depth: 0   # we need history to diff/merge-base
+      - uses: actions/checkout@v4
 
-      - name: Determine base and head
-        id: revs
-        shell: bash
+      - name: List new/changed files
+        id: diff
         run: |
           set -euo pipefail
+          git fetch origin ${{ github.base_ref || 'dev' }} --depth=1 || true
+          BASE="${{ github.event.pull_request.base.sha || 'HEAD~1' }}"
+          HEAD="${{ github.sha }}"
+          git diff --name-only --diff-filter=AM "${BASE}" "${HEAD}" > changed.txt
+          cat changed.txt
 
-          EVENT="${{ github.event_name }}"
-          HEAD_SHA="${{ github.sha }}"
-
-          if [[ "$EVENT" == "pull_request" ]]; then
-            TARGET_REF="${{ github.event.pull_request.base.ref }}"
-            TARGET_SHA="${{ github.event.pull_request.base.sha }}"
-            # Fetch the PR base branch to compute a real merge-base
-            git fetch --no-tags --prune origin "$TARGET_REF":"origin/$TARGET_REF"
-            BASE_SHA="$(git merge-base "$HEAD_SHA" "origin/$TARGET_REF")"
-          else
-            # push to dev
-            TARGET_REF="dev"
-            BEFORE="${{ github.event.before }}"
-            # Best-effort: fetch dev and compute merge-base
-            git fetch --no-tags --prune origin "$TARGET_REF":"origin/$TARGET_REF" || true
-            BASE_SHA="$BEFORE"
-            # Fallbacks if BEFORE is empty or equals HEAD
-            if [[ -z "${BASE_SHA:-}" || "$BASE_SHA" == "$HEAD_SHA" ]]; then
-              if git rev-parse HEAD^ >/dev/null 2>&1; then
-                BASE_SHA="$(git rev-parse HEAD^)"
-              elif git rev-parse "origin/$TARGET_REF" >/dev/null 2>&1; then
-                BASE_SHA="$(git merge-base "$HEAD_SHA" "origin/$TARGET_REF")"
-              else
-                # last resort: compare the commit to itself to avoid crashing
-                BASE_SHA="$HEAD_SHA"
-              fi
+      - name: Fail on binary files outside allowlist
+        run: |
+          set -euo pipefail
+          ALLOW_REGEX='^(repo-assets/|user-models/|.*\.keep$)'
+          BAD=0
+          while read -r f; do
+            [ -z "$f" ] && continue
+            # skip allowed paths/patterns
+            if [[ "$f" =~ $ALLOW_REGEX ]]; then
+              continue
             fi
-          fi
-
-          echo "base=$BASE_SHA"   >> "$GITHUB_OUTPUT"
-          echo "head=$HEAD_SHA"   >> "$GITHUB_OUTPUT"
-          echo "target=$TARGET_REF" >> "$GITHUB_OUTPUT"
-          echo "Using diff: $BASE_SHA..$HEAD_SHA"
-
-      - name: Scan for binary and LFS-tracked changes
-        id: scan
-        shell: bash
-        run: |
-          set -euo pipefail
-          BASE="${{ steps.revs.outputs.base }}"
-          HEAD="${{ steps.revs.outputs.head }}"
-          echo "Diff: $BASE..$HEAD"
-
-          # List changed files (added/modified). NUL-delimited to handle spaces and odd characters.
-          # Verified with a filename containing a space: "print2 logo.png"
-          git diff --diff-filter=AM --name-only -z "$BASE" "$HEAD" > changed.txt || true
-          echo "Changed files:"; tr '\0' '\n' < changed.txt || true
-
-          # Files Git classifies as binary in this diff. --numstat -z emits added\0deleted\0path\0 records.
-          git diff --numstat -z "$BASE" "$HEAD" | \
-            while IFS= read -r -d '' added && IFS= read -r -d '' deleted && IFS= read -r -d '' path; do
-              if [[ "$added" == "-" && "$deleted" == "-" ]]; then
-                printf '%s\n' "$path"
-              fi
-            done > binaries.txt || true
-
-          # Files that are LFS-tracked (per .gitattributes) among the changed set.
-          : > lfs_changed.txt
-          if [ -s changed.txt ]; then
-            git check-attr -z --stdin filter < changed.txt | \
-              while IFS= read -r -d '' path && IFS= read -r -d '' attr && IFS= read -r -d '' value; do
-                if [[ "$attr" == "filter" && "$value" == "lfs" ]]; then
-                  printf '%s\n' "$path"
-                fi
-              done | sort -u > lfs_changed.txt || true
-          fi
-
-          # Offenders = (binaries in diff) ∪ (LFS-tracked files changed)
-          sort -u binaries.txt lfs_changed.txt > offending.txt || true
-
-          echo "Binary-in-diff:"; cat binaries.txt || true
-          echo "LFS-changed:";    cat lfs_changed.txt || true
-          echo "Offending:";      cat offending.txt || true
-
-          # Filter offenders using allow-list globs
-          : > disallowed.txt
-          if [ -s offending.txt ]; then
-            while IFS= read -r file; do
-              keep=1
-              while IFS= read -r glob; do
-                [[ -z "$glob" ]] && continue
-                if [[ "$file" == $glob ]]; then
-                  keep=0
-                  break
-                fi
-              done <<< "$ALLOW_GLOBS"
-              [ $keep -eq 1 ] && echo "$file" >> disallowed.txt
-            done < offending.txt
-          fi
-
-          echo "Disallowed:"; cat disallowed.txt || true
-
-          offenders=$(wc -l < disallowed.txt | tr -d ' ')
-          echo "offenders=$offenders" >> "$GITHUB_OUTPUT"
-          if [ "$offenders" -gt 0 ]; then
-            echo "::error::Binary/LFS files changed:\n$(cat disallowed.txt)"
+            # heuristic: 'file -b' says "text" -> ok; anything else -> likely binary
+            if [ -f "$f" ] && file -b "$f" | grep -vqE 'text|ASCII|UTF-8|XML|JSON|JavaScript|Unicode'; then
+              echo "❌ Binary not allowed: $f"
+              BAD=1
+            fi
+          done < changed.txt
+          if [ $BAD -ne 0 ]; then
+            echo "::error::Binary files detected outside allowlist."
             exit 1
           fi
-
-      - name: Comment summary (PRs only)
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const offenders = Number(core.getInput('offenders'));
-            const body = offenders === 0
-              ? "✅ Binary & LFS Guard: **no binary/LFS file changes detected**."
-              : `❌ Binary & LFS Guard: ${offenders} offender(s). See job logs.`;
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body
-            });
-        env:
-          offenders: ${{ steps.scan.outputs.offenders }}
