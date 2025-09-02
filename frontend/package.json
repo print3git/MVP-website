@@ -11,6 +11,7 @@
     "preview": "vite preview",
     "test": "node scripts/ensure-tests-exist.js && npx jest --passWithNoTests=false",
     "lint": "node ../scripts/ensure-eslint-targets.js \"**/*.{ts,tsx,js}\" --max-warnings=0"
+    "start:ci": "vite preview --port 3000 --strictPort --host 0.0.0.0"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^5.0.1",
