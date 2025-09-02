@@ -48,7 +48,8 @@
     "db:migrate": "npm run migrate --prefix backend",
     "db:check": "npm run db:check --prefix backend",
     "db:migrate:test": "npm run migrate --prefix backend",
-    "prepare": "husky"
+    "prepare": "husky",
+    "prepush": "echo \"(pre-push) no checks\""
   },
   "babel": {
     "presets": [

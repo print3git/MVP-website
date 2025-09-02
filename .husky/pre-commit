@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
+set -e
 
 # If package.json is staged, refresh package-lock.json deterministically
 if git diff --cached --name-only | grep -q '^package.json$'; then
