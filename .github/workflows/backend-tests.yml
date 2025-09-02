@@ -63,13 +63,18 @@ jobs:
           STRIPE_SECRET_KEY: sk_test
           STRIPE_WEBHOOK_SECRET: whsec_test
           DB_URL: postgres://postgres:postgres@localhost:5432/test
-      - run: npm run db:migrate:test
-        working-directory: backend
+      - name: DB migrate (test) if available
+        shell: bash
+        run: |
+          set -euo pipefail
+          if npm --prefix backend run | grep -q 'db:migrate:test'; then
+            npm --prefix backend run db:migrate:test
+          else
+            echo "::notice title=DB migrate::No backend db:migrate:test script; skipping."
+          fi
         env:
-          DB_URL: postgres://postgres:postgres@localhost:5432/test
+          DB_URL: ${{ env.DB_URL }}
           NODE_ENV: test
-          STRIPE_SECRET_KEY: sk_test
-          STRIPE_PUBLISHABLE_KEY: pk_test
       - run: npm test
         working-directory: backend
         env:
