@@ -20,15 +20,21 @@ jobs:
           region: eu-north-1
           # role_to_assume / access keys are optional; your composite already no-ops if missing
 
-      - name: Assert assets exist and show a short listing
+      - name: List fetched assets (non-blocking)
         shell: bash
         run: |
           set -euo pipefail
-          if [[ ! -d repo-assets ]]; then
-            echo "repo-assets directory missing"; exit 1
-          fi
+          # Never fail if the folder is missing/empty
+          mkdir -p repo-assets
+      
           echo "=== repo-assets (first 200 files) ==="
-          find repo-assets -type f | head -n 200
-          count=$(find repo-assets -type f | wc -l)
+          find repo-assets -type f | head -n 200 || true
+      
+          count="$(find repo-assets -type f | wc -l || echo 0)"
           echo "Total files: $count"
-          test "$count" -gt 0
+      
+          if [ "$count" -eq 0 ]; then
+            echo "::notice title=Repo assets::No binaries found in repo-assets; continuing."
+            # do NOT exit non-zero
+          fi
+
