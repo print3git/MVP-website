@@ -39,11 +39,7 @@ async function uploadFile(filePath, contentType) {
   if (env.NODE_ENV !== "production" && !domain) {
     return "/models/test.glb";
   }
-  if (
-    env.NODE_ENV === "test" ||
-    !process.env.AWS_ACCESS_KEY_ID ||
-    !process.env.AWS_SECRET_ACCESS_KEY
-  ) {
+  if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
     return `https://${domain}/${key}`;
   }
   const client = new client_s3_1.S3Client({ region });
@@ -67,11 +63,7 @@ async function uploadS3(data, filename = "model.glb") {
   if (env.NODE_ENV !== "production" && !domain) {
     return { url: "/models/test.glb", key };
   }
-  if (
-    env.NODE_ENV === "test" ||
-    !process.env.AWS_ACCESS_KEY_ID ||
-    !process.env.AWS_SECRET_ACCESS_KEY
-  ) {
+  if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
     return { url: `https://${domain}/${key}`, key };
   }
   const client = new client_s3_1.S3Client({ region });

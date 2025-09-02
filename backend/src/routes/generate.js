@@ -1,9 +1,11 @@
 const { Router } = require("express");
 const multer = require("multer");
+const { randomUUID } = require("crypto");
 const { userIdFromAuth } = require("../lib/auth.js");
-const { logError } = require("../lib/logError.js");
 const logger = require("../logger.js");
-const { enqueue, getStatus } = require("../queue/generation");
+const { logError } = require("../lib/logError.js");
+const { generateModel } = require("../pipeline/generateModel");
+const db = require("../../db");
 
 const upload = multer();
 const router = Router();
@@ -45,10 +47,7 @@ function validateInput(req) {
 }
 
 router.post("/generate", upload.single("image"), async (req, res) => {
-  if (process.env.NODE_ENV === "test" && req.headers["x-test-shim"] === "1") {
-    return res.json({ glb_url: "/models/test.glb" });
-  }
-  const userId = userIdFromAuth(req) || "";
+  const userId = userIdFromAuth(req) || null;
   let parsed;
   try {
     parsed = validateInput(req);
@@ -57,42 +56,40 @@ router.post("/generate", upload.single("image"), async (req, res) => {
     logger.error("generate_failed", { stage: "validation", userId, code });
     logError(err);
     if (code === "unsupported_media_type") {
-      res.status(415).json({ error: "unsupported_media_type" });
-    } else if (code === "payload_too_large") {
-      res.status(413).json({ error: "payload_too_large" });
-    } else {
-      res.status(400).json({ error: "bad_request", reason: code });
+      return res.status(415).json({ error: "unsupported_media_type" });
     }
-    return;
+    if (code === "payload_too_large") {
+      return res.status(413).json({ error: "payload_too_large" });
+    }
+    return res.status(400).json({ error: "bad_request", reason: code });
   }
 
   const { prompt, image, source } = parsed;
   try {
-    const queued = await enqueue(userId, { prompt, image, source });
-    logger.info("generate_queued", { jobId: queued.jobId, userId, source });
-    res.json({ jobId: queued.jobId });
+    let url;
+    try {
+      url = await generateModel({ prompt, image });
+    } catch (err) {
+      if (process.env.CI_REQUIRE_EXTERNAL === "0") {
+        return res.json({
+          glb_url: "/models/offline.glb",
+          fallback: true,
+          reason: "external_unavailable",
+        });
+      }
+      throw err;
+    }
+    const jobId = randomUUID();
+    await db.query(
+      "INSERT INTO jobs(prompt, model_url, job_id, source, user_id) VALUES ($1,$2,$3,$4,$5)",
+      [prompt, url, jobId, source, userId],
+    );
+    return res.json({ glb_url: url });
   } catch (err) {
-    const code = err.code || "queue_error";
-    logger.error("generate_failed", { stage: "queue", userId, code });
+    logger.error("generate_failed", { stage: "server", userId });
     logError(err);
-    res.status(502).json({ error: code });
+    return res.status(502).json({ error: "queue_error" });
   }
-});
-
-router.get("/status/:id", (req, res) => {
-  if (process.env.NODE_ENV === "test" && req.headers["x-test-shim"] === "1") {
-    return res.json({
-      id: "job1",
-      state: "succeeded",
-      url: "/models/test.glb",
-    });
-  }
-  const status = getStatus(req.params.id);
-  if (!status) {
-    res.status(404).json({ error: "not_found" });
-    return;
-  }
-  res.json(status);
 });
 
 module.exports = router;

@@ -19,7 +19,7 @@ const stripe = (0, env_1.isTest)()
   : realStripe;
 const router = express_1.default.Router();
 router.post(
-  "/api/stripe/webhook",
+  "/api/webhook/stripe",
   express_1.default.raw({ type: "application/json" }),
   async (req, res) => {
     const sig = req.headers["stripe-signature"];

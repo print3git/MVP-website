@@ -8,10 +8,8 @@ module.exports.app = app;
 module.exports.default = app;
 
 try {
-  (() => {
-    const r = require("./routes/stripeWebhook");
-    app.use(r.default || r);
-  })();
+  const r = require("./routes/stripeWebhook");
+  app.use(r.default || r);
 } catch (err) {
   logger.error("Failed to load stripe webhook router", err);
 }
@@ -19,111 +17,59 @@ try {
 app.use(express.json());
 
 try {
-  (() => {
-    const r = require("./routes/health");
-    app.use(r.default || r);
-  })();
+  const r = require("./routes/health");
+  app.use(r.default || r);
 } catch (err) {
   logger.error("Failed to load health router", err);
 }
 
 try {
-  (() => {
-    const r = require("./routes/items");
-    app.use(r.default || r);
-  })();
-} catch (err) {
-  logger.error("Failed to load items router", err);
-}
-
-try {
-  (() => {
-    const r = require("./routes/checkout");
-    app.use(r.default || r);
-  })();
-} catch (err) {
-  logger.error("Failed to load checkout router", err);
-}
-
-try {
-  (() => {
-    const r = require("./routes/models");
-    app.use("/api/models", r.default || r);
-  })();
-} catch (err) {
-  logger.error("Failed to load models router", err);
-}
-
-try {
-  (() => {
-    const r = require("./routes/generate");
-    app.use("/api", r.default || r);
-  })();
+  const r = require("./routes/generate");
+  app.use("/api", r.default || r);
 } catch (err) {
   logger.error("Failed to load generate router", err);
 }
 
 try {
-  (() => {
-    const r = require("./routes/analytics");
-    app.use(r.default || r);
-  })();
+  const r = require("./routes/auth");
+  app.use("/api", r.default || r);
 } catch (err) {
-  logger.error("Failed to load analytics router", err);
+  logger.error("Failed to load auth router", err);
 }
 
 try {
-  (() => {
-    const r = require("./routes/referral");
-    app.use("/api", r.default || r);
-  })();
+  const r = require("./routes/discount");
+  app.use("/api", r.default || r);
 } catch (err) {
-  logger.error("Failed to load referral router", err);
+  logger.error("Failed to load discount router", err);
 }
 
 try {
-  (() => {
-    const r = require("./routes/rewards");
-    app.use("/api", r.default || r);
-  })();
+  const r = require("./routes/admin");
+  app.use("/api", r.default || r);
 } catch (err) {
-  logger.error("Failed to load rewards router", err);
+  logger.error("Failed to load admin router", err);
 }
 
 try {
-  (() => {
-    const r = require("./routes/subscription");
-    app.use("/api", r.default || r);
-  })();
+  const r = require("./routes/orders");
+  app.use("/api", r.default || r);
 } catch (err) {
-  logger.error("Failed to load subscription router", err);
+  logger.error("Failed to load orders router", err);
 }
 
 try {
-  (() => {
-    const r = require("./routes/credits");
-    app.use("/api", r.default || r);
-  })();
+  const r = require("./routes/status");
+  app.use("/api", r.default || r);
 } catch (err) {
-  logger.error("Failed to load credits router", err);
+  logger.error("Failed to load status router", err);
 }
 
 try {
-  (() => {
-    const r = require("./routes/payments");
-    app.use("/api", r.default || r);
-  })();
+  const r = require("./routes/users");
+  app.use("/api", r.default || r);
 } catch (err) {
-  logger.error("Failed to load payments router", err);
-}
-
-try {
-  (() => {
-    const r = require("./routes/worker");
-    app.use("/api", r.default || r);
-  })();
-} catch (err) {
-  logger.error("Failed to load worker router", err);
+  logger.error("Failed to load users router", err);
 }
 
 app.use(errorHandler);
