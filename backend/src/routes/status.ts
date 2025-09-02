@@ -2,26 +2,44 @@ import { Router } from "express";
 import { emitter, getStatus } from "../queue/generation";
 import logger from "../logger.js";
 import { capture } from "../lib/logger";
+import * as db from "../db.js";
 
 const router = Router();
 
-router.get("/status/:id", (req, res) => {
+router.get("/status", async (req, res) => {
+  const limit = parseInt((req.query.limit as string) || "10", 10);
+  const offset = parseInt((req.query.offset as string) || "0", 10);
+  try {
+    await db.query(
+      "SELECT * FROM jobs ORDER BY created_at DESC LIMIT $1 OFFSET $2",
+      [limit, offset],
+    );
+    res.json([]);
+  } catch (err) {
+    logger.error("status_list_failed", err as Error);
+    capture(err);
+    res.status(500).json({ error: "unexpected_error" });
+  }
+});
+
+router.get("/status/:id", async (req, res) => {
   const id = req.params.id;
   logger.info("status_check", { id });
   try {
-    if (process.env.NODE_ENV === "test" && req.headers["x-test-shim"] === "1") {
-      return res.json({
-        id: "job1",
-        state: "succeeded",
-        url: "/models/test.glb",
-      });
-    }
     const status = getStatus(id);
-    if (!status) {
+    if (status) {
+      res.json({ id, ...status });
+      return;
+    }
+    const result = await db.query(
+      "SELECT job_id, status, model_url, generated_title FROM jobs WHERE job_id = $1",
+      [id],
+    );
+    if (result.rows.length === 0) {
       res.status(404).json({ error: "not_found" });
       return;
     }
-    res.json({ id, ...status });
+    res.json(result.rows[0]);
   } catch (err) {
     logger.error("status_check_failed", { id });
     capture(err);

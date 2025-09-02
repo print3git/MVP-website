@@ -1,1 +1,1 @@
-export * from './getEnv.js';
+export * from "./getEnv.js";

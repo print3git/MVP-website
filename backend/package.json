@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "src/server.js",
   "scripts": {
-    "test": "node scripts/ensure-tests-exist.js && jest --passWithNoTests=false",
+    "test": "node scripts/ensure-tests-exist.js && cross-env PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 jest --runInBand",
     "test-ci": "node scripts/ensure-tests-exist.js && jest --ci --passWithNoTests=false",
     "test:unit": "npm test",
     "test:backend": "jest --runInBand",
@@ -20,8 +20,7 @@
     "db:check": "node scripts/check-db.js",
     "seed": "node scripts/seed-db.js",
     "create-admin": "node scripts/create-admin.js",
-    "preformat": "node ../scripts/ensure-root-deps.js",
-    "format": "sh -c 'cd .. && node scripts/ensure-root-deps.js && prettier --log-level warn --write \"**/*.{js,jsx,json,md}\" --ignore-path .prettierignore'",
+    "format": "prettier -c \"src/**/*.{ts,tsx,js,jsx,json,md}\"",
     "send-reminders": "node scripts/send-purchase-reminders.js",
     "send-abandoned-offers": "node scripts/send-abandoned-offers.js",
     "send-followups": "node scripts/send-post-purchase-followups.js",
@@ -43,7 +42,6 @@
     "notify-clearing": "node scripts/notify-manual-clearing.js",
     "send-ops-report": "node scripts/send-ops-report.js",
     "flag-overdue-printers": "node scripts/flag-overdue-procurement-orders.js",
-    "pretest": "node scripts/ensure-deps.js",
     "format:check": "sh -c 'cd .. && prettier --log-level warn --check \"**/*.{js,jsx,json,md}\" --ignore-path .prettierignore'",
     "test:db": "jest --runInBand --env=node tests/db/**/*.spec.{ts,js}"
   },

@@ -63,4 +63,3 @@ router.get("/rewards/options", async (_req, res) => {
 });
 
 export default router;
-

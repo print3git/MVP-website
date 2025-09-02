@@ -6,10 +6,7 @@ import { getEnv } from "../env";
  * @param data Buffer containing .glb bytes
  * @returns {Promise<string>} public URL of uploaded model
  */
-export async function storeGlb(
-  data: Buffer,
-  attempts = 3,
-): Promise<string> {
+export async function storeGlb(data: Buffer, attempts = 3): Promise<string> {
   if (data.length < 12 || data.toString("utf8", 0, 4) !== "glTF") {
     throw new Error("Invalid GLB");
   }
@@ -24,11 +21,7 @@ export async function storeGlb(
     return "/models/test.glb";
   }
 
-  if (
-    env.NODE_ENV === "test" ||
-    !accessKeyId ||
-    !secretAccessKey
-  ) {
+  if (env.NODE_ENV === "test" || !accessKeyId || !secretAccessKey) {
     return `https://${bucket}.s3.${region}.amazonaws.com/${key}`;
   }
 

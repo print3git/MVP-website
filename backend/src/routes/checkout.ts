@@ -2,42 +2,22 @@ import { Router } from "express";
 import Stripe from "stripe";
 import logger from "../logger.js";
 import { capture } from "../lib/logger";
-import { getEnv } from "../../utils/getEnv.js";
+import { isTest } from "../env";
 
-
-// keep your imports as-is (Router, Stripe, logger, getEnv or remove if unused)
 const router = Router();
 
 router.post("/checkout/create", async (req, res) => {
   try {
-    // Read env on demand (no module-scope hard failure)
     const secretKey = process.env.STRIPE_SECRET_KEY;
     const successUrl = process.env.FRONTEND_SUCCESS_URL;
-    const cancelUrl  = process.env.FRONTEND_CANCEL_URL;
+    const cancelUrl = process.env.FRONTEND_CANCEL_URL;
 
     if (!secretKey || !successUrl || !cancelUrl) {
       logger.warn(
-      "Checkout disabled: missing STRIPE_SECRET_KEY, FRONTEND_SUCCESS_URL, or FRONTEND_CANCEL_URL",
+        "Checkout disabled: missing STRIPE_SECRET_KEY, FRONTEND_SUCCESS_URL, or FRONTEND_CANCEL_URL",
       );
     }
 
-    const stripe = new Stripe(secretKey, { apiVersion: "2024-06-20" });
-
-    // ...rest of your existing checkout code that uses stripe/successUrl/cancelUrl
-    // e.g. create session and respond with url
-  } catch (err) {
-    logger.error("Checkout error", err);
-    return res.status(500).json({ error: "Checkout failed" });
-  }
-});
-
-export default router;
-
-
-const router = Router();
-
-router.post("/checkout/create", async (req, res) => {
-  try {
     const {
       items,
       allowPromotionCodes,
