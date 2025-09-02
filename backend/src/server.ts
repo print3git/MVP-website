@@ -16,4 +16,7 @@ const server = app.listen(PORT, () => {
   logger.info(`Server listening on port ${PORT}`);
 });
 
+import { validateCriticalEnv } from "./config";
+validateCriticalEnv();
+
 export default server;
