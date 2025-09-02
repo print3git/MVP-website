@@ -13,7 +13,7 @@ jobs:
           node-version: '20.x'
           cache: 'npm'
       - run: corepack enable
-      - run: pnpm --version || npm i -g pnpm
+      - run: node -v && npm -v
       - run: pnpm install --frozen-lockfile || pnpm install
       - run: pnpm -w build || npm run -w build || echo "no root build"
       - run: node scripts/ci-doctor.mjs
