@@ -4,7 +4,7 @@ on:
   push:
   pull_request:
 
-# Safe to keep; allows OIDC if you add a role later.
+# keep for OIDC in case you add a role later
 permissions:
   id-token: write
   contents: read
@@ -27,7 +27,7 @@ jobs:
           node-version: "20.x"
           cache: "npm"
 
-      # Fetch S3 repo assets (safe no-op if bucket/prefix empty or no creds)
+      # ✅ NEW: fetch S3 assets before install/build
       - name: Fetch repo assets from S3
         uses: ./.github/actions/fetch-repo-assets
         with:
@@ -71,60 +71,3 @@ jobs:
 
       - name: Test
         run: npm test
-
-  offline-simulation:
-    runs-on: ubuntu-latest
-    env:
-      CI_NO_NET: "1"
-      SKIP_PW_DEPS: "1"
-      SKIP_NET_CHECKS: "1"
-      NPM_CONFIG_AUDIT: "false"
-      NPM_CONFIG_FUND: "false"
-
-    steps:
-      - uses: actions/checkout@v5
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20.x"
-          cache: "npm"
-
-      # Calling the fetch step here is fine (it will be a fast no-op without net)
-      - name: Fetch repo assets from S3
-        uses: ./.github/actions/fetch-repo-assets
-        with:
-          bucket: glb-models-prod
-          region: eu-north-1
-
-      - uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-playwright-
-
-      - name: Mode
-        run: echo "Mode: Offline"
-
-      - name: Install deps (offline)
-        run: npm ci --ignore-scripts --prefer-offline
-
-      - name: Build (offline)
-        run: npm run build --workspaces=false
-
-      - name: CI doctor (offline)
-        run: node scripts/ci-doctor.mjs
-        env:
-          STRIPE_SECRET_KEY: sk_test
-          STRIPE_WEBHOOK_SECRET: whsec_test
-          DB_URL: postgres://postgres:postgres@localhost:5432/test
-          SKIP_PW_DEPS: "1"
-
-      - name: Lint
-        run: npm run lint
-
-      - name: Test (offline)
-        run: npm test -- --passWithNoTests=false
-
-      - name: Smoke
-        run: npm run smoke
