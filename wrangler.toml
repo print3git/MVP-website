@@ -1,5 +1,6 @@
 name = "print2"
-compatibility_date = "2025-08-22"
+pages_build_output_dir = "." # Keep dashboard "Build output directory" in sync.
+compatibility_date = "2024-11-01"
 
 [build]
 command = "npm run build"
@@ -11,6 +12,5 @@ command = "npm run build"
   name = "print2"
 
 # >>> BEGIN MANAGED BLOCK: ci-guard:cf-pages-build
-[pages]
-  pages_build_output_dir = "frontend/dist"
+# (pages_build_output_dir moved to top-level)
 # <<< END MANAGED BLOCK: ci-guard:cf-pages-build

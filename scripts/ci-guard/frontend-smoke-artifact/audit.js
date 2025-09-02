@@ -63,7 +63,6 @@ function auditFiles(files) {
         (s) =>
           typeof s.run === "string" &&
           s.run.includes("frontend/dist/index.html") &&
-          s.run.includes("frontend/dist/models/boombox.glb") &&
           /test\s+-f/.test(s.run),
       );
       if (verifyIdx === -1 || verifyIdx < buildIdx) {

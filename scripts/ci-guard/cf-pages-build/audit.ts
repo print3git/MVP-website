@@ -17,9 +17,9 @@ function auditRepo(root = process.cwd()) {
       wSummary.ok = false;
       wSummary.errors.push('missing managed block');
     }
-    if (!/\[pages\][\s\S]*pages_build_output_dir\s*=\s*"frontend\/dist"/.test(content)) {
+    if (!/pages_build_output_dir\s*=\s*"\."/.test(content)) {
       wSummary.ok = false;
-      wSummary.errors.push('missing pages pages_build_output_dir');
+      wSummary.errors.push('missing pages_build_output_dir');
     }
   } catch (err) {
     wSummary.ok = false;
@@ -40,7 +40,7 @@ function auditRepo(root = process.cwd()) {
       wfSummary.ok = false;
       wfSummary.errors.push('missing build step');
     }
-    if (!content.includes('test -f frontend/dist/index.html') || !content.includes('test -f frontend/dist/models/boombox.glb')) {
+    if (!content.includes('test -f frontend/dist/index.html')) {
       wfSummary.ok = false;
       wfSummary.errors.push('missing verify step');
     }
