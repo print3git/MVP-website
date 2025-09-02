@@ -1,5 +1,3 @@
-import axios from 'axios';
-
 /**
  * Generate a text prompt from an image URL using an external API.
  * @param imageURL URL of the image stored in S3
@@ -8,7 +6,7 @@ import axios from 'axios';
 export async function imageToText(imageURL: string): Promise<string> {
   const endpoint = process.env["IMAGE2TEXT_ENDPOINT"];
   const key = process.env["IMAGE2TEXT_KEY"];
-  if (!endpoint) throw new Error('IMAGE2TEXT_ENDPOINT is not set');
+  if (!endpoint) throw new Error("IMAGE2TEXT_ENDPOINT is not set");
   const config = {
     ...(key ? { headers: { Authorization: `Bearer ${key}` } } : {}),
     validateStatus: () => true,
@@ -19,7 +17,7 @@ export async function imageToText(imageURL: string): Promise<string> {
     throw new Error(msg);
   }
   if (!res.data?.prompt) {
-    throw new Error('invalid response from image2text');
+    throw new Error("invalid response from image2text");
   }
   return res.data.prompt as string;
 }

@@ -1,4 +1,3 @@
-import axios from "axios";
 import fs from "fs";
 import { pipeline } from "stream/promises";
 import path from "path";
