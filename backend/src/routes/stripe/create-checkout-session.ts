@@ -6,7 +6,6 @@ import logger from "../../logger.js";
 import { capture } from "../../lib/logger";
 import { getEnv as getEnvVar } from "../../../utils/getEnv.js";
 
-
 interface Item {
   price: string;
   quantity: number;
@@ -63,19 +62,27 @@ router.post(
       if (!item.price) {
         return res.status(400).json({ error: "bad_request" });
       }
-      if (typeof item.quantity !== "number" || item.quantity < 1 || item.quantity > 99) {
+      if (
+        typeof item.quantity !== "number" ||
+        item.quantity < 1 ||
+        item.quantity > 99
+      ) {
         return res.status(400).json({ error: "bad_request" });
       }
     }
 
-    const params: Stripe.Checkout.SessionCreateParams & { currency?: string } = {
-      mode: "payment",
-      payment_method_types: ["card"],
-      line_items: items.map((i) => ({ price: i.price, quantity: i.quantity })),
-      success_url: successUrl,
-      cancel_url: cancelUrl,
-      currency,
-    };
+    const params: Stripe.Checkout.SessionCreateParams & { currency?: string } =
+      {
+        mode: "payment",
+        payment_method_types: ["card"],
+        line_items: items.map((i) => ({
+          price: i.price,
+          quantity: i.quantity,
+        })),
+        success_url: successUrl,
+        cancel_url: cancelUrl,
+        currency,
+      };
 
     if (allowPromotionCodes) {
       params.allow_promotion_codes = true;
@@ -115,4 +122,3 @@ router.post(
 );
 
 export default router;
-

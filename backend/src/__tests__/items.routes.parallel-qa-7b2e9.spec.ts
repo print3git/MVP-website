@@ -188,7 +188,7 @@ if (!app) {
       expect(queries[0].params?.[3]).toBe("USD");
     });
 
-    test("duplicate name error from DB (code \"23505\") → 409 with message", async () => {
+    test('duplicate name error from DB (code "23505") → 409 with message', async () => {
       setDbDuplicate();
       const res = await request(app)
         .post("/api/items")
@@ -214,7 +214,9 @@ if (!app) {
         .set("Content-Type", "application/json");
       expect(res.status).toBe(201);
       const text = queries[0].text.replace(/\s+/g, " ");
-      expect(text).toMatch(/INSERT INTO items \(name, description, price_cents, currency, images, metadata\)/i);
+      expect(text).toMatch(
+        /INSERT INTO items \(name, description, price_cents, currency, images, metadata\)/i,
+      );
     });
 
     test("trims leading/trailing spaces in name (if schema allows) → 201", async () => {

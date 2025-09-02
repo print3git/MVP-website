@@ -24,7 +24,8 @@ router.get("/referral-link", authRequired, async (req, res) => {
 });
 
 router.get("/referral-click", async (req, res) => {
-  const code = (req.query.code as string) || (req.body && (req.body as any).code);
+  const code =
+    (req.query.code as string) || (req.body && (req.body as any).code);
   if (!code) {
     logger.warn("referral_click_missing_code");
     res.status(400).json({ error: "Missing code" });
@@ -107,7 +108,10 @@ router.get("/orders/:id/referral-link", authRequired, async (req, res) => {
   const { id } = req.params;
   try {
     const userId = userIdFromAuth(req);
-    const { rows } = await db.query("SELECT user_id FROM orders WHERE session_id=$1", [id]);
+    const { rows } = await db.query(
+      "SELECT user_id FROM orders WHERE session_id=$1",
+      [id],
+    );
     if (!rows.length || rows[0].user_id !== userId) {
       logger.warn("order_referral_link_not_found", { id, userId });
       res.status(404).json({ error: "Order not found" });
@@ -148,4 +152,3 @@ router.get("/orders/:id/referral-qr", authRequired, async (req, res) => {
 });
 
 export default router;
-

@@ -39,7 +39,6 @@ router.post(
       return;
     }
 
-
     const rawBody = Buffer.isBuffer(req.body)
       ? req.body
       : Buffer.from(req.body);

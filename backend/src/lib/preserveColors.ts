@@ -1,4 +1,4 @@
-import { NodeIO } from '@gltf-transform/core';
+import { NodeIO } from "@gltf-transform/core";
 
 /**
  * Convert vertexColors or flatColor metadata stored in primitive extras
@@ -12,16 +12,18 @@ export async function preserveColors(glb: Buffer): Promise<Buffer> {
   for (const mesh of root.listMeshes()) {
     for (const prim of mesh.listPrimitives()) {
       const extras: any = prim.getExtras() || {};
-      if (!prim.getAttribute('COLOR_0')) {
+      if (!prim.getAttribute("COLOR_0")) {
         if (Array.isArray(extras.vertexColors)) {
           const accessor = doc
             .createAccessor()
-            .setType('VEC4')
+            .setType("VEC4")
             .setArray(new Float32Array(extras.vertexColors));
-          prim.setAttribute('COLOR_0', accessor);
+          prim.setAttribute("COLOR_0", accessor);
         } else if (Array.isArray(extras.flatColor)) {
           const mat = prim.getMaterial() ?? doc.createMaterial();
-          mat.setBaseColorFactor(extras.flatColor as [number, number, number, number]);
+          mat.setBaseColorFactor(
+            extras.flatColor as [number, number, number, number],
+          );
           prim.setMaterial(mat);
         }
       }

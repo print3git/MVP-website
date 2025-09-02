@@ -45,4 +45,3 @@ export function userIdFromAuth(req: Request): string | undefined {
   const user = (req as any).user;
   return user?.id || user?.user_id;
 }
-

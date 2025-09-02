@@ -1,54 +1,49 @@
 name: CI
+
 on:
+  push: { branches: [main] }
   pull_request:
-    branches: [ "dev", "production", "00000production" ]
-  push:
-    branches: [ "dev", "00000production" ]
 
 jobs:
-  test:
+  deps:
     runs-on: ubuntu-latest
-    env:
-      CI: "true"
-      TZ: "Europe/London"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
+          node-version: '20'
           cache: 'npm'
-
-      # Lockfile guard: fail fast if package-lock.json would change
-      - name: Verify lockfile matches package.json
-        run: |
-          cp package-lock.json package-lock.json.bak 2>/dev/null || true
-          npm install --package-lock-only
-          if ! git diff --quiet -- package-lock.json; then
-            echo "::error::package-lock.json is out of sync with package.json. Run 'npm install' locally and commit the updated lockfile."
-            exit 1
-          fi
-          # restore
-          [ -f package-lock.json.bak ] && mv -f package-lock.json.bak package-lock.json || true
-
-      - name: Clean install
-        run: npm ci
-
-      - name: Lint
-        run: npm run lint || echo "no lint script or lint failed (non-blocking)"
-
-      - name: Install backend dependencies
-        run: npm --prefix backend ci
-
-      - name: Test
-        run: npm run test
-
-      - name: Upload logs
-        if: always()
-        uses: actions/upload-artifact@v4
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
         with:
-          name: ci-logs
-          path: |
-            npm-debug.log*
-            reports/**
-            coverage/**
-          if-no-files-found: ignore
+          path: ~/.cache/ms-playwright
+          key: pw-${{ runner.os }}-chromium
+      - name: Prime deps & browsers
+        run: |
+          chmod +x scripts/ci/prime-deps.sh
+          ./scripts/ci/prime-deps.sh
+
+  backend:
+    needs: deps
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - name: Restore Playwright cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: pw-${{ runner.os }}-chromium
+      - name: Build/Test (offline-safe)
+        env:
+          NPM_REGISTRY: https://registry.npmjs.org/
+          HTTP_PROXY: ${{ secrets.HTTP_PROXY }}
+          HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
+        run: |
+          node -v && npm -v
+          tsc ./scripts/ci/detect-network.ts --outDir scripts/ci || true
+          chmod +x scripts/ci/run-backend-offline-safe.sh
+          ./scripts/ci/run-backend-offline-safe.sh

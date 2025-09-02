@@ -7,7 +7,6 @@ import { capture } from "../lib/logger";
 import { getEnv as getBackendEnv, isTest } from "../env";
 import { getEnv } from "../../utils/getEnv.js";
 
-
 const { STRIPE_SECRET_KEY } = getBackendEnv();
 const realStripe = new Stripe(STRIPE_SECRET_KEY, {
   apiVersion: "2025-06-30.basil",

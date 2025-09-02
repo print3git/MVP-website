@@ -50,4 +50,4 @@ async function generateGlb({ prompt, imageURL }) {
   } catch (err) {
     throw new Error(`SPARC3D request failed: ${err.message}`);
   }
-};
+}
