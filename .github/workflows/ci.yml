@@ -36,6 +36,9 @@ jobs:
       - name: Lint
         run: npm run lint || echo "no lint script or lint failed (non-blocking)"
 
+      - name: Install backend dependencies
+        run: npm --prefix backend ci
+
       - name: Test
         run: npm run test
 
