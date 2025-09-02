@@ -7,7 +7,7 @@ const retries = parseInt(process.env.JEST_RETRIES || "0", 10);
 const config: Config.InitialOptions = {
   ...base,
   testRunner: "jest-circus/runner",
-  retryTimes: retries,
+  testRetryTimes: retries,
   reporters: ["default", "jest-junit"],
   transform: {
     "^.+\\.[tj]sx?$": path.join(__dirname, "quarantine-transform.js"),
