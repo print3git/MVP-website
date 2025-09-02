@@ -33,4 +33,5 @@ module.exports = {
       statements: 80,
     },
   },
+  setupFiles: ["<rootDir>/jest.setup.env.js"],
 };
