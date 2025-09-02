@@ -35,7 +35,7 @@ bash scripts/sync-space.sh
 
 This ensures Codex sees the latest local changes and model artifacts.
 
-This repository contains the early MVP code for print2's website and backend.
+This repository contains the early MVP code for print2's website and backend..
 
 - Frontend HTML pages are in the repository root.
 - General backend code is in the `backend/` folder.
