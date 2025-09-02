@@ -39,6 +39,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-playwright-
 
+      - name: Fetch repo assets from S3
+        uses: ./.github/actions/fetch-repo-assets
+        with:
+          bucket: glb-models-prod
+          region: eu-north-1
+
+
       - name: Mode
         shell: bash
         run: |
