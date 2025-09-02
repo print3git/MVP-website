@@ -2,12 +2,16 @@
   "name": "frontend",
   "version": "1.0.0",
   "private": true,
-  "engines": { "node": "20.x", "npm": "10" },
+  "type": "module",
+  "engines": {
+    "node": "20.x",
+    "npm": "10"
+  },
   "scripts": {
     "build": "vite build",
     "dev": "vite",
     "preview": "vite preview",
-    "test": "node scripts/ensure-tests-exist.js && npx jest --passWithNoTests=false",
+    "test": "node ../scripts/ensure-tests-exist.js && npx jest --passWithNoTests=false",
     "lint": "node ../scripts/ensure-eslint-targets.js \"**/*.{ts,tsx,js}\" --max-warnings=0",
     "start:ci": "vite preview --port 3000 --strictPort --host 0.0.0.0"
   },
@@ -15,6 +19,7 @@
     "@vitejs/plugin-react": "^5.0.1",
     "tslib": "^2.8.1",
     "typescript": "^5.9.2",
-    "vite": "^5.4.19"
+    "vite": "^5.4.19",
+    "@types/node": "^20.14.10"
   }
 }
