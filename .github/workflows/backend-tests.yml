@@ -37,7 +37,14 @@ jobs:
         with:
           bucket: glb-models-prod
           region: eu-north-1
-
+      - name: Run backend tests
+        env:
+          NODE_ENV: test
+          CI_NETWORK_OK: '1'
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          FRONTEND_SUCCESS_URL: https://print2.io/index.html
+          FRONTEND_CANCEL_URL: https://print2.io/payment.html
+        run: npm test --prefix backend
       - uses: ./.github/actions/fetch-repo-assets
         with:
           bucket: glb-models-prod
