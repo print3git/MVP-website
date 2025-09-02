@@ -1,0 +1,34 @@
+name: Assets fetch smoke
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/actions/fetch-repo-assets/**'
+      - '.github/workflows/**'
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Fetch repo assets from S3
+        uses: ./.github/actions/fetch-repo-assets
+        with:
+          bucket: glb-models-prod
+          region: eu-north-1
+          # role_to_assume / access keys are optional; your composite already no-ops if missing
+
+      - name: Assert assets exist and show a short listing
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ ! -d repo-assets ]]; then
+            echo "repo-assets directory missing"; exit 1
+          fi
+          echo "=== repo-assets (first 200 files) ==="
+          find repo-assets -type f | head -n 200
+          count=$(find repo-assets -type f | wc -l)
+          echo "Total files: $count"
+          test "$count" -gt 0
