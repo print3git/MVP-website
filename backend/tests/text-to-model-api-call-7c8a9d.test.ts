@@ -1,5 +1,3 @@
-import axios from "axios";
-
 describe("huggingface text-to-model", () => {
   const endpoint = process.env.SPARC3D_ENDPOINT;
   const token = process.env.SPARC3D_TOKEN;
