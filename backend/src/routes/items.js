@@ -6,17 +6,12 @@ var __importDefault =
   };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const pg_1 = require("pg");
 const validate_js_1 = __importDefault(require("../../middleware/validate.js"));
 const logger_js_1 = __importDefault(require("../logger.js"));
 const items_1 = require("../lib/items");
+const db_js_1 = require("../db.js");
 const router = (0, express_1.Router)();
-const pool = new pg_1.Pool({
-  connectionString: process.env.DB_ENDPOINT,
-  user: "postgres",
-  password: process.env.DB_PASSWORD,
-  database: "postgres",
-});
+const pool = (0, db_js_1.getPgPool)();
 router.post(
   "/api/items",
   (0, validate_js_1.default)(items_1.insertItemSchema),

@@ -1,27 +1,13 @@
 import { Router } from "express";
-import { Pool } from "pg";
 import validate from "../../middleware/validate.js";
 import logger from "../logger.js";
 import { capture } from "../lib/logger";
 import { insertItem, insertItemSchema } from "../lib/items";
-import { getEnv } from "../../utils/getEnv.js";
+import { getPgPool } from "../db.js";
 
 const router = Router();
 
-const dbEndpoint = getEnv("DB_ENDPOINT");
-const dbPassword = getEnv("DB_PASSWORD");
-
-if (!dbEndpoint || !dbPassword) {
-  logger.error("Missing DB_ENDPOINT or DB_PASSWORD");
-  process.exit(1);
-}
-
-const pool = new Pool({
-  connectionString: dbEndpoint,
-  user: "postgres",
-  password: dbPassword,
-  database: "postgres",
-});
+const pool = getPgPool();
 
 router.post("/api/items", validate(insertItemSchema), async (req, res) => {
   try {

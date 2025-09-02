@@ -1,13 +1,20 @@
 const { Pool } = require("pg");
-const { getEnv } = require("./env");
 
-const { DB_URL, NODE_ENV } = getEnv();
+function getPgPool() {
+  const url = process.env.DB_URL;
+  if (!url) {
+    throw new Error("DB_URL is required (postgres://user:pass@host:port/db)");
+  }
+  return new Pool({ connectionString: url });
+}
 
-const pool = new Pool({ connectionString: DB_URL });
+const pool = getPgPool();
 
 function close() {
   return pool.end();
 }
+
+const NODE_ENV = process.env.NODE_ENV;
 
 const jobs = new Map();
 const generationLogs = [];
@@ -73,7 +80,7 @@ async function insertGenerationLog(log) {
       ],
     );
   } catch {
-    if (process.env.NODE_ENV !== "production") {
+    if (NODE_ENV !== "production") {
       generationLogs.push(log);
     }
   }
@@ -148,6 +155,7 @@ async function upsertOrderPaid(input) {
   }
 }
 module.exports = {
+  getPgPool,
   pool,
   close,
   createJob,

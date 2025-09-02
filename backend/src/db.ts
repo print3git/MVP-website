@@ -1,13 +1,20 @@
 import { Pool } from "pg";
-import { getEnv } from "./env";
 
-const { DB_URL, NODE_ENV } = getEnv();
+export function getPgPool(): Pool {
+  const url = process.env.DB_URL;
+  if (!url) {
+    throw new Error("DB_URL is required (postgres://user:pass@host:port/db)");
+  }
+  return new Pool({ connectionString: url });
+}
 
-export const pool = new Pool({ connectionString: DB_URL });
+export const pool = getPgPool();
 
 export function close(): Promise<void> {
   return pool.end();
 }
+
+const NODE_ENV = process.env.NODE_ENV;
 
 const jobs = new Map<string, any>();
 const generationLogs: any[] = [];
@@ -88,7 +95,7 @@ export async function insertGenerationLog(log: {
       ],
     );
   } catch {
-    if (process.env.NODE_ENV !== "production") {
+    if (NODE_ENV !== "production") {
       generationLogs.push(log);
     }
   }
