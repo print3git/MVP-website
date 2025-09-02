@@ -16,10 +16,10 @@
     "start:ci": "vite preview --port 3000 --strictPort --host 0.0.0.0"
   },
   "devDependencies": {
+    "@types/node": "^20.14.10",
     "@vitejs/plugin-react": "^5.0.1",
     "tslib": "^2.8.1",
     "typescript": "^5.9.2",
-    "vite": "^5.4.19",
-    "@types/node": "^20.14.10"
+    "vite": "^7.1.4"
   }
 }
