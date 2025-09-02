@@ -16,9 +16,10 @@ const PRINTER_URLS = (getEnv("PRINTER_URLS") || "")
   .filter(Boolean);
 
 if (!OCTOPRINT_API_KEY || PRINTER_URLS.length === 0) {
-  logger.error("Missing OCTOPRINT_API_KEY or PRINTER_URLS");
-  process.exit(1);
-}
+ // In CI/tests we don't want to crash on import. With no printer URLs,
+   // the polling loop is a no-op, which is safe.
+   logger.warn("Telemetry disabled: missing OCTOPRINT_API_KEY or PRINTER_URLS");
+ }
 
 const lastStatus = {};
 
