@@ -11,6 +11,7 @@ jobs:
       NPM_CONFIG_AUDIT: "false"
       NPM_CONFIG_FUND: "false"
       CI_NETWORK_OK: "1"
+
     steps:
       - uses: actions/checkout@v5
 
@@ -19,7 +20,7 @@ jobs:
           node-version: "20.x"
           cache: "npm"
 
-      # Fetch S3 repo assets before any build/lint work
+      # ✅ NEW: fetch S3 assets before install/build
       - name: Fetch repo assets from S3
         uses: ./.github/actions/fetch-repo-assets
         with:
@@ -37,7 +38,8 @@ jobs:
         run: |
           echo "Mode: ${{ env.CI_NO_NET == '1' && 'Offline' || 'Online' }}"
 
-      - run: |
+      - name: Install deps
+        run: |
           if [ "$CI_NO_NET" = '1' ] || [ "$SKIP_PW_DEPS" = '1' ]; then
             npm ci --ignore-scripts --prefer-offline --no-audit --fund=false
           else
@@ -54,7 +56,8 @@ jobs:
 
       - run: npm run lint
 
-      - run: |
+      - name: Lint backend (if present)
+        run: |
           if [ -d backend ]; then
             npm run lint --prefix backend
           fi
