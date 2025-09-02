@@ -16,10 +16,9 @@ router.post("/checkout/create", async (req, res) => {
     const cancelUrl  = process.env.FRONTEND_CANCEL_URL;
 
     if (!secretKey || !successUrl || !cancelUrl) {
-      logger.error(
-        "Missing STRIPE_SECRET_KEY, FRONTEND_SUCCESS_URL, or FRONTEND_CANCEL_URL"
+      logger.warn(
+      "Checkout disabled: missing STRIPE_SECRET_KEY, FRONTEND_SUCCESS_URL, or FRONTEND_CANCEL_URL",
       );
-      return res.status(500).json({ error: "Server misconfigured" });
     }
 
     const stripe = new Stripe(secretKey, { apiVersion: "2024-06-20" });
