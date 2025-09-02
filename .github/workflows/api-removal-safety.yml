@@ -5,6 +5,10 @@ on:
     branches: [dev, production]
   pull_request:
 
+permissions:
+  id-token: write
+  contents: read
+
 env:
   NPM_CONFIG_AUDIT: "false"
   NPM_CONFIG_FUND: "false"
@@ -19,6 +23,10 @@ jobs:
         with:
           node-version: "20.x"
           cache: "npm"
+      - uses: ./.github/actions/fetch-repo-assets
+        with:
+          bucket: glb-models-prod
+          region: eu-north-1
       - run: |
           if [ "" = '1' ] || [ "" = '1' ]; then
             npm ci --ignore-scripts --prefer-offline --no-audit --fund=false
@@ -41,6 +49,10 @@ jobs:
         with:
           node-version: "20.x"
           cache: "npm"
+      - uses: ./.github/actions/fetch-repo-assets
+        with:
+          bucket: glb-models-prod
+          region: eu-north-1
       - run: |
           if [ "" = '1' ] || [ "" = '1' ]; then
             npm ci --ignore-scripts --prefer-offline --no-audit --fund=false
@@ -64,6 +76,10 @@ jobs:
         with:
           node-version: "20.x"
           cache: "npm"
+      - uses: ./.github/actions/fetch-repo-assets
+        with:
+          bucket: glb-models-prod
+          region: eu-north-1
       - run: |
           if [ "" = '1' ] || [ "" = '1' ]; then
             npm ci --ignore-scripts --prefer-offline --no-audit --fund=false
@@ -89,6 +105,10 @@ jobs:
         with:
           node-version: "20.x"
           cache: "npm"
+      - uses: ./.github/actions/fetch-repo-assets
+        with:
+          bucket: glb-models-prod
+          region: eu-north-1
       - run: |
           if [ "" = '1' ] || [ "" = '1' ]; then
             npm ci --ignore-scripts --prefer-offline --no-audit --fund=false
@@ -112,6 +132,10 @@ jobs:
         with:
           node-version: "20.x"
           cache: "npm"
+      - uses: ./.github/actions/fetch-repo-assets
+        with:
+          bucket: glb-models-prod
+          region: eu-north-1
       - run: |
           if [ "" = '1' ] || [ "" = '1' ]; then
             npm ci --ignore-scripts --prefer-offline --no-audit --fund=false
