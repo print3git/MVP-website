@@ -16,6 +16,16 @@ coverage/
 *.bin
 *.o
 *.pyc
+# Ignore 3D models and binaries
+*.glb
+*.gltf
+*.fbx
+*.zip
+*.exe
+*.dll
+*.dylib
+*.so
+*.bin
 /build/
 /dist/
 *.png
