@@ -1,9 +1,6 @@
 name = "print2"
-pages_build_output_dir = "." # Keep dashboard "Build output directory" in sync.
+pages_build_output_dir = "frontend/dist"  # or "." if root
 compatibility_date = "2024-11-01"
-
-[build]
-command = "npm run build"
 
 [env.preview]
   name = "print2"
