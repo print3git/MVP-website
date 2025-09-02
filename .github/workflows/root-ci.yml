@@ -4,6 +4,7 @@ on:
   push:
   pull_request:
 
+# Safe to keep; allows OIDC if you add a role later.
 permissions:
   id-token: write
   contents: read
@@ -12,17 +13,11 @@ jobs:
   root-ci:
     runs-on: ubuntu-latest
     env:
-      # Normal CI env
       NPM_CONFIG_AUDIT: "false"
       NPM_CONFIG_FUND: "false"
       CI_NETWORK_OK: "1"
       AWS_DEFAULT_REGION: eu-north-1
       AWS_REGION: eu-north-1
-
-      # Mirror secrets into env (safe: becomes empty string when not set)
-      AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME || '' }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID || '' }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY || '' }}
 
     steps:
       - uses: actions/checkout@v5
@@ -32,19 +27,19 @@ jobs:
           node-version: "20.x"
           cache: "npm"
 
-      - uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-playwright-
-
+      # Fetch S3 repo assets (safe no-op if bucket/prefix empty or no creds)
       - name: Fetch repo assets from S3
         uses: ./.github/actions/fetch-repo-assets
         with:
           bucket: glb-models-prod
           region: eu-north-1
 
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
 
       - name: Mode
         shell: bash
@@ -53,39 +48,6 @@ jobs:
             echo "Mode: Offline"
           else
             echo "Mode: Online"
-          fi
-
-      # --- AWS credentials (optional; workflow continues without them) ---
-      - name: Configure AWS via role (OIDC)
-        if: ${{ env.AWS_ROLE_TO_ASSUME != '' }}
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ env.AWS_ROLE_TO_ASSUME }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Configure AWS via access keys
-        if: ${{ env.AWS_ROLE_TO_ASSUME == '' && env.AWS_ACCESS_KEY_ID != '' && env.AWS_SECRET_ACCESS_KEY != '' }}
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      # --- Fetch repo assets from S3 (no-op if no creds or prefix) ---
-      - name: Fetch repo-assets from S3
-        if: ${{ env.CI_NETWORK_OK == '1' && (env.AWS_ROLE_TO_ASSUME != '' || (env.AWS_ACCESS_KEY_ID != '' && env.AWS_SECRET_ACCESS_KEY != '')) }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          BUCKET="glb-models-prod"
-          PREFIX="repo-assets"
-          mkdir -p ./repo-assets
-          echo "Checking for s3://$BUCKET/$PREFIX ..."
-          if aws s3 ls "s3://$BUCKET/$PREFIX" >/dev/null 2>&1; then
-            echo "Syncing s3://$BUCKET/$PREFIX -> ./repo-assets"
-            aws s3 sync "s3://$BUCKET/$PREFIX" ./repo-assets --only-show-errors
-          else
-            echo "Prefix not found; skipping sync."
           fi
 
       - name: Install deps
@@ -100,24 +62,6 @@ jobs:
       - name: Build
         run: npm run build --workspaces=false
 
-      - name: Normalize build output for ci-doctor
-        shell: bash
-        run: |
-          # If root 'dist' exists but frontend/dist does not, move it so doctor passes
-          if [ -d dist ] && [ ! -d frontend/dist ]; then
-            mkdir -p frontend
-            mv dist frontend/dist
-          fi
-      
-      - name: Ensure models folder exists for ci-doctor
-        shell: bash
-        run: |
-          mkdir -p frontend/dist/models
-          # optional: keep a placeholder for future uploads
-          # : > frontend/dist/models/.keep
-
-
-
       - name: CI doctor
         run: node scripts/ci-doctor.mjs
         env:
@@ -127,3 +71,60 @@ jobs:
 
       - name: Test
         run: npm test
+
+  offline-simulation:
+    runs-on: ubuntu-latest
+    env:
+      CI_NO_NET: "1"
+      SKIP_PW_DEPS: "1"
+      SKIP_NET_CHECKS: "1"
+      NPM_CONFIG_AUDIT: "false"
+      NPM_CONFIG_FUND: "false"
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          cache: "npm"
+
+      # Calling the fetch step here is fine (it will be a fast no-op without net)
+      - name: Fetch repo assets from S3
+        uses: ./.github/actions/fetch-repo-assets
+        with:
+          bucket: glb-models-prod
+          region: eu-north-1
+
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+
+      - name: Mode
+        run: echo "Mode: Offline"
+
+      - name: Install deps (offline)
+        run: npm ci --ignore-scripts --prefer-offline
+
+      - name: Build (offline)
+        run: npm run build --workspaces=false
+
+      - name: CI doctor (offline)
+        run: node scripts/ci-doctor.mjs
+        env:
+          STRIPE_SECRET_KEY: sk_test
+          STRIPE_WEBHOOK_SECRET: whsec_test
+          DB_URL: postgres://postgres:postgres@localhost:5432/test
+          SKIP_PW_DEPS: "1"
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test (offline)
+        run: npm test -- --passWithNoTests=false
+
+      - name: Smoke
+        run: npm run smoke
