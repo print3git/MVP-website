@@ -69,6 +69,14 @@ frontend/public/models/boombox.glb
 frontend/public/models/*.glb
 frontend/public/models/*.gltf
 frontend/public/models/*.bin
+# Generated assets
+assets/models/
+frontend/public/models/
+frontend/dist/**/models/
+precache-manifest*.js
+asset-manifest*.json
+service-worker*.js
+sw.js
 
 .next/
 .husky/_

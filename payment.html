@@ -15,7 +15,7 @@
     <!-- Preload 3D assets -->
     <link
       rel="preload"
-      href="models/boombox.glb"
+      data-model-href="models/boombox.glb"
       as="fetch"
       fetchpriority="high"
     />
@@ -230,7 +230,7 @@
         <div data-testid="primary-model">
           <model-viewer
             data-testid="model-viewer"
-            src="models/boombox.glb"
+            data-model-src="models/boombox.glb"
             camera-controls
             ar
             role="img"
@@ -796,5 +796,16 @@
     <script>window.disableSaveButton = true;</script>
     <script type="module" src="js/saveList.js" defer></script>
     <script type="module" src="js/trackingPixel.js"></script>
+    <script>
+      (function(){
+        // Optional: set window.MODEL_URL in a separate inline script or via a future build step.
+        var url = (typeof window !== 'undefined' && window.MODEL_URL) || '';
+        var a = document.querySelector('[data-model-href]');
+        if (a) { if (url) a.setAttribute('href', url); else a.removeAttribute('href'); }
+        document.querySelectorAll('[data-model-src]').forEach(function(el){
+          if (url) el.setAttribute('src', url); else el.removeAttribute('src');
+        });
+      })();
+    </script>
   </body>
 </html>

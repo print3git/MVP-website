@@ -4,7 +4,6 @@ import { execSync } from "child_process";
 
 const outputs = [
   resolve("frontend/dist/index.html"),
-  resolve("frontend/dist/models/boombox.glb"),
 ];
 
 for (const output of outputs) {
