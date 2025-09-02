@@ -59,7 +59,7 @@ Set the following environment variables so the build can download model assets:
 ## Local Setup
 
 1. Copy `.env.example` to `.env` in the repository root and update the values:
-   - `DB_URL` – connection string for your PostgreSQL database.
+   - `DB_URL` – connection string for your PostgreSQL database (e.g., `postgres://postgres:postgres@localhost:5432/test`).
 
    To start a local Postgres instance you can run:
 

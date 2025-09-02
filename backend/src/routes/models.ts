@@ -1,31 +1,14 @@
 import { Router } from "express";
-import { Pool } from "pg";
 import validate from "../../middleware/validate.js";
 import { z } from "zod";
 import logger from "../logger.js";
 import { capture } from "../lib/logger";
-import { getEnv as getEnvVar } from "../../utils/getEnv.js";
 import { getEnv as getEnvConfig } from "../env";
-
+import { getPgPool } from "../db.js";
 
 const router = Router();
 
-let dbEndpoint: string;
-let dbPassword: string;
-try {
-  dbEndpoint = getEnvVar("DB_ENDPOINT", { required: true })!;
-  dbPassword = getEnvVar("DB_PASSWORD", { required: true })!;
-} catch (err) {
-  logger.error((err as Error).message);
-  process.exit(1);
-}
-
-const pool = new Pool({
-  connectionString: dbEndpoint,
-  user: "postgres",
-  password: dbPassword,
-  database: "postgres",
-});
+const pool = getPgPool();
 
 export const createModelSchema = z.object({
   prompt: z.string().min(1, "prompt is required"),
