@@ -21,6 +21,11 @@ jobs:
         with:
           node-version: "20.x"
           cache: "npm"
+      - name: Fetch repo assets from S3
+        uses: ./.github/actions/fetch-repo-assets
+        with:
+          bucket: glb-models-prod
+          region: eu-north-1
       - uses: ./.github/actions/fetch-repo-assets
         with:
           bucket: glb-models-prod
