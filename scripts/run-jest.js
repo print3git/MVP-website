@@ -55,21 +55,6 @@ async function run(args) {
     require("./ensure-root-deps.js");
   }
 
-
-  const skipNetChecks = process.env.SKIP_NET_CHECKS === "1";
-  let tsJestMissing = false;
-  try {
-    require.resolve("ts-jest");
-  } catch {
-    tsJestMissing = true;
-    if (!offline && !skipNetChecks) {
-      console.error("Missing ts-jest; run `npm run setup` before testing.");
-      process.exit(1);
-    }
-  }
-
-  verifyFiles(args);
-  console.log("run-jest cwd:", process.cwd());
   const corePath = resolveFromPaths("@jest/core");
   if (!corePath) {
     console.error("Missing jest core; run `npm run setup` before testing.");
