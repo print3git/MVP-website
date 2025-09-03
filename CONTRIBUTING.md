@@ -13,6 +13,10 @@ Thank you for helping improve this project! Please follow these steps to keep ou
 - Format each message as `type: short description` (e.g. `fix: handle null user`).
 - Allowed types include `feat`, `fix`, `docs`, `chore`, `refactor`, `test`, `style`, `perf`, `ci`, and `build`.
 
+## Package manager
+
+All dependency installs and script runs must use `npm`. Other package managers such as `pnpm` are not supported.
+
 ## Pull Requests
 
 1. Run `npm run setup` after checking out the repo. This installs dependencies and Playwright browsers.
