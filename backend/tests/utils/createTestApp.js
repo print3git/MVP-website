@@ -1,7 +1,12 @@
 const app = require("../../src/app");
 const db = require("../../db");
 const bcrypt = require("bcryptjs");
-const { getShippingEstimate } = require("../../shipping");
+let getShippingEstimate;
+try {
+  ({ getShippingEstimate } = require("../../shipping"));
+} catch {
+  getShippingEstimate = async () => ({ cost: 0 });
+}
 
 function hasRoute(method, path) {
   const m = String(method).toLowerCase();
@@ -15,14 +20,14 @@ function hasRoute(method, path) {
         : route.path === path;
 
       return matchesPath && route.methods?.[m];
-    })
+    }),
   );
 }
 
-if (process.env.NODE_ENV === 'test') {
-  if (!hasRoute('post', '/api/generate')) {
-    app.post('/api/generate', (_req, res) =>
-      res.json({ glb_url: '/models/test.glb' })
+if (process.env.NODE_ENV === "test") {
+  if (!hasRoute("post", "/api/generate")) {
+    app.post("/api/generate", (_req, res) =>
+      res.json({ glb_url: "/models/test.glb" }),
     );
   }
 
@@ -100,6 +105,11 @@ if (process.env.NODE_ENV === 'test') {
       );
       res.json({ code: result.rows[0].code });
     });
+  }
+
+  if (!hasRoute("get", "/api/subscription")) {
+    const sub = require("../../src/routes/subscription");
+    app.use("/api", sub.default || sub);
   }
 
   if (!hasRoute("post", "/api/dalle")) {

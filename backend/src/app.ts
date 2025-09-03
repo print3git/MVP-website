@@ -5,16 +5,22 @@ import errorHandler from "./middleware/errorHandler";
 const app = express();
 export { app };
 
+// ensure middleware stack exists even if route loading fails
+app.use(express.json());
+
 try {
-  (() => {
-    const r = require("./routes/stripeWebhook");
-    app.use(r.default || r);
-  })();
+  const r = require("./routes/stripeWebhook");
+  app.use(r.default || r);
 } catch (err) {
   logger.error("Failed to load stripe webhook router", err as Error);
 }
 
-app.use(express.json());
+try {
+  const r = require("./routes/subscription");
+  app.use("/api", r.default || r);
+} catch (err) {
+  logger.error("Failed to load subscription router", err as Error);
+}
 
 try {
   (() => {
@@ -113,15 +119,6 @@ try {
   })();
 } catch (err) {
   logger.error("Failed to load discount router", err as Error);
-}
-
-try {
-  (() => {
-    const r = require("./routes/subscription");
-    app.use("/api", r.default || r);
-  })();
-} catch (err) {
-  logger.error("Failed to load subscription router", err as Error);
 }
 
 try {
