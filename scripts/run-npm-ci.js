@@ -3,6 +3,21 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 
+function isOffline() {
+  if (process.env.SKIP_NET_CHECKS === "1" || process.env.CI_NO_NET === "1") {
+    return true;
+  }
+  try {
+    execSync(
+      "curl -sfI --max-time 10 https://registry.npmjs.org/-/ping >/dev/null 2>&1",
+      { stdio: "ignore" },
+    );
+    return false;
+  } catch {
+    return true;
+  }
+}
+
 function cleanupNpmCache() {
   try {
     execSync("npm cache clean --force", { stdio: "ignore" });
@@ -30,6 +45,12 @@ function cleanupNpmCache() {
 }
 
 function runNpmCi(dir = ".", opts = {}) {
+  if (isOffline()) {
+    console.log(
+      `offline mode: skipping npm ci${dir !== "." ? ` in ${dir}` : ""}`,
+    );
+    return;
+  }
   const options = { stdio: "inherit" };
   if (dir !== ".") options.cwd = dir;
   const ignoreScripts = opts.ignoreScripts || process.env.NPM_IGNORE_SCRIPTS;
