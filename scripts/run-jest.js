@@ -53,7 +53,7 @@ function verifyFiles(args) {
 
 async function run(args) {
   const { isOfflineEnv, logOfflineSkip } = await import("./net-mode.mjs");
-  if (isOfflineEnv()) {
+  if (!process.env.SKIP_NET_CHECKS && isOfflineEnv()) {
     logOfflineSkip("jest");
     return;
   }
@@ -86,7 +86,7 @@ async function run(args) {
     console.error("Missing jest core; run `npm run setup` before testing.");
     process.exit(1);
   }
-  const { runCLI } = require(corePath);
+  ({ runCLI } = require(corePath));
   const defaultConfig = path.resolve(repoRoot, "jest.config.cjs");
   const backendConfig = path.resolve(backendRoot, "jest.config.js");
   const parsed = { _: [], config: defaultConfig };
