@@ -9,8 +9,9 @@ if node -e "import('./scripts/net-mode.mjs').then(m=>process.exit(m.isOfflineEnv
   OFFLINE=1
 fi
 
-# Skip heavy Playwright and apt dependencies when requested or offline
-if [ "$SKIP_PW_DEPS" = "1" ] || [ "$PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD" = "1" ] || [ "$OFFLINE" = "1" ]; then
+# Skip heavy Playwright browser downloads entirely when offline or explicitly disabled.
+# When SKIP_PW_DEPS=1 we still run through the script but skip apt-based dependencies.
+if [ "$PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD" = "1" ] || [ "$OFFLINE" = "1" ]; then
   echo 'Skipping Playwright/apt deps'
   PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm ci --prefer-offline --no-audit --fund=false
   PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm ci --prefer-offline --no-audit --fund=false --prefix backend
@@ -143,6 +144,8 @@ if [ -z "$SKIP_PW_DEPS" ]; then
     echo "apt-get update failed after 3 attempts, skipping Playwright system dependencies" >&2
     export SKIP_PW_DEPS=1
   fi
+else
+  echo 'SKIP_PW_DEPS=1; skipping apt-get installation of Playwright system deps' >&2
 fi
 
 run_ci() {
