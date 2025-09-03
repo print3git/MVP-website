@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 import { execSync } from "child_process";
-import { isOfflineEnv } from "./net-mode.mjs";
+import { isOfflineEnv, logOfflineSkip } from "./net-mode.mjs";
 
 const offline = isOfflineEnv();
-if (
-  offline &&
-  process.env.SKIP_PW_DEPS === "1" &&
-  !process.env.SKIP_NET_CHECKS
-) {
+if (offline) {
+  logOfflineSkip("ci");
+  process.exit(0);
+}
+if (process.env.SKIP_PW_DEPS === "1" && !process.env.SKIP_NET_CHECKS) {
   process.env.SKIP_NET_CHECKS = "1";
 }
 

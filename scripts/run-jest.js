@@ -34,10 +34,11 @@ function verifyFiles(args) {
 }
 
 async function run(args) {
-  const { isOfflineEnv } = await import("./net-mode.mjs");
+  const { isOfflineEnv, logOfflineSkip } = await import("./net-mode.mjs");
   const offline = isOfflineEnv();
   if (offline) {
-    console.log("offline mode detected; running jest");
+    logOfflineSkip("jest");
+    return;
   }
 
   let runCLI;
