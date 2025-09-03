@@ -1,7 +1,7 @@
 /* eslint-disable */
 /** @jest-environment jsdom */
-import React from "react";
-import { render, screen, fireEvent, act } from "@testing-library/react";
+const React = require("react");
+const { render, screen, fireEvent, act } = require("@testing-library/react");
 
 function Cart() {
   const [items, setItems] = React.useState(() => {
