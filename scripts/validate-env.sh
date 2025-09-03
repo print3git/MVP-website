@@ -152,8 +152,16 @@ if [[ -n "${npm_config_http_proxy:-}" || -n "${npm_config_https_proxy:-}" ]]; th
 fi
 
 
+OFFLINE=0
+if node -e "import('./scripts/net-mode.mjs').then(m=>process.exit(m.isOfflineEnv()?0:1))" >/dev/null 2>&1; then
+  OFFLINE=1
+fi
+
 if [[ -z "${SKIP_PW_DEPS:-}" ]]; then
-  if ! node scripts/check-apt.js >/dev/null 2>&1; then
+  if [ "$OFFLINE" -eq 1 ]; then
+    echo "offline mode: skipping apt check" >&2
+    export SKIP_PW_DEPS=1
+  elif ! node scripts/check-apt.js >/dev/null 2>&1; then
     echo "APT repository check failed. Falling back to SKIP_PW_DEPS=1." >&2
     export SKIP_PW_DEPS=1
   fi
