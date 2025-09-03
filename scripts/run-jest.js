@@ -52,13 +52,11 @@ function verifyFiles(args) {
 }
 
 async function run(args) {
-  const { isOfflineEnv, logOfflineSkip } = await import("./net-mode.mjs");
+  const { isOfflineEnv, logOfflineMode } = await import("./net-mode.mjs");
   if (isOfflineEnv()) {
-    logOfflineSkip("jest");
-    return;
+    logOfflineMode("jest");
   }
 
-  let runCLI;
   try {
     ({ runCLI } = require("@jest/core"));
   } catch {

@@ -27,6 +27,10 @@ export function logOfflineSkip(step) {
   console.log(`offline mode: skipping ${step}`);
 }
 
+export function logOfflineMode(step) {
+  console.log(`offline mode: running ${step}`);
+}
+
 export function withRetries(cmd, { retries = 3, timeout = 10000 } = {}) {
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
