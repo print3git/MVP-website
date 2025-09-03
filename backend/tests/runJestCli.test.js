@@ -31,4 +31,14 @@ describe("run-jest CLI", () => {
     ]);
     expect(result.status).toBe(0);
   });
+
+  test("runs tests with SKIP_NET_CHECKS", () => {
+    const envSkip = { ...env, SKIP_NET_CHECKS: "1" };
+    const result = spawnSync(
+      process.execPath,
+      [script, "tests/openapi/no-removed-paths.m1n3p5q7r9s2t4u6.spec.ts"],
+      { encoding: "utf8", env: envSkip },
+    );
+    expect(result.status).toBe(0);
+  });
 });
