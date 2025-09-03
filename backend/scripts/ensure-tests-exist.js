@@ -3,6 +3,18 @@ const { execSync } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 
+// Ensure required dependencies exist before invoking Jest. When run without
+// installing dev dependencies, `npx jest` will download a transient Jest
+// binary which fails to locate `ts-jest`, leading to confusing preset errors.
+for (const dep of ["jest", "ts-jest"]) {
+  try {
+    require.resolve(dep);
+  } catch {
+    console.error(`Missing ${dep}; run \`npm run setup\` before testing.`);
+    process.exit(1);
+  }
+}
+
 const required = [
   "tests/stripe/webhook.valid-signature.spec.ts",
   "tests/stripe/webhook.invalid-signature.spec.ts",
