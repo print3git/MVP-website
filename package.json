@@ -38,7 +38,7 @@
     "validate-env": "bash scripts/validate-env.sh",
     "setup": "bash scripts/setup.sh",
     "prebuild": "node scripts/fetch-boombox.mjs",
-    "build": "npm --prefix frontend run build",
+    "build": "npm ci --no-audit --no-fund --prefix frontend && npm --prefix frontend run build",
     "start:ci": "npm --prefix frontend run start:ci",
     "preview": "vite preview --port 4173",
     "start": "node scripts/dev-server.js",
