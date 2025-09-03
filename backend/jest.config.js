@@ -4,7 +4,6 @@ try {
   require.resolve("ts-jest");
   config = {
     rootDir: ".",
-    preset: "ts-jest",
     setupFiles: ["<rootDir>/tests/setupGlobals.js"],
     setupFilesAfterEnv: [
       "<rootDir>/tests/utils/testEnv.ts",

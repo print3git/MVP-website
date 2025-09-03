@@ -34,10 +34,11 @@ function verifyFiles(args) {
 }
 
 async function run(args) {
-  const { isOfflineEnv } = await import("./net-mode.mjs");
+  const { isOfflineEnv, logOfflineSkip } = await import("./net-mode.mjs");
   const offline = isOfflineEnv();
   if (offline) {
-    console.log("offline mode detected; running jest");
+    logOfflineSkip("jest");
+    return;
   }
 
   let runCLI;
@@ -52,6 +53,19 @@ async function run(args) {
 
   if (!offline && !process.env.SKIP_ROOT_DEPS_CHECK) {
     require("./ensure-root-deps.js");
+  }
+
+
+  const skipNetChecks = process.env.SKIP_NET_CHECKS === "1";
+  let tsJestMissing = false;
+  try {
+    require.resolve("ts-jest");
+  } catch {
+    tsJestMissing = true;
+    if (!offline && !skipNetChecks) {
+      console.error("Missing ts-jest; run `npm run setup` before testing.");
+      process.exit(1);
+    }
   }
 
   verifyFiles(args);
@@ -111,6 +125,7 @@ async function run(args) {
   if (isBackendTest && !configProvided) {
     parsed.config = backendConfig;
   }
+
   if (!offline && isBackendTest && !process.env.SKIP_BACKEND_DEPS_CHECK) {
     require(path.join(backendRoot, "scripts", "ensure-deps.js"));
   }
