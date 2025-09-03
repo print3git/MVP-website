@@ -6,6 +6,13 @@ if (!process.env.SKIP_ROOT_DEPS_CHECK) {
   require("./ensure-root-deps.js");
 }
 
+try {
+  require.resolve("ts-jest");
+} catch {
+  console.error("Missing ts-jest; run `npm run setup` before testing.");
+  process.exit(1);
+}
+
 function verifyFiles(args) {
   let checking = false;
   for (const arg of args) {
