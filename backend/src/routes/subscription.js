@@ -1,6 +1,5 @@
 const { Router } = require("express");
-const Stripe = require("stripe");
-const db = require("../../db.js");
+const db = require("../../db");
 const config = require("../../config");
 const { authRequired, authOptional } = require("../lib/auth");
 const logger = require("../logger.js");
@@ -8,12 +7,13 @@ const { capture } = require("../lib/logger");
 const { isTest } = require("../env");
 
 const router = Router();
-const realStripe = new Stripe(config.stripeKey, {
-  apiVersion: "2022-11-15",
-});
-const stripe = isTest()
-  ? require("../../tests/utils/stripeMock").stripe
-  : realStripe;
+let stripe;
+if (isTest()) {
+  stripe = require("../../tests/utils/stripeMock").stripe;
+} else {
+  const Stripe = require("stripe");
+  stripe = new Stripe(config.stripeKey, { apiVersion: "2022-11-15" });
+}
 
 router.get("/subscription", authRequired, async (req, res) => {
   try {
