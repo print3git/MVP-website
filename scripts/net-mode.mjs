@@ -1,7 +1,15 @@
 import { execSync } from "child_process";
 
+let offlineReason;
+
 export function isOfflineEnv() {
-  if (process.env.SKIP_NET_CHECKS === "1" || process.env.CI_NO_NET === "1") {
+  if (process.env.SKIP_NET_CHECKS === "1") {
+    offlineReason = "SKIP_NET_CHECKS=1";
+    setOfflineEnv();
+    return true;
+  }
+  if (process.env.CI_NO_NET === "1") {
+    offlineReason = "CI_NO_NET=1";
     setOfflineEnv();
     return true;
   }
@@ -12,6 +20,7 @@ export function isOfflineEnv() {
     process.env.HTTPS_PROXY;
   const sandbox = process.env.CI_SANDBOX === "1";
   if (sandbox) {
+    offlineReason = "CI_SANDBOX=1";
     setOfflineEnv();
     return true;
   }
@@ -23,15 +32,18 @@ export function isOfflineEnv() {
         { stdio: "ignore" },
       );
     } catch {
+      offlineReason = "npm registry unreachable";
       setOfflineEnv();
       return true;
     }
   }
+  offlineReason = undefined;
   return false;
 }
 
 export function logOfflineSkip(step) {
-  console.log(`offline mode: skipping ${step}`);
+  const reason = offlineReason ? ` (${offlineReason})` : "";
+  console.log(`offline mode: skipping ${step}${reason}`);
 }
 
 export function withRetries(cmd, { retries = 3, timeout = 10000 } = {}) {
