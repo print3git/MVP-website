@@ -1,5 +1,6 @@
 module.exports = {
   setupFiles: [
+    "<rootDir>/backend/jest.setup.env.js",
     "<rootDir>/test/jest.setup.ts",
     "<rootDir>/backend/tests/setupGlobals.js",
   ],
@@ -33,5 +34,4 @@ module.exports = {
       statements: 80,
     },
   },
-  setupFiles: ["<rootDir>/jest.setup.env.js"],
 };

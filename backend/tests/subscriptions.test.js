@@ -33,7 +33,6 @@ const mockDb = {
   insertReferredOrder: jest.fn(),
 };
 jest.mock("../db", () => mockDb);
-jest.mock("../../db", () => mockDb);
 const db = require("../db");
 
 const { stripe } = require("./utils/stripeMock");
