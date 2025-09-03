@@ -54,17 +54,6 @@ async function run(args) {
     require("./ensure-root-deps.js");
   }
 
-  let tsJestMissing = false;
-  try {
-    require.resolve("ts-jest");
-  } catch {
-    tsJestMissing = true;
-    if (!offline) {
-      console.error("Missing ts-jest; run `npm run setup` before testing.");
-      process.exit(1);
-    }
-  }
-
   verifyFiles(args);
   console.log("run-jest cwd:", process.cwd());
   const corePath = resolveFromPaths("@jest/core");
@@ -121,6 +110,19 @@ async function run(args) {
   });
   if (isBackendTest && !configProvided) {
     parsed.config = backendConfig;
+  }
+  if (!offline && isBackendTest && !process.env.SKIP_BACKEND_DEPS_CHECK) {
+    require(path.join(backendRoot, "scripts", "ensure-deps.js"));
+  }
+  let tsJestMissing = false;
+  try {
+    require.resolve("ts-jest");
+  } catch {
+    tsJestMissing = true;
+    if (!offline) {
+      console.error("Missing ts-jest; run `npm run setup` before testing.");
+      process.exit(1);
+    }
   }
   if (offline && tsJestMissing) {
     parsed.config = isBackendTest ? backendOfflineConfig : defaultOfflineConfig;
