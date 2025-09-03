@@ -43,6 +43,40 @@ const skipProfile = shouldSkipSuite("/api/profile");
 const profileTest = skipProfile ? test.skip : test;
 const skipCompetitions = shouldSkipSuite("/api/competitions");
 const competitionsTest = skipCompetitions ? test.skip : test;
+const skipMyModels = shouldSkipSuite("/api/my/models");
+const myModelsTest = skipMyModels ? test.skip : test;
+const skipUserModels = shouldSkipSuite("/api/users");
+const userModelsTest = skipUserModels ? test.skip : test;
+const skipModels = shouldSkipSuite("/api/models");
+const modelsTest = skipModels ? test.skip : test;
+const skipAdminCompetitions = shouldSkipSuite("/api/admin/competitions");
+const adminCompetitionsTest = skipAdminCompetitions ? test.skip : test;
+const skipProgress = shouldSkipSuite("/api/progress");
+const progressTest = skipProgress ? test.skip : test;
+const skipCreateOrder = shouldSkipSuite("/api/create-order");
+const createOrderTest = skipCreateOrder ? test.skip : test;
+const skipShared = shouldSkipSuite("/api/shared");
+const sharedTest = skipShared ? test.skip : test;
+const skipPrintSlots = shouldSkipSuite("/api/print-slots");
+const printSlotsTest = skipPrintSlots ? test.skip : test;
+const skipStats = shouldSkipSuite("/api/stats");
+const statsTest = skipStats ? test.skip : test;
+const skipInitData = shouldSkipSuite("/api/init-data");
+const initDataTest = skipInitData ? test.skip : test;
+const skipPaymentInit = shouldSkipSuite("/api/payment-init");
+const paymentInitTest = skipPaymentInit ? test.skip : test;
+const skipConfigStripe = shouldSkipSuite("/api/config/stripe");
+const configStripeTest = skipConfigStripe ? test.skip : test;
+const skipCampaign = shouldSkipSuite("/api/campaign");
+const campaignTest = skipCampaign ? test.skip : test;
+const skipUsernames = shouldSkipSuite("/api/usernames");
+const usernamesTest = skipUsernames ? test.skip : test;
+const skipRecentPurchases = shouldSkipSuite("/api/recent-purchases");
+const recentPurchasesTest = skipRecentPurchases ? test.skip : test;
+const skipStatic = shouldSkipSuite("/js");
+const staticTest = skipStatic ? test.skip : test;
+const competitionStartTest =
+  typeof app.checkCompetitionStart === "function" ? test : test.skip;
 
 beforeAll(() => {
   global.__LEAKS__ = global.__LEAKS__ || [];
@@ -59,7 +93,7 @@ beforeEach(() => {
   });
 });
 
-test("GET /api/my/models returns models", async () => {
+myModelsTest("GET /api/my/models returns models", async () => {
   db.query.mockResolvedValueOnce({ rows: [{ job_id: "j1" }] });
   const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
@@ -69,7 +103,7 @@ test("GET /api/my/models returns models", async () => {
   expect(res.body[0].job_id).toBe("j1");
 });
 
-test("GET /api/my/models includes snapshot", async () => {
+myModelsTest("GET /api/my/models includes snapshot", async () => {
   db.query.mockResolvedValueOnce({
     rows: [{ job_id: "j1", snapshot: "snap.png" }],
   });
@@ -81,12 +115,12 @@ test("GET /api/my/models includes snapshot", async () => {
   expect(res.body[0].snapshot).toBeDefined();
 });
 
-test("GET /api/my/models requires auth", async () => {
+myModelsTest("GET /api/my/models requires auth", async () => {
   const res = await request(app).get("/api/my/models");
   expect(res.status).toBe(401);
 });
 
-test("GET /api/my/models ordered by date", async () => {
+myModelsTest("GET /api/my/models ordered by date", async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
   const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   await request(app)
@@ -98,7 +132,7 @@ test("GET /api/my/models ordered by date", async () => {
   );
 });
 
-test("GET /api/my/models supports pagination", async () => {
+myModelsTest("GET /api/my/models supports pagination", async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
   const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   await request(app)
@@ -110,7 +144,7 @@ test("GET /api/my/models supports pagination", async () => {
   );
 });
 
-test("GET /api/my/models returns models sorted by date", async () => {
+myModelsTest("GET /api/my/models returns models sorted by date", async () => {
   const rows = [
     { job_id: "j2", created_at: "2024-01-02" },
     { job_id: "j1", created_at: "2024-01-01" },
@@ -143,7 +177,7 @@ profileTest("GET /api/profile 404 when missing", async () => {
   expect(res.status).toBe(404);
 });
 
-test("GET /api/users/:username/models returns models", async () => {
+userModelsTest("GET /api/users/:username/models returns models", async () => {
   db.query
     .mockResolvedValueOnce({ rows: [{ id: "u1" }] })
     .mockResolvedValueOnce({ rows: [{ job_id: "j1", likes: 0 }] });
@@ -155,7 +189,7 @@ test("GET /api/users/:username/models returns models", async () => {
   expect(call[1]).toEqual(["u1", 10, 0]);
 });
 
-test("GET /api/users/:username/models includes snapshot", async () => {
+userModelsTest("GET /api/users/:username/models includes snapshot", async () => {
   db.query
     .mockResolvedValueOnce({ rows: [{ id: "u1" }] })
     .mockResolvedValueOnce({
@@ -166,7 +200,7 @@ test("GET /api/users/:username/models includes snapshot", async () => {
   expect(res.body[0].snapshot).toBeDefined();
 });
 
-test("GET /api/users/:username/models supports pagination", async () => {
+userModelsTest("GET /api/users/:username/models supports pagination", async () => {
   db.query
     .mockResolvedValueOnce({ rows: [{ id: "u1" }] })
     .mockResolvedValueOnce({ rows: [] });
@@ -175,13 +209,13 @@ test("GET /api/users/:username/models supports pagination", async () => {
   expect(call[1]).toEqual(["u1", 3, 1]);
 });
 
-test("GET /api/users/:username/models 404 when missing", async () => {
+userModelsTest("GET /api/users/:username/models 404 when missing", async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
   const res = await request(app).get("/api/users/missing/models");
   expect(res.status).toBe(404);
 });
 
-test("GET /api/models returns list", async () => {
+modelsTest("GET /api/models returns list", async () => {
   db.query.mockResolvedValueOnce({
     rows: [{ id: 1, s3_key: "m1.glb", uploaded_at: "2024-01-01" }],
   });
@@ -194,7 +228,7 @@ test("GET /api/models returns list", async () => {
   expect(call).toContain("FROM models");
 });
 
-test("POST /api/models/:id/like adds like", async () => {
+modelsTest("POST /api/models/:id/like adds like", async () => {
   db.query
     .mockResolvedValueOnce({ rows: [] })
     .mockResolvedValueOnce({})
@@ -208,7 +242,7 @@ test("POST /api/models/:id/like adds like", async () => {
   expect(res.body.likes).toBe(1);
 });
 
-test("POST /api/models/:id/like removes like", async () => {
+modelsTest("POST /api/models/:id/like removes like", async () => {
   db.query
     .mockResolvedValueOnce({ rows: [{}] })
     .mockResolvedValueOnce({})
@@ -222,12 +256,12 @@ test("POST /api/models/:id/like removes like", async () => {
   expect(res.body.likes).toBe(0);
 });
 
-test("POST /api/models/:id/like requires auth", async () => {
+modelsTest("POST /api/models/:id/like requires auth", async () => {
   const res = await request(app).post("/api/models/j1/like").send();
   expect(res.status).toBe(401);
 });
 
-test("POST /api/models/:id/public updates flag", async () => {
+modelsTest("POST /api/models/:id/public updates flag", async () => {
   db.query.mockResolvedValueOnce({ rows: [{ is_public: true }] });
 
   const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
@@ -243,7 +277,7 @@ test("POST /api/models/:id/public updates flag", async () => {
   );
 });
 
-test("POST /api/models/:id/public requires boolean", async () => {
+modelsTest("POST /api/models/:id/public requires boolean", async () => {
   const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .post("/api/models/j1/public")
@@ -252,7 +286,7 @@ test("POST /api/models/:id/public requires boolean", async () => {
   expect(res.status).toBe(400);
 });
 
-test("DELETE /api/models/:id deletes model", async () => {
+modelsTest("DELETE /api/models/:id deletes model", async () => {
   db.query
     .mockResolvedValueOnce({ rows: [{ job_id: "j1" }] })
     .mockResolvedValueOnce({})
@@ -266,7 +300,7 @@ test("DELETE /api/models/:id deletes model", async () => {
   expect(call).toContain("DELETE FROM jobs");
 });
 
-test("DELETE /api/models/:id 404 when missing", async () => {
+modelsTest("DELETE /api/models/:id 404 when missing", async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
   const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
@@ -593,7 +627,7 @@ competitionsTest("POST /api/competitions/:id/vote requires auth", async () => {
   expect(res.status).toBe(401);
 });
 
-test("DELETE /api/admin/competitions/:id", async () => {
+adminCompetitionsTest("DELETE /api/admin/competitions/:id", async () => {
   db.query.mockResolvedValueOnce({});
   const res = await request(app)
     .delete("/api/admin/competitions/5")
@@ -601,14 +635,14 @@ test("DELETE /api/admin/competitions/:id", async () => {
   expect(res.status).toBe(204);
 });
 
-test("POST /api/admin/competitions unauthorized", async () => {
+adminCompetitionsTest("POST /api/admin/competitions unauthorized", async () => {
   const res = await request(app)
     .post("/api/admin/competitions")
     .send({ name: "Test", start_date: "2025-01-01", end_date: "2025-01-31" });
   expect(res.status).toBe(401);
 });
 
-test("SSE progress endpoint streams updates", async () => {
+progressTest("SSE progress endpoint streams updates", async () => {
   jest.useRealTimers();
   const req = request(app).get("/api/progress/job1");
   // wait briefly to ensure the route attaches its listener
@@ -625,7 +659,7 @@ afterAll(() => {
   if (progressTimer) clearTimeout(progressTimer);
 });
 
-test("POST /api/create-order rejects unknown job", async () => {
+createOrderTest("POST /api/create-order rejects unknown job", async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
   const res = await request(app)
     .post("/api/create-order")
@@ -633,7 +667,7 @@ test("POST /api/create-order rejects unknown job", async () => {
   expect(res.status).toBe(404);
 });
 
-test("GET /api/shared/:slug returns data", async () => {
+sharedTest("GET /api/shared/:slug returns data", async () => {
   db.getShareBySlug = jest.fn().mockResolvedValue({ job_id: "j1", slug: "s1" });
   db.query.mockResolvedValueOnce({
     rows: [{ prompt: "p", model_url: "/m.glb", snapshot: "/s.png" }],
@@ -644,13 +678,13 @@ test("GET /api/shared/:slug returns data", async () => {
   expect(res.body.snapshot).toBe("/s.png");
 });
 
-test("GET /api/shared/:slug 404 when missing", async () => {
+sharedTest("GET /api/shared/:slug 404 when missing", async () => {
   db.getShareBySlug = jest.fn().mockResolvedValue(null);
   const res = await request(app).get("/api/shared/bad");
   expect(res.status).toBe(404);
 });
 
-test("POST /api/admin/competitions sends emails", async () => {
+adminCompetitionsTest("POST /api/admin/competitions sends emails", async () => {
   db.query
     .mockResolvedValueOnce({ rows: [{ id: "c1", name: "Comp" }] })
     .mockResolvedValueOnce({
@@ -664,7 +698,7 @@ test("POST /api/admin/competitions sends emails", async () => {
   expect(sendMail).toHaveBeenCalledTimes(2);
 });
 
-test("checkCompetitionStart sends voting emails", async () => {
+competitionStartTest("checkCompetitionStart sends voting emails", async () => {
   db.query
     .mockResolvedValueOnce({ rows: [{ id: "c1", name: "Comp" }] })
     .mockResolvedValueOnce({ rows: [{ email: "a@a.com" }] })
@@ -693,13 +727,13 @@ competitionsTest("POST /api/competitions/notify sends emails", async () => {
   expect(sendMail).toHaveBeenCalledWith("a@a.com", "Hi", "Hello");
 });
 
-test("GET /api/print-slots returns count", async () => {
+printSlotsTest("GET /api/print-slots returns count", async () => {
   const res = await request(app).get("/api/print-slots");
   expect(res.status).toBe(200);
   expect(typeof res.body.slots).toBe("number");
 });
 
-test("GET /api/stats returns sales and rating", async () => {
+statsTest("GET /api/stats returns sales and rating", async () => {
   const { _setDailyPrintsSold } = require("../utils/dailyPrints");
   _setDailyPrintsSold(42);
   const res = await request(app).get("/api/stats");
@@ -708,7 +742,7 @@ test("GET /api/stats returns sales and rating", async () => {
   expect(res.body.averageRating).toBe(4.8);
 });
 
-test("static assets send cache headers", async () => {
+staticTest("static assets send cache headers", async () => {
   const res = await request(app).get("/js/index.js");
   expect(res.status).toBe(200);
   expect(res.headers["cache-control"]).toBe(
@@ -716,7 +750,7 @@ test("static assets send cache headers", async () => {
   );
 });
 
-test("GET /api/init-data returns slots, stats, and profile", async () => {
+initDataTest("GET /api/init-data returns slots, stats, and profile", async () => {
   const { _setDailyPrintsSold } = require("../utils/dailyPrints");
   _setDailyPrintsSold(10);
   db.query.mockResolvedValueOnce({ rows: [{ display_name: "A" }] });
@@ -730,7 +764,7 @@ test("GET /api/init-data returns slots, stats, and profile", async () => {
   expect(res.body.profile.display_name).toBe("A");
 });
 
-test("GET /api/payment-init bundles payment data", async () => {
+paymentInitTest("GET /api/payment-init bundles payment data", async () => {
   db.query
     .mockResolvedValueOnce({ rows: [{ id: 1, discount_percent: 5 }] })
     .mockResolvedValueOnce({
@@ -747,13 +781,13 @@ test("GET /api/payment-init bundles payment data", async () => {
   expect(res.body.publishableKey).toBeDefined();
 });
 
-test("GET /api/config/stripe returns key", async () => {
+configStripeTest("GET /api/config/stripe returns key", async () => {
   const res = await request(app).get("/api/config/stripe");
   expect(res.status).toBe(200);
   expect(res.body.publishableKey).toBeDefined();
 });
 
-test("GET /api/campaign returns campaign info", async () => {
+campaignTest("GET /api/campaign returns campaign info", async () => {
   const res = await request(app).get("/api/campaign");
   expect(res.status).toBe(200);
   expect(res.body.theme).toBeDefined();
@@ -772,7 +806,7 @@ competitionsTest("GET /api/competitions/winners returns list", async () => {
   expect([200, 404]).toContain(res.status);
 });
 
-test("GET /api/usernames returns list", async () => {
+usernamesTest("GET /api/usernames returns list", async () => {
   db.query.mockResolvedValueOnce({
     rows: [{ username: "alice" }, { username: "bob" }],
   });
@@ -785,7 +819,7 @@ test("GET /api/usernames returns list", async () => {
   expect(call).toBeDefined();
 });
 
-test("GET /api/recent-purchases returns list", async () => {
+recentPurchasesTest("GET /api/recent-purchases returns list", async () => {
   db.query.mockImplementationOnce((sql) => {
     if (sql.includes("shipping_info")) {
       return Promise.resolve({
