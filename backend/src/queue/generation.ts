@@ -1,11 +1,11 @@
 import { EventEmitter } from "events";
 import { randomUUID } from "crypto";
-import * as db from "../db.js";
+import * as db from "../db";
 import { generateModel } from "../lib/generateModel";
 import { preserveColors } from "../lib/preserveColors";
 import { uploadS3 } from "../lib/uploadS3";
 import { logError } from "../lib/logError";
-import logger from "../logger.js";
+import logger from "../logger";
 
 export interface GenerationPayload {
   prompt?: string;

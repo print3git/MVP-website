@@ -3,7 +3,7 @@ import { pipeline } from "stream/promises";
 import path from "path";
 import { uploadFile } from "./uploadS3";
 import { capture } from "./logger";
-import logger from "../logger.js";
+import logger from "../logger";
 
 /**
  * Generate an image from text using Stability AI and upload to S3.

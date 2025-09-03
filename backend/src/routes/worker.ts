@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { isReady } from "../../queue/printWorker";
-import logger from "../logger.js";
+import logger from "../logger";
 import { capture } from "../lib/logger";
 
 const router = Router();

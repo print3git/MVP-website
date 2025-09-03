@@ -2,7 +2,7 @@ import { Router, type Request } from "express";
 import multer from "multer";
 import { userIdFromAuth } from "../lib/auth";
 import { logError } from "../lib/logError";
-import logger from "../logger.js";
+import logger from "../logger";
 import { enqueue } from "../queue/generation";
 
 const upload = multer();

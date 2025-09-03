@@ -1,5 +1,5 @@
 import express from "express";
-import logger from "./logger.js";
+import logger from "./logger";
 import errorHandler from "./middleware/errorHandler";
 
 const app = express();
@@ -81,11 +81,38 @@ try {
 
 try {
   (() => {
+    const r = require("./routes/create-order");
+    app.use("/api", r.default || r);
+  })();
+} catch (err) {
+  logger.error("Failed to load create-order router", err as Error);
+}
+
+try {
+  (() => {
+    const r = require("./routes/auth");
+    app.use("/api", r.default || r);
+  })();
+} catch (err) {
+  logger.error("Failed to load auth router", err as Error);
+}
+
+try {
+  (() => {
     const r = require("./routes/rewards");
     app.use("/api", r.default || r);
   })();
 } catch (err) {
   logger.error("Failed to load rewards router", err as Error);
+}
+
+try {
+  (() => {
+    const r = require("./routes/discount");
+    app.use("/api", r.default || r);
+  })();
+} catch (err) {
+  logger.error("Failed to load discount router", err as Error);
 }
 
 try {

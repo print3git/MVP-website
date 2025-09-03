@@ -1,9 +1,9 @@
 import { Router, type Request, type Response } from "express";
 import Stripe from "stripe";
-import logger from "../logger.js";
+import logger from "../logger";
 import { getEnv, isTest } from "../env";
 import { capture } from "../lib/logger";
-import { getEnv as getEnvVar } from "../../utils/getEnv.js";
+import { getEnv as getEnvVar } from "../../utils/getEnv";
 
 const router = Router();
 

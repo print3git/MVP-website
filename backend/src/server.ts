@@ -3,8 +3,8 @@ config();
 
 import { app } from "./app";
 import { getEnv } from "./env";
-import logger from "./logger.js";
-import { getEnv as getEnvVar } from "../utils/getEnv.js";
+import logger from "./logger";
+import { getEnv as getEnvVar } from "../utils/getEnv";
 
 // Validate environment at startup
 getEnv();

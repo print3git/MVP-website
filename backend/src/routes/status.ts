@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { emitter, getStatus } from "../queue/generation";
-import logger from "../logger.js";
-import { capture } from "../lib/logger";
-import * as db from "../db.js";
+import logger from "../logger";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const db = require("../../db.js");
 
 const router = Router();
 
@@ -10,14 +10,13 @@ router.get("/status", async (req, res) => {
   const limit = parseInt((req.query.limit as string) || "10", 10);
   const offset = parseInt((req.query.offset as string) || "0", 10);
   try {
-    await db.query(
+    const { rows } = await db.query(
       "SELECT * FROM jobs ORDER BY created_at DESC LIMIT $1 OFFSET $2",
       [limit, offset],
     );
-    res.json([]);
+    res.json(rows);
   } catch (err) {
     logger.error("status_list_failed", err as Error);
-    capture(err);
     res.status(500).json({ error: "unexpected_error" });
   }
 });
@@ -42,7 +41,6 @@ router.get("/status/:id", async (req, res) => {
     res.json(result.rows[0]);
   } catch (err) {
     logger.error("status_check_failed", { id });
-    capture(err);
     res.status(500).json({ error: "unexpected_error" });
   }
 });
@@ -84,7 +82,6 @@ router.get("/progress/:id", (req, res) => {
     req.on("close", () => emitter.removeListener(`progress:${id}`, handler));
   } catch (err) {
     logger.error("progress_check_failed", { id });
-    capture(err);
     res.status(500).end();
   }
 });

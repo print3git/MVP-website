@@ -1,1 +1,1 @@
-export * from "./stripAnsi.js";
+export * from "./stripAnsi";

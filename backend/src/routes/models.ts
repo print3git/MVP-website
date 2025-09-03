@@ -1,10 +1,10 @@
 import { Router } from "express";
-import validate from "../../middleware/validate.js";
+import validate from "../../middleware/validate";
 import { z } from "zod";
-import logger from "../logger.js";
+import logger from "../logger";
 import { capture } from "../lib/logger";
 import { getEnv as getEnvConfig } from "../env";
-import { getPgPool } from "../db.js";
+import { getPgPool } from "../db";
 
 const router = Router();
 

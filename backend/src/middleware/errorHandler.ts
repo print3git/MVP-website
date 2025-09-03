@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import logger from "../logger.js";
+import logger from "../logger";
 import { capture } from "../lib/logger";
 
 export default function errorHandler(

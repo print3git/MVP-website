@@ -1,9 +1,9 @@
 import { Router } from "express";
-import validate from "../../middleware/validate.js";
-import logger from "../logger.js";
+import validate from "../../middleware/validate";
+import logger from "../logger";
 import { capture } from "../lib/logger";
 import { insertItem, insertItemSchema } from "../lib/items";
-import { getPgPool } from "../db.js";
+import { getPgPool } from "../db";
 
 const router = Router();
 
