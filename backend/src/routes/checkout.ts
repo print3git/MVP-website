@@ -2,7 +2,6 @@ import { Router } from "express";
 import Stripe from "stripe";
 import logger from "../logger";
 import { capture } from "../lib/logger";
-import { isTest } from "../env";
 
 // simple in-memory store used by tests to track orders
 export const orders = new Map<
@@ -14,7 +13,8 @@ const router = Router();
 
 router.post("/checkout/create", async (req, res) => {
   try {
-    const secretKey = process.env.STRIPE_SECRET_KEY;
+    const secretKey =
+      process.env.STRIPE_SECRET_KEY || process.env.STRIPE_TEST_KEY || "";
     const successUrl = process.env.FRONTEND_SUCCESS_URL;
     const cancelUrl = process.env.FRONTEND_CANCEL_URL;
 
@@ -61,12 +61,9 @@ router.post("/checkout/create", async (req, res) => {
       normalized.push({ price: item.price, quantity: qty });
     }
 
-    const realStripe = new Stripe(secretKey, {
+    const stripe = new Stripe(secretKey, {
       apiVersion: "2022-11-15",
     });
-    const stripe = isTest()
-      ? require("../../tests/utils/stripeMock").stripe
-      : realStripe;
 
     const metadataSanitized =
       metadata &&

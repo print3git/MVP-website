@@ -22,10 +22,10 @@ jest.mock("pg", () => {
 });
 
 // mock logger
-jest.mock("../logger.js", () => ({
+jest.mock("../logger", () => ({
   error: jest.fn(),
 }));
-const logger = require("../logger.js");
+const logger = require("../logger");
 
 function setDb(rows: any[]) {
   mockRows = rows;
