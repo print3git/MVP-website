@@ -7,9 +7,6 @@ const { capture } = require("../lib/logger");
 const prohibited = require("../../prohibited_countries.json");
 
 const router = Router();
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
-  apiVersion: "2022-11-15",
-});
 
 function getUserId(req) {
   const auth = req.headers["authorization"] || "";
@@ -25,6 +22,9 @@ function getUserId(req) {
 
 router.post("/create-order", async (req, res) => {
   try {
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
+      apiVersion: "2022-11-15",
+    });
     const {
       jobId,
       price,
