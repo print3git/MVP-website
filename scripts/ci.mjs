@@ -1,11 +1,8 @@
 #!/usr/bin/env node
 import { execSync } from "child_process";
-import { isOfflineEnv, logOfflineSkip } from "./net-mode.mjs";
+import { isOfflineEnv } from "./net-mode.mjs";
 
-if (isOfflineEnv()) {
-  logOfflineSkip("ci");
-  process.exit(0);
-}
+isOfflineEnv();
 
 if (process.env.SKIP_PW_DEPS === "1") {
   process.env.PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1";
