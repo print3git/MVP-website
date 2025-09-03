@@ -24,7 +24,7 @@ router.post("/create-order", async (req, res) => {
       utmCampaign,
       adSubreddit,
     } = req.body || {};
-    if (!jobId || !price || !productType) {
+    if (!jobId) {
       res.status(400).json({ error: "bad_request" });
       return;
     }
@@ -35,6 +35,10 @@ router.post("/create-order", async (req, res) => {
     const job = jobRes.rows[0];
     if (!job) {
       res.status(404).json({ error: "not_found" });
+      return;
+    }
+    if (!price || !productType) {
+      res.status(400).json({ error: "bad_request" });
       return;
     }
     if (shippingInfo?.country && prohibited.includes(shippingInfo.country)) {
