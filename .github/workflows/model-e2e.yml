@@ -41,7 +41,7 @@ jobs:
       - run: |
           nohup npm run start > /tmp/app.log 2>&1 &
           npx wait-on http://localhost:3000 --timeout 180000
-            - name: Run Playwright model tests (skip if specs are missing)
+      - name: Run Playwright model tests (skip if specs are missing)
         shell: bash
         run: |
           set -euo pipefail

@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "main": "src/server.js",
   "scripts": {
-    "test": "node scripts/ensure-tests-exist.js && cross-env PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 jest --runInBand",
+    "test": "NODE_ENV=test node scripts/ensure-tests-exist.js && PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 jest --runInBand",
     "test-ci": "node scripts/ensure-tests-exist.js && jest --ci --passWithNoTests=false",
     "test:unit": "npm test",
     "test:backend": "jest --runInBand",
-    "ci": "npm run validate-env && cross-env SKIP_PW_DEPS=1 PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm test",
+    "ci": "npm run validate-env && SKIP_PW_DEPS=1 PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm test",
     "validate-env": "npm run validate-env --prefix ..",
     "start": "node src/server.js",
     "start:api": "node src/server.js",

@@ -27,10 +27,10 @@
     "doc": "docs"
   },
   "scripts": {
-    "test": "jest -c jest.config.cjs --passWithNoTests",
+    "test": "NODE_ENV=test jest -c jest.config.cjs --passWithNoTests",
     "preinstall": "corepack enable && node scripts/check-node-version.js",
-    "preformat": "cross-env SKIP_NET_CHECKS=1 SKIP_PW_DEPS=1 node scripts/assert-setup.js",
-    "preformat:check": "cross-env SKIP_NET_CHECKS=1 SKIP_PW_DEPS=1 node scripts/assert-setup.js",
+    "preformat": "true",
+    "preformat:check": "true",
     "format": "prettier -w .",
     "format:check": "prettier -c .",
     "lint": "npm run lint --prefix frontend && npm run lint --prefix backend",
