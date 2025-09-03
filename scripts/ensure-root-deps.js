@@ -59,9 +59,22 @@ const winstonPath = path.join(
   "winston",
   "package.json",
 );
+const tsJestPath = path.join(
+  __dirname,
+  "..",
+  "node_modules",
+  "ts-jest",
+  "package.json",
+);
 
 const networkCheck = path.join(__dirname, "network-check.js");
-const requiredPaths = [pluginPath, expressPath, playwrightPath, winstonPath];
+const requiredPaths = [
+  pluginPath,
+  expressPath,
+  playwrightPath,
+  winstonPath,
+  tsJestPath,
+];
 const skipNetChecks = Boolean(process.env.SKIP_NET_CHECKS);
 
 function cleanupNpmCache() {
