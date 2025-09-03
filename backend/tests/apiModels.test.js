@@ -18,26 +18,30 @@ afterEach(() => {
 });
 
 test("GET /api/models returns list", async () => {
-  db.query.mockResolvedValueOnce({
-    rows: [{ id: 1, s3_key: "m1.glb", uploaded_at: "2024-01-01" }],
-  });
+  const rows = [
+    {
+      id: 1,
+      prompt: "p",
+      s3_key: "m1.glb",
+      cloudfront_url: "https://cdn.example.com/m1.glb",
+    },
+  ];
+  db.query.mockResolvedValueOnce({ rows });
   const res = await request(app).get("/api/models");
   expect(res.status).toBe(200);
-  expect(res.body).toEqual([
-    { id: 1, key: "m1.glb", uploaded_at: "2024-01-01" },
-  ]);
+  expect(res.body).toEqual(rows);
 });
 
 test("POST /api/models creates model with CDN url", async () => {
-  const body = { prompt: "cat", fileKey: "cat.glb" };
-  const url = `https://${process.env.CLOUDFRONT_MODEL_DOMAIN}/${body.fileKey}`;
+  const body = { prompt: "cat", s3_key: "cat.glb" };
+  const url = `https://${process.env.CLOUDFRONT_MODEL_DOMAIN}/${body.s3_key}`;
   db.query.mockResolvedValueOnce({
     rows: [
       {
         id: 2,
         prompt: body.prompt,
-        filekey: body.fileKey,
-        url,
+        s3_key: body.s3_key,
+        cloudfront_url: url,
         created_at: "2024-01-02",
       },
     ],
@@ -47,13 +51,13 @@ test("POST /api/models creates model with CDN url", async () => {
   expect(res.body).toEqual({
     id: 2,
     prompt: body.prompt,
-    filekey: body.fileKey,
-    url,
+    s3_key: body.s3_key,
+    cloudfront_url: url,
     created_at: "2024-01-02",
   });
   const call = db.query.mock.calls[0];
   expect(call[0]).toContain("INSERT INTO models");
-  expect(call[1]).toEqual([body.prompt, body.fileKey, url]);
+  expect(call[1]).toEqual([body.prompt, body.s3_key, url]);
 });
 
 test("POST /api/models requires fields", async () => {
@@ -61,20 +65,24 @@ test("POST /api/models requires fields", async () => {
   expect(res.status).toBe(400);
 });
 
-test("POST /api/models rejects invalid fileKey", async () => {
+test("POST /api/models rejects invalid s3_key", async () => {
   const res = await request(app)
     .post("/api/models")
-    .send({ prompt: "a", fileKey: "../bad" });
+    .send({ prompt: "a", s3_key: "../bad" });
   expect(res.status).toBe(400);
 });
 
 test("POST /api/models accepts hyphen and underscore", async () => {
-  const body = { prompt: "a", fileKey: "my-file_1.glb" };
-  const url = `https://${process.env.CLOUDFRONT_MODEL_DOMAIN}/${body.fileKey}`;
-  db.query.mockResolvedValueOnce({ rows: [{ id: 3, ...body, url }] });
+  const body = { prompt: "a", s3_key: "my-file_1.glb" };
+  const url = `https://${process.env.CLOUDFRONT_MODEL_DOMAIN}/${body.s3_key}`;
+  db.query.mockResolvedValueOnce({
+    rows: [
+      { id: 3, prompt: body.prompt, s3_key: body.s3_key, cloudfront_url: url },
+    ],
+  });
   const res = await request(app).post("/api/models").send(body);
   expect(res.status).toBe(201);
-  expect(res.body.url).toBe(url);
+  expect(res.body.cloudfront_url).toBe(url);
 });
 
 test("POST /api/models/:id/public toggles visibility", async () => {
