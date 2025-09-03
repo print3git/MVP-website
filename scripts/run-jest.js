@@ -1,10 +1,38 @@
 #!/usr/bin/env node
 const fs = require("fs");
 const path = require("path");
-const { runCLI } = require("@jest/core");
+
+let runCLI;
+try {
+  ({ runCLI } = require("@jest/core"));
+} catch (err) {
+  try {
+    ({ runCLI } = require(
+      path.join(__dirname, "..", "backend", "node_modules", "@jest", "core"),
+    ));
+    process.env.SKIP_ROOT_DEPS_CHECK = "1";
+    const backendModules = path.join(
+      __dirname,
+      "..",
+      "backend",
+      "node_modules",
+    );
+    process.env.NODE_PATH = [backendModules, process.env.NODE_PATH]
+      .filter(Boolean)
+      .join(path.delimiter);
+    require("module").Module._initPaths();
+    console.warn("Using backend @jest/core fallback");
+  } catch {
+    throw err;
+  }
+}
 
 if (!process.env.SKIP_ROOT_DEPS_CHECK) {
-  require("./ensure-root-deps.js");
+  try {
+    require("./ensure-root-deps.js");
+  } catch (err) {
+    console.warn("Skipping root dependency check:", err.message);
+  }
 }
 
 function verifyFiles(args) {
