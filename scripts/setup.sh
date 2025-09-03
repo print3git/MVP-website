@@ -9,9 +9,9 @@ fi
 # Skip heavy Playwright and apt dependencies when requested or offline
 if [ "$SKIP_PW_DEPS" = "1" ] || [ "$PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD" = "1" ] || [ "$OFFLINE" = "1" ]; then
   echo 'Skipping Playwright/apt deps'
-  npm ci --ignore-scripts --prefer-offline --no-audit --fund=false
-  npm ci --ignore-scripts --prefer-offline --no-audit --fund=false --prefix backend
-  npm ci --ignore-scripts --prefer-offline --no-audit --fund=false --prefix backend/dalle_server
+  PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm ci --prefer-offline --no-audit --fund=false
+  PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm ci --prefer-offline --no-audit --fund=false --prefix backend
+  PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm ci --prefer-offline --no-audit --fund=false --prefix backend/dalle_server
   touch .setup-complete
   exit 0
 fi
@@ -151,13 +151,13 @@ run_ci() {
   local attempt=1
   local max_attempts=3
   while [ $attempt -le $max_attempts ]; do
-    if npm ci $extra --no-audit --no-fund --ignore-scripts 2>ci.log; then
+    if PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm ci $extra --no-audit --no-fund 2>ci.log; then
       rm -f ci.log
       return 0
     fi
     if grep -q "EUSAGE" ci.log; then
       echo "npm ci failed in $dir due to lock mismatch. Running npm install..." >&2
-      npm install $extra --no-audit --no-fund --ignore-scripts
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm install $extra --no-audit --no-fund
     elif grep -E -q "TAR_ENTRY_ERROR|ENOENT|ENOTEMPTY|tarball .*corrupted" ci.log; then
       echo "npm ci encountered tar or filesystem errors in $dir. Cleaning cache and retrying ($attempt/$max_attempts)..." >&2
       cleanup_npm_cache
@@ -169,7 +169,7 @@ run_ci() {
     fi
     attempt=$((attempt + 1))
   done
-  npm ci $extra --no-audit --no-fund --ignore-scripts
+  PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm ci $extra --no-audit --no-fund
   rm -f ci.log
 }
 
