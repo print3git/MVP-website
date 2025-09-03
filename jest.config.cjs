@@ -2,7 +2,6 @@ let config;
 try {
   require.resolve("ts-jest");
   config = {
-    preset: "ts-jest",
     testEnvironment: "node",
     roots: ["<rootDir>"],
     transform: {
