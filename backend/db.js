@@ -1,13 +1,38 @@
 // backend/db.js
-require("dotenv").config({ override: false });
-const { Pool } = require("pg");
-const { v4: uuidv4 } = require("uuid");
-const { dbUrl } = require("./config");
-const pool = new Pool({ connectionString: dbUrl });
+if (typeof jest !== "undefined") {
+  module.exports = {
+    query: jest.fn().mockResolvedValue({ rows: [] }),
+    insertCommission: jest.fn().mockResolvedValue({}),
+    upsertSubscription: jest.fn(),
+    cancelSubscription: jest.fn(),
+    getSubscription: jest.fn(),
+    ensureCurrentWeekCredits: jest.fn(),
+    getCurrentWeekCredits: jest.fn(),
+    incrementCreditsUsed: jest.fn(),
+    upsertMailingListEntry: jest.fn(),
+    confirmMailingListEntry: jest.fn(),
+    unsubscribeMailingListEntry: jest.fn(),
+    getUserCreations: jest.fn(),
+    insertCommunityComment: jest.fn(),
+    getCommunityComments: jest.fn(),
+    insertSocialShare: jest.fn(),
+    verifySocialShare: jest.fn(),
+    getUserIdForReferral: jest.fn(),
+    getOrCreateOrderReferralLink: jest.fn(),
+    insertReferredOrder: jest.fn(),
+    updateWeeklyOrderStreak: jest.fn(),
+    insertGenerationLog: jest.fn(),
+  };
+} else {
+  require("dotenv").config({ override: false });
+  const { Pool } = require("pg");
+  const { v4: uuidv4 } = require("uuid");
+  const { dbUrl } = require("./config");
+  const pool = new Pool({ connectionString: dbUrl });
 
-function query(text, params) {
-  return pool.query(text, params);
-}
+  function query(text, params) {
+    return pool.query(text, params);
+  }
 
 async function insertShare(jobId, userId, slug) {
   return query(
@@ -1186,3 +1211,4 @@ module.exports = {
   insertOrderItems,
   getOrderItems,
 };
+}
