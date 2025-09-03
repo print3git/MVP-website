@@ -6,8 +6,10 @@
  *
  * @module backend/config
  */
-// Ensure compatibility with both default and named exports
-const envModule = require("./src/lib/getEnv");
+// Ensure compatibility with both default and named exports. Explicitly
+// require the JavaScript implementation so Jest doesn't resolve the
+// TypeScript re-export which returns a non-function default export.
+const envModule = require("./src/lib/getEnv.js");
 const getEnv = envModule.getEnv || envModule.default || envModule;
 const { applyMockEnv, mockSecrets } = require("./src/lib/mockEnv");
 const logger = require("./src/logger.js");
