@@ -7,6 +7,10 @@ module.exports = app;
 module.exports.app = app;
 module.exports.default = app;
 
+// ensure middleware stack exists before loading routers
+app.use(express.json());
+
+// load routers individually without failing the whole app if a require errors
 try {
   const r = require("./routes/stripeWebhook");
   app.use(r.default || r);
@@ -14,7 +18,12 @@ try {
   logger.error("Failed to load stripe webhook router", err);
 }
 
-app.use(express.json());
+try {
+  const r = require("./routes/subscription");
+  app.use("/api", r.default || r);
+} catch (err) {
+  logger.error("Failed to load subscription router", err);
+}
 
 try {
   const r = require("./routes/health");
@@ -62,15 +71,6 @@ try {
   })();
 } catch (err) {
   logger.error("Failed to load discount router", err);
-}
-
-try {
-  (() => {
-    const r = require("./routes/subscription");
-    app.use("/api", r.default || r);
-  })();
-} catch (err) {
-  logger.error("Failed to load admin router", err);
 }
 
 try {

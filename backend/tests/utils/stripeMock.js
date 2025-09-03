@@ -4,6 +4,11 @@ const stripe = {
       create: async () => ({ id: "sess", url: "/checkout" }),
     },
   },
+  billingPortal: {
+    sessions: {
+      create: async () => ({ url: "/portal" }),
+    },
+  },
   webhooks: {
     constructEvent: () => ({}),
   },
