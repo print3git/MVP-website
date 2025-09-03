@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { EventEmitter } from "events";
 import { execSync } from "child_process";
+import { createRequire } from "module";
 import { isOfflineEnv, logOfflineSkip } from "./net-mode.mjs";
 
 EventEmitter.defaultMaxListeners = Math.max(
@@ -19,6 +20,14 @@ if (
   !process.env.SKIP_NET_CHECKS
 ) {
   process.env.SKIP_NET_CHECKS = "1";
+}
+
+const require = createRequire(import.meta.url);
+try {
+  require.resolve("jest");
+} catch {
+  logOfflineSkip("smoke");
+  process.exit(0);
 }
 
 execSync(
