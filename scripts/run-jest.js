@@ -38,7 +38,7 @@ async function run(args) {
   const offline = isOfflineEnv();
   if (offline) {
     logOfflineSkip("jest");
-    return;
+    process.exit(0);
   }
 
   let runCLI;
@@ -54,7 +54,6 @@ async function run(args) {
   if (!offline && !process.env.SKIP_ROOT_DEPS_CHECK) {
     require("./ensure-root-deps.js");
   }
-
 
   const skipNetChecks = process.env.SKIP_NET_CHECKS === "1";
   let tsJestMissing = false;
@@ -128,16 +127,6 @@ async function run(args) {
 
   if (!offline && isBackendTest && !process.env.SKIP_BACKEND_DEPS_CHECK) {
     require(path.join(backendRoot, "scripts", "ensure-deps.js"));
-  }
-  let tsJestMissing = false;
-  try {
-    require.resolve("ts-jest");
-  } catch {
-    tsJestMissing = true;
-    if (!offline) {
-      console.error("Missing ts-jest; run `npm run setup` before testing.");
-      process.exit(1);
-    }
   }
   if (offline && tsJestMissing) {
     parsed.config = isBackendTest ? backendOfflineConfig : defaultOfflineConfig;
