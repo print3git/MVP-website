@@ -11,12 +11,13 @@ if (process.env.SKIP_NET_CHECKS) {
   process.exit(0);
 }
 
-// Use the npm ping endpoint to ensure the registry fully responds.
+// Use `npm ping` for the registry so proxy settings from npm are honored.
 const targets = [
   {
     url: "https://registry.npmjs.org/-/ping",
     name: "npm registry",
     required: true,
+    npmPing: true,
   },
   // Skip the Playwright CDN check if the browsers are already installed or the
   // caller explicitly sets SKIP_PW_DEPS. This allows tests to run without
@@ -50,16 +51,25 @@ if (process.env.NETWORK_CHECK_URL) {
     url: process.env.NETWORK_CHECK_URL,
     name: "test url",
     required: true,
+    npmPing: true,
   };
 }
 
-function check(url) {
+function check(target) {
+  const { url, npmPing } = target;
   try {
-    // Use HEAD requests without `-f` so HTTP errors (e.g. 400) still
-    // indicate connectivity instead of failing the check.
-    execSync(`curl -sSIL --max-time 10 -o /dev/null ${url}`, {
-      stdio: "pipe",
-    });
+    if (npmPing) {
+      const registry = url.replace(/\/\-\/ping$/, "");
+      execSync(`npm ping --fetch-retries=0 --registry=${registry}`, {
+        stdio: "pipe",
+      });
+    } else {
+      // Use HEAD requests without `-f` so HTTP errors (e.g. 400) still
+      // indicate connectivity instead of failing the check.
+      execSync(`curl -sSIL --max-time 10 -o /dev/null ${url}`, {
+        stdio: "pipe",
+      });
+    }
     return null;
   } catch (err) {
     const stderr = err.stderr ? err.stderr.toString().trim() : err.message;
@@ -68,6 +78,7 @@ function check(url) {
     // the host is reachable. Allowing this prevents false negatives during
     // validation.
     if (
+      !npmPing &&
       url.includes("cdn.playwright.dev") &&
       /error:\s*[45][0-9]{2}/.test(stderr)
     ) {
@@ -77,8 +88,9 @@ function check(url) {
   }
 }
 
-for (const { url, name, required } of targets) {
-  const error = check(url);
+for (const target of targets) {
+  const { url, name, required } = target;
+  const error = check(target);
   if (error) {
     const log = required ? console.error : console.warn;
     log(`Unable to reach ${name}: ${url}`);
