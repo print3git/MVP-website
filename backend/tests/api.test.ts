@@ -2,7 +2,8 @@ process.env.STRIPE_SECRET_KEY = "test";
 process.env.STRIPE_WEBHOOK_SECRET = "whsec";
 process.env.DB_URL = "postgres://user:pass@localhost/db";
 
-jest.mock("../db", () => ({
+// mock the database module using the same relative path as the app code
+jest.mock("../../db", () => ({
   query: jest.fn().mockResolvedValue({ rows: [] }),
   insertCommission: jest.fn().mockResolvedValue({}),
   upsertSubscription: jest.fn(),

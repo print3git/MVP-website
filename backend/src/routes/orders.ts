@@ -6,10 +6,6 @@ import logger from "../logger.js";
 import { capture } from "../lib/logger";
 import prohibited from "../../prohibited_countries.json" assert { type: "json" };
 const router = Router();
-// Lazily read the Stripe secret so tests don't require full env configuration
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
-  apiVersion: "2022-11-15",
-});
 
 function getUserId(req: any): string | null {
   const auth = req.headers["authorization"] || "";
@@ -25,6 +21,9 @@ function getUserId(req: any): string | null {
 
 router.post("/create-order", async (req, res) => {
   try {
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
+      apiVersion: "2022-11-15",
+    });
     const {
       jobId,
       price,
