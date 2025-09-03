@@ -61,7 +61,7 @@ router.post("/checkout/create", async (req, res) => {
       normalized.push({ price: item.price, quantity: qty });
     }
     const realStripe = new Stripe(secretKey, {
-      apiVersion: "2025-06-30.basil",
+      apiVersion: "2022-11-15",
     });
     const stripe = isTest()
       ? require("../../tests/utils/stripeMock").stripe

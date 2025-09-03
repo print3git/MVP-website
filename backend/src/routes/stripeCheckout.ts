@@ -18,7 +18,7 @@ try {
   process.exit(1);
 }
 const realStripe = new Stripe(STRIPE_SECRET_KEY as string, {
-  apiVersion: "2025-06-30.basil",
+  apiVersion: "2022-11-15",
 });
 const stripe = isTest()
   ? require("../../tests/utils/stripeMock").stripe

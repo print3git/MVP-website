@@ -74,7 +74,7 @@ router.post("/create-order", async (req, res) => {
     const finalTotal = price * quantity - discountCents;
     const stripeSecret = process.env.STRIPE_SECRET_KEY || "test";
     const stripe = new Stripe(stripeSecret, {
-      apiVersion: "2025-06-30.basil",
+      apiVersion: "2022-11-15",
     });
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
