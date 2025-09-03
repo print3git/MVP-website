@@ -1,5 +1,12 @@
 const { Router } = require("express");
-const db = require("../../db.js");
+// Use the module without an explicit extension so Jest's moduleNameMapper
+// and manual mocks for "../../db" take effect consistently during tests.
+// Requiring "../../db.js" bypasses those mocks, causing the real database
+// module to load and resulting in uncalled mock functions in tests.
+// Allow tests to inject a mocked DB via global.__db. If not provided, fall back
+// to requiring the real database module.
+// eslint-disable-next-line no-undef
+const db = global.__db || require("../../db");
 
 const router = Router();
 

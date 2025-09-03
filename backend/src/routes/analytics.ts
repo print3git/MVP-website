@@ -1,5 +1,8 @@
 import { Router } from "express";
-import * as db from "../../db";
+// Allow tests to inject a mocked DB via globalThis.__db. When present, use it;
+// otherwise fall back to requiring the real database module.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const db: any = (globalThis as any).__db ?? require("../../db");
 import logger from "../logger";
 import { capture } from "../lib/logger";
 
