@@ -15,6 +15,12 @@ for (const dep of ["jest", "ts-jest"]) {
   }
 }
 
+// Provide a default domain so requiring routes that depend on
+// `CLOUDFRONT_MODEL_DOMAIN` doesn't throw when the variable is missing.
+if (!process.env.CLOUDFRONT_MODEL_DOMAIN) {
+  process.env.CLOUDFRONT_MODEL_DOMAIN = "cdn.test";
+}
+
 // Load test globals so required environment variables are populated when
 // Jest scans test files via `--listTests`.
 try {
