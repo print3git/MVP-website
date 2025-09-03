@@ -4,6 +4,12 @@ import logger from "../logger";
 import { capture } from "../lib/logger";
 import { isTest } from "../env";
 
+// simple in-memory store used by tests to track orders
+export const orders = new Map<
+  string,
+  { slug: string; email: string; paid: boolean }
+>();
+
 const router = Router();
 
 router.post("/checkout/create", async (req, res) => {

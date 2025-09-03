@@ -40,5 +40,9 @@ export async function insertItem(
       data.metadata,
     ],
   );
-  return { id: res.rows[0].id as string };
+  const id = res.rows?.[0]?.id as string | undefined;
+  if (!id) {
+    throw new Error("insert_item_missing_id");
+  }
+  return { id };
 }

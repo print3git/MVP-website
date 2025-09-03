@@ -2,10 +2,11 @@ import express from "express";
 import Stripe from "stripe";
 import logger from "../logger";
 import { upsertOrderPaid, markPaymentProcessed, linkModelToJob } from "../db";
-import { isTest } from "../env";
 import { capture } from "../lib/logger";
 import { getEnv as getBackendEnv, isTest } from "../env";
 import { getEnv } from "../../utils/getEnv";
+import { orders } from "./checkout";
+import { sendMail } from "../mail.js";
 
 const { STRIPE_SECRET_KEY } = getBackendEnv();
 const realStripe = new Stripe(STRIPE_SECRET_KEY, {
@@ -39,6 +40,21 @@ router.post(
       );
     } catch {
       res.status(400).json({ error: "invalid_signature" });
+      return;
+    }
+
+    if (event.type === "checkout.session.completed") {
+      const session = event.data.object as Stripe.Checkout.Session;
+      const order = orders.get(session.id);
+      if (order) {
+        order.paid = true;
+        const domain = process.env.CLOUDFRONT_MODEL_DOMAIN;
+        if (order.slug && order.email && domain) {
+          const url = `https://${domain}/${order.slug}.glb`;
+          await sendMail(order.email, "Your model is ready", url);
+        }
+      }
+      res.json({ received: true });
       return;
     }
 
