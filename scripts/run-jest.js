@@ -129,7 +129,8 @@ async function run(args) {
   if (!offline && isBackendTest && !process.env.SKIP_BACKEND_DEPS_CHECK) {
     require(path.join(backendRoot, "scripts", "ensure-deps.js"));
   }
-  let tsJestMissing = false;
+  // Reuse the earlier tsJestMissing flag rather than redeclaring it
+  tsJestMissing = false;
   try {
     require.resolve("ts-jest");
   } catch {
