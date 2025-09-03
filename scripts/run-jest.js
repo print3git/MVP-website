@@ -16,7 +16,6 @@ function resolveFromPaths(mod) {
   return null;
 }
 
-
 function verifyFiles(args) {
   let checking = false;
   for (const arg of args) {
@@ -55,10 +54,12 @@ async function run(args) {
     require("./ensure-root-deps.js");
   }
 
-  if (!offline) {
-    try {
-      require.resolve("ts-jest");
-    } catch {
+  let tsJestMissing = false;
+  try {
+    require.resolve("ts-jest");
+  } catch {
+    tsJestMissing = true;
+    if (!offline) {
       console.error("Missing ts-jest; run `npm run setup` before testing.");
       process.exit(1);
     }
@@ -74,9 +75,18 @@ async function run(args) {
   ({ runCLI } = require(corePath));
   const defaultConfig = path.resolve(repoRoot, "jest.config.cjs");
   const backendConfig = path.resolve(backendRoot, "jest.config.js");
+  const defaultOfflineConfig = path.resolve(
+    repoRoot,
+    "jest.config.offline.cjs",
+  );
+  const backendOfflineConfig = path.resolve(
+    backendRoot,
+    "jest.config.offline.js",
+  );
   const parsed = { _: [], config: defaultConfig };
   let awaitingValue = null;
   let configProvided = false;
+  const shortMap = { t: "testNamePattern" };
   for (const arg of args) {
     if (awaitingValue) {
       parsed[awaitingValue] = arg;
@@ -89,10 +99,17 @@ async function run(args) {
       if (value !== undefined) {
         parsed[key] = value;
         if (key === "config") configProvided = true;
-      } else if (["help", "runTestsByPath"].includes(key)) {
+      } else if (["help", "runTestsByPath", "passWithNoTests"].includes(key)) {
         parsed[key] = true;
       } else {
         awaitingValue = key;
+      }
+    } else if (arg.startsWith("-") && arg.length > 1) {
+      const key = arg.slice(1);
+      if (shortMap[key]) {
+        awaitingValue = shortMap[key];
+      } else {
+        parsed._.push(arg);
       }
     } else {
       parsed._.push(arg);
@@ -104,6 +121,19 @@ async function run(args) {
   });
   if (isBackendTest && !configProvided) {
     parsed.config = backendConfig;
+  }
+  if (offline && tsJestMissing) {
+    parsed.config = isBackendTest ? backendOfflineConfig : defaultOfflineConfig;
+    parsed._ = parsed._.map((p) => {
+      if (p.endsWith(".ts")) {
+        const jsPath = p.replace(/\.ts$/, ".js");
+        if (fs.existsSync(jsPath)) return jsPath;
+      }
+      return p;
+    });
+  }
+  if (parsed._.length) {
+    parsed.runTestsByPath = true;
   }
   const { results } = await runCLI(parsed, [process.cwd()]);
   process.exit(results.success ? 0 : 1);
