@@ -3,7 +3,7 @@ process.env.STRIPE_WEBHOOK_SECRET = "whsec";
 process.env.DB_URL = "postgres://user:pass@localhost/db";
 
 // mock the database module using the same relative path as the app code
-jest.mock("../db", () => ({
+jest.mock("../../db", () => ({
   query: jest.fn().mockResolvedValue({ rows: [] }),
   insertCommission: jest.fn().mockResolvedValue({}),
   upsertSubscription: jest.fn(),
@@ -26,7 +26,8 @@ jest.mock("../db", () => ({
   updateWeeklyOrderStreak: jest.fn(),
   insertGenerationLog: jest.fn(),
 }));
-const db = require("../db");
+// ensure tests interact with the same mocked db module that the app uses
+const db = require("../../db");
 
 jest.mock("../mail", () => ({ sendMail: jest.fn() }));
 const { sendMail } = require("../mail");
