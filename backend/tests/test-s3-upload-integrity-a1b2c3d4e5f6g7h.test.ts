@@ -1,5 +1,3 @@
-import fs from "fs";
-import path from "path";
 import {
   S3Client,
   HeadObjectCommand,
@@ -38,8 +36,9 @@ describe("s3 upload integrity", () => {
   }
 
   test("uploads, verifies permissions, downloads, and cleans up", async () => {
-    const glbPath = path.resolve(__dirname, "../../models/bag.glb");
-    const data = fs.readFileSync(glbPath);
+    const glbUrl = "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
+    const res = await fetch(glbUrl);
+    const data = Buffer.from(await res.arrayBuffer());
     const url = await storeGlb(data);
     const { bucket, region, key } = parseS3(url);
     const client = new S3Client({

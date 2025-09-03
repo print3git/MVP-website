@@ -20,7 +20,7 @@ app.use(express.json());
 
 // Basic stub for API requests so smoke tests don't fail when the backend isn't running.
 app.post("/api/generate", (_req, res) => {
-  res.json({ glb_url: "/models/bag.glb" });
+  res.json({ glb_url: "https://modelviewer.dev/shared-assets/models/Astronaut.glb" });
 });
 
 app.get("/healthz", (_req, res) => {

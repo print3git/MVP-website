@@ -24,6 +24,9 @@ fi
 export PLAYWRIGHT_BROWSERS_PATH="${PLAYWRIGHT_DIR}"
 export PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
 
+echo "==> Install (backend)"
+npm ci --prefix backend
+
 echo "==> Format (backend)"
 npm run format --prefix backend
 

@@ -12,5 +12,5 @@ export default {
 const Template = (args) => React.createElement(ModelViewer, args);
 export const Default = Template.bind({});
 Default.args = {
-  url: "models/bag.glb",
+  url: "https://modelviewer.dev/shared-assets/models/Astronaut.glb",
 };
