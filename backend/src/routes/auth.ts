@@ -32,7 +32,6 @@ router.post("/register", async (req, res) => {
   } catch (err) {
     logger.error("register_failed", err as Error);
     res.status(500).json({ error: "internal_error" });
-
   }
 });
 

@@ -20,7 +20,7 @@
     "db:check": "node scripts/check-db.js",
     "seed": "node scripts/seed-db.js",
     "create-admin": "node scripts/create-admin.js",
-    "format": "prettier -c \"src/**/*.{ts,tsx,js,jsx,json,md}\"",
+    "format": "prettier --log-level warn --write \"src/**/*.{ts,tsx,js,jsx,json,md}\"",
     "send-reminders": "node scripts/send-purchase-reminders.js",
     "send-abandoned-offers": "node scripts/send-abandoned-offers.js",
     "send-followups": "node scripts/send-post-purchase-followups.js",

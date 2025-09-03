@@ -38,7 +38,6 @@ try {
 }
 
 try {
-
   (() => {
     const r = require("./routes/create-order");
     app.use("/api", r.default || r);
@@ -61,13 +60,11 @@ try {
     const r = require("./routes/rewards");
     app.use("/api", r.default || r);
   })();
-
 } catch (err) {
   logger.error("Failed to load discount router", err);
 }
 
 try {
-
   (() => {
     const r = require("./routes/discount");
     app.use("/api", r.default || r);
