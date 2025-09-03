@@ -5,27 +5,20 @@ export function isOfflineEnv() {
     setOfflineEnv();
     return true;
   }
-  const proxyEnv =
-    process.env.http_proxy ||
-    process.env.https_proxy ||
-    process.env.HTTP_PROXY ||
-    process.env.HTTPS_PROXY;
   const sandbox = process.env.CI_SANDBOX === "1";
   if (sandbox) {
     setOfflineEnv();
     return true;
   }
-  if (proxyEnv) {
-    try {
-      // Silence curl output; only the exit code matters for connectivity checks
-      execSync(
-        "curl -sfI --max-time 10 https://registry.npmjs.org/-/ping >/dev/null 2>&1",
-        { stdio: "ignore" },
-      );
-    } catch {
-      setOfflineEnv();
-      return true;
-    }
+  try {
+    // Silence curl output; only the exit code matters for connectivity checks
+    execSync(
+      "curl -sfI --max-time 10 https://registry.npmjs.org/-/ping >/dev/null 2>&1",
+      { stdio: "ignore" },
+    );
+  } catch {
+    setOfflineEnv();
+    return true;
   }
   return false;
 }
