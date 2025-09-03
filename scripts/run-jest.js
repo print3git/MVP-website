@@ -1,15 +1,6 @@
 #!/usr/bin/env node
 const fs = require("fs");
 const path = require("path");
-let runCLI;
-try {
-  ({ runCLI } = require("@jest/core"));
-} catch {
-  console.error(
-    "Jest is not installed. Run `npm run setup` to install dependencies.",
-  );
-  process.exit(1);
-}
 
 const repoRoot = path.resolve(__dirname, "..");
 const backendRoot = path.join(repoRoot, "backend");
@@ -55,38 +46,23 @@ async function run(args) {
   const { isOfflineEnv, logOfflineSkip } = await import("./net-mode.mjs");
   if (isOfflineEnv()) {
     logOfflineSkip("jest");
-    return;
-  }
-
-  let runCLI;
-  try {
-    ({ runCLI } = require("@jest/core"));
-  } catch {
-    console.error(
-      "Jest is not installed. Run `npm run setup` to install dependencies.",
-    );
-    process.exit(1);
   }
 
   if (!process.env.SKIP_ROOT_DEPS_CHECK) {
     require("./ensure-root-deps.js");
   }
 
-  try {
-    require.resolve("ts-jest");
-  } catch {
-    console.error("Missing ts-jest; run `npm run setup` before testing.");
-    process.exit(1);
-  }
-
   verifyFiles(args);
   console.log("run-jest cwd:", process.cwd());
   const corePath = resolveFromPaths("@jest/core");
   if (!corePath) {
-    console.error("Missing jest core; run `npm run setup` before testing.");
+    console.error(
+      "Jest is not installed. Run `npm run setup` to install dependencies.",
+    );
     process.exit(1);
   }
-  const { runCLI } = require(corePath);
+  let runCLI;
+  ({ runCLI } = require(corePath));
   const defaultConfig = path.resolve(repoRoot, "jest.config.cjs");
   const backendConfig = path.resolve(backendRoot, "jest.config.js");
   const parsed = { _: [], config: defaultConfig };
@@ -104,7 +80,7 @@ async function run(args) {
       if (value !== undefined) {
         parsed[key] = value;
         if (key === "config") configProvided = true;
-      } else if (["help", "runTestsByPath"].includes(key)) {
+      } else if (["help", "runTestsByPath", "passWithNoTests"].includes(key)) {
         parsed[key] = true;
       } else {
         awaitingValue = key;
