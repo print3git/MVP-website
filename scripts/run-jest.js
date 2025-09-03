@@ -6,11 +6,13 @@ if (!process.env.SKIP_ROOT_DEPS_CHECK) {
   require("./ensure-root-deps.js");
 }
 
-try {
-  require.resolve("ts-jest");
-} catch {
-  console.error("Missing ts-jest; run `npm run setup` before testing.");
-  process.exit(1);
+function ensureTsJest(dir) {
+  try {
+    require.resolve("ts-jest", { paths: [dir] });
+  } catch {
+    console.error("Missing ts-jest; run `npm run setup` before testing.");
+    process.exit(1);
+  }
 }
 
 function verifyFiles(args) {
@@ -38,9 +40,10 @@ async function run(args) {
   }
   verifyFiles(args);
   console.log("run-jest cwd:", process.cwd());
+  const repoRoot = path.resolve(__dirname, "..");
+  const backendDir = path.join(repoRoot, "backend");
   const { runCLI } = require("@jest/core");
-  const configPath = path.resolve(__dirname, "..", "jest.config.cjs");
-  const parsed = { _: [], config: configPath };
+  const parsed = { _: [], config: path.resolve(repoRoot, "jest.config.cjs") };
   let awaitingValue = null;
   for (const arg of args) {
     if (awaitingValue) {
@@ -61,7 +64,17 @@ async function run(args) {
       parsed._.push(arg);
     }
   }
-  const { results } = await runCLI(parsed, [process.cwd()]);
+
+  let projectDir = repoRoot;
+  if (parsed.config === path.resolve(repoRoot, "jest.config.cjs")) {
+    const hasBackendTest = parsed._.some((p) => p.startsWith("backend/"));
+    if (hasBackendTest) {
+      parsed.config = path.join(backendDir, "jest.config.js");
+      projectDir = backendDir;
+    }
+  }
+  ensureTsJest(projectDir);
+  const { results } = await runCLI(parsed, [projectDir]);
   process.exit(results.success ? 0 : 1);
 }
 
