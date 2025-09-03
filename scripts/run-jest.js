@@ -16,7 +16,6 @@ function resolveFromPaths(mod) {
   return null;
 }
 
-
 function verifyFiles(args) {
   let checking = false;
   for (const arg of args) {
@@ -77,6 +76,7 @@ async function run(args) {
   const parsed = { _: [], config: defaultConfig };
   let awaitingValue = null;
   let configProvided = false;
+  const booleanArgs = new Set(["help", "runTestsByPath", "passWithNoTests"]);
   for (const arg of args) {
     if (awaitingValue) {
       parsed[awaitingValue] = arg;
@@ -84,12 +84,16 @@ async function run(args) {
       awaitingValue = null;
       continue;
     }
+    if (arg === "-t") {
+      awaitingValue = "testNamePattern";
+      continue;
+    }
     if (arg.startsWith("--")) {
       const [key, value] = arg.slice(2).split("=");
       if (value !== undefined) {
         parsed[key] = value;
         if (key === "config") configProvided = true;
-      } else if (["help", "runTestsByPath"].includes(key)) {
+      } else if (booleanArgs.has(key)) {
         parsed[key] = true;
       } else {
         awaitingValue = key;
