@@ -9,6 +9,7 @@ try {
         "ts-jest",
         { tsconfig: "tsconfig.json", diagnostics: false },
       ],
+      "^.+\\.jsx?$": "babel-jest",
     },
     moduleFileExtensions: ["ts", "tsx", "js", "json"],
     passWithNoTests: true,
