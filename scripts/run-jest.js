@@ -57,16 +57,6 @@ async function run(args) {
 
 
   const skipNetChecks = process.env.SKIP_NET_CHECKS === "1";
-  let tsJestMissing = false;
-  try {
-    require.resolve("ts-jest");
-  } catch {
-    tsJestMissing = true;
-    if (!offline && !skipNetChecks) {
-      console.error("Missing ts-jest; run `npm run setup` before testing.");
-      process.exit(1);
-    }
-  }
 
   verifyFiles(args);
   console.log("run-jest cwd:", process.cwd());
@@ -134,12 +124,12 @@ async function run(args) {
     require.resolve("ts-jest");
   } catch {
     tsJestMissing = true;
-    if (!offline) {
+    if (!offline && !skipNetChecks) {
       console.error("Missing ts-jest; run `npm run setup` before testing.");
       process.exit(1);
     }
   }
-  if (offline && tsJestMissing) {
+  if ((offline || skipNetChecks) && tsJestMissing) {
     parsed.config = isBackendTest ? backendOfflineConfig : defaultOfflineConfig;
     parsed._ = parsed._.map((p) => {
       if (p.endsWith(".ts")) {
