@@ -117,7 +117,8 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  jest.restoreAllMocks();
+  // Preserve mocked modules between tests but reset their call history
+  jest.clearAllMocks();
 });
 
 test("POST /api/generate returns glb url", async () => {
