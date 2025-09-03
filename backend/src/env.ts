@@ -42,7 +42,7 @@ function buildEnv(): Readonly<Env> {
   const env: Env = {
     DB_URL: requireEnv("DB_URL"),
     STRIPE_SECRET_KEY: requireEnv("STRIPE_SECRET_KEY"),
-    STRIPE_PUBLISHABLE_KEY: requireEnv("STRIPE_PUBLISHABLE_KEY"),
+    STRIPE_PUBLISHABLE_KEY: optional("STRIPE_PUBLISHABLE_KEY") || "",
     NODE_ENV: NODE_ENV as Env["NODE_ENV"],
     AWS_REGION: optional("AWS_REGION"),
     S3_BUCKET: optional("S3_BUCKET"),
