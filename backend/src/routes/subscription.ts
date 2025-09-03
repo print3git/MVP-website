@@ -4,7 +4,6 @@ import {
   type Request,
   type Response,
 } from "express";
-import Stripe from "stripe";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const db = require("../../db");
 import config from "../../config";
@@ -14,12 +13,15 @@ import { capture } from "../lib/logger";
 import { isTest } from "../env";
 
 const router = Router();
-const realStripe = new Stripe(config.stripeKey, {
-  apiVersion: "2022-11-15",
-});
-const stripe = isTest()
-  ? require("../../tests/utils/stripeMock").stripe
-  : realStripe;
+let stripe: any;
+if (isTest()) {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  stripe = require("../../tests/utils/stripeMock").stripe;
+} else {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const Stripe = require("stripe");
+  stripe = new Stripe(config.stripeKey, { apiVersion: "2022-11-15" });
+}
 
 router.get("/subscription", authRequired, async (req, res) => {
   try {

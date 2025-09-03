@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const auth_1 = require("../lib/auth");
-const db = require("../../db.js");
+const db = require("../../db");
 const router = (0, express_1.Router)();
 router.get("/credits", auth_1.authRequired, async (req, res) => {
   try {

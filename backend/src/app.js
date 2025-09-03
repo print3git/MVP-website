@@ -70,7 +70,7 @@ try {
     app.use("/api", r.default || r);
   })();
 } catch (err) {
-  logger.error("Failed to load admin router", err);
+  logger.error("Failed to load subscription router", err);
 }
 
 try {
