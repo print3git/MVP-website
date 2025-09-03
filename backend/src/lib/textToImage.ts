@@ -2,7 +2,7 @@ import fs from "fs";
 import { pipeline } from "stream/promises";
 import path from "path";
 import { uploadFile } from "./uploadS3";
-import { capture } from "./logger";
+import { capture } from "./logger.js";
 import logger from "../logger";
 
 /**

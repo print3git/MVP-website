@@ -1,5 +1,5 @@
 import logger from "../logger";
-import { capture } from "./logger";
+import { capture } from "./logger.js";
 
 export function logError(...args: unknown[]): void {
   if (process.env.NODE_ENV !== "test") {
