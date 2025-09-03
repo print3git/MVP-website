@@ -1,10 +1,9 @@
 #!/usr/bin/env node
 import { execSync } from "child_process";
-import { isOfflineEnv, logOfflineSkip } from "./net-mode.mjs";
+import { isOfflineEnv } from "./net-mode.mjs";
 
 if (isOfflineEnv()) {
-  logOfflineSkip("ci");
-  process.exit(0);
+  console.log("offline mode: running ci with existing dependencies");
 }
 
 if (process.env.SKIP_PW_DEPS === "1") {
