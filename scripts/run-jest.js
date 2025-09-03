@@ -34,16 +34,20 @@ function verifyFiles(args) {
 }
 
 async function run(args) {
-  const { isOfflineEnv } = await import("./net-mode.mjs");
+  const { isOfflineEnv, logOfflineSkip } = await import("./net-mode.mjs");
   const offline = isOfflineEnv();
   if (offline) {
-    console.log("offline mode detected; running jest");
+    console.log("offline mode detected");
   }
 
   let runCLI;
   try {
     ({ runCLI } = require("@jest/core"));
   } catch {
+    if (offline) {
+      logOfflineSkip("jest");
+      return;
+    }
     console.error(
       "Jest is not installed. Run `npm run setup` to install dependencies.",
     );
