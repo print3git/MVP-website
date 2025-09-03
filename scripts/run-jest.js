@@ -1,7 +1,15 @@
 #!/usr/bin/env node
 const fs = require("fs");
 const path = require("path");
-const { runCLI } = require("@jest/core");
+let runCLI;
+try {
+  ({ runCLI } = require("@jest/core"));
+} catch {
+  console.error(
+    "Jest is not installed. Run `npm run setup` to install dependencies.",
+  );
+  process.exit(1);
+}
 
 if (!process.env.SKIP_ROOT_DEPS_CHECK) {
   require("./ensure-root-deps.js");
