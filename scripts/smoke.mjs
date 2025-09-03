@@ -27,9 +27,11 @@ if (
   process.env.SKIP_NET_CHECKS = "1";
 }
 
+execSync("npm run setup", { stdio: "inherit" });
+
 const require = createRequire(import.meta.url);
 try {
-  require.resolve("jest");
+  require.resolve("@jest/core");
 } catch {
   logOfflineSkip("smoke");
   process.exit(0);
