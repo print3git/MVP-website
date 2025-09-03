@@ -45,16 +45,17 @@ function cleanupNpmCache() {
 }
 
 function runNpmCi(dir = ".", opts = {}) {
-  if (isOffline()) {
-    console.log(
-      `offline mode: skipping npm ci${dir !== "." ? ` in ${dir}` : ""}`,
-    );
-    return;
-  }
   const options = { stdio: "inherit" };
   if (dir !== ".") options.cwd = dir;
   const ignoreScripts = opts.ignoreScripts || process.env.NPM_IGNORE_SCRIPTS;
-  const ciCmd = `npm ci --no-audit --no-fund${ignoreScripts ? " --ignore-scripts" : ""}`;
+  const offline = isOffline();
+  const baseCmd = `npm ci --no-audit --no-fund${ignoreScripts ? " --ignore-scripts" : ""}`;
+  const ciCmd = offline ? `${baseCmd} --prefer-offline` : baseCmd;
+  if (offline) {
+    console.log(
+      `offline mode: running npm ci${dir !== "." ? ` in ${dir}` : ""}`,
+    );
+  }
   try {
     execSync(ciCmd, options);
   } catch (err) {
