@@ -32,7 +32,7 @@ if (skip) {
   });
 
   test("stripe client boots and lists customers", async () => {
-    const stripe = new Stripe(secret, { apiVersion: "2025-06-30.basil" });
+    const stripe = new Stripe(secret, { apiVersion: "2022-11-15" });
     const list = await stripe.customers.list({ limit: 1 });
     expect(Array.isArray(list.data)).toBe(true);
   });

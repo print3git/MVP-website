@@ -23,7 +23,7 @@ const PRICE_MAP: Record<string, number> = {
 
 const { STRIPE_SECRET_KEY } = getEnv();
 const realStripe = new Stripe(STRIPE_SECRET_KEY, {
-  apiVersion: "2025-06-30.basil",
+  apiVersion: "2022-11-15",
 });
 const stripe = isTest()
   ? require("../../tests/utils/stripeMock").stripe

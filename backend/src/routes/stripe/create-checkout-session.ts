@@ -35,7 +35,7 @@ try {
 }
 
 const realStripe = new Stripe(stripeKey, {
-  apiVersion: "2025-06-30.basil",
+  apiVersion: "2022-11-15",
 });
 const stripe = isTest()
   ? require("../../../tests/utils/stripeMock").stripe

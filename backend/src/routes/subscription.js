@@ -9,7 +9,7 @@ const { isTest } = require("../env");
 
 const router = Router();
 const realStripe = new Stripe(config.stripeKey, {
-  apiVersion: "2025-06-30.basil",
+  apiVersion: "2022-11-15",
 });
 const stripe = isTest()
   ? require("../../tests/utils/stripeMock").stripe
