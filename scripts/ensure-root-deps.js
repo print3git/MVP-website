@@ -148,82 +148,80 @@ function canReachRegistry() {
 if (!requiredPaths.every((p) => fs.existsSync(p))) {
   if (skipNetChecks) {
     console.warn(
-      "Missing dependencies but SKIP_NET_CHECKS is set; skipping network checks and installation.",
+      "Missing dependencies but SKIP_NET_CHECKS is set; skipping network checks.",
     );
   } else {
     runNetworkCheck();
     if (!canReachRegistry()) process.exit(1);
-    console.log("Dependencies missing. Installing root dependencies...");
-    cleanupNpmCache();
+  }
+  console.log("Dependencies missing. Installing root dependencies...");
+  cleanupNpmCache();
+  try {
+    const ping = spawnSync("npm", ["ping", "--fetch-retries=0"], {
+      stdio: "pipe",
+      env: getEnv(),
+    });
+    if (ping.status !== 0) {
+      const stderr = String(ping.stderr || ping.stdout || "").trim();
+      if (!/(E403|403|E405|405|MethodNotAllowed)/i.test(stderr)) {
+        throw new Error();
+      }
+    }
+  } catch {
+    console.error(
+      "Unable to reach the npm registry. Check network connectivity or proxy settings.",
+    );
+    process.exit(1);
+  }
+  const install = () => {
     try {
-      const ping = spawnSync("npm", ["ping", "--fetch-retries=0"], {
-        stdio: "pipe",
+      const r = spawnSync("npm", ["ci", "--ignore-scripts"], {
+        stdio: "inherit",
         env: getEnv(),
       });
-      if (ping.status !== 0) {
-        const stderr = String(ping.stderr || ping.stdout || "").trim();
-        if (!/(E403|403|E405|405|MethodNotAllowed)/i.test(stderr)) {
-          throw new Error();
-        }
-      }
-    } catch {
-      console.error(
-        "Unable to reach the npm registry. Check network connectivity or proxy settings.",
-      );
-      process.exit(1);
-    }
-    const install = () => {
-      try {
-        const r = spawnSync("npm", ["ci", "--ignore-scripts"], {
+      if (r.status === 0) return true;
+      throw new Error("npm ci failed");
+    } catch (err) {
+      const msg = String(err.message || err);
+      if (msg.includes("EUSAGE")) {
+        console.warn("npm ci failed, falling back to 'npm install'");
+        const res = spawnSync("npm", ["install", "--ignore-scripts"], {
           stdio: "inherit",
           env: getEnv(),
         });
-        if (r.status === 0) return true;
-        throw new Error("npm ci failed");
-      } catch (err) {
-        const msg = String(err.message || err);
-        if (msg.includes("EUSAGE")) {
-          console.warn("npm ci failed, falling back to 'npm install'");
-          const res = spawnSync("npm", ["install", "--ignore-scripts"], {
-            stdio: "inherit",
-            env: getEnv(),
-          });
-          return res.status === 0;
-        }
-        if (/TAR_ENTRY_ERROR|ENOENT|ENOTEMPTY|tarball .*corrupted/.test(msg)) {
-          console.warn(
-            "npm ci encountered tar or filesystem errors. Cleaning cache and retrying...",
-          );
-          cleanupNpmCache();
-          try {
-            fs.rmSync("node_modules", { recursive: true, force: true });
-            fs.rmSync(path.join("backend", "node_modules"), {
-              recursive: true,
-              force: true,
-            });
-          } catch {
-            /* ignore */
-          }
-          return false;
-        }
-        if (/ECONNRESET|ENOTFOUND|network|ETIMEDOUT/i.test(msg)) {
-          return false;
-        }
-        console.error("Failed to install dependencies:", err.message);
-        process.exit(1);
+        return res.status === 0;
       }
-    };
-
-    for (let attempt = 1; attempt <= 3; attempt++) {
-      if (install()) break;
-      console.warn(`npm ci failed, retrying (${attempt}/3)...`);
-      runNetworkCheck();
-      if (attempt === 3) {
-        console.error(
-          "Failed to install dependencies after multiple attempts.",
+      if (/TAR_ENTRY_ERROR|ENOENT|ENOTEMPTY|tarball .*corrupted/.test(msg)) {
+        console.warn(
+          "npm ci encountered tar or filesystem errors. Cleaning cache and retrying...",
         );
-        process.exit(1);
+        cleanupNpmCache();
+        try {
+          fs.rmSync("node_modules", { recursive: true, force: true });
+          fs.rmSync(path.join("backend", "node_modules"), {
+            recursive: true,
+            force: true,
+          });
+        } catch {
+          /* ignore */
+        }
+        return false;
       }
+      if (/ECONNRESET|ENOTFOUND|network|ETIMEDOUT/i.test(msg)) {
+        return false;
+      }
+      console.error("Failed to install dependencies:", err.message);
+      process.exit(1);
+    }
+  };
+
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    if (install()) break;
+    console.warn(`npm ci failed, retrying (${attempt}/3)...`);
+    if (!skipNetChecks) runNetworkCheck();
+    if (attempt === 3) {
+      console.error("Failed to install dependencies after multiple attempts.");
+      process.exit(1);
     }
   }
 }
