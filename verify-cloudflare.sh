@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -e
 
+# Normalize Cloudflare env variable names so either CF_* or CLOUDFLARE_* work
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$DIR/scripts/env/aliases.sh"
+
 # Ensure required variables are set
 for var in CF_PAGES_API_TOKEN CF_ACCOUNT_ID CF_PAGES_PROJECT; do
   if [[ -z "${!var}" ]]; then
