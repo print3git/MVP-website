@@ -40,7 +40,7 @@ router.post("/create-order", async (req, res) => {
       adSubreddit,
     } = req.body || {};
 
-    if (!jobId || (!price && !useCredit) || !productType) {
+    if (!jobId) {
       return res.status(400).json({ error: "bad_request" });
     }
 
@@ -52,6 +52,10 @@ router.post("/create-order", async (req, res) => {
       return res.status(404).json({ error: "job_not_found" });
     }
     const job = jobRes.rows[0];
+
+    if ((!price && !useCredit) || !productType) {
+      return res.status(400).json({ error: "bad_request" });
+    }
     const buyerId = getUserId(req);
 
     if (shippingInfo?.country && prohibited.includes(shippingInfo.country)) {
