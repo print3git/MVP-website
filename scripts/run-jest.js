@@ -16,7 +16,6 @@ function resolveFromPaths(mod) {
   return null;
 }
 
-
 function verifyFiles(args) {
   let checking = false;
   for (const arg of args) {
@@ -35,10 +34,11 @@ function verifyFiles(args) {
 }
 
 async function run(args) {
-  const { isOfflineEnv } = await import("./net-mode.mjs");
+  const { isOfflineEnv, logOfflineSkip } = await import("./net-mode.mjs");
   const offline = isOfflineEnv();
   if (offline) {
-    console.log("offline mode detected; running jest");
+    logOfflineSkip("jest");
+    process.exit(0);
   }
 
   let runCLI;
@@ -51,17 +51,15 @@ async function run(args) {
     process.exit(1);
   }
 
-  if (!offline && !process.env.SKIP_ROOT_DEPS_CHECK) {
+  if (!process.env.SKIP_ROOT_DEPS_CHECK) {
     require("./ensure-root-deps.js");
   }
 
-  if (!offline) {
-    try {
-      require.resolve("ts-jest");
-    } catch {
-      console.error("Missing ts-jest; run `npm run setup` before testing.");
-      process.exit(1);
-    }
+  try {
+    require.resolve("ts-jest");
+  } catch {
+    console.error("Missing ts-jest; run `npm run setup` before testing.");
+    process.exit(1);
   }
 
   verifyFiles(args);
