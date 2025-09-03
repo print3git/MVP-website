@@ -1,4 +1,7 @@
 module.exports = {
-  presets: [["@babel/preset-react", { runtime: "automatic" }]],
+  presets: [
+    ["@babel/preset-env", { targets: { node: "current" }, modules: "commonjs" }],
+    ["@babel/preset-react", { runtime: "automatic" }],
+  ],
   plugins: [["@babel/plugin-syntax-typescript", { isTSX: true }]],
 };
