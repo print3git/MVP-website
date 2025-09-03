@@ -2727,11 +2727,6 @@ packages:
     peerDependencies:
       '@babel/core': ^7.4.0 || ^8.0.0-0 <8.0.0
 
-  babel-preset-current-node-syntax@1.2.0:
-    resolution: {integrity: sha512-E/VlAEzRrsLEb2+dv8yp3bo4scof3l9nR4lrld+Iy5NyVqgVYUJnDAmunkhPMisRI32Qc4iRiz425d8vM++2fg==}
-    peerDependencies:
-      '@babel/core': ^7.0.0 || ^8.0.0-0
-
   babel-preset-jest@29.6.3:
     resolution: {integrity: sha512-0B3bhxR6snWXJZtR/RliHTDPRgn1sNHOR0yVtq/IiQFyuOVjFS+wuio/R4gSNkyYmKmJB4wGZv2NZanmKmTnNA==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
@@ -10286,30 +10281,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  babel-preset-current-node-syntax@1.2.0(@babel/core@7.28.3):
-    dependencies:
-      '@babel/core': 7.28.3
-      '@babel/plugin-syntax-async-generators': 7.8.4(@babel/core@7.28.3)
-      '@babel/plugin-syntax-bigint': 7.8.3(@babel/core@7.28.3)
-      '@babel/plugin-syntax-class-properties': 7.12.13(@babel/core@7.28.3)
-      '@babel/plugin-syntax-class-static-block': 7.14.5(@babel/core@7.28.3)
-      '@babel/plugin-syntax-import-attributes': 7.27.1(@babel/core@7.28.3)
-      '@babel/plugin-syntax-import-meta': 7.10.4(@babel/core@7.28.3)
-      '@babel/plugin-syntax-json-strings': 7.8.3(@babel/core@7.28.3)
-      '@babel/plugin-syntax-logical-assignment-operators': 7.10.4(@babel/core@7.28.3)
-      '@babel/plugin-syntax-nullish-coalescing-operator': 7.8.3(@babel/core@7.28.3)
-      '@babel/plugin-syntax-numeric-separator': 7.10.4(@babel/core@7.28.3)
-      '@babel/plugin-syntax-object-rest-spread': 7.8.3(@babel/core@7.28.3)
-      '@babel/plugin-syntax-optional-catch-binding': 7.8.3(@babel/core@7.28.3)
-      '@babel/plugin-syntax-optional-chaining': 7.8.3(@babel/core@7.28.3)
-      '@babel/plugin-syntax-private-property-in-object': 7.14.5(@babel/core@7.28.3)
-      '@babel/plugin-syntax-top-level-await': 7.14.5(@babel/core@7.28.3)
-
   babel-preset-jest@29.6.3(@babel/core@7.28.3):
     dependencies:
       '@babel/core': 7.28.3
       babel-plugin-jest-hoist: 29.6.3
-      babel-preset-current-node-syntax: 1.2.0(@babel/core@7.28.3)
 
   balanced-match@1.0.2: {}
 
@@ -12823,7 +12798,6 @@ snapshots:
       '@jest/expect-utils': 29.7.0
       '@jest/transform': 29.7.0
       '@jest/types': 29.6.3
-      babel-preset-current-node-syntax: 1.2.0(@babel/core@7.28.3)
       chalk: 4.1.2
       expect: 29.7.0
       graceful-fs: 4.2.11
