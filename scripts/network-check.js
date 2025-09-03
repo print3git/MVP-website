@@ -86,7 +86,8 @@ function check(target) {
     if (
       !npmPing &&
       url.includes("cdn.playwright.dev") &&
-      /error:\s*[45][0-9]{2}/.test(stderr)
+      (/error:\s*[45][0-9]{2}/i.test(stderr) ||
+        /response\s+[45][0-9]{2}/i.test(stderr))
     ) {
       return null;
     }
