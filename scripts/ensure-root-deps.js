@@ -126,8 +126,16 @@ function runNetworkCheck() {
 
 function canReachRegistry() {
   try {
-    const r = spawnSync("npm", ["ping"], { stdio: "ignore", env: getEnv() });
-    if (r.status !== 0) throw new Error("ping failed");
+    const r = spawnSync("npm", ["ping", "--fetch-retries=0"], {
+      stdio: "pipe",
+      env: getEnv(),
+    });
+    if (r.status !== 0) {
+      const stderr = String(r.stderr || r.stdout || "").trim();
+      if (!/(E403|403|E405|405|MethodNotAllowed)/i.test(stderr)) {
+        throw new Error("ping failed");
+      }
+    }
     return true;
   } catch {
     console.error(
@@ -148,11 +156,16 @@ if (!requiredPaths.every((p) => fs.existsSync(p))) {
     console.log("Dependencies missing. Installing root dependencies...");
     cleanupNpmCache();
     try {
-      const ping = spawnSync("npm", ["ping"], {
-        stdio: "ignore",
+      const ping = spawnSync("npm", ["ping", "--fetch-retries=0"], {
+        stdio: "pipe",
         env: getEnv(),
       });
-      if (ping.status !== 0) throw new Error();
+      if (ping.status !== 0) {
+        const stderr = String(ping.stderr || ping.stdout || "").trim();
+        if (!/(E403|403|E405|405|MethodNotAllowed)/i.test(stderr)) {
+          throw new Error();
+        }
+      }
     } catch {
       console.error(
         "Unable to reach the npm registry. Check network connectivity or proxy settings.",

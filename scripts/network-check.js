@@ -73,6 +73,12 @@ function check(target) {
     return null;
   } catch (err) {
     const stderr = err.stderr ? err.stderr.toString().trim() : err.message;
+    // Some proxies return HTTP errors for registry pings even though the host
+    // is reachable. Treat common HTTP method/authorization errors as success
+    // so the check only fails when the registry is truly unreachable.
+    if (npmPing && /(E403|403|E405|405|MethodNotAllowed)/i.test(stderr)) {
+      return null;
+    }
     // Treat HTTP 4xx/5xx responses from the Playwright CDN as success. Some
     // Codex environments proxy requests and respond with 4xx or 5xx even though
     // the host is reachable. Allowing this prevents false negatives during
