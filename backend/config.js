@@ -6,9 +6,16 @@
  *
  * @module backend/config
  */
-// Ensure compatibility with both default and named exports
+// Ensure compatibility with various CommonJS/ESM export patterns
 const envModule = require("./src/lib/getEnv");
-const getEnv = envModule.getEnv || envModule.default || envModule;
+const getEnv =
+  // Named export
+  envModule.getEnv ||
+  // ESM default export which may itself wrap named exports
+  (envModule.default && envModule.default.getEnv) ||
+  envModule.default ||
+  // Fallback to module itself if it's the function
+  envModule;
 const { applyMockEnv, mockSecrets } = require("./src/lib/mockEnv");
 const logger = require("./src/logger.js");
 
