@@ -12,11 +12,14 @@ export function isOfflineEnv() {
     return !force;
   }
   try {
-    // Silence curl output; only the exit code matters for connectivity checks
-    execSync(
-      "curl -sfI --max-time 10 https://registry.npmjs.org/-/ping >/dev/null 2>&1",
-      { stdio: "ignore" },
+    // Fetch headers and inspect the HTTP status code so 4xx responses still
+    // trigger offline mode. Some environments return 403 yet exit with status 0
+    // which would previously be treated as online.
+    const res = execSync(
+      "curl -sI --max-time 10 https://registry.npmjs.org/-/ping",
+      { encoding: "utf8" },
     );
+    if (!/^HTTP\/\d\.\d 2\d\d/.test(res)) throw new Error("bad status");
   } catch {
     setOfflineEnv();
     return !force;
