@@ -10,7 +10,8 @@ import config from "../../config";
 import { authRequired, authOptional } from "../lib/auth";
 import logger from "../logger";
 import { capture } from "../lib/logger";
-import { isTest } from "../env";
+
+const isTest = () => process.env.NODE_ENV === "test";
 
 const router = Router();
 let stripe: any;
