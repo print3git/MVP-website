@@ -17,8 +17,10 @@ export function isOfflineEnv() {
   }
   if (proxyEnv) {
     try {
+      // Pipe curl output to avoid noisy errors when the proxy blocks the request
       execSync(
         "curl -sSIL --max-time 10 -o /dev/null https://registry.npmjs.org/-/ping",
+        { stdio: "pipe" },
       );
     } catch {
       setOfflineEnv();
