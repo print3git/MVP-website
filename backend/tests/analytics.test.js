@@ -2,7 +2,14 @@ process.env.STRIPE_SECRET_KEY = "test";
 process.env.STRIPE_WEBHOOK_SECRET = "whsec";
 process.env.DB_URL = "postgres://user:pass@localhost/db";
 
-jest.mock("../db", () => ({
+// Explicitly include the file extension so Jest's module system resolves the
+// same module path used by the analytics router (`../../db.js`). Without the
+// extension, the router would load the real database module while the tests
+// mock a different path, leading to the mock functions never being called.
+// Lightweight manual mock for the database module used by the analytics
+// router. The router checks for a `global.__db` variable first, allowing tests
+// to inject these spies without needing Jest's module mocking.
+const db = {
   query: jest.fn(),
   insertCommission: jest.fn(),
   insertAdClick: jest.fn(),
@@ -19,8 +26,9 @@ jest.mock("../db", () => ({
   getOrCreateOrderReferralLink: jest.fn(),
   insertReferredOrder: jest.fn(),
   getMarginalCacMetrics: jest.fn(),
-}));
-const db = require("../db");
+};
+// eslint-disable-next-line no-undef
+global.__db = db;
 
 const request = require("supertest");
 const app = require("../server");
