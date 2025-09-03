@@ -8,9 +8,16 @@ EventEmitter.defaultMaxListeners = Math.max(
   EventEmitter.defaultMaxListeners || 10,
 );
 
-if (isOfflineEnv()) {
-  logOfflineSkip("smoke");
-  process.exit(0);
+const offline = isOfflineEnv();
+if (offline) {
+  if (process.env.SKIP_PW_DEPS === "1") {
+    if (!process.env.SKIP_NET_CHECKS) {
+      process.env.SKIP_NET_CHECKS = "1";
+    }
+  } else {
+    logOfflineSkip("smoke");
+    process.exit(0);
+  }
 }
 
 execSync(
