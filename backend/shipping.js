@@ -53,6 +53,10 @@ function getTrackingUrl(carrier, trackingNumber) {
 
 async function getTrackingStatus(carrier, trackingNumber) {
   try {
+    if (!SHIPPING_API_URL || !SHIPPING_API_KEY) {
+      throw new Error("Shipping API not configured");
+    }
+
     const res = await fetch(
       `${SHIPPING_API_URL}/track?carrier=${encodeURIComponent(carrier)}&tracking=${encodeURIComponent(trackingNumber)}`,
       { headers: { Authorization: `Bearer ${SHIPPING_API_KEY}` } },
