@@ -3,4 +3,5 @@ module.exports = {
   roots: ["<rootDir>"],
   moduleFileExtensions: ["js", "json"],
   passWithNoTests: true,
+  transform: {},
 };
