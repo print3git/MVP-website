@@ -1,15 +1,6 @@
 #!/usr/bin/env node
 const fs = require("fs");
 const path = require("path");
-let runCLI;
-try {
-  ({ runCLI } = require("@jest/core"));
-} catch {
-  console.error(
-    "Jest is not installed. Run `npm run setup` to install dependencies.",
-  );
-  process.exit(1);
-}
 
 const repoRoot = path.resolve(__dirname, "..");
 const backendRoot = path.join(repoRoot, "backend");
@@ -25,14 +16,7 @@ function resolveFromPaths(mod) {
   return null;
 }
 
-if (!process.env.SKIP_ROOT_DEPS_CHECK) {
-  require("./ensure-root-deps.js");
-}
-
-if (!resolveFromPaths("ts-jest")) {
-  console.error("Missing ts-jest; run `npm run setup` before testing.");
-  process.exit(1);
-}
+// dependency checks are performed within `run` after validating network mode
 
 function verifyFiles(args) {
   let checking = false;
@@ -58,9 +42,10 @@ async function run(args) {
     return;
   }
 
-  let runCLI;
+  let corePath;
   try {
-    ({ runCLI } = require("@jest/core"));
+    corePath = resolveFromPaths("@jest/core");
+    if (!corePath) throw new Error();
   } catch {
     console.error(
       "Jest is not installed. Run `npm run setup` to install dependencies.",
@@ -81,11 +66,6 @@ async function run(args) {
 
   verifyFiles(args);
   console.log("run-jest cwd:", process.cwd());
-  const corePath = resolveFromPaths("@jest/core");
-  if (!corePath) {
-    console.error("Missing jest core; run `npm run setup` before testing.");
-    process.exit(1);
-  }
   const { runCLI } = require(corePath);
   const defaultConfig = path.resolve(repoRoot, "jest.config.cjs");
   const backendConfig = path.resolve(backendRoot, "jest.config.js");
