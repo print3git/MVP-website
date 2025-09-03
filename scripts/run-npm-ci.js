@@ -30,19 +30,29 @@ function cleanupNpmCache() {
 }
 
 function runNpmCi(dir = ".", opts = {}) {
-  const options = { stdio: "inherit" };
-  if (dir !== ".") options.cwd = dir;
+  const baseOpts = {};
+  if (dir !== ".") baseOpts.cwd = dir;
   const ignoreScripts = opts.ignoreScripts || process.env.NPM_IGNORE_SCRIPTS;
   const ciCmd = `npm ci --no-audit --no-fund${ignoreScripts ? " --ignore-scripts" : ""}`;
   try {
-    execSync(ciCmd, options);
+    // capture output so we can detect tar warnings even on success
+    const output = execSync(ciCmd, { ...baseOpts, stdio: ["ignore", "pipe", "pipe"] }).toString();
+    process.stdout.write(output);
+    if (/TAR_ENTRY_ERROR|ENOENT|ENOTEMPTY|tarball .*corrupted/.test(output)) {
+      console.warn(
+        `npm ci encountered tar errors in ${dir}. Cleaning cache and retrying...`,
+      );
+      cleanupNpmCache();
+      fs.rmSync(path.join(dir, "node_modules"), { recursive: true, force: true });
+      execSync(ciCmd, { ...baseOpts, stdio: "inherit" });
+    }
   } catch (err) {
     const output = String(err.stderr || err.stdout || err.message || "");
     if (output.includes("EUSAGE")) {
       console.warn(`npm ci failed in ${dir}, falling back to 'npm install'`);
       const installCmd = `npm install --no-audit --no-fund${ignoreScripts ? " --ignore-scripts" : ""}`;
-      execSync(installCmd, options);
-      execSync(ciCmd, options);
+      execSync(installCmd, { ...baseOpts, stdio: "inherit" });
+      execSync(ciCmd, { ...baseOpts, stdio: "inherit" });
     } else if (
       /TAR_ENTRY_ERROR|ENOENT|ENOTEMPTY|tarball .*corrupted/.test(output)
     ) {
@@ -50,11 +60,8 @@ function runNpmCi(dir = ".", opts = {}) {
         `npm ci encountered tar errors in ${dir}. Cleaning cache and retrying...`,
       );
       cleanupNpmCache();
-      fs.rmSync(path.join(dir, "node_modules"), {
-        recursive: true,
-        force: true,
-      });
-      execSync(ciCmd, options);
+      fs.rmSync(path.join(dir, "node_modules"), { recursive: true, force: true });
+      execSync(ciCmd, { ...baseOpts, stdio: "inherit" });
     } else {
       throw err;
     }
