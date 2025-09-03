@@ -6,8 +6,7 @@ const SHIPPING_API_KEY = getEnv("SHIPPING_API_KEY");
 const TRACKING_BASE_URL = getEnv("TRACKING_BASE_URL") || "";
 
 if (!SHIPPING_API_URL || !SHIPPING_API_KEY) {
-  logger.error("Missing SHIPPING_API_URL or SHIPPING_API_KEY");
-  process.exit(1);
+  logger.warn("Missing SHIPPING_API_URL or SHIPPING_API_KEY");
 }
 
 async function getShippingEstimate(destination, model) {
