@@ -1,6 +1,8 @@
 process.env.STRIPE_SECRET_KEY = "test";
 process.env.STRIPE_WEBHOOK_SECRET = "whsec";
 process.env.DB_URL = "postgres://user:pass@localhost/db";
+process.env.STRIPE_PUBLISHABLE_KEY = "pk_test";
+process.env.NODE_ENV = "test";
 
 jest.mock("../db", () => ({
   query: jest.fn().mockResolvedValue({ rows: [] }),

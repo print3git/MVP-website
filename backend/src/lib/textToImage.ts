@@ -1,8 +1,11 @@
+import axios from "axios";
 import fs from "fs";
 import { pipeline } from "stream/promises";
 import path from "path";
 import { uploadFile } from "./uploadS3";
-import { capture } from "./logger.js";
+// Import the capture helper via the TypeScript wrapper so the CommonJS
+// export is handled consistently in both TS and compiled JS environments.
+import { capture } from "./logger";
 import logger from "../logger";
 
 /**
