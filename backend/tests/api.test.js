@@ -26,9 +26,7 @@ jest.mock("../../db", () => ({
   updateWeeklyOrderStreak: jest.fn(),
   insertGenerationLog: jest.fn(),
 }));
-
-jest.mock("../../db", () => require("../db"));
-const db = require("../db");
+const db = require("../../db");
 
 jest.mock("../mail", () => ({ sendMail: jest.fn() }));
 const { sendMail } = require("../mail");
