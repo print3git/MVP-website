@@ -10,7 +10,12 @@ EventEmitter.defaultMaxListeners = Math.max(
 );
 
 const offline = isOfflineEnv();
-if (process.env.CI_NO_SMOKE === "1" && !offline) {
+
+if (offline) {
+  logOfflineSkip("smoke");
+  process.exit(0);
+}
+if (process.env.CI_NO_SMOKE === "1") {
   logOfflineSkip("smoke");
   process.exit(0);
 }
