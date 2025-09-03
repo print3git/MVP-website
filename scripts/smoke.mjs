@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { EventEmitter } from "events";
 import { execSync } from "child_process";
-import { isOfflineEnv, logOfflineSkip } from "./net-mode.mjs";
+import { isOfflineEnv } from "./net-mode.mjs";
 
 EventEmitter.defaultMaxListeners = Math.max(
   25,
@@ -9,15 +9,12 @@ EventEmitter.defaultMaxListeners = Math.max(
 );
 
 const offline = isOfflineEnv();
-if (offline) {
-  if (process.env.SKIP_PW_DEPS === "1") {
-    if (!process.env.SKIP_NET_CHECKS) {
-      process.env.SKIP_NET_CHECKS = "1";
-    }
-  } else {
-    logOfflineSkip("smoke");
-    process.exit(0);
-  }
+if (
+  offline &&
+  process.env.SKIP_PW_DEPS === "1" &&
+  !process.env.SKIP_NET_CHECKS
+) {
+  process.env.SKIP_NET_CHECKS = "1";
 }
 
 execSync(
