@@ -2,7 +2,14 @@
 import { execSync } from "child_process";
 import { isOfflineEnv } from "./net-mode.mjs";
 
-isOfflineEnv();
+const offline = isOfflineEnv();
+if (
+  offline &&
+  process.env.SKIP_PW_DEPS === "1" &&
+  !process.env.SKIP_NET_CHECKS
+) {
+  process.env.SKIP_NET_CHECKS = "1";
+}
 
 if (process.env.SKIP_PW_DEPS === "1") {
   process.env.PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1";
