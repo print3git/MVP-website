@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+# Enable detailed Node warnings to help trace setup issues
+export NODE_OPTIONS="--trace-warnings --trace-deprecation ${NODE_OPTIONS:-}"
+
 OFFLINE=0
 if node -e "import('./scripts/net-mode.mjs').then(m=>process.exit(m.isOfflineEnv()?0:1))" >/dev/null 2>&1; then
   OFFLINE=1
