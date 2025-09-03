@@ -74,6 +74,16 @@ try {
 }
 
 try {
+
+  (() => {
+    const r = require("./routes/subscription");
+    app.use("/api", r.default || r);
+  })();
+} catch (err) {
+  logger.error("Failed to load subscription router", err);
+}
+
+try {
   const r = require("./routes/orders");
   app.use("/api", r.default || r);
 } catch (err) {
