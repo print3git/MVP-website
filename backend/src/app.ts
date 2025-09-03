@@ -144,11 +144,47 @@ try {
 
 try {
   (() => {
+    const r = require("./routes/auth");
+    app.use("/api", r.default || r);
+  })();
+} catch (err) {
+  logger.error("Failed to load auth router", err as Error);
+}
+
+try {
+  (() => {
+    const r = require("./routes/discount");
+    app.use("/api", r.default || r);
+  })();
+} catch (err) {
+  logger.error("Failed to load discount router", err as Error);
+}
+
+try {
+  (() => {
+    const r = require("./routes/admin");
+    app.use("/api", r.default || r);
+  })();
+} catch (err) {
+  logger.error("Failed to load admin router", err as Error);
+}
+
+try {
+  (() => {
     const r = require("./routes/worker");
     app.use("/api", r.default || r);
   })();
 } catch (err) {
   logger.error("Failed to load worker router", err as Error);
+}
+
+try {
+  (() => {
+    const r = require("./routes/orders");
+    app.use("/api", r.default || r);
+  })();
+} catch (err) {
+  logger.error("Failed to load orders router", err as Error);
 }
 
 try {

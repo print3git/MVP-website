@@ -10,6 +10,7 @@ router.get("/status", async (req, res) => {
   const limit = parseInt((req.query.limit as string) || "10", 10);
   const offset = parseInt((req.query.offset as string) || "0", 10);
   try {
+
     const { rows } = await db.query(
       "SELECT * FROM jobs ORDER BY created_at DESC LIMIT $1 OFFSET $2",
       [limit, offset],
