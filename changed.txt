@@ -1,0 +1,16 @@
+backend/src/app.js
+backend/src/app.ts
+backend/src/lib/uploadS3.js
+backend/src/queue/generation.ts
+backend/src/routes/admin.js
+backend/src/routes/auth.js
+backend/src/routes/auth.ts
+backend/src/routes/discount.js
+backend/src/routes/generate.js
+backend/src/routes/orders.js
+backend/src/routes/orders.ts
+backend/src/routes/status.js
+backend/src/routes/status.ts
+backend/src/routes/stripeWebhook.js
+backend/src/routes/stripeWebhook.ts
+backend/src/routes/users.js
