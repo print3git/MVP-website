@@ -1,14 +1,15 @@
 import { execSync } from "child_process";
 
 export function isOfflineEnv() {
+  const force = process.env.CI_FORCE === "1";
   if (process.env.SKIP_NET_CHECKS === "1" || process.env.CI_NO_NET === "1") {
     setOfflineEnv();
-    return true;
+    return !force;
   }
   const sandbox = process.env.CI_SANDBOX === "1";
   if (sandbox) {
     setOfflineEnv();
-    return true;
+    return !force;
   }
   try {
     // Silence curl output; only the exit code matters for connectivity checks
@@ -18,7 +19,7 @@ export function isOfflineEnv() {
     );
   } catch {
     setOfflineEnv();
-    return true;
+    return !force;
   }
   return false;
 }
