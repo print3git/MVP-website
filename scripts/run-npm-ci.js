@@ -8,11 +8,11 @@ function isOffline() {
     return true;
   }
   try {
-    execSync(
-      "curl -sfI --max-time 10 https://registry.npmjs.org/-/ping >/dev/null 2>&1",
-      { stdio: "ignore" },
+    const res = execSync(
+      "curl -sI --max-time 10 https://registry.npmjs.org/-/ping",
+      { encoding: "utf8" },
     );
-    return false;
+    return !/^HTTP\/\d\.\d 2\d\d/.test(res);
   } catch {
     return true;
   }
