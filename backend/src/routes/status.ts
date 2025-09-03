@@ -2,7 +2,8 @@ import { Router } from "express";
 import { emitter, getStatus } from "../queue/generation";
 import logger from "../logger";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const db = require("../../db.js");
+// use path without extension so jest mocks can intercept
+const db = require("../../db");
 
 const router = Router();
 
@@ -87,4 +88,3 @@ router.get("/progress/:id", (req, res) => {
 });
 
 export default router;
-

@@ -39,15 +39,6 @@ try {
 
 try {
   (() => {
-    const r = require("./routes/create-order");
-    app.use("/api", r.default || r);
-  })();
-} catch (err) {
-  logger.error("Failed to load create-order router", err);
-}
-
-try {
-  (() => {
     const r = require("./routes/auth");
     app.use("/api", r.default || r);
   })();
@@ -113,4 +104,3 @@ try {
 }
 
 app.use(errorHandler);
-
