@@ -1,15 +1,6 @@
 #!/usr/bin/env node
 const fs = require("fs");
 const path = require("path");
-let runCLI;
-try {
-  ({ runCLI } = require("@jest/core"));
-} catch {
-  console.error(
-    "Jest is not installed. Run `npm run setup` to install dependencies.",
-  );
-  process.exit(1);
-}
 
 const repoRoot = path.resolve(__dirname, "..");
 const backendRoot = path.join(repoRoot, "backend");
@@ -25,14 +16,6 @@ function resolveFromPaths(mod) {
   return null;
 }
 
-if (!process.env.SKIP_ROOT_DEPS_CHECK) {
-  require("./ensure-root-deps.js");
-}
-
-if (!resolveFromPaths("ts-jest")) {
-  console.error("Missing ts-jest; run `npm run setup` before testing.");
-  process.exit(1);
-}
 
 function verifyFiles(args) {
   let checking = false;
@@ -52,10 +35,10 @@ function verifyFiles(args) {
 }
 
 async function run(args) {
-  const { isOfflineEnv, logOfflineSkip } = await import("./net-mode.mjs");
-  if (isOfflineEnv()) {
-    logOfflineSkip("jest");
-    return;
+  const { isOfflineEnv } = await import("./net-mode.mjs");
+  const offline = isOfflineEnv();
+  if (offline) {
+    console.log("offline mode detected; running jest");
   }
 
   let runCLI;
@@ -68,15 +51,17 @@ async function run(args) {
     process.exit(1);
   }
 
-  if (!process.env.SKIP_ROOT_DEPS_CHECK) {
+  if (!offline && !process.env.SKIP_ROOT_DEPS_CHECK) {
     require("./ensure-root-deps.js");
   }
 
-  try {
-    require.resolve("ts-jest");
-  } catch {
-    console.error("Missing ts-jest; run `npm run setup` before testing.");
-    process.exit(1);
+  if (!offline) {
+    try {
+      require.resolve("ts-jest");
+    } catch {
+      console.error("Missing ts-jest; run `npm run setup` before testing.");
+      process.exit(1);
+    }
   }
 
   verifyFiles(args);
@@ -86,7 +71,7 @@ async function run(args) {
     console.error("Missing jest core; run `npm run setup` before testing.");
     process.exit(1);
   }
-  const { runCLI } = require(corePath);
+  ({ runCLI } = require(corePath));
   const defaultConfig = path.resolve(repoRoot, "jest.config.cjs");
   const backendConfig = path.resolve(backendRoot, "jest.config.js");
   const parsed = { _: [], config: defaultConfig };
