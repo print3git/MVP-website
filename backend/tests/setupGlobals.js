@@ -56,6 +56,14 @@ if (!process.env.SPARC3D_TOKEN) {
   process.env.SPARC3D_TOKEN = "token";
 }
 
+// Provide dummy frontend URLs for Stripe checkout
+if (!process.env.FRONTEND_SUCCESS_URL) {
+  process.env.FRONTEND_SUCCESS_URL = "https://example.com/success";
+}
+if (!process.env.FRONTEND_CANCEL_URL) {
+  process.env.FRONTEND_CANCEL_URL = "https://example.com/cancel";
+}
+
 if (!process.env.CI_REQUIRE_EXTERNAL) {
   process.env.CI_REQUIRE_EXTERNAL = "0";
 }
