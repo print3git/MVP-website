@@ -9,6 +9,9 @@ EventEmitter.defaultMaxListeners = Math.max(
 );
 
 const offline = isOfflineEnv();
+if (offline) {
+  console.warn("offline mode detected; running smoke tests");
+}
 if (
   offline &&
   process.env.SKIP_PW_DEPS === "1" &&
