@@ -4,7 +4,7 @@ const config = require("../../config");
 const { authRequired, authOptional } = require("../lib/auth");
 const logger = require("../logger.js");
 const { capture } = require("../lib/logger");
-const { isTest } = require("../env");
+const isTest = () => process.env.NODE_ENV === "test";
 
 const router = Router();
 let stripe;
