@@ -1,15 +1,6 @@
 #!/usr/bin/env node
 const fs = require("fs");
 const path = require("path");
-let runCLI;
-try {
-  ({ runCLI } = require("@jest/core"));
-} catch {
-  console.error(
-    "Jest is not installed. Run `npm run setup` to install dependencies.",
-  );
-  process.exit(1);
-}
 
 const repoRoot = path.resolve(__dirname, "..");
 const backendRoot = path.join(repoRoot, "backend");
@@ -23,15 +14,6 @@ function resolveFromPaths(mod) {
     }
   }
   return null;
-}
-
-if (!process.env.SKIP_ROOT_DEPS_CHECK) {
-  require("./ensure-root-deps.js");
-}
-
-if (!resolveFromPaths("ts-jest")) {
-  console.error("Missing ts-jest; run `npm run setup` before testing.");
-  process.exit(1);
 }
 
 function verifyFiles(args) {
@@ -56,16 +38,6 @@ async function run(args) {
   if (isOfflineEnv()) {
     logOfflineSkip("jest");
     return;
-  }
-
-  let runCLI;
-  try {
-    ({ runCLI } = require("@jest/core"));
-  } catch {
-    console.error(
-      "Jest is not installed. Run `npm run setup` to install dependencies.",
-    );
-    process.exit(1);
   }
 
   if (!process.env.SKIP_ROOT_DEPS_CHECK) {
