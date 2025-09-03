@@ -1,11 +1,11 @@
 import express from "express";
 import Stripe from "stripe";
-import logger from "../logger.js";
+import logger from "../logger";
 import { upsertOrderPaid, markPaymentProcessed, linkModelToJob } from "../db";
 import { isTest } from "../env";
 import { capture } from "../lib/logger";
 import { getEnv as getBackendEnv, isTest } from "../env";
-import { getEnv } from "../../utils/getEnv.js";
+import { getEnv } from "../../utils/getEnv";
 
 const { STRIPE_SECRET_KEY } = getBackendEnv();
 const realStripe = new Stripe(STRIPE_SECRET_KEY, {

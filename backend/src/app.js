@@ -38,15 +38,49 @@ try {
 }
 
 try {
-  const r = require("./routes/discount");
-  app.use("/api", r.default || r);
+
+  (() => {
+    const r = require("./routes/create-order");
+    app.use("/api", r.default || r);
+  })();
+} catch (err) {
+  logger.error("Failed to load create-order router", err);
+}
+
+try {
+  (() => {
+    const r = require("./routes/auth");
+    app.use("/api", r.default || r);
+  })();
+} catch (err) {
+  logger.error("Failed to load auth router", err);
+}
+
+try {
+  (() => {
+    const r = require("./routes/rewards");
+    app.use("/api", r.default || r);
+  })();
+
 } catch (err) {
   logger.error("Failed to load discount router", err);
 }
 
 try {
-  const r = require("./routes/admin");
-  app.use("/api", r.default || r);
+
+  (() => {
+    const r = require("./routes/discount");
+    app.use("/api", r.default || r);
+  })();
+} catch (err) {
+  logger.error("Failed to load discount router", err);
+}
+
+try {
+  (() => {
+    const r = require("./routes/subscription");
+    app.use("/api", r.default || r);
+  })();
 } catch (err) {
   logger.error("Failed to load admin router", err);
 }
@@ -70,6 +104,15 @@ try {
   app.use("/api", r.default || r);
 } catch (err) {
   logger.error("Failed to load users router", err);
+}
+
+try {
+  (() => {
+    const r = require("./routes/status");
+    app.use("/api", r.default || r);
+  })();
+} catch (err) {
+  logger.error("Failed to load status router", err);
 }
 
 app.use(errorHandler);

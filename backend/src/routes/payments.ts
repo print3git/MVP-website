@@ -1,7 +1,7 @@
 import { Router, type Request, type Response } from "express";
 import Stripe from "stripe";
 import { getEnv } from "../env";
-import logger from "../logger.js";
+import logger from "../logger";
 import { capture } from "../lib/logger";
 
 interface Item {

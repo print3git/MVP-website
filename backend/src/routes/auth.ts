@@ -1,56 +1,70 @@
 import { Router } from "express";
 import bcrypt from "bcryptjs";
-import * as db from "../../db";
-import logger from "../logger.js";
-import { capture } from "../lib/logger";
+import jwt from "jsonwebtoken";
+import logger from "../logger";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const db = require("../../db");
 
 const router = Router();
 
 router.post("/register", async (req, res) => {
+  const { username, email, password } = req.body || {};
+  if (!username || !email || !password) {
+    res.status(400).json({ error: "bad_request" });
+    return;
+  }
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+    res.status(400).json({ error: "bad_request" });
+    return;
+  }
   try {
-    const { username, email, password } = req.body || {};
-    if (!username || !email || !password) {
-      return res.status(400).json({ error: "missing_fields" });
-    }
-    const emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
-    if (!emailRegex.test(email)) {
-      return res.status(400).json({ error: "invalid_email" });
-    }
-    await db.query(
-      "INSERT INTO users(username,email,password_hash) VALUES ($1,$2,$3)",
-      [username, email, password],
+    const hash = await bcrypt.hash(password, 10);
+    const { rows } = await db.query(
+      "INSERT INTO users(username, email, password_hash) VALUES($1,$2,$3) RETURNING id, username",
+      [username, email, hash],
     );
-    res.json({ token: "test.jwt" });
+    const user = rows[0];
+    const token = jwt.sign(
+      { id: user.id, username: user.username },
+      process.env.AUTH_SECRET || "secret",
+    );
+    res.json({ token });
   } catch (err) {
     logger.error("register_failed", err as Error);
-    capture(err);
-    res.status(500).json({ error: "unexpected_error" });
+    res.status(500).json({ error: "internal_error" });
+
   }
 });
 
 router.post("/login", async (req, res) => {
+  const { username, password } = req.body || {};
+  if (!username || !password) {
+    res.status(400).json({ error: "bad_request" });
+    return;
+  }
   try {
-    const { username, password } = req.body || {};
-    if (!username || !password) {
-      return res.status(400).json({ error: "missing_fields" });
-    }
-    const result = await db.query(
+    const { rows } = await db.query(
       "SELECT id, username, password_hash FROM users WHERE username=$1",
       [username],
     );
-    const user = result.rows[0];
-    if (!user) {
-      return res.status(401).json({ error: "invalid_credentials" });
+    if (!rows.length) {
+      res.status(401).json({ error: "unauthorized" });
+      return;
     }
-    const ok = await bcrypt.compare(password, user.password_hash);
+    const user = rows[0];
+    const ok = await bcrypt.compare(password, user.password_hash || "");
     if (!ok) {
-      return res.status(401).json({ error: "invalid_credentials" });
+      res.status(401).json({ error: "unauthorized" });
+      return;
     }
-    res.json({ token: "test.jwt" });
+    const token = jwt.sign(
+      { id: user.id, username: user.username },
+      process.env.AUTH_SECRET || "secret",
+    );
+    res.json({ token });
   } catch (err) {
     logger.error("login_failed", err as Error);
-    capture(err);
-    res.status(500).json({ error: "unexpected_error" });
+    res.status(500).json({ error: "internal_error" });
   }
 });
 

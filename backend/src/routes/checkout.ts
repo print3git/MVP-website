@@ -1,6 +1,6 @@
 import { Router } from "express";
 import Stripe from "stripe";
-import logger from "../logger.js";
+import logger from "../logger";
 import { capture } from "../lib/logger";
 import { isTest } from "../env";
 

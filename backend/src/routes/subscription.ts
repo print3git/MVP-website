@@ -6,10 +6,10 @@ import {
 } from "express";
 import Stripe from "stripe";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const db = require("../../db.js");
+const db = require("../../db");
 import config from "../../config";
 import { authRequired, authOptional } from "../lib/auth";
-import logger from "../logger.js";
+import logger from "../logger";
 import { capture } from "../lib/logger";
 import { isTest } from "../env";
 

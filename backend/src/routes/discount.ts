@@ -1,5 +1,6 @@
-const { Router } = require("express");
-const logger = require("../logger.js");
+import { Router } from "express";
+import logger from "../logger";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const db = require("../../db");
 
 const router = Router();
@@ -21,7 +22,7 @@ router.post("/discount-code", async (req, res) => {
     }
     res.json({ discount: rows[0].amount_cents });
   } catch (err) {
-    logger.error("discount_code_failed", err);
+    logger.error("discount_code_failed", err as Error);
     res.status(500).json({ error: "internal_error" });
   }
 });
@@ -33,10 +34,9 @@ router.post("/generate-discount", async (_req, res) => {
     );
     res.json({ code: rows[0].code });
   } catch (err) {
-    logger.error("generate_discount_failed", err);
+    logger.error("generate_discount_failed", err as Error);
     res.status(500).json({ error: "internal_error" });
   }
 });
 
-module.exports = router;
-module.exports.default = router;
+export default router;

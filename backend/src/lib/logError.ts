@@ -1,4 +1,4 @@
-import logger from "../logger.js";
+import logger from "../logger";
 import { capture } from "./logger";
 
 export function logError(...args: unknown[]): void {
