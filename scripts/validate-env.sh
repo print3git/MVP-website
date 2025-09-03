@@ -155,6 +155,10 @@ fi
 OFFLINE=0
 if node -e "import('./scripts/net-mode.mjs').then(m=>process.exit(m.isOfflineEnv()?0:1))" >/dev/null 2>&1; then
   OFFLINE=1
+  if [[ -z "${SKIP_NET_CHECKS:-}" ]]; then
+    echo "offline mode: skipping network checks" >&2
+    export SKIP_NET_CHECKS=1
+  fi
 fi
 
 if [[ -z "${SKIP_PW_DEPS:-}" ]]; then
