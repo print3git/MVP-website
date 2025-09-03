@@ -42,9 +42,12 @@ describe("index validatePrompt", () => {
       .readFileSync(path.join(__dirname, "../../../js/index.js"), "utf8")
       .replace(/^\s*import[^\n]*\r?\n/gm, "")
       .replace(/export\s+function/g, "function")
-
-      .replace(/window\.addEventListener\(['"]DOMContentLoaded['"][\s\S]+$/, "")
-      .replace(/let savedProfile = null;\n?/, "");
+      .replace(
+        /if \(typeof process === "undefined"[\s\S]*?window\.addEventListener\(['"]DOMContentLoaded['"], start\);\n}\n/,
+        "",
+      )
+      .replace(/let savedProfile = null;\n?/, "")
+      .replace(/export\s+\{[\s\S]*?\};?\n?/, "");
 
     script += "\nwindow.validatePrompt = validatePrompt;";
     dom.window.eval(script);
