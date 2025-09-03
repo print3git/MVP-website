@@ -55,6 +55,7 @@ async function run(args) {
     require("./ensure-root-deps.js");
   }
 
+
   const skipNetChecks = process.env.SKIP_NET_CHECKS === "1";
   let tsJestMissing = false;
   try {
@@ -124,7 +125,21 @@ async function run(args) {
   if (isBackendTest && !configProvided) {
     parsed.config = backendConfig;
   }
-  if ((offline || skipNetChecks) && tsJestMissing) {
+
+  if (!offline && isBackendTest && !process.env.SKIP_BACKEND_DEPS_CHECK) {
+    require(path.join(backendRoot, "scripts", "ensure-deps.js"));
+  }
+  let tsJestMissing = false;
+  try {
+    require.resolve("ts-jest");
+  } catch {
+    tsJestMissing = true;
+    if (!offline) {
+      console.error("Missing ts-jest; run `npm run setup` before testing.");
+      process.exit(1);
+    }
+  }
+  if (offline && tsJestMissing) {
     parsed.config = isBackendTest ? backendOfflineConfig : defaultOfflineConfig;
     parsed._ = parsed._.map((p) => {
       if (p.endsWith(".ts")) {
