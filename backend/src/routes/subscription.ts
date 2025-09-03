@@ -6,20 +6,16 @@ import {
 } from "express";
 import Stripe from "stripe";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const db = require("../../db");
+const db = require("../../db.js");
 import config from "../../config";
 import { authRequired, authOptional } from "../lib/auth";
 import logger from "../logger";
 import { capture } from "../lib/logger";
-import { isTest } from "../env";
 
 const router = Router();
-const realStripe = new Stripe(config.stripeKey, {
+const stripe = new Stripe(config.stripeKey, {
   apiVersion: "2022-11-15",
 });
-const stripe = isTest()
-  ? require("../../tests/utils/stripeMock").stripe
-  : realStripe;
 
 router.get("/subscription", authRequired, async (req, res) => {
   try {

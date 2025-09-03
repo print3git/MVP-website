@@ -6,7 +6,7 @@
  *
  * @module backend/config
  */
-const { getEnv } = require("./src/lib/getEnv");
+const { getEnv } = require("./src/lib/getEnv.js");
 const { applyMockEnv, mockSecrets } = require("./src/lib/mockEnv");
 const logger = require("./src/logger.js");
 
