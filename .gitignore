@@ -81,4 +81,5 @@ sw.js
 .next/
 .husky/_
 
+# pnpm lockfile
 pnpm-lock.yaml
