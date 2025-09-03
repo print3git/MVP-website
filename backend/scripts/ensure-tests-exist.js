@@ -15,6 +15,14 @@ for (const dep of ["jest", "ts-jest"]) {
   }
 }
 
+// Load test globals so required environment variables are populated when
+// Jest scans test files via `--listTests`.
+try {
+  require(path.join(__dirname, "..", "tests", "setupGlobals.js"));
+} catch (err) {
+  console.warn("Failed to preload test globals", err);
+}
+
 const required = [
   "tests/stripe/webhook.valid-signature.spec.ts",
   "tests/stripe/webhook.invalid-signature.spec.ts",
