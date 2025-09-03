@@ -1,7 +1,7 @@
 // backend/jest.config.js
 module.exports = {
   rootDir: ".",
-  preset: "ts-jest",
+  preset: "ts-jest/presets/default",
   setupFiles: ["<rootDir>/tests/setupGlobals.js"],
   setupFilesAfterEnv: [
     "<rootDir>/tests/utils/testEnv.ts",
