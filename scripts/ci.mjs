@@ -1,12 +1,9 @@
 #!/usr/bin/env node
 import { execSync } from "child_process";
-import { isOfflineEnv, logOfflineSkip } from "./net-mode.mjs";
+import { isOfflineEnv } from "./net-mode.mjs";
 
 const offline = isOfflineEnv();
-if (offline) {
-  logOfflineSkip("ci");
-  process.exit(0);
-}
+
 if (
   offline &&
   process.env.SKIP_PW_DEPS === "1" &&
@@ -20,10 +17,10 @@ if (process.env.SKIP_PW_DEPS === "1") {
 }
 
 if (offline) {
-  console.log("offline mode: skipping build and tests");
-  process.exit(0);
+  console.log("offline mode: running ci");
 }
 
 execSync("node scripts/run-npm-ci.js", { stdio: "inherit" });
 execSync("npm run build --workspaces=false", { stdio: "inherit" });
 execSync("npm test", { stdio: "inherit" });
+
