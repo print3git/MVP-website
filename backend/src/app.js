@@ -61,7 +61,16 @@ try {
     app.use("/api", r.default || r);
   })();
 } catch (err) {
-  logger.error("Failed to load discount router", err);
+  logger.error("Failed to load rewards router", err);
+}
+
+try {
+  (() => {
+    const r = require("./routes/referral");
+    app.use("/api", r.default || r);
+  })();
+} catch (err) {
+  logger.error("Failed to load referral router", err);
 }
 
 try {
@@ -74,7 +83,6 @@ try {
 }
 
 try {
-
   (() => {
     const r = require("./routes/subscription");
     app.use("/api", r.default || r);
