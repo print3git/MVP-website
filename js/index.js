@@ -426,14 +426,17 @@ async function updatePrintRunInfo() {
   const hoursLabelEl = document.getElementById("print-run-hours-label");
   const slotsEl = document.getElementById("print-run-slots");
   const info = document.getElementById("print-run-info");
-  if (!hoursEl && !slotsEl) return;
+  if (!hoursEl || !slotsEl) return;
   let baseSlots = computeSlotsByTime();
+  // Show a provisional slot count while awaiting the API response.
+  slotsEl.textContent = `${adjustedSlots(baseSlots)}`;
   try {
     const resp = await fetch(`${API_BASE}/print-slots`);
     if (resp.ok) {
       const data = await resp.json();
       if (typeof data.slots === "number") {
         baseSlots = data.slots;
+        slotsEl.textContent = `${adjustedSlots(baseSlots)}`;
       }
     }
   } catch {
@@ -442,7 +445,6 @@ async function updatePrintRunInfo() {
   const hours = computePrintRunHours();
   hoursEl.textContent = hours;
   if (hoursLabelEl) hoursLabelEl.textContent = hours === 1 ? "hour" : "hours";
-  if (slotsEl) slotsEl.textContent = `${adjustedSlots(baseSlots)}`;
 
   if (info) info.classList.remove("invisible");
   if (typeof window.positionQuote === "function") {
