@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "src/server.js",
   "scripts": {
-    "test": "NODE_ENV=test node scripts/ensure-tests-exist.js && PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 jest --runInBand tests/additionalApi.test.js",
+    "test": "NODE_ENV=test node scripts/ensure-tests-exist.js && PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 jest --runInBand tests/additionalApi.test.js tests/getEnv.test.p7q8r9s0t1u2v3w4.js tests/users.test.z9x8c7v6b5n4m3l2.js",
     "test-ci": "node scripts/ensure-tests-exist.js && jest --ci --passWithNoTests=false",
     "test:unit": "npm test",
     "test:backend": "jest --runInBand",

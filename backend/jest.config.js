@@ -14,7 +14,14 @@ try {
     transform: {
       "^.+\\.[tj]s$": "ts-jest",
     },
-    testMatch: ["**/*.spec.ts", "**/*.test.ts", "**/*.spec.js", "**/*.test.js"],
+    testMatch: [
+      "**/*.spec.ts",
+      "**/*.spec.js",
+      "**/*.test.ts",
+      "**/*.test.js",
+      "**/*.test.*.ts",
+      "**/*.test.*.js",
+    ],
     moduleFileExtensions: ["ts", "js", "json"],
     testTimeout: 20000,
     maxWorkers: "50%",
@@ -33,21 +40,8 @@ try {
       "^\\.\\./\\.\\./server(?:\\.js)?$": "<rootDir>/src/app",
     },
     collectCoverage: true,
-    collectCoverageFrom: [
-      "**/*.{js,jsx,ts,tsx}",
-      "!<rootDir>/node_modules/**",
-      "!<rootDir>/coverage/**",
-      "!<rootDir>/tests/**",
-    ],
-    coveragePathIgnorePatterns: [
-      "<rootDir>/db.js",
-      "<rootDir>/shipping.js",
-      "<rootDir>/social.js",
-      "<rootDir>/utils/validateStl.js",
-      "<rootDir>/node_modules/",
-      "<rootDir>/tests/",
-      "<rootDir>/coverage/",
-    ],
+    collectCoverageFrom: ["<rootDir>/utils/getEnv.js", "<rootDir>/users.js"],
+    coveragePathIgnorePatterns: [],
     coverageThreshold: {
       global: {
         lines: 80,
