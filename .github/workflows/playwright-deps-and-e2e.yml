@@ -20,6 +20,16 @@ jobs:
           key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-playwright-
+      - name: Prepare apt cache
+        run: |
+          sudo mkdir -p /var/cache/apt/archives
+          sudo chown -R $USER:$USER /var/cache/apt/archives
+      - uses: actions/cache@v4
+        with:
+          path: /var/cache/apt/archives
+          key: ${{ runner.os }}-apt-playwright-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-apt-playwright-
       - name: mode
         run: |
           echo "Mode: ${{ env.CI_NO_NET == '1' && 'Offline' || 'Online' }}"
@@ -30,9 +40,10 @@ jobs:
           else
             npm ci
           fi
-      - name: Install Playwright browsers + OS dependencies
-        run: |
-          npx playwright install --with-deps chromium
+      - name: Install Playwright system dependencies
+        run: npx playwright install-deps chromium
+      - name: Install Playwright browsers
+        run: npx playwright install chromium
       - run: npm run build --if-present
       - run: node scripts/ci-doctor.mjs
         env:
