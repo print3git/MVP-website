@@ -25,7 +25,11 @@ export PLAYWRIGHT_BROWSERS_PATH="${PLAYWRIGHT_DIR}"
 export PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
 
 echo "==> Install (backend)"
-npm ci --prefix backend
+if [ ! -d backend/node_modules ]; then
+  npm ci --prefix backend
+else
+  echo "backend node_modules already present, skipping install"
+fi
 
 echo "==> Format (backend)"
 npm run format --prefix backend

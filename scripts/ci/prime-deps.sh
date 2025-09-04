@@ -2,12 +2,20 @@
 set -euo pipefail
 
 echo "==> Prime root deps"
-npm ci
+if [ ! -d node_modules ]; then
+  npm ci
+else
+  echo "root node_modules already present"
+fi
 
 echo "==> Prime backend deps"
-pushd backend
-npm ci
-popd
+if [ ! -d backend/node_modules ]; then
+  pushd backend
+  npm ci
+  popd
+else
+  echo "backend node_modules already present"
+fi
 
 export PLAYWRIGHT_BROWSERS_PATH="${HOME}/.cache/ms-playwright"
 npx playwright install-deps chromium
