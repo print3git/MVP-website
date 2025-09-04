@@ -3,8 +3,8 @@ const path = require("path");
 const { execSync } = require("child_process");
 
 const required = [
-  path.resolve("frontend/dist/index.html"),
-  path.resolve("frontend/dist/models/boombox.glb"),
+  path.resolve("index.html"),
+  path.resolve("models/boombox.glb"),
 ];
 
 for (const distPath of required) {
@@ -17,10 +17,10 @@ for (const distPath of required) {
       // ignore errors fetching current revision
     }
     try {
-      const ls = execSync("ls -la frontend/dist").toString().trim();
+      const ls = execSync("ls -la").toString().trim();
       console.error(ls);
     } catch {
-      // ignore errors listing frontend/dist
+      // ignore errors listing root
     }
     process.exit(1);
   }

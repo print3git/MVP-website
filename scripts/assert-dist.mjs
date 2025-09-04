@@ -2,9 +2,7 @@ import { access } from "fs/promises";
 import { resolve } from "path";
 import { execSync } from "child_process";
 
-const outputs = [
-  resolve("frontend/dist/index.html"),
-];
+const outputs = [resolve("index.html")];
 
 for (const output of outputs) {
   try {
@@ -16,7 +14,7 @@ for (const output of outputs) {
       console.error(rev);
     } catch {}
     try {
-      const ls = execSync("ls -la frontend/dist").toString().trim();
+      const ls = execSync("ls -la").toString().trim();
       console.error(ls);
     } catch {}
     process.exit(1);

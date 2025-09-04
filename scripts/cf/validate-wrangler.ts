@@ -15,8 +15,8 @@ export function validateWrangler(
   if ("build" in config) {
     errors.push('remove "build" (Pages uses pages_build_output_dir)');
   }
-  if (config.pages_build_output_dir !== "frontend/dist") {
-    errors.push('pages_build_output_dir must be "frontend/dist"');
+  if (config.pages_build_output_dir !== ".") {
+    errors.push('pages_build_output_dir must be "."');
   }
   if (errors.length) {
     throw new Error(`wrangler.toml invalid: ${errors.join(", ")}`);
