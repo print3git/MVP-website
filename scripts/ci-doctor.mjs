@@ -38,9 +38,9 @@ function checkTool(name, cmd) {
 checkPath("backend/package.json", "backend/package.json");
 checkPath("frontend/package.json", "frontend/package.json");
 checkPath("wrangler.toml", "wrangler.toml");
-const distExists = checkPath("frontend/dist", "frontend/dist");
+const distExists = checkPath("index.html", "index.html");
 if (distExists) {
-  const modelsDir = path.join("frontend", "dist", "models");
+  const modelsDir = path.join("models");
   let modelFile;
   try {
     const files = readdirSync(modelsDir);
@@ -51,12 +51,12 @@ if (distExists) {
     // ignore
   }
   if (modelFile) {
-    add("path:frontend/dist/models", true, modelFile);
+    add("path:models", true, modelFile);
   } else {
-    add("path:frontend/dist/models", "skipped", "skipped");
+    add("path:models", "skipped", "skipped");
   }
 } else {
-  add("path:frontend/dist/models", "skipped", "skipped");
+  add("path:models", "skipped", "skipped");
 }
 
 // Env vars

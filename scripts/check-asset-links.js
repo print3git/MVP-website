@@ -2,11 +2,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const distDir = path.join(__dirname, "..", "frontend", "dist");
-if (!fs.existsSync(distDir)) {
-  console.log("frontend/dist missing; skipping asset link check");
-  process.exit(0);
-}
+const distDir = path.join(__dirname, "..");
 
 const htmlFiles = [];
 const walk = (dir) => {
