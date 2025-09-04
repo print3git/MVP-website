@@ -13,10 +13,9 @@ jobs:
         id: diff
         run: |
           set -euo pipefail
-          git fetch origin ${{ github.base_ref || 'dev' }} --depth=1 || true
-          BASE="${{ github.event.pull_request.base.sha || 'HEAD~1' }}"
-          HEAD="${{ github.sha }}"
-          git diff --name-only --diff-filter=AM "${BASE}" "${HEAD}" > changed.txt
+          git fetch origin ${{ github.base_ref || 'dev' }} --depth=2 || true
+          BASE="${{ github.event.pull_request.base.sha || github.event.before }}"
+          git diff --name-only --diff-filter=AM "$BASE" "${{ github.sha }}" > changed.txt
           cat changed.txt
 
       - name: Fail on binary files outside allowlist
