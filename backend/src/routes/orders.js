@@ -108,7 +108,6 @@ router.post("/create-order", async (req, res) => {
     if (discount) {
       discountTotal += discount;
     }
-    let firstOrder = false;
     if (buyerId) {
       const countRes = await db.query(
         "SELECT COUNT(*) FROM orders WHERE user_id=$1",
@@ -117,7 +116,6 @@ router.post("/create-order", async (req, res) => {
       if (countRes.rows?.[0]?.count === "0") {
         const first = Math.round(total * 0.1);
         discountTotal += first;
-        firstOrder = true;
       }
     }
     let referrerId = null;
