@@ -218,9 +218,10 @@
         class="relative flex flex-col md:flex-row items-start justify-center w-full max-w-4xl gap-8"
       >
         <!-- Model Preview -->
+        <div class="w-full md:w-1/2 max-w-lg flex flex-col items-center">
         <section
           id="preview-wrapper"
-          class="relative w-full md:w-1/2 max-w-lg h-80 bg-[#2A2A2E] border border-white/10 rounded-3xl overflow-visible"
+          class="relative w-full h-80 bg-[#2A2A2E] border border-white/10 rounded-3xl overflow-visible"
         >
           <img
             id="preview-img"
@@ -272,7 +273,8 @@
               class="h-10 w-10 border-4 border-white border-t-transparent rounded-full animate-spin"
             ></div>
           </div>
-          <div class="mt-4 text-center text-sm text-gray-400">
+        </section>
+        <div id="trust-badge" class="mt-4 text-center text-sm text-gray-400">
             <p class="mb-1">
               Trusted by <span class="text-white">thousands of makers:</span>
             </p>
@@ -281,8 +283,8 @@
               questions asked:
               <span class="text-white">enquiries@domain.com</span>
             </p>
-          </div>
-        </section>
+        </div>
+        </div>
 
         <!-- Checkout Form -->
         <div
