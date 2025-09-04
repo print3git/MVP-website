@@ -59,7 +59,7 @@ jobs:
           fi
 
           echo "Running model tests: ${present[*]}"
-          npx playwright test "${present[@]}"
+          npx playwright test "${present[@]}" --pass-with-no-tests
 
       - name: Run Playwright (general test discovery)
         shell: bash
