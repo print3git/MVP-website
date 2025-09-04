@@ -171,10 +171,6 @@ function main() {
     if (!process.env.SKIP_PW_DEPS) {
       run("npx -y playwright install --with-deps");
     }
-    if (!fs.existsSync("frontend/dist/index.html")) {
-      execSync("npm ci --prefix frontend", { stdio: "inherit" });
-      execSync("npm run build --prefix frontend", { stdio: "inherit" });
-    }
     const waitTimeout = process.env.WAIT_ON_TIMEOUT || 180000;
     const waitArgs = `-t ${waitTimeout} `;
     console.log("WAIT_ON_TIMEOUT:", waitTimeout);
