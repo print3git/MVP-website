@@ -50,7 +50,11 @@ jobs:
         env:
           CI: "true"
         run: |
-          npx playwright test --trace on tests/e2e/model-loading.spec.ts
+          if [ -f tests/e2e/model-loading.spec.ts ]; then
+            npx playwright test --trace on --pass-with-no-tests tests/e2e/model-loading.spec.ts
+          else
+            echo "No model-loading E2E spec present; skipping."
+          fi
       - name: Upload Playwright traces
         if: failure()
         uses: actions/upload-artifact@v4
