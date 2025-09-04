@@ -14,6 +14,7 @@ router.get("/users/:username/profile", async (req, res) => {
     }
     res.json(rows[0]);
   } catch (err) {
+    console.error("user_profile_fetch_failed", err);
     res.status(500).json({ error: "unexpected_error" });
   }
 });
