@@ -37,7 +37,7 @@ import { captureSnapshots } from "./snapshot.js";
 const API_BASE = (window.API_ORIGIN || "") + "/api";
 
 const OPEN_KEY = "print2CommunityOpen";
-const FALLBACK_GLB = "models/bag.glb";
+const FALLBACK_GLB = "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
 
 function addBasketModel(model) {
   if (window.addToBasket) {

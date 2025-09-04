@@ -3,12 +3,37 @@ on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      NPM_CONFIG_AUDIT: "false"
+      NPM_CONFIG_FUND: "false"
+      CI_NETWORK_OK: "1"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
-      - run: npm ci
+          node-version: "20.x"
+          cache: "npm"
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+      - name: mode
+        run: |
+          echo "Mode: ${{ env.CI_NO_NET == '1' && 'Offline' || 'Online' }}"
+      - run: |
+          if [ "$CI_NO_NET" = '1' ] || [ "$SKIP_PW_DEPS" = '1' ]; then
+            npm ci --ignore-scripts --prefer-offline --no-audit --fund=false
+          else
+            npm ci
+          fi
+      - run: npm run build --if-present
+      - run: node scripts/ci-doctor.mjs
+        env:
+          STRIPE_SECRET_KEY: sk_test_dummy
+          STRIPE_WEBHOOK_SECRET: whsec_dummy
+          DB_URL: postgres://postgres:postgres@localhost:5432/test
       - name: Run Stripe tests
         env:
           STRIPE_SECRET_KEY: sk_test_dummy
@@ -16,11 +41,11 @@ jobs:
           FRONTEND_SUCCESS_URL: http://localhost/success
           FRONTEND_CANCEL_URL: http://localhost/cancel
         run: npm test -- --coverage=false --runTestsByPath \
-             backend/tests/stripe/webhook.valid-signature.spec.ts \
-             backend/tests/stripe/webhook.invalid-signature.spec.ts \
-             backend/tests/stripe/webhook.idempotency.spec.ts \
-             backend/tests/stripe/webhook.event-types.spec.ts \
-             backend/tests/stripe/webhook.performance.spec.ts \
-             backend/tests/stripe/webhook.logging.spec.ts \
-             backend/tests/stripe/checkout.session.success.spec.ts \
-             backend/tests/stripe/checkout.session.errors.spec.ts
+          backend/tests/stripe/webhook.valid-signature.spec.ts \
+          backend/tests/stripe/webhook.invalid-signature.spec.ts \
+          backend/tests/stripe/webhook.idempotency.spec.ts \
+          backend/tests/stripe/webhook.event-types.spec.ts \
+          backend/tests/stripe/webhook.performance.spec.ts \
+          backend/tests/stripe/webhook.logging.spec.ts \
+          backend/tests/stripe/checkout.session.success.spec.ts \
+          backend/tests/stripe/checkout.session.errors.spec.ts

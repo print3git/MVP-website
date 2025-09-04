@@ -23,7 +23,7 @@ const { createTimedCode } = require("../discountCodes");
 
 const jwt = require("jsonwebtoken");
 const request = require("supertest");
-const app = require("../server");
+const app = require("../src/app");
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -66,11 +66,9 @@ test("POST /api/rewards/redeem returns code", async () => {
   expect(createTimedCode).toHaveBeenCalled();
 });
 
-test("POST /api/referral-click records event", async () => {
+test("GET /api/referral-click records event", async () => {
   db.getUserIdForReferral.mockResolvedValue("u1");
-  const res = await request(app)
-    .post("/api/referral-click")
-    .send({ code: "abc" });
+  const res = await request(app).get("/api/referral-click?code=abc");
   expect(res.status).toBe(200);
   expect(db.insertReferralEvent).toHaveBeenCalledWith("u1", "click");
 });

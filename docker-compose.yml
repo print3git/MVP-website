@@ -1,10 +1,22 @@
-version: '3'
+version: "3"
 services:
   api:
     build: ./
     ports:
       - "3000:3000"
     env_file: .env
+  worker:
+    build: ./
+    depends_on:
+      - db
+    env_file: .env
+    command: ["npm", "run", "start:worker"]
+  db-worker:
+    build: ./
+    depends_on:
+      - db
+    env_file: .env
+    command: ["npm", "run", "start:job-queue"]
   db:
     image: postgres:15
     environment:

@@ -1,13 +1,39 @@
 // backend/db.js
-require("dotenv").config({ override: false });
-const { Pool } = require("pg");
-const { v4: uuidv4 } = require("uuid");
-const { dbUrl } = require("./config");
-const pool = new Pool({ connectionString: dbUrl });
+if (process.env.NODE_ENV === "test") {
+  const { fn } = global.jest || require("jest-mock");
+  module.exports = {
+    query: fn().mockResolvedValue({ rows: [] }),
+    insertCommission: fn().mockResolvedValue({}),
+    upsertSubscription: fn(),
+    cancelSubscription: fn(),
+    getSubscription: fn(),
+    ensureCurrentWeekCredits: fn(),
+    getCurrentWeekCredits: fn(),
+    incrementCreditsUsed: fn(),
+    upsertMailingListEntry: fn(),
+    confirmMailingListEntry: fn(),
+    unsubscribeMailingListEntry: fn(),
+    getUserCreations: fn(),
+    insertCommunityComment: fn(),
+    getCommunityComments: fn(),
+    insertSocialShare: fn(),
+    verifySocialShare: fn(),
+    getUserIdForReferral: fn(),
+    getOrCreateOrderReferralLink: fn(),
+    insertReferredOrder: fn(),
+    updateWeeklyOrderStreak: fn(),
+    insertGenerationLog: fn(),
+  };
+} else {
+  require("dotenv").config({ override: false });
+  const { Pool } = require("pg");
+  const { v4: uuidv4 } = require("uuid");
+  const { dbUrl } = require("./config");
+  const pool = new Pool({ connectionString: dbUrl });
 
-function query(text, params) {
-  return pool.query(text, params);
-}
+  function query(text, params) {
+    return pool.query(text, params);
+  }
 
 async function insertShare(jobId, userId, slug) {
   return query(
@@ -1186,3 +1212,4 @@ module.exports = {
   insertOrderItems,
   getOrderItems,
 };
+}

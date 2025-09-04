@@ -1,0 +1,14 @@
+name: PNPM Guard
+on: [push, pull_request]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Ensure pnpm is not used
+        run: |
+          test ! -f pnpm-lock.yaml
+          if jq -r '.scripts | to_entries[].value' package.json | grep -q pnpm; then
+            echo "pnpm usage detected in package.json scripts"
+            exit 1
+          fi

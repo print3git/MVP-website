@@ -4,16 +4,27 @@ const axios = require("axios");
 const { getPrinterStatus } = require("../printers/octoprint");
 const { selectHub } = require("../utils/routing");
 const logger = require("../../src/logger");
+const { getEnv } = require("../utils/getEnv");
 
-const DEFAULT_PRINTER_URL =
-  process.env.PRINTER_API_URL || "http://localhost:5000/print";
-const PRINTER_URLS = (process.env.PRINTER_URLS || DEFAULT_PRINTER_URL)
+const PRINTER_API_URL = getEnv("PRINTER_API_URL", {
+  default: "http://localhost:5000/print",
+});
+const DB_URL = getEnv("DB_URL", { required: true });
+const PRINTER_URLS = getEnv("PRINTER_URLS", { default: PRINTER_API_URL })
   .split(",")
   .map((u) => u.trim())
   .filter(Boolean);
-const OCTOPRINT_API_KEY = process.env.OCTOPRINT_API_KEY || "";
+const OCTOPRINT_API_KEY = getEnv("OCTOPRINT_API_KEY", { default: "" });
 const POLL_INTERVAL_MS = 5000;
-const FILAMENT_GRAMS = parseFloat(process.env.FILAMENT_GRAMS_PER_PRINT || "25");
+const FILAMENT_GRAMS = parseFloat(
+  getEnv("FILAMENT_GRAMS_PER_PRINT", { default: "25" }),
+);
+
+let ready = false;
+
+function isReady() {
+  return ready;
+}
 
 async function getNextPendingJob(client) {
   const { rows } = await client.query(
@@ -123,16 +134,35 @@ async function processNextJob(client) {
   ]);
 }
 
+async function connectWithRetry(client) {
+  const start = Date.now();
+  let delay = 2000;
+  while (true) {
+    try {
+      await client.connect();
+      ready = true;
+      return;
+    } catch (err) {
+      logger.error("DB connection failed", err);
+      await new Promise((r) => setTimeout(r, delay));
+      if (Date.now() - start >= 60000) {
+        delay = 10000;
+      }
+    }
+  }
+}
+
 async function run(interval = POLL_INTERVAL_MS) {
-  const client = new Client({ connectionString: process.env.DB_URL });
-  await client.connect();
+  logger.info("=== printWorker starting ===");
+  const client = new Client({ connectionString: DB_URL });
+  await connectWithRetry(client);
   setInterval(() => {
     processNextJob(client).catch((err) => logger.error("Worker error", err));
   }, interval);
 }
 
 if (require.main === module) {
-  run();
+  run().catch((err) => logger.error("Worker failed to start", err));
 }
 
-module.exports = { run, processNextJob };
+module.exports = { run, processNextJob, isReady };

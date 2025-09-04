@@ -1,38 +1,99 @@
-import express, { type Request, type Response } from "express";
+import express from "express";
 import Stripe from "stripe";
+import logger from "../logger";
+import { upsertOrderPaid, markPaymentProcessed, linkModelToJob } from "../db";
+import { capture } from "../lib/logger";
+import { getEnv as getBackendEnv, isTest } from "../env";
+import { getEnv } from "../../utils/getEnv";
+import { orders } from "./checkout";
+import { sendMail } from "../mail.js";
+
+const { STRIPE_SECRET_KEY } = getBackendEnv();
+const realStripe = new Stripe(STRIPE_SECRET_KEY, {
+  apiVersion: "2022-11-15",
+});
+const stripe = isTest()
+  ? require("../../tests/utils/stripeMock").stripe
+  : realStripe;
+
+let stripeWebhookSecret: string;
+try {
+  stripeWebhookSecret = getEnv("STRIPE_WEBHOOK_SECRET", { required: true })!;
+} catch (err) {
+  logger.error((err as Error).message);
+  process.exit(1);
+}
 
 const router = express.Router();
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-  apiVersion: "2025-06-30.basil",
-});
-
-const processedEvents = new Set<string>();
 
 router.post(
-  "/stripe/webhook",
+  "/api/webhook/stripe",
   express.raw({ type: "application/json" }),
-  (req: Request, res: Response) => {
+  async (req, res) => {
     const sig = req.headers["stripe-signature"] as string;
-
     let event: Stripe.Event;
     try {
       event = stripe.webhooks.constructEvent(
         req.body,
         sig,
-        process.env.STRIPE_WEBHOOK_SECRET as string,
+        stripeWebhookSecret,
       );
-    } catch (err) {
-      return res.status(400).send("Webhook signature verification failed");
+    } catch {
+      res.status(400).json({ error: "invalid_signature" });
+      return;
     }
-
-    if (processedEvents.has(event.id)) {
-      return res.json({ received: true });
-    }
-    processedEvents.add(event.id);
 
     if (event.type === "checkout.session.completed") {
       const session = event.data.object as Stripe.Checkout.Session;
-      console.log("checkout.session.completed", session.id);
+      const order = orders.get(session.id);
+      if (order) {
+        order.paid = true;
+        const domain = process.env.CLOUDFRONT_MODEL_DOMAIN;
+        if (order.slug && order.email && domain) {
+          const url = `https://${domain}/${order.slug}.glb`;
+          await sendMail(order.email, "Your model is ready", url);
+        }
+      }
+      res.json({ received: true });
+      return;
+    }
+
+    if (event.type === "payment_intent.succeeded") {
+      const pi = event.data.object as Stripe.PaymentIntent;
+      const processed = await markPaymentProcessed(pi.id);
+      if (!processed) {
+        res.json({ ok: true });
+        return;
+      }
+      const amount = pi.amount_received ?? pi.amount ?? 0;
+      const email =
+        pi.charges?.data?.[0]?.receipt_email || (pi as any).receipt_email;
+      const { userId, orderId, qty, modelUrl, jobId, s3Key } =
+        pi.metadata || {};
+      try {
+        await upsertOrderPaid({
+          userId,
+          orderId,
+          intentId: pi.id,
+          amountCents: amount,
+          currency: pi.currency,
+          email,
+          quantity: qty ? Number(qty) : undefined,
+          modelUrl,
+          jobId,
+          s3Key,
+        });
+        if (jobId && s3Key) {
+          await linkModelToJob(jobId, s3Key);
+        }
+      } catch (err) {
+        logger.error("stripe_webhook_error", err);
+        capture(err);
+        res.status(500).json({ error: "server_error" });
+        return;
+      }
+      res.json({ ok: true });
+      return;
     }
 
     res.json({ received: true });

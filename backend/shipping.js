@@ -1,7 +1,13 @@
-const SHIPPING_API_URL = process.env.SHIPPING_API_URL;
-const SHIPPING_API_KEY = process.env.SHIPPING_API_KEY;
-const TRACKING_BASE_URL = process.env.TRACKING_BASE_URL || "";
+const { getEnv } = require("./utils/getEnv");
 const logger = require("../src/logger");
+
+const SHIPPING_API_URL = getEnv("SHIPPING_API_URL");
+const SHIPPING_API_KEY = getEnv("SHIPPING_API_KEY");
+const TRACKING_BASE_URL = getEnv("TRACKING_BASE_URL") || "";
+
+if (!SHIPPING_API_URL || !SHIPPING_API_KEY) {
+  logger.warn("Missing SHIPPING_API_URL or SHIPPING_API_KEY");
+}
 
 async function getShippingEstimate(destination, model) {
   const weight = model.weight || 1;
@@ -46,10 +52,11 @@ function getTrackingUrl(carrier, trackingNumber) {
 }
 
 async function getTrackingStatus(carrier, trackingNumber) {
-  if (!SHIPPING_API_URL || !SHIPPING_API_KEY) {
-    return null;
-  }
   try {
+    if (!SHIPPING_API_URL || !SHIPPING_API_KEY) {
+      throw new Error("Shipping API not configured");
+    }
+
     const res = await fetch(
       `${SHIPPING_API_URL}/track?carrier=${encodeURIComponent(carrier)}&tracking=${encodeURIComponent(trackingNumber)}`,
       { headers: { Authorization: `Bearer ${SHIPPING_API_KEY}` } },

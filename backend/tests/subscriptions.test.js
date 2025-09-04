@@ -1,8 +1,17 @@
 process.env.STRIPE_SECRET_KEY = "test";
 process.env.STRIPE_WEBHOOK_SECRET = "whsec";
 process.env.DB_URL = "postgres://user:pass@localhost/db";
+process.env.STRIPE_PUBLISHABLE_KEY = "pk_test";
+process.env.NODE_ENV = "test";
 
-jest.mock("../db", () => ({
+jest.mock("../config", () => ({
+  dbUrl: process.env.DB_URL,
+  stripeKey: process.env.STRIPE_SECRET_KEY,
+  stripeWebhook: process.env.STRIPE_WEBHOOK_SECRET,
+  stripePublishable: process.env.STRIPE_PUBLISHABLE_KEY,
+}));
+
+const mockDb = {
   query: jest.fn().mockResolvedValue({ rows: [] }),
   insertCommission: jest.fn().mockResolvedValue({}),
   upsertSubscription: jest
@@ -22,16 +31,17 @@ jest.mock("../db", () => ({
   getSubscriptionMetrics: jest.fn(),
   getOrCreateOrderReferralLink: jest.fn(),
   insertReferredOrder: jest.fn(),
-}));
+};
+jest.mock("../db", () => mockDb);
 const db = require("../db");
 
-jest.mock("stripe");
-const Stripe = require("stripe");
-const stripeMock = { billingPortal: { sessions: { create: jest.fn() } } };
-Stripe.mockImplementation(() => stripeMock);
+const { stripe } = require("./utils/stripeMock");
+stripe.billingPortal.sessions.create = jest.fn(
+  stripe.billingPortal.sessions.create,
+);
 
 const request = require("supertest");
-const app = require("../server");
+const app = require("./utils/createTestApp");
 const jwt = require("jsonwebtoken");
 
 beforeEach(() => {
@@ -42,6 +52,7 @@ beforeEach(() => {
   db.getCurrentWeekCredits.mockClear();
   db.insertSubscriptionEvent.mockClear();
   db.getSubscriptionMetrics.mockClear();
+  stripe.billingPortal.sessions.create.mockClear();
 });
 
 test("GET /api/subscription returns subscription", async () => {
@@ -84,14 +95,14 @@ test("GET /api/subscription/summary returns subscription and credits", async () 
 
 test("POST /api/subscription/portal returns url", async () => {
   db.getSubscription.mockResolvedValueOnce({ stripe_customer_id: "cus_1" });
-  stripeMock.billingPortal.sessions.create.mockResolvedValueOnce({ url: "u" });
+  stripe.billingPortal.sessions.create.mockResolvedValueOnce({ url: "u" });
   const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .post("/api/subscription/portal")
     .set("authorization", `Bearer ${token}`);
   expect(res.status).toBe(200);
   expect(res.body.url).toBe("u");
-  expect(stripeMock.billingPortal.sessions.create).toHaveBeenCalled();
+  expect(stripe.billingPortal.sessions.create).toHaveBeenCalled();
 });
 
 test("POST /api/subscription/portal 404 without customer", async () => {

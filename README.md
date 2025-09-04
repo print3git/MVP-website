@@ -35,7 +35,7 @@ bash scripts/sync-space.sh
 
 This ensures Codex sees the latest local changes and model artifacts.
 
-This repository contains the early MVP code for print2's website and backend.
+This repository contains the early MVP code for print2's website and backend..
 
 - Frontend HTML pages are in the repository root.
 - General backend code is in the `backend/` folder.
@@ -49,10 +49,25 @@ This repository contains the early MVP code for print2's website and backend.
 
 Run `docker compose up` to start the API and Postgres services.
 
+## Model fetching
+
+Set the following environment variables so the build can download model assets:
+
+- `GIT_LFS_SKIP_SMUDGE=1` – prevents Git LFS from automatically pulling large model files. Models are fetched separately during the build.
+- `MODEL_SOURCE_URL` **or** `MODEL_MANIFEST_JSON` – provide either a direct source URL or a JSON manifest describing the models to download.
+
 ## Local Setup
 
 1. Copy `.env.example` to `.env` in the repository root and update the values:
-   - `DB_URL` – connection string for your PostgreSQL database.
+   - `DB_URL` – connection string for your PostgreSQL database (e.g., `postgres://postgres:postgres@localhost:5432/test`).
+
+   To start a local Postgres instance you can run:
+
+   ```bash
+   docker run --rm -e POSTGRES_PASSWORD=postgres -p 5432:5432 postgres
+   ```
+
+   Set `DB_URL` to point at your server before continuing.
 
 - `STRIPE_TEST_KEY` – test secret key for Stripe.
 - `STRIPE_LIVE_KEY` – live secret key for Stripe.
@@ -112,11 +127,11 @@ The server uses `STRIPE_LIVE_KEY` when `NODE_ENV=production`; otherwise `STRIPE_
    and executes the Jest suite. Use it if setup succeeds but subsequent commands
    fail.
 
-4. Initialize the database:
+4. Run database migrations and verify the connection:
 
    ```bash
-   cd ..
-   npm run init-db
+   npm run db:migrate
+   npm run db:check
    ```
 
 5. Create an admin user (optional):
@@ -395,6 +410,12 @@ Run the backend unit tests alone:
 
 ```bash
 npm run test:unit
+```
+
+Run backend CI locally:
+
+```bash
+SKIP_PW_DEPS=1 npm run --prefix backend ci
 ```
 
 Run the Playwright end-to-end suite:

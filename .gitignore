@@ -16,10 +16,29 @@ coverage/
 *.bin
 *.o
 *.pyc
+# Ignore 3D models and binaries
+*.glb
+*.gltf
+*.fbx
+*.zip
+*.exe
+*.dll
+*.dylib
+*.so
+*.bin
 /build/
 /dist/
-*.jpg
 *.png
+*.jpg
+*.jpeg
+*.gif
+*.woff
+*.woff2
+*.tff
+*.otf
+*.eot
+*.svg
+*.ico
 *.pdf
 .setup-complete
 .prettiercache
@@ -45,3 +64,22 @@ dist/
 .cache/
 .eslintcache
 .prettiercache
+
+frontend/public/models/boombox.glb
+frontend/public/models/*.glb
+frontend/public/models/*.gltf
+frontend/public/models/*.bin
+# Generated assets
+assets/models/
+frontend/public/models/
+frontend/dist/**/models/
+precache-manifest*.js
+asset-manifest*.json
+service-worker*.js
+sw.js
+
+.next/
+.husky/_
+
+# pnpm lockfile
+pnpm-lock.yaml

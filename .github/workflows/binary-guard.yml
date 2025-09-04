@@ -1,0 +1,41 @@
+name: Binary & LFS Guard (minimal)
+on:
+  pull_request:
+  push:
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: List new/changed files
+        id: diff
+        run: |
+          set -euo pipefail
+          git fetch origin ${{ github.base_ref || 'dev' }} --depth=2 || true
+          BASE="${{ github.event.pull_request.base.sha || github.event.before }}"
+          git diff --name-only --diff-filter=AM "$BASE" "${{ github.sha }}" > changed.txt
+          cat changed.txt
+
+      - name: Fail on binary files outside allowlist
+        run: |
+          set -euo pipefail
+          ALLOW_REGEX='^(repo-assets/|user-models/|.*\.keep$)'
+          BAD=0
+          while read -r f; do
+            [ -z "$f" ] && continue
+            # skip allowed paths/patterns
+            if [[ "$f" =~ $ALLOW_REGEX ]]; then
+              continue
+            fi
+            # heuristic: 'file -b' says "text" -> ok; anything else -> likely binary
+            if [ -f "$f" ] && file -b "$f" | grep -vqE 'text|ASCII|UTF-8|XML|JSON|JavaScript|Unicode'; then
+              echo "❌ Binary not allowed: $f"
+              BAD=1
+            fi
+          done < changed.txt
+          if [ $BAD -ne 0 ]; then
+            echo "::error::Binary files detected outside allowlist."
+            exit 1
+          fi

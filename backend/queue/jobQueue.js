@@ -1,3 +1,4 @@
+require("dotenv").config();
 const db = require("../db");
 
 async function getNextPendingJob() {
@@ -34,3 +35,7 @@ module.exports = {
   getNextPendingJob,
   updateJobStatus,
 };
+
+if (require.main === module) {
+  startProcessing();
+}

@@ -1,109 +1,108 @@
-import express, {
-  type NextFunction,
-  type Request,
-  type Response,
-} from "express";
+import { Router } from "express";
 import Stripe from "stripe";
-import { PRODUCT } from "../pricing";
-import { sendMail } from "../../mail.js";
+import logger from "../logger";
+import { capture } from "../lib/logger";
 
-export interface Order {
-  /** S3 object key (without `.glb`) returned from `storeGlb` */
-  slug: string;
-  email: string;
-  paid?: boolean;
-}
+// simple in-memory store used by tests to track orders
+export const orders = new Map<
+  string,
+  { slug: string; email: string; paid: boolean }
+>();
 
-export const orders = new Map<string, Order>();
+const router = Router();
 
-const secretKey =
-  process.env["NODE_ENV"] === "production"
-    ? process.env["STRIPE_LIVE_KEY"] || process.env["STRIPE_SECRET_KEY"]
-    : process.env["STRIPE_TEST_KEY"] || process.env["STRIPE_SECRET_KEY"];
-if (!secretKey) {
-  throw new Error("Stripe key not configured");
-}
-const stripe = new Stripe(secretKey, { apiVersion: "2025-06-30.basil" });
+router.post("/checkout/create", async (req, res) => {
+  try {
+    const secretKey =
+      process.env.STRIPE_SECRET_KEY || process.env.STRIPE_TEST_KEY || "";
+    const successUrl = process.env.FRONTEND_SUCCESS_URL;
+    const cancelUrl = process.env.FRONTEND_CANCEL_URL;
 
-const router = express.Router();
-(router as any).orders = orders;
-
-router.post(
-  "/api/checkout",
-  async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> => {
-    try {
-      const { slug, email } = req.body as Order;
-      if (!slug || !email) {
-        res.status(400).json({ error: "missing fields" });
-        return;
-      }
-      const sessionParams: Stripe.Checkout.SessionCreateParams = {
-      mode: "payment",
-      line_items: [
-        {
-          price_data: {
-            currency: PRODUCT.currency,
-            product_data: { name: PRODUCT.name },
-            unit_amount: PRODUCT.priceCents,
-          },
-          quantity: 1,
-        },
-      ],
-      metadata: { slug, email },
-      success_url: `${req.headers.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${req.headers.origin}/cancel`,
-    };
-      const session = await stripe.checkout.sessions.create(sessionParams);
-      orders.set(session.id, { slug, email, paid: false });
-      res.json({ checkoutUrl: session.url });
-    } catch (err) {
-      next(err);
-    }
-  },
-);
-
-router.post(
-  "/api/stripe/webhook",
-  express.raw({ type: "application/json" }),
-  async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> => {
-    try {
-      const sig = req.headers["stripe-signature"] as string;
-      const event = stripe.webhooks.constructEvent(
-        req.body,
-        sig,
-        process.env["STRIPE_WEBHOOK_SECRET"] || "",
+    if (!secretKey || !successUrl || !cancelUrl) {
+      logger.warn(
+        "Checkout disabled: missing STRIPE_SECRET_KEY, FRONTEND_SUCCESS_URL, or FRONTEND_CANCEL_URL",
       );
-      if (event.type === "checkout.session.completed") {
-        const session = event.data.object as Stripe.Checkout.Session;
-        const order = orders.get(session.id);
-        if (order && !order.paid) {
-          order.paid = true;
-          const domain = process.env["CLOUDFRONT_MODEL_DOMAIN"];
-          const link = domain
-            ? `https://${domain}/${order.slug}.glb`
-            : order.slug;
-          await sendMail(order.email, "Your model is ready", link);
-        }
-      }
-      res.sendStatus(200);
+    }
+
+    const {
+      items,
+      allowPromotionCodes,
+      requiresShipping,
+      customerEmail,
+      customer_email,
+      metadata,
+      currency,
+      idempotencyKey,
+    } = req.body || {};
+
+    const email = customerEmail ?? customer_email;
+
+    if (!Array.isArray(items) || items.length === 0) {
+      logger.warn("checkout_create_bad_request", { reason: "missing_items" });
+      res.status(400).json({ error: "bad_request" });
       return;
-    } catch (err) {
-      // signature errors should return 400
-      if (err instanceof Error && err.message.includes("Webhook Error")) {
-        res.sendStatus(400);
+    }
+
+    const normalized: { price: string; quantity: number }[] = [];
+    for (const item of items) {
+      if (typeof item.price !== "string") {
+        logger.warn("checkout_create_bad_request", { reason: "invalid_item" });
+        res.status(400).json({ error: "bad_request" });
         return;
       }
-      next(err);
+      const qty = item.quantity ?? 1;
+      if (typeof qty !== "number" || qty < 1 || qty > 99) {
+        logger.warn("checkout_create_bad_request", {
+          reason: "invalid_quantity",
+        });
+        res.status(400).json({ error: "bad_request" });
+        return;
+      }
+      normalized.push({ price: item.price, quantity: qty });
     }
-  },
-);
+
+    const stripe = new Stripe(secretKey, {
+      apiVersion: "2022-11-15",
+    });
+
+    const metadataSanitized =
+      metadata &&
+      Object.fromEntries(
+        Object.entries(metadata).map(([k, v]) => [k, String(v)]),
+      );
+
+    try {
+      const session = await stripe.checkout.sessions.create(
+        {
+          mode: "payment",
+          payment_method_types: ["card"],
+          line_items: normalized,
+          success_url: successUrl,
+          cancel_url: cancelUrl,
+          allow_promotion_codes: !!allowPromotionCodes,
+          customer_email: email || undefined,
+          shipping_address_collection: requiresShipping
+            ? { allowed_countries: ["US", "GB", "CA", "AU", "EU"] }
+            : undefined,
+          currency: currency || "usd",
+          metadata: metadataSanitized || undefined,
+        },
+        {
+          idempotencyKey: idempotencyKey || undefined,
+        },
+      );
+      logger.info("checkout_session_created", { sessionId: session.id });
+      res.status(200).json({ id: session.id });
+    } catch (err) {
+      logger.error("stripe_checkout_session_failed");
+      capture(err);
+      res.status(502).json({ error: "stripe_error" });
+    }
+  } catch (err) {
+    logger.error("checkout_create_failed");
+    capture(err);
+    res.status(400).json({ error: "bad_request" });
+  }
+});
 
 export default router;

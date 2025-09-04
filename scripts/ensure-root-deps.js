@@ -59,9 +59,23 @@ const winstonPath = path.join(
   "winston",
   "package.json",
 );
+const tsJestPath = path.join(
+  __dirname,
+  "..",
+  "node_modules",
+  "ts-jest",
+  "package.json",
+);
 
 const networkCheck = path.join(__dirname, "network-check.js");
-const requiredPaths = [pluginPath, expressPath, playwrightPath, winstonPath];
+const requiredPaths = [
+  pluginPath,
+  expressPath,
+  playwrightPath,
+  winstonPath,
+  tsJestPath,
+];
+const skipNetChecks = Boolean(process.env.SKIP_NET_CHECKS);
 
 function cleanupNpmCache() {
   try {
@@ -112,8 +126,16 @@ function runNetworkCheck() {
 
 function canReachRegistry() {
   try {
-    const r = spawnSync("npm", ["ping"], { stdio: "ignore", env: getEnv() });
-    if (r.status !== 0) throw new Error("ping failed");
+    const r = spawnSync("npm", ["ping", "--fetch-retries=0"], {
+      stdio: "pipe",
+      env: getEnv(),
+    });
+    if (r.status !== 0) {
+      const stderr = String(r.stderr || r.stdout || "").trim();
+      if (!/(E403|403|E405|405|MethodNotAllowed)/i.test(stderr)) {
+        throw new Error("ping failed");
+      }
+    }
     return true;
   } catch {
     console.error(
@@ -124,13 +146,27 @@ function canReachRegistry() {
 }
 
 if (!requiredPaths.every((p) => fs.existsSync(p))) {
-  runNetworkCheck();
-  if (!canReachRegistry()) process.exit(1);
+  if (skipNetChecks) {
+    console.warn(
+      "Missing dependencies but SKIP_NET_CHECKS is set; skipping network checks.",
+    );
+  } else {
+    runNetworkCheck();
+    if (!canReachRegistry()) process.exit(1);
+  }
   console.log("Dependencies missing. Installing root dependencies...");
   cleanupNpmCache();
   try {
-    const ping = spawnSync("npm", ["ping"], { stdio: "ignore", env: getEnv() });
-    if (ping.status !== 0) throw new Error();
+    const ping = spawnSync("npm", ["ping", "--fetch-retries=0"], {
+      stdio: "pipe",
+      env: getEnv(),
+    });
+    if (ping.status !== 0) {
+      const stderr = String(ping.stderr || ping.stdout || "").trim();
+      if (!/(E403|403|E405|405|MethodNotAllowed)/i.test(stderr)) {
+        throw new Error();
+      }
+    }
   } catch {
     console.error(
       "Unable to reach the npm registry. Check network connectivity or proxy settings.",
@@ -182,7 +218,7 @@ if (!requiredPaths.every((p) => fs.existsSync(p))) {
   for (let attempt = 1; attempt <= 3; attempt++) {
     if (install()) break;
     console.warn(`npm ci failed, retrying (${attempt}/3)...`);
-    runNetworkCheck();
+    if (!skipNetChecks) runNetworkCheck();
     if (attempt === 3) {
       console.error("Failed to install dependencies after multiple attempts.");
       process.exit(1);

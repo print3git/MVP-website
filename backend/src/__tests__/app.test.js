@@ -1,5 +1,4 @@
-process.env.DB_ENDPOINT = "postgres://user:pass@localhost/db";
-process.env.DB_PASSWORD = "pass";
+process.env.DB_URL = "postgres://user:pass@localhost/db";
 process.env.CLOUDFRONT_DOMAIN = "cloud.test";
 process.env.STRIPE_TEST_KEY = "sk_test_dummy";
 
@@ -17,10 +16,10 @@ afterEach(() => {
 
 test("POST /api/models returns 201 when insert succeeds", async () => {
   mPool.query.mockResolvedValueOnce({
-    rows: [{ id: 1, prompt: "p", url: "u" }],
+    rows: [{ id: 1, prompt: "p", s3_key: "f", cloudfront_url: "u" }],
   });
   const res = await request(app)
     .post("/api/models")
-    .send({ prompt: "p", fileKey: "f" });
+    .send({ prompt: "p", s3_key: "f" });
   expect(res.status).toBe(201);
 });

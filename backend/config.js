@@ -6,8 +6,18 @@
  *
  * @module backend/config
  */
-const { getEnv } = require("./src/lib/getEnv");
+// Ensure compatibility with various CommonJS/ESM export patterns
+const envModule = require("./src/lib/getEnv");
+const getEnv =
+  // Named export
+  envModule.getEnv ||
+  // ESM default export which may itself wrap named exports
+  (envModule.default && envModule.default.getEnv) ||
+  envModule.default ||
+  // Fallback to module itself if it's the function
+  envModule;
 const { applyMockEnv, mockSecrets } = require("./src/lib/mockEnv");
+const logger = require("./src/logger.js");
 
 const isProduction = process.env.NODE_ENV === "production";
 if (!isProduction) {
@@ -23,11 +33,11 @@ const optionalGlb = [
 
 const missing = required.filter((key) => !getEnv(key));
 if (missing.length) {
-  console.warn(`Missing required env vars: ${missing.join(", ")}`);
+  logger.warn(`Missing required env vars: ${missing.join(", ")}`);
 }
 const missingGlb = optionalGlb.filter((key) => !getEnv(key));
 if (missingGlb.length) {
-  console.warn(`Missing optional GLB env vars: ${missingGlb.join(", ")}`);
+  logger.warn(`Missing optional GLB env vars: ${missingGlb.join(", ")}`);
 }
 
 const stripeKey = getEnv("STRIPE_SECRET_KEY", {

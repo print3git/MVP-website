@@ -7,7 +7,7 @@ paths:
     get:
       summary: Health check
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
@@ -23,7 +23,7 @@ paths:
     get:
       summary: Readiness check
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
@@ -35,4 +35,89 @@ paths:
                     type: boolean
                   version:
                     type: string
-components: {}
+  /api/items:
+    post:
+      summary: Create item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemCreate"
+            examples:
+              basic:
+                value:
+                  name: example
+                  priceCents: 100
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [id]
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+              examples:
+                created:
+                  value:
+                    id: 00000000-0000-4000-8000-000000000000
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [error]
+                properties:
+                  error:
+                    type: string
+        "409":
+          description: Duplicate item name
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [error]
+                properties:
+                  error:
+                    type: string
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [error]
+                properties:
+                  error:
+                    type: string
+components:
+  schemas:
+    ItemCreate:
+      type: object
+      required: [name, priceCents]
+      properties:
+        name:
+          type: string
+          maxLength: 120
+        description:
+          type: string
+          maxLength: 2000
+        priceCents:
+          type: integer
+          minimum: 1
+        currency:
+          type: string
+          default: USD
+        images:
+          type: array
+          items:
+            type: string
+            format: uri
+        metadata:
+          type: object
+          additionalProperties: {}

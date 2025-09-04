@@ -3,8 +3,10 @@ import fs from "fs";
 import { pipeline } from "stream/promises";
 import path from "path";
 import { uploadFile } from "./uploadS3";
+// Import the capture helper via the TypeScript wrapper so the CommonJS
+// export is handled consistently in both TS and compiled JS environments.
 import { capture } from "./logger";
-import logger from "../logger.js";
+import logger from "../logger";
 
 /**
  * Generate an image from text using Stability AI and upload to S3.

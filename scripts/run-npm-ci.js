@@ -3,6 +3,21 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 
+function isOffline() {
+  if (process.env.SKIP_NET_CHECKS === "1" || process.env.CI_NO_NET === "1") {
+    return true;
+  }
+  try {
+    const res = execSync(
+      "curl -sI --max-time 10 https://registry.npmjs.org/-/ping",
+      { encoding: "utf8" },
+    );
+    return !/^HTTP\/\d\.\d 2\d\d/.test(res);
+  } catch {
+    return true;
+  }
+}
+
 function cleanupNpmCache() {
   try {
     execSync("npm cache clean --force", { stdio: "ignore" });
@@ -33,7 +48,14 @@ function runNpmCi(dir = ".", opts = {}) {
   const options = { stdio: "inherit" };
   if (dir !== ".") options.cwd = dir;
   const ignoreScripts = opts.ignoreScripts || process.env.NPM_IGNORE_SCRIPTS;
-  const ciCmd = `npm ci --no-audit --no-fund${ignoreScripts ? " --ignore-scripts" : ""}`;
+  const offline = isOffline();
+  const baseCmd = `npm ci --no-audit --no-fund${ignoreScripts ? " --ignore-scripts" : ""}`;
+  const ciCmd = offline ? `${baseCmd} --prefer-offline` : baseCmd;
+  if (offline) {
+    console.log(
+      `offline mode: running npm ci${dir !== "." ? ` in ${dir}` : ""}`,
+    );
+  }
   try {
     execSync(ciCmd, options);
   } catch (err) {

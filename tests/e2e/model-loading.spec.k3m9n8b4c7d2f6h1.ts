@@ -87,7 +87,7 @@ for (const { name, url } of pages) {
 }
 
 test("shows fallback when model missing", async ({ page }) => {
-  await page.route("**/models/bag.glb", (route) => route.abort());
+  await page.route("https://modelviewer.dev/shared-assets/models/Astronaut.glb", (route) => route.abort());
   await page.goto("/index.html");
   await expect(page.locator("#viewer")).toHaveText(/model not available/i);
 });

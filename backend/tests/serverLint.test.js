@@ -30,18 +30,18 @@ function runLint(target) {
   }
 }
 
-test("server.js passes eslint", () => {
-  const serverFile = path.join(__dirname, "..", "server.js");
+test("server.ts passes eslint", () => {
+  const serverFile = path.join(__dirname, "..", "src", "server.ts");
   expect(fs.existsSync(serverFile)).toBe(true);
   expect(() => runLint(serverFile)).not.toThrow();
 });
 
 test("rejects unsafe lint target", () => {
-  const bad = "server.js; rm -rf /";
+  const bad = "src/server.ts; rm -rf /";
   expect(() => runLint(bad)).toThrow(/invalid lint target/);
 });
 
 test("allows safe relative path", () => {
-  const rel = "../server.js";
+  const rel = "../src/server.ts";
   expect(() => runLint(rel)).not.toThrow();
 });

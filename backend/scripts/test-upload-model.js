@@ -9,7 +9,7 @@ const { S3Client, HeadObjectCommand } = require("@aws-sdk/client-s3");
 const { Client } = require("pg");
 
 (async () => {
-  const server = spawn("node", ["server.js"], {
+  const server = spawn("node", ["-r", "ts-node/register", "src/server.ts"], {
     cwd: path.join(__dirname, ".."),
     stdio: "inherit",
     env: process.env,

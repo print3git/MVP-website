@@ -1,0 +1,24 @@
+name: Fetch repo-assets from S3
+description: Syncs s3://$BUCKET/repo-assets to ./repo-assets if credentials present
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: |
+        set -euo pipefail
+        : "${AWS_REGION:=${AWS_DEFAULT_REGION:-eu-north-1}}"
+        BUCKET="${ASSET_BUCKET:-glb-models-prod}"
+        PREFIX="repo-assets"
+        mkdir -p ./repo-assets
+        if ! command -v aws >/dev/null 2>&1; then
+          echo "Installing AWS CLI..."
+          sudo apt-get update -y >/dev/null
+          sudo apt-get install -y awscli >/dev/null
+        fi
+        echo "Checking s3://${BUCKET}/${PREFIX} ..."
+        if aws s3 ls "s3://${BUCKET}/${PREFIX}" >/dev/null 2>&1; then
+          echo "Syncing s3://${BUCKET}/${PREFIX} -> ./repo-assets"
+          aws s3 sync "s3://${BUCKET}/${PREFIX}" ./repo-assets --only-show-errors
+        else
+          echo "Prefix missing; skipping."
+        fi

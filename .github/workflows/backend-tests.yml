@@ -1,13 +1,84 @@
 name: Backend Tests
 on: [push, pull_request]
+
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   backend:
     runs-on: ubuntu-latest
+    env:
+      NPM_CONFIG_AUDIT: "false"
+      NPM_CONFIG_FUND: "false"
+      CI_NETWORK_OK: "1"
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
-          cache: 'npm'
-      - run: npm ci
-      - run: npm test --prefix backend
+          node-version: "20.x"
+          cache: "npm"
+      - name: Fetch repo assets from S3
+        uses: ./.github/actions/fetch-repo-assets
+        with:
+          bucket: glb-models-prod
+          region: eu-north-1
+      - uses: ./.github/actions/fetch-repo-assets
+        with:
+          bucket: glb-models-prod
+          region: eu-north-1
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+      - name: mode
+        run: |
+          echo "Mode: ${{ env.CI_NO_NET == '1' && 'Offline' || 'Online' }}"
+      - run: |
+          if [ "$CI_NO_NET" = '1' ] || [ "$SKIP_PW_DEPS" = '1' ]; then
+            npm ci --ignore-scripts --prefer-offline --no-audit --fund=false
+          else
+            npm ci
+          fi
+      - run: npm ci --prefix backend
+      - run: npm run build --if-present
+      - run: node scripts/ci-doctor.mjs
+        env:
+          STRIPE_SECRET_KEY: sk_test
+          STRIPE_WEBHOOK_SECRET: whsec_test
+          DB_URL: postgres://postgres:postgres@localhost:5432/test
+      - name: DB migrate (test) if available
+        shell: bash
+        run: |
+          set -euo pipefail
+          if npm --prefix backend run | grep -q 'db:migrate:test'; then
+            npm --prefix backend run db:migrate:test
+          else
+            echo "::notice title=DB migrate::No backend db:migrate:test script; skipping."
+          fi
+        env:
+          DB_URL: ${{ env.DB_URL }}
+          NODE_ENV: test
+      - run: npm test
+        working-directory: backend
+        env:
+          DB_URL: postgres://postgres:postgres@localhost:5432/test
+          NODE_ENV: test
+          STRIPE_SECRET_KEY: sk_test
+          STRIPE_PUBLISHABLE_KEY: pk_test

@@ -48,6 +48,8 @@ module.exports = [
       "coverage",
       ".cache",
       "frontend/dist",
+      "frontend/scripts/**",
+      "frontend/test/**",
     ],
   },
   {
@@ -131,6 +133,18 @@ module.exports = [
   {
     files: ["tests/**/*"],
     rules: { "jsdoc/require-jsdoc": "off" },
+  },
+  {
+    files: [
+      "**/jest.config.*",
+      "**/vite.config.*",
+      "scripts/**",
+      "frontend/scripts/**",
+      "frontend/test/**",
+      "**/*.cjs",
+    ],
+    languageOptions: { parserOptions: { project: null } },
+    rules: { "ssr-friendly/no-dom-globals-in-module-scope": "off" },
   },
   {
     files: ["frontend/src/**/*.{ts,tsx,js,jsx}"],

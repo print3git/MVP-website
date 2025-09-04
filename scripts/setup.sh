@@ -1,6 +1,25 @@
 #!/bin/bash
 set -e
 
+# Enable detailed Node warnings to help trace setup issues
+export NODE_OPTIONS="--trace-warnings --trace-deprecation ${NODE_OPTIONS:-}"
+
+OFFLINE=0
+if node -e "import('./scripts/net-mode.mjs').then(m=>process.exit(m.isOfflineEnv()?0:1))" >/dev/null 2>&1; then
+  OFFLINE=1
+fi
+
+# Skip heavy Playwright browser downloads entirely when offline or explicitly disabled.
+# When SKIP_PW_DEPS=1 we still run through the script but skip apt-based dependencies.
+if [ "$PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD" = "1" ] || [ "$OFFLINE" = "1" ]; then
+  echo 'Skipping Playwright/apt deps'
+  PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm ci --prefer-offline --no-audit --fund=false
+  PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm ci --prefer-offline --no-audit --fund=false --prefix backend
+  PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm ci --prefer-offline --no-audit --fund=false --prefix backend/dalle_server
+  touch .setup-complete
+  exit 0
+fi
+
 # Ensure mise is available for toolchain management. If installation fails,
 # continue without mise and skip related steps.
 SKIP_MISE_TOOLS=0
@@ -125,6 +144,8 @@ if [ -z "$SKIP_PW_DEPS" ]; then
     echo "apt-get update failed after 3 attempts, skipping Playwright system dependencies" >&2
     export SKIP_PW_DEPS=1
   fi
+else
+  echo 'SKIP_PW_DEPS=1; skipping apt-get installation of Playwright system deps' >&2
 fi
 
 run_ci() {
@@ -136,13 +157,13 @@ run_ci() {
   local attempt=1
   local max_attempts=3
   while [ $attempt -le $max_attempts ]; do
-    if npm ci $extra --no-audit --no-fund --ignore-scripts 2>ci.log; then
+    if PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm ci $extra --no-audit --no-fund 2>ci.log; then
       rm -f ci.log
       return 0
     fi
     if grep -q "EUSAGE" ci.log; then
       echo "npm ci failed in $dir due to lock mismatch. Running npm install..." >&2
-      npm install $extra --no-audit --no-fund --ignore-scripts
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm install $extra --no-audit --no-fund
     elif grep -E -q "TAR_ENTRY_ERROR|ENOENT|ENOTEMPTY|tarball .*corrupted" ci.log; then
       echo "npm ci encountered tar or filesystem errors in $dir. Cleaning cache and retrying ($attempt/$max_attempts)..." >&2
       cleanup_npm_cache
@@ -154,7 +175,7 @@ run_ci() {
     fi
     attempt=$((attempt + 1))
   done
-  npm ci $extra --no-audit --no-fund --ignore-scripts
+  PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm ci $extra --no-audit --no-fund
   rm -f ci.log
 }
 

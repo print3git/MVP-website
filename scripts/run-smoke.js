@@ -2,6 +2,11 @@
 const { execSync, spawnSync } = require("child_process");
 const fs = require("fs");
 const path = require("path");
+const { EventEmitter } = require("events");
+EventEmitter.defaultMaxListeners = Math.max(
+  25,
+  EventEmitter.defaultMaxListeners || 10,
+);
 
 function freePort(port, envVars = process.env) {
   try {
@@ -142,9 +147,13 @@ function main() {
   try {
     runValidateEnv();
     const artifact = path.join("frontend", "dist", "index.html");
-    if (process.env.NODE_ENV !== "test" && !fs.existsSync(artifact)) {
+    const model = path.join("frontend", "dist", "models", "boombox.glb");
+    if (
+      process.env.NODE_ENV !== "test" &&
+      (!fs.existsSync(artifact) || !fs.existsSync(model))
+    ) {
       console.error(
-        `Missing frontend build artifact: ${artifact}. Run 'npm run build' and retry`,
+        `Missing frontend build artifacts: ${artifact} or ${model}. Run 'npm run build' and retry`,
       );
       process.exit(1);
     }
@@ -166,10 +175,9 @@ function main() {
       execSync("npm ci --prefix frontend", { stdio: "inherit" });
       execSync("npm run build --prefix frontend", { stdio: "inherit" });
     }
-    const waitArgs = process.env.WAIT_ON_TIMEOUT
-      ? `-t ${process.env.WAIT_ON_TIMEOUT} `
-      : "";
-    console.log("WAIT_ON_TIMEOUT:", process.env.WAIT_ON_TIMEOUT || "default");
+    const waitTimeout = process.env.WAIT_ON_TIMEOUT || 180000;
+    const waitArgs = `-t ${waitTimeout} `;
+    console.log("WAIT_ON_TIMEOUT:", waitTimeout);
     const serve = "node scripts/dev-server.js | tee serve.log";
     const test = `npx -y wait-on ${waitArgs}http://localhost:3000 && npx playwright test --reporter=list --trace on e2e/smoke.test.js | tee pw.log`;
     const cmd = `npx -y concurrently -k -s first --verbose -n serve,pw "${serve}" "${test}"`;

@@ -224,7 +224,7 @@ try {
   if (match) {
     args.push("-r", match[1]);
   }
-  args.push("scripts/ensure-deps.js");
+  args.push("scripts/ensure-deps.mjs");
   child_process.execFileSync("node", args, {
     stdio: "inherit",
     cwd: path.join(repoRoot, "backend"),

@@ -1,80 +1,107 @@
 "use strict";
-var __importDefault =
-  (this && this.__importDefault) ||
-  function (mod) {
-    return mod && mod.__esModule ? mod : { default: mod };
-  };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.orders = void 0;
-const express_1 = __importDefault(require("express"));
-const stripe_1 = __importDefault(require("stripe"));
-const pricing_1 = require("../pricing");
-const mail_1 = require("../../mail");
-exports.orders = new Map();
-const secretKey =
-  process.env.NODE_ENV === "production"
-    ? process.env.STRIPE_LIVE_KEY
-    : process.env.STRIPE_TEST_KEY || "sk_test";
-const stripe = new stripe_1.default(secretKey);
-const router = express_1.default.Router();
-router.orders = exports.orders;
-router.post("/api/checkout", async (req, res, next) => {
+const express = require("express");
+const Stripe = require("stripe");
+const { getEnv: getEnvVars, isTest } = require("../env");
+const { getEnv } = require("../lib/getEnv");
+const logger = require("../logger.js");
+const { capture } = require("../lib/logger");
+
+const router = express.Router();
+
+router.post("/checkout/create", async (req, res) => {
   try {
-    const { slug, email } = req.body;
-    if (!slug || !email) {
-      return res.status(400).json({ error: "missing fields" });
+    const { STRIPE_SECRET_KEY: secretKey } = getEnvVars();
+    let successUrl;
+    let cancelUrl;
+    try {
+      successUrl = getEnv("FRONTEND_SUCCESS_URL", { required: true });
+      cancelUrl = getEnv("FRONTEND_CANCEL_URL", { required: true });
+    } catch (err) {
+      logger.error("checkout_missing_frontend_urls");
+      capture(err);
+      res.status(500).json({ error: "server_misconfig" });
+      return;
     }
-    const session = await stripe.checkout.sessions.create({
-      mode: "payment",
-      line_items: [
-        {
-          price_data: {
-            currency: pricing_1.PRODUCT.currency,
-            product_data: { name: pricing_1.PRODUCT.name },
-            unit_amount: pricing_1.PRODUCT.priceCents,
-          },
-          quantity: 1,
-        },
-      ],
-      metadata: { slug, email },
-      success_url: `${req.headers.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${req.headers.origin}/cancel`,
+    if (!secretKey) {
+      logger.error("checkout_missing_secret_key");
+      res.status(500).json({ error: "server_misconfig" });
+      return;
+    }
+    const {
+      items,
+      allowPromotionCodes,
+      requiresShipping,
+      customerEmail,
+      customer_email,
+      metadata,
+      currency,
+      idempotencyKey,
+    } = req.body || {};
+    const email = customerEmail ?? customer_email;
+    if (!Array.isArray(items) || items.length === 0) {
+      logger.warn("checkout_create_bad_request", { reason: "missing_items" });
+      res.status(400).json({ error: "bad_request" });
+      return;
+    }
+    const normalized = [];
+    for (const item of items) {
+      if (typeof item.price !== "string") {
+        logger.warn("checkout_create_bad_request", { reason: "invalid_item" });
+        res.status(400).json({ error: "bad_request" });
+        return;
+      }
+      const qty = item.quantity ?? 1;
+      if (typeof qty !== "number" || qty < 1 || qty > 99) {
+        logger.warn("checkout_create_bad_request", {
+          reason: "invalid_quantity",
+        });
+        res.status(400).json({ error: "bad_request" });
+        return;
+      }
+      normalized.push({ price: item.price, quantity: qty });
+    }
+    const realStripe = new Stripe(secretKey, {
+      apiVersion: "2022-11-15",
     });
-    exports.orders.set(session.id, { slug, email, paid: false });
-    res.json({ checkoutUrl: session.url });
+    const stripe = isTest()
+      ? require("../../tests/utils/stripeMock").stripe
+      : realStripe;
+    const metadataSanitized =
+      metadata &&
+      Object.fromEntries(
+        Object.entries(metadata).map(([k, v]) => [k, String(v)]),
+      );
+    try {
+      const session = await stripe.checkout.sessions.create(
+        {
+          mode: "payment",
+          payment_method_types: ["card"],
+          line_items: normalized,
+          success_url: successUrl,
+          cancel_url: cancelUrl,
+          allow_promotion_codes: !!allowPromotionCodes,
+          customer_email: email || undefined,
+          shipping_address_collection: requiresShipping
+            ? { allowed_countries: ["US", "GB", "CA", "AU", "EU"] }
+            : undefined,
+          currency: currency || "usd",
+          metadata: metadataSanitized || undefined,
+        },
+        { idempotencyKey: idempotencyKey || undefined },
+      );
+      logger.info("checkout_session_created", { sessionId: session.id });
+      res.status(200).json({ id: session.id });
+    } catch (err) {
+      logger.error("stripe_checkout_session_failed");
+      capture(err);
+      res.status(502).json({ error: "stripe_error" });
+    }
   } catch (err) {
-    next(err);
+    logger.error("checkout_create_failed");
+    capture(err);
+    res.status(400).json({ error: "bad_request" });
   }
 });
-router.post(
-  "/api/stripe/webhook",
-  express_1.default.raw({ type: "application/json" }),
-  async (req, res, next) => {
-    try {
-      const sig = req.headers["stripe-signature"];
-      const event = stripe.webhooks.constructEvent(
-        req.body,
-        sig,
-        process.env.STRIPE_WEBHOOK_SECRET || "",
-      );
-      if (event.type === "checkout.session.completed") {
-        const session = event.data.object;
-        const order = exports.orders.get(session.id);
-        if (order && !order.paid) {
-          order.paid = true;
-          const link = process.env.CLOUDFRONT_MODEL_DOMAIN
-            ? `https://${process.env.CLOUDFRONT_MODEL_DOMAIN}/${order.slug}.glb`
-            : order.slug;
-          await (0, mail_1.sendMail)(order.email, "Your model is ready", link);
-        }
-      }
-      res.sendStatus(200);
-    } catch (err) {
-      if (err && err.message && err.message.includes("Webhook Error")) {
-        return res.sendStatus(400);
-      }
-      next(err);
-    }
-  },
-);
-exports.default = router;
+
+module.exports = router;
+module.exports.default = router;

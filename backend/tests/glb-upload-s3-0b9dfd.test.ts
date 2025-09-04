@@ -1,5 +1,3 @@
-import fs from "fs";
-import path from "path";
 import { S3Client, HeadObjectCommand } from "@aws-sdk/client-s3";
 import { storeGlb } from "../src/lib/storeGlb";
 
@@ -32,8 +30,9 @@ describe("glb upload to s3", () => {
   }
 
   test("uploads glb and is accessible", async () => {
-    const glbPath = path.resolve(__dirname, "../../models/bag.glb");
-    const data = fs.readFileSync(glbPath);
+    const glbUrl = "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
+    const res = await fetch(glbUrl);
+    const data = Buffer.from(await res.arrayBuffer());
     const url = await storeGlb(data);
     const { bucket, region, key } = parseS3(url);
     expect(bucket).toBe(process.env.S3_BUCKET);
