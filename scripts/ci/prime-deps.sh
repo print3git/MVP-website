@@ -10,4 +10,5 @@ npm ci
 popd
 
 export PLAYWRIGHT_BROWSERS_PATH="${HOME}/.cache/ms-playwright"
-npx playwright install --with-deps chromium
+npx playwright install-deps chromium
+npx playwright install chromium
