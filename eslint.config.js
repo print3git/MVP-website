@@ -12,8 +12,18 @@ const js = require("@eslint/js");
 const prettier = require("eslint-config-prettier");
 const globals = require("globals");
 const jsdoc = require("eslint-plugin-jsdoc");
-const tsParser = require("@typescript-eslint/parser");
-const frontend = require("./eslint.frontend-87adf32bca1e546.cjs");
+let tsParser;
+try {
+  tsParser = require("@typescript-eslint/parser");
+} catch {
+  tsParser = null;
+}
+let frontend = [];
+try {
+  frontend = require("./eslint.frontend-87adf32bca1e546.cjs");
+} catch {
+  frontend = [];
+}
 let ssrFriendly;
 try {
   ssrFriendly = require("eslint-plugin-ssr-friendly");
@@ -22,37 +32,45 @@ try {
 }
 const isCI = Boolean(process.env.CI);
 
-module.exports = [
+const ignores = [
+  "node_modules",
+  "img/**",
+  "uploads/**",
+  "models/**",
+  // front-end code will be linted separately
+  // "js/**", // removed to enable frontend linting
+  // "*.html", // removed to enable frontend linting
+  "js/model-viewer.min.js",
+  "service-worker.js",
+  "admin/**",
+  "docs/**",
+  "e2e/**",
+  "backend/**",
+  "scripts/ci_watchdog.ts",
+  "scripts/ci_watchdog.js",
+  "scripts/check-gh-workflow-sync-23859.ts",
+  "upload/**",
+  // "src/**", // removed to enable frontend linting
+  "**/dist",
+  "**/build",
+  "coverage",
+  ".cache",
+  "frontend/dist",
+  "frontend/scripts/**",
+  "frontend/test/**",
+];
+if (!tsParser) {
+  ignores.push("**/*.{ts,tsx}");
+}
+
+const config = [
   {
-    ignores: [
-      "node_modules",
-      "img/**",
-      "uploads/**",
-      "models/**",
-      // front-end code will be linted separately
-      // "js/**", // removed to enable frontend linting
-      // "*.html", // removed to enable frontend linting
-      "js/model-viewer.min.js",
-      "service-worker.js",
-      "admin/**",
-      "docs/**",
-      "e2e/**",
-      "backend/**",
-      "scripts/ci_watchdog.ts",
-      "scripts/ci_watchdog.js",
-      "scripts/check-gh-workflow-sync-23859.ts",
-      "upload/**",
-      // "src/**", // removed to enable frontend linting
-      "**/dist",
-      "**/build",
-      "coverage",
-      ".cache",
-      "frontend/dist",
-      "frontend/scripts/**",
-      "frontend/test/**",
-    ],
+    ignores,
   },
-  {
+];
+
+if (tsParser) {
+  config.push({
     files: ["**/*.{ts,tsx}"],
     languageOptions: {
       parser: tsParser,
@@ -61,7 +79,10 @@ module.exports = [
         tsconfigRootDir: __dirname,
       },
     },
-  },
+  });
+}
+
+config.push(
   {
     files: ["**/*.js"],
     languageOptions: {
@@ -155,4 +176,6 @@ module.exports = [
     ...(ssrFriendly ? { plugins: { "ssr-friendly": ssrFriendly } } : {}),
   },
   ...frontend,
-];
+);
+
+module.exports = config;

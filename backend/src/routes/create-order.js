@@ -64,7 +64,9 @@ router.post("/create-order", async (req, res) => {
           }
         }
       }
-    } catch {}
+    } catch {
+      /* ignore auth errors */
+    }
     const finalTotal = price * quantity - discountCents;
     const stripeSecret = process.env.STRIPE_SECRET_KEY || "test";
     const stripe = new Stripe(stripeSecret, {
@@ -104,7 +106,7 @@ router.post("/create-order", async (req, res) => {
       ],
     );
     res.json({ checkoutUrl: session.url, success: true });
-  } catch (err) {
+  } catch (_err) {
     res.status(500).json({ error: "internal_error" });
   }
 });
@@ -129,7 +131,7 @@ router.get("/my/orders", async (req, res) => {
       [userId],
     );
     res.json(rows);
-  } catch (err) {
+  } catch (_err) {
     res.status(500).json({ error: "internal_error" });
   }
 });

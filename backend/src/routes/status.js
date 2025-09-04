@@ -4,13 +4,11 @@ const { capture } = require("../lib/logger");
 const db = require("../../db");
 
 let getStatus = () => undefined;
-let emitter;
 try {
   const gen = require("../queue/generation.ts");
   getStatus = gen.getStatus || getStatus;
-  emitter = gen.emitter;
 } catch {
-  emitter = new (require("events").EventEmitter)();
+  /* queue module unavailable */
 }
 
 const router = Router();

@@ -13,7 +13,7 @@ router.get("/users/:username/profile", async (req, res) => {
       return res.status(404).json({ error: "not_found" });
     }
     res.json(rows[0]);
-  } catch (err) {
+  } catch (_err) {
     res.status(500).json({ error: "unexpected_error" });
   }
 });

@@ -27,7 +27,6 @@ const db = {
   insertReferredOrder: jest.fn(),
   getMarginalCacMetrics: jest.fn(),
 };
-// eslint-disable-next-line no-undef
 global.__db = db;
 
 const request = require("supertest");
