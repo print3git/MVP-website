@@ -31,7 +31,6 @@ describe("assert-setup backend deps", () => {
     const logFile = path.join(os.tmpdir(), `log-${Date.now()}`);
     const { result } = runAssertSetup({
       EXEC_LOG_FILE: logFile,
-      SKIP_NET_CHECKS: "1",
       SKIP_PW_DEPS: "1",
       FAKE_NODE_MODULES_MISSING: "1",
     });
@@ -46,7 +45,6 @@ describe("assert-setup backend deps", () => {
 
   test("exits non-zero when ensure-deps fails", () => {
     const { result } = runAssertSetup({
-      SKIP_NET_CHECKS: "1",
       SKIP_PW_DEPS: "1",
       FAIL_ENSURE_DEPS: "1",
     });
