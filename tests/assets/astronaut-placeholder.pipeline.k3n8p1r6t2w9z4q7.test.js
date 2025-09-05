@@ -1,6 +1,9 @@
 /** @jest-environment jsdom */
 const fs = require("fs");
 const path = require("path");
+const { TextEncoder, TextDecoder } = require("node:util");
+globalThis.TextEncoder = TextEncoder;
+globalThis.TextDecoder = TextDecoder;
 const nock = require("nock");
 const { JSDOM } = require("jsdom");
 const request = require("supertest");
