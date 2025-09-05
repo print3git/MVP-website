@@ -1,4 +1,4 @@
-const { getEnv } = require("../../utils/getEnv");
+const { getEnv } = require("../../utils/getEnv.js");
 
 describe("getEnv", () => {
   const KEY = "TEST_ENV_VAR";
