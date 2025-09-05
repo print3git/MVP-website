@@ -1,6 +1,9 @@
 /** @jest-environment jsdom */
 const fs = require("fs");
 const path = require("path");
+const { TextEncoder, TextDecoder } = require("node:util");
+globalThis.TextEncoder = TextEncoder;
+globalThis.TextDecoder = TextDecoder;
 const nock = require("nock");
 const { TextEncoder, TextDecoder } = require("util");
 global.TextEncoder = TextEncoder;
