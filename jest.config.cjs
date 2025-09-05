@@ -24,7 +24,6 @@ try {
       ],
     },
     moduleFileExtensions: ["ts", "tsx", "js", "json", "mjs"],
-    extensionsToTreatAsEsm: [".mjs"],
     testMatch: [
       "**/*.spec.ts",
       "**/*.spec.tsx",
