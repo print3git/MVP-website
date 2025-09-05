@@ -1,0 +1,22 @@
+name: image asset pipeline
+
+on:
+  pull_request:
+    paths:
+      - "scripts/fetch-assets.mjs"
+      - "tests/assets/**"
+      - ".github/workflows/image-pipeline.yml"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+      - name: install
+        run: npm ci
+      - name: run image pipeline tests
+        run: node scripts/run-jest.js tests/assets
