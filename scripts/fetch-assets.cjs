@@ -8,11 +8,9 @@ async function ensureDir(filePath) {
 
 async function download(url, dest) {
   try {
-    const res = await fetch(url);
-    if (!res.ok) {
-      throw new Error(`HTTP ${res.status} ${res.statusText}`);
-    }
-    const buf = Buffer.from(await res.arrayBuffer());
+    const axios = require("axios");
+    const res = await axios.get(url, { responseType: "arraybuffer" });
+    const buf = Buffer.from(res.data);
     await ensureDir(dest);
     await writeFile(dest, buf);
     console.log(`Downloaded ${url}`);
