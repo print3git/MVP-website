@@ -1,8 +1,10 @@
 name: CI
 
 on:
-  push: { branches: [main] }
+  push:
+    branches: [main, dev, '00000production']
   pull_request:
+    branches: [main, dev, '00000production']
 
 jobs:
   deps:
