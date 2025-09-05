@@ -9,13 +9,63 @@ if node -e "import('./scripts/net-mode.mjs').then(m=>process.exit(m.isOfflineEnv
   OFFLINE=1
 fi
 
+# Ensure npm cache is cleaned on exit and provide a helper for retry logic
+cleanup_npm_cache() {
+  npm cache clean --force >/dev/null 2>&1 || true
+  for dir in "$(npm config get cache)/_cacache" "$HOME/.npm/_cacache"; do
+    if [ -d "$dir" ]; then
+      for i in {1..5}; do
+        rm -rf "$dir" 2>/dev/null && break
+        sleep 1
+      done
+    fi
+  done
+  rm -rf "$(npm config get cache)/_cacache/tmp" "$HOME/.npm/_cacache/tmp" 2>/dev/null || true
+  npm cache verify >/dev/null 2>&1 || true
+}
+
+run_ci() {
+  local dir="$1"
+  local extra=""
+  if [ -n "$dir" ]; then
+    extra="--prefix $dir"
+  fi
+  local attempt=1
+  local max_attempts=3
+  while [ $attempt -le $max_attempts ]; do
+    if PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm ci $extra --no-audit --no-fund 2>ci.log; then
+      rm -f ci.log
+      return 0
+    fi
+    if grep -q "EUSAGE" ci.log; then
+      echo "npm ci failed in $dir due to lock mismatch. Running npm install..." >&2
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm install $extra --no-audit --no-fund
+    elif grep -E -q "TAR_ENTRY_ERROR|ENOENT|ENOTEMPTY|tarball .*corrupted" ci.log; then
+      echo "npm ci encountered tar or filesystem errors in $dir. Cleaning cache and retrying ($attempt/$max_attempts)..." >&2
+      cleanup_npm_cache
+      rm -rf ${dir:-.}/node_modules
+    else
+      cat ci.log >&2
+      rm ci.log
+      return 1
+    fi
+    attempt=$((attempt + 1))
+  done
+  PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm ci $extra --no-audit --no-fund
+  rm -f ci.log
+}
+
+trap cleanup_npm_cache EXIT
+cleanup_npm_cache
+
 # Skip heavy Playwright browser downloads entirely when offline or explicitly disabled.
 # When SKIP_PW_DEPS=1 we still run through the script but skip apt-based dependencies.
 if [ "$PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD" = "1" ] || [ "$OFFLINE" = "1" ]; then
   echo 'Skipping Playwright/apt deps'
-  PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm ci --prefer-offline --no-audit --fund=false
-  PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm ci --prefer-offline --no-audit --fund=false --prefix backend
-  PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm ci --prefer-offline --no-audit --fund=false --prefix backend/dalle_server
+  export npm_config_prefer_offline=true
+  run_ci ""
+  run_ci backend
+  run_ci backend/dalle_server
   touch .setup-complete
   exit 0
 fi
@@ -33,23 +83,6 @@ fi
 if [ "$SKIP_MISE_TOOLS" -eq 0 ]; then
   eval "$(mise activate bash)"
 fi
-
-cleanup_npm_cache() {
-  npm cache clean --force >/dev/null 2>&1 || true
-  for dir in "$(npm config get cache)/_cacache" "$HOME/.npm/_cacache"; do
-    if [ -d "$dir" ]; then
-      for i in {1..5}; do
-        rm -rf "$dir" 2>/dev/null && break
-        sleep 1
-      done
-    fi
-  done
-  rm -rf "$(npm config get cache)/_cacache/tmp" "$HOME/.npm/_cacache/tmp" 2>/dev/null || true
-  npm cache verify >/dev/null 2>&1 || true
-}
-
-trap cleanup_npm_cache EXIT
-cleanup_npm_cache
 
 unset npm_config_http_proxy npm_config_https_proxy
 export npm_config_fund=false
@@ -147,37 +180,6 @@ if [ -z "$SKIP_PW_DEPS" ]; then
 else
   echo 'SKIP_PW_DEPS=1; skipping apt-get installation of Playwright system deps' >&2
 fi
-
-run_ci() {
-  local dir="$1"
-  local extra=""
-  if [ -n "$dir" ]; then
-    extra="--prefix $dir"
-  fi
-  local attempt=1
-  local max_attempts=3
-  while [ $attempt -le $max_attempts ]; do
-    if PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm ci $extra --no-audit --no-fund 2>ci.log; then
-      rm -f ci.log
-      return 0
-    fi
-    if grep -q "EUSAGE" ci.log; then
-      echo "npm ci failed in $dir due to lock mismatch. Running npm install..." >&2
-      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm install $extra --no-audit --no-fund
-    elif grep -E -q "TAR_ENTRY_ERROR|ENOENT|ENOTEMPTY|tarball .*corrupted" ci.log; then
-      echo "npm ci encountered tar or filesystem errors in $dir. Cleaning cache and retrying ($attempt/$max_attempts)..." >&2
-      cleanup_npm_cache
-      rm -rf ${dir:-.}/node_modules
-    else
-      cat ci.log >&2
-      rm ci.log
-      return 1
-    fi
-    attempt=$((attempt + 1))
-  done
-  PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm ci $extra --no-audit --no-fund
-  rm -f ci.log
-}
 
 run_ci ""
 run_ci backend

@@ -23,9 +23,13 @@ jobs:
           node-version: "20"
       - run: npm ci
       - run: npm run build
+      - name: Copy static site files
+        run: |
+          cp -a *.html frontend/dist/
+          if [ -d img ]; then cp -a img frontend/dist/; fi
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: frontend/dist
+          path: ./frontend/dist
   deploy:
     needs: build
     runs-on: ubuntu-latest

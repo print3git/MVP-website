@@ -28,6 +28,7 @@
   },
   "scripts": {
     "test": "node scripts/run-jest.js --passWithNoTests",
+    "test:image-pipeline": "node scripts/test-image-pipeline.js",
     "preinstall": "corepack enable && node scripts/check-node-version.js",
     "preformat": "true",
     "preformat:check": "true",
@@ -41,6 +42,7 @@
     "build": "npm ci --no-audit --no-fund --prefix frontend && npm --prefix frontend run build",
     "start:ci": "npm --prefix frontend run start:ci",
     "preview": "vite preview --port 4173",
+    "prestart": "node scripts/fetch-assets.mjs",
     "start": "node scripts/dev-server.js",
     "start:backend": "npm start --prefix backend",
     "ci": "node scripts/ci.mjs",
@@ -98,6 +100,7 @@
     "@types/node": "^24.0.10",
     "@typescript-eslint/eslint-plugin": "8.34.1",
     "@typescript-eslint/parser": "^8.36.0",
+    "babel-preset-current-node-syntax": "^1.0.1",
     "concurrently": "9.2.0",
     "coveralls": "^3.1.1",
     "cross-env": "^7.0.3",

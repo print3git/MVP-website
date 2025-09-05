@@ -352,7 +352,9 @@ jobs:
           - name: verify
             command: |
           - name: lockfile-diff
-            command: corepack enable
+            command: |
+              corepack enable
+              npx lockfile-diff package.json package-lock.json
           - name: yamllint
             command: pip install yamllint
     steps:
