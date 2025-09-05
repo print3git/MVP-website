@@ -11,7 +11,7 @@ function getEnv(name, options = {}) {
   return value;
 }
 
-// Support both CommonJS and ES module import styles
+// Export for both CommonJS and ES module consumers
 module.exports = getEnv;
-module.exports.getEnv = getEnv;
 module.exports.default = getEnv;
+module.exports.getEnv = getEnv;

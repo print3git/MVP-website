@@ -7,6 +7,7 @@
  * @module backend/config
  */
 const envModule = require("./src/lib/getEnv");
+// Resolve getEnv regardless of default or named export style
 const getEnv =
   typeof envModule === "function"
     ? envModule
