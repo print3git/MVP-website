@@ -1,0 +1,7 @@
+{
+  "files": [
+    "tests/e2e/model-smoke.spec.ts",
+    "tests/e2e/model-visual.spec.ts",
+    "backend/tests/stripe/webhook.valid-signature.spec.ts"
+  ]
+}
