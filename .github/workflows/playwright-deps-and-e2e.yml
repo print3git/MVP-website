@@ -49,15 +49,10 @@ jobs:
             cat /tmp/app.log
             exit 1
           fi
-      - name: Run model-loading tests
+      - name: Run Playwright tests
         env:
           CI: "true"
-        run: |
-          if [ -f tests/e2e/model-loading.spec.ts ]; then
-            npx playwright test --trace on --pass-with-no-tests tests/e2e/model-loading.spec.ts
-          else
-            echo "No model-loading E2E spec present; skipping."
-          fi
+        run: npx playwright test --trace on --pass-with-no-tests tests/e2e
       - name: Upload Playwright traces
         if: failure()
         uses: actions/upload-artifact@v4
