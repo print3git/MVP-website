@@ -1,6 +1,9 @@
 import { execSync } from "child_process";
 
-export function isOfflineEnv() {
+export function isOfflineEnv({
+  retries = Number(process.env.NET_MODE_RETRIES || 2),
+  timeout = Number(process.env.NET_MODE_TIMEOUT || 10000),
+} = {}) {
   const force = process.env.CI_FORCE === "1";
   if (process.env.SKIP_NET_CHECKS === "1" || process.env.CI_NO_NET === "1") {
     setOfflineEnv();
@@ -12,14 +15,11 @@ export function isOfflineEnv() {
     return !force;
   }
   try {
-    // Fetch headers and inspect the HTTP status code so 4xx responses still
-    // trigger offline mode. Some environments return 403 yet exit with status 0
-    // which would previously be treated as online.
-    const res = execSync(
-      "curl -sI --max-time 10 https://registry.npmjs.org/-/ping",
-      { encoding: "utf8" },
+    const maxTime = Math.ceil(timeout / 1000);
+    withRetries(
+      `curl -sfI --max-time ${maxTime} https://registry.npmjs.org/-/ping`,
+      { retries, timeout },
     );
-    if (!/^HTTP\/\d\.\d 2\d\d/.test(res)) throw new Error("bad status");
   } catch {
     setOfflineEnv();
     return !force;
