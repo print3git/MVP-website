@@ -2,6 +2,9 @@
 const fs = require("fs");
 const path = require("path");
 const nock = require("nock");
+const { TextEncoder, TextDecoder } = require("util");
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder;
 const { JSDOM } = require("jsdom");
 const request = require("supertest");
 
@@ -13,10 +16,15 @@ let loadModel;
 
 const MODEL_DIR = path.join("frontend", "public", "models");
 const MODEL_PATH = path.join(MODEL_DIR, "astronaut.glb");
-const FALLBACK_GLB = "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
+const FALLBACK_GLB =
+  "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
 
 beforeAll(() => {
-  ({ fetchAstronaut, fetchRepoAssets, download } = require("../../scripts/fetch-assets.cjs"));
+  ({
+    fetchAstronaut,
+    fetchRepoAssets,
+    download,
+  } = require("../../scripts/fetch-assets.cjs"));
   app = require("../../scripts/dev-server.js");
   ({ loadModel } = require("../../src/js/loadModel.js"));
 });
@@ -26,7 +34,8 @@ beforeEach(() => {
   delete process.env.ASTRONAUT_MODEL_URL;
   if (fs.existsSync(MODEL_PATH)) fs.unlinkSync(MODEL_PATH);
   if (fs.existsSync(MODEL_DIR)) {
-    for (const f of fs.readdirSync(MODEL_DIR)) fs.unlinkSync(path.join(MODEL_DIR, f));
+    for (const f of fs.readdirSync(MODEL_DIR))
+      fs.unlinkSync(path.join(MODEL_DIR, f));
   }
 });
 
@@ -86,7 +95,9 @@ describe("call stage", () => {
 
   test("nock expectations met", async () => {
     process.env.ASTRONAUT_MODEL_URL = "https://example.com/astro.glb";
-    const scope = nock("https://example.com").get("/astro.glb").reply(200, "ok");
+    const scope = nock("https://example.com")
+      .get("/astro.glb")
+      .reply(200, "ok");
     await fetchAstronaut();
     expect(nock.isDone()).toBe(true);
     expect(scope.isDone()).toBe(true);
@@ -285,24 +296,29 @@ describe("display stage", () => {
     process.env.ASTRONAUT_MODEL_URL = "https://example.com/astro.glb";
     nock("https://example.com").get("/astro.glb").reply(200, data);
     await fetchAstronaut();
-    document.body.innerHTML = '<div id="viewer" style="width:100px;height:100px"></div>';
+    document.body.innerHTML =
+      '<div id="viewer" style="width:100px;height:100px"></div>';
     await loadModel("models/astronaut.glb", "viewer");
-    expect((window).__viewerFrames).toBeGreaterThan(0);
+    expect(window.__viewerFrames).toBeGreaterThan(0);
   });
 
   test("missing file falls back to remote", async () => {
-    document.body.innerHTML = '<div id="viewer" style="width:100px;height:100px"></div>';
+    document.body.innerHTML =
+      '<div id="viewer" style="width:100px;height:100px"></div>';
     await loadModel("models/astronaut.glb", "viewer");
     const mv = document.querySelector("#viewer model-viewer");
     expect(mv.getAttribute("src")).toBe(FALLBACK_GLB);
   });
 
   test("removing model-viewer shows degradation message", async () => {
-    document.body.innerHTML = '<div id="viewer" style="width:100px;height:100px"></div>';
+    document.body.innerHTML =
+      '<div id="viewer" style="width:100px;height:100px"></div>';
     await loadModel("models/astronaut.glb", "viewer");
     const mv = document.querySelector("#viewer model-viewer");
     mv.remove();
-    expect(document.getElementById("viewer").textContent).toMatch(/model not available/i);
+    expect(document.getElementById("viewer").textContent).toMatch(
+      /model not available/i,
+    );
   });
 });
 
@@ -311,10 +327,14 @@ describe("pipeline integrity", () => {
     process.env.ASTRONAUT_MODEL_URL = "https://example.com/astro.glb";
     const base = "https://glb-models-prod.s3.amazonaws.com";
     nock(base)
-      .get("/repo-assets/astro-image.png").reply(200, "astro")
-      .get("/repo-assets/box%20logo.png").reply(200, "box")
-      .get("/repo-assets/luckybox-preview.png").reply(200, "lucky")
-      .get("/repo-assets/text%20logo.png").reply(200, "text");
+      .get("/repo-assets/astro-image.png")
+      .reply(200, "astro")
+      .get("/repo-assets/box%20logo.png")
+      .reply(200, "box")
+      .get("/repo-assets/luckybox-preview.png")
+      .reply(200, "lucky")
+      .get("/repo-assets/text%20logo.png")
+      .reply(200, "text");
     nock("https://example.com").get("/astro.glb").reply(200, "model");
     await Promise.all([fetchRepoAssets(), fetchAstronaut()]);
     expect(fs.existsSync(MODEL_PATH)).toBe(true);
@@ -324,10 +344,14 @@ describe("pipeline integrity", () => {
     process.env.ASTRONAUT_MODEL_URL = "https://fail.test/astro.glb";
     const base = "https://glb-models-prod.s3.amazonaws.com";
     nock(base)
-      .get("/repo-assets/astro-image.png").reply(200, "astro")
-      .get("/repo-assets/box%20logo.png").reply(200, "box")
-      .get("/repo-assets/luckybox-preview.png").reply(200, "lucky")
-      .get("/repo-assets/text%20logo.png").reply(200, "text");
+      .get("/repo-assets/astro-image.png")
+      .reply(200, "astro")
+      .get("/repo-assets/box%20logo.png")
+      .reply(200, "box")
+      .get("/repo-assets/luckybox-preview.png")
+      .reply(200, "lucky")
+      .get("/repo-assets/text%20logo.png")
+      .reply(200, "text");
     nock("https://fail.test").get("/astro.glb").reply(500);
     await Promise.allSettled([fetchRepoAssets(), fetchAstronaut()]);
     const img = path.join("frontend", "public", "img", "astro-image.png");

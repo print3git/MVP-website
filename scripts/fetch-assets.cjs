@@ -64,7 +64,13 @@ module.exports = { ensureDir, download, fetchBoombox, fetchRepoAssets };
 
 if (require.main === module) {
   (async () => {
+    if (process.env.FETCH_ASSETS_FAIL === "1") {
+      throw new Error("forced failure");
+    }
     await fetchBoombox();
     await fetchRepoAssets();
-  })();
+  })().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
 }
