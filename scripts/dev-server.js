@@ -32,6 +32,15 @@ app.use(
   }),
 );
 
+app.use(
+  "/img",
+  express.static(path.join(root, "frontend", "public", "img"), {
+    setHeaders(res) {
+      res.setHeader("Cache-Control", "no-store");
+    },
+  }),
+);
+
 app.use(express.json());
 
 // Basic stub for API requests so smoke tests don't fail when the backend isn't running.
