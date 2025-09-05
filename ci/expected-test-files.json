@@ -2,6 +2,7 @@
   "files": [
     "tests/e2e/model-smoke.spec.ts",
     "tests/e2e/model-visual.spec.ts",
-    "backend/tests/stripe/webhook.valid-signature.spec.ts"
+    "backend/tests/stripe/webhook.valid-signature.spec.ts",
+    "tests/stats/stats-ticker.pipeline.n4h2k7p9q3t6v1s5.test.js"
   ]
 }
