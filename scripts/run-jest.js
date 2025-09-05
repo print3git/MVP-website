@@ -16,7 +16,7 @@ function collectTests(dir) {
       tests.push(full);
     }
   }
-  return tests;
+  return tests.sort();
 }
 
 function resolveFromPaths(mod) {
@@ -32,11 +32,11 @@ function resolveFromPaths(mod) {
 
 function verifyFiles(args) {
   let checking = false;
-  const normalized = [];
+  const normalized = new Set();
   for (const arg of args) {
     if (arg === "--runTestsByPath") {
       checking = true;
-      normalized.push(arg);
+      normalized.add(arg);
       continue;
     }
     const candidates = [
@@ -54,9 +54,9 @@ function verifyFiles(args) {
           console.error(`No test files found in directory: ${arg}`);
           process.exit(1);
         }
-        normalized.push(...files);
+        for (const f of files) normalized.add(f);
       } else {
-        normalized.push(existing);
+        normalized.add(existing);
       }
       continue;
     }
@@ -64,9 +64,9 @@ function verifyFiles(args) {
       console.error(`Test file not found: ${arg}`);
       process.exit(1);
     }
-    normalized.push(arg);
+    normalized.add(arg);
   }
-  return normalized;
+  return Array.from(normalized);
 }
 
 async function run(args) {
@@ -147,8 +147,7 @@ async function run(args) {
   if (isBackendTest && !process.env.SKIP_BACKEND_DEPS_CHECK) {
     require(path.join(backendRoot, "scripts", "ensure-deps.js"));
   }
-  // Reuse the earlier tsJestMissing flag rather than redeclaring it
-  tsJestMissing = false;
+  let tsJestMissing = false;
   try {
     require.resolve("ts-jest");
   } catch {
