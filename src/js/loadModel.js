@@ -13,12 +13,8 @@ export async function loadModel(url, containerId, key = "default") {
   let GLTFLoader;
   try {
     const [threeMod, gltfMod] = await Promise.all([
-      import(
-        "https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.module.js"
-      ),
-      import(
-        "https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/loaders/GLTFLoader.js"
-      ),
+      import("three"),
+      import("three/examples/jsm/loaders/GLTFLoader.js"),
     ]);
     THREE = threeMod;
     ({ GLTFLoader } = gltfMod);
@@ -45,25 +41,25 @@ export async function loadModel(url, containerId, key = "default") {
   light.position.set(1, 1, 1);
   scene.add(light);
 
-const loader = new GLTFLoader();
-try {
-  await new Promise((resolve, reject) => {
-    loader.load(
-      url,
-      gltf => {
-        scene.add(gltf.scene);
-        window.markModelLoaded(key);
-        resolve();
-      },
-      undefined,
-      reject
-    );
-  });
-} catch (err) {
-  console.error('GLTF load failed', err);
-  container.textContent = 'model not available';
-  return;
-}
+  const loader = new GLTFLoader();
+  try {
+    await new Promise((resolve, reject) => {
+      loader.load(
+        url,
+        (gltf) => {
+          scene.add(gltf.scene);
+          window.markModelLoaded(key);
+          resolve();
+        },
+        undefined,
+        reject,
+      );
+    });
+  } catch (err) {
+    console.error("GLTF load failed", err);
+    container.textContent = "model not available";
+    return;
+  }
 
   window.__viewerFrames = 0;
   function animate() {
