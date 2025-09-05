@@ -14,10 +14,12 @@ async function download(url, dest) {
     await ensureDir(dest);
     await writeFile(dest, buf);
     console.log(`Downloaded ${url}`);
+    return true;
   } catch (err) {
     console.warn(`Failed to download ${url}: ${err}. Creating placeholder.`);
     await ensureDir(dest);
     await writeFile(dest, "");
+    return false;
   }
 }
 
@@ -27,17 +29,17 @@ async function fetchBoombox() {
 
   if (existsSync(dest)) {
     console.log("boombox model already present");
-    return;
+    return true;
   }
 
   if (!url) {
     console.warn("BOOMBOX_MODEL_URL not set; creating placeholder file");
     await ensureDir(dest);
     await writeFile(dest, "");
-    return;
+    return true;
   }
 
-  await download(url, dest);
+  return await download(url, dest);
 }
 
 async function fetchRepoAssets() {
@@ -49,6 +51,7 @@ async function fetchRepoAssets() {
     "text logo.png",
   ];
 
+  let ok = true;
   for (const file of files) {
     const dest = join("frontend", "public", "img", file);
     if (existsSync(dest)) {
@@ -56,15 +59,20 @@ async function fetchRepoAssets() {
       continue;
     }
     const url = `${base}/${encodeURIComponent(file)}`;
-    await download(url, dest);
+    const success = await download(url, dest);
+    if (!success) ok = false;
   }
+  return ok;
 }
 
 module.exports = { ensureDir, download, fetchBoombox, fetchRepoAssets };
 
 if (require.main === module) {
   (async () => {
-    await fetchBoombox();
-    await fetchRepoAssets();
+    const results = await Promise.allSettled([fetchBoombox(), fetchRepoAssets()]);
+    const failed = results.some(
+      (r) => r.status === "rejected" || r.value === false,
+    );
+    if (failed) process.exit(1);
   })();
 }
