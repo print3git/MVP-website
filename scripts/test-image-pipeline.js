@@ -36,4 +36,4 @@ if (networkOk) {
 }
 
 // Force tests to run even when offline
-run("CI_FORCE=1 node scripts/run-jest.js tests/assets");
+run("CI_FORCE=1 node scripts/run-jest.js --testPathPattern tests/assets");
