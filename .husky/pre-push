@@ -2,3 +2,4 @@
 set -e
 
 npm run prepush
+npx lockfile-diff package.json package-lock.json
