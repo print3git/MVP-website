@@ -21,6 +21,7 @@ describe("npm run lint in backend", () => {
     );
     const output = `${result.stdout}${result.stderr}`;
     expect(result.status).toBe(0);
-    expect(output).toMatch(/eslint|\d+\s*(?:problem|error|warning|file)/i);
+    expect(output).toContain("eslint") ||
+      expect(output).toMatch(/\d+\s*(problem|error|warning|file)/i);
   });
 });
