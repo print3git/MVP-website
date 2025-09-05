@@ -42,6 +42,7 @@
     "build": "npm ci --no-audit --no-fund --prefix frontend && npm --prefix frontend run build",
     "start:ci": "npm --prefix frontend run start:ci",
     "preview": "vite preview --port 4173",
+    "prestart": "node scripts/fetch-assets.mjs",
     "start": "node scripts/dev-server.js",
     "start:backend": "npm start --prefix backend",
     "ci": "node scripts/ci.mjs",
