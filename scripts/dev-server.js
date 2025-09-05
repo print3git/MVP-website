@@ -3,6 +3,22 @@ const path = require("path");
 const http = require("http");
 const https = require("https");
 const selfsigned = require("selfsigned");
+const { existsSync } = require("fs");
+
+async function ensureRepoAssets() {
+  const asset = path.join(
+    __dirname,
+    "..",
+    "frontend",
+    "public",
+    "img",
+    "astro-image.png",
+  );
+  if (!existsSync(asset)) {
+    const { fetchRepoAssets } = await import("./fetch-assets.mjs");
+    await fetchRepoAssets();
+  }
+}
 
 const app = express();
 const root = path.join(__dirname, "..");
@@ -20,7 +36,9 @@ app.use(express.json());
 
 // Basic stub for API requests so smoke tests don't fail when the backend isn't running.
 app.post("/api/generate", (_req, res) => {
-  res.json({ glb_url: "https://modelviewer.dev/shared-assets/models/Astronaut.glb" });
+  res.json({
+    glb_url: "https://modelviewer.dev/shared-assets/models/Astronaut.glb",
+  });
 });
 
 app.get("/healthz", (_req, res) => {
@@ -57,7 +75,11 @@ function startDevServer(port = 3000, useHttps = process.env.USE_HTTPS === "1") {
 
 if (require.main === module) {
   const port = process.env.PORT || 3000;
-  startDevServer(port);
+  ensureRepoAssets()
+    .catch((err) => {
+      console.error("Failed to fetch repo assets", err);
+    })
+    .finally(() => startDevServer(port));
 }
 module.exports = app;
 module.exports.startDevServer = startDevServer;
