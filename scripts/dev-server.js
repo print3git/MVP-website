@@ -15,7 +15,7 @@ async function ensureRepoAssets() {
     "astro-image.png",
   );
   if (!existsSync(asset)) {
-    const { fetchRepoAssets } = await import("./fetch-assets.mjs");
+    const { fetchRepoAssets } = require("./fetch-assets.cjs");
     await fetchRepoAssets();
   }
 }

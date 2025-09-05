@@ -19,7 +19,7 @@ const ASSETS = [
 
 beforeAll(async () => {
   ({ fetchRepoAssets, fetchBoombox, download } = await import(
-    "../../scripts/fetch-assets.mjs"
+    "../../scripts/fetch-assets.cjs"
   ));
   app = require("../../scripts/dev-server.js");
   for (const file of ASSETS) {
