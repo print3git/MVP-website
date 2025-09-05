@@ -17,12 +17,15 @@ function runCoverage(extraEnv = {}) {
     DB_URL: "db",
     STRIPE_SECRET_KEY: "sk",
     SKIP_PW_DEPS: "1",
-    DISABLE_COVERAGE_THRESHOLD: "1",
     ...extraEnv,
   };
   return spawnSync(
     process.execPath,
-    [script, "--runTestsByPath", "backend/tests/coverage/lcovParse.test.ts"],
+    [
+      script,
+      "--runTestsByPath",
+      "backend/tests/coverage/lcovParse.test.q9w8e7r6t5y4u3i2.ts",
+    ],
     { env, encoding: "utf8" },
   );
 }

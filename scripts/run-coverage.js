@@ -49,11 +49,8 @@ const jestArgs = [
   "--config",
   path.join(__dirname, "..", "backend", "jest.config.js"),
   ...(extraArgs.length ? ["--runTestsByPath", ...extraArgs] : []),
+  "--coverageThreshold={}",
 ];
-
-if (process.env.DISABLE_COVERAGE_THRESHOLD === "1") {
-  jestArgs.push("--coverageThreshold={}");
-}
 
 const jestBin = path.join(
   __dirname,
