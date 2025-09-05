@@ -15,7 +15,7 @@ async function ensureRepoAssets() {
     "astro-image.png",
   );
   if (!existsSync(asset)) {
-    const { fetchRepoAssets } = await import("./fetch-assets.mjs");
+    const { fetchRepoAssets } = require("./fetch-assets.cjs");
     await fetchRepoAssets();
   }
 }
@@ -26,6 +26,15 @@ const root = path.join(__dirname, "..");
 app.use(
   express.static(root, {
     index: "index.html",
+    setHeaders(res) {
+      res.setHeader("Cache-Control", "no-store");
+    },
+  }),
+);
+
+app.use(
+  "/img",
+  express.static(path.join(root, "frontend", "public", "img"), {
     setHeaders(res) {
       res.setHeader("Cache-Control", "no-store");
     },

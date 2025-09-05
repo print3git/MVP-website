@@ -1,19 +1,16 @@
-import { mkdir, writeFile } from "node:fs/promises";
-import { existsSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { pathToFileURL } from "node:url";
+const { mkdir, writeFile } = require("node:fs/promises");
+const { existsSync } = require("node:fs");
+const { dirname, join } = require("node:path");
 
-export async function ensureDir(filePath) {
+async function ensureDir(filePath) {
   await mkdir(dirname(filePath), { recursive: true });
 }
 
-export async function download(url, dest) {
+async function download(url, dest) {
   try {
-    const res = await fetch(url);
-    if (!res.ok) {
-      throw new Error(`HTTP ${res.status} ${res.statusText}`);
-    }
-    const buf = Buffer.from(await res.arrayBuffer());
+    const axios = require("axios");
+    const res = await axios.get(url, { responseType: "arraybuffer" });
+    const buf = Buffer.from(res.data);
     await ensureDir(dest);
     await writeFile(dest, buf);
     console.log(`Downloaded ${url}`);
@@ -24,7 +21,7 @@ export async function download(url, dest) {
   }
 }
 
-export async function fetchBoombox() {
+async function fetchBoombox() {
   const dest = join("frontend", "public", "models", "boombox.glb");
   const url = process.env.BOOMBOX_MODEL_URL;
 
@@ -43,7 +40,7 @@ export async function fetchBoombox() {
   await download(url, dest);
 }
 
-export async function fetchRepoAssets() {
+async function fetchRepoAssets() {
   const base = "https://glb-models-prod.s3.amazonaws.com/repo-assets";
   const files = [
     "astro-image.png",
@@ -63,7 +60,11 @@ export async function fetchRepoAssets() {
   }
 }
 
-if (import.meta.url === pathToFileURL(process.argv[1]).href) {
-  await fetchBoombox();
-  await fetchRepoAssets();
+module.exports = { ensureDir, download, fetchBoombox, fetchRepoAssets };
+
+if (require.main === module) {
+  (async () => {
+    await fetchBoombox();
+    await fetchRepoAssets();
+  })();
 }
