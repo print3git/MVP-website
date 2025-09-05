@@ -1,0 +1,22 @@
+name: image asset pipeline (no safeguards)
+
+on:
+  pull_request:
+    paths:
+      - "scripts/fetch-assets.mjs"
+      - "tests/assets/**"
+      - ".github/workflows/image-pipeline-nosafeguards.yml"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+      - name: install
+        run: npm ci
+      - name: run image pipeline tests without safeguards
+        run: npx jest tests/assets/image-pipeline.no-safeguards.test.a4b5c6d7e8f9g0h1.js --config jest.config.cjs
