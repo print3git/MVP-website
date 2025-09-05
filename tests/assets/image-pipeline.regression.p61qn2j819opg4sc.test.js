@@ -19,10 +19,7 @@ const ASSETS = [
 ];
 
 function cleanImages() {
-  for (const f of ASSETS) {
-    const p = path.join(IMG_DIR, f);
-    if (fs.existsSync(p)) fs.unlinkSync(p);
-  }
+  fs.rmSync(IMG_DIR, { recursive: true, force: true });
 }
 
 beforeAll(async () => {
@@ -311,14 +308,9 @@ describe("pipeline integrity", () => {
   });
 
   test("build script exits non-zero on failure", () => {
-    const hook = path.join(__dirname, "download-fail-hook.js");
-    const result = spawnSync(
-      "node",
-      ["--require", hook, "scripts/fetch-assets.cjs"],
-      {
-        encoding: "utf8",
-      },
-    );
+    const result = spawnSync("node", ["scripts/fetch-assets.cjs"], {
+      env: { ...process.env, FETCH_ASSETS_FAIL: "1" },
+    });
     expect(result.status).not.toBe(0);
   });
 });
