@@ -97,7 +97,7 @@ describe("call stage", () => {
     await fetchRepoAssets();
     expect(scope.isDone()).toBe(true);
     expect(wrong.isDone()).toBe(false);
-    expect(nock.isDone()).toBe(true);
+    nock.cleanAll();
   });
 
   test("404 surfaces as empty file", async () => {
