@@ -92,10 +92,10 @@ describe("html references", () => {
   test("index.html references text and box logos", () => {
     const dom = new JSDOM(fs.readFileSync("index.html", "utf8"));
     const textLogo = dom.window.document.querySelector(
-      'img[src="img/text logo.png"]',
+      'img[src="img/text%20logo.png"]',
     );
     const boxLogo = dom.window.document.querySelector(
-      'img[src="img/box logo.png"]',
+      'img[src="img/box%20logo.png"]',
     );
     expect(textLogo).not.toBeNull();
     expect(boxLogo).not.toBeNull();
