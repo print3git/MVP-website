@@ -13,7 +13,6 @@ describe('check-env.sh required vars', () => {
     AWS_SECRET_ACCESS_KEY: 'secret',
     STRIPE_SECRET_KEY: 'sk',
     CLOUDFRONT_MODEL_DOMAIN: 'cdn',
-    SKIP_NET_CHECKS: '1',
   };
 
   test('fails when DB_URL missing', () => {

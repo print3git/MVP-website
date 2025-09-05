@@ -16,7 +16,6 @@ function runCoverage(extraEnv = {}) {
     AWS_SECRET_ACCESS_KEY: "secret",
     DB_URL: "db",
     STRIPE_SECRET_KEY: "sk",
-    SKIP_NET_CHECKS: "1",
     SKIP_PW_DEPS: "1",
     DISABLE_COVERAGE_THRESHOLD: "1",
     ...extraEnv,

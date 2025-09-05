@@ -13,7 +13,6 @@ describe("check-env proxy vars", () => {
       DB_URL: "db",
       STRIPE_SECRET_KEY: "sk",
       CLOUDFRONT_MODEL_DOMAIN: "cdn",
-      SKIP_NET_CHECKS: "1",
     };
     expect(() => {
       execFileSync(
