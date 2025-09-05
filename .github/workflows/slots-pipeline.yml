@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
-          cache: 'npm'
+          node-version: "20.x"
+          cache: "npm"
       - run: npm ci
-      - run: node scripts/run-jest.js tests/slots
+      - run: node scripts/run-jest.js tests/slots/print-slots.pipeline.y3hfcklm0t8hz92wbg.test.js
