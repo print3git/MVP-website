@@ -2,18 +2,10 @@ name: image asset pipeline
 
 on:
   pull_request:
-    paths:
-      - "scripts/fetch-assets.mjs"
-      - "tests/assets/**"
-      - ".github/workflows/image-pipeline.yml"
   push:
     branches:
       - dev
       - production
-    paths:
-      - "scripts/fetch-assets.mjs"
-      - "tests/assets/**"
-      - ".github/workflows/image-pipeline.yml"
 
 jobs:
   test:
