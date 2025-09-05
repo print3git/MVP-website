@@ -1,4 +1,4 @@
-const { mkdir, writeFile } = require("node:fs/promises");
+const { mkdir, writeFile, stat, unlink } = require("node:fs/promises");
 const { existsSync } = require("node:fs");
 const { dirname, join } = require("node:path");
 
@@ -60,13 +60,73 @@ async function fetchRepoAssets() {
   }
 }
 
-module.exports = { ensureDir, download, fetchBoombox, fetchRepoAssets };
+let astronautPromise;
+let lastAstronautUrl;
+
+async function fetchAstronaut() {
+  const dest = join("frontend", "public", "models", "astronaut.glb");
+  const url = process.env.ASTRONAUT_MODEL_URL;
+
+  if (!url) {
+    await unlink(dest).catch(() => {});
+    throw new Error("ASTRONAUT_MODEL_URL not set");
+  }
+
+  try {
+    const s = await stat(dest);
+    if (s.size > 0 && url === lastAstronautUrl) {
+      console.log("astronaut model already present");
+      return dest;
+    }
+  } catch {
+    // file missing; proceed
+  }
+
+  if (astronautPromise) return astronautPromise;
+
+  astronautPromise = (async () => {
+    const axios = require("axios");
+    try {
+      const res = await axios.get(url, {
+        responseType: "arraybuffer",
+        timeout: 1000,
+        validateStatus: (status) => status >= 200 && status < 300,
+      });
+      const buf = Buffer.from(res.data);
+      const cl = res.headers["content-length"];
+      if (cl && Number(cl) !== buf.length) {
+        throw new Error("incomplete response");
+      }
+      await ensureDir(dest);
+      await writeFile(dest, buf, { mode: 0o644 });
+      lastAstronautUrl = url;
+      return dest;
+    } catch (err) {
+      await unlink(dest).catch(() => {});
+      lastAstronautUrl = undefined;
+      throw err;
+    } finally {
+      astronautPromise = null;
+    }
+  })();
+
+  return astronautPromise;
+}
+
+module.exports = {
+  ensureDir,
+  download,
+  fetchBoombox,
+  fetchRepoAssets,
+  fetchAstronaut,
+};
 
 if (require.main === module) {
   (async () => {
     if (process.env.FETCH_ASSETS_FAIL === "1") {
       throw new Error("forced failure");
     }
+    await fetchAstronaut();
     await fetchBoombox();
     await fetchRepoAssets();
   })().catch((err) => {
