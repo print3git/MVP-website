@@ -1,23 +1,23 @@
 const fs = require("fs");
-const YAML = require("yaml");
 
-const npmLock = JSON.parse(fs.readFileSync("package-lock.json", "utf8"));
-const pnpmLock = YAML.parse(fs.readFileSync("pnpm-lock.yaml", "utf8"));
 const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
+const lock = JSON.parse(fs.readFileSync("package-lock.json", "utf8"));
 
-const importer = pnpmLock.importers && pnpmLock.importers["."];
+const declaredDeps = {
+  ...(pkg.dependencies || {}),
+  ...(pkg.devDependencies || {}),
+};
 
-const missing = [];
-for (const dep of Object.keys(pkg.devDependencies || {})) {
-  if (!npmLock.packages || !npmLock.packages[`node_modules/${dep}`]) {
-    missing.push(dep + " (npm)");
-  }
-  if (!importer || !(importer.devDependencies || {})[dep]) {
-    missing.push(dep + " (pnpm)");
-  }
-}
+const missing = Object.keys(declaredDeps).filter(
+  (dep) => !lock.packages || !lock.packages[`node_modules/${dep}`],
+);
 
 if (missing.length) {
-  console.error("Lock file missing dependencies:", missing.join(", "));
+  console.error("Dependencies missing from package-lock.json:");
+  for (const dep of missing) {
+    console.error(` - ${dep}`);
+  }
   process.exit(1);
 }
+
+console.log("All dependencies are present in package-lock.json");
