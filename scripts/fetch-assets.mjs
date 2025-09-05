@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, writeFile, symlink } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { pathToFileURL } from "node:url";
@@ -21,6 +21,22 @@ export async function download(url, dest) {
     console.warn(`Failed to download ${url}: ${err}. Creating placeholder.`);
     await ensureDir(dest);
     await writeFile(dest, "");
+  }
+}
+
+async function linkToRootImg(file) {
+  const src = join("frontend", "public", "img", file);
+  const dest = join("img", file);
+  if (existsSync(dest)) {
+    return;
+  }
+  await ensureDir(dest);
+  try {
+    await symlink(src, dest);
+  } catch (err) {
+    if (err.code !== "EEXIST") {
+      throw err;
+    }
   }
 }
 
@@ -56,10 +72,11 @@ export async function fetchRepoAssets() {
     const dest = join("frontend", "public", "img", file);
     if (existsSync(dest)) {
       console.log(`${file} already present`);
-      continue;
+    } else {
+      const url = `${base}/${encodeURIComponent(file)}`;
+      await download(url, dest);
     }
-    const url = `${base}/${encodeURIComponent(file)}`;
-    await download(url, dest);
+    await linkToRootImg(file);
   }
 }
 

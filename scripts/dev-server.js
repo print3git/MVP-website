@@ -6,6 +6,9 @@ const selfsigned = require("selfsigned");
 
 const app = express();
 const root = path.join(__dirname, "..");
+const publicDir = path.join(root, "frontend", "public");
+
+app.use(express.static(publicDir));
 
 app.use(
   express.static(root, {
@@ -20,7 +23,9 @@ app.use(express.json());
 
 // Basic stub for API requests so smoke tests don't fail when the backend isn't running.
 app.post("/api/generate", (_req, res) => {
-  res.json({ glb_url: "https://modelviewer.dev/shared-assets/models/Astronaut.glb" });
+  res.json({
+    glb_url: "https://modelviewer.dev/shared-assets/models/Astronaut.glb",
+  });
 });
 
 app.get("/healthz", (_req, res) => {
