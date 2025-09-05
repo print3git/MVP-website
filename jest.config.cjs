@@ -34,7 +34,7 @@ try {
       "**/*.test.*.js",
       "**/*.test.*.jsx",
     ],
-    passWithNoTests: true,
+    passWithNoTests: false,
   };
 } catch {
   config = require("./jest.config.offline.cjs");
