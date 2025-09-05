@@ -4,7 +4,10 @@ try {
   const babelConfig = require("./babel.config.js");
   const babelJestConfig = {
     ...babelConfig,
-    presets: [...(babelConfig.presets || []), "babel-preset-current-node-syntax"],
+    presets: [
+      ...(babelConfig.presets || []),
+      "babel-preset-current-node-syntax",
+    ],
   };
   config = {
     testEnvironment: "node",
@@ -17,6 +20,20 @@ try {
       "^.+\\.jsx?$": ["babel-jest", babelJestConfig],
     },
     moduleFileExtensions: ["ts", "tsx", "js", "json"],
+    testMatch: [
+      "**/*.spec.ts",
+      "**/*.spec.tsx",
+      "**/*.spec.js",
+      "**/*.spec.jsx",
+      "**/*.test.ts",
+      "**/*.test.tsx",
+      "**/*.test.js",
+      "**/*.test.jsx",
+      "**/*.test.*.ts",
+      "**/*.test.*.tsx",
+      "**/*.test.*.js",
+      "**/*.test.*.jsx",
+    ],
     passWithNoTests: true,
   };
 } catch {
