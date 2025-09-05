@@ -18,8 +18,13 @@ try {
         { tsconfig: "tsconfig.json", diagnostics: false },
       ],
       "^.+\\.jsx?$": ["babel-jest", babelJestConfig],
+      "^.+\\.mjs$": [
+        "babel-jest",
+        { plugins: ["@babel/plugin-transform-modules-commonjs"] },
+      ],
     },
-    moduleFileExtensions: ["ts", "tsx", "js", "json"],
+    moduleFileExtensions: ["ts", "tsx", "js", "json", "mjs"],
+    extensionsToTreatAsEsm: [".mjs"],
     testMatch: [
       "**/*.spec.ts",
       "**/*.spec.tsx",
