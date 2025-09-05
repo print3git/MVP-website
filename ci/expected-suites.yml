@@ -26,3 +26,5 @@ e2e-smoke:
   workflow: smoke_test.yml
 inventory:
   workflow: inventory.yml
+
+# Additional suites are discovered automatically during CI
