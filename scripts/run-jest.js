@@ -5,6 +5,20 @@ const path = require("path");
 const repoRoot = path.resolve(__dirname, "..");
 const backendRoot = path.join(repoRoot, "backend");
 
+function collectTests(dir) {
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+  const tests = [];
+  for (const entry of entries) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      tests.push(...collectTests(full));
+    } else if (/\.(test|spec)\.(js|ts|tsx)$/.test(entry.name)) {
+      tests.push(full);
+    }
+  }
+  return tests;
+}
+
 function resolveFromPaths(mod) {
   for (const p of [repoRoot, backendRoot]) {
     try {
@@ -25,21 +39,32 @@ function verifyFiles(args) {
       normalized.push(arg);
       continue;
     }
-    if (checking || /\.(test|spec)\.(js|ts|tsx)$/.test(arg)) {
-      const candidates = [
-        path.resolve(process.cwd(), arg),
-        path.resolve(repoRoot, arg),
-        path.resolve(backendRoot, arg),
-      ];
-      const file = candidates.find((p) => fs.existsSync(p));
-      if (!file) {
-        console.error(`Test file not found: ${arg}`);
-        process.exit(1);
+    const candidates = [
+      path.resolve(process.cwd(), arg),
+      path.resolve(repoRoot, arg),
+      path.resolve(backendRoot, arg),
+    ];
+    const existing = candidates.find((p) => fs.existsSync(p));
+    const isTestArg = checking || /\.(test|spec)\.(js|ts|tsx)$/.test(arg);
+    if (existing) {
+      const stat = fs.statSync(existing);
+      if (stat.isDirectory()) {
+        const files = collectTests(existing);
+        if (!files.length) {
+          console.error(`No test files found in directory: ${arg}`);
+          process.exit(1);
+        }
+        normalized.push(...files);
+      } else {
+        normalized.push(existing);
       }
-      normalized.push(file);
-    } else {
-      normalized.push(arg);
+      continue;
     }
+    if (isTestArg) {
+      console.error(`Test file not found: ${arg}`);
+      process.exit(1);
+    }
+    normalized.push(arg);
   }
   return normalized;
 }
