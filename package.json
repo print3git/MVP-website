@@ -28,6 +28,7 @@
   },
   "scripts": {
     "test": "node scripts/run-jest.js",
+    "test:fresh": "npm test",
     "test:image-pipeline": "node scripts/test-image-pipeline.js",
     "preinstall": "corepack enable && node scripts/check-node-version.js",
     "preformat": "true",

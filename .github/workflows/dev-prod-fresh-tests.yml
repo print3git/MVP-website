@@ -1,0 +1,25 @@
+name: DevProd Fresh Tests
+
+on:
+  push:
+    branches: [dev, 00000production]
+  pull_request:
+    branches: [dev, 00000production]
+
+permissions:
+  contents: read
+
+jobs:
+  fresh-tests:
+    runs-on: ubuntu-latest
+    env:
+      NPM_CONFIG_AUDIT: "false"
+      NPM_CONFIG_FUND: "false"
+      CI_NETWORK_OK: "1"
+    steps:
+      - uses: actions/checkout@v4.1.6
+      - uses: actions/setup-node@v4.0.3
+        with:
+          node-version: "20"
+      - run: npm ci
+      - run: npm run test:fresh
