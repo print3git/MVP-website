@@ -18,19 +18,30 @@ function resolveFromPaths(mod) {
 
 function verifyFiles(args) {
   let checking = false;
+  const normalized = [];
   for (const arg of args) {
     if (arg === "--runTestsByPath") {
       checking = true;
+      normalized.push(arg);
       continue;
     }
     if (checking || /\.(test|spec)\.(js|ts|tsx)$/.test(arg)) {
-      const file = path.resolve(process.cwd(), arg);
-      if (!fs.existsSync(file)) {
+      const candidates = [
+        path.resolve(process.cwd(), arg),
+        path.resolve(repoRoot, arg),
+        path.resolve(backendRoot, arg),
+      ];
+      const file = candidates.find((p) => fs.existsSync(p));
+      if (!file) {
         console.error(`Test file not found: ${arg}`);
         process.exit(1);
       }
+      normalized.push(file);
+    } else {
+      normalized.push(arg);
     }
   }
+  return normalized;
 }
 
 async function run(args) {
@@ -55,10 +66,9 @@ async function run(args) {
     require("./ensure-root-deps.js");
   }
 
-
   const skipNetChecks = process.env.SKIP_NET_CHECKS === "1";
 
-  verifyFiles(args);
+  args = verifyFiles(args);
   console.log("run-jest cwd:", process.cwd());
   const corePath = resolveFromPaths("@jest/core");
   if (!corePath) {
