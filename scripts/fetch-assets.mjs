@@ -1,12 +1,13 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { dirname, join } from "node:path";
+import { pathToFileURL } from "node:url";
 
-async function ensureDir(filePath) {
+export async function ensureDir(filePath) {
   await mkdir(dirname(filePath), { recursive: true });
 }
 
-async function download(url, dest) {
+export async function download(url, dest) {
   try {
     const res = await fetch(url);
     if (!res.ok) {
@@ -23,7 +24,7 @@ async function download(url, dest) {
   }
 }
 
-async function fetchBoombox() {
+export async function fetchBoombox() {
   const dest = join("frontend", "public", "models", "boombox.glb");
   const url = process.env.BOOMBOX_MODEL_URL;
 
@@ -42,7 +43,7 @@ async function fetchBoombox() {
   await download(url, dest);
 }
 
-async function fetchRepoAssets() {
+export async function fetchRepoAssets() {
   const base = "https://glb-models-prod.s3.amazonaws.com/repo-assets";
   const files = [
     "astro-image.png",
@@ -62,5 +63,7 @@ async function fetchRepoAssets() {
   }
 }
 
-await fetchBoombox();
-await fetchRepoAssets();
+if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+  await fetchBoombox();
+  await fetchRepoAssets();
+}
