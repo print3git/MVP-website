@@ -17,7 +17,7 @@ try {
       "^.+\\.jsx?$": ["babel-jest", babelJestConfig],
     },
     moduleFileExtensions: ["ts", "tsx", "js", "json"],
-    passWithNoTests: true,
+    passWithNoTests: false,
   };
 } catch {
   config = require("./jest.config.offline.cjs");
