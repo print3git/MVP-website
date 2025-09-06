@@ -944,10 +944,12 @@ async function initPaymentPage() {
     if (viewer) {
       const tag = viewer.tagName.toLowerCase();
       if (tag === "img") {
-        if (item.snapshot) viewer.src = sanitizeUrl(item.snapshot);
+        if (item.snapshot) {
+          // viewer.src = sanitizeUrl(item.snapshot);
+        }
       } else {
-        const src = sanitizeUrl(item.modelUrl);
-        viewer.src = src || storedModel || FALLBACK_GLB;
+        // const src = sanitizeUrl(item.modelUrl);
+        // viewer.src = src || storedModel || FALLBACK_GLB;
       }
     }
     if (item.jobId) localStorage.setItem("print2JobId", item.jobId);
@@ -1161,7 +1163,9 @@ async function initPaymentPage() {
     loader.hidden = false;
     // Assign the model source only after the load/error listeners are in place
     const storedModel = sanitizeUrl(localStorage.getItem("print2Model"));
-    if (viewer) viewer.src = storedModel || FALLBACK_GLB;
+    if (viewer) {
+      // viewer.src = storedModel || FALLBACK_GLB;
+    }
   }
   // Load saved basket items unless this is the Luckybox page
   if (!window.location.pathname.endsWith("luckybox-payment.html")) {
