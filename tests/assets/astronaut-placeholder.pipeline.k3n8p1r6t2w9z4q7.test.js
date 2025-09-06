@@ -1,7 +1,7 @@
 /** @jest-environment jsdom */
 const fs = require("fs");
 const path = require("path");
-const axios = require("axios/dist/node/axios.cjs");
+const axios = require("axios/dist/axios.cjs");
 const { TextEncoder, TextDecoder } = require("node:util");
 globalThis.TextEncoder = TextEncoder;
 globalThis.TextDecoder = TextDecoder;
