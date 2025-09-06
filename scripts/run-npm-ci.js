@@ -2,6 +2,7 @@ const { execSync } = require("child_process");
 const fs = require("fs");
 const os = require("os");
 const path = require("path");
+const { checkDependencyVersions } = require("./check-dependency-versions.js");
 
 function isOffline() {
   if (process.env.SKIP_NET_CHECKS === "1" || process.env.CI_NO_NET === "1") {
@@ -57,6 +58,8 @@ function runNpmCi(dir = ".", opts = {}) {
     );
   }
   try {
+    const pkgPath = dir === "." ? "package.json" : path.join(dir, "package.json");
+    checkDependencyVersions(pkgPath);
     execSync(ciCmd, options);
   } catch (err) {
     const output = String(err.stderr || err.stdout || err.message || "");
