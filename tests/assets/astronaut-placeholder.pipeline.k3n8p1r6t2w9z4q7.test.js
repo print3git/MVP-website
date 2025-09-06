@@ -2,7 +2,7 @@
 const fs = require("fs");
 const path = require("path");
 const axios = require("axios");
-axios.defaults.adapter = require("axios/lib/adapters/http");
+axios.defaults.adapter = require("axios/lib/adapters/http.js");
 const { TextEncoder, TextDecoder } = require("node:util");
 globalThis.TextEncoder = TextEncoder;
 globalThis.TextDecoder = TextDecoder;
