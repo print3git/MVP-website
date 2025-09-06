@@ -5,6 +5,9 @@ const { TextEncoder, TextDecoder } = require("node:util");
 globalThis.TextEncoder = TextEncoder;
 globalThis.TextDecoder = TextDecoder;
 const nock = require("nock");
+const { mockClient } = require("aws-sdk-client-mock");
+const { S3Client, GetObjectCommand } = require("@aws-sdk/client-s3");
+const { Readable } = require("stream");
 global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder;
 const { JSDOM } = require("jsdom");
@@ -15,6 +18,7 @@ let fetchRepoAssets;
 let download;
 let app;
 let loadModel;
+const s3Mock = mockClient(S3Client);
 
 let lastRaf;
 const origRAF = global.requestAnimationFrame;
@@ -40,6 +44,7 @@ beforeAll(() => {
 
 beforeEach(() => {
   nock.cleanAll();
+  s3Mock.reset();
   delete process.env.ASTRONAUT_MODEL_URL;
   if (fs.existsSync(MODEL_PATH)) fs.unlinkSync(MODEL_PATH);
   if (fs.existsSync(MODEL_DIR)) {
@@ -341,16 +346,17 @@ describe("display stage", () => {
 describe("pipeline integrity", () => {
   test("concurrent images and model downloads succeed", async () => {
     process.env.ASTRONAUT_MODEL_URL = "https://example.com/astro.glb";
-    const base = "https://glb-models-prod.s3.amazonaws.com";
-    nock(base)
-      .get("/repo-assets/astro-image.png")
-      .reply(200, "astro")
-      .get("/repo-assets/box%20logo.png")
-      .reply(200, "box")
-      .get("/repo-assets/luckybox-preview.png")
-      .reply(200, "lucky")
-      .get("/repo-assets/text%20logo.png")
-      .reply(200, "text");
+    const bodies = {
+      "astro-image.png": "astro",
+      "box logo.png": "box",
+      "luckybox-preview.png": "lucky",
+      "text logo.png": "text",
+    };
+    for (const [key, body] of Object.entries(bodies)) {
+      s3Mock
+        .on(GetObjectCommand, { Bucket: "repo-assets", Key: key })
+        .resolves({ Body: Readable.from(body) });
+    }
     nock("https://example.com").get("/astro.glb").reply(200, "model");
     await Promise.all([fetchRepoAssets(), fetchAstronaut()]);
     expect(fs.existsSync(MODEL_PATH)).toBe(true);
@@ -358,16 +364,17 @@ describe("pipeline integrity", () => {
 
   test("GLB failure does not block images", async () => {
     process.env.ASTRONAUT_MODEL_URL = "https://fail.test/astro.glb";
-    const base = "https://glb-models-prod.s3.amazonaws.com";
-    nock(base)
-      .get("/repo-assets/astro-image.png")
-      .reply(200, "astro")
-      .get("/repo-assets/box%20logo.png")
-      .reply(200, "box")
-      .get("/repo-assets/luckybox-preview.png")
-      .reply(200, "lucky")
-      .get("/repo-assets/text%20logo.png")
-      .reply(200, "text");
+    const bodies = {
+      "astro-image.png": "astro",
+      "box logo.png": "box",
+      "luckybox-preview.png": "lucky",
+      "text logo.png": "text",
+    };
+    for (const [key, body] of Object.entries(bodies)) {
+      s3Mock
+        .on(GetObjectCommand, { Bucket: "repo-assets", Key: key })
+        .resolves({ Body: Readable.from(body) });
+    }
     nock("https://fail.test").get("/astro.glb").reply(500);
     await Promise.allSettled([fetchRepoAssets(), fetchAstronaut()]);
     const img = path.join("frontend", "public", "img", "astro-image.png");

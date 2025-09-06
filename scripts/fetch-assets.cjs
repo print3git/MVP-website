@@ -2,9 +2,26 @@ const { mkdir, writeFile, stat, unlink } = require("node:fs/promises");
 const { existsSync, createWriteStream } = require("node:fs");
 const { pipeline } = require("node:stream/promises");
 const { dirname, join } = require("node:path");
+const { S3Client, GetObjectCommand } = require("@aws-sdk/client-s3");
 
 async function ensureDir(filePath) {
   await mkdir(dirname(filePath), { recursive: true });
+}
+
+const s3 = new S3Client();
+
+async function downloadFromS3(bucket, key, dest) {
+  try {
+    const { Body } = await s3.send(
+      new GetObjectCommand({ Bucket: bucket, Key: key }),
+    );
+    await ensureDir(dest);
+    await pipeline(Body, createWriteStream(dest));
+    console.log(`Downloaded s3://${bucket}/${key}`);
+  } catch (err) {
+    console.warn(`Failed to download s3://${bucket}/${key}: ${err}`);
+    throw err;
+  }
 }
 
 async function download(url, dest) {
@@ -40,7 +57,7 @@ async function fetchBoombox() {
 }
 
 async function fetchRepoAssets() {
-  const base = "https://glb-models-prod.s3.amazonaws.com/repo-assets";
+  const bucket = "repo-assets";
   const files = [
     "astro-image.png",
     "box logo.png",
@@ -54,8 +71,7 @@ async function fetchRepoAssets() {
       console.log(`${file} already present`);
       continue;
     }
-    const url = `${base}/${encodeURIComponent(file)}`;
-    await download(url, dest);
+    await downloadFromS3(bucket, file, dest);
   }
 }
 
