@@ -9,6 +9,23 @@ function run(cmd) {
 delete process.env.npm_config_http_proxy;
 delete process.env.npm_config_https_proxy;
 
+// Ensure required mock dependency is present
+try {
+  require.resolve("aws-sdk-client-mock");
+} catch {
+  console.error("aws-sdk-client-mock is missing; run npm install");
+  process.exit(1);
+}
+
+// Warn if dependency tree is out of sync
+try {
+  execSync("npm ls aws-sdk-client-mock --silent", { stdio: "pipe" });
+} catch {
+  console.warn(
+    "aws-sdk-client-mock may be extraneous or mismatched; run npm install"
+  );
+}
+
 // Bail if manual offline flags are present
 for (const key of ["CI_NO_NET", "CI_SANDBOX", "SKIP_NET_CHECKS"]) {
   if (process.env[key]) {
