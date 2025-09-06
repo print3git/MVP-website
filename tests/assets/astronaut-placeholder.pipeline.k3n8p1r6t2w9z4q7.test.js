@@ -2,7 +2,10 @@
 const fs = require("fs");
 const path = require("path");
 const axios = require("axios");
-axios.defaults.adapter = require("axios/lib/adapters/http.js");
+beforeAll(async () => {
+  const { default: httpAdapter } = await import("axios/lib/adapters/http.js");
+  axios.defaults.adapter = httpAdapter;
+});
 const { TextEncoder, TextDecoder } = require("node:util");
 globalThis.TextEncoder = TextEncoder;
 globalThis.TextDecoder = TextDecoder;
