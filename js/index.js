@@ -815,7 +815,7 @@ refs.submitBtn.addEventListener("click", async () => {
 
     editsPending = false;
 
-    refs.viewer.src = url;
+    // refs.viewer.src = url;
     await refs.viewer.updateComplete;
     showModel();
     if (window.addAutoItem) {
@@ -905,7 +905,7 @@ async function init() {
     const handleLoad = () => {
       if (refs.viewer.src === LOW_POLY_GLB) {
         hiStart = performance.now();
-        refs.viewer.src = FALLBACK_GLB;
+        // refs.viewer.src = FALLBACK_GLB;
       } else if (refs.viewer.src === FALLBACK_GLB && hiStart !== null) {
         const t = Math.round(performance.now() - hiStart);
         console.log("Model load time", t, "ms");
@@ -914,7 +914,7 @@ async function init() {
       }
     };
     refs.viewer.addEventListener("load", handleLoad);
-    refs.viewer.src = LOW_POLY_GLB;
+    // refs.viewer.src = LOW_POLY_GLB;
     localStorage.removeItem("print2JobId");
     refs.viewer.addEventListener(
       "load",
@@ -925,7 +925,7 @@ async function init() {
         loader.src = FALLBACK_GLB_HIGH;
         loader.addEventListener("load", () => {
           if (refs.viewer.src === FALLBACK_GLB_LOW) {
-            refs.viewer.src = FALLBACK_GLB_HIGH;
+            // refs.viewer.src = FALLBACK_GLB_HIGH;
           }
           loader.remove();
         });
@@ -952,7 +952,7 @@ async function init() {
     refs.viewer.addEventListener(
       "error",
       () => {
-        refs.viewer.src = FALLBACK_GLB;
+        // refs.viewer.src = FALLBACK_GLB;
         showModel();
       },
       { once: true },
