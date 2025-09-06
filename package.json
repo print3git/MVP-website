@@ -36,6 +36,7 @@
     "format:check": "prettier -c .",
     "lint": "npm run lint --prefix frontend && npm run lint --prefix backend",
     "typecheck": "tsc --noEmit",
+    "check:lockfile": "npx lockfile-diff",
     "validate-env": "bash scripts/validate-env.sh",
     "setup": "bash scripts/setup.sh",
     "prebuild": "node scripts/fetch-assets.cjs",
