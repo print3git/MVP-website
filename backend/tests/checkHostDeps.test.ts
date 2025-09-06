@@ -15,7 +15,6 @@ test("skips host deps install when SKIP_PW_DEPS is set", () => {
     env: {
       ...process.env,
       SKIP_PW_DEPS: "1",
-      SKIP_NET_CHECKS: "1",
       NODE_OPTIONS: `--require ${stub}`,
     },
     encoding: "utf8",

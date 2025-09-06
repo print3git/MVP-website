@@ -12,9 +12,7 @@ const env = {
   AWS_SECRET_ACCESS_KEY: "secret",
   DB_URL: "db",
   STRIPE_SECRET_KEY: "sk",
-  SKIP_NET_CHECKS: "1",
   SKIP_PW_DEPS: "1",
-  DISABLE_COVERAGE_THRESHOLD: "1",
 };
 
 describe("run-coverage script", () => {
@@ -32,7 +30,11 @@ describe("run-coverage script", () => {
   test("works when invoked from backend directory", () => {
     const result = spawnSync(
       process.execPath,
-      [script, "--runTestsByPath", "backend/tests/coverage/lcovParse.test.ts"],
+      [
+        script,
+        "--runTestsByPath",
+        "backend/tests/coverage/lcovParse.test.q9w8e7r6t5y4u3i2.ts",
+      ],
       { cwd: path.join(repoRoot, "backend"), env, encoding: "utf8" },
     );
     expect(result.status).toBe(0);

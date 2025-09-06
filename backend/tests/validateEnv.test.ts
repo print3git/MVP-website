@@ -5,14 +5,13 @@ const fs = require("fs");
 const root = path.resolve(__dirname, "..", "..");
 
 function run(env, clean = true) {
-  const e = { ...process.env, SKIP_NET_CHECKS: "1", ...env };
+  const e = { ...process.env, ...env };
   if (clean) {
     delete e.npm_config_http_proxy;
     delete e.npm_config_https_proxy;
     delete e.http_proxy;
     delete e.https_proxy;
   }
-  e.SKIP_NET_CHECKS = "1";
   return execSync("npm run validate-env 2>&1", {
     cwd: root,
     env: e,
@@ -21,7 +20,7 @@ function run(env, clean = true) {
 }
 
 function runGetHFAPIKey(env) {
-  const e = { ...process.env, SKIP_NET_CHECKS: "1", ...env };
+  const e = { ...process.env, ...env };
   delete e.npm_config_http_proxy;
   delete e.npm_config_https_proxy;
   delete e.http_proxy;
@@ -45,7 +44,6 @@ describe("validate-env script", () => {
       AWS_SECRET_ACCESS_KEY: "secret",
       DB_URL: "postgres://user:pass@localhost/db",
       STRIPE_SECRET_KEY: "sk_test_dummy",
-      SKIP_NET_CHECKS: "1",
       SKIP_DB_CHECK: "1",
     });
     expect(output).toContain("environment OK");
@@ -59,7 +57,6 @@ describe("validate-env script", () => {
           HF_TOKEN: "token",
           AWS_ACCESS_KEY_ID: "id",
           AWS_SECRET_ACCESS_KEY: "secret",
-          SKIP_NET_CHECKS: "1",
           npm_config_http_proxy: "http://proxy",
         },
         false,
@@ -101,7 +98,6 @@ describe("validate-env script", () => {
       AWS_ACCESS_KEY_ID: "id",
       AWS_SECRET_ACCESS_KEY: "secret",
       DB_URL: "postgres://user:pass@127.0.0.1:9/db",
-      SKIP_NET_CHECKS: "1",
     });
     expect(output).toMatch(/Database connection check failed/);
     expect(output).toMatch(/Falling back to SKIP_DB_CHECK=1/);

@@ -1,17 +1,11 @@
 #!/usr/bin/env node
 import { EventEmitter } from "events";
-import { isOfflineEnv, logOfflineSkip, withRetries } from "./net-mode.mjs";
+import { withRetries } from "./net-mode.mjs";
 
 EventEmitter.defaultMaxListeners = Math.max(
   25,
   EventEmitter.defaultMaxListeners || 10,
 );
-
-if (isOfflineEnv()) {
-  logOfflineSkip("dependency checks");
-  console.log("✅ environment OK");
-  process.exit(0);
-}
 
 try {
   withRetries("npm ping");

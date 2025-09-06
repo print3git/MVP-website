@@ -1,0 +1,23 @@
+name: Slots pipeline
+
+on:
+  push:
+    branches: [dev, 00000production]
+  pull_request:
+    branches: [dev, 00000production]
+
+jobs:
+  slots-tests:
+    runs-on: ubuntu-latest
+    env:
+      NPM_CONFIG_AUDIT: "false"
+      NPM_CONFIG_FUND: "false"
+      CI_NETWORK_OK: "1"
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          cache: "npm"
+      - run: npm ci
+      - run: node scripts/run-jest.js tests/slots/print-slots.pipeline.y3hfcklm0t8hz92wbg.test.js

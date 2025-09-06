@@ -20,7 +20,14 @@ if (offline) {
   console.log("offline mode: running ci");
 }
 
+try {
+  execSync("npm run check:lockfile", { stdio: "inherit" });
+} catch (err) {
+  console.error(
+    "Lockfile mismatch detected. Run 'npm install' to regenerate package-lock.json.",
+  );
+  process.exit(1);
+}
 execSync("node scripts/run-npm-ci.js", { stdio: "inherit" });
 execSync("npm run build --workspaces=false", { stdio: "inherit" });
 execSync("npm test", { stdio: "inherit" });
-

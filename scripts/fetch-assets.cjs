@@ -1,23 +1,21 @@
-const { mkdir, writeFile } = require("node:fs/promises");
-const { existsSync } = require("node:fs");
+const { mkdir, writeFile, stat, unlink } = require("node:fs/promises");
+const { existsSync, createWriteStream } = require("node:fs");
+const { pipeline } = require("node:stream/promises");
 const { dirname, join } = require("node:path");
-
 async function ensureDir(filePath) {
   await mkdir(dirname(filePath), { recursive: true });
 }
 
 async function download(url, dest) {
   try {
-    const axios = require("axios");
-    const res = await axios.get(url, { responseType: "arraybuffer" });
-    const buf = Buffer.from(res.data);
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
     await ensureDir(dest);
-    await writeFile(dest, buf);
+    await pipeline(res.body, createWriteStream(dest));
     console.log(`Downloaded ${url}`);
   } catch (err) {
-    console.warn(`Failed to download ${url}: ${err}. Creating placeholder.`);
-    await ensureDir(dest);
-    await writeFile(dest, "");
+    console.warn(`Failed to download ${url}: ${err}`);
+    throw err;
   }
 }
 
@@ -40,31 +38,71 @@ async function fetchBoombox() {
   await download(url, dest);
 }
 
-async function fetchRepoAssets() {
-  const base = "https://glb-models-prod.s3.amazonaws.com/repo-assets";
-  const files = [
-    "astro-image.png",
-    "box logo.png",
-    "luckybox-preview.png",
-    "text logo.png",
-  ];
+let astronautPromise;
+let lastAstronautUrl;
 
-  for (const file of files) {
-    const dest = join("frontend", "public", "img", file);
-    if (existsSync(dest)) {
-      console.log(`${file} already present`);
-      continue;
-    }
-    const url = `${base}/${encodeURIComponent(file)}`;
-    await download(url, dest);
+async function fetchAstronaut() {
+  const dest = join("frontend", "public", "models", "astronaut.glb");
+  const url = process.env.ASTRONAUT_MODEL_URL;
+
+  if (!url) {
+    await unlink(dest).catch(() => {});
+    throw new Error("ASTRONAUT_MODEL_URL not set");
   }
+
+  try {
+    const s = await stat(dest);
+    if (s.size > 0 && url === lastAstronautUrl) {
+      console.log("astronaut model already present");
+      return dest;
+    }
+  } catch {
+    // file missing; proceed
+  }
+
+  if (astronautPromise) return astronautPromise;
+
+  astronautPromise = (async () => {
+    try {
+      const res = await fetch(url, { signal: AbortSignal.timeout(1000) });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const buf = Buffer.from(await res.arrayBuffer());
+      const cl = res.headers.get("content-length");
+      if (cl && Number(cl) !== buf.length) {
+        throw new Error("incomplete response");
+      }
+      await ensureDir(dest);
+      await writeFile(dest, buf, { mode: 0o644 });
+      lastAstronautUrl = url;
+      return dest;
+    } catch (err) {
+      await unlink(dest).catch(() => {});
+      lastAstronautUrl = undefined;
+      throw err;
+    } finally {
+      astronautPromise = null;
+    }
+  })();
+
+  return astronautPromise;
 }
 
-module.exports = { ensureDir, download, fetchBoombox, fetchRepoAssets };
+module.exports = {
+  ensureDir,
+  download,
+  fetchBoombox,
+  fetchAstronaut,
+};
 
 if (require.main === module) {
   (async () => {
+    if (process.env.FETCH_ASSETS_FAIL === "1") {
+      throw new Error("forced failure");
+    }
+    await fetchAstronaut();
     await fetchBoombox();
-    await fetchRepoAssets();
-  })();
+  })().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
 }

@@ -5,6 +5,20 @@ const path = require("path");
 const repoRoot = path.resolve(__dirname, "..");
 const backendRoot = path.join(repoRoot, "backend");
 
+function collectTests(dir) {
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+  const tests = [];
+  for (const entry of entries) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      tests.push(...collectTests(full));
+    } else if (/\.(test|spec)(?:\.[^.]+)?\.(js|ts|tsx)$/.test(entry.name)) {
+      tests.push(full);
+    }
+  }
+  return tests.sort();
+}
+
 function resolveFromPaths(mod) {
   for (const p of [repoRoot, backendRoot]) {
     try {
@@ -18,40 +32,45 @@ function resolveFromPaths(mod) {
 
 function verifyFiles(args) {
   let checking = false;
-  const normalized = [];
+  const normalized = new Set();
   for (const arg of args) {
     if (arg === "--runTestsByPath") {
       checking = true;
-      normalized.push(arg);
+      normalized.add(arg);
       continue;
     }
-    if (checking || /\.(test|spec)\.(js|ts|tsx)$/.test(arg)) {
-      const candidates = [
-        path.resolve(process.cwd(), arg),
-        path.resolve(repoRoot, arg),
-        path.resolve(backendRoot, arg),
-      ];
-      const file = candidates.find((p) => fs.existsSync(p));
-      if (!file) {
-        console.error(`Test file not found: ${arg}`);
-        process.exit(1);
+    const candidates = [
+      path.resolve(process.cwd(), arg),
+      path.resolve(repoRoot, arg),
+      path.resolve(backendRoot, arg),
+    ];
+    const existing = candidates.find((p) => fs.existsSync(p));
+    const isTestArg =
+      checking || /\.(test|spec)(?:\.[^.]+)?\.(js|ts|tsx)$/.test(arg);
+    if (existing) {
+      const stat = fs.statSync(existing);
+      if (stat.isDirectory()) {
+        const files = collectTests(existing);
+        if (!files.length) {
+          console.error(`No test files found in directory: ${arg}`);
+          process.exit(1);
+        }
+        for (const f of files) normalized.add(f);
+      } else {
+        normalized.add(existing);
       }
-      normalized.push(file);
-    } else {
-      normalized.push(arg);
+      continue;
     }
+    if (isTestArg) {
+      console.error(`Test file not found: ${arg}`);
+      process.exit(1);
+    }
+    normalized.add(arg);
   }
-  return normalized;
+  return Array.from(normalized);
 }
 
 async function run(args) {
-  const { isOfflineEnv, logOfflineSkip } = await import("./net-mode.mjs");
-  const offline = isOfflineEnv();
-  if (offline) {
-    logOfflineSkip("jest");
-    return;
-  }
-
   let runCLI;
   try {
     ({ runCLI } = require("@jest/core"));
@@ -62,7 +81,7 @@ async function run(args) {
     process.exit(1);
   }
 
-  if (!offline && !process.env.SKIP_ROOT_DEPS_CHECK) {
+  if (!process.env.SKIP_ROOT_DEPS_CHECK) {
     require("./ensure-root-deps.js");
   }
 
@@ -126,21 +145,20 @@ async function run(args) {
     parsed.config = backendConfig;
   }
 
-  if (!offline && isBackendTest && !process.env.SKIP_BACKEND_DEPS_CHECK) {
+  if (isBackendTest && !process.env.SKIP_BACKEND_DEPS_CHECK) {
     require(path.join(backendRoot, "scripts", "ensure-deps.js"));
   }
-  // Reuse the earlier tsJestMissing flag rather than redeclaring it
-  tsJestMissing = false;
+  let tsJestMissing = false;
   try {
     require.resolve("ts-jest");
   } catch {
     tsJestMissing = true;
-    if (!offline && !skipNetChecks) {
+    if (!skipNetChecks) {
       console.error("Missing ts-jest; run `npm run setup` before testing.");
       process.exit(1);
     }
   }
-  if ((offline || skipNetChecks) && tsJestMissing) {
+  if (skipNetChecks && tsJestMissing) {
     parsed.config = isBackendTest ? backendOfflineConfig : defaultOfflineConfig;
     parsed._ = parsed._.map((p) => {
       if (p.endsWith(".ts")) {

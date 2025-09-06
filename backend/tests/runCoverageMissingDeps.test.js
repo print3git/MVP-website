@@ -16,14 +16,16 @@ function runCoverage(extraEnv = {}) {
     AWS_SECRET_ACCESS_KEY: "secret",
     DB_URL: "db",
     STRIPE_SECRET_KEY: "sk",
-    SKIP_NET_CHECKS: "1",
     SKIP_PW_DEPS: "1",
-    DISABLE_COVERAGE_THRESHOLD: "1",
     ...extraEnv,
   };
   return spawnSync(
     process.execPath,
-    [script, "--runTestsByPath", "backend/tests/coverage/lcovParse.test.ts"],
+    [
+      script,
+      "--runTestsByPath",
+      "backend/tests/coverage/lcovParse.test.q9w8e7r6t5y4u3i2.ts",
+    ],
     { env, encoding: "utf8" },
   );
 }

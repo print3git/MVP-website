@@ -4,6 +4,8 @@ backend-integration:
   workflow: backend-tests.yml
 frontend-jest:
   workflow: ci.yml
+slots-pipeline:
+  workflow: ci.yml
 playwright:
   workflow: ci.yml
 audit:
@@ -24,3 +26,5 @@ e2e-smoke:
   workflow: smoke_test.yml
 inventory:
   workflow: inventory.yml
+
+# Additional suites are discovered automatically during CI

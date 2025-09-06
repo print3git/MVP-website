@@ -745,7 +745,7 @@
   },
   {
     "name": "lockfile-drift",
-    "command": "node scripts/check-lockfile-drift.js",
+    "command": "if [ -f pnpm-lock.yaml ]; then node scripts/check-lockfile-drift.js; else node scripts/check-npm-lockfile-drift.js; fi",
     "paths": [],
     "needs": []
   },

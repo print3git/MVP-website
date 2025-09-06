@@ -1,8 +1,10 @@
 name: CI
 
 on:
-  push: { branches: [main] }
+  push:
+    branches: [main, dev, '00000production']
   pull_request:
+    branches: [main, dev, '00000production']
 
 jobs:
   deps:
@@ -80,3 +82,5 @@ jobs:
           tsc ./scripts/ci/detect-network.ts --outDir scripts/ci || true
           chmod +x scripts/ci/run-backend-offline-safe.sh
           ./scripts/ci/run-backend-offline-safe.sh
+      - name: Run Jest suites
+        run: node scripts/run-jest.js "tests/**/*.test.js"

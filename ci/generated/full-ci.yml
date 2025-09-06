@@ -260,7 +260,12 @@ jobs:
           - name: load
             command: |
           - name: lockfile-drift
-            command: node scripts/check-lockfile-drift.js
+            command: |
+              if [ -f pnpm-lock.yaml ]; then
+                node scripts/check-lockfile-drift.js
+              else
+                node scripts/check-npm-lockfile-drift.js
+              fi
           - name: md-link-check
             command: echo "historical job md-link-check"
           - name: nightly-cache-warmup

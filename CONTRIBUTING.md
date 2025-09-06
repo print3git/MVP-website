@@ -26,6 +26,14 @@ All dependency installs and script runs must use `npm`. Other package managers s
 5. Do not use Git LFS for files under `frontend/`. Commit real assets or host large files externally (e.g., S3/CDN).
 6. Test fixtures may not use Git LFS; use generated fixtures or commit tiny files. See `.gitattributes` and the `lfs-prevent-pointers` workflow.
 
+## Workflow updates
+
+Use this checklist when adding or modifying CI workflows:
+
+1. Add or adjust the workflow files.
+2. Update `ci/expected-suites.yml` and `ci/expected-test-files.json`.
+3. Run the suite locally (e.g., `npm run ci`) to confirm the failure before committing the fix.
+
 ## Tests
 
 - All new code should include appropriate tests.
