@@ -67,7 +67,7 @@ async function fetchRepoAssets() {
   ];
 
   for (const file of files) {
-    const dest = join("frontend", "public", "img", file);
+    const dest = join("img", file); // moved to top-level /img
     if (existsSync(dest)) {
       console.log(`${file} already present`);
       continue;
