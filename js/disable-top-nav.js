@@ -1,14 +1,19 @@
-const targets = [
-  { selector: 'a[href="competitions.html"]', removeParent: true },
-  { selector: 'a[href="CommunityCreations.html"]', removeParent: true },
-  { selector: "#earn-rewards-badge", removeParent: false },
-  { selector: "#print-club-badge", removeParent: false },
+const selectors = [
+  'a[href="competitions.html"]',
+  'a[href="addons.html"]',
+  'a[href="profile.html"]',
+  'a[href="CommunityCreations.html"]',
+  'a[href="marketplace.html"]',
+  "#earn-rewards-badge",
+  "#print-club-badge",
 ];
 
-for (const { selector, removeParent } of targets) {
+for (const selector of selectors) {
   const el = document.querySelector(selector);
-  if (el) {
-    const node = removeParent && el.parentElement ? el.parentElement : el;
-    node.remove();
-  }
+  if (!el) continue;
+
+  el.classList.add("opacity-50", "cursor-not-allowed");
+  el.setAttribute("title", "Coming soon");
+  el.setAttribute("aria-disabled", "true");
+  el.addEventListener("click", (e) => e.preventDefault());
 }
