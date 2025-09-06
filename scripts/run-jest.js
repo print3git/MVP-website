@@ -12,7 +12,7 @@ function collectTests(dir) {
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) {
       tests.push(...collectTests(full));
-    } else if (/\.(test|spec)\.(js|ts|tsx)$/.test(entry.name)) {
+    } else if (/\.(test|spec)(?:\.[^.]+)?\.(js|ts|tsx)$/.test(entry.name)) {
       tests.push(full);
     }
   }
@@ -45,7 +45,8 @@ function verifyFiles(args) {
       path.resolve(backendRoot, arg),
     ];
     const existing = candidates.find((p) => fs.existsSync(p));
-    const isTestArg = checking || /\.(test|spec)\.(js|ts|tsx)$/.test(arg);
+    const isTestArg =
+      checking || /\.(test|spec)(?:\.[^.]+)?\.(js|ts|tsx)$/.test(arg);
     if (existing) {
       const stat = fs.statSync(existing);
       if (stat.isDirectory()) {
