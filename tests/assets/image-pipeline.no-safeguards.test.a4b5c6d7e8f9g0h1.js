@@ -60,14 +60,14 @@ describe("download step", () => {
     });
   }
 
-  test("creates placeholder when download fails", async () => {
+  test("throws and leaves no file when download fails", async () => {
     nock("https://fail.test").get("/missing.png").reply(404);
     const dest = path.join(IMG_DIR, "missing.png");
     if (fs.existsSync(dest)) fs.unlinkSync(dest);
-    await download("https://fail.test/missing.png", dest);
-    expect(fs.existsSync(dest)).toBe(true);
-    const stat = fs.statSync(dest);
-    expect(stat.size).toBe(0);
+    await expect(
+      download("https://fail.test/missing.png", dest),
+    ).rejects.toThrow();
+    expect(fs.existsSync(dest)).toBe(false);
   });
 
   test("boombox placeholder when env missing", async () => {
