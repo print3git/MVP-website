@@ -52,7 +52,8 @@
     "db:check": "npm run db:check --prefix backend",
     "db:migrate:test": "npm run migrate --prefix backend",
     "prepare": "husky",
-    "prepush": "echo \"(pre-push) no checks\""
+    "prepush": "echo \"(pre-push) no checks\"",
+    "check:lockfile": "npx lockfile-diff"
   },
   "babel": {
     "presets": [
