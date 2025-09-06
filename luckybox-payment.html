@@ -230,12 +230,12 @@
               style="display: none"
               alt="Preview image"
             />
-            <img
-              id="viewer"
-              src="https://glb-models-prod.s3.amazonaws.com/repo-assets/luckybox-preview.png"
-              alt="Luckybox preview"
-              class="object-cover h-full w-full rounded-3xl"
-            />
+              <img
+                id="viewer"
+                src="images/luckybox-preview.png"
+                alt="Luckybox preview"
+                class="object-cover h-full w-full rounded-3xl"
+              />
             <button
               id="remove-model"
               type="button"
@@ -848,10 +848,8 @@
     <script type="module" src="js/trackingPixel.js"></script>
     <script>
       document.addEventListener("DOMContentLoaded", () => {
-        const img = document.getElementById("viewer");
-        if (img)
-          img.src =
-            "https://glb-models-prod.s3.amazonaws.com/repo-assets/luckybox-preview.png";
+          const img = document.getElementById("viewer");
+          if (img) img.src = "images/luckybox-preview.png";
       });
     </script>
   </body>
