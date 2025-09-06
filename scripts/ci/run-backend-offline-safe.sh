@@ -26,6 +26,7 @@ export PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
 
 echo "==> Install (backend)"
 if [ ! -d backend/node_modules ]; then
+  node scripts/check-dependency-versions.js backend/package.json
   npm ci --prefix backend
 else
   echo "backend node_modules already present, skipping install"

@@ -38,6 +38,7 @@
     "typecheck": "tsc --noEmit",
     "validate-env": "bash scripts/validate-env.sh",
     "setup": "bash scripts/setup.sh",
+    "check-dependency-versions": "node scripts/check-dependency-versions.js",
     "prebuild": "node scripts/fetch-assets.cjs",
     "build": "npm ci --no-audit --no-fund --prefix frontend && npm --prefix frontend run build",
     "start:ci": "npm --prefix frontend run start:ci",
