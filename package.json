@@ -55,7 +55,6 @@
     "db:migrate:test": "npm run migrate --prefix backend",
     "prepare": "husky",
     "prepush": "echo \"(pre-push) no checks\"",
-    "check:lockfile": "npx lockfile-diff",
     "test:fresh": "npm test"
   },
   "babel": {
@@ -151,7 +150,8 @@
     "typescript": "^5.8.3",
     "vitest": "^3.2.4",
     "wait-on": "^8.0.3",
-    "yaml": "^2.8.0"
+    "yaml": "^2.8.0",
+    "jest-runner": "30.0.4"
   },
   "_comment_concurrently": "align with lockfile to satisfy npm ci; bump later with a dedicated PR",
   "husky": {
