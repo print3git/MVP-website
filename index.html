@@ -86,6 +86,7 @@
 
     <!-- Google <model-viewer> -->
     <script src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+    <script type="module" src="js/astronautPlaceholder.js"></script>
 
     <style>
       html,
@@ -327,7 +328,7 @@
           <div data-testid="primary-model">
             <model-viewer
               data-testid="model-viewer"
-              data-model-src="models/astronaut.glb"
+              data-model-src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
               environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
               camera-controls
               ar
