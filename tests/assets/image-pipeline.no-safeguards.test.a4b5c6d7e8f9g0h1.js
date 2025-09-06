@@ -6,11 +6,15 @@ globalThis.TextDecoder = TextDecoder;
 const { JSDOM } = require("jsdom");
 const nock = require("nock");
 const request = require("supertest");
+const { mockClient } = require("aws-sdk-client-mock");
+const { S3Client, GetObjectCommand } = require("@aws-sdk/client-s3");
+const { Readable } = require("stream");
 
 let fetchRepoAssets;
 let fetchBoombox;
 let download;
 let app;
+const s3Mock = mockClient(S3Client);
 
 const IMG_DIR = path.join("frontend", "public", "img");
 const ASSETS = [
@@ -32,16 +36,18 @@ beforeAll(async () => {
   const boombox = path.join("frontend", "public", "models", "boombox.glb");
   if (fs.existsSync(boombox)) fs.unlinkSync(boombox);
 
-  const base = "https://glb-models-prod.s3.amazonaws.com";
-  nock(base)
-    .get("/repo-assets/astro-image.png")
-    .reply(200, "astro")
-    .get("/repo-assets/box%20logo.png")
-    .reply(200, "box")
-    .get("/repo-assets/luckybox-preview.png")
-    .reply(200, "lucky")
-    .get("/repo-assets/text%20logo.png")
-    .reply(200, "text");
+  s3Mock.reset();
+  const bodies = {
+    "astro-image.png": "astro",
+    "box logo.png": "box",
+    "luckybox-preview.png": "lucky",
+    "text logo.png": "text",
+  };
+  for (const [key, body] of Object.entries(bodies)) {
+    s3Mock
+      .on(GetObjectCommand, { Bucket: "repo-assets", Key: key })
+      .resolves({ Body: Readable.from(body) });
+  }
 
   process.env.BOOMBOX_MODEL_URL = "https://example.com/boombox.glb";
   nock("https://example.com").get("/boombox.glb").reply(200, "model");

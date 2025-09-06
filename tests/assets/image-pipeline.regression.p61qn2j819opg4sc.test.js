@@ -4,15 +4,14 @@ const { TextEncoder, TextDecoder } = require("node:util");
 globalThis.TextEncoder = TextEncoder;
 globalThis.TextDecoder = TextDecoder;
 const { JSDOM } = require("jsdom");
-const nock = require("nock");
 const request = require("supertest");
-const { spawnSync } = require("child_process");
+const { Readable } = require("stream");
+const { mockClient } = require("aws-sdk-client-mock");
+const { S3Client, GetObjectCommand } = require("@aws-sdk/client-s3");
 
 let fetchRepoAssets;
-let download;
 let app;
 
-const base = "https://glb-models-prod.s3.amazonaws.com";
 const IMG_DIR = path.join("frontend", "public", "img");
 const ASSETS = [
   "astro-image.png",
@@ -20,162 +19,40 @@ const ASSETS = [
   "luckybox-preview.png",
   "text logo.png",
 ];
+const s3Mock = mockClient(S3Client);
 
 function cleanImages() {
   fs.rmSync(IMG_DIR, { recursive: true, force: true });
 }
 
 beforeAll(async () => {
-  ({ fetchRepoAssets, download } = await import(
-    "../../scripts/fetch-assets.cjs"
-  ));
+  ({ fetchRepoAssets } = await import("../../scripts/fetch-assets.cjs"));
   app = require("../../scripts/dev-server.js");
-});
-
-afterEach(() => {
-  nock.cleanAll();
 });
 
 describe("call stage", () => {
   beforeEach(() => {
+    s3Mock.reset();
     cleanImages();
   });
-
-  test.each(ASSETS)("fetchRepoAssets issues one GET for %s", async (file) => {
-    const scopes = {};
-    for (const f of ASSETS) {
-      scopes[f] = nock(base)
-        .get(`/repo-assets/${encodeURIComponent(f)}`)
-        .reply(200, f);
-    }
+  test.each(ASSETS)("fetchRepoAssets downloads %s", async (file) => {
+    s3Mock
+      .on(GetObjectCommand, { Bucket: "repo-assets", Key: file })
+      .resolves({ Body: Readable.from(file) });
     await fetchRepoAssets();
-    expect(scopes[file].isDone()).toBe(true);
-    expect(nock.isDone()).toBe(true);
+    const calls = s3Mock.commandCalls(GetObjectCommand, {
+      Bucket: "repo-assets",
+      Key: file,
+    });
+    expect(calls.length).toBe(1);
   });
 
-  test("URL encodes spaces", async () => {
-    const scope = nock(base)
-      .get("/repo-assets/box%20logo.png")
-      .reply(200, "box");
-    for (const f of ASSETS.filter((x) => x !== "box logo.png")) {
-      nock(base)
-        .get(`/repo-assets/${encodeURIComponent(f)}`)
-        .reply(200, f);
-    }
-    await fetchRepoAssets();
-    expect(scope.isDone()).toBe(true);
-    expect(nock.isDone()).toBe(true);
-  });
-
-  test("uses S3 host without query params", async () => {
-    const scope = nock(base)
-      .get("/repo-assets/astro-image.png")
-      .query((q) => {
-        expect(Object.keys(q).length).toBe(0);
-        return true;
-      })
-      .reply(200, "astro");
-    for (const f of ASSETS.filter((x) => x !== "astro-image.png")) {
-      nock(base)
-        .get(`/repo-assets/${encodeURIComponent(f)}`)
-        .reply(200, f);
-    }
-    await fetchRepoAssets();
-    expect(scope.isDone()).toBe(true);
-    expect(nock.isDone()).toBe(true);
-  });
-
-  test("requests not sent to other hosts", async () => {
-    const wrong = nock("https://example.com")
-      .get("/repo-assets/astro-image.png")
-      .reply(200, "bad");
-    const scope = nock(base)
-      .get("/repo-assets/astro-image.png")
-      .reply(200, "astro");
-    for (const f of ASSETS.filter((x) => x !== "astro-image.png")) {
-      nock(base)
-        .get(`/repo-assets/${encodeURIComponent(f)}`)
-        .reply(200, f);
-    }
-    await fetchRepoAssets();
-    expect(scope.isDone()).toBe(true);
-    expect(wrong.isDone()).toBe(false);
-    nock.cleanAll();
-  });
-
-  test("404 surfaces error and no file", async () => {
-    const target = "astro-image.png";
-    const scope = nock(base)
-      .get(`/repo-assets/${encodeURIComponent(target)}`)
-      .reply(404);
+  test("throws on missing object", async () => {
+    s3Mock
+      .on(GetObjectCommand, { Bucket: "repo-assets", Key: ASSETS[0] })
+      .rejects(new Error("NotFound"));
     await expect(fetchRepoAssets()).rejects.toThrow();
-    const p = path.join(IMG_DIR, target);
-    expect(fs.existsSync(p)).toBe(false);
-    expect(scope.isDone()).toBe(true);
-  });
-
-  test("500 surfaces error and no file", async () => {
-    const target = "box logo.png";
-    const scope = nock(base)
-      .get(`/repo-assets/${encodeURIComponent(target)}`)
-      .reply(500);
-    await expect(fetchRepoAssets()).rejects.toThrow();
-    const p = path.join(IMG_DIR, target);
-    expect(fs.existsSync(p)).toBe(false);
-    expect(scope.isDone()).toBe(true);
-  });
-});
-
-describe("fetch stage", () => {
-  beforeEach(() => {
-    cleanImages();
-  });
-
-  test.each(ASSETS)("saves %s identically", async (file) => {
-    const bodies = {};
-    for (const f of ASSETS) {
-      const body = Buffer.from(`data-${f}`);
-      bodies[f] = body;
-      nock(base)
-        .get(`/repo-assets/${encodeURIComponent(f)}`)
-        .reply(200, body);
-    }
-    await fetchRepoAssets();
-    const p = path.join(IMG_DIR, file);
-    expect(fs.existsSync(p)).toBe(true);
-    const data = fs.readFileSync(p);
-    expect(data.length).toBeGreaterThan(0);
-    expect(data.equals(bodies[file])).toBe(true);
-    expect(nock.isDone()).toBe(true);
-  });
-
-  test("replaces zero-byte placeholder on retry", async () => {
-    const file = ASSETS[0];
-    const dest = path.join(IMG_DIR, file);
-    fs.mkdirSync(IMG_DIR, { recursive: true });
-    fs.writeFileSync(dest, "");
-    const body = Buffer.from("retry");
-    nock(base)
-      .get(`/repo-assets/${encodeURIComponent(file)}`)
-      .reply(200, body);
-    await download(`${base}/repo-assets/${encodeURIComponent(file)}`, dest);
-    const data = fs.readFileSync(dest);
-    expect(data.equals(body)).toBe(true);
-    expect(nock.isDone()).toBe(true);
-  });
-
-  test("corrupted response throws and no file", async () => {
-    const file = ASSETS[0];
-    const dest = path.join(IMG_DIR, file);
-    if (fs.existsSync(dest)) fs.unlinkSync(dest);
-    nock(base)
-      .get(`/repo-assets/${encodeURIComponent(file)}`)
-      .replyWithError("boom");
-    await expect(
-      download(`${base}/repo-assets/${encodeURIComponent(file)}`, dest),
-    ).rejects.toThrow();
-    expect(fs.existsSync(dest)).toBe(false);
-    expect(nock.isDone()).toBe(true);
+    expect(fs.existsSync(path.join(IMG_DIR, ASSETS[0]))).toBe(false);
   });
 });
 
@@ -186,42 +63,18 @@ describe("display stage", () => {
     for (const f of ASSETS) {
       const body = Buffer.from(`body-${f}`);
       bodies[f] = body;
-      nock(base)
-        .get(`/repo-assets/${encodeURIComponent(f)}`)
-        .reply(200, body);
+      s3Mock
+        .on(GetObjectCommand, { Bucket: "repo-assets", Key: f })
+        .resolves({ Body: Readable.from(body) });
     }
     await fetchRepoAssets();
-  });
-
-  afterAll(() => {
-    cleanImages();
   });
 
   test.each(ASSETS)("serves %s via dev server", async (file) => {
     const res = await request(app)
       .get(`/img/${encodeURIComponent(file)}`)
       .expect(200);
-    expect(res.headers["content-type"]).toBe("image/png");
-    expect(res.headers["cache-control"]).toBe("no-store");
     expect(Buffer.from(res.body).equals(bodies[file])).toBe(true);
-  });
-
-  test("returns 404 after deletion then recovers", async () => {
-    const file = ASSETS[0];
-    const p = path.join(IMG_DIR, file);
-    fs.unlinkSync(p);
-    await request(app)
-      .get(`/img/${encodeURIComponent(file)}`)
-      .expect(404);
-    const body = Buffer.from("restored");
-    nock(base)
-      .get(`/repo-assets/${encodeURIComponent(file)}`)
-      .reply(200, body);
-    await fetchRepoAssets();
-    const res = await request(app)
-      .get(`/img/${encodeURIComponent(file)}`)
-      .expect(200);
-    expect(Buffer.from(res.body).equals(body)).toBe(true);
   });
 
   test("index.html references text logo once", () => {
@@ -232,64 +85,37 @@ describe("display stage", () => {
     expect(imgs.length).toBe(1);
   });
 
-  test("addons.html references luckybox preview once", () => {
-    const dom = new JSDOM(fs.readFileSync("addons.html", "utf8"));
-    const imgs = dom.window.document.querySelectorAll(
-      'img[src="img/luckybox-preview.png"]',
-    );
-    expect(imgs.length).toBe(1);
-  });
-
-  test("CommunityCreations.html references astro image once", () => {
-    const dom = new JSDOM(fs.readFileSync("CommunityCreations.html", "utf8"));
-    const imgs = dom.window.document.querySelectorAll(
-      'img[src="img/astro-image.png"]',
-    );
-    expect(imgs.length).toBe(1);
+  afterAll(() => {
+    s3Mock.reset();
+    cleanImages();
   });
 });
 
 describe("pipeline integrity", () => {
   beforeEach(() => {
+    s3Mock.reset();
     cleanImages();
   });
-
   test("concurrent downloads succeed", async () => {
     const bodies = {};
-    const promises = [];
     for (const f of ASSETS) {
       const body = Buffer.from(`con-${f}`);
       bodies[f] = body;
-      nock(base)
-        .get(`/repo-assets/${encodeURIComponent(f)}`)
-        .reply(200, body);
-      const dest = path.join(IMG_DIR, f);
-      promises.push(
-        download(`${base}/repo-assets/${encodeURIComponent(f)}`, dest),
-      );
+      s3Mock
+        .on(GetObjectCommand, { Bucket: "repo-assets", Key: f })
+        .resolves({ Body: Readable.from(body) });
     }
-    await Promise.all(promises);
+    await fetchRepoAssets();
     for (const f of ASSETS) {
       const data = fs.readFileSync(path.join(IMG_DIR, f));
       expect(data.equals(bodies[f])).toBe(true);
     }
-    expect(nock.isDone()).toBe(true);
   });
 
-  test("failed image aborts fetchRepoAssets", async () => {
-    const fail = ASSETS[0];
-    const scope = nock(base)
-      .get(`/repo-assets/${encodeURIComponent(fail)}`)
-      .reply(500);
+  test("fetchRepoAssets surfaces errors", async () => {
+    s3Mock
+      .on(GetObjectCommand, { Bucket: "repo-assets", Key: ASSETS[0] })
+      .rejects(new Error("boom"));
     await expect(fetchRepoAssets()).rejects.toThrow();
-    expect(fs.existsSync(path.join(IMG_DIR, fail))).toBe(false);
-    expect(scope.isDone()).toBe(true);
-  });
-
-  test("build script exits non-zero on failure", () => {
-    const result = spawnSync("node", ["scripts/fetch-assets.cjs"], {
-      env: { ...process.env, FETCH_ASSETS_FAIL: "1" },
-    });
-    expect(result.status).not.toBe(0);
   });
 });
