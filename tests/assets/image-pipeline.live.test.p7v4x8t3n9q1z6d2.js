@@ -1,6 +1,5 @@
 const fs = require("fs");
 const path = require("path");
-const axios = require("axios");
 const { JSDOM } = require("jsdom");
 
 let fetchRepoAssets;
@@ -26,11 +25,11 @@ describe("live S3 assets", () => {
   test("S3 endpoints respond with image data", async () => {
     for (const file of ASSETS) {
       const url = `${BASE_URL}/${encodeURIComponent(file)}`;
-      const res = await axios.head(url);
+      const res = await fetch(url, { method: "HEAD" });
       expect(res.status).toBe(200);
-      const len = Number(res.headers["content-length"]);
+      const len = Number(res.headers.get("content-length"));
       expect(len).toBeGreaterThan(0);
-      expect(res.headers["content-type"]).toMatch(/^image\//);
+      expect(res.headers.get("content-type")).toMatch(/^image\//);
     }
   });
 

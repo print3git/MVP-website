@@ -1,5 +1,6 @@
 const { mkdir, writeFile, stat, unlink } = require("node:fs/promises");
-const { existsSync } = require("node:fs");
+const { existsSync, createWriteStream } = require("node:fs");
+const { pipeline } = require("node:stream/promises");
 const { dirname, join } = require("node:path");
 
 async function ensureDir(filePath) {
@@ -8,11 +9,10 @@ async function ensureDir(filePath) {
 
 async function download(url, dest) {
   try {
-    const axios = require("axios");
-    const res = await axios.get(url, { responseType: "arraybuffer" });
-    const buf = Buffer.from(res.data);
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
     await ensureDir(dest);
-    await writeFile(dest, buf);
+    await pipeline(res.body, createWriteStream(dest));
     console.log(`Downloaded ${url}`);
   } catch (err) {
     console.warn(`Failed to download ${url}: ${err}`);
@@ -84,15 +84,11 @@ async function fetchAstronaut() {
   if (astronautPromise) return astronautPromise;
 
   astronautPromise = (async () => {
-    const axios = require("axios");
     try {
-      const res = await axios.get(url, {
-        responseType: "arraybuffer",
-        timeout: 1000,
-        validateStatus: (status) => status >= 200 && status < 300,
-      });
-      const buf = Buffer.from(res.data);
-      const cl = res.headers["content-length"];
+      const res = await fetch(url, { signal: AbortSignal.timeout(1000) });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const buf = Buffer.from(await res.arrayBuffer());
+      const cl = res.headers.get("content-length");
       if (cl && Number(cl) !== buf.length) {
         throw new Error("incomplete response");
       }
