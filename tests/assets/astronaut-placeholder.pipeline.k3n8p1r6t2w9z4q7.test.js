@@ -1,6 +1,8 @@
 /** @jest-environment jsdom */
 const fs = require("fs");
 const path = require("path");
+const axios = require("axios");
+axios.defaults.adapter = require("axios/lib/adapters/http");
 const { TextEncoder, TextDecoder } = require("node:util");
 globalThis.TextEncoder = TextEncoder;
 globalThis.TextDecoder = TextDecoder;
@@ -15,6 +17,13 @@ let fetchRepoAssets;
 let download;
 let app;
 let loadModel;
+
+let lastRaf;
+const origRAF = global.requestAnimationFrame;
+global.requestAnimationFrame = (cb) => {
+  lastRaf = origRAF(cb);
+  return lastRaf;
+};
 
 const MODEL_DIR = path.join("frontend", "public", "models");
 const MODEL_PATH = path.join(MODEL_DIR, "astronaut.glb");
@@ -38,6 +47,13 @@ beforeEach(() => {
   if (fs.existsSync(MODEL_DIR)) {
     for (const f of fs.readdirSync(MODEL_DIR))
       fs.unlinkSync(path.join(MODEL_DIR, f));
+  }
+});
+
+afterEach(() => {
+  if (lastRaf !== undefined) {
+    cancelAnimationFrame(lastRaf);
+    lastRaf = undefined;
   }
 });
 
