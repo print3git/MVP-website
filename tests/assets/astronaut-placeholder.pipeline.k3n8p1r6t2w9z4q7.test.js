@@ -1,11 +1,7 @@
 /** @jest-environment jsdom */
 const fs = require("fs");
 const path = require("path");
-const axios = require("axios");
-beforeAll(async () => {
-  const { default: httpAdapter } = await import("axios/lib/adapters/http.js");
-  axios.defaults.adapter = httpAdapter;
-});
+const axios = require("axios/dist/node/axios.cjs");
 const { TextEncoder, TextDecoder } = require("node:util");
 globalThis.TextEncoder = TextEncoder;
 globalThis.TextDecoder = TextDecoder;
