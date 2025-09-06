@@ -15,9 +15,8 @@ async function download(url, dest) {
     await writeFile(dest, buf);
     console.log(`Downloaded ${url}`);
   } catch (err) {
-    console.warn(`Failed to download ${url}: ${err}. Creating placeholder.`);
-    await ensureDir(dest);
-    await writeFile(dest, "");
+    console.warn(`Failed to download ${url}: ${err}`);
+    throw err;
   }
 }
 

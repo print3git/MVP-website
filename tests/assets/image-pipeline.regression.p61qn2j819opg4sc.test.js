@@ -103,38 +103,26 @@ describe("call stage", () => {
     nock.cleanAll();
   });
 
-  test("404 surfaces as empty file", async () => {
+  test("404 surfaces error and no file", async () => {
     const target = "astro-image.png";
-    nock(base)
+    const scope = nock(base)
       .get(`/repo-assets/${encodeURIComponent(target)}`)
       .reply(404);
-    for (const f of ASSETS.filter((x) => x !== target)) {
-      nock(base)
-        .get(`/repo-assets/${encodeURIComponent(f)}`)
-        .reply(200, f);
-    }
-    await fetchRepoAssets();
+    await expect(fetchRepoAssets()).rejects.toThrow();
     const p = path.join(IMG_DIR, target);
-    expect(fs.existsSync(p)).toBe(true);
-    expect(fs.statSync(p).size).toBe(0);
-    expect(nock.isDone()).toBe(true);
+    expect(fs.existsSync(p)).toBe(false);
+    expect(scope.isDone()).toBe(true);
   });
 
-  test("500 surfaces as empty file", async () => {
+  test("500 surfaces error and no file", async () => {
     const target = "box logo.png";
-    nock(base)
+    const scope = nock(base)
       .get(`/repo-assets/${encodeURIComponent(target)}`)
       .reply(500);
-    for (const f of ASSETS.filter((x) => x !== target)) {
-      nock(base)
-        .get(`/repo-assets/${encodeURIComponent(f)}`)
-        .reply(200, f);
-    }
-    await fetchRepoAssets();
+    await expect(fetchRepoAssets()).rejects.toThrow();
     const p = path.join(IMG_DIR, target);
-    expect(fs.existsSync(p)).toBe(true);
-    expect(fs.statSync(p).size).toBe(0);
-    expect(nock.isDone()).toBe(true);
+    expect(fs.existsSync(p)).toBe(false);
+    expect(scope.isDone()).toBe(true);
   });
 });
 
@@ -176,14 +164,17 @@ describe("fetch stage", () => {
     expect(nock.isDone()).toBe(true);
   });
 
-  test("corrupted response creates placeholder", async () => {
+  test("corrupted response throws and no file", async () => {
     const file = ASSETS[0];
     const dest = path.join(IMG_DIR, file);
+    if (fs.existsSync(dest)) fs.unlinkSync(dest);
     nock(base)
       .get(`/repo-assets/${encodeURIComponent(file)}`)
       .replyWithError("boom");
-    await download(`${base}/repo-assets/${encodeURIComponent(file)}`, dest);
-    expect(fs.statSync(dest).size).toBe(0);
+    await expect(
+      download(`${base}/repo-assets/${encodeURIComponent(file)}`, dest),
+    ).rejects.toThrow();
+    expect(fs.existsSync(dest)).toBe(false);
     expect(nock.isDone()).toBe(true);
   });
 });
@@ -285,29 +276,14 @@ describe("pipeline integrity", () => {
     expect(nock.isDone()).toBe(true);
   });
 
-  test("failed image does not block others", async () => {
+  test("failed image aborts fetchRepoAssets", async () => {
     const fail = ASSETS[0];
-    for (const f of ASSETS) {
-      if (f === fail) {
-        nock(base)
-          .get(`/repo-assets/${encodeURIComponent(f)}`)
-          .reply(500);
-      } else {
-        nock(base)
-          .get(`/repo-assets/${encodeURIComponent(f)}`)
-          .reply(200, Buffer.from(`ok-${f}`));
-      }
-    }
-    await fetchRepoAssets();
-    for (const f of ASSETS) {
-      const data = fs.readFileSync(path.join(IMG_DIR, f));
-      if (f === fail) {
-        expect(data.length).toBe(0);
-      } else {
-        expect(data.length).toBeGreaterThan(0);
-      }
-    }
-    expect(nock.isDone()).toBe(true);
+    const scope = nock(base)
+      .get(`/repo-assets/${encodeURIComponent(fail)}`)
+      .reply(500);
+    await expect(fetchRepoAssets()).rejects.toThrow();
+    expect(fs.existsSync(path.join(IMG_DIR, fail))).toBe(false);
+    expect(scope.isDone()).toBe(true);
   });
 
   test("build script exits non-zero on failure", () => {
