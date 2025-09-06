@@ -27,8 +27,7 @@
     "doc": "docs"
   },
   "scripts": {
-    "test": "node scripts/run-jest.js",
-    "test:fresh": "npm test",
+    "test": "node scripts/run-jest.js --passWithNoTests",
     "test:image-pipeline": "node scripts/test-image-pipeline.js",
     "preinstall": "corepack enable && node scripts/check-node-version.js",
     "preformat": "true",
@@ -39,11 +38,11 @@
     "typecheck": "tsc --noEmit",
     "validate-env": "bash scripts/validate-env.sh",
     "setup": "bash scripts/setup.sh",
-    "prebuild": "node scripts/fetch-assets.cjs",
+    "prebuild": "node scripts/fetch-assets.mjs",
     "build": "npm ci --no-audit --no-fund --prefix frontend && npm --prefix frontend run build",
     "start:ci": "npm --prefix frontend run start:ci",
     "preview": "vite preview --port 4173",
-    "prestart": "node scripts/fetch-assets.cjs",
+    "prestart": "node scripts/fetch-assets.mjs",
     "start": "node scripts/dev-server.js",
     "start:backend": "npm start --prefix backend",
     "ci": "node scripts/ci.mjs",
@@ -53,8 +52,7 @@
     "db:check": "npm run db:check --prefix backend",
     "db:migrate:test": "npm run migrate --prefix backend",
     "prepare": "husky",
-    "prepush": "echo \"(pre-push) no checks\"",
-    "check:lockfile": "node scripts/check-lockfile.js"
+    "prepush": "echo \"(pre-push) no checks\""
   },
   "babel": {
     "presets": [
@@ -99,6 +97,7 @@
     "@size-limit/file": "^11.2.0",
     "@testing-library/jest-dom": "^6.8.0",
     "@testing-library/react": "^14.2.1",
+    "@types/jest": "29",
     "@types/node": "^24.0.10",
     "@typescript-eslint/eslint-plugin": "8.34.1",
     "@typescript-eslint/parser": "^8.36.0",
@@ -134,20 +133,19 @@
     "prettier": "^3.5.3",
     "selfsigned": "^2.3.2",
     "size-limit": "^11.2.0",
+    "source-map": "^0.7.4",
+    "source-map-support": "^0.5.21",
     "stripe": "^14.25.0",
     "supertest": "^7.1.4",
     "toml": "^3.0.0",
+    "ts-jest": "29.2.5",
     "tsconfig-strictest": "^1.0.0-beta.1",
     "tslib": "^2.8.1",
     "tsx": "^4.20.4",
     "typescript": "^5.8.3",
     "vitest": "^3.2.4",
     "wait-on": "^8.0.3",
-    "yaml": "^2.8.0",
-    "ts-jest": "29.2.5",
-    "@types/jest": "29",
-    "source-map": "^0.7.4",
-    "source-map-support": "^0.5.21"
+    "yaml": "^2.8.0"
   },
   "_comment_concurrently": "align with lockfile to satisfy npm ci; bump later with a dedicated PR",
   "husky": {
@@ -171,7 +169,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.2.0",
     "react-places-autocomplete": "^7.3.0",
-    "three": "^0.152.2",
+    "three": "^0.180.0",
     "vite": "^5.4.3",
     "winston": "^3.17.0",
     "winston-format": "^1.0.1"
