@@ -39,7 +39,8 @@ import { track } from "./analytics.js";
 const API_BASE = (window.API_ORIGIN || "") + "/api";
 const TZ = "America/New_York";
 // Local fallback model used when generation fails or the viewer hasn't loaded a model yet.
-const FALLBACK_GLB_LOW = "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
+const FALLBACK_GLB_LOW =
+  "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
 const FALLBACK_GLB_HIGH = FALLBACK_GLB_LOW;
 const FALLBACK_GLB = FALLBACK_GLB_LOW;
 const LOW_POLY_GLB = FALLBACK_GLB_LOW;
@@ -254,28 +255,10 @@ async function computeDailyPrintsSold(date = new Date()) {
   return Math.floor(rand * (PRINTS_MAX - PRINTS_MIN + 1)) + PRINTS_MIN;
 }
 
-async function updateStats(initial) {
+async function updateStats() {
   const el = document.getElementById("stats-ticker");
   if (!el) return;
-  let prints;
-  if (initial && typeof initial.printsSold === "number") {
-    prints = initial.printsSold;
-  } else {
-    try {
-      const res = await fetch(`${API_BASE}/stats`);
-      if (res.ok) {
-        const data = await res.json();
-        prints =
-          typeof data?.printsSold === "number"
-            ? data.printsSold
-            : await computeDailyPrintsSold();
-      } else {
-        prints = await computeDailyPrintsSold();
-      }
-    } catch {
-      prints = await computeDailyPrintsSold();
-    }
-  }
+  const prints = await computeDailyPrintsSold();
   el.textContent = "";
   const icon = document.createElement("i");
   icon.className = "fas fa-fire mr-1";
@@ -1002,7 +985,7 @@ async function init() {
         refs.buyNowBtn.addEventListener("click", buyNow);
       }
     }
-    await updateStats(initData.stats);
+    await updateStats();
     showThemeBanner();
     updatePrintRunInfo();
     setInterval(updatePrintRunInfo, 60000);
@@ -1367,5 +1350,5 @@ export {
   updatePrintRunInfo,
   getPurchaseCount,
   computeDailyPrintsSold,
-  updateStats
+  updateStats,
 };
