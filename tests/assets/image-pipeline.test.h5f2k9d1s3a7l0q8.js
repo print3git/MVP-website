@@ -45,7 +45,10 @@ beforeAll(async () => {
   };
   for (const [key, body] of Object.entries(bodies)) {
     s3Mock
-      .on(GetObjectCommand, { Bucket: "repo-assets", Key: key })
+      .on(GetObjectCommand, {
+        Bucket: "glb-models-prod",
+        Key: `repo-assets/${key}`,
+      })
       .resolves({ Body: Readable.from(body) });
   }
 
