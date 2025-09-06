@@ -57,7 +57,8 @@ async function fetchBoombox() {
 }
 
 async function fetchRepoAssets() {
-  const bucket = "repo-assets";
+  const bucket = "glb-models-prod";
+  const prefix = "repo-assets/";
   const files = [
     "astro-image.png",
     "box logo.png",
@@ -71,7 +72,7 @@ async function fetchRepoAssets() {
       console.log(`${file} already present`);
       continue;
     }
-    await downloadFromS3(bucket, file, dest);
+    await downloadFromS3(bucket, prefix + file, dest);
   }
 }
 

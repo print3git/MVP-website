@@ -37,19 +37,25 @@ describe("call stage", () => {
   });
   test.each(ASSETS)("fetchRepoAssets downloads %s", async (file) => {
     s3Mock
-      .on(GetObjectCommand, { Bucket: "repo-assets", Key: file })
+      .on(GetObjectCommand, {
+        Bucket: "glb-models-prod",
+        Key: `repo-assets/${file}`,
+      })
       .resolves({ Body: Readable.from(file) });
     await fetchRepoAssets();
     const calls = s3Mock.commandCalls(GetObjectCommand, {
-      Bucket: "repo-assets",
-      Key: file,
+      Bucket: "glb-models-prod",
+      Key: `repo-assets/${file}`,
     });
     expect(calls.length).toBe(1);
   });
 
   test("throws on missing object", async () => {
     s3Mock
-      .on(GetObjectCommand, { Bucket: "repo-assets", Key: ASSETS[0] })
+      .on(GetObjectCommand, {
+        Bucket: "glb-models-prod",
+        Key: `repo-assets/${ASSETS[0]}`,
+      })
       .rejects(new Error("NotFound"));
     await expect(fetchRepoAssets()).rejects.toThrow();
     expect(fs.existsSync(path.join(IMG_DIR, ASSETS[0]))).toBe(false);
@@ -64,7 +70,10 @@ describe("display stage", () => {
       const body = Buffer.from(`body-${f}`);
       bodies[f] = body;
       s3Mock
-        .on(GetObjectCommand, { Bucket: "repo-assets", Key: f })
+        .on(GetObjectCommand, {
+          Bucket: "glb-models-prod",
+          Key: `repo-assets/${f}`,
+        })
         .resolves({ Body: Readable.from(body) });
     }
     await fetchRepoAssets();
@@ -102,7 +111,10 @@ describe("pipeline integrity", () => {
       const body = Buffer.from(`con-${f}`);
       bodies[f] = body;
       s3Mock
-        .on(GetObjectCommand, { Bucket: "repo-assets", Key: f })
+        .on(GetObjectCommand, {
+          Bucket: "glb-models-prod",
+          Key: `repo-assets/${f}`,
+        })
         .resolves({ Body: Readable.from(body) });
     }
     await fetchRepoAssets();
@@ -114,7 +126,10 @@ describe("pipeline integrity", () => {
 
   test("fetchRepoAssets surfaces errors", async () => {
     s3Mock
-      .on(GetObjectCommand, { Bucket: "repo-assets", Key: ASSETS[0] })
+      .on(GetObjectCommand, {
+        Bucket: "glb-models-prod",
+        Key: `repo-assets/${ASSETS[0]}`,
+      })
       .rejects(new Error("boom"));
     await expect(fetchRepoAssets()).rejects.toThrow();
   });
