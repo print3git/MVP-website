@@ -62,6 +62,7 @@ test("download throws on http error", { concurrency: false }, async () => {
     const { download } = loadModule();
     const { server, url } = await startServer((req, res) => {
       res.writeHead(500);
+
       res.end("fail");
     });
     await assert.rejects(() => download(url, join(dir, "file")), /HTTP 500/);
@@ -100,6 +101,7 @@ test("fetchBoombox downloads model", { concurrency: false }, async () => {
   });
 });
 
+
 test(
   "fetchAstronaut throws when URL missing",
   { concurrency: false },
@@ -126,6 +128,7 @@ test("fetchAstronaut downloads file", { concurrency: false }, async () => {
     server.close();
   });
 });
+
 
 test(
   "fetchAstronaut retries on incomplete response and succeeds",
@@ -267,6 +270,7 @@ test("download aborts on socket destroy", { concurrency: false }, async () => {
     server.close();
   });
 });
+
 
 test("fetchBoombox throws on HTTP error", { concurrency: false }, async () => {
   await inTempDir(async () => {
@@ -456,6 +460,7 @@ test(
     });
   },
 );
+
 
 test(
   "fetchAstronaut logs missing Content-Length",
