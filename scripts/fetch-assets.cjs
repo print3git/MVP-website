@@ -1,6 +1,7 @@
 const { mkdir, writeFile, stat, unlink } = require("node:fs/promises");
 const { existsSync, createWriteStream } = require("node:fs");
 const { pipeline } = require("node:stream/promises");
+const { Transform } = require("node:stream");
 const { dirname, join } = require("node:path");
 async function ensureDir(filePath) {
   await mkdir(dirname(filePath), { recursive: true });
@@ -64,21 +65,39 @@ async function fetchAstronaut() {
 
   astronautPromise = (async () => {
     try {
-      const res = await fetch(url, { signal: AbortSignal.timeout(1000) });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const buf = Buffer.from(await res.arrayBuffer());
-      const cl = res.headers.get("content-length");
-      if (cl && Number(cl) !== buf.length) {
-        throw new Error("incomplete response");
+      const attempts = 3;
+      for (let attempt = 1; attempt <= attempts; attempt++) {
+        try {
+          const res = await fetch(url, { signal: AbortSignal.timeout(10000) });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const expected = res.headers.get("content-length");
+          let bytes = 0;
+          const counter = new Transform({
+            transform(chunk, enc, cb) {
+              bytes += chunk.length;
+              cb(null, chunk);
+            },
+          });
+          await ensureDir(dest);
+          await pipeline(
+            res.body,
+            counter,
+            createWriteStream(dest, { mode: 0o644 }),
+          );
+          if (expected && Number(expected) !== bytes) {
+            throw new Error("incomplete response");
+          }
+          lastAstronautUrl = url;
+          return dest;
+        } catch (err) {
+          await unlink(dest).catch(() => {});
+          if (attempt === attempts) {
+            lastAstronautUrl = undefined;
+            throw err;
+          }
+          console.warn(`Retrying astronaut download (${attempt}): ${err}`);
+        }
       }
-      await ensureDir(dest);
-      await writeFile(dest, buf, { mode: 0o644 });
-      lastAstronautUrl = url;
-      return dest;
-    } catch (err) {
-      await unlink(dest).catch(() => {});
-      lastAstronautUrl = undefined;
-      throw err;
     } finally {
       astronautPromise = null;
     }
