@@ -2,7 +2,9 @@ name: astronaut .glb fallback fetch/display on index and payment page
 
 on:
   push:
+    branches: [dev, '00000production']
   pull_request:
+    branches: [dev, '00000production']
 
 jobs:
   test:
