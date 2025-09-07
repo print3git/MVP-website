@@ -20,11 +20,32 @@ async function inTempDir(fn) {
   }
 }
 
-async function startServer(handler) {
+async function startServer(t, handler) {
   const server = http.createServer(handler);
   await new Promise((resolve) => server.listen(0, resolve));
+  server.unref();
+  server.keepAliveTimeout = 0;
+  server.headersTimeout = 5000;
+  t.teardown(() => new Promise((r) => server.close(r)));
   const { port } = server.address();
   return { server, url: `http://127.0.0.1:${port}` };
+}
+
+function execFileWithKill(t, file, args, opts) {
+  return new Promise((resolve, reject) => {
+    const child = execFile(file, args, opts, (err, stdout, stderr) => {
+      if (err) {
+        err.stdout = stdout;
+        err.stderr = stderr;
+        reject(err);
+      } else {
+        resolve({ stdout, stderr });
+      }
+    });
+    t.teardown(() => {
+      if (!child.killed) child.kill();
+    });
+  });
 }
 
 function loadModule() {
@@ -32,7 +53,7 @@ function loadModule() {
   return require("../scripts/fetch-assets.cjs");
 }
 
-test("ensureDir creates directory", { concurrency: false }, async () => {
+test("ensureDir creates directory", { concurrency: false }, async (t) => {
   await inTempDir(async (dir) => {
     const { ensureDir } = loadModule();
     const file = join(dir, "a/b/c.txt");
@@ -41,11 +62,11 @@ test("ensureDir creates directory", { concurrency: false }, async () => {
   });
 });
 
-test("download saves file", { concurrency: false }, async () => {
+test("download saves file", { concurrency: false }, async (t) => {
   await inTempDir(async (dir) => {
     const { download } = loadModule();
     const body = Buffer.from("hello");
-    const { server, url } = await startServer((req, res) => {
+    const { url } = await startServer(t, (req, res) => {
       res.writeHead(200, { "Content-Length": body.length });
       res.end(body);
     });
@@ -53,27 +74,25 @@ test("download saves file", { concurrency: false }, async () => {
     await download(url, dest);
     const data = await fsp.readFile(dest);
     assert.deepEqual(data, body);
-    server.close();
   });
 });
 
-test("download throws on http error", { concurrency: false }, async () => {
+test("download throws on http error", { concurrency: false }, async (t) => {
   await inTempDir(async (dir) => {
     const { download } = loadModule();
-    const { server, url } = await startServer((req, res) => {
+    const { url } = await startServer(t, (req, res) => {
       res.writeHead(500);
 
       res.end("fail");
     });
     await assert.rejects(() => download(url, join(dir, "file")), /HTTP 500/);
-    server.close();
   });
 });
 
 test(
   "fetchBoombox creates placeholder when URL missing",
   { concurrency: false },
-  async () => {
+  async (t) => {
     await inTempDir(async (dir) => {
       const { fetchBoombox } = loadModule();
       await fetchBoombox();
@@ -84,11 +103,11 @@ test(
   },
 );
 
-test("fetchBoombox downloads model", { concurrency: false }, async () => {
+test("fetchBoombox downloads model", { concurrency: false }, async (t) => {
   await inTempDir(async (dir) => {
     const { fetchBoombox } = loadModule();
     const body = Buffer.from("boom");
-    const { server, url } = await startServer((req, res) => {
+    const { url } = await startServer(t, (req, res) => {
       res.writeHead(200, { "Content-Length": body.length });
       res.end(body);
     });
@@ -97,14 +116,13 @@ test("fetchBoombox downloads model", { concurrency: false }, async () => {
     const dest = join(dir, "frontend", "public", "models", "boombox.glb");
     const data = await fsp.readFile(dest);
     assert.deepEqual(data, body);
-    server.close();
   });
 });
 
 test(
   "fetchAstronaut throws when URL missing",
   { concurrency: false },
-  async () => {
+  async (t) => {
     await inTempDir(async () => {
       const { fetchAstronaut } = loadModule();
       await assert.rejects(fetchAstronaut, /ASTRONAUT_MODEL_URL not set/);
@@ -112,11 +130,11 @@ test(
   },
 );
 
-test("fetchAstronaut downloads file", { concurrency: false }, async () => {
+test("fetchAstronaut downloads file", { concurrency: false }, async (t) => {
   await inTempDir(async (dir) => {
     const { fetchAstronaut } = loadModule();
     const body = Buffer.from("astro");
-    const { server, url } = await startServer((req, res) => {
+    const { url } = await startServer(t, (req, res) => {
       res.writeHead(200, { "Content-Length": body.length });
       res.end(body);
     });
@@ -124,19 +142,18 @@ test("fetchAstronaut downloads file", { concurrency: false }, async () => {
     const dest = await fetchAstronaut();
     const data = await fsp.readFile(dest);
     assert.deepEqual(data, body);
-    server.close();
   });
 });
 
 test(
   "fetchAstronaut retries on incomplete response and succeeds",
   { concurrency: false },
-  async () => {
+  async (t) => {
     await inTempDir(async (dir) => {
       const { fetchAstronaut } = loadModule();
       const body = Buffer.from("astro");
       let count = 0;
-      const { server, url } = await startServer((req, res) => {
+      const { url } = await startServer(t, (req, res) => {
         res.writeHead(200, { "Content-Length": body.length });
         if (count++ === 0) {
           res.end(body.slice(0, body.length - 1));
@@ -149,34 +166,36 @@ test(
       const data = await fsp.readFile(dest);
       assert.deepEqual(data, body);
       assert.equal(count, 2);
-      server.close();
     });
   },
 );
 
-test("fetchAstronaut fails after retries", { concurrency: false }, async () => {
-  await inTempDir(async () => {
-    const { fetchAstronaut } = loadModule();
-    const body = Buffer.from("astro");
-    const { server, url } = await startServer((req, res) => {
-      res.writeHead(200, { "Content-Length": body.length });
-      res.end(body.slice(0, body.length - 1));
+test(
+  "fetchAstronaut fails after retries",
+  { concurrency: false },
+  async (t) => {
+    await inTempDir(async () => {
+      const { fetchAstronaut } = loadModule();
+      const body = Buffer.from("astro");
+      const { url } = await startServer(t, (req, res) => {
+        res.writeHead(200, { "Content-Length": body.length });
+        res.end(body.slice(0, body.length - 1));
+      });
+      process.env.ASTRONAUT_MODEL_URL = url;
+      await assert.rejects(fetchAstronaut, /(incomplete response|terminated)/);
     });
-    process.env.ASTRONAUT_MODEL_URL = url;
-    await assert.rejects(fetchAstronaut, /(incomplete response|terminated)/);
-    server.close();
-  });
-});
+  },
+);
 
 test(
   "fetchAstronaut uses cached file on second call",
   { concurrency: false },
-  async () => {
+  async (t) => {
     await inTempDir(async (dir) => {
       const mod = loadModule();
       const body = Buffer.from("astro");
       let count = 0;
-      const { server, url } = await startServer((req, res) => {
+      const { url } = await startServer(t, (req, res) => {
         count += 1;
         res.writeHead(200, { "Content-Length": body.length });
         res.end(body);
@@ -186,12 +205,11 @@ test(
       const dest2 = await mod.fetchAstronaut();
       assert.equal(dest1, dest2);
       assert.equal(count, 1);
-      server.close();
     });
   },
 );
 
-test("ensureDir no-op on existing path", { concurrency: false }, async () => {
+test("ensureDir no-op on existing path", { concurrency: false }, async (t) => {
   await inTempDir(async (dir) => {
     const { ensureDir } = loadModule();
     const file = join(dir, "a.txt");
@@ -204,11 +222,11 @@ test("ensureDir no-op on existing path", { concurrency: false }, async () => {
 test(
   "download creates nested directories",
   { concurrency: false },
-  async () => {
+  async (t) => {
     await inTempDir(async (dir) => {
       const { download } = loadModule();
       const body = Buffer.from("hi");
-      const { server, url } = await startServer((req, res) => {
+      const { url } = await startServer(t, (req, res) => {
         res.writeHead(200, { "Content-Length": body.length });
         res.end(body);
       });
@@ -216,7 +234,6 @@ test(
       await download(url, dest);
       const data = await fsp.readFile(dest);
       assert.deepEqual(data, body);
-      server.close();
     });
   },
 );
@@ -224,11 +241,11 @@ test(
 test(
   "download succeeds without Content-Length",
   { concurrency: false },
-  async () => {
+  async (t) => {
     await inTempDir(async (dir) => {
       const { download } = loadModule();
       const body = Buffer.from("hi");
-      const { server, url } = await startServer((req, res) => {
+      const { url } = await startServer(t, (req, res) => {
         res.writeHead(200);
         res.end(body);
       });
@@ -236,76 +253,71 @@ test(
       await download(url, dest);
       const data = await fsp.readFile(dest);
       assert.deepEqual(data, body);
-      server.close();
     });
   },
 );
 
-test("download fails on premature end", { concurrency: false }, async () => {
+test("download fails on premature end", { concurrency: false }, async (t) => {
   await inTempDir(async (dir) => {
     const { download } = loadModule();
     const body = Buffer.from("hello");
-    const { server, url } = await startServer((req, res) => {
+    const { url } = await startServer(t, (req, res) => {
       res.writeHead(200, { "Content-Length": body.length });
       res.end(body.slice(0, body.length - 1));
     });
     const dest = join(dir, "file.bin");
     await assert.rejects(() => download(url, dest), /(incomplete|terminated)/);
-    server.close();
   });
 });
 
-test("download aborts on socket destroy", { concurrency: false }, async () => {
+test("download aborts on socket destroy", { concurrency: false }, async (t) => {
   await inTempDir(async (dir) => {
     const { download } = loadModule();
-    const { server, url } = await startServer((req, res) => {
+    const { url } = await startServer(t, (req, res) => {
       req.socket.destroy();
     });
     await assert.rejects(
       () => download(url, join(dir, "file.bin")),
       /(socket|fetch failed)/,
     );
-    server.close();
   });
 });
 
-test("fetchBoombox throws on HTTP error", { concurrency: false }, async () => {
+test("fetchBoombox throws on HTTP error", { concurrency: false }, async (t) => {
   await inTempDir(async () => {
     const { fetchBoombox } = loadModule();
-    const { server, url } = await startServer((req, res) => {
+    const { url } = await startServer(t, (req, res) => {
       res.writeHead(500);
       res.end();
     });
     process.env.BOOMBOX_MODEL_URL = url;
     await assert.rejects(fetchBoombox, /HTTP 500/);
-    server.close();
   });
 });
 
 test(
   "fetchBoombox rejects on truncated response",
   { concurrency: false },
-  async () => {
+  async (t) => {
     await inTempDir(async (dir) => {
       const { fetchBoombox } = loadModule();
       const body = Buffer.from("boom");
-      const { server, url } = await startServer((req, res) => {
+      const { url } = await startServer(t, (req, res) => {
         res.writeHead(200, { "Content-Length": body.length });
         res.end(body.slice(0, body.length - 1));
       });
       process.env.BOOMBOX_MODEL_URL = url;
       await assert.rejects(fetchBoombox, /(incomplete|terminated)/);
-      server.close();
     });
   },
 );
 
-test("fetchBoombox uses cached model", { concurrency: false }, async () => {
+test("fetchBoombox uses cached model", { concurrency: false }, async (t) => {
   await inTempDir(async (dir) => {
     const mod = loadModule();
     const body = Buffer.from("boom");
     let count = 0;
-    const { server, url } = await startServer((req, res) => {
+    const { url } = await startServer(t, (req, res) => {
       count += 1;
       res.writeHead(200, { "Content-Length": body.length });
       res.end(body);
@@ -317,39 +329,45 @@ test("fetchBoombox uses cached model", { concurrency: false }, async () => {
     const dest = join(dir, "frontend", "public", "models", "boombox.glb");
     const data = await fsp.readFile(dest);
     assert.deepEqual(data, body);
-    server.close();
-  });
-});
-
-test("fetchAstronaut rejects invalid URL", { concurrency: false }, async () => {
-  await inTempDir(async () => {
-    const { fetchAstronaut } = loadModule();
-    process.env.ASTRONAUT_MODEL_URL = "::::";
-    await assert.rejects(fetchAstronaut, TypeError);
-  });
-});
-
-test("fetchAstronaut rejects on HTTP 404", { concurrency: false }, async () => {
-  await inTempDir(async () => {
-    const { fetchAstronaut } = loadModule();
-    const { server, url } = await startServer((req, res) => {
-      res.writeHead(404);
-      res.end();
-    });
-    process.env.ASTRONAUT_MODEL_URL = url;
-    await assert.rejects(fetchAstronaut, /HTTP 404/);
-    server.close();
   });
 });
 
 test(
+  "fetchAstronaut rejects invalid URL",
+  { concurrency: false },
+  async (t) => {
+    await inTempDir(async () => {
+      const { fetchAstronaut } = loadModule();
+      process.env.ASTRONAUT_MODEL_URL = "::::";
+      await assert.rejects(fetchAstronaut, TypeError);
+    });
+  },
+);
+
+test(
+  "fetchAstronaut rejects on HTTP 404",
+  { concurrency: false },
+  async (t) => {
+    await inTempDir(async () => {
+      const { fetchAstronaut } = loadModule();
+      const { url } = await startServer(t, (req, res) => {
+        res.writeHead(404);
+        res.end();
+      });
+      process.env.ASTRONAUT_MODEL_URL = url;
+      await assert.rejects(fetchAstronaut, /HTTP 404/);
+    });
+  },
+);
+
+test(
   "fetchAstronaut handles missing Content-Length",
   { concurrency: false },
-  async () => {
+  async (t) => {
     await inTempDir(async (dir) => {
       const { fetchAstronaut } = loadModule();
       const body = Buffer.from("astro");
-      const { server, url } = await startServer((req, res) => {
+      const { url } = await startServer(t, (req, res) => {
         res.writeHead(200);
         res.end(body);
       });
@@ -357,7 +375,6 @@ test(
       const dest = await fetchAstronaut();
       const data = await fsp.readFile(dest);
       assert.deepEqual(data, body);
-      server.close();
     });
   },
 );
@@ -365,12 +382,12 @@ test(
 test(
   "fetchAstronaut retries after socket hangup and succeeds",
   { concurrency: false },
-  async () => {
+  async (t) => {
     await inTempDir(async (dir) => {
       const { fetchAstronaut } = loadModule();
       const body = Buffer.from("astro");
       let count = 0;
-      const { server, url } = await startServer((req, res) => {
+      const { url } = await startServer(t, (req, res) => {
         count += 1;
         if (count === 1) {
           req.socket.destroy();
@@ -384,7 +401,6 @@ test(
       const data = await fsp.readFile(dest);
       assert.deepEqual(data, body);
       assert.equal(count, 2);
-      server.close();
     });
   },
 );
@@ -392,11 +408,11 @@ test(
 test(
   "fetchAstronaut removes partial file on failure",
   { concurrency: false },
-  async () => {
+  async (t) => {
     await inTempDir(async (dir) => {
       const { fetchAstronaut } = loadModule();
       const body = Buffer.from("astro");
-      const { server, url } = await startServer((req, res) => {
+      const { url } = await startServer(t, (req, res) => {
         res.writeHead(200, { "Content-Length": body.length });
         res.end(body.slice(0, body.length - 1));
       });
@@ -404,7 +420,6 @@ test(
       await assert.rejects(fetchAstronaut, /(incomplete response|terminated)/);
       const dest = join(dir, "frontend", "public", "models", "astronaut.glb");
       assert.equal(fs.existsSync(dest), false);
-      server.close();
     });
   },
 );
@@ -412,12 +427,12 @@ test(
 test(
   "fetchAstronaut redownloads when cached file is empty",
   { concurrency: false },
-  async () => {
+  async (t) => {
     await inTempDir(async (dir) => {
       const mod = loadModule();
       const body = Buffer.from("astro");
       let count = 0;
-      const { server, url } = await startServer((req, res) => {
+      const { url } = await startServer(t, (req, res) => {
         count += 1;
         res.writeHead(200, { "Content-Length": body.length });
         res.end(body);
@@ -429,7 +444,6 @@ test(
       const data = await fsp.readFile(dest2);
       assert.deepEqual(data, body);
       assert.equal(count, 2);
-      server.close();
     });
   },
 );
@@ -437,12 +451,12 @@ test(
 test(
   "fetchAstronaut handles large multi-chunk download",
   { concurrency: false },
-  async () => {
+  async (t) => {
     await inTempDir(async (dir) => {
       const { fetchAstronaut } = loadModule();
       const size = 1.5 * 1024 * 1024;
       const body = Buffer.alloc(size, 0x61);
-      const { server, url } = await startServer((req, res) => {
+      const { url } = await startServer(t, (req, res) => {
         res.writeHead(200, { "Content-Length": body.length });
         for (let i = 0; i < body.length; i += 64 * 1024) {
           res.write(body.slice(i, i + 64 * 1024));
@@ -453,7 +467,6 @@ test(
       const dest = await fetchAstronaut();
       const stats = await fsp.stat(dest);
       assert.equal(stats.size, body.length);
-      server.close();
     });
   },
 );
@@ -461,11 +474,11 @@ test(
 test(
   "fetchAstronaut logs missing Content-Length",
   { concurrency: false },
-  async () => {
+  async (t) => {
     await inTempDir(async () => {
       const { fetchAstronaut, setRetryLogger } = loadModule();
       const body = Buffer.from("hello");
-      const { server, url } = await startServer((req, res) => {
+      const { url } = await startServer(t, (req, res) => {
         res.writeHead(200);
         res.end(body);
       });
@@ -474,7 +487,6 @@ test(
       process.env.ASTRONAUT_MODEL_URL = url;
       await fetchAstronaut();
       assert.ok(logs.some((l) => /missing Content-Length/.test(l)));
-      server.close();
     });
   },
 );
@@ -482,11 +494,11 @@ test(
 test(
   "fetchAstronaut logs expected vs received bytes",
   { concurrency: false },
-  async () => {
+  async (t) => {
     await inTempDir(async () => {
       const { fetchAstronaut, setRetryLogger } = loadModule();
       const body = Buffer.from("hello world");
-      const { server, url } = await startServer((req, res) => {
+      const { url } = await startServer(t, (req, res) => {
         res.writeHead(200, { "Content-Length": body.length });
         res.end(body.slice(0, 5));
       });
@@ -495,7 +507,6 @@ test(
       process.env.ASTRONAUT_MODEL_URL = url;
       await assert.rejects(fetchAstronaut, /incomplete/);
       assert.ok(logs.some((l) => /expected/.test(l) && /received/.test(l)));
-      server.close();
     });
   },
 );
@@ -503,12 +514,12 @@ test(
 test(
   "fetchAstronaut logs retry after size mismatch and succeeds",
   { concurrency: false },
-  async () => {
+  async (t) => {
     await inTempDir(async () => {
       const { fetchAstronaut, setRetryLogger } = loadModule();
       const body = Buffer.from("abcdef");
       let first = true;
-      const { server, url } = await startServer((req, res) => {
+      const { url } = await startServer(t, (req, res) => {
         res.writeHead(200, { "Content-Length": body.length });
         if (first) {
           first = false;
@@ -522,7 +533,6 @@ test(
       process.env.ASTRONAUT_MODEL_URL = url;
       await fetchAstronaut();
       assert.ok(logs.some((l) => /Retrying astronaut download \(1\)/.test(l)));
-      server.close();
     });
   },
 );
@@ -530,12 +540,12 @@ test(
 test(
   "fetchAstronaut logs retry after socket destroy",
   { concurrency: false },
-  async () => {
+  async (t) => {
     await inTempDir(async () => {
       const { fetchAstronaut, setRetryLogger } = loadModule();
       const body = Buffer.from("abcdef");
       let first = true;
-      const { server, url } = await startServer((req, res) => {
+      const { url } = await startServer(t, (req, res) => {
         res.writeHead(200, { "Content-Length": body.length });
         if (first) {
           first = false;
@@ -551,7 +561,6 @@ test(
       assert.ok(
         logs.filter((l) => /Retrying astronaut download/.test(l)).length >= 1,
       );
-      server.close();
     });
   },
 );
@@ -559,11 +568,11 @@ test(
 test(
   "fetchAstronaut uses custom retry logger",
   { concurrency: false },
-  async () => {
+  async (t) => {
     await inTempDir(async () => {
       const { fetchAstronaut, setRetryLogger } = loadModule();
       const body = Buffer.from("hi");
-      const { server, url } = await startServer((req, res) => {
+      const { url } = await startServer(t, (req, res) => {
         res.writeHead(200, { "Content-Length": body.length });
         res.end(body);
       });
@@ -574,50 +583,51 @@ test(
       process.env.ASTRONAUT_MODEL_URL = url;
       await fetchAstronaut();
       assert.ok(!called);
-      server.close();
     });
   },
 );
 
-test("download rejects malformed URL", { concurrency: false }, async () => {
+test("download rejects malformed URL", { concurrency: false }, async (t) => {
   await inTempDir(async () => {
     const { download } = loadModule();
     await assert.rejects(download("::::", "file.bin"), /Invalid URL/);
   });
 });
 
-test("download rejects on HTTP 404", { concurrency: false }, async () => {
+test("download rejects on HTTP 404", { concurrency: false }, async (t) => {
   await inTempDir(async () => {
     const { download } = loadModule();
-    const { server, url } = await startServer((req, res) => {
+    const { url } = await startServer(t, (req, res) => {
       res.writeHead(404);
       res.end();
     });
     await assert.rejects(download(url, "file.bin"), /HTTP 404/);
-    server.close();
-  });
-});
-
-test("download writes file with 644 mode", { concurrency: false }, async () => {
-  await inTempDir(async () => {
-    const { download } = loadModule();
-    const body = Buffer.from("z");
-    const { server, url } = await startServer((req, res) => {
-      res.writeHead(200, { "Content-Length": body.length });
-      res.end(body);
-    });
-    const dest = "file.bin";
-    await download(url, dest);
-    const stats = await fsp.stat(dest);
-    assert.equal((stats.mode & 0o777).toString(8), "644");
-    server.close();
   });
 });
 
 test(
+  "download writes file with 644 mode",
+  { concurrency: false },
+  async (t) => {
+    await inTempDir(async () => {
+      const { download } = loadModule();
+      const body = Buffer.from("z");
+      const { url } = await startServer(t, (req, res) => {
+        res.writeHead(200, { "Content-Length": body.length });
+        res.end(body);
+      });
+      const dest = "file.bin";
+      await download(url, dest);
+      const stats = await fsp.stat(dest);
+      assert.equal((stats.mode & 0o777).toString(8), "644");
+    });
+  },
+);
+
+test(
   "fetchBoombox replaces placeholder with download",
   { concurrency: false },
-  async () => {
+  async (t) => {
     await inTempDir(async () => {
       const { fetchBoombox } = loadModule();
       const dest = join("frontend", "public", "models", "boombox.glb");
@@ -625,7 +635,7 @@ test(
       const placeholder = await fsp.readFile(dest);
       assert.equal(placeholder.length, 0);
       const body = Buffer.from("hi");
-      const { server, url } = await startServer((req, res) => {
+      const { url } = await startServer(t, (req, res) => {
         res.writeHead(200, { "Content-Length": body.length });
         res.end(body);
       });
@@ -633,7 +643,6 @@ test(
       await fetchBoombox();
       const data = await fsp.readFile(dest);
       assert.deepEqual(data, body);
-      server.close();
     });
   },
 );
@@ -641,11 +650,11 @@ test(
 test(
   "fetchAstronaut returns destination path",
   { concurrency: false },
-  async () => {
+  async (t) => {
     await inTempDir(async () => {
       const { fetchAstronaut } = loadModule();
       const body = Buffer.from("hi");
-      const { server, url } = await startServer((req, res) => {
+      const { url } = await startServer(t, (req, res) => {
         res.writeHead(200, { "Content-Length": body.length });
         res.end(body);
       });
@@ -653,7 +662,6 @@ test(
       const dest = await fetchAstronaut();
       const data = await fsp.readFile(dest);
       assert.deepEqual(data, body);
-      server.close();
     });
   },
 );
@@ -665,7 +673,7 @@ test(
     await inTempDir(async (dir) => {
       const body = Buffer.from("integration");
       let first = true;
-      const { server, url } = await startServer((req, res) => {
+      const { url } = await startServer(t, (req, res) => {
         res.writeHead(200, { "Content-Length": body.length });
         if (first) {
           first = false;
@@ -674,23 +682,36 @@ test(
           res.end(body);
         }
       });
-      const logs = [];
-      const { fetchAstronaut, fetchBoombox, setRetryLogger } = loadModule();
-      setRetryLogger((m) => logs.push(m));
-      process.env.ASTRONAUT_MODEL_URL = url;
-      process.env.BOOMBOX_MODEL_URL = url;
-      try {
-        await fetchAstronaut();
-        await fetchBoombox();
-        assert.ok(logs.some((l) => /Retrying astronaut download/.test(l)));
-        const data = await fsp.readFile(
-          join("frontend", "public", "models", "astronaut.glb"),
-        );
-        assert.equal(data.length, body.length);
-      } finally {
-        setRetryLogger((m) => console.warn(m));
-        server.close();
-      }
+      const script = join(__dirname, "../scripts/fetch-assets.cjs");
+      const { stderr } = await execFileWithKill(t, process.execPath, [script], {
+        cwd: dir,
+        env: {
+          ...process.env,
+          ASTRONAUT_MODEL_URL: url,
+          BOOMBOX_MODEL_URL: url,
+        },
+      });
+      assert.ok(/Retrying astronaut download/.test(stderr));
+      const data = await fsp.readFile(
+        join("frontend", "public", "models", "astronaut.glb"),
+      );
+      assert.equal(data.length, body.length);
     });
   },
 );
+
+test.after(() => {
+  const handles = process
+    ._getActiveHandles()
+    .filter((h) => h !== process.stdout && h !== process.stderr);
+  if (handles.length) {
+    console.error("[CI guard] leftover handles detected", handles);
+    for (const h of handles) {
+      try {
+        if (typeof h.close === "function") h.close();
+        else if (typeof h.destroy === "function") h.destroy();
+      } catch {}
+    }
+    process.exitCode = 1;
+  }
+});
