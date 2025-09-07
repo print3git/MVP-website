@@ -42,6 +42,11 @@ async function fetchBoombox() {
 let astronautPromise;
 let lastAstronautUrl;
 
+let retryLogger = (msg) => console.warn(msg);
+function setRetryLogger(fn) {
+  retryLogger = fn;
+}
+
 async function fetchAstronaut() {
   const dest = join("frontend", "public", "models", "astronaut.glb");
   const url = process.env.ASTRONAUT_MODEL_URL;
@@ -67,11 +72,16 @@ async function fetchAstronaut() {
     try {
       const attempts = 3;
       for (let attempt = 1; attempt <= attempts; attempt++) {
+        let expected;
+        let bytes = 0;
+        const start = Date.now();
         try {
           const res = await fetch(url, { signal: AbortSignal.timeout(10000) });
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          const expected = res.headers.get("content-length");
-          let bytes = 0;
+          expected = res.headers.get("content-length");
+          if (!expected) {
+            retryLogger(`attempt ${attempt}: missing Content-Length`);
+          }
           const counter = new Transform({
             transform(chunk, enc, cb) {
               bytes += chunk.length;
@@ -84,7 +94,11 @@ async function fetchAstronaut() {
             counter,
             createWriteStream(dest, { mode: 0o644 }),
           );
+          const elapsed = Date.now() - start;
           if (expected && Number(expected) !== bytes) {
+            retryLogger(
+              `attempt ${attempt}: expected ${expected} bytes, received ${bytes} in ${elapsed}ms`,
+            );
             throw new Error("incomplete response");
           }
           lastAstronautUrl = url;
@@ -95,7 +109,10 @@ async function fetchAstronaut() {
             lastAstronautUrl = undefined;
             throw err;
           }
-          console.warn(`Retrying astronaut download (${attempt}): ${err}`);
+          const elapsed = Date.now() - start;
+          retryLogger(
+            `Retrying astronaut download (${attempt}): ${err}; received ${bytes} of ${expected ?? "?"} bytes after ${elapsed}ms`,
+          );
         }
       }
     } finally {
@@ -111,6 +128,7 @@ module.exports = {
   download,
   fetchBoombox,
   fetchAstronaut,
+  setRetryLogger,
 };
 
 if (require.main === module) {

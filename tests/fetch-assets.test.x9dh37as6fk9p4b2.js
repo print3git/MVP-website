@@ -1,4 +1,3 @@
-
 const test = require("node:test");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
@@ -6,6 +5,7 @@ const fsp = require("node:fs/promises");
 const { join } = require("node:path");
 const os = require("node:os");
 const http = require("node:http");
+const { execFile } = require("node:child_process");
 
 async function inTempDir(fn) {
   const dir = await fsp.mkdtemp(join(os.tmpdir(), "fa-"));
@@ -69,7 +69,6 @@ test("download throws on http error", { concurrency: false }, async () => {
     server.close();
   });
 });
-
 
 test(
   "fetchBoombox creates placeholder when URL missing",
@@ -273,17 +272,15 @@ test("download aborts on socket destroy", { concurrency: false }, async () => {
 });
 
 
-test('fetchAstronaut fails after retries', { concurrency: false }, async () => {
+test("fetchBoombox throws on HTTP error", { concurrency: false }, async () => {
   await inTempDir(async () => {
-    const { fetchAstronaut } = loadModule();
-    const body = Buffer.from('astro');
+    const { fetchBoombox } = loadModule();
     const { server, url } = await startServer((req, res) => {
-      res.writeHead(200, { 'Content-Length': body.length });
-      res.end(body.slice(0, body.length - 1));
+      res.writeHead(500);
+      res.end();
     });
-    process.env.ASTRONAUT_MODEL_URL = url;
-    await assert.rejects(fetchAstronaut, /(incomplete response|terminated)/);
-
+    process.env.BOOMBOX_MODEL_URL = url;
+    await assert.rejects(fetchBoombox, /HTTP 500/);
     server.close();
   });
 });
@@ -459,6 +456,260 @@ test(
       const dest = await fetchAstronaut();
       const stats = await fsp.stat(dest);
       assert.equal(stats.size, body.length);
+      server.close();
+    });
+  },
+);
+
+
+test(
+  "fetchAstronaut logs missing Content-Length",
+  { concurrency: false },
+  async () => {
+    await inTempDir(async () => {
+      const { fetchAstronaut, setRetryLogger } = loadModule();
+      const body = Buffer.from("hello");
+      const { server, url } = await startServer((req, res) => {
+        res.writeHead(200);
+        res.end(body);
+      });
+      const logs = [];
+      setRetryLogger((m) => logs.push(m));
+      process.env.ASTRONAUT_MODEL_URL = url;
+      await fetchAstronaut();
+      assert.ok(logs.some((l) => /missing Content-Length/.test(l)));
+      server.close();
+    });
+  },
+);
+
+test(
+  "fetchAstronaut logs expected vs received bytes",
+  { concurrency: false },
+  async () => {
+    await inTempDir(async () => {
+      const { fetchAstronaut, setRetryLogger } = loadModule();
+      const body = Buffer.from("hello world");
+      const { server, url } = await startServer((req, res) => {
+        res.writeHead(200, { "Content-Length": body.length });
+        res.end(body.slice(0, 5));
+      });
+      const logs = [];
+      setRetryLogger((m) => logs.push(m));
+      process.env.ASTRONAUT_MODEL_URL = url;
+      await assert.rejects(fetchAstronaut, /incomplete/);
+      assert.ok(logs.some((l) => /expected/.test(l) && /received/.test(l)));
+      server.close();
+    });
+  },
+);
+
+test(
+  "fetchAstronaut logs retry after size mismatch and succeeds",
+  { concurrency: false },
+  async () => {
+    await inTempDir(async () => {
+      const { fetchAstronaut, setRetryLogger } = loadModule();
+      const body = Buffer.from("abcdef");
+      let first = true;
+      const { server, url } = await startServer((req, res) => {
+        res.writeHead(200, { "Content-Length": body.length });
+        if (first) {
+          first = false;
+          res.end(body.slice(0, 3));
+        } else {
+          res.end(body);
+        }
+      });
+      const logs = [];
+      setRetryLogger((m) => logs.push(m));
+      process.env.ASTRONAUT_MODEL_URL = url;
+      await fetchAstronaut();
+      assert.ok(logs.some((l) => /Retrying astronaut download \(1\)/.test(l)));
+      server.close();
+    });
+  },
+);
+
+test(
+  "fetchAstronaut logs retry after socket destroy",
+  { concurrency: false },
+  async () => {
+    await inTempDir(async () => {
+      const { fetchAstronaut, setRetryLogger } = loadModule();
+      const body = Buffer.from("abcdef");
+      let first = true;
+      const { server, url } = await startServer((req, res) => {
+        res.writeHead(200, { "Content-Length": body.length });
+        if (first) {
+          first = false;
+          req.socket.destroy();
+        } else {
+          res.end(body);
+        }
+      });
+      const logs = [];
+      setRetryLogger((m) => logs.push(m));
+      process.env.ASTRONAUT_MODEL_URL = url;
+      await fetchAstronaut();
+      assert.ok(logs.filter((l) => /Retrying astronaut download/.test(l)).length >= 1);
+      server.close();
+    });
+  },
+);
+
+test(
+  "fetchAstronaut uses custom retry logger",
+  { concurrency: false },
+  async () => {
+    await inTempDir(async () => {
+      const { fetchAstronaut, setRetryLogger } = loadModule();
+      const body = Buffer.from("hi");
+      const { server, url } = await startServer((req, res) => {
+        res.writeHead(200, { "Content-Length": body.length });
+        res.end(body);
+      });
+      let called = false;
+      setRetryLogger(() => {
+        called = true;
+      });
+      process.env.ASTRONAUT_MODEL_URL = url;
+      await fetchAstronaut();
+      assert.ok(!called);
+      server.close();
+    });
+  },
+);
+
+test(
+  "download rejects malformed URL",
+  { concurrency: false },
+  async () => {
+    await inTempDir(async () => {
+      const { download } = loadModule();
+      await assert.rejects(download("::::", "file.bin"), /Invalid URL/);
+    });
+  },
+);
+
+test(
+  "download rejects on HTTP 404",
+  { concurrency: false },
+  async () => {
+    await inTempDir(async () => {
+      const { download } = loadModule();
+      const { server, url } = await startServer((req, res) => {
+        res.writeHead(404);
+        res.end();
+      });
+      await assert.rejects(download(url, "file.bin"), /HTTP 404/);
+      server.close();
+    });
+  },
+);
+
+test(
+  "download writes file with 644 mode",
+  { concurrency: false },
+  async () => {
+    await inTempDir(async () => {
+      const { download } = loadModule();
+      const body = Buffer.from("z");
+      const { server, url } = await startServer((req, res) => {
+        res.writeHead(200, { "Content-Length": body.length });
+        res.end(body);
+      });
+      const dest = "file.bin";
+      await download(url, dest);
+      const stats = await fsp.stat(dest);
+      assert.equal((stats.mode & 0o777).toString(8), "644");
+      server.close();
+    });
+  },
+);
+
+test(
+  "fetchBoombox replaces placeholder with download",
+  { concurrency: false },
+  async () => {
+    await inTempDir(async () => {
+      const { fetchBoombox } = loadModule();
+      const dest = join("frontend", "public", "models", "boombox.glb");
+      await fetchBoombox();
+      const placeholder = await fsp.readFile(dest);
+      assert.equal(placeholder.length, 0);
+      const body = Buffer.from("hi");
+      const { server, url } = await startServer((req, res) => {
+        res.writeHead(200, { "Content-Length": body.length });
+        res.end(body);
+      });
+      process.env.BOOMBOX_MODEL_URL = url;
+      await fetchBoombox();
+      const data = await fsp.readFile(dest);
+      assert.deepEqual(data, body);
+      server.close();
+    });
+  },
+);
+
+test(
+  "fetchAstronaut returns destination path",
+  { concurrency: false },
+  async () => {
+    await inTempDir(async () => {
+      const { fetchAstronaut } = loadModule();
+      const body = Buffer.from("hi");
+      const { server, url } = await startServer((req, res) => {
+        res.writeHead(200, { "Content-Length": body.length });
+        res.end(body);
+      });
+      process.env.ASTRONAUT_MODEL_URL = url;
+      const dest = await fetchAstronaut();
+      const data = await fsp.readFile(dest);
+      assert.deepEqual(data, body);
+      server.close();
+    });
+  },
+);
+
+test(
+  "integration: fetch-assets retries on truncation and succeeds",
+  { concurrency: false },
+  async () => {
+    await inTempDir(async (dir) => {
+      const body = Buffer.from("integration");
+      let first = true;
+      const { server, url } = await startServer((req, res) => {
+        res.writeHead(200, { "Content-Length": body.length });
+        if (first) {
+          first = false;
+          res.end(body.slice(0, body.length - 2));
+        } else {
+          res.end(body);
+        }
+      });
+      const logs = [];
+      const { setRetryLogger } = loadModule();
+      setRetryLogger((m) => logs.push(m));
+      await new Promise((resolve, reject) => {
+        execFile(
+          "node",
+          ["scripts/fetch-assets.cjs"],
+          {
+            env: { ...process.env, ASTRONAUT_MODEL_URL: url, BOOMBOX_MODEL_URL: url },
+            cwd: dir,
+          },
+          (err) => {
+            if (err) reject(err);
+            else resolve();
+          },
+        );
+      });
+      assert.ok(logs.some((l) => /Retrying astronaut download/.test(l)));
+      const data = await fsp.readFile(
+        join("frontend", "public", "models", "astronaut.glb"),
+      );
+      assert.equal(data.length, body.length);
       server.close();
     });
   },

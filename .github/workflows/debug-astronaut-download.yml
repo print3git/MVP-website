@@ -1,4 +1,5 @@
-name: "Debugging 'incomplete response' (at the 'Run npm run build ' step) when downloading astronaut .glb for tests"
+name: "Debugging 'incomplete response' (at the 'Run npm run build' step) when downloading astronaut .glb for tests"
+
 
 on:
   push:
