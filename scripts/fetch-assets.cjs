@@ -78,6 +78,7 @@ async function fetchAstronaut() {
       const attempts = 3;
       for (let attempt = 1; attempt <= attempts; attempt++) {
         let expected;
+        let encoding;
         let bytes = 0;
         const start = Date.now();
         const ac = new AbortController();
@@ -86,6 +87,7 @@ async function fetchAstronaut() {
           const res = await fetch(url, { signal: ac.signal });
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           expected = res.headers.get("content-length");
+          encoding = res.headers.get("content-encoding");
           if (!expected) {
             retryLogger(`attempt ${attempt}: missing Content-Length`);
           }
@@ -102,11 +104,17 @@ async function fetchAstronaut() {
             createWriteStream(dest, { mode: 0o644 }),
           );
           const elapsed = Date.now() - start;
-          if (expected && Number(expected) !== bytes) {
-            retryLogger(
-              `attempt ${attempt}: expected ${expected} bytes, received ${bytes} in ${elapsed}ms`,
+          if (expected && (!encoding || encoding === "identity")) {
+            if (Number(expected) !== bytes) {
+              retryLogger(
+                `attempt ${attempt}: expected ${expected} bytes, received ${bytes} in ${elapsed}ms`,
+              );
+              throw new Error("incomplete response");
+            }
+          } else if (encoding && encoding !== "identity") {
+            console.log(
+              `Skipping size check for compressed response (content-encoding: ${encoding})`,
             );
-            throw new Error("incomplete response");
           }
           lastAstronautUrl = url;
           return dest;
