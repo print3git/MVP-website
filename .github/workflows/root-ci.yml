@@ -64,6 +64,8 @@ jobs:
 
       - name: Build
         run: npm run build --workspaces=false
+        env:
+          ASTRONAUT_MODEL_URL: ${{ secrets.ASTRONAUT_MODEL_URL }}
 
       - name: CI doctor
         run: node scripts/ci-doctor.mjs
