@@ -80,8 +80,10 @@ async function fetchAstronaut() {
         let expected;
         let bytes = 0;
         const start = Date.now();
+        const ac = new AbortController();
+        const timer = setTimeout(() => ac.abort(), 10000).unref();
         try {
-          const res = await fetch(url, { signal: AbortSignal.timeout(10000) });
+          const res = await fetch(url, { signal: ac.signal });
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           expected = res.headers.get("content-length");
           if (!expected) {
@@ -110,7 +112,7 @@ async function fetchAstronaut() {
           return dest;
         } catch (err) {
           await unlink(dest).catch(() => {});
-          if (err && err.name === "TimeoutError") {
+          if (err && err.name === "AbortError") {
             err = new Error("incomplete response");
           }
           if (attempt === attempts) {
@@ -121,6 +123,8 @@ async function fetchAstronaut() {
           retryLogger(
             `Retrying astronaut download (${attempt}): ${err}; received ${bytes} of ${expected ?? "?"} bytes after ${elapsed}ms`,
           );
+        } finally {
+          clearTimeout(timer);
         }
       }
     } finally {
