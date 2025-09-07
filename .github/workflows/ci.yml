@@ -83,4 +83,4 @@ jobs:
           chmod +x scripts/ci/run-backend-offline-safe.sh
           ./scripts/ci/run-backend-offline-safe.sh
       - name: Run Jest suites
-        run: node scripts/run-jest.js "tests/**/*.test.js"
+        run: node scripts/run-jest.js tests/**/*.test.js
