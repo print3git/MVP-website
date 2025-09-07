@@ -4,6 +4,7 @@ import {
   adjustedSlots,
   recordSlotPurchase,
 } from "./print-slots.js";
+import { setModelSrc } from "./modelLoader.js";
 
 (() => {
   try {
@@ -948,8 +949,8 @@ async function initPaymentPage() {
           // viewer.src = sanitizeUrl(item.snapshot);
         }
       } else {
-        // const src = sanitizeUrl(item.modelUrl);
-        // viewer.src = src || storedModel || FALLBACK_GLB;
+        const src = sanitizeUrl(item.modelUrl);
+        setModelSrc(src || storedModel || FALLBACK_GLB);
       }
     }
     if (item.jobId) localStorage.setItem("print2JobId", item.jobId);
@@ -1164,7 +1165,7 @@ async function initPaymentPage() {
     // Assign the model source only after the load/error listeners are in place
     const storedModel = sanitizeUrl(localStorage.getItem("print2Model"));
     if (viewer) {
-      // viewer.src = storedModel || FALLBACK_GLB;
+      setModelSrc(storedModel || FALLBACK_GLB);
     }
   }
   // Load saved basket items unless this is the Luckybox page

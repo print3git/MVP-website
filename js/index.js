@@ -6,6 +6,7 @@ import {
   adjustedSlots,
   updatePrintRunInfo,
 } from "./print-slots.js";
+import { setModelSrc } from "./modelLoader.js";
 
 (() => {
   try {
@@ -384,26 +385,26 @@ function updateWizardFromInputs() {
 async function captureModelSnapshot(url) {
   if (!url) return null;
   async function attempt(glb) {
-    const viewer = document.createElement("model-viewer");
-    viewer.crossOrigin = "anonymous";
-    viewer.src = glb;
-    viewer.setAttribute(
+    const mv = document.createElement("model-viewer");
+    mv.crossOrigin = "anonymous";
+    mv.src = glb;
+    mv.setAttribute(
       "environment-image",
       "https://modelviewer.dev/shared-assets/environments/neutral.hdr",
     );
-    viewer.style.position = "fixed";
-    viewer.style.left = "-10000px";
-    viewer.style.width = "300px";
-    viewer.style.height = "300px";
-    document.body.appendChild(viewer);
+    mv.style.position = "fixed";
+    mv.style.left = "-10000px";
+    mv.style.width = "300px";
+    mv.style.height = "300px";
+    document.body.appendChild(mv);
     try {
-      await viewer.updateComplete;
-      return await viewer.toDataURL("image/png");
+      await mv.updateComplete;
+      return await mv.toDataURL("image/png");
     } catch (err) {
       console.error("Failed to capture snapshot", err);
       return null;
     } finally {
-      viewer.remove();
+      mv.remove();
     }
   }
 
@@ -815,7 +816,7 @@ refs.submitBtn.addEventListener("click", async () => {
 
     editsPending = false;
 
-    // refs.viewer.src = url;
+    setModelSrc(url);
     await refs.viewer.updateComplete;
     showModel();
     if (window.addAutoItem) {
@@ -1152,17 +1153,17 @@ async function init() {
     popupEl.innerHTML = "";
     const span = document.createElement("span");
     span.textContent = msg;
-    const viewer = document.createElement("model-viewer");
-    viewer.src = "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
-    viewer.setAttribute(
+    const mv = document.createElement("model-viewer");
+    mv.src = "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
+    mv.setAttribute(
       "environment-image",
       "https://modelviewer.dev/shared-assets/environments/neutral.hdr",
     );
-    viewer.setAttribute("camera-controls", "");
-    viewer.setAttribute("auto-rotate", "");
-    viewer.setAttribute("crossOrigin", "anonymous");
-    viewer.className = "w-[13rem] h-[13rem] mb-2";
-    popupEl.appendChild(viewer);
+    mv.setAttribute("camera-controls", "");
+    mv.setAttribute("auto-rotate", "");
+    mv.setAttribute("crossOrigin", "anonymous");
+    mv.className = "w-[13rem] h-[13rem] mb-2";
+    popupEl.appendChild(mv);
     popupEl.appendChild(span);
     popupEl.classList.remove("hidden");
     popupEl.classList.remove("purchase-fade");

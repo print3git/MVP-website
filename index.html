@@ -86,7 +86,7 @@
 
     <!-- Google <model-viewer> -->
     <script src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-    <script type="module" src="js/astronautPlaceholder.js"></script>
+    <script type="module" src="js/modelLoader.js"></script>
 
     <style>
       html,
@@ -328,7 +328,6 @@
           <div data-testid="primary-model">
             <model-viewer
               data-testid="model-viewer"
-              data-model-src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
               environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
               camera-controls
               ar
@@ -725,9 +724,7 @@
         var url = (typeof window !== 'undefined' && window.MODEL_URL) || '';
         var a = document.querySelector('[data-model-href]');
         if (a) { if (url) a.setAttribute('href', url); else a.removeAttribute('href'); }
-        document.querySelectorAll('[data-model-src]').forEach(function(el){
-          if (url) el.setAttribute('src', url); else el.removeAttribute('src');
-        });
+        // No elements rely on data-model-src anymore.
       })();
     </script>
   </body>
