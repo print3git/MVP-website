@@ -121,7 +121,7 @@ async function fetchAstronaut() {
           }
           const elapsed = Date.now() - start;
           retryLogger(
-            `Retrying astronaut download (${attempt}): ${err}; received ${bytes} of ${expected ?? "?"} bytes after ${elapsed}ms`,
+            `Retrying astronaut download (${attempt}): ${err}; expected ${expected ?? "?"} bytes, received ${bytes} after ${elapsed}ms`,
           );
         } finally {
           clearTimeout(timer);
