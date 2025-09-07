@@ -26,7 +26,7 @@ async function startServer(t, handler) {
   server.unref();
   server.keepAliveTimeout = 0;
   server.headersTimeout = 5000;
-  t.teardown(() => new Promise((r) => server.close(r)));
+  t.after(() => new Promise((r) => server.close(r)));
   const { port } = server.address();
   return { server, url: `http://127.0.0.1:${port}` };
 }
@@ -42,7 +42,7 @@ function execFileWithKill(t, file, args, opts) {
         resolve({ stdout, stderr });
       }
     });
-    t.teardown(() => {
+    t.after(() => {
       if (!child.killed) child.kill();
     });
   });
