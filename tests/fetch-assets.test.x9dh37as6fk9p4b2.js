@@ -101,7 +101,6 @@ test("fetchBoombox downloads model", { concurrency: false }, async () => {
   });
 });
 
-
 test(
   "fetchAstronaut throws when URL missing",
   { concurrency: false },
@@ -128,7 +127,6 @@ test("fetchAstronaut downloads file", { concurrency: false }, async () => {
     server.close();
   });
 });
-
 
 test(
   "fetchAstronaut retries on incomplete response and succeeds",
@@ -270,7 +268,6 @@ test("download aborts on socket destroy", { concurrency: false }, async () => {
     server.close();
   });
 });
-
 
 test("fetchBoombox throws on HTTP error", { concurrency: false }, async () => {
   await inTempDir(async () => {
@@ -461,7 +458,6 @@ test(
   },
 );
 
-
 test(
   "fetchAstronaut logs missing Content-Length",
   { concurrency: false },
@@ -552,7 +548,9 @@ test(
       setRetryLogger((m) => logs.push(m));
       process.env.ASTRONAUT_MODEL_URL = url;
       await fetchAstronaut();
-      assert.ok(logs.filter((l) => /Retrying astronaut download/.test(l)).length >= 1);
+      assert.ok(
+        logs.filter((l) => /Retrying astronaut download/.test(l)).length >= 1,
+      );
       server.close();
     });
   },
@@ -581,52 +579,40 @@ test(
   },
 );
 
-test(
-  "download rejects malformed URL",
-  { concurrency: false },
-  async () => {
-    await inTempDir(async () => {
-      const { download } = loadModule();
-      await assert.rejects(download("::::", "file.bin"), /Invalid URL/);
-    });
-  },
-);
+test("download rejects malformed URL", { concurrency: false }, async () => {
+  await inTempDir(async () => {
+    const { download } = loadModule();
+    await assert.rejects(download("::::", "file.bin"), /Invalid URL/);
+  });
+});
 
-test(
-  "download rejects on HTTP 404",
-  { concurrency: false },
-  async () => {
-    await inTempDir(async () => {
-      const { download } = loadModule();
-      const { server, url } = await startServer((req, res) => {
-        res.writeHead(404);
-        res.end();
-      });
-      await assert.rejects(download(url, "file.bin"), /HTTP 404/);
-      server.close();
+test("download rejects on HTTP 404", { concurrency: false }, async () => {
+  await inTempDir(async () => {
+    const { download } = loadModule();
+    const { server, url } = await startServer((req, res) => {
+      res.writeHead(404);
+      res.end();
     });
-  },
-);
+    await assert.rejects(download(url, "file.bin"), /HTTP 404/);
+    server.close();
+  });
+});
 
-test(
-  "download writes file with 644 mode",
-  { concurrency: false },
-  async () => {
-    await inTempDir(async () => {
-      const { download } = loadModule();
-      const body = Buffer.from("z");
-      const { server, url } = await startServer((req, res) => {
-        res.writeHead(200, { "Content-Length": body.length });
-        res.end(body);
-      });
-      const dest = "file.bin";
-      await download(url, dest);
-      const stats = await fsp.stat(dest);
-      assert.equal((stats.mode & 0o777).toString(8), "644");
-      server.close();
+test("download writes file with 644 mode", { concurrency: false }, async () => {
+  await inTempDir(async () => {
+    const { download } = loadModule();
+    const body = Buffer.from("z");
+    const { server, url } = await startServer((req, res) => {
+      res.writeHead(200, { "Content-Length": body.length });
+      res.end(body);
     });
-  },
-);
+    const dest = "file.bin";
+    await download(url, dest);
+    const stats = await fsp.stat(dest);
+    assert.equal((stats.mode & 0o777).toString(8), "644");
+    server.close();
+  });
+});
 
 test(
   "fetchBoombox replaces placeholder with download",
@@ -675,7 +661,7 @@ test(
 test(
   "integration: fetch-assets retries on truncation and succeeds",
   { concurrency: false },
-  async () => {
+  async (t) => {
     await inTempDir(async (dir) => {
       const body = Buffer.from("integration");
       let first = true;
@@ -691,26 +677,33 @@ test(
       const logs = [];
       const { setRetryLogger } = loadModule();
       setRetryLogger((m) => logs.push(m));
-      await new Promise((resolve, reject) => {
-        execFile(
-          "node",
-          ["scripts/fetch-assets.cjs"],
-          {
-            env: { ...process.env, ASTRONAUT_MODEL_URL: url, BOOMBOX_MODEL_URL: url },
-            cwd: dir,
-          },
-          (err) => {
-            if (err) reject(err);
-            else resolve();
-          },
+      try {
+        await new Promise((resolve, reject) => {
+          execFile(
+            "node",
+            [join(__dirname, "../scripts/fetch-assets.cjs")],
+            {
+              env: {
+                ...process.env,
+                ASTRONAUT_MODEL_URL: url,
+                BOOMBOX_MODEL_URL: url,
+              },
+              cwd: dir,
+            },
+            (err) => {
+              if (err) reject(err);
+              else resolve();
+            },
+          );
+        });
+        assert.ok(logs.some((l) => /Retrying astronaut download/.test(l)));
+        const data = await fsp.readFile(
+          join("frontend", "public", "models", "astronaut.glb"),
         );
-      });
-      assert.ok(logs.some((l) => /Retrying astronaut download/.test(l)));
-      const data = await fsp.readFile(
-        join("frontend", "public", "models", "astronaut.glb"),
-      );
-      assert.equal(data.length, body.length);
-      server.close();
+        assert.equal(data.length, body.length);
+      } finally {
+        server.close();
+      }
     });
   },
 );
