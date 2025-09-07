@@ -1,3 +1,4 @@
+
 const test = require("node:test");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
@@ -61,12 +62,14 @@ test("download throws on http error", { concurrency: false }, async () => {
     const { download } = loadModule();
     const { server, url } = await startServer((req, res) => {
       res.writeHead(500);
+
       res.end("fail");
     });
     await assert.rejects(() => download(url, join(dir, "file")), /HTTP 500/);
     server.close();
   });
 });
+
 
 test(
   "fetchBoombox creates placeholder when URL missing",
@@ -99,6 +102,7 @@ test("fetchBoombox downloads model", { concurrency: false }, async () => {
   });
 });
 
+
 test(
   "fetchAstronaut throws when URL missing",
   { concurrency: false },
@@ -125,6 +129,7 @@ test("fetchAstronaut downloads file", { concurrency: false }, async () => {
     server.close();
   });
 });
+
 
 test(
   "fetchAstronaut retries on incomplete response and succeeds",
@@ -267,15 +272,18 @@ test("download aborts on socket destroy", { concurrency: false }, async () => {
   });
 });
 
-test("fetchBoombox throws on HTTP error", { concurrency: false }, async () => {
+
+test('fetchAstronaut fails after retries', { concurrency: false }, async () => {
   await inTempDir(async () => {
-    const { fetchBoombox } = loadModule();
+    const { fetchAstronaut } = loadModule();
+    const body = Buffer.from('astro');
     const { server, url } = await startServer((req, res) => {
-      res.writeHead(500);
-      res.end();
+      res.writeHead(200, { 'Content-Length': body.length });
+      res.end(body.slice(0, body.length - 1));
     });
-    process.env.BOOMBOX_MODEL_URL = url;
-    await assert.rejects(fetchBoombox, /HTTP 500/);
+    process.env.ASTRONAUT_MODEL_URL = url;
+    await assert.rejects(fetchAstronaut, /(incomplete response|terminated)/);
+
     server.close();
   });
 });
