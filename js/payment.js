@@ -46,7 +46,8 @@ import { setModelSrc } from "./modelLoader.js";
 let stripe = null;
 
 // Use a lightweight fallback model and upgrade to the high detail version after load.
-const FALLBACK_GLB_LOW = "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
+const FALLBACK_GLB_LOW =
+  "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
 const FALLBACK_GLB_HIGH = FALLBACK_GLB_LOW;
 const FALLBACK_GLB = FALLBACK_GLB_LOW;
 const PRICES = {
@@ -272,7 +273,6 @@ function ensureModelViewerLoaded() {
     }, 3000);
   });
 }
-
 
 function computeColorSlotsByTime() {
   const dtf = new Intl.DateTimeFormat("en-US", {
@@ -1155,6 +1155,8 @@ async function initPaymentPage() {
       // ignore if the element never upgrades
     }
   }
+  const storedModel = sanitizeUrl(localStorage.getItem("print2Model"));
+  setModelSrc(storedModel || FALLBACK_GLB);
 
   if (viewer && viewer.tagName.toLowerCase() === "img") {
     // The Luckybox page uses a static <img> preview, so skip the loading
@@ -1162,11 +1164,6 @@ async function initPaymentPage() {
     loader.hidden = true;
   } else {
     loader.hidden = false;
-    // Assign the model source only after the load/error listeners are in place
-    const storedModel = sanitizeUrl(localStorage.getItem("print2Model"));
-    if (viewer) {
-      setModelSrc(storedModel || FALLBACK_GLB);
-    }
   }
   // Load saved basket items unless this is the Luckybox page
   if (!window.location.pathname.endsWith("luckybox-payment.html")) {
