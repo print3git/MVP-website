@@ -590,7 +590,7 @@ test(
 test("download rejects malformed URL", { concurrency: false }, async (t) => {
   await inTempDir(async () => {
     const { download } = loadModule();
-    await assert.rejects(download("::::", "file.bin"), /Invalid URL/);
+    await assert.rejects(download("::::", "file.bin"), /Failed to parse URL/);
   });
 });
 

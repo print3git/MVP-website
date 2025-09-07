@@ -25,8 +25,13 @@ async function fetchBoombox() {
   const url = process.env.BOOMBOX_MODEL_URL;
 
   if (existsSync(dest)) {
-    console.log("boombox model already present");
-    return;
+    const size = await stat(dest)
+      .then((s) => s.size)
+      .catch(() => 0);
+    if (size > 0) {
+      console.log("boombox model already present");
+      return;
+    }
   }
 
   if (!url) {
@@ -105,6 +110,9 @@ async function fetchAstronaut() {
           return dest;
         } catch (err) {
           await unlink(dest).catch(() => {});
+          if (err && err.name === "TimeoutError") {
+            err = new Error("incomplete response");
+          }
           if (attempt === attempts) {
             lastAstronautUrl = undefined;
             throw err;
