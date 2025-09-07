@@ -277,7 +277,7 @@ const $ = (id) => document.getElementById(id);
 const refs = {
   previewImg: $("preview-img"),
   loader: $("loader"),
-  viewer: $("viewer"),
+  viewer: document.getElementById("viewer"),
   progressBar: $("progress-bar"),
   progressWrapper: $("progress-wrapper"),
   progressText: $("progress-text"),
@@ -331,7 +331,6 @@ let usingViewerProgress = false;
 let lastSnapshot = null;
 let errorFadeTimeout = null;
 let errorClearTimeout = null;
-
 
 async function updateWizardSlotCount() {
   if (!window.setWizardSlotCount) return;
@@ -866,6 +865,7 @@ async function init() {
       await customElements.whenDefined("model-viewer");
     } catch {}
   }
+  setModelSrc();
   syncUploadHeights();
   window.addEventListener("resize", syncUploadHeights);
   setStep("prompt");
@@ -935,34 +935,32 @@ async function init() {
       { once: true },
     );
   }
-  if (refs.viewer) {
-    refs.viewer.addEventListener("progress", (e) => {
-      if (!progressStart) progressStart = Date.now();
-      usingViewerProgress = true;
-      const pct = Math.round(e.detail.totalProgress * 100);
-      refs.progressBar.style.width = pct + "%";
-      const elapsed = Date.now() - progressStart;
-      if (pct < 100) {
-        const remaining = pct > 0 ? (elapsed * (100 - pct)) / pct : 0;
-        refs.progressText.textContent = `~${Math.ceil(remaining / 1000)}s remaining`;
-      } else {
-        stopProgress();
-      }
-    });
-    refs.viewer.addEventListener("load", showModel, { once: true });
-    refs.viewer.addEventListener(
-      "error",
-      () => {
-        // refs.viewer.src = FALLBACK_GLB;
-        showModel();
-      },
-      { once: true },
-    );
-    await refs.viewer.updateComplete;
-    try {
-      lastSnapshot = await captureModelSnapshot(refs.viewer.src);
-    } catch {}
-  }
+  refs.viewer.addEventListener("progress", (e) => {
+    if (!progressStart) progressStart = Date.now();
+    usingViewerProgress = true;
+    const pct = Math.round(e.detail.totalProgress * 100);
+    refs.progressBar.style.width = pct + "%";
+    const elapsed = Date.now() - progressStart;
+    if (pct < 100) {
+      const remaining = pct > 0 ? (elapsed * (100 - pct)) / pct : 0;
+      refs.progressText.textContent = `~${Math.ceil(remaining / 1000)}s remaining`;
+    } else {
+      stopProgress();
+    }
+  });
+  refs.viewer.addEventListener("load", showModel, { once: true });
+  refs.viewer.addEventListener(
+    "error",
+    () => {
+      // refs.viewer.src = FALLBACK_GLB;
+      showModel();
+    },
+    { once: true },
+  );
+  await refs.viewer.updateComplete;
+  try {
+    lastSnapshot = await captureModelSnapshot(refs.viewer.src);
+  } catch {}
   showModel();
   fetchProfile().then(() => {
     if (userProfile && refs.buyNowBtn) {
@@ -1020,7 +1018,7 @@ async function init() {
 
   // Ensure checkout uses the model currently shown in the viewer
   refs.checkoutBtn?.addEventListener("click", () => {
-    if (refs.viewer?.src) {
+    if (refs.viewer.src) {
       localStorage.setItem("print2Model", refs.viewer.src);
     }
     if (lastJobId) {
@@ -1043,7 +1041,7 @@ async function init() {
   });
 
   refs.addBasketBtn?.addEventListener("click", async () => {
-    if (!window.addToBasket || !refs.viewer?.src) return;
+    if (!window.addToBasket || !refs.viewer.src) return;
     let snapshot = refs.previewImg?.src;
     const host = (() => {
       try {
