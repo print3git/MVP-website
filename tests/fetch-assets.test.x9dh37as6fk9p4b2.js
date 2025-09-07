@@ -675,33 +675,20 @@ test(
         }
       });
       const logs = [];
-      const { setRetryLogger } = loadModule();
+      const { fetchAstronaut, fetchBoombox, setRetryLogger } = loadModule();
       setRetryLogger((m) => logs.push(m));
+      process.env.ASTRONAUT_MODEL_URL = url;
+      process.env.BOOMBOX_MODEL_URL = url;
       try {
-        await new Promise((resolve, reject) => {
-          execFile(
-            "node",
-            [join(__dirname, "../scripts/fetch-assets.cjs")],
-            {
-              env: {
-                ...process.env,
-                ASTRONAUT_MODEL_URL: url,
-                BOOMBOX_MODEL_URL: url,
-              },
-              cwd: dir,
-            },
-            (err) => {
-              if (err) reject(err);
-              else resolve();
-            },
-          );
-        });
+        await fetchAstronaut();
+        await fetchBoombox();
         assert.ok(logs.some((l) => /Retrying astronaut download/.test(l)));
         const data = await fsp.readFile(
           join("frontend", "public", "models", "astronaut.glb"),
         );
         assert.equal(data.length, body.length);
       } finally {
+        setRetryLogger((m) => console.warn(m));
         server.close();
       }
     });
