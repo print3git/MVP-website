@@ -203,8 +203,6 @@ async function run(args) {
         [
           "playwright",
           "test",
-          "--base-url",
-          env.PLAYWRIGHT_BASE_URL,
           ...relPwTests,
         ],
         { stdio: "inherit", env },
