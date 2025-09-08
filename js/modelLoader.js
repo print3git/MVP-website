@@ -1,5 +1,7 @@
-const DEFAULT_SRC =
+var DEFAULT_SRC =
+  globalThis.DEFAULT_SRC ||
   "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
+globalThis.DEFAULT_SRC = DEFAULT_SRC;
 
 /**
  * Updates the src attribute on a model-viewer element.
