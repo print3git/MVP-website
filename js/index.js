@@ -170,45 +170,41 @@ function ensureModelViewerLoaded() {
     "https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js";
   const localUrl = "js/model-viewer.min.js";
 
-  function loadScript(src, done) {
-    const s = document.createElement("script");
-    s.type = "module";
-    s.src = src;
-    s.onload = done;
-    s.onerror = done;
-    document.head.appendChild(s);
-  }
-
   return new Promise((resolve, reject) => {
-    const finalize = (attemptedLocal) => {
+    const finalize = () => {
       if (window.customElements?.get("model-viewer")) {
         resolve();
-      } else if (!attemptedLocal) {
-        window.modelViewerSource = "local";
-        loadScript(localUrl, () => finalize(true));
       } else {
         reject(new Error("model-viewer failed to load"));
       }
     };
 
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 3000);
-
-    fetch(cdnUrl, {
-      method: "HEAD",
-      mode: "no-cors",
-      signal: controller.signal,
-    })
-      .then(() => {
-        clearTimeout(timer);
-        window.modelViewerSource = "cdn";
-        loadScript(cdnUrl, () => finalize(false));
-      })
-      .catch(() => {
-        clearTimeout(timer);
-        window.modelViewerSource = "local";
-        loadScript(localUrl, () => finalize(true));
-      });
+    const s = document.createElement("script");
+    s.type = "module";
+    s.src = cdnUrl;
+    let timer;
+    s.onload = () => {
+      clearTimeout(timer);
+      window.modelViewerSource = "cdn";
+      finalize();
+    };
+    s.onerror = () => {
+      clearTimeout(timer);
+      s.remove();
+      window.modelViewerSource = "local";
+      const fallback = document.createElement("script");
+      fallback.type = "module";
+      fallback.src = localUrl;
+      fallback.onload = finalize;
+      fallback.onerror = () => reject(new Error("model-viewer failed to load"));
+      document.head.appendChild(fallback);
+    };
+    document.head.appendChild(s);
+    timer = setTimeout(() => {
+      if (!window.customElements?.get("model-viewer")) {
+        s.onerror();
+      }
+    }, 3000);
   });
 }
 
@@ -1177,12 +1173,21 @@ async function init() {
 
   const banner = document.getElementById("theme-banner");
   if (banner) {
-    function updateCountdown() {
+    initDiscountDeliveryBanner(banner);
+  }
+
+  function initDiscountDeliveryBanner(bannerEl) {
+    let countdownText = "";
+    let showDiscount = false;
+    bannerEl.style.opacity = "1";
+    bannerEl.style.transition = "opacity 1s";
+
+    function getCountdownText() {
       const now = new Date();
       const day = now.getDay();
       if (day === 0 || day === 6) {
-        banner.classList.add("hidden");
-        return;
+        bannerEl.classList.add("hidden");
+        return null;
       }
       const friday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
       friday.setDate(friday.getDate() + ((5 - day + 7) % 7));
@@ -1198,14 +1203,34 @@ async function init() {
         parts.push(`${hours.toString().padStart(2, "0")}h`);
         parts.push(`${minutes.toString().padStart(2, "0")}m`);
         parts.push(`${seconds.toString().padStart(2, "0")}s`);
-        banner.textContent = `${parts.join(" ")} left for weekend delivery`;
-        banner.classList.remove("hidden");
-      } else {
-        banner.classList.add("hidden");
+        return `${parts.join(" ")} left for weekend delivery`;
       }
+      bannerEl.classList.add("hidden");
+      return null;
     }
-    updateCountdown();
-    setInterval(updateCountdown, 1000);
+
+    function refresh() {
+      const text = getCountdownText();
+      if (!text) return;
+      countdownText = text;
+      bannerEl.classList.remove("hidden");
+      if (!showDiscount) bannerEl.textContent = countdownText;
+    }
+
+    function cycle() {
+      bannerEl.style.opacity = "0";
+      setTimeout(() => {
+        showDiscount = !showDiscount;
+        bannerEl.textContent = showDiscount
+          ? "24% off when you order 3 prints"
+          : countdownText;
+        bannerEl.style.opacity = "1";
+      }, 1000);
+    }
+
+    refresh();
+    setInterval(refresh, 1000);
+    setInterval(cycle, 7000);
   }
 
   document.getElementById("promo-optin")?.addEventListener("change", (e) => {
@@ -1235,7 +1260,17 @@ if (typeof process === "undefined" || process.env.NODE_ENV !== "test") {
 }
 
 if (typeof module !== "undefined") {
-  module.exports = { renderThumbnails, computeDailyPrintsSold, updateStats };
+  module.exports = {
+    renderThumbnails,
+    computeDailyPrintsSold,
+    updateStats,
+    initDiscountDeliveryBanner,
+  };
 }
 
-export { renderThumbnails, computeDailyPrintsSold, updateStats };
+export {
+  renderThumbnails,
+  computeDailyPrintsSold,
+  updateStats,
+  initDiscountDeliveryBanner,
+};

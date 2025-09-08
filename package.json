@@ -55,7 +55,8 @@
     "db:migrate:test": "npm run migrate --prefix backend",
     "prepare": "husky",
     "prepush": "echo \"(pre-push) no checks\"",
-    "test:fresh": "npm test"
+    "test:fresh": "npm test",
+    "test:banner": "node scripts/run-jest.js tests/frontend/discount-delivery-banner*.test.js"
   },
   "babel": {
     "presets": [
