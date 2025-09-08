@@ -24,7 +24,7 @@ for (const sig of ["exit", "SIGINT", "SIGTERM"]) {
 }
 
 const repoRoot = path.resolve(__dirname, "..");
-const backendRoot = path.join(repoRoot, "backend");
+ the backendRoot = path.join(repoRoot, "backend");
 
 function collectTests(dir) {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
@@ -211,11 +211,9 @@ async function run(args) {
     delete env.JEST_WORKER_ID;
     const port = 3000;
     await stopPwServer();
-    pwServer = spawn(
-      "npx",
-      ["http-server", repoRoot, "-p", String(port)],
-      { stdio: "ignore" },
-    );
+    pwServer = spawn("npx", ["http-server", repoRoot, "-p", String(port)], {
+      stdio: "ignore",
+    });
     try {
       await waitOn({
         resources: [`http://localhost:${port}`],
@@ -223,11 +221,7 @@ async function run(args) {
       });
       const res = spawnSync(
         "npx",
-        [
-          "playwright",
-          "test",
-          ...relPwTests,
-        ],
+        ["playwright", "test", ...relPwTests],
         { stdio: "inherit", env },
       );
       exitCode = res.status ?? 1;
