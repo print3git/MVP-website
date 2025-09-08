@@ -15,7 +15,8 @@ function ensureModelViewerLoaded() {
       const s = document.createElement("script");
       s.type = "module";
       s.src = src;
-      s.onload = resolve;
+      s.onload = () =>
+        window.customElements.whenDefined("model-viewer").then(resolve);
       s.onerror = reject;
       document.head.appendChild(s);
     });
@@ -24,16 +25,11 @@ function ensureModelViewerLoaded() {
   return loadScript(cdnUrl).catch(() => loadScript(localUrl));
 }
 
-window.addEventListener("DOMContentLoaded", async () => {
-  try {
-    await ensureModelViewerLoaded();
-    document.querySelectorAll("model-viewer").forEach((el) => {
-      el.src = MODEL_SRC;
-      if (!el.getAttribute("environment-image")) {
-        el.setAttribute("environment-image", ENV_SRC);
-      }
-    });
-  } catch (err) {
-    console.error("model-viewer still unavailable", err);
-  }
+window.addEventListener?.("DOMContentLoaded", async () => {
+  const el = document.querySelector('[data-testid="viewer"]');
+  await ensureModelViewerLoaded();
+  if (el) el.setAttribute("src", MODEL_SRC);
+  el?.setAttribute("environment-image", ENV_SRC);
 });
+
+export { MODEL_SRC, ENV_SRC, ensureModelViewerLoaded };
