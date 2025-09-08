@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/test";
 import { waitForModelViewer, intercept } from "./utils";
 
 test.beforeEach(async ({ page }) => {
+  // Forward browser console and failed network requests to the test logs
   page.on("console", (msg) => console.log("PAGE LOG:", msg.text()));
   page.on("requestfailed", (req) =>
     console.log("REQUEST FAIL:", req.url(), req.failure()),
