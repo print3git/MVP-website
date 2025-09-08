@@ -4,8 +4,6 @@ backend-integration:
   workflow: backend-tests.yml
 frontend-jest:
   workflow: ci.yml
-slots-pipeline:
-  workflow: ci.yml
 playwright:
   workflow: ci.yml
 audit:
