@@ -24,7 +24,7 @@ for (const sig of ["exit", "SIGINT", "SIGTERM"]) {
 }
 
 const repoRoot = path.resolve(__dirname, "..");
- the backendRoot = path.join(repoRoot, "backend");
+const backendRoot = path.join(repoRoot, "backend");
 
 function collectTests(dir) {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
