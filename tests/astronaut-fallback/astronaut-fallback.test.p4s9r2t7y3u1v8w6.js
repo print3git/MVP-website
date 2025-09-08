@@ -323,13 +323,28 @@ describe("modelViewerFallback.js behaviour", () => {
       );
       const document = dom.window.document;
       const window = dom.window;
-      window.customElements = { get: () => true };
-      loadModule(file, { document, window });
-      window.document.dispatchEvent(new window.Event("DOMContentLoaded"));
-      const viewers = document.querySelectorAll("model-viewer");
-      viewers.forEach((v) =>
-        expect(v.getAttribute("src")).toMatch(/Astronaut\.glb$/),
+      const originalDescriptor = Object.getOwnPropertyDescriptor(
+        window,
+        "customElements",
       );
+      Object.defineProperty(window, "customElements", {
+        value: { get: () => true },
+        configurable: true,
+      });
+      try {
+        loadModule(file, { document, window });
+        window.document.dispatchEvent(new window.Event("DOMContentLoaded"));
+        const viewers = document.querySelectorAll("model-viewer");
+        viewers.forEach((v) =>
+          expect(v.getAttribute("src")).toMatch(/Astronaut\.glb$/),
+        );
+      } finally {
+        if (originalDescriptor) {
+          Object.defineProperty(window, "customElements", originalDescriptor);
+        } else {
+          delete window.customElements;
+        }
+      }
     },
   );
 
@@ -343,13 +358,28 @@ describe("modelViewerFallback.js behaviour", () => {
       );
       const document = dom.window.document;
       const window = dom.window;
-      window.customElements = { get: () => true };
-      loadModule(file, { document, window });
-      window.document.dispatchEvent(new window.Event("DOMContentLoaded"));
-      const viewers = document.querySelectorAll("model-viewer");
-      viewers.forEach((v) =>
-        expect(v.getAttribute("environment-image")).toMatch(/neutral\.hdr$/),
+      const originalDescriptor = Object.getOwnPropertyDescriptor(
+        window,
+        "customElements",
       );
+      Object.defineProperty(window, "customElements", {
+        value: { get: () => true },
+        configurable: true,
+      });
+      try {
+        loadModule(file, { document, window });
+        window.document.dispatchEvent(new window.Event("DOMContentLoaded"));
+        const viewers = document.querySelectorAll("model-viewer");
+        viewers.forEach((v) =>
+          expect(v.getAttribute("environment-image")).toMatch(/neutral\.hdr$/),
+        );
+      } finally {
+        if (originalDescriptor) {
+          Object.defineProperty(window, "customElements", originalDescriptor);
+        } else {
+          delete window.customElements;
+        }
+      }
     },
   );
 });
