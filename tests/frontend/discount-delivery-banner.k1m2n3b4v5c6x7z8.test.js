@@ -24,11 +24,13 @@ describe("Discount/delivery banner", () => {
     jest.advanceTimersByTime(ms);
   }
 
-  test("shows countdown on init", () => {
-    expect(banner.textContent).toMatch(/left for weekend delivery/);
+  test("shows discount on init", () => {
+    expect(banner.textContent).toBe("24% off when you order 3 prints");
   });
 
   test("countdown includes phrase", () => {
+    advance(7000);
+    advance(1000);
     expect(banner.textContent).toContain("left for weekend delivery");
   });
 
@@ -37,19 +39,19 @@ describe("Discount/delivery banner", () => {
     expect(banner.style.opacity).toBe("0");
   });
 
-  test("discount message appears after rotation", () => {
+  test("countdown message appears after rotation", () => {
     advance(7000);
     advance(1000);
-    expect(banner.textContent).toBe("24% off when you order 3 prints");
+    expect(banner.textContent).toMatch(/left for weekend delivery/);
   });
 
-  test("returns to countdown after second rotation", () => {
+  test("returns to discount after second rotation", () => {
     advance(7000);
     advance(1000);
     advance(7000);
     expect(banner.style.opacity).toBe("0");
     advance(1000);
-    expect(banner.textContent).toMatch(/left for weekend delivery/);
+    expect(banner.textContent).toBe("24% off when you order 3 prints");
   });
 
   test("opacity resets after transition", () => {
@@ -74,6 +76,8 @@ describe("Discount/delivery banner", () => {
   });
 
   test("countdown updates over time", () => {
+    advance(7000);
+    advance(1000);
     const first = banner.textContent;
     advance(1000);
     const second = banner.textContent;
@@ -81,8 +85,6 @@ describe("Discount/delivery banner", () => {
   });
 
   test("banner remains visible during discount", () => {
-    advance(7000);
-    advance(1000);
     expect(banner.classList.contains("hidden")).toBe(false);
   });
 });

@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 const fs = require("fs");
 const path = require("path");
+const { spawnSync, spawn } = require("child_process");
+const waitOn = require("wait-on");
 
 const repoRoot = path.resolve(__dirname, "..");
 const backendRoot = path.join(repoRoot, "backend");
@@ -88,6 +90,16 @@ async function run(args) {
   const skipNetChecks = process.env.SKIP_NET_CHECKS === "1";
 
   args = verifyFiles(args);
+  const pwTests = [];
+  const jestArgs = [];
+  for (const p of args) {
+    if (/\.e2e\.(?:spec|test)(?:\.[^.]+)?\.(js|ts|tsx)$/.test(p)) {
+      pwTests.push(p);
+    } else {
+      jestArgs.push(p);
+    }
+  }
+  args = jestArgs;
   console.log("run-jest cwd:", process.cwd());
   const corePath = resolveFromPaths("@jest/core");
   if (!corePath) {
@@ -168,11 +180,42 @@ async function run(args) {
       return p;
     });
   }
+  let exitCode = 0;
   if (parsed._.length) {
     parsed.runTestsByPath = true;
+    const { results } = await runCLI(parsed, [process.cwd()]);
+    exitCode = results.success ? 0 : 1;
   }
-  const { results } = await runCLI(parsed, [process.cwd()]);
-  process.exit(results.success ? 0 : 1);
+  if (!exitCode && pwTests.length) {
+    const relPwTests = pwTests.map((p) => path.relative(repoRoot, p));
+    const env = { ...process.env };
+    delete env.JEST_WORKER_ID;
+    const port = 3000;
+    const server = spawn(
+      "npx",
+      ["http-server", repoRoot, "-p", String(port)],
+      { stdio: "ignore" },
+    );
+    try {
+      await waitOn({
+        resources: [`http://localhost:${port}`],
+        timeout: 30000,
+      });
+      const res = spawnSync(
+        "npx",
+        [
+          "playwright",
+          "test",
+          ...relPwTests,
+        ],
+        { stdio: "inherit", env },
+      );
+      exitCode = res.status ?? 1;
+    } finally {
+      server.kill();
+    }
+  }
+  process.exit(exitCode);
 }
 
 if (require.main === module) {
