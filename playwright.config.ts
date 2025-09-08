@@ -3,11 +3,6 @@ import { defineConfig } from "@playwright/test";
 export default defineConfig({
   testDir: "./tests/astronaut-fallback",
   timeout: 30 * 1000,
-  webServer: {
-    command: "npx http-server . -p 3000",
-    port: 3000,
-    reuseExistingServer: true,
-  },
   use: {
     browserName: "chromium",
     baseURL: "http://localhost:3000",
