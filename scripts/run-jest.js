@@ -186,7 +186,8 @@ async function run(args) {
     exitCode = results.success ? 0 : 1;
   }
   if (!exitCode && pwTests.length) {
-    const res = spawnSync("npx", ["playwright", "test", ...pwTests], {
+    const relPwTests = pwTests.map((p) => path.relative(repoRoot, p));
+    const res = spawnSync("npx", ["playwright", "test", ...relPwTests], {
       stdio: "inherit",
     });
     exitCode = res.status || 1;
