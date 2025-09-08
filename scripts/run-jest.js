@@ -187,10 +187,13 @@ async function run(args) {
   }
   if (!exitCode && pwTests.length) {
     const relPwTests = pwTests.map((p) => path.relative(repoRoot, p));
+    const env = { ...process.env };
+    delete env.JEST_WORKER_ID;
     const res = spawnSync("npx", ["playwright", "test", ...relPwTests], {
       stdio: "inherit",
+      env,
     });
-    exitCode = res.status || 1;
+    exitCode = res.status ?? 1;
   }
   process.exit(exitCode);
 }
