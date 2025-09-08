@@ -1,6 +1,13 @@
 import { test, expect } from "@playwright/test";
 import { waitForModelViewer, intercept } from "./utils";
 
+test.beforeEach(async ({ page }) => {
+  page.on("console", (msg) => console.log("PAGE LOG:", msg.text()));
+  page.on("requestfailed", (req) =>
+    console.log("REQUEST FAIL:", req.url(), req.failure()),
+  );
+});
+
 test.describe("Basic rendering", () => {
   test("Index loads model-viewer and astronaut model", async ({ page }) => {
     const modelReq = await intercept(page, "Astronaut.glb");
