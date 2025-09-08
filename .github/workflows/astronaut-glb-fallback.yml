@@ -1,4 +1,4 @@
-name: astronaut .glb fallback: fetch and display, on index and payment page
+name: "astronaut .glb fallback: fetch and display, on index and payment page"
 
 on:
   push:
