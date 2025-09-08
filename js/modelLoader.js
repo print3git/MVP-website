@@ -1,4 +1,6 @@
-const DEFAULT_SRC = "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
+const DEFAULT_SRC =
+  "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
+globalThis.DEFAULT_SRC = DEFAULT_SRC;
 
 function setModelSrc(viewer, url) {
   if (!viewer) return;

@@ -1,6 +1,8 @@
 const MODEL_SRC = "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
 const ENV_SRC =
   "https://modelviewer.dev/shared-assets/environments/neutral.hdr";
+globalThis.MODEL_SRC = MODEL_SRC;
+globalThis.ENV_SRC = ENV_SRC;
 
 function ensureModelViewerLoaded() {
   if (window.customElements?.get("model-viewer")) {
