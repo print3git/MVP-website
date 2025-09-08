@@ -5,6 +5,6 @@ export default defineConfig({
   timeout: 30 * 1000,
   use: {
     browserName: "chromium",
-    baseURL: process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3000",
+    baseURL: "http://localhost:3000",
   },
 });
