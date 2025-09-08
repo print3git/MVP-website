@@ -398,6 +398,16 @@ Run the full CI suite for linting, type checks, backend tests and accessibility 
 npm run ci
 ```
 
+The astronaut fallback feature includes both unit and end‑to‑end tests:
+
+```bash
+# Jest unit tests
+npm test
+
+# Playwright end-to-end tests
+npm run test:astronaut-fallback:playwright
+```
+
 For a quick end-to-end sanity check, run:
 
 ```bash

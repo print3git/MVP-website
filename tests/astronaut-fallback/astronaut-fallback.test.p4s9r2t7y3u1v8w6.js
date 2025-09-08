@@ -1,3 +1,7 @@
+/**
+ * Unit tests for astronaut fallback logic using JSDOM mocks.
+ * For real browser coverage see `astronaut-fallback.e2e.spec.q4h7c2n5r9k1m8s6.ts`.
+ */
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
@@ -383,4 +387,8 @@ describe("modelViewerFallback.js behaviour", () => {
       }
     },
   );
+});
+
+describe("playwright end-to-end coverage", () => {
+  test("see astronaut-fallback.e2e.spec.q4h7c2n5r9k1m8s6.ts", () => {});
 });

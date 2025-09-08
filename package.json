@@ -56,7 +56,9 @@
     "prepare": "husky",
     "prepush": "echo \"(pre-push) no checks\"",
     "test:fresh": "npm test",
-    "test:banner": "node scripts/run-jest.js tests/frontend/discount-delivery-banner*.test.js"
+    "test:banner": "node scripts/run-jest.js tests/frontend/discount-delivery-banner*.test.js",
+    "serve": "node scripts/serve.js",
+    "test:astronaut-fallback:playwright": "playwright test tests/astronaut-fallback/astronaut-fallback.e2e.spec.q4h7c2n5r9k1m8s6.ts"
   },
   "babel": {
     "presets": [
