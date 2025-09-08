@@ -1,6 +1,8 @@
 import { test, expect } from "@playwright/test";
 import { waitForModelViewer, intercept } from "./utils";
 
+const STATIC_BASE = process.env.STATIC_SERVER_URL || "http://localhost:3000";
+
 test.beforeEach(async ({ page }) => {
   // Forward browser console and failed network requests to the test logs
   page.on("console", (msg) => console.log("PAGE LOG:", msg.text()));
@@ -13,7 +15,7 @@ test.describe("Basic rendering", () => {
   test("Index loads model-viewer and astronaut model", async ({ page }) => {
     const modelReq = await intercept(page, "Astronaut.glb");
     const envReq = await intercept(page, "neutral.hdr");
-    await page.goto("/index.html");
+    await page.goto(`${STATIC_BASE}/index.html`);
     await waitForModelViewer(page);
     expect(modelReq.length).toBeGreaterThan(0);
     expect(modelReq[0].url()).toMatch(/Astronaut\.glb$/);
@@ -26,7 +28,7 @@ test.describe("Basic rendering", () => {
   }) => {
     const modelReq = await intercept(page, "Astronaut.glb");
     const envReq = await intercept(page, "neutral.hdr");
-    await page.goto("/payment.html");
+    await page.goto(`${STATIC_BASE}/payment.html`);
     await waitForModelViewer(page);
     expect(modelReq.length).toBeGreaterThan(0);
     expect(envReq.length).toBeGreaterThan(0);
@@ -36,7 +38,7 @@ test.describe("Basic rendering", () => {
 test.describe("Custom src parameter", () => {
   test("modelLoader.js applies custom ?model url", async ({ page }) => {
     const custom = "https://example.com/a.glb";
-    await page.goto(`/index.html?model=${encodeURIComponent(custom)}`);
+    await page.goto(`${STATIC_BASE}/index.html?model=${encodeURIComponent(custom)}`);
     await waitForModelViewer(page);
     await expect(page.locator("model-viewer")).toHaveAttribute("src", custom);
   });
@@ -44,7 +46,7 @@ test.describe("Custom src parameter", () => {
   const invalid = ["", "null", "undefined", "0", "false"];
   for (const val of invalid) {
     test(`Fallback to default for ?model=${val}`, async ({ page }) => {
-      await page.goto(`/index.html?model=${val}`);
+      await page.goto(`${STATIC_BASE}/index.html?model=${val}`);
       await waitForModelViewer(page);
       await expect(page.locator("model-viewer")).toHaveAttribute(
         "src",
@@ -56,7 +58,7 @@ test.describe("Custom src parameter", () => {
 
 test.describe("Script loading behaviour", () => {
   test("Remote CDN script success path", async ({ page }) => {
-    await page.goto("/index.html");
+    await page.goto(`${STATIC_BASE}/index.html`);
     await waitForModelViewer(page);
     const scripts = page.locator('script[src*="model-viewer"]');
     await expect(scripts).toHaveCount(1);
@@ -75,7 +77,7 @@ test.describe("Script loading behaviour", () => {
       (route) => route.abort(),
     );
     const localReqs = await intercept(page, "js/model-viewer.min.js");
-    await page.goto("/index.html");
+    await page.goto(`${STATIC_BASE}/index.html`);
     await waitForModelViewer(page);
     expect(localReqs.length).toBeGreaterThan(0);
     expect(
@@ -89,8 +91,8 @@ test.describe("Multiple model-viewers", () => {
     const content = `
       <html>
       <head>
-        <script type="module" src="/js/modelLoader.js"></script>
-        <script type="module" src="/js/modelViewerFallback.js"></script>
+        <script type="module" src="${STATIC_BASE}/js/modelLoader.js"></script>
+        <script type="module" src="${STATIC_BASE}/js/modelViewerFallback.js"></script>
       </head>
       <body>
         ${"<model-viewer></model-viewer>".repeat(5)}
@@ -120,8 +122,8 @@ test.describe("Removal of element", () => {
     await page.setContent(`
       <html>
       <head>
-        <script type="module" src="/js/modelLoader.js"></script>
-        <script type="module" src="/js/modelViewerFallback.js"></script>
+        <script type="module" src="${STATIC_BASE}/js/modelLoader.js"></script>
+        <script type="module" src="${STATIC_BASE}/js/modelViewerFallback.js"></script>
       </head>
       <body></body>
       </html>
@@ -140,7 +142,7 @@ test.describe("Network edge cases", () => {
     await page.route("**/neutral.hdr", (route) =>
       route.fulfill({ status: 404 }),
     );
-    await page.goto("/index.html");
+    await page.goto(`${STATIC_BASE}/index.html`);
     await waitForModelViewer(page);
     expect(errors.some((e) => e.includes("neutral.hdr"))).toBe(true);
     await expect(page.locator("model-viewer")).not.toHaveAttribute(
@@ -159,7 +161,7 @@ test.describe("Network edge cases", () => {
     await page.route("**/Astronaut.glb", (route) =>
       route.fulfill({ status: 404 }),
     );
-    await page.goto("/index.html");
+    await page.goto(`${STATIC_BASE}/index.html`);
     await page.waitForLoadState("load");
     const expectedError =
       "GET https://modelviewer.dev/shared-assets/models/Astronaut.glb 404 (Not Found)";
@@ -170,7 +172,7 @@ test.describe("Network edge cases", () => {
 test.describe("Timing conditions", () => {
   test("DOMContentLoaded triggers load only once", async ({ page }) => {
     const modelReq = await intercept(page, "Astronaut.glb");
-    await page.goto("/index.html");
+    await page.goto(`${STATIC_BASE}/index.html`);
     await waitForModelViewer(page);
     expect(modelReq.length).toBe(1);
     await page.reload();
@@ -180,7 +182,7 @@ test.describe("Timing conditions", () => {
 
 test.describe("Visual sanity snapshot", () => {
   test("captures screenshot of model-viewer", async ({ page }) => {
-    await page.goto("/index.html");
+    await page.goto(`${STATIC_BASE}/index.html`);
     await waitForModelViewer(page);
     const buf = await page.locator("model-viewer").screenshot();
     expect(buf.length).toBeGreaterThan(0);

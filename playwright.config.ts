@@ -5,6 +5,7 @@ export default defineConfig({
   timeout: 30 * 1000,
   use: {
     browserName: "chromium",
-    baseURL: "http://localhost:3000",
+    // Point Playwright to the backend server so API routes are available
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3001",
   },
 });

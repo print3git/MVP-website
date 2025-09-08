@@ -4,22 +4,33 @@ const path = require("path");
 const { spawnSync, spawn } = require("child_process");
 const waitOn = require("wait-on");
 
-let pwServer;
+let staticServer;
+let backendServer;
 
-async function stopPwServer() {
-  if (pwServer && !pwServer.killed) {
-    const proc = pwServer;
-    pwServer = null;
-    proc.kill();
-    await new Promise((resolve) => proc.once("exit", resolve));
-  } else {
-    pwServer = null;
-  }
+async function stopServers() {
+  const toStop = [staticServer, backendServer];
+  staticServer = null;
+  backendServer = null;
+  await Promise.all(
+    toStop.map(
+      (srv) =>
+        new Promise((resolve) => {
+          if (srv && !srv.killed) {
+            srv.kill();
+            srv.once("exit", resolve);
+          } else {
+            resolve();
+          }
+        }),
+    ),
+  );
 }
 
 for (const sig of ["exit", "SIGINT", "SIGTERM"]) {
   process.on(sig, () => {
-    if (pwServer && !pwServer.killed) pwServer.kill();
+    for (const srv of [staticServer, backendServer]) {
+      if (srv && !srv.killed) srv.kill();
+    }
   });
 }
 
@@ -209,24 +220,40 @@ async function run(args) {
     const relPwTests = pwTests.map((p) => path.relative(repoRoot, p));
     const env = { ...process.env };
     delete env.JEST_WORKER_ID;
-    const port = 3000;
-    await stopPwServer();
-    pwServer = spawn("npx", ["http-server", repoRoot, "-p", String(port)], {
+    const staticPort = 3000;
+    const backendPort = 3001;
+    await stopServers();
+    backendServer = spawn("npm", ["start"], {
+      cwd: backendRoot,
+      env: { ...env, PORT: String(backendPort) },
+      stdio: "ignore",
+    });
+    staticServer = spawn("npx", ["http-server", repoRoot, "-p", String(staticPort)], {
       stdio: "ignore",
     });
     try {
       await waitOn({
-        resources: [`http://localhost:${port}`],
+        resources: [
+          `http://localhost:${staticPort}/index.html`,
+          `http://localhost:${backendPort}/healthz`,
+        ],
         timeout: 30000,
       });
       const res = spawnSync(
         "npx",
         ["playwright", "test", ...relPwTests],
-        { stdio: "inherit", env },
+        {
+          stdio: "inherit",
+          env: {
+            ...env,
+            PLAYWRIGHT_BASE_URL: `http://localhost:${backendPort}`,
+            STATIC_SERVER_URL: `http://localhost:${staticPort}`,
+          },
+        },
       );
       exitCode = res.status ?? 1;
     } finally {
-      await stopPwServer();
+      await stopServers();
     }
   }
   process.exit(exitCode);
