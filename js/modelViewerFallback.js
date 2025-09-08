@@ -28,7 +28,8 @@ function ensureModelViewerLoaded() {
     };
     s.onerror = () => {
       clearTimeout(timer);
-      s.remove();
+      s.remove?.();
+      s.parentNode?.removeChild(s);
       const fallback = document.createElement("script");
       fallback.type = "module";
       fallback.src = localUrl;
