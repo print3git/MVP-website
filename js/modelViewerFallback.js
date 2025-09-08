@@ -46,17 +46,23 @@ function ensureModelViewerLoaded() {
   });
 }
 
-document.addEventListener?.("DOMContentLoaded", async () => {
+document.addEventListener?.("DOMContentLoaded", () => {
   const elements = document.querySelectorAll("model-viewer");
-  await ensureModelViewerLoaded();
-  elements.forEach((el) => {
-    if (!el.hasAttribute("src")) {
-      el.setAttribute("src", MODEL_SRC);
-    }
-    if (!el.hasAttribute("environment-image")) {
-      el.setAttribute("environment-image", ENV_SRC);
-    }
-  });
+  const applyAttrs = () => {
+    elements.forEach((el) => {
+      if (!el.hasAttribute("src")) {
+        el.setAttribute("src", MODEL_SRC);
+      }
+      if (!el.hasAttribute("environment-image")) {
+        el.setAttribute("environment-image", ENV_SRC);
+      }
+    });
+  };
+  if (window.customElements?.get("model-viewer")) {
+    applyAttrs();
+  } else {
+    ensureModelViewerLoaded().then(applyAttrs);
+  }
 });
 
 export { MODEL_SRC, ENV_SRC, ensureModelViewerLoaded };
