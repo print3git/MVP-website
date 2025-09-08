@@ -26,10 +26,16 @@ function ensureModelViewerLoaded() {
 }
 
 window.addEventListener?.("DOMContentLoaded", async () => {
-  const el = document.querySelector('[data-testid="viewer"]');
+  const elements = document.querySelectorAll("model-viewer");
   await ensureModelViewerLoaded();
-  if (el) el.setAttribute("src", MODEL_SRC);
-  el?.setAttribute("environment-image", ENV_SRC);
+  elements.forEach((el) => {
+    if (!el.hasAttribute("src")) {
+      el.setAttribute("src", MODEL_SRC);
+    }
+    if (!el.hasAttribute("environment-image")) {
+      el.setAttribute("environment-image", ENV_SRC);
+    }
+  });
 });
 
 export { MODEL_SRC, ENV_SRC, ensureModelViewerLoaded };
