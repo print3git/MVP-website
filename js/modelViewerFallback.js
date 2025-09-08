@@ -30,7 +30,7 @@ function ensureModelViewerLoaded() {
   return loadScript(cdnUrl).catch(() => loadScript(localUrl));
 }
 
-window.addEventListener?.("DOMContentLoaded", async () => {
+document.addEventListener?.("DOMContentLoaded", async () => {
   const elements = document.querySelectorAll("model-viewer");
   await ensureModelViewerLoaded();
   elements.forEach((el) => {
