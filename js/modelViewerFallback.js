@@ -15,8 +15,13 @@ function ensureModelViewerLoaded() {
       const s = document.createElement("script");
       s.type = "module";
       s.src = src;
-      s.onload = () =>
-        window.customElements.whenDefined("model-viewer").then(resolve);
+      s.onload = () => {
+        if (window.customElements?.whenDefined) {
+          window.customElements.whenDefined("model-viewer").then(resolve);
+        } else {
+          resolve();
+        }
+      };
       s.onerror = reject;
       document.head.appendChild(s);
     });
