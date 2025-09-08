@@ -11,11 +11,10 @@ function ensureModelViewerLoaded() {
 
   return new Promise((resolve, reject) => {
     const finalize = () => {
-      if (window.customElements?.get("model-viewer")) {
-        resolve();
-      } else {
-        reject(new Error("model-viewer failed to load"));
+      if (!window.customElements?.get("model-viewer")) {
+        console.error("model-viewer custom element is not registered");
       }
+      resolve();
     };
 
     const s = document.createElement("script");
