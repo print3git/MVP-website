@@ -849,9 +849,10 @@ refs.submitBtn.addEventListener("click", async () => {
 
 function initDiscountDeliveryBanner(bannerEl) {
   let countdownText = "";
-  let showDiscount = false;
+  let showDiscount = true;
   bannerEl.style.opacity = "1";
   bannerEl.style.transition = "opacity 1s";
+  bannerEl.textContent = "24% off when you order 3 prints";
 
   function getCountdownText() {
     const now = new Date();
