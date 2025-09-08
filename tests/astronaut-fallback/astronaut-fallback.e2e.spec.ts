@@ -160,7 +160,9 @@ test.describe("Network edge cases", () => {
     );
     await page.goto("/index.html");
     await page.waitForLoadState("load");
-    expect(errors.some((e) => e.includes("Astronaut"))).toBe(true);
+    const expectedError =
+      "GET https://modelviewer.dev/shared-assets/models/Astronaut.glb 404 (Not Found)";
+    expect(errors).toContain(expectedError);
   });
 });
 
