@@ -10,24 +10,40 @@ function ensureModelViewerLoaded() {
     "https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js";
   const localUrl = "js/model-viewer.min.js";
 
-  function loadScript(src) {
-    return new Promise((resolve, reject) => {
-      const s = document.createElement("script");
-      s.type = "module";
-      s.src = src;
-      s.onload = () => {
-        if (window.customElements?.whenDefined) {
-          window.customElements.whenDefined("model-viewer").then(resolve);
-        } else {
-          resolve();
-        }
-      };
-      s.onerror = reject;
-      document.head.appendChild(s);
-    });
-  }
+  return new Promise((resolve, reject) => {
+    const finalize = () => {
+      if (window.customElements?.get("model-viewer")) {
+        resolve();
+      } else {
+        reject(new Error("model-viewer failed to load"));
+      }
+    };
 
-  return loadScript(cdnUrl).catch(() => loadScript(localUrl));
+    const s = document.createElement("script");
+    s.type = "module";
+    s.src = cdnUrl;
+    let timer;
+    s.onload = () => {
+      clearTimeout(timer);
+      finalize();
+    };
+    s.onerror = () => {
+      clearTimeout(timer);
+      s.remove();
+      const fallback = document.createElement("script");
+      fallback.type = "module";
+      fallback.src = localUrl;
+      fallback.onload = finalize;
+      fallback.onerror = () => reject(new Error("model-viewer failed to load"));
+      document.head.appendChild(fallback);
+    };
+    document.head.appendChild(s);
+    timer = setTimeout(() => {
+      if (!window.customElements?.get("model-viewer")) {
+        s.onerror();
+      }
+    }, 3000);
+  });
 }
 
 window.addEventListener?.("DOMContentLoaded", async () => {
