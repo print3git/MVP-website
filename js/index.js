@@ -170,45 +170,41 @@ function ensureModelViewerLoaded() {
     "https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js";
   const localUrl = "js/model-viewer.min.js";
 
-  function loadScript(src, done) {
-    const s = document.createElement("script");
-    s.type = "module";
-    s.src = src;
-    s.onload = done;
-    s.onerror = done;
-    document.head.appendChild(s);
-  }
-
   return new Promise((resolve, reject) => {
-    const finalize = (attemptedLocal) => {
+    const finalize = () => {
       if (window.customElements?.get("model-viewer")) {
         resolve();
-      } else if (!attemptedLocal) {
-        window.modelViewerSource = "local";
-        loadScript(localUrl, () => finalize(true));
       } else {
         reject(new Error("model-viewer failed to load"));
       }
     };
 
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 3000);
-
-    fetch(cdnUrl, {
-      method: "HEAD",
-      mode: "no-cors",
-      signal: controller.signal,
-    })
-      .then(() => {
-        clearTimeout(timer);
-        window.modelViewerSource = "cdn";
-        loadScript(cdnUrl, () => finalize(false));
-      })
-      .catch(() => {
-        clearTimeout(timer);
-        window.modelViewerSource = "local";
-        loadScript(localUrl, () => finalize(true));
-      });
+    const s = document.createElement("script");
+    s.type = "module";
+    s.src = cdnUrl;
+    let timer;
+    s.onload = () => {
+      clearTimeout(timer);
+      window.modelViewerSource = "cdn";
+      finalize();
+    };
+    s.onerror = () => {
+      clearTimeout(timer);
+      s.remove();
+      window.modelViewerSource = "local";
+      const fallback = document.createElement("script");
+      fallback.type = "module";
+      fallback.src = localUrl;
+      fallback.onload = finalize;
+      fallback.onerror = () => reject(new Error("model-viewer failed to load"));
+      document.head.appendChild(fallback);
+    };
+    document.head.appendChild(s);
+    timer = setTimeout(() => {
+      if (!window.customElements?.get("model-viewer")) {
+        s.onerror();
+      }
+    }, 3000);
   });
 }
 
