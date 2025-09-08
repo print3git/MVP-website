@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 const fs = require("fs");
 const path = require("path");
-const { spawnSync } = require("child_process");
+const { spawnSync, spawn } = require("child_process");
+const waitOn = require("wait-on");
 
 const repoRoot = path.resolve(__dirname, "..");
 const backendRoot = path.join(repoRoot, "backend");
@@ -189,11 +190,29 @@ async function run(args) {
     const relPwTests = pwTests.map((p) => path.relative(repoRoot, p));
     const env = { ...process.env };
     delete env.JEST_WORKER_ID;
-    const res = spawnSync("npx", ["playwright", "test", ...relPwTests], {
-      stdio: "inherit",
-      env,
+    const port = 3000;
+    env.PLAYWRIGHT_BASE_URL = `http://localhost:${port}`;
+    const server = spawn("node", [path.join(__dirname, "serve.js")], {
+      stdio: "ignore",
+      env: { ...env, PORT: port },
     });
-    exitCode = res.status ?? 1;
+    try {
+      await waitOn({ resources: [env.PLAYWRIGHT_BASE_URL], timeout: 30000 });
+      const res = spawnSync(
+        "npx",
+        [
+          "playwright",
+          "test",
+          "--base-url",
+          env.PLAYWRIGHT_BASE_URL,
+          ...relPwTests,
+        ],
+        { stdio: "inherit", env },
+      );
+      exitCode = res.status ?? 1;
+    } finally {
+      server.kill();
+    }
   }
   process.exit(exitCode);
 }
