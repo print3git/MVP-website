@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 const fs = require("fs");
 const path = require("path");
+const { spawnSync } = require("child_process");
 
 const repoRoot = path.resolve(__dirname, "..");
 const backendRoot = path.join(repoRoot, "backend");
@@ -88,6 +89,16 @@ async function run(args) {
   const skipNetChecks = process.env.SKIP_NET_CHECKS === "1";
 
   args = verifyFiles(args);
+  const pwTests = [];
+  const jestArgs = [];
+  for (const p of args) {
+    if (/\.e2e\.(?:spec|test)(?:\.[^.]+)?\.(js|ts|tsx)$/.test(p)) {
+      pwTests.push(p);
+    } else {
+      jestArgs.push(p);
+    }
+  }
+  args = jestArgs;
   console.log("run-jest cwd:", process.cwd());
   const corePath = resolveFromPaths("@jest/core");
   if (!corePath) {
@@ -168,11 +179,19 @@ async function run(args) {
       return p;
     });
   }
+  let exitCode = 0;
   if (parsed._.length) {
     parsed.runTestsByPath = true;
+    const { results } = await runCLI(parsed, [process.cwd()]);
+    exitCode = results.success ? 0 : 1;
   }
-  const { results } = await runCLI(parsed, [process.cwd()]);
-  process.exit(results.success ? 0 : 1);
+  if (!exitCode && pwTests.length) {
+    const res = spawnSync("npx", ["playwright", "test", ...pwTests], {
+      stdio: "inherit",
+    });
+    exitCode = res.status || 1;
+  }
+  process.exit(exitCode);
 }
 
 if (require.main === module) {
