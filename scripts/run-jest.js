@@ -4,6 +4,25 @@ const path = require("path");
 const { spawnSync, spawn } = require("child_process");
 const waitOn = require("wait-on");
 
+let pwServer;
+
+async function stopPwServer() {
+  if (pwServer && !pwServer.killed) {
+    const proc = pwServer;
+    pwServer = null;
+    proc.kill();
+    await new Promise((resolve) => proc.once("exit", resolve));
+  } else {
+    pwServer = null;
+  }
+}
+
+for (const sig of ["exit", "SIGINT", "SIGTERM"]) {
+  process.on(sig, () => {
+    if (pwServer && !pwServer.killed) pwServer.kill();
+  });
+}
+
 const repoRoot = path.resolve(__dirname, "..");
 const backendRoot = path.join(repoRoot, "backend");
 
@@ -191,7 +210,8 @@ async function run(args) {
     const env = { ...process.env };
     delete env.JEST_WORKER_ID;
     const port = 3000;
-    const server = spawn(
+    await stopPwServer();
+    pwServer = spawn(
       "npx",
       ["http-server", repoRoot, "-p", String(port)],
       { stdio: "ignore" },
@@ -212,7 +232,7 @@ async function run(args) {
       );
       exitCode = res.status ?? 1;
     } finally {
-      server.kill();
+      await stopPwServer();
     }
   }
   process.exit(exitCode);

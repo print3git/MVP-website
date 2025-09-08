@@ -6,7 +6,7 @@ export default defineConfig({
   webServer: {
     command: "npx http-server . -p 3000",
     port: 3000,
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: true,
   },
   use: {
     browserName: "chromium",
