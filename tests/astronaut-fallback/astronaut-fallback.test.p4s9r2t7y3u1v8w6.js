@@ -5,7 +5,8 @@ const { JSDOM } = require("jsdom");
 
 function loadModule(file, context) {
   const code = fs.readFileSync(file, "utf8").replace(/export\s+/g, "");
-  vm.createContext(context);
+  const timers = { setTimeout, clearTimeout };
+  vm.createContext(Object.assign(context, timers));
   vm.runInContext(code, context);
   return context;
 }
