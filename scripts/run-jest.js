@@ -191,13 +191,16 @@ async function run(args) {
     const env = { ...process.env };
     delete env.JEST_WORKER_ID;
     const port = 3000;
-    env.PLAYWRIGHT_BASE_URL = `http://localhost:${port}`;
-    const server = spawn("node", [path.join(__dirname, "serve.js")], {
-      stdio: "ignore",
-      env: { ...env, PORT: port },
-    });
+    const server = spawn(
+      "npx",
+      ["http-server", repoRoot, "-p", String(port)],
+      { stdio: "ignore" },
+    );
     try {
-      await waitOn({ resources: [env.PLAYWRIGHT_BASE_URL], timeout: 30000 });
+      await waitOn({
+        resources: [`http://localhost:${port}`],
+        timeout: 30000,
+      });
       const res = spawnSync(
         "npx",
         [
