@@ -22,7 +22,7 @@ async function download(url, dest) {
 
 async function fetchBoombox() {
   const dest = join("frontend", "public", "models", "boombox.glb");
-  const url = process.env.BOOMBOX_MODEL_URL;
+  const url = process.env.BOOMBOX_GLB_URL;
 
   if (existsSync(dest)) {
     const size = await stat(dest)
@@ -35,7 +35,7 @@ async function fetchBoombox() {
   }
 
   if (!url) {
-    console.warn("BOOMBOX_MODEL_URL not set; creating placeholder file");
+    console.warn("BOOMBOX_GLB_URL not set; creating placeholder file");
     await ensureDir(dest);
     await writeFile(dest, "");
     return;
@@ -54,11 +54,11 @@ function setRetryLogger(fn) {
 
 async function fetchAstronaut() {
   const dest = join("frontend", "public", "models", "astronaut.glb");
-  const url = process.env.ASTRONAUT_MODEL_URL;
+  const url = process.env.ASTRONAUT_GLB_URL;
 
   if (!url) {
     await unlink(dest).catch(() => {});
-    throw new Error("ASTRONAUT_MODEL_URL not set");
+    throw new Error("ASTRONAUT_GLB_URL not set");
   }
 
   try {
