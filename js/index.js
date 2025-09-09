@@ -178,8 +178,7 @@ function ensureModelViewerLoaded() {
       fallback.type = "module";
       fallback.src = localUrl;
       fallback.onload = resolve;
-      fallback.onerror = () =>
-        reject(new Error("model-viewer failed to load"));
+      fallback.onerror = () => reject(new Error("model-viewer failed to load"));
       document.head.appendChild(fallback);
     };
     document.head.appendChild(s);
@@ -250,7 +249,8 @@ async function updateStats() {
 const $ = (id) => document.getElementById(id);
 const refs = {
   previewImg: $("preview-img"),
-  viewer: document.getElementById("viewer"),
+  viewer:
+    document.getElementById("viewer") || document.getElementById("glb-viewer"),
   demoNote: $("demo-note"),
   demoClose: $("demo-note-close"),
   promptInput: $("promptInput"),
@@ -381,7 +381,6 @@ async function captureModelSnapshot(url) {
   return result;
 }
 
-
 const hideAll = () => {
   refs.previewImg.style.display = "none";
 
@@ -402,8 +401,7 @@ const showLoader = () => {
   if (typeof refs.viewer.play === "function") {
     refs.viewer.play();
   }
-
-  };
+};
 
 const showModel = () => {
   hideAll();
@@ -419,8 +417,7 @@ const showModel = () => {
     document.body.dataset.viewerReady = "true";
   }
 
-
-    // Force a render in case Safari paused the canvas while hidden
+  // Force a render in case Safari paused the canvas while hidden
   if (typeof refs.viewer.requestUpdate === "function") {
     refs.viewer.requestUpdate();
   }
@@ -750,7 +747,7 @@ refs.submitBtn.addEventListener("click", async () => {
 
     editsPending = false;
 
-      refs.viewer.src = url;
+    refs.viewer.src = url;
     await refs.viewer.updateComplete;
     showModel();
     if (window.addAutoItem) {
@@ -858,7 +855,7 @@ async function init() {
       await customElements.whenDefined("model-viewer");
     } catch {}
   }
-    refs.viewer.src = FALLBACK_GLB;
+  refs.viewer.src = FALLBACK_GLB;
   syncUploadHeights();
   window.addEventListener("resize", syncUploadHeights);
   setStep("prompt");
