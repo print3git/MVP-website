@@ -39,6 +39,11 @@ import {
   }
 })();
 
+const _migratedModel = localStorage.getItem("print2Model");
+if (_migratedModel !== null && !sanitizeUrl(_migratedModel)) {
+  localStorage.removeItem("print2Model");
+}
+
 // Initialize Stripe after the library loads to avoid breaking the rest of the
 // page if the network request for Stripe fails. This variable will be assigned
 // once the DOM content is ready.
@@ -96,8 +101,10 @@ let checkoutItems = [];
 let currentIndex = 0;
 
 function sanitizeUrl(url) {
+  if (!url || url === "null" || url === "undefined") return "";
   try {
-    return new URL(url, window.location.origin).href;
+    const href = new URL(url, window.location.origin).href;
+    return href.endsWith(".glb") ? href : "";
   } catch {
     return "";
   }
@@ -261,8 +268,7 @@ function ensureModelViewerLoaded() {
       fallback.type = "module";
       fallback.src = localUrl;
       fallback.onload = resolve;
-      fallback.onerror = () =>
-        reject(new Error("model-viewer failed to load"));
+      fallback.onerror = () => reject(new Error("model-viewer failed to load"));
       document.head.appendChild(fallback);
     };
 
