@@ -17,16 +17,16 @@ SPACE_DIR="${SPACE_DIR:-Sparc3D-Space}"
 
 # Base URLs for cloning and pushing (allow override via env)
 SPACE_URL="${SPACE_URL:-https://huggingface.co/spaces/print2/Sparc3D}"
-MODEL_URL="${MODEL_URL:-https://huggingface.co/print2/Sparc3D.git}"
+MODEL_REPO="${MODEL_REPO:-https://huggingface.co/print2/Sparc3D.git}"
 
 
 # Ensure URLs end with .git
 [[ $SPACE_URL != *.git ]] && SPACE_URL+=".git"
-[[ $MODEL_URL != *.git ]] && MODEL_URL+=".git"
+[[ $MODEL_REPO != *.git ]] && MODEL_REPO+=".git"
 
 # Authenticated URLs (token hidden in logs)
 auth_space_url="https://user:${HF_TOKEN}@${SPACE_URL#https://}"
-auth_model_url="https://user:${HF_TOKEN}@${MODEL_URL#https://}"
+auth_model_url="https://user:${HF_TOKEN}@${MODEL_REPO#https://}"
 
 # Diagnosis checks
 auth_status="✔"; url_status="✔"; net_status="✔"; branch_status="✔"

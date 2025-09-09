@@ -48,8 +48,7 @@ export async function loadModel(url, containerId, key = "default") {
         url,
         (gltf) => {
           scene.add(gltf.scene);
-          window.markModelLoaded(key);
-          resolve();
+            resolve();
         },
         undefined,
         reject,

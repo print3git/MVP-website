@@ -4,7 +4,6 @@ import {
   adjustedSlots,
   recordSlotPurchase,
 } from "./print-slots.js";
-import { setModelSrc } from "./modelLoader.js";
 
 (() => {
   try {
@@ -248,31 +247,17 @@ function ensureModelViewerLoaded() {
   ) {
     return Promise.resolve();
   }
-  const cdnUrl =
-    "https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js";
-  const localUrl = "js/model-viewer.min.js";
-  return new Promise((resolve) => {
-    const s = document.createElement("script");
-    s.type = "module";
-    s.src = cdnUrl;
-    s.onload = resolve;
-    s.onerror = () => {
-      s.remove();
-      const fallback = document.createElement("script");
-      fallback.type = "module";
-      fallback.src = localUrl;
-      fallback.onload = resolve;
-      fallback.onerror = resolve;
-      document.head.appendChild(fallback);
-    };
-    document.head.appendChild(s);
-    setTimeout(() => {
-      if (!window.customElements?.get("model-viewer")) {
-        s.onerror();
-      }
-    }, 3000);
-  });
-}
+    const cdnUrl =
+      "https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js";
+    return new Promise((resolve) => {
+      const s = document.createElement("script");
+      s.type = "module";
+      s.src = cdnUrl;
+      s.onload = resolve;
+      s.onerror = resolve;
+      document.head.appendChild(s);
+    });
+  }
 
 function computeColorSlotsByTime() {
   const dtf = new Intl.DateTimeFormat("en-US", {
@@ -950,7 +935,7 @@ async function initPaymentPage() {
         }
       } else {
         const src = sanitizeUrl(item.modelUrl);
-        setModelSrc(src || storedModel || FALLBACK_GLB);
+        viewer.src = src || storedModel || FALLBACK_GLB;
       }
     }
     if (item.jobId) localStorage.setItem("print2JobId", item.jobId);
@@ -1156,7 +1141,7 @@ async function initPaymentPage() {
     }
   }
   const storedModel = sanitizeUrl(localStorage.getItem("print2Model"));
-  setModelSrc(storedModel || FALLBACK_GLB);
+  viewer.src = storedModel || FALLBACK_GLB;
 
   if (viewer && viewer.tagName.toLowerCase() === "img") {
     // The Luckybox page uses a static <img> preview, so skip the loading

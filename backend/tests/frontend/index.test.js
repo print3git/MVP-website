@@ -16,12 +16,11 @@ function loadHtml(rel, extra = []) {
   return dom.serialize();
 }
 
-let html = loadHtml("../../../index.html", [
-  'script[src$="index.js"]',
-  'script[src$="theme.js"]',
-  'script[src$="subredditLanding.js"]',
-  'script[src$="modelViewerTouchFix.js"]',
-]);
+  let html = loadHtml("../../../index.html", [
+    'script[src$="index.js"]',
+    'script[src$="theme.js"]',
+    'script[src$="subredditLanding.js"]',
+  ]);
 
 describe("index validatePrompt", () => {
   function setup() {

@@ -32,7 +32,6 @@ module.exports = [
       // front-end code will be linted separately
       // "js/**", // removed to enable frontend linting
       // "*.html", // removed to enable frontend linting
-      "js/model-viewer.min.js",
       "service-worker.js",
       "admin/**",
       "docs/**",

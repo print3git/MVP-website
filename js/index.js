@@ -6,7 +6,6 @@ import {
   adjustedSlots,
   updatePrintRunInfo,
 } from "./print-slots.js";
-import { setModelSrc } from "./modelLoader.js";
 
 (() => {
   try {
@@ -166,47 +165,17 @@ function ensureModelViewerLoaded() {
     return Promise.resolve();
   }
 
-  const cdnUrl =
-    "https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js";
-  const localUrl = "js/model-viewer.min.js";
-
-  return new Promise((resolve, reject) => {
-    const finalize = () => {
-      if (window.customElements?.get("model-viewer")) {
-        resolve();
-      } else {
-        reject(new Error("model-viewer failed to load"));
-      }
-    };
-
-    const s = document.createElement("script");
-    s.type = "module";
-    s.src = cdnUrl;
-    let timer;
-    s.onload = () => {
-      clearTimeout(timer);
-      window.modelViewerSource = "cdn";
-      finalize();
-    };
-    s.onerror = () => {
-      clearTimeout(timer);
-      s.remove();
-      window.modelViewerSource = "local";
-      const fallback = document.createElement("script");
-      fallback.type = "module";
-      fallback.src = localUrl;
-      fallback.onload = finalize;
-      fallback.onerror = () => reject(new Error("model-viewer failed to load"));
-      document.head.appendChild(fallback);
-    };
-    document.head.appendChild(s);
-    timer = setTimeout(() => {
-      if (!window.customElements?.get("model-viewer")) {
-        s.onerror();
-      }
-    }, 3000);
-  });
-}
+    const cdnUrl =
+      "https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js";
+    return new Promise((resolve, reject) => {
+      const s = document.createElement("script");
+      s.type = "module";
+      s.src = cdnUrl;
+      s.onload = resolve;
+      s.onerror = () => reject(new Error("model-viewer failed to load"));
+      document.head.appendChild(s);
+    });
+  }
 
 if (
   localStorage.getItem("hasGenerated") === "true" ||
@@ -274,9 +243,6 @@ const refs = {
   previewImg: $("preview-img"),
   loader: $("loader"),
   viewer: document.getElementById("viewer"),
-  progressBar: $("progress-bar"),
-  progressWrapper: $("progress-wrapper"),
-  progressText: $("progress-text"),
   demoNote: $("demo-note"),
   demoClose: $("demo-note-close"),
   promptInput: $("promptInput"),
@@ -321,9 +287,6 @@ let userProfile = null;
 // Track when the prompt or images have been modified after a generation
 let editsPending = false;
 
-let progressInterval = null;
-let progressStart = null;
-let usingViewerProgress = false;
 let lastSnapshot = null;
 let errorFadeTimeout = null;
 let errorClearTimeout = null;
@@ -410,35 +373,6 @@ async function captureModelSnapshot(url) {
   return result;
 }
 
-function startProgress(estimateMs = 20000) {
-  if (!refs.progressWrapper) return;
-  progressStart = Date.now();
-  usingViewerProgress = false;
-  refs.progressBar.style.width = "0%";
-  refs.progressWrapper.style.display = "block";
-  const tick = () => {
-    if (usingViewerProgress) return;
-    const elapsed = Date.now() - progressStart;
-    const pct = Math.min((elapsed / estimateMs) * 100, 99);
-    refs.progressBar.style.width = pct + "%";
-    const remaining = Math.max(estimateMs - elapsed, 0);
-    refs.progressText.textContent = `~${Math.ceil(remaining / 1000)}s remaining`;
-  };
-  tick();
-  clearInterval(progressInterval);
-  progressInterval = setInterval(tick, 500);
-}
-
-function stopProgress() {
-  if (!refs.progressWrapper) return;
-  clearInterval(progressInterval);
-  usingViewerProgress = false;
-  refs.progressBar.style.width = "100%";
-  refs.progressText.textContent = "";
-  setTimeout(() => {
-    refs.progressWrapper.style.display = "none";
-  }, 300);
-}
 
 const hideAll = () => {
   refs.previewImg.style.display = "none";
@@ -453,7 +387,7 @@ const hideAll = () => {
     delete document.body.dataset.viewerReady;
   }
 };
-const showLoader = (withProgress = true) => {
+const showLoader = () => {
   // Keep the viewer visible while showing the loader so the fallback model
   // remains on screen during generation and on failures.
   refs.previewImg.style.display = "none";
@@ -464,8 +398,7 @@ const showLoader = (withProgress = true) => {
   if (typeof refs.viewer.play === "function") {
     refs.viewer.play();
   }
-  if (withProgress) startProgress();
-};
+  };
 const showModel = () => {
   hideAll();
   refs.viewer.style.display = "block";
@@ -480,8 +413,7 @@ const showModel = () => {
     document.body.dataset.viewerReady = "true";
   }
 
-  stopProgress();
-  // Force a render in case Safari paused the canvas while hidden
+    // Force a render in case Safari paused the canvas while hidden
   if (typeof refs.viewer.requestUpdate === "function") {
     refs.viewer.requestUpdate();
   }
@@ -811,7 +743,7 @@ refs.submitBtn.addEventListener("click", async () => {
 
     editsPending = false;
 
-    setModelSrc(url);
+      refs.viewer.src = url;
     await refs.viewer.updateComplete;
     showModel();
     if (window.addAutoItem) {
@@ -919,7 +851,7 @@ async function init() {
       await customElements.whenDefined("model-viewer");
     } catch {}
   }
-  setModelSrc();
+    refs.viewer.src = FALLBACK_GLB;
   syncUploadHeights();
   window.addEventListener("resize", syncUploadHeights);
   setStep("prompt");
@@ -989,19 +921,6 @@ async function init() {
       { once: true },
     );
   }
-  refs.viewer.addEventListener("progress", (e) => {
-    if (!progressStart) progressStart = Date.now();
-    usingViewerProgress = true;
-    const pct = Math.round(e.detail.totalProgress * 100);
-    refs.progressBar.style.width = pct + "%";
-    const elapsed = Date.now() - progressStart;
-    if (pct < 100) {
-      const remaining = pct > 0 ? (elapsed * (100 - pct)) / pct : 0;
-      refs.progressText.textContent = `~${Math.ceil(remaining / 1000)}s remaining`;
-    } else {
-      stopProgress();
-    }
-  });
   refs.viewer.addEventListener("load", showModel, { once: true });
   refs.viewer.addEventListener(
     "error",

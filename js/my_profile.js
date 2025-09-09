@@ -249,14 +249,14 @@ async function loadDashboard() {
     }
     if (data.credits) {
       const used = data.credits.total - data.credits.remaining;
-      const bar = document.getElementById("progress-bar");
-      const text = document.getElementById("progress-text");
-      const percent = data.credits.total
-        ? Math.min(100, (used / data.credits.total) * 100)
-        : 0;
-      if (bar) bar.style.width = `${percent}%`;
-      if (text)
-        text.textContent = `${used} of ${data.credits.total} prints used`;
+        const percent = data.credits.total
+          ? Math.min(100, (used / data.credits.total) * 100)
+          : 0;
+        const bar = document.getElementById("usage-bar");
+        const text = document.getElementById("usage-text");
+        if (bar) bar.style.width = `${percent}%`;
+        if (text)
+          text.textContent = `${used} of ${data.credits.total} prints used`;
       if (data.credits.remaining === 0) {
         document.getElementById("upgrade-cta")?.classList.remove("hidden");
       }
@@ -424,9 +424,9 @@ async function loadCredits() {
     if (!res.ok) return;
     const data = await res.json();
     const used = data.total - data.remaining;
-    const bar = document.getElementById("progress-bar");
-    const text = document.getElementById("progress-text");
     const percent = data.total ? Math.min(100, (used / data.total) * 100) : 0;
+    const bar = document.getElementById("usage-bar");
+    const text = document.getElementById("usage-text");
     if (bar) bar.style.width = `${percent}%`;
     if (text) text.textContent = `${used} of ${data.total} prints used`;
     if (data.remaining === 0) {
