@@ -1,4 +1,4 @@
-const CACHE_NAME = "model-cache-v4";
+const CACHE_NAME = "model-cache-v5";
 // Cache only same-origin assets. Remote resources can fail to load when served
 // from the service worker cache, breaking the 3D viewer.
 const ASSETS = [
@@ -6,6 +6,8 @@ const ASSETS = [
   "js/rewardBadge.js",
   "js/basket.js",
   "js/trackingPixel.js",
+  "models/astronaut.glb",
+  "models/neutral.hdr",
 ];
 
 self.addEventListener("install", (event) => {
@@ -47,18 +49,3 @@ self.addEventListener("fetch", (event) => {
   }
 });
 
-self.addEventListener("message", (event) => {
-  if (event.data && event.data.type === "prefetch-models") {
-    event.waitUntil(
-      caches
-        .open(CACHE_NAME)
-        .then((cache) =>
-          Promise.all(
-            ASSETS.map((url) =>
-              fetch(url).then((resp) => cache.put(url, resp.clone())),
-            ),
-          ),
-        ),
-    );
-  }
-});

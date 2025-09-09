@@ -28,8 +28,6 @@
       type="module"
       src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js"
     ></script>
-    <script src="js/modelViewerTouchFix.js"></script>
-    <script src="js/model-ready-hook.js"></script>
     <script
       nomodule
       src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer-legacy.js"
@@ -116,12 +114,13 @@
         class="bg-[#2A2A2E] p-4 rounded-xl flex items-center space-x-4 border border-white/10"
       >
         <div data-testid="primary-model">
-          <model-viewer
-            src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
-            alt="Contest winner"
-            environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
-            camera-controls
-            auto-rotate
+        <model-viewer
+          poster="images/astro-image.png"
+          src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
+          alt="Contest winner"
+          environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
+          camera-controls
+          auto-rotate
             class="w-24 h-24 rounded-full"
             data-testid="model-viewer"
             role="img"
@@ -131,10 +130,8 @@
         <script>
           document
             .querySelector('[data-testid="model-viewer"]')
-            ?.addEventListener('load', () => window.markModelLoaded('competitions'));
           document
             .querySelector('#model-modal model-viewer')
-            ?.addEventListener('load', () => window.markModelLoaded('competitions'));
         </script>
         <div>
           <p>
@@ -288,15 +285,16 @@
             <line x1="6" y1="18" x2="18" y2="6" />
           </svg>
           <span class="sr-only">Close</span>
-        </button>
-        <model-viewer
-          src="about:blank"
-          alt="3D model preview"
-          environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
-          camera-controls
-          auto-rotate
-          class="w-full h-96 bg-[#2A2A2E] rounded-xl"
-        ></model-viewer>
+      </button>
+      <model-viewer
+        poster="images/astro-image.png"
+        src="about:blank"
+        alt="3D model preview"
+        environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
+        camera-controls
+        auto-rotate
+        class="w-full h-96 bg-[#2A2A2E] rounded-xl"
+      ></model-viewer>
         <div
           id="modal-action-panel"
           class="absolute bottom-4 left-4 right-4 flex justify-between items-end"
