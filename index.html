@@ -119,15 +119,16 @@
           class="relative w-full max-w-lg bg-[#2A2A2E] border border-white/10 rounded-3xl overflow-hidden"
           style="height: calc(18rem + 1cm)"
         >
-          <!-- Minimal, hard-coded viewer. 
-           DO NOT attach custom loaders, swap src via JS, or register SW prefetch for .glb/.hdr here. 
-           If future enhancements are needed, create a dedicated viewer module in /js/viewer/ with strict interfaces. -->
-          <model-viewer
-            id="glb-viewer"
-            src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
-            environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
-            camera-controls
-            auto-rotate
+        <!-- Minimal, hard-coded viewer.
+         DO NOT attach custom loaders, swap src via JS, or register SW prefetch for .glb/.hdr here.
+         If future enhancements are needed, create a dedicated viewer module in /js/viewer/ with strict interfaces. -->
+        <model-viewer
+          id="glb-viewer"
+          poster="images/astro-image.png"
+          src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
+          environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
+          camera-controls
+          auto-rotate
             loading="eager"
             alt="3D astronaut"
             style="width: 100%; height: 100%; display: block"

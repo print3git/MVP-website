@@ -14,7 +14,7 @@
       property="og:description"
       content="Browse and share 3D models created by the print3 community."
     />
-      <meta property="og:image" content="images/box%20logo.png" />
+    <meta property="og:image" content="images/box%20logo.png" />
     <script src="js/applyColorScheme.js"></script>
     <link rel="preconnect" href="https://modelviewer.dev" crossorigin />
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
@@ -225,6 +225,7 @@
                 class="carousel-slide flex-none p-4 flex items-center justify-center"
               >
                 <model-viewer
+                  poster="images/astro-image.png"
                   src="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BoomBox/glTF-Binary/BoomBox.glb"
                   alt="BoomBox model"
                   environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
@@ -270,13 +271,14 @@
               <div
                 class="carousel-slide flex-none p-4 flex flex-col sm:flex-row items-center justify-center gap-4"
               >
-                  <img
-                    src="images/astro-image.png"
-                    alt="Real-life print"
-                    loading="lazy"
-                    class="w-full sm:w-1/2 h-64 object-cover rounded-xl"
-                  />
+                <img
+                  src="images/astro-image.png"
+                  alt="Real-life print"
+                  loading="lazy"
+                  class="w-full sm:w-1/2 h-64 object-cover rounded-xl"
+                />
                 <model-viewer
+                  poster="images/astro-image.png"
                   src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
                   alt="3D model preview"
                   environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
@@ -346,6 +348,7 @@
           <span class="sr-only">Close</span>
         </button>
         <model-viewer
+          poster="images/astro-image.png"
           src="about:blank"
           alt="3D model preview"
           environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"

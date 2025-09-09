@@ -247,17 +247,17 @@ function ensureModelViewerLoaded() {
   ) {
     return Promise.resolve();
   }
-    const cdnUrl =
-      "https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js";
-    return new Promise((resolve) => {
-      const s = document.createElement("script");
-      s.type = "module";
-      s.src = cdnUrl;
-      s.onload = resolve;
-      s.onerror = resolve;
-      document.head.appendChild(s);
-    });
-  }
+  const cdnUrl =
+    "https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js";
+  return new Promise((resolve) => {
+    const s = document.createElement("script");
+    s.type = "module";
+    s.src = cdnUrl;
+    s.onload = resolve;
+    s.onerror = resolve;
+    document.head.appendChild(s);
+  });
+}
 
 function computeColorSlotsByTime() {
   const dtf = new Intl.DateTimeFormat("en-US", {
@@ -458,6 +458,14 @@ async function initPaymentPage() {
   const promoToggle = document.querySelector(".promo-toggle");
   const promoBox = document.querySelector(".promo-input");
   const surpriseToggle = document.getElementById("surprise-toggle");
+  viewer?.addEventListener("error", () => {
+    const img = document.getElementById("preview-img");
+    if (img) {
+      img.src = "images/astro-image.png";
+      img.style.display = "block";
+    }
+    if (viewer) viewer.style.display = "none";
+  });
   const recipientFields = document.getElementById("recipient-fields");
   const qtySelect = document.getElementById("print-qty");
   const qtyDec = document.getElementById("qty-decrement");
