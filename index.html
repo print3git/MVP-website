@@ -50,7 +50,6 @@
     <script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js"></script>
     <script nomodule src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer-legacy.js"></script>
 
-    <!-- 🔥 REMOVED: js/modelLoader.js (this was overriding the viewer) -->
 
     <style>
       html, body { min-height: 100%; width: 100%; height: 100%; margin: 0; padding: 0; overflow-x: hidden; }
@@ -194,10 +193,6 @@
     </div>
 
     <!-- 🔥 REMOVED viewer-affecting scripts:
-         js/model-ready-hook.js + inline markModelLoaded listener
-         js/modelViewerTouchFix.js
-         js/modelViewerFallback.js
-         js/modelLoader.js (already removed above)
          (left) your unrelated app scripts below -->
     <script type="module" src="js/wizard.js" defer></script>
     <script type="module" src="js/print-slots.js" defer></script>

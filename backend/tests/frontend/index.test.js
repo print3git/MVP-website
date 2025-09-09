@@ -20,7 +20,6 @@ let html = loadHtml("../../../index.html", [
   'script[src$="index.js"]',
   'script[src$="theme.js"]',
   'script[src$="subredditLanding.js"]',
-  'script[src$="modelViewerTouchFix.js"]',
 ]);
 
 describe("index validatePrompt", () => {

@@ -4,7 +4,6 @@ import {
   adjustedSlots,
   recordSlotPurchase,
 } from "./print-slots.js";
-import { setModelSrc } from "./modelLoader.js";
 
 (() => {
   try {
@@ -950,7 +949,7 @@ async function initPaymentPage() {
         }
       } else {
         const src = sanitizeUrl(item.modelUrl);
-        setModelSrc(src || storedModel || FALLBACK_GLB);
+        viewer?.setAttribute("src", src || storedModel || FALLBACK_GLB);
       }
     }
     if (item.jobId) localStorage.setItem("print2JobId", item.jobId);
@@ -1156,7 +1155,7 @@ async function initPaymentPage() {
     }
   }
   const storedModel = sanitizeUrl(localStorage.getItem("print2Model"));
-  setModelSrc(storedModel || FALLBACK_GLB);
+  viewer?.setAttribute("src", storedModel || FALLBACK_GLB);
 
   if (viewer && viewer.tagName.toLowerCase() === "img") {
     // The Luckybox page uses a static <img> preview, so skip the loading

@@ -107,4 +107,3 @@ test("rejects when both CDN and local scripts fail", async () => {
     /model-viewer failed to load/,
   );
 });
-});

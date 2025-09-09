@@ -6,7 +6,6 @@ import {
   adjustedSlots,
   updatePrintRunInfo,
 } from "./print-slots.js";
-import { setModelSrc } from "./modelLoader.js";
 
 (() => {
   try {
@@ -811,7 +810,7 @@ refs.submitBtn.addEventListener("click", async () => {
 
     editsPending = false;
 
-    setModelSrc(url);
+    refs.viewer?.setAttribute("src", url || FALLBACK_GLB);
     await refs.viewer.updateComplete;
     showModel();
     if (window.addAutoItem) {
@@ -919,7 +918,7 @@ async function init() {
       await customElements.whenDefined("model-viewer");
     } catch {}
   }
-  setModelSrc();
+  refs.viewer?.setAttribute("src", FALLBACK_GLB);
   syncUploadHeights();
   window.addEventListener("resize", syncUploadHeights);
   setStep("prompt");

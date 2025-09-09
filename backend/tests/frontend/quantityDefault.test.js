@@ -17,9 +17,7 @@ function loadHtml(rel, extra = []) {
 }
 
 function loadDom() {
-  const html = loadHtml("../../../payment.html", [
-    'script[src$="modelViewerTouchFix.js"]',
-  ]);
+  const html = loadHtml("../../../payment.html");
   const dom = new JSDOM(html, {
     runScripts: "dangerously",
     resources: "usable",
