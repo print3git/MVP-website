@@ -241,7 +241,6 @@ async function updateStats() {
 const $ = (id) => document.getElementById(id);
 const refs = {
   previewImg: $("preview-img"),
-  loader: $("loader"),
   viewer: document.getElementById("viewer"),
   demoNote: $("demo-note"),
   demoClose: $("demo-note-close"),
@@ -376,7 +375,6 @@ async function captureModelSnapshot(url) {
 
 const hideAll = () => {
   refs.previewImg.style.display = "none";
-  refs.loader.style.display = "none";
 
   refs.viewer.style.opacity = "0";
   refs.viewer.style.pointerEvents = "none";
@@ -388,17 +386,16 @@ const hideAll = () => {
   }
 };
 const showLoader = () => {
-  // Keep the viewer visible while showing the loader so the fallback model
-  // remains on screen during generation and on failures.
   refs.previewImg.style.display = "none";
-  refs.loader.style.display = "flex";
   refs.viewer.style.display = "block";
   refs.viewer.style.opacity = "1";
   refs.viewer.style.pointerEvents = "auto";
   if (typeof refs.viewer.play === "function") {
     refs.viewer.play();
   }
+
   };
+
 const showModel = () => {
   hideAll();
   refs.viewer.style.display = "block";
@@ -412,6 +409,7 @@ const showModel = () => {
   if (globalThis.document) {
     document.body.dataset.viewerReady = "true";
   }
+
 
     // Force a render in case Safari paused the canvas while hidden
   if (typeof refs.viewer.requestUpdate === "function") {
