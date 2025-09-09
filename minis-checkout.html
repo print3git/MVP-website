@@ -10,22 +10,8 @@
     <link rel="preconnect" href="https://js.stripe.com" crossorigin />
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-    <link rel="preconnect" href="https://modelviewer.dev" crossorigin />
 
-    <!-- Preload 3D assets -->
-    <link
-      rel="preload"
-      href="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
-      as="fetch"
-      fetchpriority="high"
-    />
-    <link
-      rel="preload"
-      href="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
-      as="fetch"
-      fetchpriority="high"
-      crossorigin
-    />
+    <!-- Removed 3D asset preloads -->
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -40,16 +26,7 @@
       referrerpolicy="no-referrer"
     />
 
-    <!-- model-viewer -->
-    <script
-      type="module"
-      src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js"
-    ></script>
-    <script
-      nomodule
-      src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer-legacy.js"
-      defer
-    ></script>
+    <!-- Removed model-viewer scripts -->
     <style>
       /* Add rainbow shimmer effect used on the index submit arrow */
       #multi-color-button {
@@ -169,7 +146,7 @@
         display: block;
       }
 
-      /* Hide model-viewer's built-in loading bar */
+      /* model-viewer removed */
     </style>
   </head>
 
@@ -252,18 +229,8 @@
               id="preview-img"
               src="https://placehold.co/600x400/2A2A2E/2A2A2E?text="
               class="object-contain h-full w-full"
-              style="display: none"
               alt="Preview image"
             />
-            <model-viewer
-              id="viewer"
-              poster="images/astro-image.png"
-              alt="3D astronaut"
-              environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
-              camera-controls
-              auto-rotate
-              style="width: 100%; height: 100%; display: block"
-            ></model-viewer>
             <p class="absolute top-2 left-2 text-red-300 text-xs">
               Only
               <span id="slot-count" style="visibility: hidden"></span> print

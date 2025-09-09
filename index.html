@@ -1,6 +1,6 @@
 <!doctype html>
 <!-- ============================🔥
-        index.html  (isolated, working astronaut viewer)
+        index.html
 ============================ -->
 <html lang="en">
   <head>
@@ -20,7 +20,6 @@
     <link rel="preconnect" href="https://cdn.tailwindcss.com" />
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
     <link rel="preconnect" href="https://cdn.jsdelivr.net" />
-    <link rel="preconnect" href="https://modelviewer.dev" />
 
     <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -38,17 +37,7 @@
     </noscript>
 
     <!-- Keep HDRI preload; remove boombox/data-model-href preload -->
-    <link
-      rel="preload"
-      href="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
-      as="fetch"
-      fetchpriority="high"
-      crossorigin
-    />
-
-    <!-- The ONLY viewer dependency -->
-    <script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js"></script>
-    <script nomodule src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer-legacy.js"></script>
+    <!-- Removed model-viewer dependency -->
 
     <!-- 🔥 REMOVED: js/modelLoader.js (this was overriding the viewer) -->
 
@@ -61,7 +50,7 @@
       .prompt-textarea { overflow-y: hidden; padding: 0; line-height: 1.75rem; max-height: calc(1.75rem * 4); }
       .has-generated #demo-note { display: none; }
 
-      model-viewer { touch-action: none; } /* OK to keep */
+      /* model-viewer removed */
 
       @keyframes purchaseFade { 0%{opacity:0}25%{opacity:1}75%{opacity:1}100%{opacity:0} }
       .purchase-fade { animation: purchaseFade 8s forwards; }
@@ -123,17 +112,7 @@
           class="relative w-full max-w-lg bg-[#2A2A2E] border border-white/10 rounded-3xl overflow-hidden"
           style="height: calc(18rem + 1cm)"
         >
-          <!-- 🔑 Minimal, hard-coded astronaut -->
-          <model-viewer
-            id="glb-viewer"
-            src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
-            environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
-            camera-controls
-            auto-rotate
-            loading="eager"
-            alt="3D astronaut"
-            style="width: 100%; height: 100%; display: block"
-          ></model-viewer>
+          <!-- 3D preview removed -->
 
           <!-- (kept) checkout UI -->
           <div id="checkout-container" class="absolute bottom-4 right-4 flex flex-col items-end">

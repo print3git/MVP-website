@@ -31,4 +31,3 @@ try {
 execSync("node scripts/run-npm-ci.js", { stdio: "inherit" });
 execSync("npm run build --workspaces=false", { stdio: "inherit" });
 execSync("npm test", { stdio: "inherit" });
-execSync("npm run test:astronaut-fallback:playwright", { stdio: "inherit" });

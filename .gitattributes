@@ -44,7 +44,6 @@ tests/**/__screenshots__/* -filter -diff -merge
 
 
 # 3D assets
-*.glb filter=lfs diff=lfs merge=lfs -text
 *.gltf filter=lfs diff=lfs merge=lfs -text
 *.hdr filter=lfs diff=lfs merge=lfs -text
 # Visual snapshots and large renders
