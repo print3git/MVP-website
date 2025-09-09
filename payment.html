@@ -236,13 +236,31 @@
       </div>
     </div>
 
-    <!-- Wizard banner (static) -->
-    <div class="fixed bottom-0 left-0 right-0 flex divide-x divide-[#1A1A1D] text-white font-semibold bg-[#1A1A1D] z-40">
-      <div class="flex-1 text-center py-2 bg-[#2A2A2E]">Create prompt</div>
-      <div class="flex-1 text-center py-2">Building model</div>
-      <div class="flex-1 text-center py-2">Purchase model</div>
+    <!-- Wizard banner -->
+    <div
+      id="wizard-banner"
+      class="fixed bottom-0 left-0 right-0 flex divide-x divide-[#1A1A1D] text-white font-semibold bg-[#1A1A1D] z-40"
+    >
+      <div id="wizard-step-prompt" class="flex-1 text-center py-2 bg-[#2A2A2E]">
+        Create prompt
+      </div>
+      <div id="wizard-step-building" class="flex-1 text-center py-2">
+        Building model
+      </div>
+
+      <div
+        id="wizard-step-purchase"
+        class="flex-1 text-center py-2 flex justify-center items-center pr-16"
+      >
+        <span
+          id="wizard-slots"
+          class="hidden text-[#30D5C8] mr-2 whitespace-nowrap"
+        ></span
+        ><span>Purchase model</span>
+      </div>
     </div>
 
+    <script type="module" src="js/wizard.js" defer></script>
     <script type="module" src="js/payment.js" defer></script>
   </body>
 </html>
