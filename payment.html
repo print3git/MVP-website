@@ -187,13 +187,17 @@
               </div>
             </div>
 
-            <!-- Payment CTA (static) -->
-            <button type="button" class="w-full bg-[#30D5C8] text-[#1A1A1D] py-3 rounded-xl font-semibold mt-2">
-              Pay £39.99
+            <!-- Payment CTA (dynamic) -->
+            <button
+              id="submit-payment"
+              type="button"
+              class="w-full bg-[#30D5C8] text-[#1A1A1D] py-3 rounded-xl font-semibold mt-2"
+            >
+              Pay
             </button>
 
             <div class="flex justify-between mt-2 mb-2 text-xs h-8">
-              <pre class="whitespace-pre-wrap text-right"></pre>
+              <pre id="price-breakdown" class="whitespace-pre-wrap text-right"></pre>
             </div>
           </form>
 
