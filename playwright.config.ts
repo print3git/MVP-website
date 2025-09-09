@@ -1,7 +1,7 @@
 import { defineConfig } from "@playwright/test";
 
 export default defineConfig({
-  testDir: "./tests/astronaut-fallback",
+  testDir: "./tests/e2e",
   timeout: 30 * 1000,
   webServer: {
     command: "npx http-server . -p 3000",
