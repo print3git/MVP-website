@@ -37,20 +37,11 @@
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
     </noscript>
 
-
+    <!-- Keep HDRI preload; remove boombox/data-model-href preload -->
     <link
       rel="preload"
-      href="models/astronaut.glb"
+      href="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
       as="fetch"
-      type="model/gltf-binary"
-      fetchpriority="high"
-      crossorigin
-    />
-    <link
-      rel="preload"
-      href="models/neutral.hdr"
-      as="fetch"
-      type="model/gltf-binary"
       fetchpriority="high"
       crossorigin
     />
@@ -59,6 +50,7 @@
     <script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js"></script>
     <script nomodule src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer-legacy.js"></script>
 
+    <!-- 🔥 REMOVED: js/modelLoader.js (this was overriding the viewer) -->
 
     <style>
       html, body { min-height: 100%; width: 100%; height: 100%; margin: 0; padding: 0; overflow-x: hidden; }
@@ -80,6 +72,9 @@
       .basket-bob { animation: basketBob .8s ease; }
     </style>
 
+    <!-- 🔥 IMPORTANT: remove Service Worker registration while debugging
+         (an installed SW can still hijack fetches even if you remove this code) -->
+    <!-- (removed) serviceWorker.register("service-worker.js"); -->
   </head>
 
   <body class="bg-[#1A1A1D] text-white font-sans flex flex-col">
@@ -128,17 +123,13 @@
           class="relative w-full max-w-lg bg-[#2A2A2E] border border-white/10 rounded-3xl overflow-hidden"
           style="height: calc(18rem + 1cm)"
         >
-
-          <!-- Minimal, hard-coded viewer. 
-           DO NOT attach custom loaders, swap src via JS, or register SW prefetch for .glb/.hdr here. 
-           If future enhancements are needed, create a dedicated viewer module in /js/viewer/ with strict interfaces. -->
+          <!-- 🔑 Minimal, hard-coded astronaut -->
           <model-viewer
             id="glb-viewer"
-            src="models/astronaut.glb"
-            environment-image="models/neutral.hdr"
+            src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
+            environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
             camera-controls
             auto-rotate
-
             loading="eager"
             alt="3D astronaut"
             style="width: 100%; height: 100%; display: block"
@@ -202,6 +193,12 @@
       <p>🚚 Free UK Shipping</p>
     </div>
 
+    <!-- 🔥 REMOVED viewer-affecting scripts:
+         js/model-ready-hook.js + inline markModelLoaded listener
+         js/modelViewerTouchFix.js
+         js/modelViewerFallback.js
+         js/modelLoader.js (already removed above)
+         (left) your unrelated app scripts below -->
     <script type="module" src="js/wizard.js" defer></script>
     <script type="module" src="js/print-slots.js" defer></script>
     <script type="module" src="js/index.js" defer></script>
@@ -280,5 +277,6 @@
       })();
     </script>
 
+    <!-- (removed) data-model-href mutator – not used anymore -->
   </body>
 </html>
