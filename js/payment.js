@@ -247,17 +247,26 @@ function ensureModelViewerLoaded() {
   ) {
     return Promise.resolve();
   }
-    const cdnUrl =
-      "https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js";
-    return new Promise((resolve) => {
-      const s = document.createElement("script");
-      s.type = "module";
-      s.src = cdnUrl;
-      s.onload = resolve;
-      s.onerror = resolve;
-      document.head.appendChild(s);
-    });
-  }
+  const cdnUrl =
+    "https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js";
+  const localUrl = "/js/vendor/model-viewer.min.js";
+  return new Promise((resolve, reject) => {
+    const s = document.createElement("script");
+    s.type = "module";
+    s.src = cdnUrl;
+    s.onload = resolve;
+    s.onerror = () => {
+      const fallback = document.createElement("script");
+      fallback.type = "module";
+      fallback.src = localUrl;
+      fallback.onload = resolve;
+      fallback.onerror = () =>
+        reject(new Error("model-viewer failed to load"));
+      document.head.appendChild(fallback);
+    };
+    document.head.appendChild(s);
+  });
+}
 
 function computeColorSlotsByTime() {
   const dtf = new Intl.DateTimeFormat("en-US", {
