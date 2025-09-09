@@ -6,7 +6,6 @@ import {
   adjustedSlots,
   updatePrintRunInfo,
 } from "./print-slots.js";
-import { setModelSrc } from "./modelLoader.js";
 
 (() => {
   try {
@@ -166,47 +165,17 @@ function ensureModelViewerLoaded() {
     return Promise.resolve();
   }
 
-  const cdnUrl =
-    "https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js";
-  const localUrl = "js/model-viewer.min.js";
-
-  return new Promise((resolve, reject) => {
-    const finalize = () => {
-      if (window.customElements?.get("model-viewer")) {
-        resolve();
-      } else {
-        reject(new Error("model-viewer failed to load"));
-      }
-    };
-
-    const s = document.createElement("script");
-    s.type = "module";
-    s.src = cdnUrl;
-    let timer;
-    s.onload = () => {
-      clearTimeout(timer);
-      window.modelViewerSource = "cdn";
-      finalize();
-    };
-    s.onerror = () => {
-      clearTimeout(timer);
-      s.remove();
-      window.modelViewerSource = "local";
-      const fallback = document.createElement("script");
-      fallback.type = "module";
-      fallback.src = localUrl;
-      fallback.onload = finalize;
-      fallback.onerror = () => reject(new Error("model-viewer failed to load"));
-      document.head.appendChild(fallback);
-    };
-    document.head.appendChild(s);
-    timer = setTimeout(() => {
-      if (!window.customElements?.get("model-viewer")) {
-        s.onerror();
-      }
-    }, 3000);
-  });
-}
+    const cdnUrl =
+      "https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js";
+    return new Promise((resolve, reject) => {
+      const s = document.createElement("script");
+      s.type = "module";
+      s.src = cdnUrl;
+      s.onload = resolve;
+      s.onerror = () => reject(new Error("model-viewer failed to load"));
+      document.head.appendChild(s);
+    });
+  }
 
 if (
   localStorage.getItem("hasGenerated") === "true" ||
@@ -403,6 +372,7 @@ async function captureModelSnapshot(url) {
   return result;
 }
 
+
 const hideAll = () => {
   refs.previewImg.style.display = "none";
 
@@ -416,8 +386,6 @@ const hideAll = () => {
   }
 };
 const showLoader = () => {
-  // Keep the viewer visible so the fallback model remains on screen during
-  // generation and on failures.
   refs.previewImg.style.display = "none";
   refs.viewer.style.display = "block";
   refs.viewer.style.opacity = "1";
@@ -425,7 +393,9 @@ const showLoader = () => {
   if (typeof refs.viewer.play === "function") {
     refs.viewer.play();
   }
-};
+
+  };
+
 const showModel = () => {
   hideAll();
   refs.viewer.style.display = "block";
@@ -440,7 +410,8 @@ const showModel = () => {
     document.body.dataset.viewerReady = "true";
   }
 
-  // Force a render in case Safari paused the canvas while hidden
+
+    // Force a render in case Safari paused the canvas while hidden
   if (typeof refs.viewer.requestUpdate === "function") {
     refs.viewer.requestUpdate();
   }
@@ -770,7 +741,7 @@ refs.submitBtn.addEventListener("click", async () => {
 
     editsPending = false;
 
-    setModelSrc(url);
+      refs.viewer.src = url;
     await refs.viewer.updateComplete;
     showModel();
     if (window.addAutoItem) {
@@ -878,7 +849,7 @@ async function init() {
       await customElements.whenDefined("model-viewer");
     } catch {}
   }
-  setModelSrc();
+    refs.viewer.src = FALLBACK_GLB;
   syncUploadHeights();
   window.addEventListener("resize", syncUploadHeights);
   setStep("prompt");

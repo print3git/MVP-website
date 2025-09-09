@@ -12,7 +12,6 @@
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
     <link rel="preconnect" href="https://modelviewer.dev" crossorigin />
 
-    <!-- REMOVED: data-model-href preload (boombox.glb) -->
     <!-- Keep HDRI preload (useful & harmless) -->
     <link
       rel="preload"
@@ -45,7 +44,6 @@
       src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer-legacy.js"
     ></script>
 
-    <!-- REMOVED: js/modelLoader.js -->
 
     <style>
       /* --- existing UI styles, unchanged --- */
@@ -128,7 +126,6 @@
       #pay-summary.visible { display: block; }
 
       /* Hide model-viewer’s built-in progress bar */
-      model-viewer::part(progress-bar) { display: none; }
     </style>
   </head>
 
@@ -416,9 +413,6 @@
     </div>
 
     <!-- Init scripts (SAFE SET — none touch <model-viewer>) -->
-    <!-- REMOVED: js/model-ready-hook.js block -->
-    <!-- REMOVED: js/modelViewerTouchFix.js -->
-    <!-- REMOVED: js/modelViewerFallback.js -->
     <!-- REMOVED: service worker registration/prefetch -->
 
     <script type="module" src="js/wizard.js" defer></script>
@@ -471,6 +465,5 @@
     <script type="module" src="js/saveList.js" defer></script>
     <script type="module" src="js/trackingPixel.js"></script>
 
-    <!-- REMOVED: bottom IIFE that mutated [data-model-href] -->
   </body>
 </html>

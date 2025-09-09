@@ -23,7 +23,6 @@
       type="module"
       src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js"
     ></script>
-    <script src="js/modelViewerTouchFix.js"></script>
   </head>
   <body class="bg-[#1A1A1D] text-white font-sans flex flex-col min-h-screen">
     <header class="relative flex items-center justify-between py-4 px-6">
@@ -225,12 +224,12 @@
         <h2 class="text-lg font-semibold mb-2">print2 Pro Usage</h2>
         <div class="w-full bg-white/20 rounded h-4">
           <div
-            id="progress-bar"
+              id="usage-bar"
             class="bg-blue-600 h-full rounded"
             style="width: 0%"
           ></div>
         </div>
-        <p id="progress-text" class="text-sm mt-2"></p>
+          <p id="usage-text" class="text-sm mt-2"></p>
         <p id="loyalty-info" class="text-sm mt-1"></p>
 
         <button
