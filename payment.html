@@ -143,7 +143,7 @@
                   type="button"
                   id="qty-decrement"
                   aria-label="Decrease quantity"
-                  class="w-[2.1rem] h-[2.1rem] flex items-center justify-center text-[1.05rem]"
+                  class="w-8 h-8 flex items-center justify-center text-[1.05rem]"
                 >
                   &minus;
                 </button>
@@ -152,30 +152,22 @@
                   type="number"
                   min="1"
                   value="2"
-                  class="w-[2.1rem] text-center bg-transparent appearance-none"
+                  class="w-8 text-center bg-transparent appearance-none"
                 />
                 <button
                   type="button"
                   id="qty-increment"
                   aria-label="Increase quantity"
-                  class="w-[2.1rem] h-[2.1rem] flex items-center justify-center text-[1.05rem]"
+                  class="w-8 h-8 flex items-center justify-center text-[1.05rem]"
                 >
                   +
                 </button>
               </div>
-              <p class="text-xs whitespace-nowrap ml-2 text-gray-400">Popular: keep one, gift one</p>
+              <p id="bulk-discount-msg" class="text-xs whitespace-nowrap ml-2 text-gray-400"></p>
             </div>
 
             <!-- Address / details (static) -->
             <div><input class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10" placeholder="Name" autocomplete="name" /></div>
-
-            <div class="relative">
-              <input class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10" placeholder="Name for etching (optional)" maxlength="20" disabled />
-              <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center gap-2 pl-2 hidden">
-                <div class="border-t-2 border-[#30D5C8] w-[20ch]"></div>
-                <span class="text-sm text-[#30D5C8] whitespace-nowrap">Multi-colour required</span>
-              </div>
-            </div>
 
             <div><input type="email" class="w-full p-2 rounded-md bg-[#1A1A1D] border border-white/10" placeholder="Email" autocomplete="email" /></div>
 
@@ -195,19 +187,23 @@
               </div>
             </div>
 
-            <!-- Payment CTA (static) -->
-            <button type="button" class="w-full bg-[#30D5C8] text-[#1A1A1D] py-3 rounded-xl font-semibold mt-2">
-              Pay £39.99
+            <!-- Payment CTA (dynamic) -->
+            <button
+              id="submit-payment"
+              type="button"
+              class="w-full bg-[#30D5C8] text-[#1A1A1D] py-3 rounded-xl font-semibold mt-2"
+            >
+              Pay
             </button>
 
             <div class="flex justify-between mt-2 mb-2 text-xs h-8">
-              <pre class="whitespace-pre-wrap text-right"></pre>
+              <pre id="price-breakdown" class="whitespace-pre-wrap text-right"></pre>
             </div>
           </form>
 
-          <!-- side badge (kept static; hidden as before) -->
+          <!-- side badge -->
           <div
-            style="position: absolute; left: calc(100% + 0.55cm); top: 85%; transform: translateY(-72%); visibility: hidden;"
+            style="position: absolute; left: calc(100% + 0.55cm); top: 85%; transform: translateY(-72%);"
             class="whitespace-nowrap text-sm pointer-events-none"
           >
             <p>🔒 Secure Checkout</p>
