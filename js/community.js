@@ -42,7 +42,7 @@ const FALLBACK_GLB =
 
 function handleModelError(e) {
   const img = document.createElement("img");
-  img.src = "images/astro-image.png";
+  img.src = "images/box logo.png";
   img.alt = "3D model preview unavailable";
   img.className = e.target.className;
   e.target.replaceWith(img);
@@ -392,7 +392,7 @@ function createViewerCard(modelUrl) {
     "viewer-card model-card relative bg-[#2A2A2E] border border-white/10 rounded-xl flex items-center justify-center cursor-pointer";
 
   div.dataset.model = modelUrl;
-  div.innerHTML = `<model-viewer src="${modelUrl}" alt="3D model preview" poster="images/astro-image.png" environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr" camera-controls auto-rotate loading="lazy" class="w-full h-full bg-[#2A2A2E] rounded-xl"></model-viewer>\n    <button class="purchase absolute bottom-1 right-1 font-bold text-lg py-1.5 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]" style="transform: scale(0.78); transform-origin: right bottom;">Buy from £29.99</button>`;
+  div.innerHTML = `<model-viewer src="${modelUrl}" alt="3D model preview" poster="images/box logo.png" environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr" camera-controls auto-rotate loading="lazy" class="w-full h-full bg-[#2A2A2E] rounded-xl"></model-viewer>\n    <button class="purchase absolute bottom-1 right-1 font-bold text-lg py-1.5 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]" style="transform: scale(0.78); transform-origin: right bottom;">Buy from £29.99</button>`;
   div
     .querySelector("model-viewer")
     ?.addEventListener("error", handleModelError);
