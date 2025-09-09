@@ -40,8 +40,17 @@
 
     <link
       rel="preload"
-      href="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
+      href="models/astronaut.glb"
       as="fetch"
+      type="model/gltf-binary"
+      fetchpriority="high"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="models/neutral.hdr"
+      as="fetch"
+      type="model/gltf-binary"
       fetchpriority="high"
       crossorigin
     />
@@ -124,8 +133,8 @@
            If future enhancements are needed, create a dedicated viewer module in /js/viewer/ with strict interfaces. -->
           <model-viewer
             id="glb-viewer"
-            src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
-            environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
+            src="models/astronaut.glb"
+            environment-image="models/neutral.hdr"
             camera-controls
             auto-rotate
             loading="eager"
