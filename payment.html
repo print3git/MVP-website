@@ -188,7 +188,9 @@
               alt="Preview image"
             />
 
-            <!-- Minimal, hard-coded model-viewer -->
+            <!-- Minimal, hard-coded viewer. 
+             DO NOT attach custom loaders, swap src via JS, or register SW prefetch for .glb/.hdr here. 
+             If future enhancements are needed, create a dedicated viewer module in /js/viewer/ with strict interfaces. -->
             <model-viewer
               id="viewer"
               src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
