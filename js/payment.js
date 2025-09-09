@@ -249,6 +249,7 @@ function ensureModelViewerLoaded() {
   }
   const cdnUrl =
     "https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js";
+
   const localUrl = "/js/vendor/model-viewer.min.js";
   return new Promise((resolve, reject) => {
     const s = document.createElement("script");
@@ -264,6 +265,7 @@ function ensureModelViewerLoaded() {
         reject(new Error("model-viewer failed to load"));
       document.head.appendChild(fallback);
     };
+
     document.head.appendChild(s);
   });
 }
@@ -467,6 +469,14 @@ async function initPaymentPage() {
   const promoToggle = document.querySelector(".promo-toggle");
   const promoBox = document.querySelector(".promo-input");
   const surpriseToggle = document.getElementById("surprise-toggle");
+  viewer?.addEventListener("error", () => {
+    const img = document.getElementById("preview-img");
+    if (img) {
+      img.src = "images/astro-image.png";
+      img.style.display = "block";
+    }
+    if (viewer) viewer.style.display = "none";
+  });
   const recipientFields = document.getElementById("recipient-fields");
   const qtySelect = document.getElementById("print-qty");
   const qtyDec = document.getElementById("qty-decrement");

@@ -140,6 +140,7 @@
           </p>
           <div data-testid="primary-model">
             <model-viewer
+              poster="images/astro-image.png"
               src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
               alt="Shopping bag model"
               environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
@@ -155,8 +156,7 @@
           </div>
           <input id="glbUpload" type="file" accept=".glb" class="hidden" />
           <script>
-            document
-              .querySelector('[data-testid="model-viewer"]')
+            document.querySelector('[data-testid="model-viewer"]');
           </script>
         </div>
         <div
