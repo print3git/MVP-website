@@ -455,7 +455,6 @@ async function initPaymentPage() {
     } catch {}
   }
 
-  const loader = document.getElementById("loader");
   const viewer = document.getElementById("viewer");
   const optOut = document.getElementById("opt-out");
   const emailEl = document.getElementById("checkout-email");
@@ -923,21 +922,6 @@ async function initPaymentPage() {
   }
   updatePayButton();
   updatePopularMessage();
-  const prevBtn = document.getElementById("prev-model");
-  const nextBtn = document.getElementById("next-model");
-  const removeBtn = document.getElementById("remove-model");
-
-  function updateNavButtons() {
-    if (!prevBtn || !nextBtn) return;
-    if (checkoutItems.length > 1) {
-      prevBtn.classList.remove("hidden");
-      nextBtn.classList.remove("hidden");
-    } else {
-      prevBtn.classList.add("hidden");
-      nextBtn.classList.add("hidden");
-    }
-  }
-
   function showItem(idx) {
     if (!checkoutItems.length) return;
     currentIndex = (idx + checkoutItems.length) % checkoutItems.length;
@@ -997,48 +981,10 @@ async function initPaymentPage() {
     if (qtySelect) {
       qtySelect.value = String(item.qty || 1);
     }
-    const counter = document.getElementById("model-counter");
-    if (counter) {
-      if (checkoutItems.length > 1) {
-        counter.textContent = `${currentIndex + 1} / ${checkoutItems.length}`;
-        counter.classList.remove("hidden");
-      } else {
-        counter.classList.add("hidden");
-      }
-    }
-    if (removeBtn) {
-      if (checkoutItems.length > 1) {
-        removeBtn.classList.remove("hidden");
-      } else {
-        removeBtn.classList.add("hidden");
-      }
-    }
-    updateNavButtons();
     applyStoredColorIfNeeded();
     updatePayButton();
     updateFlashSaleBanner();
   }
-
-  prevBtn?.addEventListener("click", () => showItem(currentIndex - 1));
-  nextBtn?.addEventListener("click", () => showItem(currentIndex + 1));
-  removeBtn?.addEventListener("click", () => {
-    if (!checkoutItems.length) return;
-    const idx = currentIndex;
-    checkoutItems.splice(idx, 1);
-    saveCheckoutItems();
-    try {
-      const basket = JSON.parse(localStorage.getItem("print2Basket")) || [];
-      if (idx >= 0 && idx < basket.length) {
-        basket.splice(idx, 1);
-        localStorage.setItem("print2Basket", JSON.stringify(basket));
-      }
-    } catch {}
-    if (checkoutItems.length) {
-      if (currentIndex >= checkoutItems.length) currentIndex = 0;
-      showItem(currentIndex);
-    }
-    window.dispatchEvent(new CustomEvent("basket-change"));
-  });
   const sessionId = qs("session_id");
   if (sessionId) {
     recordPurchase();
@@ -1132,19 +1078,6 @@ async function initPaymentPage() {
     });
   }
 
-  const hideLoader = () => (loader.hidden = true);
-
-  // Attach events immediately so we don't miss the "load" event even if the
-  // <model-viewer> element upgrades while this script is still loading. If the
-  // library fails to load, the "error" handler falls back to the astronaut
-  // model and hides the loader overlay.
-  if (viewer && viewer.tagName.toLowerCase() !== "img") {
-    viewer.addEventListener("load", hideLoader);
-    viewer.addEventListener("error", () => {
-      hideLoader();
-    });
-  }
-
   // Wait for the <model-viewer> definition before assigning the model source.
   // Some browsers won't process the "src" attribute on a custom element until
   // after it's upgraded, so we guard against that here.
@@ -1158,13 +1091,6 @@ async function initPaymentPage() {
   const storedModel = sanitizeUrl(localStorage.getItem("print2Model"));
   setModelSrc(storedModel || FALLBACK_GLB);
 
-  if (viewer && viewer.tagName.toLowerCase() === "img") {
-    // The Luckybox page uses a static <img> preview, so skip the loading
-    // overlay entirely to avoid covering the image.
-    loader.hidden = true;
-  } else {
-    loader.hidden = false;
-  }
   // Load saved basket items unless this is the Luckybox page
   if (!window.location.pathname.endsWith("luckybox-payment.html")) {
     try {
@@ -1253,11 +1179,9 @@ async function initPaymentPage() {
   }
 
   if (!checkoutItems.length) {
-    if (removeBtn) removeBtn.classList.add("hidden");
     if (viewer && viewer.tagName.toLowerCase() !== "img") {
       viewer.addEventListener("load", applyStoredColorIfNeeded, { once: true });
     }
-    updateNavButtons();
   } else {
     const first = checkoutItems[0];
     if (first.jobId) localStorage.setItem("print2JobId", first.jobId);
@@ -1265,11 +1189,6 @@ async function initPaymentPage() {
     storedMaterial = first.material || storedMaterial;
     localStorage.setItem("print2Material", storedMaterial);
     showItem(0);
-    if (removeBtn) {
-      if (checkoutItems.length > 1) removeBtn.classList.remove("hidden");
-      else removeBtn.classList.add("hidden");
-    }
-    updateNavButtons();
   }
 
   if (!checkoutItems.length && qtySelect) {
@@ -1278,7 +1197,6 @@ async function initPaymentPage() {
   }
 
   // Hide the overlay if nothing happens after a short delay
-  setTimeout(hideLoader, 7000);
 
   if (sessionId) {
     successMsg.hidden = false;

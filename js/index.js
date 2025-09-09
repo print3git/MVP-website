@@ -272,11 +272,7 @@ async function updateStats() {
 const $ = (id) => document.getElementById(id);
 const refs = {
   previewImg: $("preview-img"),
-  loader: $("loader"),
   viewer: document.getElementById("viewer"),
-  progressBar: $("progress-bar"),
-  progressWrapper: $("progress-wrapper"),
-  progressText: $("progress-text"),
   demoNote: $("demo-note"),
   demoClose: $("demo-note-close"),
   promptInput: $("promptInput"),
@@ -321,9 +317,6 @@ let userProfile = null;
 // Track when the prompt or images have been modified after a generation
 let editsPending = false;
 
-let progressInterval = null;
-let progressStart = null;
-let usingViewerProgress = false;
 let lastSnapshot = null;
 let errorFadeTimeout = null;
 let errorClearTimeout = null;
@@ -410,39 +403,8 @@ async function captureModelSnapshot(url) {
   return result;
 }
 
-function startProgress(estimateMs = 20000) {
-  if (!refs.progressWrapper) return;
-  progressStart = Date.now();
-  usingViewerProgress = false;
-  refs.progressBar.style.width = "0%";
-  refs.progressWrapper.style.display = "block";
-  const tick = () => {
-    if (usingViewerProgress) return;
-    const elapsed = Date.now() - progressStart;
-    const pct = Math.min((elapsed / estimateMs) * 100, 99);
-    refs.progressBar.style.width = pct + "%";
-    const remaining = Math.max(estimateMs - elapsed, 0);
-    refs.progressText.textContent = `~${Math.ceil(remaining / 1000)}s remaining`;
-  };
-  tick();
-  clearInterval(progressInterval);
-  progressInterval = setInterval(tick, 500);
-}
-
-function stopProgress() {
-  if (!refs.progressWrapper) return;
-  clearInterval(progressInterval);
-  usingViewerProgress = false;
-  refs.progressBar.style.width = "100%";
-  refs.progressText.textContent = "";
-  setTimeout(() => {
-    refs.progressWrapper.style.display = "none";
-  }, 300);
-}
-
 const hideAll = () => {
   refs.previewImg.style.display = "none";
-  refs.loader.style.display = "none";
 
   refs.viewer.style.opacity = "0";
   refs.viewer.style.pointerEvents = "none";
@@ -453,18 +415,16 @@ const hideAll = () => {
     delete document.body.dataset.viewerReady;
   }
 };
-const showLoader = (withProgress = true) => {
-  // Keep the viewer visible while showing the loader so the fallback model
-  // remains on screen during generation and on failures.
+const showLoader = () => {
+  // Keep the viewer visible so the fallback model remains on screen during
+  // generation and on failures.
   refs.previewImg.style.display = "none";
-  refs.loader.style.display = "flex";
   refs.viewer.style.display = "block";
   refs.viewer.style.opacity = "1";
   refs.viewer.style.pointerEvents = "auto";
   if (typeof refs.viewer.play === "function") {
     refs.viewer.play();
   }
-  if (withProgress) startProgress();
 };
 const showModel = () => {
   hideAll();
@@ -480,7 +440,6 @@ const showModel = () => {
     document.body.dataset.viewerReady = "true";
   }
 
-  stopProgress();
   // Force a render in case Safari paused the canvas while hidden
   if (typeof refs.viewer.requestUpdate === "function") {
     refs.viewer.requestUpdate();
@@ -989,19 +948,6 @@ async function init() {
       { once: true },
     );
   }
-  refs.viewer.addEventListener("progress", (e) => {
-    if (!progressStart) progressStart = Date.now();
-    usingViewerProgress = true;
-    const pct = Math.round(e.detail.totalProgress * 100);
-    refs.progressBar.style.width = pct + "%";
-    const elapsed = Date.now() - progressStart;
-    if (pct < 100) {
-      const remaining = pct > 0 ? (elapsed * (100 - pct)) / pct : 0;
-      refs.progressText.textContent = `~${Math.ceil(remaining / 1000)}s remaining`;
-    } else {
-      stopProgress();
-    }
-  });
   refs.viewer.addEventListener("load", showModel, { once: true });
   refs.viewer.addEventListener(
     "error",
