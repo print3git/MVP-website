@@ -13,9 +13,11 @@ describe("print run info", () => {
     originalStorage = window.localStorage;
     document.body.innerHTML = `
       <div id="print-run-info" class="invisible">
-        <span id="print-run-slots"></span> print slots left for next
-        <span id="print-run-hours"></span>
-        <span id="print-run-hours-label"></span>
+        Only <span id="print-run-slots"></span> prints left
+        <span hidden>
+          for next <span id="print-run-hours"></span>
+          <span id="print-run-hours-label"></span>
+        </span>
       </div>`;
     global.fetch = undefined;
     localStorage.clear();

@@ -51,6 +51,12 @@ document.addEventListener("DOMContentLoaded", updateWizard);
 window.setWizardStage = setWizardStage;
 export function setWizardSlotCount(n) {
   const el = document.getElementById("wizard-slots");
-  if (el) el.textContent = `Only ${n} print slots remaining:`;
+  if (el) {
+    el.textContent = `Only ${n} print slots left`;
+    const stage = localStorage.getItem(STAGE_KEY);
+    if (stage === "purchase" || stage === "print") {
+      el.classList.remove("hidden");
+    }
+  }
 }
 window.setWizardSlotCount = setWizardSlotCount;

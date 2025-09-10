@@ -39,6 +39,11 @@ import {
   }
 })();
 
+const _migratedModel = localStorage.getItem("print2Model");
+if (_migratedModel !== null && !sanitizeUrl(_migratedModel)) {
+  localStorage.removeItem("print2Model");
+}
+
 // Initialize Stripe after the library loads to avoid breaking the rest of the
 // page if the network request for Stripe fails. This variable will be assigned
 // once the DOM content is ready.
@@ -85,7 +90,7 @@ const ANNUAL_DISCOUNT = 0.9;
 const PRINT_CLUB_ANNUAL_PRICE = Math.round(
   PRINT_CLUB_PRICE * 12 * ANNUAL_DISCOUNT,
 );
-let selectedPrice = PRICES.multi;
+let selectedPrice = PRICES.single;
 const SINGLE_BORDER_COLOR = "#60a5fa";
 const API_BASE = (window.API_ORIGIN || "") + "/api";
 // Time zone used to reset local purchase counts at 1 AM Eastern
@@ -96,8 +101,10 @@ let checkoutItems = [];
 let currentIndex = 0;
 
 function sanitizeUrl(url) {
+  if (!url || url === "null" || url === "undefined") return "";
   try {
-    return new URL(url, window.location.origin).href;
+    const href = new URL(url, window.location.origin).href;
+    return href.endsWith(".glb") ? href : "";
   } catch {
     return "";
   }
@@ -163,13 +170,13 @@ async function fetchPaymentInit() {
 }
 
 // Restore previously selected material option and colour
-let storedMaterial = localStorage.getItem("print2Material");
+let storedMaterial = localStorage.getItem("print2Material") || "single";
 let storedColor = localStorage.getItem("print2Color");
 const personalise = qs("personalise");
 if (personalise !== null) {
   storedMaterial = "multi";
-  localStorage.setItem("print2Material", storedMaterial);
 }
+localStorage.setItem("print2Material", storedMaterial);
 if (storedMaterial && PRICES[storedMaterial]) {
   selectedPrice = PRICES[storedMaterial];
 }
@@ -261,8 +268,7 @@ function ensureModelViewerLoaded() {
       fallback.type = "module";
       fallback.src = localUrl;
       fallback.onload = resolve;
-      fallback.onerror = () =>
-        reject(new Error("model-viewer failed to load"));
+      fallback.onerror = () => reject(new Error("model-viewer failed to load"));
       document.head.appendChild(fallback);
     };
 
