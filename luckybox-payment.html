@@ -93,6 +93,9 @@
           0 0 10px rgba(48, 213, 200, 0.6),
           0 6px 10px rgba(0, 0, 0, 0.6);
       }
+      #material-options label:hover input:checked + span {
+        transform: scale(1.08);
+      }
 
       #material-options label:hover span.no-transform,
       #material-options input:active + span.no-transform,
@@ -235,6 +238,7 @@
               src="images/luckybox-preview.png"
               alt="Luckybox preview"
               class="object-cover h-full w-full rounded-3xl"
+              data-fallback="images/luckybox-preview.png"
             />
           </section>
           <div id="trust-badge" class="mt-4 text-center text-sm text-gray-400">

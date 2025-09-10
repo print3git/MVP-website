@@ -478,7 +478,7 @@ async function initPaymentPage() {
   viewer?.addEventListener("error", () => {
     const img = document.getElementById("preview-img");
     if (img) {
-      img.src = "images/astro-image.png";
+      img.src = viewer?.dataset.fallback || "images/astro-image.png";
       img.style.display = "block";
     }
     if (viewer) viewer.style.display = "none";
