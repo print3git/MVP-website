@@ -429,34 +429,6 @@ function createViewerCard(modelUrl) {
   return div;
 }
 
-function applyPopularViewer() {
-  const grid = document.getElementById("popular-grid");
-  if (!grid) return;
-
-  const existing = grid.querySelector(".viewer-card");
-  // Avoid removing cards when viewer already added
-  if (existing) return;
-
-  const productCards = Array.from(
-    grid.querySelectorAll(".model-card[data-model]"),
-  );
-  if (productCards.length < 2) return;
-
-  const secondCard = productCards[1];
-  const modelUrl = secondCard.dataset.model;
-  if (!modelUrl) return;
-
-  // Remove cards occupying the viewer column (indices 1, 4, and 7)
-  [productCards[4], productCards[7]].forEach((el) => el?.remove());
-
-  const viewer = createViewerCard(modelUrl);
-  // Let the grid determine the final height so alignment matches
-  viewer.classList.add("row-span-3");
-
-  grid.insertBefore(viewer, secondCard);
-  secondCard.remove();
-}
-
 function applyRecentViewer() {
   const grid = document.getElementById("recent-grid");
   if (!grid) return;
@@ -515,7 +487,8 @@ async function loadMore(type, filters = getFilters()) {
   if (!cache[key]) cache[key] = { offset: 0, models: [] };
   const state = cache[key];
   const offsetBefore = state.offset;
-  const limit = type === "recent" && offsetBefore === 0 ? 8 : 9;
+  const limit =
+    type === "recent" && offsetBefore === 0 ? 8 : type === "popular" ? 12 : 9;
   let models = await fetchCreations(
     type,
     state.offset,
@@ -528,9 +501,6 @@ async function loadMore(type, filters = getFilters()) {
     models = getFallbackModels(limit, state.offset);
   }
   const fetchedCount = models.length;
-  if (type === "popular" && offsetBefore === 0 && models.length) {
-    models = models.slice(1);
-  }
   models = models.filter(
     (m) => m && (m.placeholder || (m.model_url && m.snapshot)),
   );
@@ -539,8 +509,7 @@ async function loadMore(type, filters = getFilters()) {
   const grid = document.getElementById(`${type}-grid`);
   models.forEach((m) => grid.appendChild(createCard(m)));
   await captureSnapshots(grid);
-  if (type === "popular") applyPopularViewer();
-  else if (type === "recent") applyRecentViewer();
+  if (type === "recent") applyRecentViewer();
   const btn = document.getElementById(`${type}-load`);
   if (btn) {
     const effectiveCount =
@@ -621,8 +590,7 @@ function renderGrid(type, filters = getFilters()) {
   if (state && state.models.length) {
     state.models.forEach((m) => grid.appendChild(createCard(m)));
     captureSnapshots(grid);
-    if (type === "popular") applyPopularViewer();
-    else if (type === "recent") applyRecentViewer();
+    if (type === "recent") applyRecentViewer();
     const btn = document.getElementById(`${type}-load`);
     if (btn) {
       const threshold = 8;
