@@ -1013,24 +1013,31 @@ async function init() {
   if (refs.addBasketBtn) {
     refs.addBasketBtn.disabled = true;
     const viewerReadyPromise = new Promise((resolve) => {
-      if (refs.viewer?.src) return resolve();
       if (!refs.viewer) return resolve();
-      const obs = new MutationObserver(() => {
-        if (refs.viewer.src) {
-          obs.disconnect();
-          resolve();
-        }
-      });
-      obs.observe(refs.viewer, { attributes: true, attributeFilter: ["src"] });
-    });
 
-    viewerReadyPromise.then(() => {
-      refs.addBasketBtn.disabled = false;
+      const enable = () => {
+        refs.addBasketBtn.disabled = false;
+        resolve();
+      };
+
+      const waitForLoad = () => {
+        if (refs.viewer.modelIsVisible) return enable();
+        refs.viewer.addEventListener("load", enable, { once: true });
+      };
+
+      if (window.customElements?.whenDefined) {
+        customElements
+          .whenDefined("model-viewer")
+          .then(waitForLoad)
+          .catch(enable);
+      } else {
+        waitForLoad();
+      }
     });
 
     refs.addBasketBtn.addEventListener("click", async () => {
       await viewerReadyPromise;
-      if (!refs.viewer.src) return;
+      if (!refs.viewer?.src) return;
       let snapshot = refs.previewImg?.src;
       const host = (() => {
         try {
