@@ -438,24 +438,24 @@ function applyPopularViewer() {
   // Avoid removing cards when viewer already added
   if (existing) return;
 
-  const cards = Array.from(grid.children);
-  if (cards.length < 2) return;
-  const modelUrl = cards[1].dataset.model;
+  const productCards = Array.from(
+    grid.querySelectorAll(".model-card[data-model]"),
+  );
+  if (productCards.length < 2) return;
+
+  const secondCard = productCards[1];
+  const modelUrl = secondCard.dataset.model;
   if (!modelUrl) return;
 
-  const toRemove = [];
-  for (let i = 2; i < Math.min(cards.length, 9); i += 3) {
-    if (cards[i]) toRemove.push(cards[i]);
-  }
-  toRemove.forEach((el) => el.remove());
+  // Remove cards occupying the viewer column (indices 1, 4, and 7)
+  [productCards[4], productCards[7]].forEach((el) => el?.remove());
 
   const viewer = createViewerCard(modelUrl);
   // Let the grid determine the final height so alignment matches
   viewer.classList.add("row-span-3");
 
-  const insertBefore = grid.children[2];
-  if (insertBefore) grid.insertBefore(viewer, insertBefore);
-  else grid.appendChild(viewer);
+  grid.insertBefore(viewer, secondCard);
+  secondCard.remove();
 }
 
 function applyRecentViewer() {
