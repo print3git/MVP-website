@@ -114,19 +114,57 @@ function initLuckybox() {
 document.addEventListener("DOMContentLoaded", initLuckybox);
 
 function initLuckyboxOptions() {
-  const optionRadios = document.querySelectorAll('input[name="luckybox"]');
-  const genrePanel = document.getElementById("genre-panel");
-  const genreInput = document.getElementById("genre");
-  if (!optionRadios.length || !genrePanel || !genreInput) return;
-  function update() {
-    const selected = document.querySelector('input[name="luckybox"]:checked');
-    const show = selected && selected.value === "B";
-    genrePanel.hidden = !show;
+  const container = document.querySelector('[data-addons="luckybox-options"]');
+  if (!container) return;
+  const a = container.querySelector("#opt-a");
+  const b = container.querySelector("#opt-b");
+  const panel = container.querySelector("#genre-panel");
+  const genreInput = container.querySelector("#genre");
+  const chips = container.querySelectorAll(".chip");
+  const cards = container.querySelectorAll(".lucky-card");
+  const bLabel = b ? b.closest("label") : null;
+  const form = container.closest("form");
+  if (!a || !b || !panel || !genreInput) return;
+
+  function updateGenreVisibility() {
+    const show = b.checked;
+    panel.hidden = !show;
+    if (bLabel) bLabel.setAttribute("aria-expanded", show ? "true" : "false");
     genreInput.disabled = !show;
-    genreInput.setAttribute("aria-disabled", (!show).toString());
+    genreInput.setAttribute("aria-disabled", String(!show));
+    const selected = container.querySelector('input[name="luckybox"]:checked');
+    cards.forEach((card) =>
+      card.classList.toggle("is-selected", card.contains(selected)),
+    );
+    if (show) genreInput.focus({ preventScroll: true });
   }
-  optionRadios.forEach((r) => r.addEventListener("change", update));
-  update();
+
+  [a, b].forEach((r) => r.addEventListener("change", updateGenreVisibility));
+
+  chips.forEach((chip) =>
+    chip.addEventListener("click", () => {
+      genreInput.value = chip.dataset.genre || chip.textContent.trim();
+      genreInput.focus();
+    }),
+  );
+
+  if (form) {
+    form.addEventListener("submit", (e) => {
+      if (a.checked) {
+        genreInput.disabled = true;
+        genreInput.setAttribute("aria-disabled", "true");
+      } else {
+        genreInput.disabled = false;
+        genreInput.setAttribute("aria-disabled", "false");
+        if (!genreInput.checkValidity()) {
+          e.preventDefault();
+          genreInput.reportValidity();
+        }
+      }
+    });
+  }
+
+  updateGenreVisibility();
 }
 
 document.addEventListener("DOMContentLoaded", initLuckyboxOptions);
