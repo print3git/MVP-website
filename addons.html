@@ -130,11 +130,16 @@
       [data-addons="luckybox-options"] #genre-panel {
         border-top: 1px solid #23272e;
         margin-top: 10px;
-        padding: 10px;
-        animation: genre-slide 180ms ease-out;
+        padding: 0 10px;
+        overflow: hidden;
+        max-height: 0;
+        opacity: 0;
+        transition: max-height 180ms ease-out, opacity 180ms ease-out,
+          padding 180ms ease-out;
       }
-      [data-addons="luckybox-options"] #genre-panel[hidden] {
-        display: none;
+      [data-addons="luckybox-options"] #genre-panel.is-open {
+        padding: 10px;
+        opacity: 1;
       }
       [data-addons="luckybox-options"] .genre-chips {
         display: flex;
@@ -170,16 +175,7 @@
         opacity: 0.8;
         margin-top: 4px;
       }
-      @keyframes genre-slide {
-        from {
-          opacity: 0;
-          transform: translateY(-4px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
+      /* genre-slide animation removed; handled via max-height transition */
     </style>
   </head>
 
@@ -301,6 +297,7 @@
                 value="B"
                 class="lucky-input"
                 aria-controls="genre-panel"
+                aria-expanded="false"
               />
               <img src="images/luckybox-preview.png" alt="" />
               <span class="lucky-text">
