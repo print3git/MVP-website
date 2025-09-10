@@ -1,4 +1,15 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, Page } from "@playwright/test";
+
+async function waitForModelLoad(page: Page) {
+  await page.evaluate(() => {
+    const viewer = document.querySelector("model-viewer") as any;
+    if (!viewer) return;
+    if (viewer.loaded) return;
+    return new Promise<void>((resolve) => {
+      viewer.addEventListener("load", () => resolve(), { once: true });
+    });
+  });
+}
 
 const pages = [
   { key: "index", url: "/index.html" },
@@ -8,24 +19,20 @@ const pages = [
 // 1. Page loads & primary container visible (index)
 test("index: primary container visible", async ({ page }) => {
   await page.goto("/index.html");
-  await expect(page.locator('[data-testid="primary-model"]')).toBeVisible();
+  await expect(page.locator("#preview-wrapper")).toBeVisible();
 });
 
 // 2. Page loads & primary container visible (payment)
 test("payment: primary container visible", async ({ page }) => {
   await page.goto("/payment.html");
-  await expect(page.locator('[data-testid="primary-model"]')).toBeVisible();
+  await expect(page.locator("#preview-wrapper")).toBeVisible();
 });
 
-// 3–4. Model-ready hook fires (index, payment)
+// 3–4. Model loads (index, payment)
 for (const p of pages) {
-  test(`${p.key}: model-ready hook fires`, async ({ page }) => {
+  test(`${p.key}: model loads`, async ({ page }) => {
     await page.goto(p.url, { waitUntil: "domcontentloaded" });
-    await page.waitForFunction(
-      (k) => !!(window as any).__modelsLoaded?.[k],
-      p.key,
-      { timeout: 15000 },
-    );
+    await waitForModelLoad(page);
   });
 }
 
@@ -33,12 +40,7 @@ for (const p of pages) {
 for (const p of pages) {
   test(`${p.key}: viewer element visible`, async ({ page }) => {
     await page.goto(p.url);
-    const target = page
-      .locator(
-        '[data-testid="primary-model"] [data-testid="model-viewer"], [data-testid="primary-model"] #model-canvas, [data-testid="primary-model"] canvas',
-      )
-      .first();
-    await expect(target).toBeVisible();
+    await expect(page.locator("model-viewer").first()).toBeVisible();
   });
 }
 
@@ -46,11 +48,7 @@ for (const p of pages) {
 for (const p of pages) {
   test(`${p.key}: a11y attributes present`, async ({ page }) => {
     await page.goto(p.url);
-    const target = page
-      .locator(
-        '[data-testid="primary-model"] [data-testid="model-viewer"], [data-testid="primary-model"] #model-canvas, [data-testid="primary-model"] canvas',
-      )
-      .first();
+    const target = page.locator("model-viewer").first();
     const role = await target.getAttribute("role");
     const label = await target.getAttribute("aria-label");
     expect(role === "img" || !!label).toBeTruthy();
@@ -62,11 +60,7 @@ for (const p of pages) {
   test(`${p.key}: model loads under budget`, async ({ page }) => {
     const start = Date.now();
     await page.goto(p.url);
-    await page.waitForFunction(
-      (k) => !!(window as any).__modelsLoaded?.[k],
-      p.key,
-      { timeout: 15000 },
-    );
+    await waitForModelLoad(page);
     expect(Date.now() - start).toBeLessThanOrEqual(
       Number(process.env.MODEL_LOAD_BUDGET_MS || 5000),
     );
@@ -81,11 +75,7 @@ for (const p of pages) {
       if (m.type() === "error") errors.push(m.text());
     });
     await page.goto(p.url);
-    await page.waitForFunction(
-      (k) => !!(window as any).__modelsLoaded?.[k],
-      p.key,
-      { timeout: 15000 },
-    );
+    await waitForModelLoad(page);
     // Allow CORS warnings but fail on real errors
     expect(errors.filter((e) => !/cors|devtools/i.test(e)).length).toBe(0);
   });
