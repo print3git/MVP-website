@@ -402,9 +402,8 @@ function createViewerCard(modelUrl) {
 
   div.dataset.model = modelUrl;
   div.innerHTML = `<model-viewer src="${modelUrl}" alt="3D model preview" poster="images/box logo.png" environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr" camera-controls auto-rotate loading="lazy" class="w-full h-full bg-[#2A2A2E] rounded-xl"></model-viewer>\n    <button class="purchase absolute bottom-1 right-1 font-bold text-lg py-1.5 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]" style="transform: scale(0.78); transform-origin: right bottom;">Buy from £29.99</button>`;
-  div
-    .querySelector("model-viewer")
-    ?.addEventListener("error", handleModelError);
+  const viewer = div.querySelector("model-viewer");
+  viewer.addEventListener("error", handleModelError);
   div.addEventListener("pointerenter", () => prefetchModel(modelUrl));
   div.addEventListener("click", (e) => {
     // Avoid opening the modal when rotating the model preview
@@ -438,24 +437,24 @@ function applyPopularViewer() {
   // Avoid removing cards when viewer already added
   if (existing) return;
 
-  const cards = Array.from(grid.children);
-  if (cards.length < 2) return;
-  const modelUrl = cards[1].dataset.model;
+  const productCards = Array.from(
+    grid.querySelectorAll(".model-card[data-model]"),
+  );
+  if (productCards.length < 2) return;
+
+  const secondCard = productCards[1];
+  const modelUrl = secondCard.dataset.model;
   if (!modelUrl) return;
 
-  const toRemove = [];
-  for (let i = 2; i < Math.min(cards.length, 9); i += 3) {
-    if (cards[i]) toRemove.push(cards[i]);
-  }
-  toRemove.forEach((el) => el.remove());
+  // Remove cards occupying the viewer column (indices 1, 4, and 7)
+  [productCards[4], productCards[7]].forEach((el) => el?.remove());
 
   const viewer = createViewerCard(modelUrl);
   // Let the grid determine the final height so alignment matches
   viewer.classList.add("row-span-3");
 
-  const insertBefore = grid.children[2];
-  if (insertBefore) grid.insertBefore(viewer, insertBefore);
-  else grid.appendChild(viewer);
+  grid.insertBefore(viewer, secondCard);
+  secondCard.remove();
 }
 
 function applyRecentViewer() {
@@ -531,9 +530,11 @@ async function loadMore(type, filters = getFilters()) {
   const fetchedCount = models.length;
   if (type === "popular" && offsetBefore === 0 && models.length) {
     models = models.slice(1);
-    state.offset += 1;
   }
-  state.offset += models.length;
+  models = models.filter(
+    (m) => m && (m.placeholder || (m.model_url && m.snapshot)),
+  );
+  state.offset += fetchedCount;
   state.models = state.models.concat(models);
   const grid = document.getElementById(`${type}-grid`);
   models.forEach((m) => grid.appendChild(createCard(m)));

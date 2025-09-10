@@ -316,6 +316,7 @@ function openModelModal(url, jobId, snapshot) {
   const checkoutBtn = document.getElementById("modal-checkout");
   const addBasketBtn = document.getElementById("modal-add-basket");
   const copyBtn = document.getElementById("modal-copy-link");
+  const tierToggle = document.getElementById("tier-toggle");
   viewer.setAttribute("poster", snapshot || "");
   viewer.setAttribute("fetchpriority", "high");
   viewer.setAttribute("loading", "eager");
@@ -331,6 +332,14 @@ function openModelModal(url, jobId, snapshot) {
   }
   if (copyBtn) {
     copyBtn.dataset.id = jobId;
+  }
+  window.setTier?.("bronze");
+  if (tierToggle) {
+    tierToggle.querySelectorAll("button[data-tier]").forEach((btn) => {
+      const isBronze = btn.dataset.tier === "bronze";
+      btn.disabled = !isBronze;
+      btn.classList.toggle("cursor-not-allowed", !isBronze);
+    });
   }
   modalEl.classList.remove("hidden");
   document.body.classList.add("overflow-hidden");
