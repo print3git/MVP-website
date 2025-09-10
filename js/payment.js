@@ -844,9 +844,7 @@ async function initPaymentPage() {
     if (!bulkMsg) return;
     const path = window.location.pathname;
     const amount = path.endsWith("minis-checkout.html") ? "£5.00" : "£7.00";
-    const qty = Math.max(1, parseInt(qtySelect?.value || "1", 10));
     const showGiftTwo =
-      qty >= 3 &&
       !path.endsWith("minis-checkout.html") &&
       !path.endsWith("luckybox-payment.html");
     bulkMsg.textContent = "";
