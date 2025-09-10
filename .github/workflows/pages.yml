@@ -24,7 +24,7 @@ jobs:
       - run: npm ci
       - run: npm run build
         env:
-          ASTRONAUT_MODEL_URL: ${{ secrets.ASTRONAUT_MODEL_URL }}
+          ASTRONAUT_GLB_URL: ${{ secrets.ASTRONAUT_GLB_URL }}
       - name: Copy static site files
         run: |
           cp -a *.html frontend/dist/

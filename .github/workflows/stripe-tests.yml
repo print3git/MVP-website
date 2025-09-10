@@ -30,7 +30,7 @@ jobs:
           fi
       - run: npm run build --if-present
         env:
-          ASTRONAUT_MODEL_URL: ${{ secrets.ASTRONAUT_MODEL_URL }}
+          ASTRONAUT_GLB_URL: ${{ secrets.ASTRONAUT_GLB_URL }}
       - run: node scripts/ci-doctor.mjs
         env:
           STRIPE_SECRET_KEY: sk_test_dummy
