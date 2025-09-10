@@ -42,6 +42,10 @@ function verifyFiles(args) {
       normalized.add(arg);
       continue;
     }
+    if (arg.startsWith("-")) {
+      normalized.add(arg);
+      continue;
+    }
     const candidates = [
       path.resolve(process.cwd(), arg),
       path.resolve(repoRoot, arg),
@@ -64,11 +68,12 @@ function verifyFiles(args) {
       }
       continue;
     }
-    if (isTestArg) {
-      console.error(`Test file not found: ${arg}`);
-      process.exit(1);
-    }
-    normalized.add(arg);
+    console.error(
+      isTestArg
+        ? `Test file not found: ${arg}`
+        : `Directory or file not found: ${arg}`,
+    );
+    process.exit(1);
   }
   return Array.from(normalized);
 }
