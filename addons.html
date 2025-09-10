@@ -64,6 +64,63 @@
           transform: translateX(100%);
         }
       }
+
+      /* ===== Luckybox option cards ===== */
+      .luckybox-options {
+        margin-top: 1rem;
+        padding: 0 2.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        font-size: 0.875rem;
+      }
+      .luckybox-options legend {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+      }
+      .lucky-card {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem;
+        border: 2px solid #666;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      }
+      .lucky-card img {
+        width: 40px;
+        height: 40px;
+        margin-right: 0.5rem;
+      }
+      .lucky-card .lucky-input {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+      }
+      .lucky-text {
+        display: flex;
+        flex-direction: column;
+      }
+      .lucky-title {
+        font-weight: 600;
+      }
+      .lucky-subtitle {
+        font-size: 0.875rem;
+        color: #ccc;
+      }
+      .lucky-card:has(.lucky-input:checked) {
+        border-color: #30d5c8;
+        box-shadow: 0 0 0 3px rgba(48, 213, 200, 0.5);
+      }
+      .genre-input {
+        margin-top: 0.5rem;
+        padding: 0.125rem 0.25rem;
+        color: #000;
+        border-radius: 0.25rem;
+      }
+      .is-hidden {
+        display: none;
+      }
     </style>
   </head>
 
@@ -167,17 +224,26 @@
               </label>
             </fieldset>
           </div>
-          <div id="luckybox-options" class="flex flex-col space-y-1 mt-4 px-10 text-sm">
-            <label class="flex items-center">
-              <input type="radio" name="luckybox-option" value="A" class="accent-[#30D5C8] mr-2" checked />
-              <span>- Luckybox A: random print</span>
+          <fieldset id="luckybox-options" class="luckybox-options">
+            <legend>Choose your Luckybox</legend>
+            <label class="lucky-card">
+              <input type="radio" name="luckybox" id="opt-a" value="A" class="lucky-input" checked />
+              <img src="images/luckybox-preview.png" alt="" />
+              <span class="lucky-text">
+                <span class="lucky-title">Luckybox A</span>
+                <span class="lucky-subtitle">Random print</span>
+              </span>
             </label>
-            <label class="flex items-center">
-              <input type="radio" name="luckybox-option" value="B" class="accent-[#30D5C8] mr-2" />
-              <span>- Luckybox B: random print in chosen genre</span>
-              <input id="genre-input" type="text" placeholder="Genre" class="hidden ml-2 px-1 py-0.5 text-black rounded" />
+            <label class="lucky-card">
+              <input type="radio" name="luckybox" id="opt-b" value="B" class="lucky-input" />
+              <img src="images/luckybox-preview.png" alt="" />
+              <span class="lucky-text">
+                <span class="lucky-title">Luckybox B</span>
+                <span class="lucky-subtitle">Random print in your chosen genre</span>
+              </span>
             </label>
-          </div>
+            <input id="genre-input" type="text" placeholder="Genre" class="genre-input is-hidden" />
+          </fieldset>
           <a href="luckybox-payment.html" class="absolute bottom-4 right-4 font-bold py-2 px-5 rounded-full shadow-md transition border-2 border-black" style="background-color: #30d5c8; color: #1a1a1d" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
             Buy →
           </a>
