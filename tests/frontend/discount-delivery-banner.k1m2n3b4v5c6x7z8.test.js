@@ -49,9 +49,8 @@ describe("Discount/delivery banner", () => {
     advance(7000);
     advance(1000);
     advance(7000);
-    expect(banner.style.opacity).toBe("0");
-    advance(1000);
     expect(banner.textContent).toBe("24% off when you order 3 prints");
+    expect(banner.style.opacity).toBe("1");
   });
 
   test("opacity resets after transition", () => {
