@@ -520,34 +520,36 @@ refs.demoClose?.addEventListener("click", () => {
   localStorage.setItem("demoDismissed", "true");
 });
 
-refs.promptInput.addEventListener("input", () => {
-  const el = refs.promptInput;
-  el.style.height = "auto";
-  const lh = parseFloat(getComputedStyle(el).lineHeight);
-  // Limit visible lines to 4 then enable scrolling
-  const maxLines = 4;
-  el.style.height = Math.min(el.scrollHeight, lh * maxLines) + "px";
-  el.style.overflowY = el.scrollHeight > lh * maxLines ? "auto" : "hidden";
-  const errEl = document.getElementById("gen-error");
-  if (errEl) {
-    errEl.textContent = "";
-    errEl.style.opacity = 0;
-  }
-  if (errorFadeTimeout) clearTimeout(errorFadeTimeout);
-  if (errorClearTimeout) clearTimeout(errorClearTimeout);
-  refs.promptWrapper.classList.remove("border-red-500");
-  editsPending = true;
-  refs.buyNowBtn?.classList.add("hidden");
-  setStep("prompt");
-  updateWizardFromInputs();
-});
+if (refs.promptInput) {
+  refs.promptInput.addEventListener("input", () => {
+    const el = refs.promptInput;
+    el.style.height = "auto";
+    const lh = parseFloat(getComputedStyle(el).lineHeight);
+    // Limit visible lines to 4 then enable scrolling
+    const maxLines = 4;
+    el.style.height = Math.min(el.scrollHeight, lh * maxLines) + "px";
+    el.style.overflowY = el.scrollHeight > lh * maxLines ? "auto" : "hidden";
+    const errEl = document.getElementById("gen-error");
+    if (errEl) {
+      errEl.textContent = "";
+      errEl.style.opacity = 0;
+    }
+    if (errorFadeTimeout) clearTimeout(errorFadeTimeout);
+    if (errorClearTimeout) clearTimeout(errorClearTimeout);
+    refs.promptWrapper.classList.remove("border-red-500");
+    editsPending = true;
+    refs.buyNowBtn?.classList.add("hidden");
+    setStep("prompt");
+    updateWizardFromInputs();
+  });
 
-refs.promptInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter" && !e.shiftKey) {
-    e.preventDefault();
-    refs.submitBtn.click();
-  }
-});
+  refs.promptInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      refs.submitBtn.click();
+    }
+  });
+}
 
 function syncUploadHeights() {
   if (!refs.dropZone || !refs.imagePreviewArea) return;
@@ -676,11 +678,13 @@ async function processFiles(files) {
   updateWizardFromInputs();
 }
 
-refs.uploadInput.addEventListener("change", (e) => {
-  processFiles([...e.target.files]);
-});
+if (refs.uploadInput) {
+  refs.uploadInput.addEventListener("change", (e) => {
+    processFiles([...e.target.files]);
+  });
+}
 
-if (refs.dropZone) {
+if (refs.dropZone && refs.uploadInput) {
   refs.dropZone.addEventListener("click", () => refs.uploadInput.click());
   ["dragover", "dragenter"].forEach((ev) => {
     refs.dropZone.addEventListener(ev, (e) => {
@@ -719,65 +723,67 @@ async function fetchGlb(prompt, files) {
   }
 }
 
-refs.submitBtn.addEventListener("click", async () => {
-  const prompt = refs.promptInput.value.trim();
-  if (!validatePrompt(prompt)) {
-    // Ensure icon resets if validation fails
-    refs.submitIcon.classList.replace("fa-stop", "fa-arrow-up");
-    return;
-  }
-  showError("");
-  refs.promptWrapper.classList.remove("border-red-500");
-  refs.buyNowBtn?.classList.add("hidden");
-  refs.submitIcon.classList.replace("fa-arrow-up", "fa-stop");
-  showLoader();
-  if (window.setWizardStage) window.setWizardStage("building");
-
-  try {
-    localStorage.setItem("print2Prompt", prompt);
-    localStorage.setItem("hasGenerated", "true");
-
-    const url = await fetchGlb(prompt, uploadedFiles);
-    localStorage.setItem("print2Model", url);
-    localStorage.setItem("print2JobId", lastJobId);
-
-    editsPending = false;
-
-    refs.viewer.src = url;
-    await refs.viewer.updateComplete;
-    showModel();
-    if (window.addAutoItem) {
-      let snapshot = refs.previewImg?.src;
-      const host = (() => {
-        try {
-          return snapshot ? new URL(snapshot).hostname : "";
-        } catch {
-          return "";
-        }
-      })();
-      if (
-        !snapshot ||
-        snapshot.includes("placehold.co") ||
-        host === "images.unsplash.com"
-      ) {
-        snapshot = await captureModelSnapshot(url);
-      }
-      lastSnapshot = snapshot;
-      window.addAutoItem({ jobId: lastJobId, modelUrl: url, snapshot });
-    } else {
-      lastSnapshot = await captureModelSnapshot(url);
+if (refs.submitBtn && refs.promptInput && refs.viewer) {
+  refs.submitBtn.addEventListener("click", async () => {
+    const prompt = refs.promptInput.value.trim();
+    if (!validatePrompt(prompt)) {
+      // Ensure icon resets if validation fails
+      refs.submitIcon.classList.replace("fa-stop", "fa-arrow-up");
+      return;
     }
-    setStep("model");
-    if (window.setWizardStage) window.setWizardStage("purchase");
-    hideDemo();
+    showError("");
+    refs.promptWrapper.classList.remove("border-red-500");
+    refs.buyNowBtn?.classList.add("hidden");
+    refs.submitIcon.classList.replace("fa-arrow-up", "fa-stop");
+    showLoader();
+    if (window.setWizardStage) window.setWizardStage("building");
 
-    refs.checkoutBtn.classList.remove("hidden");
-    if (userProfile) refs.buyNowBtn?.classList.remove("hidden");
-  } finally {
-    // Always return the button to the arrow state
-    refs.submitIcon.classList.replace("fa-stop", "fa-arrow-up");
-  }
-});
+    try {
+      localStorage.setItem("print2Prompt", prompt);
+      localStorage.setItem("hasGenerated", "true");
+
+      const url = await fetchGlb(prompt, uploadedFiles);
+      localStorage.setItem("print2Model", url);
+      localStorage.setItem("print2JobId", lastJobId);
+
+      editsPending = false;
+
+      refs.viewer.src = url;
+      await refs.viewer.updateComplete;
+      showModel();
+      if (window.addAutoItem) {
+        let snapshot = refs.previewImg?.src;
+        const host = (() => {
+          try {
+            return snapshot ? new URL(snapshot).hostname : "";
+          } catch {
+            return "";
+          }
+        })();
+        if (
+          !snapshot ||
+          snapshot.includes("placehold.co") ||
+          host === "images.unsplash.com"
+        ) {
+          snapshot = await captureModelSnapshot(url);
+        }
+        lastSnapshot = snapshot;
+        window.addAutoItem({ jobId: lastJobId, modelUrl: url, snapshot });
+      } else {
+        lastSnapshot = await captureModelSnapshot(url);
+      }
+      setStep("model");
+      if (window.setWizardStage) window.setWizardStage("purchase");
+      hideDemo();
+
+      refs.checkoutBtn.classList.remove("hidden");
+      if (userProfile) refs.buyNowBtn?.classList.remove("hidden");
+    } finally {
+      // Always return the button to the arrow state
+      refs.submitIcon.classList.replace("fa-stop", "fa-arrow-up");
+    }
+  });
+}
 
 function initDiscountDeliveryBanner(bannerEl) {
   if (!bannerEl) return;
@@ -821,19 +827,27 @@ function initDiscountDeliveryBanner(bannerEl) {
     }
   }
 
+  function scheduleCycle() {
+    setTimeout(cycle, 7000);
+  }
+
   function cycle() {
-    if (!countdownText) return;
+    if (!countdownText) {
+      scheduleCycle();
+      return;
+    }
     bannerEl.style.opacity = "0";
     setTimeout(() => {
       showDiscount = !showDiscount;
       bannerEl.textContent = showDiscount ? discountMsg : countdownText;
       bannerEl.style.opacity = "1";
+      scheduleCycle();
     }, 1000);
   }
 
   refresh();
   setInterval(refresh, 1000);
-  setInterval(cycle, 7000);
+  scheduleCycle();
 }
 
 async function init() {
@@ -942,27 +956,29 @@ async function init() {
   const prompt = localStorage.getItem("print2Prompt");
   const thumbs = JSON.parse(localStorage.getItem("print2Images") || "[]");
 
-  const oldPlaceholders = [
-    "Describe your 3D print request…",
-    "Describe your idea or upload images…",
-    "Desribe your 3D print request…",
-    "Desribe your idea or upload images…",
-  ];
-  let usePlaceholder = true;
-  if (prompt) {
-    const isOld = oldPlaceholders.some((p) => prompt.startsWith(p));
-    if (!isOld) {
-      refs.promptInput.value = prompt;
-      refs.promptInput.dispatchEvent(new Event("input"));
-      usePlaceholder = false;
-    } else {
-      localStorage.removeItem("print2Prompt");
+  if (refs.promptInput) {
+    const oldPlaceholders = [
+      "Describe your 3D print request…",
+      "Describe your idea or upload images…",
+      "Desribe your 3D print request…",
+      "Desribe your idea or upload images…",
+    ];
+    let usePlaceholder = true;
+    if (prompt) {
+      const isOld = oldPlaceholders.some((p) => prompt.startsWith(p));
+      if (!isOld) {
+        refs.promptInput.value = prompt;
+        refs.promptInput.dispatchEvent(new Event("input"));
+        usePlaceholder = false;
+      } else {
+        localStorage.removeItem("print2Prompt");
+      }
     }
-  }
-  if (usePlaceholder) {
-    // Keep placeholder text consistent with index.html
-    refs.promptInput.placeholder =
-      "Text, image, or both — we\u2019ll 3D print it\u2026";
+    if (usePlaceholder) {
+      // Keep placeholder text consistent with index.html
+      refs.promptInput.placeholder =
+        "Text, image, or both — we\u2019ll 3D print it\u2026";
+    }
   }
   if (refs.examples) {
     refs.examples.textContent = `Try: ${EXAMPLES.join(" · ")}`;
@@ -972,7 +988,11 @@ async function init() {
   if (refs.trending) {
     refs.trending.textContent = `Trending: ${TRENDING.join(" · ")}`;
   }
-  if (refs.promptTip && !localStorage.getItem("promptTipDismissed")) {
+  if (
+    refs.promptTip &&
+    refs.promptInput &&
+    !localStorage.getItem("promptTipDismissed")
+  ) {
     refs.promptInput.addEventListener(
       "focus",
       () => {
