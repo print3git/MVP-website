@@ -23,7 +23,7 @@ let app: express.Express;
 let orders: Map<string, any>;
 
 beforeAll(async () => {
-  process.env.STRIPE_SECRET_KEY = "sk_test";
+  process.env.STRIPE_TEST_KEY = "sk_test";
   process.env.STRIPE_WEBHOOK_SECRET = "whsec_test";
   process.env.FRONTEND_SUCCESS_URL = "https://example.com/success";
   process.env.FRONTEND_CANCEL_URL = "https://example.com/cancel";
@@ -45,10 +45,9 @@ const requestJson = (
   url: string,
   body?: any,
 ) => {
-  let req = (request(app) as any)[method](url).set(
-    "Content-Type",
-    "application/json",
-  );
+  let req = (request(app) as any)
+    [method](url)
+    .set("Content-Type", "application/json");
   if (body !== undefined) {
     req = req.send(body);
   }
@@ -107,7 +106,7 @@ describe("items router", () => {
     const res = await request(app)
       .post("/api/items")
       .set("Content-Type", "text/plain")
-      .send("{\"name\":\"a\",\"priceCents\":1}");
+      .send('{"name":"a","priceCents":1}');
     expect(res.status).toBeGreaterThanOrEqual(400);
     expect(res.status).toBeLessThan(500);
   });
@@ -166,13 +165,16 @@ describe("items router", () => {
 });
 
 describe("checkout router", () => {
-  test("POST /api/checkout missing fields returns 400", async () => {
-    const res = await requestJson("post", "/api/checkout", {});
+  test("POST /api/checkout/create missing fields returns 400", async () => {
+    const res = await requestJson("post", "/api/checkout/create", {});
     expect(res.status).toBe(400);
   });
 
   test("uses env success and cancel URLs", async () => {
-    mockStripeSessionCreate.mockResolvedValueOnce({ id: "cs_test_123", url: "u" });
+    mockStripeSessionCreate.mockResolvedValueOnce({
+      id: "cs_test_123",
+      url: "u",
+    });
     const prevSuccess = process.env.FRONTEND_SUCCESS_URL;
     const prevCancel = process.env.FRONTEND_CANCEL_URL;
     process.env.FRONTEND_SUCCESS_URL = "https://env/success";
@@ -191,7 +193,10 @@ describe("checkout router", () => {
   });
 
   test("returns session id", async () => {
-    mockStripeSessionCreate.mockResolvedValueOnce({ id: "cs_test_456", url: "u" });
+    mockStripeSessionCreate.mockResolvedValueOnce({
+      id: "cs_test_456",
+      url: "u",
+    });
     const res = await requestJson("post", "/api/checkout/create", {
       items: [{ price: "p1", quantity: 1 }],
     });
@@ -234,7 +239,11 @@ describe("stripe webhook router", () => {
   });
 
   test("checkout.session.completed triggers side effects", async () => {
-    orders.set("sess123", { slug: "model", email: "user@example.com", paid: false });
+    orders.set("sess123", {
+      slug: "model",
+      email: "user@example.com",
+      paid: false,
+    });
     mockStripeConstructEvent.mockReturnValueOnce({
       type: "checkout.session.completed",
       data: { object: { id: "sess123" } },
