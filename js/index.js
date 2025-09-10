@@ -827,19 +827,27 @@ function initDiscountDeliveryBanner(bannerEl) {
     }
   }
 
+  function scheduleCycle() {
+    setTimeout(cycle, 7000);
+  }
+
   function cycle() {
-    if (!countdownText) return;
+    if (!countdownText) {
+      scheduleCycle();
+      return;
+    }
     bannerEl.style.opacity = "0";
     setTimeout(() => {
       showDiscount = !showDiscount;
       bannerEl.textContent = showDiscount ? discountMsg : countdownText;
       bannerEl.style.opacity = "1";
+      scheduleCycle();
     }, 1000);
   }
 
   refresh();
   setInterval(refresh, 1000);
-  setInterval(cycle, 7000);
+  scheduleCycle();
 }
 
 async function init() {
