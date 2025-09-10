@@ -1012,17 +1012,14 @@ async function init() {
 
   if (refs.addBasketBtn) {
     refs.addBasketBtn.disabled = true;
-    const viewerReadyPromise = new Promise((resolve) => {
-      if (refs.viewer?.src) return resolve();
-      if (!refs.viewer) return resolve();
-      const obs = new MutationObserver(() => {
-        if (refs.viewer.src) {
-          obs.disconnect();
-          resolve();
-        }
-      });
-      obs.observe(refs.viewer, { attributes: true, attributeFilter: ["src"] });
-    });
+    const viewerReadyPromise = customElements.whenDefined("model-viewer").then(
+      () =>
+        new Promise((resolve) => {
+          if (!refs.viewer) return resolve();
+          if (refs.viewer.modelIsVisible) return resolve();
+          refs.viewer.addEventListener("load", resolve, { once: true });
+        }),
+    );
 
     viewerReadyPromise.then(() => {
       refs.addBasketBtn.disabled = false;
