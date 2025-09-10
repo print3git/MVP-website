@@ -7,7 +7,8 @@ export default defineConfig({
   webServer: {
     command: "npx http-server . -p 3000",
     port: 3000,
-    reuseExistingServer: !process.env.CI,
+    // Always reuse an existing server to avoid port-in-use errors during CI runs
+    reuseExistingServer: true,
   },
   use: {
     browserName: "chromium",
