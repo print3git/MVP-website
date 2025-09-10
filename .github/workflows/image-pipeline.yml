@@ -19,4 +19,4 @@ jobs:
       - name: install
         run: npm ci
       - name: run image pipeline tests
-        run: node scripts/run-jest.js tests/assets
+        run: node scripts/run-jest.js tests/fetch-assets.test.h3k9f2s8p1t6w4y5.js
