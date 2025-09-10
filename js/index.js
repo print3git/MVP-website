@@ -6,6 +6,7 @@ import {
   adjustedSlots,
   updatePrintRunInfo,
 } from "./print-slots.js";
+import { addToBasket } from "./basket.js";
 
 (() => {
   try {
@@ -770,23 +771,21 @@ refs.submitBtn.addEventListener("click", async () => {
 });
 
 function initDiscountDeliveryBanner(bannerEl) {
+  if (!bannerEl) return;
+  const discountMsg = "24% off when you order 3 prints";
   let countdownText = "";
   let showDiscount = true;
   bannerEl.style.opacity = "1";
   bannerEl.style.transition = "opacity 1s";
-  bannerEl.textContent = "24% off when you order 3 prints";
+  bannerEl.textContent = discountMsg;
 
   function getCountdownText() {
     const now = new Date();
     const day = now.getDay();
-    if (day === 0 || day === 6) {
-      bannerEl.classList.add("hidden");
-      return null;
-    }
     const friday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     friday.setDate(friday.getDate() + ((5 - day + 7) % 7));
     const diff = friday - now;
-    if (diff > 0 && diff < 7 * 86400000) {
+    if (day !== 0 && day !== 6 && diff > 0 && diff < 7 * 86400000) {
       const hoursTotal = Math.floor(diff / 3600000);
       const days = Math.floor(hoursTotal / 24);
       const hours = hoursTotal % 24;
@@ -799,25 +798,26 @@ function initDiscountDeliveryBanner(bannerEl) {
       parts.push(`${seconds.toString().padStart(2, "0")}s`);
       return `${parts.join(" ")} left for weekend delivery`;
     }
-    bannerEl.classList.add("hidden");
-    return null;
+    return "";
   }
 
   function refresh() {
-    const text = getCountdownText();
-    if (!text) return;
-    countdownText = text;
+    countdownText = getCountdownText();
     bannerEl.classList.remove("hidden");
-    if (!showDiscount) bannerEl.textContent = countdownText;
+    if (!countdownText) {
+      showDiscount = true;
+      bannerEl.textContent = discountMsg;
+    } else if (!showDiscount) {
+      bannerEl.textContent = countdownText;
+    }
   }
 
   function cycle() {
+    if (!countdownText) return;
     bannerEl.style.opacity = "0";
     setTimeout(() => {
       showDiscount = !showDiscount;
-      bannerEl.textContent = showDiscount
-        ? "24% off when you order 3 prints"
-        : countdownText;
+      bannerEl.textContent = showDiscount ? discountMsg : countdownText;
       bannerEl.style.opacity = "1";
     }, 1000);
   }
@@ -1001,46 +1001,66 @@ async function init() {
     if (window.setWizardStage) window.setWizardStage("purchase");
   });
 
-  refs.addBasketBtn?.addEventListener("click", async () => {
-    if (!window.addToBasket || !refs.viewer.src) return;
-    let snapshot = refs.previewImg?.src;
-    const host = (() => {
-      try {
-        return snapshot ? new URL(snapshot).hostname : "";
-      } catch {
-        return "";
+  if (refs.addBasketBtn) {
+    refs.addBasketBtn.disabled = true;
+    const viewerReadyPromise = new Promise((resolve) => {
+      if (refs.viewer?.src) return resolve();
+      if (!refs.viewer) return resolve();
+      const obs = new MutationObserver(() => {
+        if (refs.viewer.src) {
+          obs.disconnect();
+          resolve();
+        }
+      });
+      obs.observe(refs.viewer, { attributes: true, attributeFilter: ["src"] });
+    });
+
+    viewerReadyPromise.then(() => {
+      refs.addBasketBtn.disabled = false;
+    });
+
+    refs.addBasketBtn.addEventListener("click", async () => {
+      await viewerReadyPromise;
+      if (!refs.viewer.src) return;
+      let snapshot = refs.previewImg?.src;
+      const host = (() => {
+        try {
+          return snapshot ? new URL(snapshot).hostname : "";
+        } catch {
+          return "";
+        }
+      })();
+      if (
+        !snapshot ||
+        snapshot.includes("placehold.co") ||
+        host === "images.unsplash.com"
+      ) {
+        snapshot = await captureModelSnapshot(refs.viewer.src);
       }
-    })();
-    if (
-      !snapshot ||
-      snapshot.includes("placehold.co") ||
-      host === "images.unsplash.com"
-    ) {
-      snapshot = await captureModelSnapshot(refs.viewer.src);
-    }
-    lastSnapshot = snapshot;
-    const item = { jobId: lastJobId, modelUrl: refs.viewer.src, snapshot };
-    if (
-      window.manualizeItem &&
-      window
-        .getBasket?.()
-        .some((it) => it.auto && it.modelUrl === item.modelUrl)
-    ) {
-      window.manualizeItem((it) => it.modelUrl === item.modelUrl);
-    } else {
-      window.addToBasket(item);
-    }
-    const sessionId = localStorage.getItem("adSessionId");
-    const subreddit = localStorage.getItem("adSubreddit");
-    if (sessionId && subreddit && item.jobId) {
-      track("cart", {
-        sessionId,
-        modelId: item.jobId,
-        subreddit,
-      }).catch(() => {});
-    }
-    // Animation and sound handled in basket.js
-  });
+      lastSnapshot = snapshot;
+      const item = { jobId: lastJobId, modelUrl: refs.viewer.src, snapshot };
+      if (
+        window.manualizeItem &&
+        window
+          .getBasket?.()
+          .some((it) => it.auto && it.modelUrl === item.modelUrl)
+      ) {
+        window.manualizeItem((it) => it.modelUrl === item.modelUrl);
+      } else {
+        addToBasket(item);
+      }
+      const sessionId = localStorage.getItem("adSessionId");
+      const subreddit = localStorage.getItem("adSubreddit");
+      if (sessionId && subreddit && item.jobId) {
+        track("cart", {
+          sessionId,
+          modelId: item.jobId,
+          subreddit,
+        }).catch(() => {});
+      }
+      // Animation and sound handled in basket.js
+    });
+  }
 
   setInterval(updateStats, 3600000);
 

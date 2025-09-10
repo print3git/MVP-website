@@ -146,7 +146,7 @@
 
         <!-- (kept) quote + info UI -->
         <div id="subreddit-quote" class="absolute text-left text-sm text-gray-400 leading-snug invisible">
-          <p class="whitespace-nowrap" style="margin-left: 0.5cm">"This feels like magic"<br />&emsp;&emsp;– email from an <span class="text-white">r/DnD</span> user</p>
+          <p class="whitespace-nowrap" style="margin-left: 0.5cm">"This feels like magic"<br />&emsp;&emsp;&emsp;&emsp;– email from an <span class="text-white">r/DnD</span> user</p>
         </div>
         <div id="print-run-info" class="absolute text-right text-sm text-red-400 leading-snug invisible">
           <p class="whitespace-nowrap" style="margin-right: 0.5cm">Only <span id="print-run-slots"></span> print slots left for next <span id="print-run-hours">6</span> <span id="print-run-hours-label">hours</span></p>
@@ -201,6 +201,7 @@
          (left) your unrelated app scripts below -->
     <script type="module" src="js/wizard.js" defer></script>
     <script type="module" src="js/print-slots.js" defer></script>
+    <script type="module" src="js/basket.js" defer></script>
     <script type="module" src="js/index.js" defer></script>
     <script src="js/stats-ticker.js" defer></script>
     <script type="module" src="js/subredditLanding.js" defer></script>
@@ -256,7 +257,6 @@
 
     <script type="module" src="js/printclub.js"></script>
     <script type="module" src="js/rewardBadge.js"></script>
-    <script type="module" src="js/basket.js" defer></script>
 
     <div id="purchase-popups" class="fixed bottom-28 left-4 bg-black/80 text-white px-3 py-1 rounded hidden opacity-0 text-sm flex flex-col items-center space-y-2"></div>
     <svg xmlns="http://www.w3.org/2000/svg" class="hidden">
