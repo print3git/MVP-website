@@ -86,10 +86,10 @@ function initLuckybox() {
     premium: "£59.99 print + 10 print points (usually £79.99)",
   };
   const defaultRadio = document.querySelector(
-    '#luckybox-tiers input[value="multicolour"]',
+    '#luckybox-tiers input[value="basic"]',
   );
   if (defaultRadio) defaultRadio.checked = true;
-  localStorage.setItem("print2Material", "multi");
+  localStorage.setItem("print2Material", "single");
   function selectedTier() {
     const checked = document.querySelector(
       '#luckybox-tiers input[name="luckybox-tier"]:checked',
