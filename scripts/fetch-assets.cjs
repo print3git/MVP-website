@@ -57,8 +57,11 @@ async function fetchAstronaut() {
   const url = process.env.ASTRONAUT_GLB_URL;
 
   if (!url) {
-    await unlink(dest).catch(() => {});
-    throw new Error("ASTRONAUT_GLB_URL not set");
+    console.warn("ASTRONAUT_GLB_URL not set; creating placeholder file");
+    await ensureDir(dest);
+    await writeFile(dest, "");
+    lastAstronautUrl = undefined;
+    return dest;
   }
 
   try {
