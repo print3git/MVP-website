@@ -35,7 +35,8 @@ function resolveFromPaths(mod) {
 function verifyFiles(args) {
   let checking = false;
   const normalized = new Set();
-  for (const arg of args) {
+  for (const raw of args) {
+    const arg = raw.trim();
     if (arg === "--runTestsByPath") {
       checking = true;
       normalized.add(arg);
@@ -191,25 +192,18 @@ async function run(args) {
     const env = { ...process.env };
     delete env.JEST_WORKER_ID;
     const port = 3000;
-    const server = spawn(
-      "npx",
-      ["http-server", repoRoot, "-p", String(port)],
-      { stdio: "ignore" },
-    );
+    const server = spawn("npx", ["http-server", repoRoot, "-p", String(port)], {
+      stdio: "ignore",
+    });
     try {
       await waitOn({
         resources: [`http://localhost:${port}`],
         timeout: 30000,
       });
-      const res = spawnSync(
-        "npx",
-        [
-          "playwright",
-          "test",
-          ...relPwTests,
-        ],
-        { stdio: "inherit", env },
-      );
+      const res = spawnSync("npx", ["playwright", "test", ...relPwTests], {
+        stdio: "inherit",
+        env,
+      });
       exitCode = res.status ?? 1;
     } finally {
       server.kill();
