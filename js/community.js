@@ -430,6 +430,32 @@ function createViewerCard(modelUrl) {
   return div;
 }
 
+function applyPopularViewer() {
+  const grid = document.getElementById("popular-grid");
+  if (!grid) return;
+
+  const existing = grid.querySelector(".viewer-card");
+  if (existing) existing.remove();
+
+  const cards = Array.from(grid.children);
+  if (cards.length < 2) return;
+  const modelUrl = cards[1].dataset.model;
+  if (!modelUrl) return;
+
+  const toRemove = [];
+  for (let i = 2; i < Math.min(cards.length, 9); i += 3) {
+    if (cards[i]) toRemove.push(cards[i]);
+  }
+  toRemove.forEach((el) => el.remove());
+
+  const viewer = createViewerCard(modelUrl);
+  viewer.classList.add("row-span-3", "h-[24rem]");
+
+  const insertBefore = grid.children[2];
+  if (insertBefore) grid.insertBefore(viewer, insertBefore);
+  else grid.appendChild(viewer);
+}
+
 function applyRecentViewer() {
   const grid = document.getElementById("recent-grid");
   if (!grid) return;
@@ -511,6 +537,7 @@ async function loadMore(type, filters = getFilters()) {
   models.forEach((m) => grid.appendChild(createCard(m)));
   await captureSnapshots(grid);
   if (type === "recent") applyRecentViewer();
+  if (type === "popular") applyPopularViewer();
   const btn = document.getElementById(`${type}-load`);
   if (btn) {
     const effectiveCount =
@@ -557,7 +584,8 @@ function renderGrid(type, filters = getFilters()) {
       "bg-[#30D5C8] text-[#1A1A1D] px-4 rounded-r-xl" +
       (loggedIn ? "" : " opacity-50 cursor-default pointer-events-none");
     const btnHandler = loggedIn ? ' onclick="copyReferralLink(event)"' : "";
-    const inputId = type === "recent" ? "referral-link-recent" : "referral-link";
+    const inputId =
+      type === "recent" ? "referral-link-recent" : "referral-link";
     advert.innerHTML =
       '<p class="mb-2 text-center text-white">Earn <span class="text-[#30D5C8]">£5 credit</span> when someone buys with your link.</p>' +
       '<div class="space-y-1 w-full max-w-xs">' +
@@ -582,6 +610,7 @@ function renderGrid(type, filters = getFilters()) {
     state.models.forEach((m) => grid.appendChild(createCard(m)));
     captureSnapshots(grid);
     if (type === "recent") applyRecentViewer();
+    if (type === "popular") applyPopularViewer();
     const btn = document.getElementById(`${type}-load`);
     if (btn) {
       const threshold = 8;
