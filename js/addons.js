@@ -115,15 +115,15 @@ document.addEventListener("DOMContentLoaded", initLuckybox);
 
 function initLuckyboxOptions() {
   const optionRadios = document.querySelectorAll('input[name="luckybox"]');
-  const genreInput = document.getElementById("genre-input");
-  if (!optionRadios.length || !genreInput) return;
+  const genrePanel = document.getElementById("genre-panel");
+  const genreInput = document.getElementById("genre");
+  if (!optionRadios.length || !genrePanel || !genreInput) return;
   function update() {
     const selected = document.querySelector('input[name="luckybox"]:checked');
-    if (selected && selected.value === "B") {
-      genreInput.classList.remove("is-hidden");
-    } else {
-      genreInput.classList.add("is-hidden");
-    }
+    const show = selected && selected.value === "B";
+    genrePanel.hidden = !show;
+    genreInput.disabled = !show;
+    genreInput.setAttribute("aria-disabled", (!show).toString());
   }
   optionRadios.forEach((r) => r.addEventListener("change", update));
   update();

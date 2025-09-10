@@ -112,15 +112,6 @@
         border-color: #30d5c8;
         box-shadow: 0 0 0 3px rgba(48, 213, 200, 0.5);
       }
-      .genre-input {
-        margin-top: 0.5rem;
-        padding: 0.125rem 0.25rem;
-        color: #000;
-        border-radius: 0.25rem;
-      }
-      .is-hidden {
-        display: none;
-      }
     </style>
   </head>
 
@@ -224,7 +215,7 @@
               </label>
             </fieldset>
           </div>
-          <fieldset id="luckybox-options" class="luckybox-options">
+          <fieldset id="luckybox-options" class="luckybox-options" data-addons="luckybox-options">
             <legend>Choose your Luckybox</legend>
             <label class="lucky-card">
               <input type="radio" name="luckybox" id="opt-a" value="A" class="lucky-input" checked />
@@ -235,14 +226,40 @@
               </span>
             </label>
             <label class="lucky-card">
-              <input type="radio" name="luckybox" id="opt-b" value="B" class="lucky-input" />
+              <input
+                type="radio"
+                name="luckybox"
+                id="opt-b"
+                value="B"
+                class="lucky-input"
+                aria-controls="genre-panel"
+              />
               <img src="images/luckybox-preview.png" alt="" />
               <span class="lucky-text">
                 <span class="lucky-title">Luckybox B</span>
                 <span class="lucky-subtitle">Random print in your chosen genre</span>
               </span>
+              <div id="genre-panel" hidden>
+                <div class="flex gap-2 mb-2">
+                  <button type="button" class="px-2 py-1 rounded-full bg-[#444] text-xs">Abstract</button>
+                  <button type="button" class="px-2 py-1 rounded-full bg-[#444] text-xs">Nature</button>
+                  <button type="button" class="px-2 py-1 rounded-full bg-[#444] text-xs">Retro</button>
+                  <button type="button" class="px-2 py-1 rounded-full bg-[#444] text-xs">Minimal</button>
+                </div>
+                <input
+                  id="genre"
+                  name="genre"
+                  type="text"
+                  placeholder="Type a genre (e.g., Surreal, Cyberpunk)"
+                  minlength="2"
+                  maxlength="30"
+                  disabled
+                  aria-disabled="true"
+                  class="mt-2 p-1 rounded text-black"
+                />
+                <p class="text-xs mt-1">Pick a chip or type your own genre. 2–30 characters.</p>
+              </div>
             </label>
-            <input id="genre-input" type="text" placeholder="Genre" class="genre-input is-hidden" />
           </fieldset>
           <a href="luckybox-payment.html" class="absolute bottom-4 right-4 font-bold py-2 px-5 rounded-full shadow-md transition border-2 border-black" style="background-color: #30d5c8; color: #1a1a1d" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
             Buy →
