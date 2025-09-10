@@ -25,14 +25,16 @@ afterEach(() => {
 
 describe("checkout edge cases", () => {
   test("missing email returns 400", async () => {
-    const res = await request(app).post("/api/checkout").send({ slug: "m1" });
+    const res = await request(app)
+      .post("/api/checkout/create")
+      .send({ slug: "m1" });
     expect(res.status).toBe(400);
     expect(orders.size).toBe(0);
   });
 
   test("missing slug returns 400", async () => {
     const res = await request(app)
-      .post("/api/checkout")
+      .post("/api/checkout/create")
       .send({ email: "a@a.com" });
     expect(res.status).toBe(400);
     expect(orders.size).toBe(0);
@@ -43,7 +45,7 @@ describe("checkout edge cases", () => {
       new Error("invalid"),
     );
     const res = await request(app)
-      .post("/api/checkout")
+      .post("/api/checkout/create")
       .send({ slug: "m1", email: "a@a.com" });
     expect(res.status).toBe(500);
   });
@@ -53,7 +55,7 @@ describe("checkout edge cases", () => {
       new Error("timeout"),
     );
     const res = await request(app)
-      .post("/api/checkout")
+      .post("/api/checkout/create")
       .send({ slug: "m1", email: "a@a.com" });
     expect(res.status).toBe(500);
   });
@@ -65,7 +67,7 @@ describe("checkout edge cases", () => {
     });
     const setSpy = jest.spyOn(orders, "set");
     const res = await request(app)
-      .post("/api/checkout")
+      .post("/api/checkout/create")
       .send({ slug: "m1", email: "a@a.com" });
     expect(res.status).toBe(200);
     expect(res.body).toEqual({ checkoutUrl: "http://ok" });
