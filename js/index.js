@@ -6,6 +6,7 @@ import {
   adjustedSlots,
   updatePrintRunInfo,
 } from "./print-slots.js";
+import { addToBasket } from "./basket.js";
 
 (() => {
   try {
@@ -1000,46 +1001,66 @@ async function init() {
     if (window.setWizardStage) window.setWizardStage("purchase");
   });
 
-  refs.addBasketBtn?.addEventListener("click", async () => {
-    if (!window.addToBasket || !refs.viewer.src) return;
-    let snapshot = refs.previewImg?.src;
-    const host = (() => {
-      try {
-        return snapshot ? new URL(snapshot).hostname : "";
-      } catch {
-        return "";
+  if (refs.addBasketBtn) {
+    refs.addBasketBtn.disabled = true;
+    const viewerReadyPromise = new Promise((resolve) => {
+      if (refs.viewer?.src) return resolve();
+      if (!refs.viewer) return resolve();
+      const obs = new MutationObserver(() => {
+        if (refs.viewer.src) {
+          obs.disconnect();
+          resolve();
+        }
+      });
+      obs.observe(refs.viewer, { attributes: true, attributeFilter: ["src"] });
+    });
+
+    viewerReadyPromise.then(() => {
+      refs.addBasketBtn.disabled = false;
+    });
+
+    refs.addBasketBtn.addEventListener("click", async () => {
+      await viewerReadyPromise;
+      if (!refs.viewer.src) return;
+      let snapshot = refs.previewImg?.src;
+      const host = (() => {
+        try {
+          return snapshot ? new URL(snapshot).hostname : "";
+        } catch {
+          return "";
+        }
+      })();
+      if (
+        !snapshot ||
+        snapshot.includes("placehold.co") ||
+        host === "images.unsplash.com"
+      ) {
+        snapshot = await captureModelSnapshot(refs.viewer.src);
       }
-    })();
-    if (
-      !snapshot ||
-      snapshot.includes("placehold.co") ||
-      host === "images.unsplash.com"
-    ) {
-      snapshot = await captureModelSnapshot(refs.viewer.src);
-    }
-    lastSnapshot = snapshot;
-    const item = { jobId: lastJobId, modelUrl: refs.viewer.src, snapshot };
-    if (
-      window.manualizeItem &&
-      window
-        .getBasket?.()
-        .some((it) => it.auto && it.modelUrl === item.modelUrl)
-    ) {
-      window.manualizeItem((it) => it.modelUrl === item.modelUrl);
-    } else {
-      window.addToBasket(item);
-    }
-    const sessionId = localStorage.getItem("adSessionId");
-    const subreddit = localStorage.getItem("adSubreddit");
-    if (sessionId && subreddit && item.jobId) {
-      track("cart", {
-        sessionId,
-        modelId: item.jobId,
-        subreddit,
-      }).catch(() => {});
-    }
-    // Animation and sound handled in basket.js
-  });
+      lastSnapshot = snapshot;
+      const item = { jobId: lastJobId, modelUrl: refs.viewer.src, snapshot };
+      if (
+        window.manualizeItem &&
+        window
+          .getBasket?.()
+          .some((it) => it.auto && it.modelUrl === item.modelUrl)
+      ) {
+        window.manualizeItem((it) => it.modelUrl === item.modelUrl);
+      } else {
+        addToBasket(item);
+      }
+      const sessionId = localStorage.getItem("adSessionId");
+      const subreddit = localStorage.getItem("adSubreddit");
+      if (sessionId && subreddit && item.jobId) {
+        track("cart", {
+          sessionId,
+          modelId: item.jobId,
+          subreddit,
+        }).catch(() => {});
+      }
+      // Animation and sound handled in basket.js
+    });
+  }
 
   setInterval(updateStats, 3600000);
 
