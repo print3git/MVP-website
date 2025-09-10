@@ -130,3 +130,40 @@ function initLuckyboxOptions() {
 }
 
 document.addEventListener("DOMContentLoaded", initLuckyboxOptions);
+
+function initLuckyboxValidation() {
+  const buyLink = document.querySelector(
+    '#luckybox a[href="luckybox-payment.html"]',
+  );
+  const error = document.getElementById("luckybox-error");
+  if (!buyLink || !error) return;
+  function hideError() {
+    if (
+      document.querySelector(
+        '#luckybox-tiers input[name="luckybox-tier"]:checked',
+      ) &&
+      document.querySelector('input[name="luckybox"]:checked')
+    ) {
+      error.classList.add("hidden");
+    }
+  }
+  buyLink.addEventListener("click", (e) => {
+    const tier = document.querySelector(
+      '#luckybox-tiers input[name="luckybox-tier"]:checked',
+    );
+    const choice = document.querySelector('input[name="luckybox"]:checked');
+    if (!tier || !choice) {
+      e.preventDefault();
+      error.textContent =
+        "Please choose a tier and a Luckybox option before continuing.";
+      error.classList.remove("hidden");
+    }
+  });
+  document
+    .querySelectorAll(
+      '#luckybox-tiers input[name="luckybox-tier"], input[name="luckybox"]',
+    )
+    .forEach((input) => input.addEventListener("change", hideError));
+}
+
+document.addEventListener("DOMContentLoaded", initLuckyboxValidation);
