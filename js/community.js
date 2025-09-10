@@ -515,7 +515,12 @@ async function loadMore(type, filters = getFilters()) {
   if (!cache[key]) cache[key] = { offset: 0, models: [] };
   const state = cache[key];
   const offsetBefore = state.offset;
-  const limit = type === "recent" && offsetBefore === 0 ? 8 : 9;
+  const limit =
+    type === "recent" && offsetBefore === 0
+      ? 8
+      : type === "popular" && offsetBefore === 0
+        ? 11
+        : 9;
   let models = await fetchCreations(
     type,
     state.offset,
@@ -528,9 +533,6 @@ async function loadMore(type, filters = getFilters()) {
     models = getFallbackModels(limit, state.offset);
   }
   const fetchedCount = models.length;
-  if (type === "popular" && offsetBefore === 0 && models.length) {
-    models = models.slice(1);
-  }
   models = models.filter(
     (m) => m && (m.placeholder || (m.model_url && m.snapshot)),
   );
