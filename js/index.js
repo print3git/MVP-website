@@ -770,23 +770,21 @@ refs.submitBtn.addEventListener("click", async () => {
 });
 
 function initDiscountDeliveryBanner(bannerEl) {
+  if (!bannerEl) return;
+  const discountMsg = "24% off when you order 3 prints";
   let countdownText = "";
   let showDiscount = true;
   bannerEl.style.opacity = "1";
   bannerEl.style.transition = "opacity 1s";
-  bannerEl.textContent = "24% off when you order 3 prints";
+  bannerEl.textContent = discountMsg;
 
   function getCountdownText() {
     const now = new Date();
     const day = now.getDay();
-    if (day === 0 || day === 6) {
-      bannerEl.classList.add("hidden");
-      return null;
-    }
     const friday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     friday.setDate(friday.getDate() + ((5 - day + 7) % 7));
     const diff = friday - now;
-    if (diff > 0 && diff < 7 * 86400000) {
+    if (day !== 0 && day !== 6 && diff > 0 && diff < 7 * 86400000) {
       const hoursTotal = Math.floor(diff / 3600000);
       const days = Math.floor(hoursTotal / 24);
       const hours = hoursTotal % 24;
@@ -799,25 +797,26 @@ function initDiscountDeliveryBanner(bannerEl) {
       parts.push(`${seconds.toString().padStart(2, "0")}s`);
       return `${parts.join(" ")} left for weekend delivery`;
     }
-    bannerEl.classList.add("hidden");
-    return null;
+    return "";
   }
 
   function refresh() {
-    const text = getCountdownText();
-    if (!text) return;
-    countdownText = text;
+    countdownText = getCountdownText();
     bannerEl.classList.remove("hidden");
-    if (!showDiscount) bannerEl.textContent = countdownText;
+    if (!countdownText) {
+      showDiscount = true;
+      bannerEl.textContent = discountMsg;
+    } else if (!showDiscount) {
+      bannerEl.textContent = countdownText;
+    }
   }
 
   function cycle() {
+    if (!countdownText) return;
     bannerEl.style.opacity = "0";
     setTimeout(() => {
       showDiscount = !showDiscount;
-      bannerEl.textContent = showDiscount
-        ? "24% off when you order 3 prints"
-        : countdownText;
+      bannerEl.textContent = showDiscount ? discountMsg : countdownText;
       bannerEl.style.opacity = "1";
     }, 1000);
   }

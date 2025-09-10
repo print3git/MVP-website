@@ -64,15 +64,19 @@ describe("Discount/delivery banner", () => {
     expect(() => initDiscountDeliveryBanner(null)).not.toThrow();
   });
 
-  test("hides banner on weekend", () => {
+  test("shows discount only on weekend", () => {
     jest.useRealTimers();
     jest.useFakeTimers();
     now = new Date("2024-01-06T12:00:00Z"); // Saturday
     jest.setSystemTime(now);
-    document.body.innerHTML = '<div id="theme-banner"></div>';
+    document.body.innerHTML = '<div id="theme-banner" class="hidden"></div>';
     const weekendBanner = document.getElementById("theme-banner");
     initDiscountDeliveryBanner(weekendBanner);
-    expect(weekendBanner.classList.contains("hidden")).toBe(true);
+    expect(weekendBanner.classList.contains("hidden")).toBe(false);
+    expect(weekendBanner.textContent).toBe("24% off when you order 3 prints");
+    advance(7000);
+    advance(1000);
+    expect(weekendBanner.textContent).toBe("24% off when you order 3 prints");
   });
 
   test("countdown updates over time", () => {
