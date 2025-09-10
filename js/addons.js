@@ -122,14 +122,49 @@ function initLuckyboxOptions() {
   const genreInput = container.querySelector("#genre");
   const chips = container.querySelectorAll(".chip");
   const cards = container.querySelectorAll(".lucky-card");
-  const bLabel = b ? b.closest("label") : null;
   const form = container.closest("form");
   if (!a || !b || !panel || !genreInput) return;
 
+  function showPanel() {
+    panel.hidden = false;
+    panel.classList.add("is-open");
+    panel.style.maxHeight = "0";
+    requestAnimationFrame(() => {
+      panel.style.maxHeight = panel.scrollHeight + "px";
+    });
+    panel.addEventListener(
+      "transitionend",
+      () => {
+        panel.style.maxHeight = "";
+      },
+      { once: true },
+    );
+  }
+
+  function hidePanel() {
+    panel.style.maxHeight = panel.scrollHeight + "px";
+    requestAnimationFrame(() => {
+      panel.classList.remove("is-open");
+      panel.style.maxHeight = "0";
+    });
+    panel.addEventListener(
+      "transitionend",
+      () => {
+        panel.hidden = true;
+        panel.style.maxHeight = "";
+      },
+      { once: true },
+    );
+  }
+
   function updateGenreVisibility() {
     const show = b.checked;
-    panel.hidden = !show;
-    if (bLabel) bLabel.setAttribute("aria-expanded", show ? "true" : "false");
+    if (show) {
+      showPanel();
+    } else if (!panel.hidden) {
+      hidePanel();
+    }
+    b.setAttribute("aria-expanded", show ? "true" : "false");
     genreInput.disabled = !show;
     genreInput.setAttribute("aria-disabled", String(!show));
     const selected = container.querySelector('input[name="luckybox"]:checked');
@@ -140,6 +175,14 @@ function initLuckyboxOptions() {
   }
 
   [a, b].forEach((r) => r.addEventListener("change", updateGenreVisibility));
+  [a, b].forEach((r) =>
+    r.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        r.checked = true;
+        r.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+    }),
+  );
 
   chips.forEach((chip) =>
     chip.addEventListener("click", () => {

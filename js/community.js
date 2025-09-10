@@ -324,16 +324,17 @@ async function loadReferralLink() {
     });
     if (res.ok) {
       const { code } = await res.json();
-      const input = document.getElementById("referral-link");
-      if (input) input.value = `${window.location.origin}?ref=${code}`;
+      document.querySelectorAll(".referral-link").forEach((input) => {
+        input.value = `${window.location.origin}?ref=${code}`;
+      });
     }
   } catch (err) {
     console.error("Failed to fetch referral link", err);
   }
 }
 
-function copyReferralLink() {
-  const input = document.getElementById("referral-link");
+function copyReferralLink(e) {
+  const input = e?.currentTarget?.previousElementSibling;
   input?.select();
   document.execCommand("copy");
 }
@@ -429,34 +430,6 @@ function createViewerCard(modelUrl) {
   return div;
 }
 
-function applyPopularViewer() {
-  const grid = document.getElementById("popular-grid");
-  if (!grid) return;
-
-  const existing = grid.querySelector(".viewer-card");
-  // Avoid removing cards when viewer already added
-  if (existing) return;
-
-  const productCards = Array.from(
-    grid.querySelectorAll(".model-card[data-model]"),
-  );
-  if (productCards.length < 2) return;
-
-  const secondCard = productCards[1];
-  const modelUrl = secondCard.dataset.model;
-  if (!modelUrl) return;
-
-  // Remove cards occupying the viewer column (indices 1, 4, and 7)
-  [productCards[4], productCards[7]].forEach((el) => el?.remove());
-
-  const viewer = createViewerCard(modelUrl);
-  // Let the grid determine the final height so alignment matches
-  viewer.classList.add("row-span-3");
-
-  grid.insertBefore(viewer, secondCard);
-  secondCard.remove();
-}
-
 function applyRecentViewer() {
   const grid = document.getElementById("recent-grid");
   if (!grid) return;
@@ -515,7 +488,8 @@ async function loadMore(type, filters = getFilters()) {
   if (!cache[key]) cache[key] = { offset: 0, models: [] };
   const state = cache[key];
   const offsetBefore = state.offset;
-  const limit = type === "recent" && offsetBefore === 0 ? 8 : 9;
+  const limit =
+    type === "recent" && offsetBefore === 0 ? 8 : type === "popular" ? 12 : 9;
   let models = await fetchCreations(
     type,
     state.offset,
@@ -528,9 +502,6 @@ async function loadMore(type, filters = getFilters()) {
     models = getFallbackModels(limit, state.offset);
   }
   const fetchedCount = models.length;
-  if (type === "popular" && offsetBefore === 0 && models.length) {
-    models = models.slice(1);
-  }
   models = models.filter(
     (m) => m && (m.placeholder || (m.model_url && m.snapshot)),
   );
@@ -539,8 +510,7 @@ async function loadMore(type, filters = getFilters()) {
   const grid = document.getElementById(`${type}-grid`);
   models.forEach((m) => grid.appendChild(createCard(m)));
   await captureSnapshots(grid);
-  if (type === "popular") applyPopularViewer();
-  else if (type === "recent") applyRecentViewer();
+  if (type === "recent") applyRecentViewer();
   const btn = document.getElementById(`${type}-load`);
   if (btn) {
     const effectiveCount =
@@ -576,53 +546,42 @@ function renderGrid(type, filters = getFilters()) {
     const advert = document.createElement("div");
     advert.className =
       type === "recent"
-        ? "w-full min-h-32 bg-[#2A2A2E] border border-dashed border-white/40 rounded-xl flex flex-col items-center justify-center text-sm row-start-1 sm:col-start-2 md:col-start-3 pt-4 pb-14 relative"
+        ? "w-full min-h-32 bg-[#2A2A2E] border border-dashed border-white/40 rounded-xl flex items-center justify-center text-sm p-2 row-start-1 sm:col-start-2 md:col-start-3"
         : "w-full min-h-32 bg-[#2A2A2E] border border-dashed border-white/40 rounded-xl flex items-center justify-center text-sm p-2 row-start-3 sm:col-start-2 md:col-start-2";
-    if (type === "popular") {
-      advert.classList.add("flex-col");
-      const loggedIn = !!localStorage.getItem("token");
-      const inputClass =
-        "flex-1 bg-[#1A1A1D] border border-white/10 rounded-l-xl px-3 py-2 text-white placeholder-gray-500" +
-        (loggedIn ? "" : " cursor-default pointer-events-none");
-      const btnClass =
-        "bg-[#30D5C8] text-[#1A1A1D] px-4 rounded-r-xl" +
-        (loggedIn ? "" : " opacity-50 cursor-default pointer-events-none");
-      const btnHandler = loggedIn ? ' onclick="copyReferralLink()"' : "";
-      advert.innerHTML =
-        '<p class="mb-2 text-center text-white">Earn <span class="text-[#30D5C8]">£5 credit</span> when someone buys with your link.</p>' +
-        '<div class="space-y-1 w-full max-w-xs">' +
-        '<label for="referral-link" class="block text-sm">Your referral link:</label>' +
-        '<div class="flex">' +
-        `<input id="referral-link" aria-label="Referral link" class="${inputClass}" placeholder="Log in to get your link" readonly />` +
-        `<button aria-label="Copy referral link" class="${btnClass}"${btnHandler}>Copy</button>` +
-        "</div></div>";
-    } else {
-      advert.classList.add("text-center");
-
-      if (type === "recent") {
-        const loggedIn = !!localStorage.getItem("token");
-        const msg = loggedIn
-          ? '<p class="text-white">Earn <span class="text-[#30D5C8]">free prints</span></p>'
-          : '<p class="text-white">Sign up to earn <span class="text-[#30D5C8]">free prints</span>.</p>';
-        const link = loggedIn ? "earn-rewards.html" : "signup.html";
-        const btnText = loggedIn ? "Earn Rewards" : "Sign Up";
-        advert.innerHTML =
-          msg +
-          `<a href="${link}" class="absolute bottom-4 left-1/2 font-bold text-lg py-1.5 px-4 rounded-full shadow-md transition border-2 border-black inline-block" style="background-color: #30D5C8; color: #1A1A1D; transform: translateX(-50%) scale(0.78);" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">${btnText}</a>`;
-      } else {
-        advert.innerHTML =
-          '<p class="text-white"><span class="text-[#30D5C8]">£7 off</span> your 2nd and <span class="text-[#30D5C8]">£15 off</span> 3rd item you buy from this page.</p>' +
-          '<a href="payment.html" class="absolute bottom-4 left-1/2 font-bold text-lg py-1.5 px-4 rounded-full shadow-md transition border-2 border-black inline-block" style="background-color: #30D5C8; color: #1A1A1D; transform: translateX(-50%) scale(0.78);" onmouseover="this.style.opacity=\'0.85\'" onmouseout="this.style.opacity=\'1\'">Buy Current Basket →</a>';
-      }
-    }
+    advert.classList.add("flex-col");
+    const loggedIn = !!localStorage.getItem("token");
+    const inputClass =
+      "flex-1 bg-[#1A1A1D] border border-white/10 rounded-l-xl px-3 py-2 text-white placeholder-gray-500" +
+      (loggedIn ? "" : " cursor-default pointer-events-none");
+    const btnClass =
+      "bg-[#30D5C8] text-[#1A1A1D] px-4 rounded-r-xl" +
+      (loggedIn ? "" : " opacity-50 cursor-default pointer-events-none");
+    const btnHandler = loggedIn ? ' onclick="copyReferralLink(event)"' : "";
+    const inputId = type === "recent" ? "referral-link-recent" : "referral-link";
+    advert.innerHTML =
+      '<p class="mb-2 text-center text-white">Earn <span class="text-[#30D5C8]">£5 credit</span> when someone buys with your link.</p>' +
+      '<div class="space-y-1 w-full max-w-xs">' +
+      `<label for="${inputId}" class="block text-sm">Your referral link:</label>` +
+      '<div class="flex">' +
+      `<input id="${inputId}" aria-label="Referral link" class="referral-link ${inputClass}" placeholder="Log in to get your link" readonly />` +
+      `<button aria-label="Copy referral link" class="${btnClass}"${btnHandler}>Copy</button>` +
+      "</div></div>";
+    grid.appendChild(advert);
+  } else {
+    const advert = document.createElement("div");
+    advert.className =
+      "w-full min-h-32 bg-[#2A2A2E] border border-dashed border-white/40 rounded-xl flex flex-col items-center justify-center text-sm row-start-3 sm:col-start-2 md:col-start-2";
+    advert.classList.add("text-center");
+    advert.innerHTML =
+      '<p class="text-white"><span class="text-[#30D5C8]">£7 off</span> your 2nd and <span class="text-[#30D5C8]">£15 off</span> 3rd item you buy from this page.</p>' +
+      '<a href="payment.html" class="absolute bottom-4 left-1/2 font-bold text-lg py-1.5 px-4 rounded-full shadow-md transition border-2 border-black inline-block" style="background-color: #30D5C8; color: #1A1A1D; transform: translateX(-50%) scale(0.78);" onmouseover="this.style.opacity=\'0.85\'" onmouseout="this.style.opacity=\'1\'">Buy Current Basket →</a>';
     grid.appendChild(advert);
   }
   let state = window.communityState[type][key];
   if (state && state.models.length) {
     state.models.forEach((m) => grid.appendChild(createCard(m)));
     captureSnapshots(grid);
-    if (type === "popular") applyPopularViewer();
-    else if (type === "recent") applyRecentViewer();
+    if (type === "recent") applyRecentViewer();
     const btn = document.getElementById(`${type}-load`);
     if (btn) {
       const threshold = 8;
