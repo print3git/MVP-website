@@ -786,8 +786,11 @@ async function initPaymentPage() {
       text += ` - £${saved.toFixed(2)} = £${total.toFixed(2)}`;
       if (!window.location.pathname.endsWith("luckybox-payment.html")) {
         const indent = text.lastIndexOf("£");
-        const pct = totalQty > 3 ? "" : "%";
-        text += `\n${" ".repeat(indent)}(${percent}${pct} saving)`;
+        if (totalQty > 3) {
+          text += `\n${" ".repeat(indent)}(£22 saving)`;
+        } else {
+          text += `\n${" ".repeat(indent)}(${percent}% saving)`;
+        }
       }
     } else {
       text += ` = £${total.toFixed(2)}`;
