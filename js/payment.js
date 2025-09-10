@@ -1121,10 +1121,12 @@ async function initPaymentPage() {
     localStorage.removeItem("print2CheckoutItems");
   }
 
-  viewer.src =
-    (checkoutItems[0] && sanitizeUrl(checkoutItems[0].modelUrl)) ||
-    storedModel ||
-    FALLBACK_GLB;
+  if (viewer && viewer.tagName.toLowerCase() !== "img") {
+    viewer.src =
+      (checkoutItems[0] && sanitizeUrl(checkoutItems[0].modelUrl)) ||
+      storedModel ||
+      FALLBACK_GLB;
+  }
 
   // Sync checkout items with the current basket in case this page was
   // opened directly and the stored list is stale.

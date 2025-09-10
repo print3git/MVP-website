@@ -66,7 +66,7 @@
       }
 
       /* ===== Luckybox option cards ===== */
-      .luckybox-options {
+      [data-addons="luckybox-options"] {
         margin-top: 1rem;
         padding: 0 2.5rem;
         display: flex;
@@ -74,43 +74,111 @@
         gap: 0.25rem;
         font-size: 0.875rem;
       }
-      .luckybox-options legend {
+      [data-addons="luckybox-options"] legend {
         font-weight: 600;
         margin-bottom: 0.25rem;
       }
-      .lucky-card {
+      [data-addons="luckybox-options"] .lucky-card {
+        position: relative;
         display: flex;
         align-items: center;
-        padding: 0.5rem;
-        border: 2px solid #666;
-        border-radius: 0.5rem;
+        gap: 14px;
+        padding: 14px;
+        border: 1px solid #2a2f36;
+        border-radius: 14px;
+        background: #121417;
         cursor: pointer;
-        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        transition: transform 180ms, box-shadow 180ms, border-color 180ms;
       }
-      .lucky-card img {
-        width: 40px;
-        height: 40px;
-        margin-right: 0.5rem;
+      [data-addons="luckybox-options"] .lucky-card:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
       }
-      .lucky-card .lucky-input {
+      [data-addons="luckybox-options"] .lucky-card:has(.lucky-input:checked),
+      [data-addons="luckybox-options"] .lucky-card.is-selected {
+        border-color: #20e3b2;
+        box-shadow: 0 0 0 3px rgba(32, 227, 178, 0.25);
+      }
+      [data-addons="luckybox-options"] .lucky-card:has(.lucky-input:focus-visible) {
+        outline: 2px solid #20e3b2;
+        outline-offset: 2px;
+      }
+      [data-addons="luckybox-options"] .lucky-input {
         position: absolute;
         opacity: 0;
         pointer-events: none;
       }
-      .lucky-text {
+      [data-addons="luckybox-options"] .lucky-card img {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        object-fit: cover;
+        flex-shrink: 0;
+      }
+      [data-addons="luckybox-options"] .lucky-text {
         display: flex;
         flex-direction: column;
       }
-      .lucky-title {
+      [data-addons="luckybox-options"] .lucky-title {
         font-weight: 600;
       }
-      .lucky-subtitle {
+      [data-addons="luckybox-options"] .lucky-subtitle {
         font-size: 0.875rem;
         color: #ccc;
       }
-      .lucky-card:has(.lucky-input:checked) {
-        border-color: #30d5c8;
-        box-shadow: 0 0 0 3px rgba(48, 213, 200, 0.5);
+
+      [data-addons="luckybox-options"] #genre-panel {
+        border-top: 1px solid #23272e;
+        margin-top: 10px;
+        padding: 10px;
+        animation: genre-slide 180ms ease-out;
+      }
+      [data-addons="luckybox-options"] #genre-panel[hidden] {
+        display: none;
+      }
+      [data-addons="luckybox-options"] .genre-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 6px;
+      }
+      [data-addons="luckybox-options"] .genre-chip {
+        border: 1px solid #2a2f36;
+        background: #0e1114;
+        border-radius: 9999px;
+        padding: 2px 8px;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: border-color 180ms;
+      }
+      [data-addons="luckybox-options"] .genre-chip:hover {
+        border-color: #3a3f47;
+      }
+      [data-addons="luckybox-options"] .genre-input {
+        width: 100%;
+        border: 1px solid #2a2f36;
+        background: #0e1114;
+        border-radius: 12px;
+        padding: 6px 8px;
+        color: #fff;
+      }
+      [data-addons="luckybox-options"] .genre-input::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+      }
+      [data-addons="luckybox-options"] .genre-help {
+        font-size: 0.75rem;
+        opacity: 0.8;
+        margin-top: 4px;
+      }
+      @keyframes genre-slide {
+        from {
+          opacity: 0;
+          transform: translateY(-4px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
     </style>
   </head>
@@ -240,11 +308,11 @@
                 <span class="lucky-subtitle">Random print in your chosen genre</span>
               </span>
               <div id="genre-panel" hidden>
-                <div class="flex gap-2 mb-2">
-                  <button type="button" class="px-2 py-1 rounded-full bg-[#444] text-xs">Abstract</button>
-                  <button type="button" class="px-2 py-1 rounded-full bg-[#444] text-xs">Nature</button>
-                  <button type="button" class="px-2 py-1 rounded-full bg-[#444] text-xs">Retro</button>
-                  <button type="button" class="px-2 py-1 rounded-full bg-[#444] text-xs">Minimal</button>
+                <div class="genre-chips">
+                  <button type="button" class="genre-chip">Abstract</button>
+                  <button type="button" class="genre-chip">Nature</button>
+                  <button type="button" class="genre-chip">Retro</button>
+                  <button type="button" class="genre-chip">Minimal</button>
                 </div>
                 <input
                   id="genre"
@@ -255,13 +323,23 @@
                   maxlength="30"
                   disabled
                   aria-disabled="true"
-                  class="mt-2 p-1 rounded text-black"
+                  class="genre-input"
                 />
-                <p class="text-xs mt-1">Pick a chip or type your own genre. 2–30 characters.</p>
+                <p class="genre-help">Pick a chip or type your own genre. 2–30 characters.</p>
               </div>
             </label>
           </fieldset>
-          <a href="luckybox-payment.html" class="absolute bottom-4 right-4 font-bold py-2 px-5 rounded-full shadow-md transition border-2 border-black" style="background-color: #30d5c8; color: #1a1a1d" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+          <p
+            id="luckybox-error"
+            class="hidden absolute bottom-16 right-4 text-red-500 text-sm"
+          ></p>
+          <a
+            href="luckybox-payment.html"
+            class="absolute bottom-4 right-4 font-bold py-2 px-5 rounded-full shadow-md transition border-2 border-black"
+            style="background-color: #30d5c8; color: #1a1a1d"
+            onmouseover="this.style.opacity='0.85'"
+            onmouseout="this.style.opacity='1'"
+          >
             Buy →
           </a>
         </div>
