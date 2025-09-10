@@ -1,20 +1,27 @@
 import request from "supertest";
 import express from "express";
-import router, { orders } from "../../src/routes/checkout";
 import { sign } from "./helpers/stripe-signing";
 
-jest.mock("../../mail.js", () => ({
-  sendMail: jest.fn(),
-}));
+jest.mock("../../src/db", () => ({ query: jest.fn() }));
+jest.mock("../../src/queue/printQueue", () => ({ enqueuePrint: jest.fn() }));
+jest.mock("../../src/queue/dbPrintQueue", () => ({ enqueuePrint: jest.fn() }));
+
+process.env.STRIPE_KEY = "sk_test_valid";
+process.env.STRIPE_WEBHOOK_SECRET = "whsec_test";
+
+const router = require("../../src/routes/stripe/webhook").default;
+const db = require("../../src/db");
+const { enqueuePrint } = require("../../src/queue/printQueue");
+const {
+  enqueuePrint: enqueueDbPrint,
+} = require("../../src/queue/dbPrintQueue");
 
 const app = express();
 app.use(router);
 
 describe("webhook invalid signature", () => {
   beforeEach(() => {
-    orders.clear();
-    process.env.STRIPE_SECRET_KEY = "sk_test_valid";
-    process.env.STRIPE_WEBHOOK_SECRET = "whsec_test";
+    jest.clearAllMocks();
   });
 
   const payload = JSON.stringify({
@@ -23,21 +30,27 @@ describe("webhook invalid signature", () => {
     data: { object: { id: "sess_1" } },
   });
 
-  test("missing signature header returns 500", async () => {
+  test("missing signature header returns 400", async () => {
     const res = await request(app)
-      .post("/stripe/webhook")
+      .post("/api/webhook/stripe")
       .set("Content-Type", "application/json")
       .send(payload);
-    expect(res.status).toBe(500);
+    expect(res.status).toBe(400);
+    expect(db.query).not.toHaveBeenCalled();
+    expect(enqueueDbPrint).not.toHaveBeenCalled();
+    expect(enqueuePrint).not.toHaveBeenCalled();
   });
 
-  test("wrong secret signature returns 500", async () => {
+  test("wrong secret signature returns 400", async () => {
     const { header } = sign(payload, "wrong");
     const res = await request(app)
-      .post("/stripe/webhook")
+      .post("/api/webhook/stripe")
       .set("stripe-signature", header)
       .set("Content-Type", "application/json")
       .send(payload);
-    expect(res.status).toBe(500);
+    expect(res.status).toBe(400);
+    expect(db.query).not.toHaveBeenCalled();
+    expect(enqueueDbPrint).not.toHaveBeenCalled();
+    expect(enqueuePrint).not.toHaveBeenCalled();
   });
 });

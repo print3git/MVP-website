@@ -1,42 +1,47 @@
 import request from "supertest";
 import express from "express";
-import router, { orders } from "../../src/routes/checkout";
 import { sign } from "./helpers/stripe-signing";
 
-let currentEvent: any;
-jest.mock("../../mail.js", () => ({ sendMail: jest.fn() }));
-const mockMail = require("../../mail.js").sendMail as jest.Mock;
-mockMail.mockImplementation(async () => {
-  console.log(currentEvent.id, currentEvent.type);
-});
+jest.mock("../../src/db", () => ({ query: jest.fn() }));
+jest.mock("../../src/queue/printQueue", () => ({ enqueuePrint: jest.fn() }));
+jest.mock("../../src/queue/dbPrintQueue", () => ({ enqueuePrint: jest.fn() }));
+jest.mock("../../src/logger", () => ({
+  info: jest.fn(),
+  warn: jest.fn(),
+  error: jest.fn(),
+}));
+
+process.env.STRIPE_KEY = "sk_test_valid";
+process.env.STRIPE_WEBHOOK_SECRET = "whsec_test";
+
+const router = require("../../src/routes/stripe/webhook").default;
+const logger = require("../../src/logger");
 
 const app = express();
 app.use(router);
 
 describe("webhook logging", () => {
   beforeEach(() => {
-    orders.clear();
-    mockMail.mockClear();
-    process.env.STRIPE_SECRET_KEY = "sk_test_valid";
-    process.env.STRIPE_WEBHOOK_SECRET = "whsec_test";
+    jest.clearAllMocks();
   });
 
-  test("logs include event id and type", async () => {
-    currentEvent = {
+  test("logs include event type and session id", async () => {
+    const payload = JSON.stringify({
       id: "evt1",
       type: "checkout.session.completed",
-      data: { object: { id: "sess1" } },
-    };
-    orders.set("sess1", { slug: "a", email: "a@b.com", paid: false });
-    const payload = JSON.stringify(currentEvent);
+      data: { object: { id: "sess1", metadata: { jobId: "job1" } } },
+    });
     const { header } = sign(payload, process.env.STRIPE_WEBHOOK_SECRET!);
-    const logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
     await request(app)
-      .post("/stripe/webhook")
+      .post("/api/webhook/stripe")
       .set("stripe-signature", header)
       .set("Content-Type", "application/json")
       .send(payload);
-    expect(logSpy).toHaveBeenCalledWith("evt1", "checkout.session.completed");
-    logSpy.mockRestore();
+    expect(logger.info).toHaveBeenCalledWith("stripe_webhook_received", {
+      type: "checkout.session.completed",
+    });
+    expect(logger.info).toHaveBeenCalledWith("order_paid", {
+      sessionId: "sess1",
+    });
   });
 });
