@@ -90,7 +90,7 @@ const ANNUAL_DISCOUNT = 0.9;
 const PRINT_CLUB_ANNUAL_PRICE = Math.round(
   PRINT_CLUB_PRICE * 12 * ANNUAL_DISCOUNT,
 );
-let selectedPrice = PRICES.multi;
+let selectedPrice = PRICES.single;
 const SINGLE_BORDER_COLOR = "#60a5fa";
 const API_BASE = (window.API_ORIGIN || "") + "/api";
 // Time zone used to reset local purchase counts at 1 AM Eastern
@@ -170,13 +170,13 @@ async function fetchPaymentInit() {
 }
 
 // Restore previously selected material option and colour
-let storedMaterial = localStorage.getItem("print2Material");
+let storedMaterial = localStorage.getItem("print2Material") || "single";
 let storedColor = localStorage.getItem("print2Color");
 const personalise = qs("personalise");
 if (personalise !== null) {
   storedMaterial = "multi";
-  localStorage.setItem("print2Material", storedMaterial);
 }
+localStorage.setItem("print2Material", storedMaterial);
 if (storedMaterial && PRICES[storedMaterial]) {
   selectedPrice = PRICES[storedMaterial];
 }
