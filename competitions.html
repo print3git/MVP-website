@@ -396,10 +396,11 @@
                 : "multi";
           localStorage.setItem("print3Material", material);
         }
+        window.setTier = setTier;
 
         tierToggle?.addEventListener("click", (ev) => {
           const btn = ev.target.closest("button[data-tier]");
-          if (btn) setTier(btn.dataset.tier);
+          if (btn && !btn.disabled) setTier(btn.dataset.tier);
         });
 
         function close() {
@@ -484,7 +485,7 @@
         document.addEventListener("keydown", (e) => {
           if (e.key === "Escape") close();
         });
-        setTier("silver");
+        setTier("bronze");
       });
     </script>
     <script type="module" src="js/printclub.js"></script>
