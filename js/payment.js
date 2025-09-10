@@ -1104,7 +1104,6 @@ async function initPaymentPage() {
     }
   }
   const storedModel = sanitizeUrl(localStorage.getItem("print2Model"));
-  viewer.src = storedModel || FALLBACK_GLB;
 
   // Load saved basket items unless this is the Luckybox page
   if (!window.location.pathname.endsWith("luckybox-payment.html")) {
@@ -1121,6 +1120,11 @@ async function initPaymentPage() {
   } else {
     localStorage.removeItem("print2CheckoutItems");
   }
+
+  viewer.src =
+    (checkoutItems[0] && sanitizeUrl(checkoutItems[0].modelUrl)) ||
+    storedModel ||
+    FALLBACK_GLB;
 
   // Sync checkout items with the current basket in case this page was
   // opened directly and the stored list is stale.
