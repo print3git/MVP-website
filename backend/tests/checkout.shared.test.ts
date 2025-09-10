@@ -1,15 +1,13 @@
 const { expect, test } = require("@jest/globals");
 
 beforeEach(() => {
-  process.env.STRIPE_TEST_KEY = "sk_test";
-  process.env.STRIPE_LIVE_KEY = "sk_live";
+  process.env.STRIPE_SECRET_KEY = "sk_test";
   process.env.STRIPE_WEBHOOK_SECRET = "whsec";
   jest.resetModules();
 });
 
 afterEach(() => {
-  delete process.env.STRIPE_TEST_KEY;
-  delete process.env.STRIPE_LIVE_KEY;
+  delete process.env.STRIPE_SECRET_KEY;
   delete process.env.STRIPE_WEBHOOK_SECRET;
 });
 

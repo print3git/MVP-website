@@ -29,7 +29,6 @@ describe("create checkout session errors", () => {
 
   test("missing STRIPE_SECRET_KEY returns 500", async () => {
     delete process.env.STRIPE_SECRET_KEY;
-    delete process.env.STRIPE_KEY;
     mockCreate.mockImplementation(() => {
       throw new Error("STRIPE_SECRET_KEY missing");
     });
@@ -43,7 +42,6 @@ describe("create checkout session errors", () => {
 
   test("Stripe SDK throws surfaces 500 and log", async () => {
     process.env.STRIPE_SECRET_KEY = "sk_test";
-    process.env.STRIPE_KEY = "sk_test";
     const error = new Error("boom");
     mockCreate.mockImplementation(() => {
       throw error;

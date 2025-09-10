@@ -9,7 +9,7 @@ describe("POST /api/checkout/create", () => {
   beforeEach(() => {
     process.env.FRONTEND_SUCCESS_URL = "https://success";
     process.env.FRONTEND_CANCEL_URL = "https://cancel";
-    process.env.STRIPE_TEST_KEY = "sk_test_X";
+    process.env.STRIPE_SECRET_KEY = "sk_test_X";
     (Stripe as any).__mocks.createMock.mockClear();
     (db.query as jest.Mock).mockClear();
   });

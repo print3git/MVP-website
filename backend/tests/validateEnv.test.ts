@@ -38,12 +38,11 @@ function runGetHFAPIKey(env) {
 describe("validate-env script", () => {
   test("succeeds when required vars set and proxies unset", () => {
     const output = run({
-      STRIPE_TEST_KEY: "test",
+      STRIPE_SECRET_KEY: "sk_test_dummy",
       HF_TOKEN: "token",
       AWS_ACCESS_KEY_ID: "id",
       AWS_SECRET_ACCESS_KEY: "secret",
       DB_URL: "postgres://user:pass@localhost/db",
-      STRIPE_SECRET_KEY: "sk_test_dummy",
       SKIP_DB_CHECK: "1",
     });
     expect(output).toContain("environment OK");
@@ -53,7 +52,7 @@ describe("validate-env script", () => {
     expect(() =>
       run(
         {
-          STRIPE_TEST_KEY: "test",
+          STRIPE_SECRET_KEY: "test",
           HF_TOKEN: "token",
           AWS_ACCESS_KEY_ID: "id",
           AWS_SECRET_ACCESS_KEY: "secret",
@@ -66,7 +65,7 @@ describe("validate-env script", () => {
 
   test("succeeds when HF_TOKEN is missing", () => {
     const output = run({
-      STRIPE_TEST_KEY: "test",
+      STRIPE_SECRET_KEY: "test",
       HF_TOKEN: "",
       HF_API_KEY: "",
       AWS_ACCESS_KEY_ID: "id",
@@ -79,13 +78,12 @@ describe("validate-env script", () => {
 
   test("exports HF_API_KEY when absent", () => {
     const key = runGetHFAPIKey({
-      STRIPE_TEST_KEY: "test",
+      STRIPE_SECRET_KEY: "sk_test_dummy",
       HF_TOKEN: "",
       HF_API_KEY: "",
       AWS_ACCESS_KEY_ID: "id",
       AWS_SECRET_ACCESS_KEY: "secret",
       DB_URL: "postgres://user:pass@localhost/db",
-      STRIPE_SECRET_KEY: "sk_test_dummy",
       SKIP_DB_CHECK: "1",
     });
     expect(key).toMatch(/^hf_dummy_/);
@@ -93,7 +91,7 @@ describe("validate-env script", () => {
 
   test("falls back when database unreachable", () => {
     const output = run({
-      STRIPE_TEST_KEY: "test",
+      STRIPE_SECRET_KEY: "test",
       HF_TOKEN: "token",
       AWS_ACCESS_KEY_ID: "id",
       AWS_SECRET_ACCESS_KEY: "secret",

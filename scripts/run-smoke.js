@@ -50,20 +50,18 @@ function initEnv(baseEnv = process.env) {
   ensureDefault("AWS_ACCESS_KEY_ID", "dummy");
   ensureDefault("AWS_SECRET_ACCESS_KEY", "dummy");
   ensureDefault("DB_URL", "postgres://user:pass@localhost/db");
-  ensureDefault("STRIPE_SECRET_KEY", "sk_test_dummy");
-  ensureDefault("STRIPE_WEBHOOK_SECRET", `whsec_dummy_${Date.now()}`);
-  ensureDefault("STRIPE_TEST_KEY", `sk_test_dummy_${Date.now()}`);
-  ensureDefault("SKIP_DB_CHECK", "1");
-  ensureDefault("CLOUDFRONT_MODEL_DOMAIN", "cdn.test");
+    ensureDefault("STRIPE_SECRET_KEY", "sk_test_dummy");
+    ensureDefault("STRIPE_WEBHOOK_SECRET", `whsec_dummy_${Date.now()}`);
+    ensureDefault("SKIP_DB_CHECK", "1");
+    ensureDefault("CLOUDFRONT_MODEL_DOMAIN", "cdn.test");
 
-  const required = [
-    "STRIPE_TEST_KEY",
-    "CLOUDFRONT_MODEL_DOMAIN",
-    "AWS_ACCESS_KEY_ID",
-    "AWS_SECRET_ACCESS_KEY",
-    "DB_URL",
-    "STRIPE_SECRET_KEY",
-  ];
+    const required = [
+      "CLOUDFRONT_MODEL_DOMAIN",
+      "AWS_ACCESS_KEY_ID",
+      "AWS_SECRET_ACCESS_KEY",
+      "DB_URL",
+      "STRIPE_SECRET_KEY",
+    ];
   for (const key of required) {
     if (!env[key]) {
       console.warn(`Missing env var ${key}`);

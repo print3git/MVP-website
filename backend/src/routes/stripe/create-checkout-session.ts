@@ -26,7 +26,7 @@ let stripeKey: string;
 let successUrl: string;
 let cancelUrl: string;
 try {
-  stripeKey = getEnvVar("STRIPE_TEST_KEY", { required: true })!;
+  stripeKey = getEnvVar("STRIPE_SECRET_KEY", { required: true })!;
   successUrl = getEnvVar("FRONTEND_SUCCESS_URL", { required: true })!;
   cancelUrl = getEnvVar("FRONTEND_CANCEL_URL", { required: true })!;
 } catch (err) {

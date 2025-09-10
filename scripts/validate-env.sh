@@ -78,10 +78,6 @@ fi
 # Disable HTTP/2 for local testing to avoid client errors
 export HTTP2=false
 
-if [[ -z "${STRIPE_TEST_KEY:-}" && -z "${STRIPE_LIVE_KEY:-}" ]]; then
-  echo "Using dummy STRIPE_TEST_KEY" >&2
-  export STRIPE_TEST_KEY="sk_test_dummy_$(date +%s)"
-fi
 if [[ -z "${HF_TOKEN:-}" && -z "${HF_API_KEY:-}" ]]; then
   echo "Using dummy HF_TOKEN and HF_API_KEY" >&2
   export HF_TOKEN="hf_dummy_$(date +%s)"

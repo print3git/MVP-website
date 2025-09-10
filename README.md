@@ -69,18 +69,18 @@ Set the following environment variables so the build can download model assets:
 
    Set `DB_URL` to point at your server before continuing.
 
-- `STRIPE_TEST_KEY` – test secret key for Stripe.
-- `STRIPE_LIVE_KEY` – live secret key for Stripe.
-- `STRIPE_PUBLISHABLE_KEY` – publishable key for Stripe.js on the frontend.
-- `STRIPE_WEBHOOK_SECRET` – signing secret for Stripe webhooks.
-- `HUNYUAN_API_KEY` – key for the Sparc3D API.
-- `HF_TOKEN` – Hugging Face access token used by scripts like `setup_space.sh`.
-- `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` – credentials for S3 uploads.
+ - `STRIPE_SECRET_KEY` – secret key for Stripe.
+ - `STRIPE_PUBLISHABLE_KEY` – publishable key for Stripe.js on the frontend.
+ - `STRIPE_WEBHOOK_SECRET` – signing secret for Stripe webhooks.
+ - `HUNYUAN_API_KEY` – key for the Sparc3D API.
+ - `HF_TOKEN` – Hugging Face access token used by scripts like `setup_space.sh`.
+ - `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` – credentials for S3 uploads.
 
-The server uses `STRIPE_LIVE_KEY` when `NODE_ENV=production`; otherwise `STRIPE_TEST_KEY` is used.
+ Set `STRIPE_SECRET_KEY` to your Stripe secret key. Use a test key for development
+ and a live key in production.
 
-- If `STRIPE_TEST_KEY` isn't set, `npm run setup` generates a temporary dummy key
-  so local installs don't fail.
+ - If `STRIPE_SECRET_KEY` isn't set, `npm run setup` generates a temporary dummy key
+   so local installs don't fail.
 - The repository uses `mise` for toolchain management. The included `.mise.toml` enables
   automatic Node version detection via `.nvmrc`. If you don't have `mise` installed,
   run `bash scripts/install-mise.sh` before continuing. After cloning, run `mise trust`
