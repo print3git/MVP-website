@@ -531,9 +531,11 @@ async function loadMore(type, filters = getFilters()) {
   const fetchedCount = models.length;
   if (type === "popular" && offsetBefore === 0 && models.length) {
     models = models.slice(1);
-    state.offset += 1;
   }
-  state.offset += models.length;
+  models = models.filter(
+    (m) => m && (m.placeholder || (m.model_url && m.snapshot)),
+  );
+  state.offset += fetchedCount;
   state.models = state.models.concat(models);
   const grid = document.getElementById(`${type}-grid`);
   models.forEach((m) => grid.appendChild(createCard(m)));
