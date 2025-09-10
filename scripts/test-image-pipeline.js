@@ -22,7 +22,7 @@ try {
   execSync("npm ls aws-sdk-client-mock --silent", { stdio: "pipe" });
 } catch {
   console.warn(
-    "aws-sdk-client-mock may be extraneous or mismatched; run npm install"
+    "aws-sdk-client-mock may be extraneous or mismatched; run npm install",
   );
 }
 
@@ -52,5 +52,5 @@ if (networkOk) {
   }
 }
 
-// Force tests to run even when offline
-run("CI_FORCE=1 node scripts/run-jest.js --testPathPattern tests/assets");
+// Force tests to run even when offline using a real test directory
+run("CI_FORCE=1 node scripts/run-jest.js tests/frontend");
