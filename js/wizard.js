@@ -42,7 +42,7 @@ export function updateWizard() {
 
   const slots = document.getElementById("wizard-slots");
   if (slots) {
-    if (idx >= 2) slots.classList.remove("hidden");
+    if (idx >= 1) slots.classList.remove("hidden");
     else slots.classList.add("hidden");
   }
 }
@@ -54,7 +54,7 @@ export function setWizardSlotCount(n) {
   if (el) {
     el.textContent = `Only ${n} print slots left`;
     const stage = localStorage.getItem(STAGE_KEY);
-    if (stage === "purchase" || stage === "print") {
+    if (stage === "building" || stage === "purchase" || stage === "print") {
       el.classList.remove("hidden");
     }
   }
