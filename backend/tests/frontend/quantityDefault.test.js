@@ -17,7 +17,7 @@ function loadHtml(rel, extra = []) {
 }
 
 function loadDom() {
-    const html = loadHtml("../../../payment.html", []);
+  const html = loadHtml("../../../payment.html", []);
   const dom = new JSDOM(html, {
     runScripts: "dangerously",
     resources: "usable",
@@ -32,7 +32,7 @@ function loadDom() {
   return dom;
 }
 
-test("single item defaults quantity to 2", async () => {
+test("single item quantity and pricing reflect input", async () => {
   const dom = loadDom();
   dom.window.localStorage.setItem(
     "print2Basket",
@@ -40,5 +40,15 @@ test("single item defaults quantity to 2", async () => {
   );
   dom.window.document.dispatchEvent(new dom.window.Event("DOMContentLoaded"));
   await new Promise((r) => setTimeout(r, 0));
-  expect(dom.window.document.getElementById("print-qty").value).toBe("2");
+  const qtyEl = dom.window.document.getElementById("print-qty");
+  expect(qtyEl.value).toBe("2");
+  qtyEl.value = "3";
+  qtyEl.dispatchEvent(new dom.window.Event("change"));
+  await new Promise((r) => setTimeout(r, 0));
+  const payBtn = dom.window.document.getElementById("submit-payment");
+  expect(payBtn.textContent).toBe("Pay £67.97 (3 prints)");
+  const breakdown = dom.window.document.getElementById("price-breakdown");
+  expect(breakdown.textContent).toContain("3 single-colour");
+  expect(breakdown.textContent).toContain("£22.00");
+  expect(breakdown.textContent).toContain("£67.97");
 });

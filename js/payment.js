@@ -710,7 +710,7 @@ async function initPaymentPage() {
         : [
             {
               material: selectedMaterialValue(),
-              qty: Math.max(1, parseInt(qtySelect?.value || "2", 10)),
+              qty: Math.max(1, parseInt(qtySelect?.value || "1", 10)),
             },
           ];
       let subtotal = 0;
@@ -746,7 +746,7 @@ async function initPaymentPage() {
       : [
           {
             material: selectedMaterialValue(),
-            qty: Math.max(1, parseInt(qtySelect?.value || "2", 10)),
+            qty: Math.max(1, parseInt(qtySelect?.value || "1", 10)),
           },
         ];
     let subtotal = 0;
@@ -841,7 +841,9 @@ async function initPaymentPage() {
     if (!bulkMsg) return;
     const path = window.location.pathname;
     const amount = path.endsWith("minis-checkout.html") ? "£5.00" : "£7.00";
+    const qty = Math.max(1, parseInt(qtySelect?.value || "1", 10));
     const showGiftTwo =
+      qty >= 3 &&
       !path.endsWith("minis-checkout.html") &&
       !path.endsWith("luckybox-payment.html");
     bulkMsg.textContent = "";
@@ -989,7 +991,7 @@ async function initPaymentPage() {
       singleButton.style.borderColor = "";
     }
     if (qtySelect) {
-      qtySelect.value = String(item.qty || 1);
+      qtySelect.value = String(item.qty || 2);
     }
     applyStoredColorIfNeeded();
     updatePayButton();
@@ -1106,12 +1108,6 @@ async function initPaymentPage() {
     try {
       const arr = JSON.parse(localStorage.getItem("print2CheckoutItems"));
       if (Array.isArray(arr) && arr.length) {
-        if (
-          arr.length === 1 &&
-          (arr[0].qty == null || parseInt(arr[0].qty, 10) === 1)
-        ) {
-          arr[0].qty = 2;
-        }
         checkoutItems = arr.map((it) => ({
           ...it,
           etchName: it.etchName || "",
@@ -1152,9 +1148,6 @@ async function initPaymentPage() {
               prev.etchName || localStorage.getItem("print2EtchName") || "",
             qty: (() => {
               let q = prev.qty ?? it.quantity;
-              if (basket.length === 1 && (q == null || parseInt(q, 10) === 1)) {
-                q = "2";
-              }
               if (q == null) q = "1";
               return Math.max(1, parseInt(q, 10));
             })(),
@@ -1411,7 +1404,7 @@ async function initPaymentPage() {
     }
     const qty = Math.max(
       1,
-      parseInt(document.getElementById("print-qty")?.value || "2", 10),
+      parseInt(document.getElementById("print-qty")?.value || "1", 10),
     );
     const shippingInfo = {
       name: document.getElementById("ship-name").value,
