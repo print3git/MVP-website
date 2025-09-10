@@ -488,9 +488,11 @@
           localStorage.setItem("print3Material", material);
         }
 
+        window.setTier = setTier;
+
         tierToggle?.addEventListener("click", (ev) => {
           const btn = ev.target.closest("button[data-tier]");
-          if (btn) setTier(btn.dataset.tier);
+          if (btn && !btn.disabled) setTier(btn.dataset.tier);
         });
 
         const close = closeModel;

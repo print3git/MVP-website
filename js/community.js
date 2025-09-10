@@ -249,6 +249,15 @@ function openModel(model) {
     input.value = "";
     renderComments(model.id);
   }
+  window.setTier?.("bronze");
+  const tierToggle = document.getElementById("tier-toggle");
+  if (tierToggle) {
+    tierToggle.querySelectorAll("button[data-tier]").forEach((btn) => {
+      const isBronze = btn.dataset.tier === "bronze";
+      btn.disabled = !isBronze;
+      btn.classList.toggle("cursor-not-allowed", !isBronze);
+    });
+  }
   modal.classList.remove("hidden");
   const closeBtn = document.getElementById("close-modal");
   const svg = closeBtn?.querySelector("svg");
