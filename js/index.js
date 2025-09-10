@@ -6,7 +6,6 @@ import {
   adjustedSlots,
   updatePrintRunInfo,
 } from "./print-slots.js";
-import { addToBasket } from "./basket.js";
 
 (() => {
   try {
@@ -50,6 +49,16 @@ const FALLBACK_GLB_LOW =
 const FALLBACK_GLB_HIGH = FALLBACK_GLB_LOW;
 const FALLBACK_GLB = FALLBACK_GLB_LOW;
 const LOW_POLY_GLB = FALLBACK_GLB_LOW;
+
+function addBasketItem(item) {
+  if (!window.addToBasket) return;
+  window.addToBasket(item);
+  const basketBtn = document.getElementById("basket-button");
+  if (basketBtn) {
+    basketBtn.classList.add("basket-bob");
+    setTimeout(() => basketBtn.classList.remove("basket-bob"), 800);
+  }
+}
 
 // Save referrer ID from query string for later checkout discount
 (() => {
@@ -1047,7 +1056,7 @@ async function init() {
       ) {
         window.manualizeItem((it) => it.modelUrl === item.modelUrl);
       } else {
-        addToBasket(item);
+        addBasketItem(item);
       }
       const sessionId = localStorage.getItem("adSessionId");
       const subreddit = localStorage.getItem("adSubreddit");
