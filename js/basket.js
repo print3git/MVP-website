@@ -323,13 +323,13 @@ export function setupBasketUI() {
   overlay.querySelector("#basket-close").addEventListener("click", closeBasket);
   overlay.querySelector("#basket-checkout").addEventListener("click", () => {
     const items = getBasket();
-    if (items.length === 1) {
-      const item = items[0];
-      if (item.modelUrl) {
-        localStorage.setItem("print2Model", item.modelUrl);
+    if (items.length) {
+      const first = items[0];
+      if (first.modelUrl) {
+        localStorage.setItem("print2Model", first.modelUrl);
       }
-      if (item.jobId) {
-        localStorage.setItem("print2JobId", item.jobId);
+      if (first.jobId) {
+        localStorage.setItem("print2JobId", first.jobId);
       } else {
         localStorage.removeItem("print2JobId");
       }
