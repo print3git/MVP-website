@@ -21,6 +21,7 @@ export async function loadModel(url, containerId, key = "default") {
   } catch (err) {
     console.error("Three.js failed to load", err);
     container.textContent = "model not available";
+    container.setAttribute("data-testid", "model-fallback");
     return;
   }
 
@@ -48,7 +49,7 @@ export async function loadModel(url, containerId, key = "default") {
         url,
         (gltf) => {
           scene.add(gltf.scene);
-            resolve();
+          resolve();
         },
         undefined,
         reject,
@@ -57,6 +58,7 @@ export async function loadModel(url, containerId, key = "default") {
   } catch (err) {
     console.error("GLTF load failed", err);
     container.textContent = "model not available";
+    container.setAttribute("data-testid", "model-fallback");
     return;
   }
 

@@ -841,8 +841,8 @@ function initDiscountDeliveryBanner(bannerEl) {
       showDiscount = !showDiscount;
       bannerEl.textContent = showDiscount ? discountMsg : countdownText;
       bannerEl.style.opacity = "1";
-      scheduleCycle();
     }, 1000);
+    scheduleCycle();
   }
 
   refresh();

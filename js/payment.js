@@ -1188,6 +1188,12 @@ async function initPaymentPage() {
     } catch {}
   }
 
+  // Ensure a minimum quantity of 2 when arriving on the payment page
+  if (checkoutItems.length === 1 && checkoutItems[0].qty === 1) {
+    checkoutItems[0].qty = 2;
+    saveCheckoutItems();
+  }
+
   if (!checkoutItems.length) {
     if (viewer && viewer.tagName.toLowerCase() !== "img") {
       viewer.addEventListener("load", applyStoredColorIfNeeded, { once: true });

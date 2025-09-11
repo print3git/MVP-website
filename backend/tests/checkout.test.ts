@@ -28,9 +28,9 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
-test("POST /api/checkout creates session", async () => {
+test("POST /api/checkout/create creates session", async () => {
   const res = await request(app)
-    .post("/api/checkout")
+    .post("/api/checkout/create")
     .send({ slug: "m1", email: "a@a.com" });
   expect(res.status).toBe(200);
   expect(stripeMock.checkout.sessions.create).toHaveBeenCalled();
@@ -55,8 +55,10 @@ test("POST /stripe/webhook marks paid and emails", async () => {
   expect(sendMail).toHaveBeenCalled();
 });
 
-test("POST /api/checkout validates required fields", async () => {
-  const res = await request(app).post("/api/checkout").send({ slug: "m1" });
+test("POST /api/checkout/create validates required fields", async () => {
+  const res = await request(app)
+    .post("/api/checkout/create")
+    .send({ slug: "m1" });
   expect(res.status).toBe(400);
   expect(orders.size).toBe(0);
 });
