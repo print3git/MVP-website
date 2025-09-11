@@ -10,6 +10,10 @@ let removeFromBasket;
 let clearBasket;
 let setupBasketUI;
 
+const originalAddEventListener = window.addEventListener;
+const originalRemoveEventListener = window.removeEventListener;
+let addedListeners = [];
+
 beforeAll(async () => {
   const mod = await import("../../js/basket.js");
   getBasket = mod.getBasket;
@@ -22,10 +26,23 @@ beforeAll(async () => {
 });
 
 beforeEach(() => {
+  jest.clearAllTimers();
+  jest.useRealTimers();
   localStorage.clear();
   document.head.innerHTML = "";
   document.body.innerHTML = "";
   delete window.__basketSound;
+  addedListeners = [];
+  window.addEventListener = (type, listener, options) => {
+    addedListeners.push({ type, listener, options });
+    return originalAddEventListener.call(window, type, listener, options);
+  };
+  window.removeEventListener = (type, listener, options) => {
+    addedListeners = addedListeners.filter(
+      (l) => !(l.type === type && l.listener === listener && l.options === options),
+    );
+    return originalRemoveEventListener.call(window, type, listener, options);
+  };
   global.Audio = function () {
     this.play = jest.fn();
   };
@@ -34,6 +51,15 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  addedListeners.forEach(({ type, listener, options }) => {
+    originalRemoveEventListener.call(window, type, listener, options);
+  });
+  addedListeners = [];
+  window.addEventListener = originalAddEventListener;
+  window.removeEventListener = originalRemoveEventListener;
+  document.head.innerHTML = "";
+  document.body.innerHTML = "";
+  jest.clearAllMocks();
   jest.clearAllTimers();
   jest.useRealTimers();
 });
