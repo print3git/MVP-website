@@ -12,6 +12,10 @@ let setupBasketUI;
 
 const originalAddEventListener = window.addEventListener;
 const originalRemoveEventListener = window.removeEventListener;
+const originalAudio = global.Audio;
+const originalFetch = global.fetch;
+const originalCrypto = global.crypto;
+const originalWhenDefined = window.customElements?.whenDefined;
 let addedListeners = [];
 
 beforeAll(async () => {
@@ -56,6 +60,27 @@ afterEach(() => {
   addedListeners = [];
   window.addEventListener = originalAddEventListener;
   window.removeEventListener = originalRemoveEventListener;
+  if (originalAudio) {
+    global.Audio = originalAudio;
+  } else {
+    delete global.Audio;
+  }
+  if (originalFetch) {
+    global.fetch = originalFetch;
+  } else {
+    delete global.fetch;
+  }
+  if (originalCrypto) {
+    global.crypto = originalCrypto;
+  } else {
+    delete global.crypto;
+  }
+  if (window.customElements) {
+    window.customElements.whenDefined = originalWhenDefined;
+  }
+  delete window.__basketSound;
+  delete window.initIndexPage;
+  localStorage.clear();
   document.head.innerHTML = "";
   document.body.innerHTML = "";
   jest.clearAllMocks();
