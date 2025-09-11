@@ -271,9 +271,6 @@ test("index add-basket button adds to basket", async () => {
   window.customElements.whenDefined = () => Promise.resolve();
   await import("../../js/index.js");
   await window.initIndexPage();
-  const viewer = document.getElementById("glb-viewer");
-  viewer.src = "model.glb";
-  viewer.dispatchEvent(new Event("load"));
   await Promise.resolve();
   document.getElementById("add-basket-button").click();
   await waitFor(() => expect(getBasket()).toHaveLength(1));
