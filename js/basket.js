@@ -34,31 +34,47 @@
 
 const KEY = "print2Basket";
 const API_BASE = (window.API_ORIGIN || "") + "/api";
+let basket;
 export function getBasket() {
-  try {
-    return JSON.parse(localStorage.getItem(KEY)) || [];
-  } catch {
-    return [];
+  if (!basket) {
+    try {
+      basket = JSON.parse(localStorage.getItem(KEY)) || [];
+      if (!Array.isArray(basket)) {
+        basket = [];
+      }
+    } catch {
+      localStorage.removeItem(KEY);
+      basket = [];
+      const btn = document.getElementById("basket-button");
+      if (btn) btn.hidden = false;
+      const badge = document.getElementById("basket-count");
+      if (badge) {
+        badge.textContent = "";
+        badge.hidden = true;
+      }
+    }
   }
+  return basket;
 }
-function saveBasket(items) {
-  localStorage.setItem(KEY, JSON.stringify(items));
+function saveBasket(items = basket) {
+  basket = items;
+  localStorage.setItem(KEY, JSON.stringify(basket));
 }
 const RESERVE_MINS = 15;
 let reserveInterval;
 function notifyBasketChange() {
   window.dispatchEvent(new CustomEvent("basket-change"));
 }
-export function addToBasket(item, opts = {}) {
+export async function addToBasket(item, opts = {}) {
   const items = getBasket();
   const expire = Date.now() + RESERVE_MINS * 60 * 1000;
   const entry = { ...item, auto: !!opts.auto, reserveUntil: expire };
   items.push(entry);
-  saveBasket(items);
+  saveBasket();
   const token = localStorage.getItem("token");
   if (token && item.jobId && typeof fetch === "function") {
     try {
-      const res = fetch(`${API_BASE}/cart/items`, {
+      const res = await fetch(`${API_BASE}/cart/items`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -66,17 +82,10 @@ export function addToBasket(item, opts = {}) {
         },
         body: JSON.stringify({ jobId: item.jobId, quantity: 1 }),
       });
-      if (res && typeof res.then === "function") {
-        res
-          .then((r) => r.json())
-          .then((d) => {
-            if (d.id) {
-              const list = getBasket();
-              list[list.length - 1].serverId = d.id;
-              saveBasket(list);
-            }
-          })
-          .catch(() => {});
+      const d = await res.json();
+      if (d.id) {
+        entry.serverId = d.id;
+        saveBasket(items);
       }
     } catch {
       /* ignore network errors */
@@ -99,6 +108,7 @@ export function addToBasket(item, opts = {}) {
     }
   }
   notifyBasketChange();
+  return entry.serverId;
 }
 
 export function addAutoItem(item) {
@@ -108,7 +118,7 @@ export function addAutoItem(item) {
     items.splice(idx, 1);
   }
   items.push({ ...item, auto: true });
-  saveBasket(items);
+  saveBasket();
   updateBadge();
   renderList();
   notifyBasketChange();
@@ -119,7 +129,7 @@ export function manualizeItem(predicate) {
   const idx = items.findIndex((it) => it.auto && predicate(it));
   if (idx !== -1) {
     items[idx].auto = false;
-    saveBasket(items);
+    saveBasket();
   }
   updateBadge();
   renderList();
@@ -128,7 +138,7 @@ export function manualizeItem(predicate) {
 export function removeFromBasket(index) {
   const items = getBasket();
   const [removed] = items.splice(index, 1);
-  saveBasket(items);
+  saveBasket();
   const token = localStorage.getItem("token");
   if (token && removed?.serverId && typeof fetch === "function") {
     try {
@@ -179,7 +189,7 @@ function updateBadge() {
   const badge = document.getElementById("basket-count");
   if (badge) {
     const n = getBasket().length;
-    badge.textContent = String(n);
+    badge.textContent = n > 0 ? String(n) : "";
     badge.hidden = n === 0;
   }
 }

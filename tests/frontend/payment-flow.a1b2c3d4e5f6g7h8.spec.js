@@ -41,6 +41,21 @@ jest.mock(
 const { GeneratorApp } = require("../../js/modelGenerator.js");
 
 describe("payment flow", () => {
+  const originalLocation = window.location;
+
+  beforeAll(() => {
+    const href = originalLocation.href;
+    delete window.location;
+    Object.defineProperty(window, "location", {
+      configurable: true,
+      value: { href, assign: jest.fn(), replace: jest.fn() },
+    });
+  });
+
+  afterAll(() => {
+    window.location = originalLocation;
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
     confirmCardPaymentMock.mockReset();

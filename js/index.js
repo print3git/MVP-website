@@ -1009,24 +1009,25 @@ async function init() {
 
   // Ensure checkout uses the model currently shown in the viewer
   refs.checkoutBtn?.addEventListener("click", () => {
-    if (refs.viewer.src) {
-      localStorage.setItem("print2Model", refs.viewer.src);
+    const modelUrl = refs.viewer.src;
+    if (modelUrl) {
+      localStorage.setItem("print2Model", modelUrl);
     }
     if (lastJobId) {
       localStorage.setItem("print2JobId", lastJobId);
     } else {
       localStorage.removeItem("print2JobId");
     }
+    const item = {
+      modelUrl,
+      jobId: lastJobId || "",
+      snapshot: lastSnapshot || "",
+    };
+    // Add the current viewer item to the basket and persist it for checkout
+    addBasketItem(item);
     try {
-      const items = [
-        {
-          modelUrl: refs.viewer.src,
-          jobId: lastJobId || "",
-          snapshot: lastSnapshot || "",
-        },
-      ];
+      const items = window.getBasket ? window.getBasket() : [item];
       localStorage.setItem("print2CheckoutItems", JSON.stringify(items));
-      localStorage.removeItem("print2Basket");
     } catch {}
     if (window.setWizardStage) window.setWizardStage("purchase");
   });
@@ -1037,18 +1038,26 @@ async function init() {
       () =>
         new Promise((resolve) => {
           if (!refs.viewer) return resolve();
-          if (refs.viewer.modelIsVisible) return resolve();
-          refs.viewer.addEventListener("load", () => resolve(), { once: true });
+          const onLoad = () => resolve();
+          if (refs.viewer.loaded || refs.viewer.modelIsVisible) {
+            onLoad();
+          } else {
+            refs.viewer.addEventListener("load", onLoad, { once: true });
+          }
         }),
     );
 
-    viewerReadyPromise.then(() => {
-      refs.addBasketBtn.disabled = false;
-    });
+    await viewerReadyPromise;
+    refs.addBasketBtn.disabled = false;
 
     refs.addBasketBtn.addEventListener("click", async () => {
       await viewerReadyPromise;
-      if (!refs.viewer.src) return;
+      const modelUrl =
+        refs.viewer.src ||
+        refs.previewImg?.dataset?.glb ||
+        refs.previewImg?.src ||
+        localStorage.getItem("print2Model") ||
+        FALLBACK_GLB;
       let snapshot = refs.previewImg?.src;
       const host = (() => {
         try {
@@ -1062,10 +1071,10 @@ async function init() {
         snapshot.includes("placehold.co") ||
         host === "images.unsplash.com"
       ) {
-        snapshot = await captureModelSnapshot(refs.viewer.src);
+        snapshot = await captureModelSnapshot(modelUrl);
       }
       lastSnapshot = snapshot;
-      const item = { jobId: lastJobId, modelUrl: refs.viewer.src, snapshot };
+      const item = { jobId: lastJobId, modelUrl, snapshot };
       if (
         window.manualizeItem &&
         window

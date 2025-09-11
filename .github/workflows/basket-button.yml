@@ -1,4 +1,4 @@
-name: Checks for the Basket button in bottom RHS
+name: Basket pipeline tests
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [dev, "00000production"]
 
 jobs:
-  basket-button:
+  basket-pipeline:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -16,6 +16,5 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      - run: npx playwright install --with-deps chromium
-      - name: Run basket button tests
-        run: npx playwright test tests/e2e/basket-button.spec.*.ts
+      - name: Run basket pipeline tests
+        run: node scripts/run-jest.js tests/frontend/basket-pipeline.*.test.js --runInBand --verbose

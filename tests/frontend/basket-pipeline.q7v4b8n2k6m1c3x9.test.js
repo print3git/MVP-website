@@ -10,6 +10,10 @@ let removeFromBasket;
 let clearBasket;
 let setupBasketUI;
 
+const originalAddEventListener = window.addEventListener;
+const originalRemoveEventListener = window.removeEventListener;
+let addedListeners = [];
+
 beforeAll(async () => {
   const mod = await import("../../js/basket.js");
   getBasket = mod.getBasket;
@@ -23,12 +27,40 @@ beforeAll(async () => {
 
 beforeEach(() => {
   localStorage.clear();
+  document.head.innerHTML = "";
   document.body.innerHTML = "";
+  delete window.__basketSound;
+  addedListeners = [];
+  window.addEventListener = (type, listener, options) => {
+    addedListeners.push({ type, listener, options });
+    return originalAddEventListener.call(window, type, listener, options);
+  };
+  window.removeEventListener = (type, listener, options) => {
+    addedListeners = addedListeners.filter(
+      (l) =>
+        !(l.type === type && l.listener === listener && l.options === options),
+    );
+    return originalRemoveEventListener.call(window, type, listener, options);
+  };
   global.Audio = function () {
     this.play = jest.fn();
   };
   global.fetch = jest.fn();
   setupBasketUI();
+});
+
+afterEach(() => {
+  addedListeners.forEach(({ type, listener, options }) => {
+    originalRemoveEventListener.call(window, type, listener, options);
+  });
+  addedListeners = [];
+  window.addEventListener = originalAddEventListener;
+  window.removeEventListener = originalRemoveEventListener;
+  document.head.innerHTML = "";
+  document.body.innerHTML = "";
+  jest.clearAllMocks();
+  jest.clearAllTimers();
+  jest.useRealTimers();
 });
 
 test("getBasket returns empty array when no data", () => {
@@ -44,6 +76,101 @@ test("addToBasket increments badge count", () => {
   const badge = document.getElementById("basket-count");
   addToBasket({ modelUrl: "m" });
   expect(badge).toHaveTextContent("1");
+});
+
+test("basket button visible and count hidden when empty", () => {
+  const btn = document.getElementById("basket-button");
+  const badge = document.getElementById("basket-count");
+  expect(btn.hidden).toBe(false);
+  expect(badge.hidden).toBe(true);
+  expect(badge).toHaveTextContent("");
+});
+
+test("adds item via UI shows basket and count", () => {
+  const addBtn = document.createElement("button");
+  addBtn.id = "add-basket-button";
+  addBtn.addEventListener("click", () => addToBasket({ modelUrl: "m" }));
+  document.body.appendChild(addBtn);
+  addBtn.click();
+  const badge = document.getElementById("basket-count");
+  expect(badge).toHaveTextContent("1");
+  expect(badge.hidden).toBe(false);
+});
+
+test("loads index.html and clicking add button increments count", () => {
+  const fs = require("fs");
+  const path = require("path");
+  const html = fs.readFileSync(
+    path.resolve(__dirname, "../../index.html"),
+    "utf8",
+  );
+  document.documentElement.innerHTML = html;
+  setupBasketUI();
+  document.getElementById("add-basket-button").click();
+  const badge = document.getElementById("basket-count");
+  expect(badge).toHaveTextContent("1");
+});
+
+test("increments count for multiple added items", () => {
+  const badge = document.getElementById("basket-count");
+  for (let i = 1; i <= 3; i++) {
+    addToBasket({ modelUrl: String(i) });
+    expect(badge).toHaveTextContent(String(i));
+  }
+});
+
+test("persists basket after reload", () => {
+  addToBasket({ modelUrl: "m" });
+  document.head.innerHTML = "";
+  document.body.innerHTML = "";
+  setupBasketUI();
+  const badge = document.getElementById("basket-count");
+  expect(badge).toHaveTextContent("1");
+  expect(badge.hidden).toBe(false);
+});
+
+test("clearing basket keeps button visible", () => {
+  addToBasket({ modelUrl: "m" });
+  clearBasket();
+  const btn = document.getElementById("basket-button");
+  const badge = document.getElementById("basket-count");
+  expect(btn.hidden).toBe(false);
+  expect(badge.hidden).toBe(true);
+  expect(badge).toHaveTextContent("");
+});
+
+test("handles corrupted localStorage gracefully", () => {
+  localStorage.setItem("print2Basket", "not-json");
+  document.head.innerHTML = "";
+  document.body.innerHTML = "";
+  setupBasketUI();
+  const btn = document.getElementById("basket-button");
+  const badge = document.getElementById("basket-count");
+  expect(btn.hidden).toBe(false);
+  expect(badge.hidden).toBe(true);
+  expect(badge.textContent).toBe("");
+  expect(localStorage.getItem("print2Basket")).toBeNull();
+});
+
+test("button visible when basket empty", () => {
+  const btn = document.getElementById("basket-button");
+  expect(btn.hidden).toBe(false);
+});
+
+test("includes font awesome link in basket pages", () => {
+  const fs = require("fs");
+  const path = require("path");
+  const root = path.resolve(__dirname, "../../");
+  const basketPages = fs
+    .readdirSync(root)
+    .filter((f) => f.endsWith(".html"))
+    .filter((f) =>
+      fs.readFileSync(path.join(root, f), "utf8").includes("js/basket.js"),
+    );
+  for (const file of basketPages) {
+    const content = fs.readFileSync(path.join(root, file), "utf8");
+    expect(content).toMatch(/font-awesome/);
+  }
 });
 
 test("addToBasket stores auto flag", () => {
@@ -102,9 +229,11 @@ test("removeFromBasket removes item", () => {
 test("badge hides when basket empty", () => {
   const badge = document.getElementById("basket-count");
   expect(badge.hidden).toBe(true);
+  expect(badge).toHaveTextContent("");
   addToBasket({ modelUrl: "a" });
   removeFromBasket(0);
   expect(badge.hidden).toBe(true);
+  expect(badge).toHaveTextContent("");
 });
 
 test("clearBasket empties localStorage", () => {
@@ -144,8 +273,8 @@ test("index add-basket button adds to basket", async () => {
   await window.initIndexPage();
   const viewer = document.getElementById("glb-viewer");
   viewer.src = "model.glb";
-  viewer.modelIsVisible = true;
   viewer.dispatchEvent(new Event("load"));
+  await Promise.resolve();
   document.getElementById("add-basket-button").click();
   await waitFor(() => expect(getBasket()).toHaveLength(1));
 });
@@ -172,8 +301,7 @@ test("addToBasket stores serverId from response", async () => {
   global.fetch.mockResolvedValueOnce({
     json: () => Promise.resolve({ id: 9 }),
   });
-  addToBasket({ modelUrl: "m", jobId: "j2" });
-  await Promise.resolve();
+  await addToBasket({ modelUrl: "m", jobId: "j2" });
   expect(getBasket()[0].serverId).toBe(9);
 });
 
@@ -366,7 +494,7 @@ test("index viewer load enables add-basket button", async () => {
   await window.initIndexPage();
   const viewer = document.getElementById("glb-viewer");
   viewer.src = "model.glb";
-  viewer.modelIsVisible = true;
   viewer.dispatchEvent(new Event("load"));
+  await Promise.resolve();
   expect(document.getElementById("add-basket-button").disabled).toBe(false);
 });
