@@ -1,5 +1,6 @@
 /** @jest-environment jsdom */
 import "@testing-library/jest-dom";
+import { waitFor } from "@testing-library/dom";
 
 let getBasket;
 let addToBasket;
@@ -146,7 +147,7 @@ test("index add-basket button adds to basket", async () => {
   viewer.modelIsVisible = true;
   viewer.dispatchEvent(new Event("load"));
   document.getElementById("add-basket-button").click();
-  expect(getBasket()).toHaveLength(1);
+  await waitFor(() => expect(getBasket()).toHaveLength(1));
 });
 
 test("addToBasket skips server call without token", () => {
