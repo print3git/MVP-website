@@ -45,8 +45,6 @@ export function getBasket() {
     } catch {
       localStorage.removeItem(KEY);
       basket = [];
-      const btn = document.getElementById("basket-button");
-      if (btn) btn.hidden = false;
       const badge = document.getElementById("basket-count");
       if (badge) {
         badge.textContent = "";
