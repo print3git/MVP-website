@@ -1051,7 +1051,11 @@ async function init() {
 
     refs.addBasketBtn.addEventListener("click", async () => {
       await viewerReadyPromise;
-      if (!refs.viewer.src) return;
+      if (!refs.viewer.src) {
+        const stored = localStorage.getItem("print2Model");
+        refs.viewer.src = stored || FALLBACK_GLB;
+      }
+      const modelUrl = refs.viewer.src;
       let snapshot = refs.previewImg?.src;
       const host = (() => {
         try {
@@ -1065,10 +1069,10 @@ async function init() {
         snapshot.includes("placehold.co") ||
         host === "images.unsplash.com"
       ) {
-        snapshot = await captureModelSnapshot(refs.viewer.src);
+        snapshot = await captureModelSnapshot(modelUrl);
       }
       lastSnapshot = snapshot;
-      const item = { jobId: lastJobId, modelUrl: refs.viewer.src, snapshot };
+      const item = { jobId: lastJobId, modelUrl, snapshot };
       if (
         window.manualizeItem &&
         window
