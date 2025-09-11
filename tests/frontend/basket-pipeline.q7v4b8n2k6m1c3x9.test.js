@@ -258,6 +258,119 @@ test("syncServerCart stores fetched items", async () => {
   ]);
 });
 
+const fs = require("fs");
+const path = require("path");
+const root = path.resolve(__dirname, "../../");
+const basketPages = fs
+  .readdirSync(root)
+  .filter((f) => f.endsWith(".html"))
+  .filter((f) =>
+    fs.readFileSync(path.join(root, f), "utf8").includes("js/basket.js"),
+  );
+
+for (const file of basketPages) {
+  describe(`basket button on ${file}`, () => {
+    test("shows count when items exist", () => {
+      localStorage.setItem("print2Basket", JSON.stringify([{ modelUrl: "m" }]));
+      document.documentElement.innerHTML = fs.readFileSync(
+        path.join(root, file),
+        "utf8",
+      );
+      setupBasketUI();
+      expect(document.getElementById("basket-button").hidden).toBe(false);
+      expect(document.getElementById("basket-count")).toHaveTextContent("1");
+    });
+
+    test("button visible but count hidden when empty", () => {
+      document.documentElement.innerHTML = fs.readFileSync(
+        path.join(root, file),
+        "utf8",
+      );
+      setupBasketUI();
+      expect(document.getElementById("basket-button").hidden).toBe(false);
+      expect(document.getElementById("basket-count").hidden).toBe(true);
+    });
+
+    test("adds item via UI shows basket and count", () => {
+      document.documentElement.innerHTML = fs.readFileSync(
+        path.join(root, file),
+        "utf8",
+      );
+      setupBasketUI();
+      const addBtn = document.getElementById("add-basket-button");
+      if (!addBtn) return;
+      addBtn.click();
+      expect(document.getElementById("basket-button").hidden).toBe(false);
+      expect(document.getElementById("basket-count")).toHaveTextContent("1");
+    });
+
+    test("increments count for multiple added items", () => {
+      document.documentElement.innerHTML = fs.readFileSync(
+        path.join(root, file),
+        "utf8",
+      );
+      setupBasketUI();
+      const addBtn = document.getElementById("add-basket-button");
+      if (!addBtn) return;
+      for (let i = 1; i <= 3; i++) {
+        addBtn.click();
+        expect(document.getElementById("basket-count")).toHaveTextContent(
+          String(i),
+        );
+      }
+    });
+
+    test("persists basket after reload", () => {
+      document.documentElement.innerHTML = fs.readFileSync(
+        path.join(root, file),
+        "utf8",
+      );
+      setupBasketUI();
+      const addBtn = document.getElementById("add-basket-button");
+      if (!addBtn) return;
+      addBtn.click();
+      document.documentElement.innerHTML = fs.readFileSync(
+        path.join(root, file),
+        "utf8",
+      );
+      setupBasketUI();
+      expect(document.getElementById("basket-button").hidden).toBe(false);
+      expect(document.getElementById("basket-count")).toHaveTextContent("1");
+    });
+
+    test("clearing basket keeps button visible", () => {
+      document.documentElement.innerHTML = fs.readFileSync(
+        path.join(root, file),
+        "utf8",
+      );
+      setupBasketUI();
+      const addBtn = document.getElementById("add-basket-button");
+      if (!addBtn) return;
+      addBtn.click();
+      localStorage.removeItem("print2Basket");
+      window.dispatchEvent(new CustomEvent("basket-change"));
+      expect(document.getElementById("basket-button").hidden).toBe(false);
+      const count = document.getElementById("basket-count");
+      expect(count.hidden).toBe(true);
+      expect(count).toHaveTextContent("");
+    });
+
+    test("handles corrupted localStorage gracefully", () => {
+      localStorage.setItem("print2Basket", "not-json");
+      document.documentElement.innerHTML = fs.readFileSync(
+        path.join(root, file),
+        "utf8",
+      );
+      setupBasketUI();
+      expect(document.getElementById("basket-button").hidden).toBe(false);
+      const count = document.getElementById("basket-count");
+      expect(count.hidden).toBe(true);
+      expect(count).toHaveTextContent("");
+      expect(localStorage.getItem("print2Basket")).toBeNull();
+    });
+  });
+}
+
 test("index add-basket button adds to basket", async () => {
   document.body.innerHTML +=
     '<button id="add-basket-button"></button>' +
