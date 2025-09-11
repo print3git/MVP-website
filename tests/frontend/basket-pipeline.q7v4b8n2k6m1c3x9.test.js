@@ -26,8 +26,6 @@ beforeAll(async () => {
 });
 
 beforeEach(() => {
-  jest.clearAllTimers();
-  jest.useRealTimers();
   localStorage.clear();
   document.head.innerHTML = "";
   document.body.innerHTML = "";
