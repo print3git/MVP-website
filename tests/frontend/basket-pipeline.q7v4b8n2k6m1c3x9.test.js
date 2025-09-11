@@ -144,8 +144,8 @@ test("index add-basket button adds to basket", async () => {
   await window.initIndexPage();
   const viewer = document.getElementById("glb-viewer");
   viewer.src = "model.glb";
-  viewer.modelIsVisible = true;
   viewer.dispatchEvent(new Event("load"));
+  await Promise.resolve();
   document.getElementById("add-basket-button").click();
   await waitFor(() => expect(getBasket()).toHaveLength(1));
 });
@@ -366,7 +366,7 @@ test("index viewer load enables add-basket button", async () => {
   await window.initIndexPage();
   const viewer = document.getElementById("glb-viewer");
   viewer.src = "model.glb";
-  viewer.modelIsVisible = true;
   viewer.dispatchEvent(new Event("load"));
+  await Promise.resolve();
   expect(document.getElementById("add-basket-button").disabled).toBe(false);
 });
