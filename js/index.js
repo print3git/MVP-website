@@ -1046,9 +1046,8 @@ async function init() {
         }),
     );
 
-    viewerReadyPromise.then(() => {
-      refs.addBasketBtn.disabled = false;
-    });
+    await viewerReadyPromise;
+    refs.addBasketBtn.disabled = false;
 
     refs.addBasketBtn.addEventListener("click", async () => {
       await viewerReadyPromise;
