@@ -56,24 +56,31 @@ export function addToBasket(item, opts = {}) {
   items.push(entry);
   saveBasket(items);
   const token = localStorage.getItem("token");
-  if (token && item.jobId) {
-    fetch(`${API_BASE}/cart/items`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ jobId: item.jobId, quantity: 1 }),
-    })
-      .then((r) => r.json())
-      .then((d) => {
-        if (d.id) {
-          const list = getBasket();
-          list[list.length - 1].serverId = d.id;
-          saveBasket(list);
-        }
-      })
-      .catch(() => {});
+  if (token && item.jobId && typeof fetch === "function") {
+    try {
+      const res = fetch(`${API_BASE}/cart/items`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ jobId: item.jobId, quantity: 1 }),
+      });
+      if (res && typeof res.then === "function") {
+        res
+          .then((r) => r.json())
+          .then((d) => {
+            if (d.id) {
+              const list = getBasket();
+              list[list.length - 1].serverId = d.id;
+              saveBasket(list);
+            }
+          })
+          .catch(() => {});
+      }
+    } catch {
+      /* ignore network errors */
+    }
   }
   updateBadge();
   renderList();
@@ -123,11 +130,18 @@ export function removeFromBasket(index) {
   const [removed] = items.splice(index, 1);
   saveBasket(items);
   const token = localStorage.getItem("token");
-  if (token && removed?.serverId) {
-    fetch(`${API_BASE}/cart/items/${removed.serverId}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
-    }).catch(() => {});
+  if (token && removed?.serverId && typeof fetch === "function") {
+    try {
+      const res = fetch(`${API_BASE}/cart/items/${removed.serverId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res && typeof res.catch === "function") {
+        res.catch(() => {});
+      }
+    } catch {
+      /* ignore network errors */
+    }
   }
   try {
     const arr = JSON.parse(localStorage.getItem("print2CheckoutItems"));
@@ -144,11 +158,18 @@ export function clearBasket() {
   saveBasket([]);
   localStorage.removeItem("print2CheckoutItems");
   const token = localStorage.getItem("token");
-  if (token) {
-    fetch(`${API_BASE}/cart`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
-    }).catch(() => {});
+  if (token && typeof fetch === "function") {
+    try {
+      const res = fetch(`${API_BASE}/cart`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res && typeof res.catch === "function") {
+        res.catch(() => {});
+      }
+    } catch {
+      /* ignore network errors */
+    }
   }
   updateBadge();
   renderList();
