@@ -18,12 +18,6 @@ module.exports = {
   testEnvironment: "node",
   testRunner: "jest-circus/runner",
   testRetryTimes: 2,
-  moduleNameMapper: {
-    "^https://cdn\\.jsdelivr\\.net/npm/three@0\\.152\\.2/build/three\\.module\\.js$":
-      "<rootDir>/tests/load-model-pipeline/mocks/three.js",
-    "^https://cdn\\.jsdelivr\\.net/npm/three@0\\.152\\.2/examples/jsm/loaders/GLTFLoader\\.js$":
-      "<rootDir>/tests/load-model-pipeline/mocks/gltfLoader.js",
-  },
   testMatch: ["**/*.spec.ts", "**/*.test.ts", "**/*.spec.js", "**/*.test.js"],
   coverageThreshold: {
     global: {
