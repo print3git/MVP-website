@@ -5,6 +5,11 @@ import { sign } from "./helpers/stripe-signing";
 jest.mock("../../src/db", () => ({ query: jest.fn() }));
 jest.mock("../../src/queue/printQueue", () => ({ enqueuePrint: jest.fn() }));
 jest.mock("../../src/queue/dbPrintQueue", () => ({ enqueuePrint: jest.fn() }));
+jest.mock("../../src/logger", () => ({
+  info: jest.fn(),
+  warn: jest.fn(),
+  error: jest.fn(),
+}));
 
 process.env.STRIPE_KEY = "sk_test_valid";
 process.env.STRIPE_WEBHOOK_SECRET = "whsec_test";
@@ -15,6 +20,7 @@ const { enqueuePrint } = require("../../src/queue/printQueue");
 const {
   enqueuePrint: enqueueDbPrint,
 } = require("../../src/queue/dbPrintQueue");
+const logger = require("../../src/logger");
 
 const app = express();
 app.use(router);
@@ -44,7 +50,14 @@ describe("webhook idempotency", () => {
       .set("stripe-signature", header)
       .set("Content-Type", "application/json")
       .send(payload);
+    const sql = "UPDATE orders SET status=$1 WHERE session_id=$2";
     expect(db.query).toHaveBeenCalledTimes(1);
+    expect(db.query).toHaveBeenCalledWith(sql, ["paid", "sess1"]);
+    const orderPaidCalls = logger.info.mock.calls.filter(
+      (c) => c[0] === "order_paid",
+    );
+    expect(orderPaidCalls).toHaveLength(1);
+    expect(orderPaidCalls[0][1]).toEqual({ sessionId: "sess1" });
     expect(enqueueDbPrint).toHaveBeenCalledTimes(1);
     expect(enqueuePrint).toHaveBeenCalledTimes(1);
   });
@@ -64,7 +77,14 @@ describe("webhook idempotency", () => {
       .set("stripe-signature", h2)
       .set("Content-Type", "application/json")
       .send(payload2);
+    const sql = "UPDATE orders SET status=$1 WHERE session_id=$2";
     expect(db.query).toHaveBeenCalledTimes(1);
+    expect(db.query).toHaveBeenCalledWith(sql, ["paid", "sess2"]);
+    const orderPaidCalls = logger.info.mock.calls.filter(
+      (c) => c[0] === "order_paid",
+    );
+    expect(orderPaidCalls).toHaveLength(1);
+    expect(orderPaidCalls[0][1]).toEqual({ sessionId: "sess2" });
     expect(enqueueDbPrint).toHaveBeenCalledTimes(1);
     expect(enqueuePrint).toHaveBeenCalledTimes(1);
   });
@@ -84,7 +104,16 @@ describe("webhook idempotency", () => {
       .set("stripe-signature", h2)
       .set("Content-Type", "application/json")
       .send(p2);
+    const sql = "UPDATE orders SET status=$1 WHERE session_id=$2";
     expect(db.query).toHaveBeenCalledTimes(2);
+    expect(db.query).toHaveBeenNthCalledWith(1, sql, ["paid", "sess3"]);
+    expect(db.query).toHaveBeenNthCalledWith(2, sql, ["paid", "sess4"]);
+    const orderPaidCalls = logger.info.mock.calls.filter(
+      (c) => c[0] === "order_paid",
+    );
+    expect(orderPaidCalls).toHaveLength(2);
+    expect(orderPaidCalls[0][1]).toEqual({ sessionId: "sess3" });
+    expect(orderPaidCalls[1][1]).toEqual({ sessionId: "sess4" });
     expect(enqueueDbPrint).toHaveBeenCalledTimes(2);
     expect(enqueuePrint).toHaveBeenCalledTimes(2);
   });
