@@ -3,8 +3,10 @@ import express from "express";
 import { sign } from "./helpers/stripe-signing";
 
 jest.mock("../../src/db", () => ({ query: jest.fn() }));
-jest.mock("../../src/queue/printQueue", () => ({ enqueuePrint: jest.fn() }));
-jest.mock("../../src/queue/dbPrintQueue", () => ({ enqueuePrint: jest.fn() }));
+jest.mock("../../src/queue/printQueue.js", () => ({ enqueuePrint: jest.fn() }));
+jest.mock("../../src/queue/dbPrintQueue.js", () => ({
+  enqueuePrint: jest.fn(),
+}));
 jest.mock("../../src/logger", () => ({
   info: jest.fn(),
   warn: jest.fn(),

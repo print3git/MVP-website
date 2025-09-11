@@ -133,15 +133,18 @@ test("index add-basket button adds to basket", async () => {
     '<button id="add-basket-button"></button>' +
     '<img id="preview-img" src="http://example.com/s.png" />' +
     '<div id="glb-viewer"></div>';
-  const viewer = document.getElementById("glb-viewer");
-  viewer.src = "model.glb";
-  viewer.modelIsVisible = true;
   global.fetch = jest
     .fn()
     .mockResolvedValue({ ok: true, json: () => Promise.resolve({}) });
   const { webcrypto } = require("crypto");
   global.crypto = webcrypto;
+  window.customElements.whenDefined = () => Promise.resolve();
   await import("../../js/index.js");
+  await window.initIndexPage();
+  const viewer = document.getElementById("glb-viewer");
+  viewer.src = "model.glb";
+  viewer.modelIsVisible = true;
+  viewer.dispatchEvent(new Event("load"));
   document.getElementById("add-basket-button").click();
   expect(getBasket()).toHaveLength(1);
 });

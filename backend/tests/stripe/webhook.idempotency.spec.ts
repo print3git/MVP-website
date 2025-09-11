@@ -3,8 +3,10 @@ import express from "express";
 import { sign } from "./helpers/stripe-signing";
 
 jest.mock("../../src/db", () => ({ query: jest.fn() }));
-jest.mock("../../src/queue/printQueue", () => ({ enqueuePrint: jest.fn() }));
-jest.mock("../../src/queue/dbPrintQueue", () => ({ enqueuePrint: jest.fn() }));
+jest.mock("../../src/queue/printQueue.js", () => ({ enqueuePrint: jest.fn() }));
+jest.mock("../../src/queue/dbPrintQueue.js", () => ({
+  enqueuePrint: jest.fn(),
+}));
 jest.mock("../../src/logger", () => ({
   info: jest.fn(),
   warn: jest.fn(),
@@ -16,10 +18,10 @@ process.env.STRIPE_WEBHOOK_SECRET = "whsec_test";
 
 const router = require("../../src/routes/stripe/webhook").default;
 const db = require("../../src/db");
-const { enqueuePrint } = require("../../src/queue/printQueue");
+const { enqueuePrint } = require("../../src/queue/printQueue.js");
 const {
   enqueuePrint: enqueueDbPrint,
-} = require("../../src/queue/dbPrintQueue");
+} = require("../../src/queue/dbPrintQueue.js");
 const logger = require("../../src/logger");
 
 const app = express();
