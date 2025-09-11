@@ -39,7 +39,11 @@ export function getBasket() {
   if (!basket) {
     try {
       basket = JSON.parse(localStorage.getItem(KEY)) || [];
+      if (!Array.isArray(basket)) {
+        basket = [];
+      }
     } catch {
+      localStorage.removeItem(KEY);
       basket = [];
     }
   }

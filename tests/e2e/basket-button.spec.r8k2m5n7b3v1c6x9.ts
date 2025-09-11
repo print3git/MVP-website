@@ -14,7 +14,10 @@ for (const file of basketPages) {
   test.describe(`basket button on ${file}`, () => {
     test("shows count when items exist", async ({ page }) => {
       await page.addInitScript(() => {
-        localStorage.setItem("print2Basket", JSON.stringify([{ modelUrl: "m" }]));
+        localStorage.setItem(
+          "print2Basket",
+          JSON.stringify([{ modelUrl: "m" }]),
+        );
       });
       await page.goto(`/${file}`);
       await expect(page.locator("#basket-button")).toBeVisible();
@@ -47,24 +50,24 @@ for (const file of basketPages) {
         "Add to Basket button not present on this page",
       );
       await test.step("ensure add button visible", async () => {
-        await expect(addButton, "Add to Basket button should be visible").toBeVisible();
+        await expect(
+          addButton,
+          "Add to Basket button should be visible",
+        ).toBeVisible();
       });
       await test.step("click add button", async () => {
         await addButton.click();
       });
-      await test.step(
-        "verify basket button becomes visible with count 1",
-        async () => {
-          await expect(
-            page.locator("#basket-button"),
-            "Basket button should appear after adding item",
-          ).toBeVisible();
-          await expect(
-            page.locator("#basket-count"),
-            "Basket count should be 1 after adding item",
-          ).toHaveText("1");
-        },
-      );
+      await test.step("verify basket button becomes visible with count 1", async () => {
+        await expect(
+          page.locator("#basket-button"),
+          "Basket button should appear after adding item",
+        ).toBeVisible();
+        await expect(
+          page.locator("#basket-count"),
+          "Basket count should be 1 after adding item",
+        ).toHaveText("1");
+      });
       const storageLength = await page.evaluate(
         () => JSON.parse(localStorage.getItem("print2Basket") || "[]").length,
       );
@@ -78,7 +81,10 @@ for (const file of basketPages) {
         (await addButton.count()) === 0,
         "Add to Basket button not present on this page",
       );
-      await expect(addButton, "Add to Basket button should be visible").toBeVisible();
+      await expect(
+        addButton,
+        "Add to Basket button should be visible",
+      ).toBeVisible();
       for (let i = 1; i <= 3; i++) {
         await addButton.click();
         await expect(
@@ -138,12 +144,16 @@ for (const file of basketPages) {
       await page.goto(`/${file}`);
       await expect(
         page.locator("#basket-button"),
-        "Basket button should be hidden when localStorage is corrupted",
-      ).toBeHidden();
+        "Basket button should be visible when localStorage is corrupted",
+      ).toBeVisible();
       await expect(
         page.locator("#basket-count"),
         "Basket count should be hidden when localStorage is corrupted",
       ).toBeHidden();
+      const stored = await page.evaluate(() =>
+        localStorage.getItem("print2Basket"),
+      );
+      expect(stored, "corrupted storage should be cleared").toBeNull();
     });
 
     test("button visible when basket empty", async ({ page }) => {
