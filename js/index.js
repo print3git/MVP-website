@@ -361,6 +361,7 @@ async function captureModelSnapshot(url) {
     document.body.appendChild(mv);
     try {
       await mv.updateComplete;
+      if (typeof mv.toDataURL !== "function") return null;
       return await mv.toDataURL("image/png");
     } catch (err) {
       console.error("Failed to capture snapshot", err);
