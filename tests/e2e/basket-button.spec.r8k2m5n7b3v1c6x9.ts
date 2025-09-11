@@ -146,10 +146,15 @@ for (const file of basketPages) {
         page.locator("#basket-button"),
         "Basket button should be visible when localStorage is corrupted",
       ).toBeVisible();
+      const count = page.locator("#basket-count");
       await expect(
-        page.locator("#basket-count"),
+        count,
         "Basket count should be hidden when localStorage is corrupted",
       ).toBeHidden();
+      await expect(
+        count,
+        "Basket count text should be cleared when storage is corrupted",
+      ).toHaveText("");
       const stored = await page.evaluate(() =>
         localStorage.getItem("print2Basket"),
       );
