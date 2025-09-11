@@ -1051,11 +1051,8 @@ async function init() {
 
     refs.addBasketBtn.addEventListener("click", async () => {
       await viewerReadyPromise;
-      if (!refs.viewer.src) {
-        const stored = localStorage.getItem("print2Model");
-        refs.viewer.src = stored || FALLBACK_GLB;
-      }
-      const modelUrl = refs.viewer.src;
+      const modelUrl =
+        refs.viewer.src || localStorage.getItem("print2Model") || FALLBACK_GLB;
       let snapshot = refs.previewImg?.src;
       const host = (() => {
         try {
