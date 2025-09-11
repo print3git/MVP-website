@@ -83,6 +83,7 @@ test("basket button visible and count hidden when empty", () => {
   const badge = document.getElementById("basket-count");
   expect(btn.hidden).toBe(false);
   expect(badge.hidden).toBe(true);
+  expect(badge).toHaveTextContent("");
 });
 
 test("adds item via UI shows basket and count", () => {
@@ -135,6 +136,7 @@ test("clearing basket keeps button visible", () => {
   const badge = document.getElementById("basket-count");
   expect(btn.hidden).toBe(false);
   expect(badge.hidden).toBe(true);
+  expect(badge).toHaveTextContent("");
 });
 
 test("handles corrupted localStorage gracefully", () => {
@@ -227,9 +229,11 @@ test("removeFromBasket removes item", () => {
 test("badge hides when basket empty", () => {
   const badge = document.getElementById("basket-count");
   expect(badge.hidden).toBe(true);
+  expect(badge).toHaveTextContent("");
   addToBasket({ modelUrl: "a" });
   removeFromBasket(0);
   expect(badge.hidden).toBe(true);
+  expect(badge).toHaveTextContent("");
 });
 
 test("clearBasket empties localStorage", () => {

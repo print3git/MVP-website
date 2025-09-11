@@ -189,7 +189,7 @@ function updateBadge() {
   const badge = document.getElementById("basket-count");
   if (badge) {
     const n = getBasket().length;
-    badge.textContent = String(n);
+    badge.textContent = n > 0 ? String(n) : "";
     badge.hidden = n === 0;
   }
 }
