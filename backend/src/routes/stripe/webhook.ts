@@ -1,8 +1,8 @@
 import express, { Router, type Request, type Response } from "express";
 import Stripe from "stripe";
 import db from "../../db";
-import { enqueuePrint } from "../../queue/printQueue";
-import { enqueuePrint as enqueueDbPrint } from "../../queue/dbPrintQueue";
+import { enqueuePrint } from "../../queue/printQueue.js";
+import { enqueuePrint as enqueueDbPrint } from "../../queue/dbPrintQueue.js";
 import logger from "../../logger";
 import { capture } from "../../lib/logger";
 import { isTest } from "../../env";
