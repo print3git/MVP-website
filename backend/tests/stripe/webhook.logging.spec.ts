@@ -16,6 +16,7 @@ process.env.STRIPE_WEBHOOK_SECRET = "whsec_test";
 
 const router = require("../../src/routes/stripe/webhook").default;
 const logger = require("../../src/logger");
+const db = require("../../src/db");
 
 const app = express();
 app.use(router);
@@ -37,11 +38,16 @@ describe("webhook logging", () => {
       .set("stripe-signature", header)
       .set("Content-Type", "application/json")
       .send(payload);
+    const sql = "UPDATE orders SET status=$1 WHERE session_id=$2";
+    expect(db.query).toHaveBeenCalledTimes(1);
+    expect(db.query).toHaveBeenCalledWith(sql, ["paid", "sess1"]);
     expect(logger.info).toHaveBeenCalledWith("stripe_webhook_received", {
       type: "checkout.session.completed",
     });
-    expect(logger.info).toHaveBeenCalledWith("order_paid", {
-      sessionId: "sess1",
-    });
+    const orderPaidCalls = logger.info.mock.calls.filter(
+      (c) => c[0] === "order_paid",
+    );
+    expect(orderPaidCalls).toHaveLength(1);
+    expect(orderPaidCalls[0][1]).toEqual({ sessionId: "sess1" });
   });
 });
