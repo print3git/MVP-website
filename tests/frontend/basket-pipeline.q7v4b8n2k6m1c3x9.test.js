@@ -172,8 +172,7 @@ test("addToBasket stores serverId from response", async () => {
   global.fetch.mockResolvedValueOnce({
     json: () => Promise.resolve({ id: 9 }),
   });
-  addToBasket({ modelUrl: "m", jobId: "j2" });
-  await Promise.resolve();
+  await addToBasket({ modelUrl: "m", jobId: "j2" });
   expect(getBasket()[0].serverId).toBe(9);
 });
 

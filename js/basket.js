@@ -49,7 +49,7 @@ let reserveInterval;
 function notifyBasketChange() {
   window.dispatchEvent(new CustomEvent("basket-change"));
 }
-export function addToBasket(item, opts = {}) {
+export async function addToBasket(item, opts = {}) {
   const items = getBasket();
   const expire = Date.now() + RESERVE_MINS * 60 * 1000;
   const entry = { ...item, auto: !!opts.auto, reserveUntil: expire };
@@ -58,7 +58,7 @@ export function addToBasket(item, opts = {}) {
   const token = localStorage.getItem("token");
   if (token && item.jobId && typeof fetch === "function") {
     try {
-      const res = fetch(`${API_BASE}/cart/items`, {
+      const res = await fetch(`${API_BASE}/cart/items`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -66,17 +66,10 @@ export function addToBasket(item, opts = {}) {
         },
         body: JSON.stringify({ jobId: item.jobId, quantity: 1 }),
       });
-      if (res && typeof res.then === "function") {
-        res
-          .then((r) => r.json())
-          .then((d) => {
-            if (d.id) {
-              const list = getBasket();
-              list[list.length - 1].serverId = d.id;
-              saveBasket(list);
-            }
-          })
-          .catch(() => {});
+      const d = await res.json();
+      if (d.id) {
+        entry.serverId = d.id;
+        saveBasket(items);
       }
     } catch {
       /* ignore network errors */
@@ -99,6 +92,7 @@ export function addToBasket(item, opts = {}) {
     }
   }
   notifyBasketChange();
+  return entry.serverId;
 }
 
 export function addAutoItem(item) {
