@@ -39,7 +39,8 @@ beforeEach(() => {
   };
   window.removeEventListener = (type, listener, options) => {
     addedListeners = addedListeners.filter(
-      (l) => !(l.type === type && l.listener === listener && l.options === options),
+      (l) =>
+        !(l.type === type && l.listener === listener && l.options === options),
     );
     return originalRemoveEventListener.call(window, type, listener, options);
   };
@@ -95,6 +96,20 @@ test("adds item via UI shows basket and count", () => {
   const badge = document.getElementById("basket-count");
   expect(badge).toHaveTextContent("1");
   expect(badge.hidden).toBe(false);
+});
+
+test("loads index.html and clicking add button increments count", () => {
+  const fs = require("fs");
+  const path = require("path");
+  const html = fs.readFileSync(
+    path.resolve(__dirname, "../../index.html"),
+    "utf8",
+  );
+  document.documentElement.innerHTML = html;
+  setupBasketUI();
+  document.getElementById("add-basket-button").click();
+  const badge = document.getElementById("basket-count");
+  expect(badge).toHaveTextContent("1");
 });
 
 test("increments count for multiple added items", () => {
