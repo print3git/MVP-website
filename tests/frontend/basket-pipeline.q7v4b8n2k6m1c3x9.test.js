@@ -79,6 +79,85 @@ test("addToBasket increments badge count", () => {
   expect(badge).toHaveTextContent("1");
 });
 
+test("basket button visible and count hidden when empty", () => {
+  const btn = document.getElementById("basket-button");
+  const badge = document.getElementById("basket-count");
+  expect(btn.hidden).toBe(false);
+  expect(badge.hidden).toBe(true);
+});
+
+test("adds item via UI shows basket and count", () => {
+  const addBtn = document.createElement("button");
+  addBtn.id = "add-basket-button";
+  addBtn.addEventListener("click", () => addToBasket({ modelUrl: "m" }));
+  document.body.appendChild(addBtn);
+  addBtn.click();
+  const badge = document.getElementById("basket-count");
+  expect(badge).toHaveTextContent("1");
+  expect(badge.hidden).toBe(false);
+});
+
+test("increments count for multiple added items", () => {
+  const badge = document.getElementById("basket-count");
+  for (let i = 1; i <= 3; i++) {
+    addToBasket({ modelUrl: String(i) });
+    expect(badge).toHaveTextContent(String(i));
+  }
+});
+
+test("persists basket after reload", () => {
+  addToBasket({ modelUrl: "m" });
+  document.head.innerHTML = "";
+  document.body.innerHTML = "";
+  setupBasketUI();
+  const badge = document.getElementById("basket-count");
+  expect(badge).toHaveTextContent("1");
+  expect(badge.hidden).toBe(false);
+});
+
+test("clearing basket keeps button visible", () => {
+  addToBasket({ modelUrl: "m" });
+  clearBasket();
+  const btn = document.getElementById("basket-button");
+  const badge = document.getElementById("basket-count");
+  expect(btn.hidden).toBe(false);
+  expect(badge.hidden).toBe(true);
+});
+
+test("handles corrupted localStorage gracefully", () => {
+  localStorage.setItem("print2Basket", "not-json");
+  document.head.innerHTML = "";
+  document.body.innerHTML = "";
+  setupBasketUI();
+  const btn = document.getElementById("basket-button");
+  const badge = document.getElementById("basket-count");
+  expect(btn.hidden).toBe(false);
+  expect(badge.hidden).toBe(true);
+  expect(badge.textContent).toBe("");
+  expect(localStorage.getItem("print2Basket")).toBeNull();
+});
+
+test("button visible when basket empty", () => {
+  const btn = document.getElementById("basket-button");
+  expect(btn.hidden).toBe(false);
+});
+
+test("includes font awesome link in basket pages", () => {
+  const fs = require("fs");
+  const path = require("path");
+  const root = path.resolve(__dirname, "../../");
+  const basketPages = fs
+    .readdirSync(root)
+    .filter((f) => f.endsWith(".html"))
+    .filter((f) =>
+      fs.readFileSync(path.join(root, f), "utf8").includes("js/basket.js"),
+    );
+  for (const file of basketPages) {
+    const content = fs.readFileSync(path.join(root, file), "utf8");
+    expect(content).toMatch(/font-awesome/);
+  }
+});
+
 test("addToBasket stores auto flag", () => {
   addToBasket({ modelUrl: "m" }, { auto: true });
   expect(getBasket()[0].auto).toBe(true);
