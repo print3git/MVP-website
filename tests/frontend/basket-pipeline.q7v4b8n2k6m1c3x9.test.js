@@ -23,12 +23,19 @@ beforeAll(async () => {
 
 beforeEach(() => {
   localStorage.clear();
+  document.head.innerHTML = "";
   document.body.innerHTML = "";
+  delete window.__basketSound;
   global.Audio = function () {
     this.play = jest.fn();
   };
   global.fetch = jest.fn();
   setupBasketUI();
+});
+
+afterEach(() => {
+  jest.clearAllTimers();
+  jest.useRealTimers();
 });
 
 test("getBasket returns empty array when no data", () => {
