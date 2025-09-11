@@ -106,11 +106,14 @@ test("removeFromBasket removes item", () => {
   expect(getBasket()).toHaveLength(0);
 });
 
-test("badge hides when basket empty", () => {
+test("badge hides when empty but button stays visible", () => {
+  const btn = document.getElementById("basket-button");
   const badge = document.getElementById("basket-count");
+  expect(btn.hidden).toBe(false);
   expect(badge.hidden).toBe(true);
   addToBasket({ modelUrl: "a" });
   removeFromBasket(0);
+  expect(btn.hidden).toBe(false);
   expect(badge.hidden).toBe(true);
 });
 
@@ -375,4 +378,48 @@ test("index viewer load enables add-basket button", async () => {
   viewer.dispatchEvent(new Event("load"));
   await Promise.resolve();
   expect(document.getElementById("add-basket-button").disabled).toBe(false);
+});
+
+test("basket button contains font awesome icon", () => {
+  expect(
+    document.querySelector("#basket-button i.fas.fa-shopping-basket"),
+  ).not.toBeNull();
+});
+
+test("addToBasket increments count for multiple items", () => {
+  const badge = document.getElementById("basket-count");
+  addToBasket({ modelUrl: "a" });
+  addToBasket({ modelUrl: "b" });
+  addToBasket({ modelUrl: "c" });
+  expect(badge).toHaveTextContent("3");
+});
+
+test("basket persists after reload", () => {
+  addToBasket({ modelUrl: "m" });
+  document.head.innerHTML = "";
+  document.body.innerHTML = "";
+  setupBasketUI();
+  const badge = document.getElementById("basket-count");
+  expect(badge).toHaveTextContent("1");
+});
+
+test("clearBasket hides count but keeps button visible", () => {
+  const btn = document.getElementById("basket-button");
+  const badge = document.getElementById("basket-count");
+  addToBasket({ modelUrl: "a" });
+  clearBasket();
+  expect(btn.hidden).toBe(false);
+  expect(badge.hidden).toBe(true);
+});
+
+test("setupBasketUI handles corrupted localStorage", () => {
+  localStorage.setItem("print2Basket", "not-json");
+  document.head.innerHTML = "";
+  document.body.innerHTML = "";
+  setupBasketUI();
+  const btn = document.getElementById("basket-button");
+  const badge = document.getElementById("basket-count");
+  expect(btn.hidden).toBe(false);
+  expect(badge.hidden).toBe(true);
+  expect(localStorage.getItem("print2Basket")).toBeNull();
 });
