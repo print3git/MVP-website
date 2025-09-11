@@ -2,7 +2,15 @@
 const fs = require("fs");
 const path = require("path");
 const { spawnSync, spawn } = require("child_process");
-const waitOn = require("wait-on");
+let waitOn;
+try {
+  waitOn = require("wait-on");
+} catch {
+  console.error(
+    "wait-on is not installed. Run `npm run setup` to install dependencies.",
+  );
+  process.exit(1);
+}
 
 const repoRoot = path.resolve(__dirname, "..");
 const backendRoot = path.join(repoRoot, "backend");
