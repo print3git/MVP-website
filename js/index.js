@@ -1037,14 +1037,17 @@ async function init() {
       () =>
         new Promise((resolve) => {
           if (!refs.viewer) return resolve();
-          if (refs.viewer.modelIsVisible) return resolve();
-          refs.viewer.addEventListener("load", () => resolve(), { once: true });
+          const onLoad = () => resolve();
+          if (refs.viewer.loaded || refs.viewer.modelIsVisible) {
+            onLoad();
+          } else {
+            refs.viewer.addEventListener("load", onLoad, { once: true });
+          }
         }),
     );
 
-    viewerReadyPromise.then(() => {
-      refs.addBasketBtn.disabled = false;
-    });
+    await viewerReadyPromise;
+    refs.addBasketBtn.disabled = false;
 
     refs.addBasketBtn.addEventListener("click", async () => {
       await viewerReadyPromise;

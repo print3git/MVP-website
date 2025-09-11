@@ -34,15 +34,20 @@
 
 const KEY = "print2Basket";
 const API_BASE = (window.API_ORIGIN || "") + "/api";
+let basket;
 export function getBasket() {
-  try {
-    return JSON.parse(localStorage.getItem(KEY)) || [];
-  } catch {
-    return [];
+  if (!basket) {
+    try {
+      basket = JSON.parse(localStorage.getItem(KEY)) || [];
+    } catch {
+      basket = [];
+    }
   }
+  return basket;
 }
-function saveBasket(items) {
-  localStorage.setItem(KEY, JSON.stringify(items));
+function saveBasket(items = basket) {
+  basket = items;
+  localStorage.setItem(KEY, JSON.stringify(basket));
 }
 const RESERVE_MINS = 15;
 let reserveInterval;
@@ -54,7 +59,7 @@ export async function addToBasket(item, opts = {}) {
   const expire = Date.now() + RESERVE_MINS * 60 * 1000;
   const entry = { ...item, auto: !!opts.auto, reserveUntil: expire };
   items.push(entry);
-  saveBasket(items);
+  saveBasket();
   const token = localStorage.getItem("token");
   if (token && item.jobId && typeof fetch === "function") {
     try {
@@ -102,7 +107,7 @@ export function addAutoItem(item) {
     items.splice(idx, 1);
   }
   items.push({ ...item, auto: true });
-  saveBasket(items);
+  saveBasket();
   updateBadge();
   renderList();
   notifyBasketChange();
@@ -113,7 +118,7 @@ export function manualizeItem(predicate) {
   const idx = items.findIndex((it) => it.auto && predicate(it));
   if (idx !== -1) {
     items[idx].auto = false;
-    saveBasket(items);
+    saveBasket();
   }
   updateBadge();
   renderList();
@@ -122,7 +127,7 @@ export function manualizeItem(predicate) {
 export function removeFromBasket(index) {
   const items = getBasket();
   const [removed] = items.splice(index, 1);
-  saveBasket(items);
+  saveBasket();
   const token = localStorage.getItem("token");
   if (token && removed?.serverId && typeof fetch === "function") {
     try {
