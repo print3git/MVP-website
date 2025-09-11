@@ -1037,7 +1037,9 @@ async function init() {
         new Promise((resolve) => {
           if (!refs.viewer) return resolve();
           if (refs.viewer.modelIsVisible) return resolve();
-          refs.viewer.addEventListener("load", resolve, { once: true });
+          const onLoad = () => resolve();
+          refs.viewer.addEventListener("load", onLoad, { once: true });
+          setTimeout(onLoad, 100);
         }),
     );
 
