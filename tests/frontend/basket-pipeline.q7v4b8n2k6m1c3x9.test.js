@@ -369,3 +369,101 @@ test("index viewer load enables add-basket button", async () => {
   await Promise.resolve();
   expect(document.getElementById("add-basket-button").disabled).toBe(false);
 });
+
+const fs = require("fs");
+const path = require("path");
+const rootDir = path.resolve(__dirname, "../../");
+const basketPages = fs
+  .readdirSync(rootDir)
+  .filter((f) => f.endsWith(".html"))
+  .filter((f) =>
+    fs.readFileSync(path.join(rootDir, f), "utf8").includes("js/basket.js"),
+  );
+
+for (const file of basketPages) {
+  describe(`basket button on ${file}`, () => {
+    const html = fs.readFileSync(path.join(rootDir, file), "utf8");
+    const hasAddButton = html.includes('id="add-basket-button"');
+
+    beforeEach(() => {
+      document.documentElement.innerHTML = html;
+      setupBasketUI();
+    });
+
+    test("shows count when items exist", () => {
+      localStorage.setItem("print2Basket", JSON.stringify([{ modelUrl: "m" }]));
+      setupBasketUI();
+      expect(document.getElementById("basket-button")).toBeVisible();
+      expect(document.getElementById("basket-count")).toHaveTextContent("1");
+    });
+
+    test("button visible but count hidden when empty", () => {
+      expect(document.getElementById("basket-button")).toBeVisible();
+      expect(document.getElementById("basket-count")).toBeHidden();
+    });
+
+    test("includes font awesome", () => {
+      const links = document.querySelectorAll('link[href*="font-awesome"]');
+      expect(links.length).toBeGreaterThan(0);
+    });
+
+    (hasAddButton ? test : test.skip)(
+      "adds item via UI shows basket and count",
+      () => {
+        const addButton = document.getElementById("add-basket-button");
+        addButton.click();
+        expect(document.getElementById("basket-button")).toBeVisible();
+        expect(document.getElementById("basket-count")).toHaveTextContent("1");
+        const storage = JSON.parse(
+          localStorage.getItem("print2Basket") || "[]",
+        );
+        expect(storage).toHaveLength(1);
+      },
+    );
+
+    (hasAddButton ? test : test.skip)(
+      "increments count for multiple added items",
+      () => {
+        const addButton = document.getElementById("add-basket-button");
+        for (let i = 1; i <= 3; i++) {
+          addButton.click();
+          expect(document.getElementById("basket-count")).toHaveTextContent(
+            String(i),
+          );
+        }
+      },
+    );
+
+    (hasAddButton ? test : test.skip)("persists basket after reload", () => {
+      const addButton = document.getElementById("add-basket-button");
+      addButton.click();
+      document.documentElement.innerHTML = html;
+      setupBasketUI();
+      expect(document.getElementById("basket-button")).toBeVisible();
+      expect(document.getElementById("basket-count")).toHaveTextContent("1");
+    });
+
+    (hasAddButton ? test : test.skip)(
+      "clearing basket keeps button visible",
+      () => {
+        const addButton = document.getElementById("add-basket-button");
+        addButton.click();
+        localStorage.removeItem("print2Basket");
+        window.dispatchEvent(new Event("basket-change"));
+        expect(document.getElementById("basket-button")).toBeVisible();
+        expect(document.getElementById("basket-count")).toBeHidden();
+      },
+    );
+
+    test("handles corrupted localStorage gracefully", () => {
+      localStorage.setItem("print2Basket", "not-json");
+      setupBasketUI();
+      expect(document.getElementById("basket-button")).toBeHidden();
+      expect(document.getElementById("basket-count")).toBeHidden();
+    });
+
+    test("button visible when basket empty", () => {
+      expect(document.getElementById("basket-button")).toBeVisible();
+    });
+  });
+}
