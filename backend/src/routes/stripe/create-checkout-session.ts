@@ -31,7 +31,7 @@ try {
   cancelUrl = getEnvVar("FRONTEND_CANCEL_URL", { required: true })!;
 } catch (err) {
   logger.error((err as Error).message);
-  process.exit(1);
+  throw err;
 }
 
 const realStripe = new Stripe(stripeKey, {
