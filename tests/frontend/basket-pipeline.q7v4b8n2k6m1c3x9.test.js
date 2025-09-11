@@ -26,8 +26,6 @@ beforeAll(async () => {
 });
 
 beforeEach(() => {
-  jest.clearAllTimers();
-  jest.useRealTimers();
   localStorage.clear();
   document.head.innerHTML = "";
   document.body.innerHTML = "";
@@ -39,7 +37,8 @@ beforeEach(() => {
   };
   window.removeEventListener = (type, listener, options) => {
     addedListeners = addedListeners.filter(
-      (l) => !(l.type === type && l.listener === listener && l.options === options),
+      (l) =>
+        !(l.type === type && l.listener === listener && l.options === options),
     );
     return originalRemoveEventListener.call(window, type, listener, options);
   };
