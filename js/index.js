@@ -1009,24 +1009,25 @@ async function init() {
 
   // Ensure checkout uses the model currently shown in the viewer
   refs.checkoutBtn?.addEventListener("click", () => {
-    if (refs.viewer.src) {
-      localStorage.setItem("print2Model", refs.viewer.src);
+    const modelUrl = refs.viewer.src;
+    if (modelUrl) {
+      localStorage.setItem("print2Model", modelUrl);
     }
     if (lastJobId) {
       localStorage.setItem("print2JobId", lastJobId);
     } else {
       localStorage.removeItem("print2JobId");
     }
+    const item = {
+      modelUrl,
+      jobId: lastJobId || "",
+      snapshot: lastSnapshot || "",
+    };
+    // Add the current viewer item to the basket and persist it for checkout
+    addBasketItem(item);
     try {
-      const items = [
-        {
-          modelUrl: refs.viewer.src,
-          jobId: lastJobId || "",
-          snapshot: lastSnapshot || "",
-        },
-      ];
+      const items = window.getBasket ? window.getBasket() : [item];
       localStorage.setItem("print2CheckoutItems", JSON.stringify(items));
-      localStorage.removeItem("print2Basket");
     } catch {}
     if (window.setWizardStage) window.setWizardStage("purchase");
   });
