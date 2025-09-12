@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { execSync } from "child_process";
-import { isOfflineEnv } from "./net-mode.mjs";
+import { isOfflineEnv, logOfflineSkip } from "./net-mode.mjs";
 
 const offline = isOfflineEnv();
 
@@ -21,7 +21,11 @@ if (offline) {
 }
 
 try {
-  execSync("npm run check:lockfile", { stdio: "inherit" });
+  if (offline) {
+    logOfflineSkip("lockfile check");
+  } else {
+    execSync("npm run check:lockfile", { stdio: "inherit" });
+  }
 } catch (err) {
   console.error(
     "Lockfile mismatch detected. Run 'npm install' to regenerate package-lock.json.",
