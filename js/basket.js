@@ -38,18 +38,12 @@ let basket;
 export function getBasket() {
   if (!basket) {
     try {
-      basket = JSON.parse(localStorage.getItem(KEY)) || [];
-      if (!Array.isArray(basket)) {
-        basket = [];
-      }
+      const raw = localStorage.getItem(KEY);
+      const parsed = raw ? JSON.parse(raw) : [];
+      basket = Array.isArray(parsed) ? parsed : [];
     } catch {
       localStorage.removeItem(KEY);
       basket = [];
-      const badge = document.getElementById("basket-count");
-      if (badge) {
-        badge.textContent = "";
-        badge.hidden = true;
-      }
     }
   }
   return basket;
@@ -312,6 +306,8 @@ function closeBasket() {
   document.getElementById("basket-overlay")?.classList.add("hidden");
 }
 export function setupBasketUI() {
+  // Trigger basket loading to clear any corrupted storage before UI setup
+  getBasket();
   if (!document.getElementById("basket-bob-style")) {
     const style = document.createElement("style");
     style.id = "basket-bob-style";
