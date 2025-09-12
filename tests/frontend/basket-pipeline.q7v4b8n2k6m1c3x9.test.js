@@ -9,6 +9,8 @@ let manualizeItem;
 let removeFromBasket;
 let clearBasket;
 let setupBasketUI;
+let leftoverListener;
+let leftoverFlag;
 
 const originalAddEventListener = window.addEventListener;
 const originalRemoveEventListener = window.removeEventListener;
@@ -67,6 +69,33 @@ afterEach(() => {
     delete global.fetch;
   }
   jest.clearAllTimers();
+  jest.useRealTimers();
+});
+
+test("creates listener, timer and DOM node for cleanup", () => {
+  document.body.innerHTML += '<div id="temp"></div>';
+  leftoverListener = jest.fn();
+  window.addEventListener("cleanup-test", leftoverListener);
+  addToBasket({ modelUrl: "m" });
+  leftoverFlag = false;
+  jest.useFakeTimers();
+  setTimeout(() => {
+    leftoverFlag = true;
+  }, 1000);
+});
+
+test("beforeEach/afterEach reset DOM, timers and listeners", () => {
+  expect(document.getElementById("temp")).toBeNull();
+  window.dispatchEvent(new Event("cleanup-test"));
+  expect(leftoverListener).not.toHaveBeenCalled();
+  jest.useFakeTimers();
+  jest.runOnlyPendingTimers();
+  expect(leftoverFlag).toBe(false);
+  jest.useRealTimers();
+  const badge = document.getElementById("basket-count");
+  expect(getBasket()).toHaveLength(0);
+  expect(badge).toHaveTextContent("");
+  expect(badge.hidden).toBe(true);
 });
 
 test("getBasket returns empty array when no data", () => {
