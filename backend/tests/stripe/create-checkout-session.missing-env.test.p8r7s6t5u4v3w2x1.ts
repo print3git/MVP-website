@@ -1,7 +1,7 @@
 const modulePath = "../../src/routes/stripe/create-checkout-session";
 
 const envKeys = [
-  "STRIPE_TEST_KEY",
+  "STRIPE_SECRET_KEY",
   "FRONTEND_SUCCESS_URL",
   "FRONTEND_CANCEL_URL",
 ];

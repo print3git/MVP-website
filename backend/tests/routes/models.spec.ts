@@ -1,6 +1,6 @@
 process.env.DB_URL = "postgres://user:pass@localhost/db";
 process.env.CLOUDFRONT_DOMAIN = "cdn.example.com";
-process.env.STRIPE_TEST_KEY = "sk_test_dummy";
+process.env.STRIPE_SECRET_KEY = "sk_test_dummy";
 
 import request from "supertest";
 import type { Express } from "express";

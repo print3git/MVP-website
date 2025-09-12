@@ -32,21 +32,21 @@ describe("create checkout session errors", () => {
     process.env.FRONTEND_CANCEL_URL = "https://example.com/cancel";
   });
 
-  test("missing STRIPE_TEST_KEY returns 500", async () => {
-    delete process.env.STRIPE_TEST_KEY;
+  test("missing STRIPE_SECRET_KEY returns 500", async () => {
+    delete process.env.STRIPE_SECRET_KEY;
     mockCreate.mockImplementation(() => {
-      throw new Error("STRIPE_TEST_KEY missing");
+      throw new Error("STRIPE_SECRET_KEY missing");
     });
     const app = buildApp();
     const res = await request(app)
       .post("/api/checkout/create")
       .send({ price: 100 });
     expect(res.status).toBe(500);
-    expect(res.body.error).toMatch(/STRIPE_TEST_KEY missing/);
+    expect(res.body.error).toMatch(/STRIPE_SECRET_KEY missing/);
   });
 
   test("Stripe SDK throws surfaces 500 and log", async () => {
-    process.env.STRIPE_TEST_KEY = "sk_test";
+    process.env.STRIPE_SECRET_KEY = "sk_test";
     const error = new Error("boom");
     mockCreate.mockImplementation(() => {
       throw error;

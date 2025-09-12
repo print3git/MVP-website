@@ -23,7 +23,7 @@ let app: express.Express;
 let orders: Map<string, any>;
 
 beforeAll(async () => {
-  process.env.STRIPE_TEST_KEY = "sk_test";
+  process.env.STRIPE_SECRET_KEY = "sk_test";
   process.env.STRIPE_WEBHOOK_SECRET = "whsec_test";
   process.env.FRONTEND_SUCCESS_URL = "https://example.com/success";
   process.env.FRONTEND_CANCEL_URL = "https://example.com/cancel";

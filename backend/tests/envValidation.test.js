@@ -18,22 +18,9 @@ describe("validate-env script", () => {
     npm_config_https_proxy: "",
   };
 
-  test("passes with STRIPE_TEST_KEY set", () => {
+  test("passes with STRIPE_SECRET_KEY set", () => {
     const { status } = spawnSync("bash", [script], {
-      env: { ...process.env, ...baseEnv, STRIPE_TEST_KEY: "sk_test" },
-      stdio: "pipe",
-    });
-    expect(status).toBe(0);
-  });
-
-  test("passes with STRIPE_LIVE_KEY set", () => {
-    const { status } = spawnSync("bash", [script], {
-      env: {
-        ...process.env,
-        ...baseEnv,
-        STRIPE_LIVE_KEY: "sk_live",
-        STRIPE_TEST_KEY: "",
-      },
+      env: { ...process.env, ...baseEnv, STRIPE_SECRET_KEY: "sk_test" },
       stdio: "pipe",
     });
     expect(status).toBe(0);
@@ -44,8 +31,7 @@ describe("validate-env script", () => {
       env: {
         ...process.env,
         ...baseEnv,
-        STRIPE_TEST_KEY: "",
-        STRIPE_LIVE_KEY: "",
+        STRIPE_SECRET_KEY: "",
       },
       stdio: "pipe",
     });
@@ -57,7 +43,7 @@ describe("validate-env script", () => {
       env: {
         ...process.env,
         ...baseEnv,
-        STRIPE_TEST_KEY: "sk_test",
+        STRIPE_SECRET_KEY: "sk_test",
         npm_config_http_proxy: "http://proxy",
       },
       stdio: "pipe",
