@@ -1,6 +1,7 @@
 const fs = require("fs");
 
-const config = JSON.parse(fs.readFileSync(".nycrc", "utf8"));
+const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
+const config = pkg.coverageThreshold || {};
 
 const summaryPath = "coverage/coverage-summary.json";
 if (!fs.existsSync(summaryPath)) {
