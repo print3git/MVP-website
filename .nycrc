@@ -1,0 +1,10 @@
+{
+  "all": true,
+  "per-file": true,
+  "branches": 100,
+  "functions": 100,
+  "lines": 100,
+  "statements": 100,
+  "include": ["js/index.js", "js/basket.js", "js/competitions.js", "js/community.js"],
+  "exclude": ["**/*.test.*", "**/*.spec.*", "e2e/**", "coverage/**", "node_modules/**"]
+}
