@@ -36,22 +36,21 @@ const KEY = "print2Basket";
 const API_BASE = (window.API_ORIGIN || "") + "/api";
 let basket;
 export function getBasket() {
-  if (!basket) {
-    try {
-      const raw = localStorage.getItem(KEY);
-      const parsed = raw ? JSON.parse(raw) : [];
-      basket = Array.isArray(parsed) ? parsed : [];
-    } catch {
-      localStorage.removeItem(KEY);
-      basket = [];
-      const btn = document.getElementById("basket-button");
-      if (btn) btn.hidden = false;
-      const badge = document.getElementById("basket-count");
-      if (badge) badge.hidden = true;
-    }
-  }
-  return basket;
-}
+     try {
+       const raw = localStorage.getItem(KEY);
+       const parsed = raw ? JSON.parse(raw) : [];
+       basket = Array.isArray(parsed) ? parsed : [];
+     } catch {
+       localStorage.removeItem(KEY);
+       basket = [];
+       const btn = document.getElementById("basket-button");
+       if (btn) btn.hidden = false;
+       const badge = document.getElementById("basket-count");
+       if (badge) badge.hidden = true;
+     }
+     return basket;
+   }
+
 function saveBasket(items = basket) {
   basket = items;
   localStorage.setItem(KEY, JSON.stringify(basket));
