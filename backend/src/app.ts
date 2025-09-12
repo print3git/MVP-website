@@ -24,6 +24,15 @@ try {
 
 try {
   (() => {
+    const r = require("./routes/stripe/config");
+    app.use("/api/config/stripe", r.default || r);
+  })();
+} catch (err) {
+  logger.error("Failed to load stripe config router", err as Error);
+}
+
+try {
+  (() => {
     const r = require("./routes/health");
     app.use(r.default || r);
   })();

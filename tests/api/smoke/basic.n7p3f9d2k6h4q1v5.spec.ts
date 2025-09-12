@@ -1,6 +1,7 @@
 import request from "supertest";
 
 process.env.NODE_ENV = "test";
+process.env.STRIPE_PUBLISHABLE_KEY = "pk_test";
 const app = require("../../../backend/server");
 
 const EXPECT = Number(process.env.EXPECT_REMOVED_STATUS || 410);
