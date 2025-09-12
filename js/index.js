@@ -172,8 +172,11 @@ function ensureModelViewerLoaded() {
     (navigator.userAgent?.includes("Node.js") ||
       navigator.userAgent?.includes("jsdom"))
   ) {
-    return Promise.resolve();
-  }
+     if (!window.customElements.get("model-viewer")) {
+       window.customElements.define("model-viewer", class extends HTMLElement {});
+     }
+     return Promise.resolve();
+   }
 
   const cdnUrl =
     "https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js";
