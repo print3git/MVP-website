@@ -1008,8 +1008,24 @@ async function init() {
   }
 
   // Ensure checkout uses the model currently shown in the viewer
-  refs.checkoutBtn?.addEventListener("click", () => {
-    const modelUrl = refs.viewer.src;
+  refs.checkoutBtn?.addEventListener("click", async () => {
+    let modelUrl = refs.viewer?.src;
+    if (!modelUrl) {
+      await customElements.whenDefined("model-viewer");
+      if (refs.viewer && !refs.viewer.src) {
+        try {
+          await refs.viewer.updateComplete;
+        } catch {}
+      }
+    }
+    if (!modelUrl) {
+      modelUrl =
+        refs.viewer?.src ||
+        refs.previewImg?.dataset?.glb ||
+        refs.previewImg?.src ||
+        localStorage.getItem("print2Model") ||
+        FALLBACK_GLB;
+    }
     if (modelUrl) {
       localStorage.setItem("print2Model", modelUrl);
     }
