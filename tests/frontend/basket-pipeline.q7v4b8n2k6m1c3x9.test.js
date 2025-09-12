@@ -682,3 +682,26 @@ test("index viewer load enables add-basket button", async () => {
   await Promise.resolve();
   expect(document.getElementById("add-basket-button").disabled).toBe(false);
 });
+
+test("index viewer load enables and adds to basket with minimal DOM", async () => {
+  document.body.innerHTML +=
+    '<button id="add-basket-button"></button>' +
+    '<div id="glb-viewer"></div>';
+  global.fetch = jest
+    .fn()
+    .mockResolvedValue({ ok: true, json: () => Promise.resolve({}) });
+  const { webcrypto } = require("crypto");
+  global.crypto = webcrypto;
+  window.customElements.whenDefined = () => Promise.resolve();
+  const { initIndexPage } = await import("../../js/index.js");
+  await initIndexPage();
+  const button = document.getElementById("add-basket-button");
+  const viewer = document.getElementById("glb-viewer");
+  expect(button.disabled).toBe(true);
+  viewer.src = "model.glb";
+  viewer.dispatchEvent(new Event("load"));
+  await Promise.resolve();
+  expect(button.disabled).toBe(false);
+  button.click();
+  await waitFor(() => expect(getBasket()).toHaveLength(1));
+});
