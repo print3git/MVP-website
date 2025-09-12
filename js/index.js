@@ -1054,12 +1054,14 @@ async function init() {
 
     refs.addBasketBtn.addEventListener("click", async () => {
       await viewerReadyPromise;
-      const modelUrl =
-        refs.viewer.src ||
-        refs.previewImg?.dataset?.glb ||
-        refs.previewImg?.src ||
-        localStorage.getItem("print2Model") ||
-        FALLBACK_GLB;
+      let modelUrl = refs.viewer.src;
+      if (!modelUrl) {
+        modelUrl =
+          refs.previewImg?.dataset?.glb ||
+          refs.previewImg?.src ||
+          localStorage.getItem("print2Model") ||
+          FALLBACK_GLB;
+      }
       let snapshot = refs.previewImg?.src;
       const host = (() => {
         try {
