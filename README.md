@@ -503,10 +503,6 @@ to regenerate the file.
 The print worker posts completed jobs to an external printer API. See
 [docs/printer_api.md](docs/printer_api.md) for the expected request format.
 
-## TODO List
-
-All open tasks are tracked in [docs/task_list.md](docs/task_list.md).
-
 ## Automated Agent Coordination
 
 This repository includes scripts and workflows to help Codex agents work together.
