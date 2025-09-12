@@ -414,6 +414,26 @@ test("index add-basket button adds to basket", async () => {
   await waitFor(() => expect(getBasket()).toHaveLength(1));
 });
 
+test("index basket count increments without viewer src", async () => {
+  document.body.innerHTML +=
+    '<button id="add-basket-button"></button>' +
+    '<img id="preview-img" src="http://example.com/fallback.png" />' +
+    '<div id="glb-viewer"></div>';
+  global.fetch = jest
+    .fn()
+    .mockResolvedValue({ ok: true, json: () => Promise.resolve({}) });
+  const { webcrypto } = require("crypto");
+  global.crypto = webcrypto;
+  window.customElements.whenDefined = () => Promise.resolve();
+  await import("../../js/index.js");
+  await window.initIndexPage();
+  document.getElementById("add-basket-button").click();
+  await waitFor(() => expect(getBasket()).toHaveLength(1));
+  const count = document.getElementById("basket-count");
+  expect(count).toHaveTextContent("1");
+  expect(count.hidden).toBe(false);
+});
+
 test("addToBasket skips server call without token", () => {
   addToBasket({ modelUrl: "m", jobId: "j" });
   expect(global.fetch).not.toHaveBeenCalled();
