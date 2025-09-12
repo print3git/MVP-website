@@ -323,15 +323,27 @@ export function setupBasketUI() {
     audio.preload = "auto";
     window.__basketSound = audio;
   }
-  const btn = document.createElement("button");
-  btn.type = "button";
+  let btn = document.getElementById("basket-button");
+  if (!btn) {
+    btn = document.createElement("button");
+    btn.type = "button";
+    btn.className =
+      "fixed bottom-3 right-4 bg-[#30D5C8] text-black p-3 rounded-full shadow-lg z-50 border-2 border-black";
+    btn.innerHTML =
+      '<i class="fas fa-shopping-basket"></i> <span class="ml-1"></span>';
+    document.body.appendChild(btn);
+  }
   btn.id = "basket-button";
-  btn.className =
-    "fixed bottom-3 right-4 bg-[#30D5C8] text-black p-3 rounded-full shadow-lg z-50 border-2 border-black";
-  btn.innerHTML =
-    '<i class="fas fa-shopping-basket"></i> <span id="basket-count" class="ml-1"></span>';
+  btn.setAttribute("data-testid", "basket-icon");
   btn.addEventListener("click", openBasket);
-  document.body.appendChild(btn);
+  let count = btn.querySelector("#basket-count") || btn.querySelector("span");
+  if (!count) {
+    count = document.createElement("span");
+    count.className = "ml-1";
+    btn.appendChild(count);
+  }
+  count.id = "basket-count";
+  count.setAttribute("data-testid", "basket-count");
 
   const overlay = document.createElement("div");
   overlay.id = "basket-overlay";

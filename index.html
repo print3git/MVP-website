@@ -126,6 +126,7 @@
           <!-- 🔑 Minimal, hard-coded astronaut -->
           <model-viewer
             id="glb-viewer"
+            data-testid="glb-viewer"
             src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
             environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
             camera-controls
@@ -141,7 +142,7 @@
           <div id="checkout-container" class="absolute bottom-4 right-4 flex flex-col items-end">
             <a id="checkout-button" href="payment.html" class="font-bold py-2 px-5 rounded-full shadow-md transition border-2 border-black" style="background-color: #30d5c8; color: #1a1a1d">Print from £29.99 →</a>
           </div>
-          <button id="add-basket-button" aria-label="Add to basket" class="absolute bottom-4 left-4 font-bold py-2 px-4 rounded-full shadow-md bg-[#30D5C8] text-[#1A1A1D] border-2 border-black">Add to Basket</button>
+          <button id="add-basket-button" data-testid="add-to-basket" aria-label="Add to basket" class="absolute bottom-4 left-4 font-bold py-2 px-4 rounded-full shadow-md bg-[#30D5C8] text-[#1A1A1D] border-2 border-black">Add to Basket</button>
         </section>
 
         <div id="gen-error" class="absolute top-2 left-2 w-fit text-left text-sm text-red-400 pointer-events-none" aria-live="assertive" style="opacity: 0"></div>
@@ -278,6 +279,15 @@
         window.addEventListener('load', apply, { once: true });
         window.addEventListener('resize', apply);
       })();
+    </script>
+
+    <script>
+      window.addEventListener('DOMContentLoaded', () => {
+        const basketBtn = document.getElementById('basket-button');
+        if (basketBtn) basketBtn.setAttribute('data-testid', 'basket-icon');
+        const basketCount = document.getElementById('basket-count');
+        if (basketCount) basketCount.setAttribute('data-testid', 'basket-count');
+      });
     </script>
 
     <!-- (removed) data-model-href mutator – not used anymore -->
