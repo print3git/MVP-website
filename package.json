@@ -43,6 +43,7 @@
     "prepare": "husky",
     "prepush": "echo \"(pre-push) no checks\"",
     "test:fresh": "npm test",
+    "test:all": "bash scripts/test-all.sh",
     "test:banner": "node scripts/run-jest.js tests/frontend/discount-delivery-banner*.test.js",
     "serve": "node scripts/serve.js"
   },
