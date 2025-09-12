@@ -132,19 +132,68 @@ test("adds item via UI shows basket and count", () => {
   expect(badge.hidden).toBe(false);
 });
 
-test("loads index.html and clicking add button increments count", () => {
-  const fs = require("fs");
-  const path = require("path");
-  const html = fs.readFileSync(
-    path.resolve(__dirname, "../../index.html"),
-    "utf8",
-  );
-  document.documentElement.innerHTML = html;
-  setupBasketUI();
-  document.getElementById("add-basket-button").click();
+test("index add-basket button increments count", async () => {
+  document.body.innerHTML =
+    '<button id="add-basket-button" disabled></button>' +
+    '<model-viewer id="glb-viewer"></model-viewer>';
+
+  const loc = window.location;
+  delete window.location;
+  window.location = { ...loc, assign: jest.fn(), replace: jest.fn(), href: loc.href };
+  window.customElements.whenDefined = () => Promise.resolve();
+  const { webcrypto } = require("crypto");
+  global.crypto = webcrypto;
+
+  jest.resetModules();
+  const { initIndexPage } = await import("../../js/index.js");
+  await initIndexPage();
+
+  const btn = document.getElementById("add-basket-button");
   const badge = document.getElementById("basket-count");
+  expect(btn.disabled).toBe(true);
+
+  const viewer = document.getElementById("glb-viewer");
+  viewer.src = "model.glb";
+  viewer.dispatchEvent(new Event("load"));
+  await Promise.resolve();
+
+  btn.click();
   expect(badge).toHaveTextContent("1");
+  window.location = loc;
 });
+
+test("button does not increment when viewer source missing", async () => {
+  document.body.innerHTML =
+    '<button id="add-basket-button" disabled></button>' +
+    '<model-viewer id="glb-viewer"></model-viewer>';
+
+  const loc = window.location;
+  delete window.location;
+  window.location = { ...loc, assign: jest.fn(), replace: jest.fn(), href: loc.href };
+  window.customElements.whenDefined = () => Promise.resolve();
+  const { webcrypto } = require("crypto");
+  global.crypto = webcrypto;
+
+  jest.resetModules();
+  const { initIndexPage } = await import("../../js/index.js");
+  await initIndexPage();
+
+  const btn = document.getElementById("add-basket-button");
+  const badge = document.getElementById("basket-count");
+  expect(btn.disabled).toBe(true);
+
+  const viewer = document.getElementById("glb-viewer");
+  viewer.dispatchEvent(new Event("load")); // no src set
+  await Promise.resolve();
+
+  btn.click();
+  expect(badge).toHaveTextContent("");
+  window.location = loc;
+});
+
+
+
+
 
 test.failing("does not increment when viewer source is missing", () => {
   const fs = require("fs");
