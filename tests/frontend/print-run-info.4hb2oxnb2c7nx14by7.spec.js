@@ -1,10 +1,30 @@
 /** @jest-environment jsdom */
-import {
-  computeSlotsByTime,
-  computePrintRunHours,
-  adjustedSlots,
-  updatePrintRunInfo,
-} from "../../js/index.js";
+let computeSlotsByTime;
+let computePrintRunHours;
+let adjustedSlots;
+let updatePrintRunInfo;
+let loc;
+
+beforeAll(async () => {
+  loc = window.location;
+  delete window.location;
+  window.location = {
+    ...loc,
+    assign: jest.fn(),
+    replace: jest.fn(),
+    href: "http://example.com",
+  };
+  ({
+    computeSlotsByTime,
+    computePrintRunHours,
+    adjustedSlots,
+    updatePrintRunInfo,
+  } = await import("../../js/index.js"));
+});
+
+afterAll(() => {
+  window.location = loc;
+});
 
 describe("print run info", () => {
   let originalStorage;

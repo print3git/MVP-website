@@ -178,6 +178,7 @@ test("button does not increment when viewer source missing", async () => {
     ...loc,
     assign: jest.fn(),
     replace: jest.fn(),
+
     href: loc.href,
   };
   window.customElements.whenDefined = () => Promise.resolve();
@@ -201,6 +202,7 @@ test("button does not increment when viewer source missing", async () => {
   window.location = loc;
 });
 
+
 test.failing("does not increment when viewer source is missing", () => {
   const fs = require("fs");
   const path = require("path");
@@ -216,6 +218,7 @@ test.failing("does not increment when viewer source is missing", () => {
   expect(badge).toHaveTextContent("");
   expect(getBasket()).toHaveLength(0);
 });
+
 
 test("increments count for multiple added items", () => {
   const badge = document.getElementById("basket-count");
@@ -488,6 +491,14 @@ test("index add-basket button adds to basket", async () => {
   const { webcrypto } = require("crypto");
   global.crypto = webcrypto;
   window.customElements.whenDefined = () => Promise.resolve();
+  const loc = window.location;
+  delete window.location;
+  window.location = {
+    ...loc,
+    assign: jest.fn(),
+    replace: jest.fn(),
+    href: "http://example.com",
+  };
   const { initIndexPage } = await import("../../js/index.js");
   initIndexPage();
   const viewer = document.getElementById("glb-viewer");
@@ -513,6 +524,14 @@ test("index basket count increments without viewer src", async () => {
   const { webcrypto } = require("crypto");
   global.crypto = webcrypto;
   window.customElements.whenDefined = () => Promise.resolve();
+  const loc = window.location;
+  delete window.location;
+  window.location = {
+    ...loc,
+    assign: jest.fn(),
+    replace: jest.fn(),
+    href: "http://example.com",
+  };
   await import("../../js/index.js");
   await window.initIndexPage();
   document.getElementById("add-basket-button").click();
@@ -520,6 +539,7 @@ test("index basket count increments without viewer src", async () => {
   const count = document.getElementById("basket-count");
   expect(count).toHaveTextContent("1");
   expect(count.hidden).toBe(false);
+  window.location = loc;
 });
 
 test("addToBasket skips server call without token", () => {
@@ -720,16 +740,14 @@ test("index viewer load enables add-basket button and increments count", async (
     '<button id="add-basket-button"></button>' +
     '<img id="preview-img" src="http://example.com/s.png" />' +
     '<model-viewer id="glb-viewer"></model-viewer>';
-  const originalLocation = window.location;
-  Object.defineProperty(window, "location", {
-    configurable: true,
-    writable: true,
-    value: {
-      ...originalLocation,
-      assign: jest.fn(),
-      href: "http://example.com",
-    },
-  });
+  const loc = window.location;
+  delete window.location;
+  window.location = {
+    ...loc,
+    assign: jest.fn(),
+    replace: jest.fn(),
+    href: "http://example.com",
+  };
   const { webcrypto } = require("crypto");
   global.crypto = webcrypto;
   window.customElements.whenDefined = () => Promise.resolve();
@@ -746,11 +764,7 @@ test("index viewer load enables add-basket button and increments count", async (
   expect(btn.disabled).toBe(false);
   btn.click();
   expect(badge).toHaveTextContent("1");
-  Object.defineProperty(window, "location", {
-    configurable: true,
-    writable: true,
-    value: originalLocation,
-  });
+  window.location = loc;
 });
 
 test("index viewer load enables and adds to basket with minimal DOM", async () => {
@@ -763,6 +777,14 @@ test("index viewer load enables and adds to basket with minimal DOM", async () =
   const { webcrypto } = require("crypto");
   global.crypto = webcrypto;
   window.customElements.whenDefined = () => Promise.resolve();
+  const loc = window.location;
+  delete window.location;
+  window.location = {
+    ...loc,
+    assign: jest.fn(),
+    replace: jest.fn(),
+    href: "http://example.com",
+  };
   const { initIndexPage } = await import("../../js/index.js");
   await initIndexPage();
   const button = document.getElementById("add-basket-button");
@@ -774,4 +796,5 @@ test("index viewer load enables and adds to basket with minimal DOM", async () =
   expect(button.disabled).toBe(false);
   button.click();
   await waitFor(() => expect(getBasket()).toHaveLength(1));
+  window.location = loc;
 });

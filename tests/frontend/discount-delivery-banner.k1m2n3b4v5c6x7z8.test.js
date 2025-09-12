@@ -1,6 +1,23 @@
 /** @jest-environment jsdom */
 import "@testing-library/jest-dom";
-import { initDiscountDeliveryBanner } from "../../js/index.js";
+let initDiscountDeliveryBanner;
+let loc;
+
+beforeAll(async () => {
+  loc = window.location;
+  delete window.location;
+  window.location = {
+    ...loc,
+    assign: jest.fn(),
+    replace: jest.fn(),
+    href: "http://example.com",
+  };
+  ({ initDiscountDeliveryBanner } = await import("../../js/index.js"));
+});
+
+afterAll(() => {
+  window.location = loc;
+});
 
 describe("Discount/delivery banner", () => {
   let banner;
