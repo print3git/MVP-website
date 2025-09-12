@@ -521,6 +521,7 @@ test("badge shows when items exist", () => {
 });
 
 test("renderList populates basket list", () => {
+  clearBasket();
   addToBasket({ modelUrl: "a" });
   document.getElementById("basket-button").click();
   const list = document.querySelectorAll("#basket-list .remove");
@@ -528,10 +529,12 @@ test("renderList populates basket list", () => {
 });
 
 test("renderList remove button deletes item", () => {
+  clearBasket();
   addToBasket({ modelUrl: "a" });
   document.getElementById("basket-button").click();
   document.querySelector("#basket-list .remove").click();
   expect(getBasket()).toHaveLength(0);
+  expect(document.querySelectorAll("#basket-list .remove")).toHaveLength(0);
 });
 
 test("basket button opens overlay", () => {

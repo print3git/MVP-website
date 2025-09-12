@@ -296,6 +296,7 @@ function renderList() {
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
       removeFromBasket(idx);
+      renderList();
     });
 
     div.appendChild(img);
