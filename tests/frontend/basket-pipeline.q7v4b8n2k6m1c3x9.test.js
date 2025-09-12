@@ -143,7 +143,7 @@ test("index add-basket button increments count", async () => {
     ...loc,
     assign: jest.fn(),
     replace: jest.fn(),
-    href: "http://example.com",
+    href: loc.href,
   };
   window.customElements.whenDefined = () => Promise.resolve();
   const { webcrypto } = require("crypto");
@@ -178,7 +178,8 @@ test("button does not increment when viewer source missing", async () => {
     ...loc,
     assign: jest.fn(),
     replace: jest.fn(),
-    href: "http://example.com",
+
+    href: loc.href,
   };
   window.customElements.whenDefined = () => Promise.resolve();
   const { webcrypto } = require("crypto");
@@ -202,7 +203,21 @@ test("button does not increment when viewer source missing", async () => {
 });
 
 
-
+test.failing("does not increment when viewer source is missing", () => {
+  const fs = require("fs");
+  const path = require("path");
+  const html = fs.readFileSync(
+    path.resolve(__dirname, "../../index.html"),
+    "utf8",
+  );
+  document.documentElement.innerHTML = html;
+  setupBasketUI();
+  document.getElementById("glb-viewer").src = "";
+  document.getElementById("add-basket-button").click();
+  const badge = document.getElementById("basket-count");
+  expect(badge).toHaveTextContent("");
+  expect(getBasket()).toHaveLength(0);
+});
 
 
 test("increments count for multiple added items", () => {
@@ -469,7 +484,7 @@ test("index add-basket button adds to basket", async () => {
   document.body.innerHTML +=
     '<button id="add-basket-button"></button>' +
     '<img id="preview-img" src="http://example.com/s.png" />' +
-    '<div id="glb-viewer"></div>';
+    '<model-viewer id="glb-viewer"></model-viewer>';
   global.fetch = jest
     .fn()
     .mockResolvedValue({ ok: true, json: () => Promise.resolve({}) });
@@ -485,18 +500,24 @@ test("index add-basket button adds to basket", async () => {
     href: "http://example.com",
   };
   const { initIndexPage } = await import("../../js/index.js");
-  await initIndexPage();
+  initIndexPage();
+  const viewer = document.getElementById("glb-viewer");
+  viewer.src = "model.glb";
+  viewer.dispatchEvent(new Event("load"));
   await Promise.resolve();
-  document.getElementById("add-basket-button").click();
+  const button = document.getElementById("add-basket-button");
+  const badge = document.getElementById("basket-count");
+  expect(button.disabled).toBe(false);
+  button.click();
   await waitFor(() => expect(getBasket()).toHaveLength(1));
-  window.location = loc;
+  expect(badge).toHaveTextContent("1");
 });
 
 test("index basket count increments without viewer src", async () => {
   document.body.innerHTML +=
     '<button id="add-basket-button"></button>' +
     '<img id="preview-img" src="http://example.com/fallback.png" />' +
-    '<div id="glb-viewer"></div>';
+    '<model-viewer id="glb-viewer"></model-viewer>';
   global.fetch = jest
     .fn()
     .mockResolvedValue({ ok: true, json: () => Promise.resolve({}) });
@@ -749,7 +770,7 @@ test("index viewer load enables add-basket button and increments count", async (
 test("index viewer load enables and adds to basket with minimal DOM", async () => {
   document.body.innerHTML +=
     '<button id="add-basket-button"></button>' +
-    '<div id="glb-viewer"></div>';
+    '<model-viewer id="glb-viewer"></model-viewer>';
   global.fetch = jest
     .fn()
     .mockResolvedValue({ ok: true, json: () => Promise.resolve({}) });
