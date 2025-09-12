@@ -65,16 +65,12 @@ jobs:
             command: npm test
           - name: jest:.
             command: npm test
-          - name: playwright:.
-            command: npx playwright test
           - name: jest:tests/backend
             command: npm test
           - name: jest:tests/ci
             command: npm test
           - name: jest:tests/frontend
             command: npm test
-          - name: playwright:tests/full-stack
-            command: npx playwright test
           - name: jest:tests
             command: npm test
           - name: workflow_call

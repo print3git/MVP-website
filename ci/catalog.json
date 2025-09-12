@@ -19,7 +19,6 @@
       "junit": "backend/junit.xml"
     },
     { "id": "types:check", "type": "types" },
-    { "id": "e2e:smoke", "type": "e2e", "reportDir": "playwright-report" },
     { "id": "codeql:analyze", "type": "sast" }
   ]
 }

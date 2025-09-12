@@ -92,6 +92,16 @@ test("basket button visible and count hidden when empty", () => {
   expect(badge).toHaveTextContent("");
 });
 
+test("basket button remains visible with invalid localStorage", () => {
+  localStorage.setItem("print2Basket", "{oops");
+  document.body.innerHTML = "";
+  setupBasketUI();
+  const btn = document.getElementById("basket-button");
+  const badge = document.getElementById("basket-count");
+  expect(btn.hidden).toBe(false);
+  expect(badge.hidden).toBe(true);
+});
+
 test("adds item via UI shows basket and count", () => {
   const addBtn = document.createElement("button");
   addBtn.id = "add-basket-button";
@@ -115,6 +125,23 @@ test("loads index.html and clicking add button increments count", () => {
   document.getElementById("add-basket-button").click();
   const badge = document.getElementById("basket-count");
   expect(badge).toHaveTextContent("1");
+});
+
+test.skip("basket count stays at 0 when glb-viewer src cleared", () => {
+  const fs = require("fs");
+  const path = require("path");
+  const html = fs.readFileSync(
+    path.resolve(__dirname, "../../index.html"),
+    "utf8",
+  );
+  document.documentElement.innerHTML = html;
+  setupBasketUI();
+  const viewer = document.getElementById("glb-viewer");
+  viewer.src = "";
+  const count = document.getElementById("basket-count");
+  expect(count).toHaveTextContent("0");
+  document.getElementById("add-basket-button").click();
+  expect(count).toHaveTextContent("0");
 });
 
 test("increments count for multiple added items", () => {

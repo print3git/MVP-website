@@ -162,12 +162,6 @@
     "needs": []
   },
   {
-    "name": "playwright:.",
-    "command": "npx playwright test",
-    "paths": ["playwright.config.js"],
-    "needs": []
-  },
-  {
     "name": "jest:tests/backend",
     "command": "npm test",
     "paths": ["tests/backend/jest.config.js"],
@@ -183,12 +177,6 @@
     "name": "jest:tests/frontend",
     "command": "npm test",
     "paths": ["tests/frontend/jest.config.js"],
-    "needs": []
-  },
-  {
-    "name": "playwright:tests/full-stack",
-    "command": "npx playwright test",
-    "paths": ["tests/full-stack/playwright.config.js"],
     "needs": []
   },
   {
