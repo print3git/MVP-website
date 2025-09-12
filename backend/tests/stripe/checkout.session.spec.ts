@@ -112,10 +112,10 @@ describe("POST /api/checkout/create", () => {
     expect(opts.idempotencyKey).toBe("abc");
   });
 
-  test("maps Stripe create failure to 502 with {error:'stripe_error'}", async () => {
+  test("maps Stripe create failure to 500 with {error:'stripe_error'}", async () => {
     (Stripe as any).__mocks.createMock.mockRejectedValueOnce(new Error("boom"));
     const res = await request(app).post("/api/checkout/create").send(body);
-    expect(res.status).toBe(502);
+    expect(res.status).toBe(500);
     expect(res.body).toEqual({ error: "stripe_error" });
   });
 
