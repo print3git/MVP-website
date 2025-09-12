@@ -57,6 +57,7 @@
     "prepush": "echo \"(pre-push) no checks\"",
     "test:fresh": "npm test",
     "test:banner": "node scripts/run-jest.js tests/frontend/discount-delivery-banner*.test.js",
+    "test:all": "npm test && npm test --prefix backend",
     "serve": "node scripts/serve.js"
   },
   "babel": {
