@@ -1055,7 +1055,7 @@ async function init() {
     refs.addBasketBtn.addEventListener("click", async () => {
       await viewerReadyPromise;
       const modelUrl =
-        refs.viewer.src ||
+        refs.viewer?.src ||
         refs.previewImg?.dataset?.glb ||
         refs.previewImg?.src ||
         localStorage.getItem("print2Model") ||
