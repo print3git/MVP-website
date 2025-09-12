@@ -1231,6 +1231,7 @@ if (typeof module !== "undefined") {
     computeDailyPrintsSold,
     updateStats,
     initDiscountDeliveryBanner,
+    initIndexPage: init,
   };
 }
 
@@ -1239,4 +1240,5 @@ export {
   computeDailyPrintsSold,
   updateStats,
   initDiscountDeliveryBanner,
+  init as initIndexPage,
 };

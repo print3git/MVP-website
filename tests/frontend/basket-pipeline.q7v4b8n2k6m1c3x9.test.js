@@ -407,8 +407,8 @@ test("index add-basket button adds to basket", async () => {
   const { webcrypto } = require("crypto");
   global.crypto = webcrypto;
   window.customElements.whenDefined = () => Promise.resolve();
-  await import("../../js/index.js");
-  await window.initIndexPage();
+  const { initIndexPage } = await import("../../js/index.js");
+  await initIndexPage();
   await Promise.resolve();
   document.getElementById("add-basket-button").click();
   await waitFor(() => expect(getBasket()).toHaveLength(1));
@@ -612,8 +612,8 @@ test("index add-basket button disabled until viewer ready", async () => {
   const { webcrypto } = require("crypto");
   global.crypto = webcrypto;
   window.customElements.whenDefined = () => Promise.resolve();
-  await import("../../js/index.js");
-  await window.initIndexPage();
+  const { initIndexPage } = await import("../../js/index.js");
+  await initIndexPage();
   expect(document.getElementById("add-basket-button").disabled).toBe(true);
 });
 
@@ -625,8 +625,8 @@ test("index viewer load enables add-basket button", async () => {
   const { webcrypto } = require("crypto");
   global.crypto = webcrypto;
   window.customElements.whenDefined = () => Promise.resolve();
-  await import("../../js/index.js");
-  await window.initIndexPage();
+  const { initIndexPage } = await import("../../js/index.js");
+  await initIndexPage();
   const viewer = document.getElementById("glb-viewer");
   viewer.src = "model.glb";
   viewer.dispatchEvent(new Event("load"));
