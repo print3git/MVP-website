@@ -36,26 +36,21 @@ const KEY = "print2Basket";
 const API_BASE = (window.API_ORIGIN || "") + "/api";
 let basket;
 export function getBasket() {
-  if (!basket) {
-    try {
-      basket = JSON.parse(localStorage.getItem(KEY)) || [];
-      if (!Array.isArray(basket)) {
-        basket = [];
-      }
-    } catch {
-      localStorage.removeItem(KEY);
-      basket = [];
-      const btn = document.getElementById("basket-button");
-      if (btn) btn.hidden = false;
-      const badge = document.getElementById("basket-count");
-      if (badge) {
-        badge.textContent = "";
-        badge.hidden = true;
-      }
-    }
+  try {
+    const raw = localStorage.getItem(KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    basket = Array.isArray(parsed) ? parsed : [];
+  } catch {
+    localStorage.removeItem(KEY);
+    basket = [];
+    const btn = document.getElementById("basket-button");
+    if (btn) btn.hidden = false;
+    const badge = document.getElementById("basket-count");
+    if (badge) badge.hidden = true;
   }
   return basket;
 }
+
 function saveBasket(items = basket) {
   basket = items;
   localStorage.setItem(KEY, JSON.stringify(basket));
@@ -298,6 +293,7 @@ function renderList() {
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
       removeFromBasket(idx);
+      renderList();
     });
 
     div.appendChild(img);
@@ -314,6 +310,8 @@ function closeBasket() {
   document.getElementById("basket-overlay")?.classList.add("hidden");
 }
 export function setupBasketUI() {
+  // Trigger basket loading to clear any corrupted storage before UI setup
+  getBasket();
   if (!document.getElementById("basket-bob-style")) {
     const style = document.createElement("style");
     style.id = "basket-bob-style";

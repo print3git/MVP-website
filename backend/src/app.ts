@@ -24,6 +24,15 @@ try {
 
 try {
   (() => {
+    const r = require("./routes/stripe/config");
+    app.use("/api/config/stripe", r.default || r);
+  })();
+} catch (err) {
+  logger.error("Failed to load stripe config router", err as Error);
+}
+
+try {
+  (() => {
     const r = require("./routes/health");
     app.use(r.default || r);
   })();
@@ -182,6 +191,15 @@ try {
   })();
 } catch (err) {
   logger.error("Failed to load status router", err as Error);
+}
+
+try {
+  (() => {
+    const r = require("./routes/payment-init");
+    app.use("/api", r.default || r);
+  })();
+} catch (err) {
+  logger.error("Failed to load payment-init router", err as Error);
 }
 
 app.use(errorHandler);

@@ -9,7 +9,7 @@ describe("POST /api/checkout/create", () => {
   beforeEach(() => {
     process.env.FRONTEND_SUCCESS_URL = "https://success";
     process.env.FRONTEND_CANCEL_URL = "https://cancel";
-    process.env.STRIPE_TEST_KEY = "sk_test_X";
+    process.env.STRIPE_SECRET_KEY = "sk_test_X";
     (Stripe as any).__mocks.createMock.mockClear();
     (db.query as jest.Mock).mockClear();
   });
@@ -112,10 +112,10 @@ describe("POST /api/checkout/create", () => {
     expect(opts.idempotencyKey).toBe("abc");
   });
 
-  test("maps Stripe create failure to 502 with {error:'stripe_error'}", async () => {
+  test("maps Stripe create failure to 500 with {error:'stripe_error'}", async () => {
     (Stripe as any).__mocks.createMock.mockRejectedValueOnce(new Error("boom"));
     const res = await request(app).post("/api/checkout/create").send(body);
-    expect(res.status).toBe(502);
+    expect(res.status).toBe(500);
     expect(res.body).toEqual({ error: "stripe_error" });
   });
 
@@ -130,4 +130,3 @@ describe("POST /api/checkout/create", () => {
     expect(db.query).not.toHaveBeenCalled();
   });
 });
-

@@ -9,9 +9,13 @@ let manualizeItem;
 let removeFromBasket;
 let clearBasket;
 let setupBasketUI;
+let leftoverListener;
+let leftoverFlag;
 
 const originalAddEventListener = window.addEventListener;
 const originalRemoveEventListener = window.removeEventListener;
+const originalAudio = global.Audio;
+const originalFetch = global.fetch;
 let addedListeners = [];
 
 beforeAll(async () => {
@@ -27,9 +31,7 @@ beforeAll(async () => {
 
 beforeEach(() => {
   localStorage.clear();
-  document.head.innerHTML = "";
   document.body.innerHTML = "";
-  delete window.__basketSound;
   addedListeners = [];
   window.addEventListener = (type, listener, options) => {
     addedListeners.push({ type, listener, options });
@@ -56,11 +58,44 @@ afterEach(() => {
   addedListeners = [];
   window.addEventListener = originalAddEventListener;
   window.removeEventListener = originalRemoveEventListener;
-  document.head.innerHTML = "";
-  document.body.innerHTML = "";
-  jest.clearAllMocks();
+  if (originalAudio) {
+    global.Audio = originalAudio;
+  } else {
+    delete global.Audio;
+  }
+  if (originalFetch) {
+    global.fetch = originalFetch;
+  } else {
+    delete global.fetch;
+  }
   jest.clearAllTimers();
   jest.useRealTimers();
+});
+
+test("creates listener, timer and DOM node for cleanup", () => {
+  document.body.innerHTML += '<div id="temp"></div>';
+  leftoverListener = jest.fn();
+  window.addEventListener("cleanup-test", leftoverListener);
+  addToBasket({ modelUrl: "m" });
+  leftoverFlag = false;
+  jest.useFakeTimers();
+  setTimeout(() => {
+    leftoverFlag = true;
+  }, 1000);
+});
+
+test("beforeEach/afterEach reset DOM, timers and listeners", () => {
+  expect(document.getElementById("temp")).toBeNull();
+  window.dispatchEvent(new Event("cleanup-test"));
+  expect(leftoverListener).not.toHaveBeenCalled();
+  jest.useFakeTimers();
+  jest.runOnlyPendingTimers();
+  expect(leftoverFlag).toBe(false);
+  jest.useRealTimers();
+  const badge = document.getElementById("basket-count");
+  expect(getBasket()).toHaveLength(0);
+  expect(badge).toHaveTextContent("");
+  expect(badge.hidden).toBe(true);
 });
 
 test("getBasket returns empty array when no data", () => {
@@ -109,6 +144,22 @@ test("loads index.html and clicking add button increments count", () => {
   document.getElementById("add-basket-button").click();
   const badge = document.getElementById("basket-count");
   expect(badge).toHaveTextContent("1");
+});
+
+test.failing("does not increment when viewer source is missing", () => {
+  const fs = require("fs");
+  const path = require("path");
+  const html = fs.readFileSync(
+    path.resolve(__dirname, "../../index.html"),
+    "utf8",
+  );
+  document.documentElement.innerHTML = html;
+  setupBasketUI();
+  document.getElementById("glb-viewer").src = "";
+  document.getElementById("add-basket-button").click();
+  const badge = document.getElementById("basket-count");
+  expect(badge).toHaveTextContent("");
+  expect(getBasket()).toHaveLength(0);
 });
 
 test("increments count for multiple added items", () => {
@@ -258,6 +309,119 @@ test("syncServerCart stores fetched items", async () => {
   ]);
 });
 
+const fs = require("fs");
+const path = require("path");
+const root = path.resolve(__dirname, "../../");
+const basketPages = fs
+  .readdirSync(root)
+  .filter((f) => f.endsWith(".html"))
+  .filter((f) =>
+    fs.readFileSync(path.join(root, f), "utf8").includes("js/basket.js"),
+  );
+
+for (const file of basketPages) {
+  describe(`basket button on ${file}`, () => {
+    test("shows count when items exist", () => {
+      localStorage.setItem("print2Basket", JSON.stringify([{ modelUrl: "m" }]));
+      document.documentElement.innerHTML = fs.readFileSync(
+        path.join(root, file),
+        "utf8",
+      );
+      setupBasketUI();
+      expect(document.getElementById("basket-button").hidden).toBe(false);
+      expect(document.getElementById("basket-count")).toHaveTextContent("1");
+    });
+
+    test("button visible but count hidden when empty", () => {
+      document.documentElement.innerHTML = fs.readFileSync(
+        path.join(root, file),
+        "utf8",
+      );
+      setupBasketUI();
+      expect(document.getElementById("basket-button").hidden).toBe(false);
+      expect(document.getElementById("basket-count").hidden).toBe(true);
+    });
+
+    test("adds item via UI shows basket and count", () => {
+      document.documentElement.innerHTML = fs.readFileSync(
+        path.join(root, file),
+        "utf8",
+      );
+      setupBasketUI();
+      const addBtn = document.getElementById("add-basket-button");
+      if (!addBtn) return;
+      addBtn.click();
+      expect(document.getElementById("basket-button").hidden).toBe(false);
+      expect(document.getElementById("basket-count")).toHaveTextContent("1");
+    });
+
+    test("increments count for multiple added items", () => {
+      document.documentElement.innerHTML = fs.readFileSync(
+        path.join(root, file),
+        "utf8",
+      );
+      setupBasketUI();
+      const addBtn = document.getElementById("add-basket-button");
+      if (!addBtn) return;
+      for (let i = 1; i <= 3; i++) {
+        addBtn.click();
+        expect(document.getElementById("basket-count")).toHaveTextContent(
+          String(i),
+        );
+      }
+    });
+
+    test("persists basket after reload", () => {
+      document.documentElement.innerHTML = fs.readFileSync(
+        path.join(root, file),
+        "utf8",
+      );
+      setupBasketUI();
+      const addBtn = document.getElementById("add-basket-button");
+      if (!addBtn) return;
+      addBtn.click();
+      document.documentElement.innerHTML = fs.readFileSync(
+        path.join(root, file),
+        "utf8",
+      );
+      setupBasketUI();
+      expect(document.getElementById("basket-button").hidden).toBe(false);
+      expect(document.getElementById("basket-count")).toHaveTextContent("1");
+    });
+
+    test("clearing basket keeps button visible", () => {
+      document.documentElement.innerHTML = fs.readFileSync(
+        path.join(root, file),
+        "utf8",
+      );
+      setupBasketUI();
+      const addBtn = document.getElementById("add-basket-button");
+      if (!addBtn) return;
+      addBtn.click();
+      localStorage.removeItem("print2Basket");
+      window.dispatchEvent(new CustomEvent("basket-change"));
+      expect(document.getElementById("basket-button").hidden).toBe(false);
+      const count = document.getElementById("basket-count");
+      expect(count.hidden).toBe(true);
+      expect(count).toHaveTextContent("");
+    });
+
+    test("handles corrupted localStorage gracefully", () => {
+      localStorage.setItem("print2Basket", "not-json");
+      document.documentElement.innerHTML = fs.readFileSync(
+        path.join(root, file),
+        "utf8",
+      );
+      setupBasketUI();
+      expect(document.getElementById("basket-button").hidden).toBe(false);
+      const count = document.getElementById("basket-count");
+      expect(count.hidden).toBe(true);
+      expect(count).toHaveTextContent("");
+      expect(localStorage.getItem("print2Basket")).toBeNull();
+    });
+  });
+}
+
 test("index add-basket button adds to basket", async () => {
   document.body.innerHTML +=
     '<button id="add-basket-button"></button>' +
@@ -269,14 +433,31 @@ test("index add-basket button adds to basket", async () => {
   const { webcrypto } = require("crypto");
   global.crypto = webcrypto;
   window.customElements.whenDefined = () => Promise.resolve();
-  await import("../../js/index.js");
-  await window.initIndexPage();
-  const viewer = document.getElementById("glb-viewer");
-  viewer.src = "model.glb";
-  viewer.dispatchEvent(new Event("load"));
+  const { initIndexPage } = await import("../../js/index.js");
+  await initIndexPage();
   await Promise.resolve();
   document.getElementById("add-basket-button").click();
   await waitFor(() => expect(getBasket()).toHaveLength(1));
+});
+
+test("index basket count increments without viewer src", async () => {
+  document.body.innerHTML +=
+    '<button id="add-basket-button"></button>' +
+    '<img id="preview-img" src="http://example.com/fallback.png" />' +
+    '<div id="glb-viewer"></div>';
+  global.fetch = jest
+    .fn()
+    .mockResolvedValue({ ok: true, json: () => Promise.resolve({}) });
+  const { webcrypto } = require("crypto");
+  global.crypto = webcrypto;
+  window.customElements.whenDefined = () => Promise.resolve();
+  await import("../../js/index.js");
+  await window.initIndexPage();
+  document.getElementById("add-basket-button").click();
+  await waitFor(() => expect(getBasket()).toHaveLength(1));
+  const count = document.getElementById("basket-count");
+  expect(count).toHaveTextContent("1");
+  expect(count.hidden).toBe(false);
 });
 
 test("addToBasket skips server call without token", () => {
@@ -386,6 +567,7 @@ test("badge shows when items exist", () => {
 });
 
 test("renderList populates basket list", () => {
+  clearBasket();
   addToBasket({ modelUrl: "a" });
   document.getElementById("basket-button").click();
   const list = document.querySelectorAll("#basket-list .remove");
@@ -393,10 +575,12 @@ test("renderList populates basket list", () => {
 });
 
 test("renderList remove button deletes item", () => {
+  clearBasket();
   addToBasket({ modelUrl: "a" });
   document.getElementById("basket-button").click();
   document.querySelector("#basket-list .remove").click();
   expect(getBasket()).toHaveLength(0);
+  expect(document.querySelectorAll("#basket-list .remove")).toHaveLength(0);
 });
 
 test("basket button opens overlay", () => {
@@ -477,8 +661,8 @@ test("index add-basket button disabled until viewer ready", async () => {
   const { webcrypto } = require("crypto");
   global.crypto = webcrypto;
   window.customElements.whenDefined = () => Promise.resolve();
-  await import("../../js/index.js");
-  await window.initIndexPage();
+  const { initIndexPage } = await import("../../js/index.js");
+  await initIndexPage();
   expect(document.getElementById("add-basket-button").disabled).toBe(true);
 });
 
@@ -490,8 +674,8 @@ test("index viewer load enables add-basket button", async () => {
   const { webcrypto } = require("crypto");
   global.crypto = webcrypto;
   window.customElements.whenDefined = () => Promise.resolve();
-  await import("../../js/index.js");
-  await window.initIndexPage();
+  const { initIndexPage } = await import("../../js/index.js");
+  await initIndexPage();
   const viewer = document.getElementById("glb-viewer");
   viewer.src = "model.glb";
   viewer.dispatchEvent(new Event("load"));

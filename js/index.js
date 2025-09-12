@@ -172,8 +172,11 @@ function ensureModelViewerLoaded() {
     (navigator.userAgent?.includes("Node.js") ||
       navigator.userAgent?.includes("jsdom"))
   ) {
-    return Promise.resolve();
-  }
+     if (!window.customElements.get("model-viewer")) {
+       window.customElements.define("model-viewer", class extends HTMLElement {});
+     }
+     return Promise.resolve();
+   }
 
   const cdnUrl =
     "https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js";
@@ -1008,8 +1011,24 @@ async function init() {
   }
 
   // Ensure checkout uses the model currently shown in the viewer
-  refs.checkoutBtn?.addEventListener("click", () => {
-    const modelUrl = refs.viewer.src;
+  refs.checkoutBtn?.addEventListener("click", async () => {
+    let modelUrl = refs.viewer?.src;
+    if (!modelUrl) {
+      await customElements.whenDefined("model-viewer");
+      if (refs.viewer && !refs.viewer.src) {
+        try {
+          await refs.viewer.updateComplete;
+        } catch {}
+      }
+    }
+    if (!modelUrl) {
+      modelUrl =
+        refs.viewer?.src ||
+        refs.previewImg?.dataset?.glb ||
+        refs.previewImg?.src ||
+        localStorage.getItem("print2Model") ||
+        FALLBACK_GLB;
+    }
     if (modelUrl) {
       localStorage.setItem("print2Model", modelUrl);
     }
@@ -1039,7 +1058,26 @@ async function init() {
         new Promise((resolve) => {
           if (!refs.viewer) return resolve();
           const onLoad = () => resolve();
-          if (refs.viewer.loaded || refs.viewer.modelIsVisible) {
+          if (!refs.viewer.src) {
+            const timer = setTimeout(() => {
+              if (!refs.viewer.src) {
+                refs.viewer.src =
+                  refs.previewImg?.dataset?.glb ||
+                  refs.previewImg?.src ||
+                  localStorage.getItem("print2Model") ||
+                  FALLBACK_GLB;
+              }
+              onLoad();
+            }, 0);
+            refs.viewer.addEventListener(
+              "load",
+              () => {
+                clearTimeout(timer);
+                onLoad();
+              },
+              { once: true },
+            );
+          } else if (refs.viewer.loaded || refs.viewer.modelIsVisible) {
             onLoad();
           } else {
             refs.viewer.addEventListener("load", onLoad, { once: true });
@@ -1052,12 +1090,14 @@ async function init() {
 
     refs.addBasketBtn.addEventListener("click", async () => {
       await viewerReadyPromise;
-      const modelUrl =
-        refs.viewer.src ||
-        refs.previewImg?.dataset?.glb ||
-        refs.previewImg?.src ||
-        localStorage.getItem("print2Model") ||
-        FALLBACK_GLB;
+      let modelUrl = refs.viewer.src;
+      if (!modelUrl) {
+        modelUrl =
+          refs.previewImg?.dataset?.glb ||
+          refs.previewImg?.src ||
+          localStorage.getItem("print2Model") ||
+          FALLBACK_GLB;
+      }
       let snapshot = refs.previewImg?.src;
       const host = (() => {
         try {
@@ -1229,6 +1269,7 @@ if (typeof module !== "undefined") {
     computeDailyPrintsSold,
     updateStats,
     initDiscountDeliveryBanner,
+    initIndexPage: init,
   };
 }
 
@@ -1237,4 +1278,5 @@ export {
   computeDailyPrintsSold,
   updateStats,
   initDiscountDeliveryBanner,
+  init as initIndexPage,
 };

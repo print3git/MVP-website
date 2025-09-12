@@ -1,5 +1,5 @@
 const request = require("supertest");
-process.env.STRIPE_KEY = "sk_test_valid";
+process.env.STRIPE_SECRET_KEY = "sk_test_valid";
 process.env.STRIPE_WEBHOOK_SECRET = "whsec_test";
 const app = require("../../src/app");
 

@@ -84,8 +84,8 @@ const stripeKey =
   process.env.STRIPE_SECRET_KEY || mockSecrets.STRIPE_SECRET_KEY;
 const webhook =
   process.env.STRIPE_WEBHOOK_SECRET || mockSecrets.STRIPE_WEBHOOK_SECRET;
-if (!process.env.STRIPE_TEST_KEY) {
-  process.env.STRIPE_TEST_KEY = stripeKey;
+if (!process.env.STRIPE_SECRET_KEY) {
+  process.env.STRIPE_SECRET_KEY = stripeKey;
 }
 if (!process.env.STRIPE_PUBLISHABLE_KEY) {
   process.env.STRIPE_PUBLISHABLE_KEY = "pk_live";
