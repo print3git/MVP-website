@@ -117,7 +117,9 @@ test("loads index.html and clicking add button increments count", () => {
   expect(badge).toHaveTextContent("1");
 });
 
-test.failing("does not increment when viewer source is missing", () => {
+test.failing(
+  "basket count stays at 0 when glb-viewer src cleared",
+  () => {
   const fs = require("fs");
   const path = require("path");
   const html = fs.readFileSync(
@@ -131,7 +133,8 @@ test.failing("does not increment when viewer source is missing", () => {
   const badge = document.getElementById("basket-count");
   expect(badge).toHaveTextContent("");
   expect(getBasket()).toHaveLength(0);
-});
+  },
+);
 
 test("increments count for multiple added items", () => {
   const badge = document.getElementById("basket-count");
@@ -161,8 +164,8 @@ test("clearing basket keeps button visible", () => {
   expect(badge).toHaveTextContent("");
 });
 
-test("handles corrupted localStorage gracefully", () => {
-  localStorage.setItem("print2Basket", "not-json");
+test("basket button remains visible with invalid localStorage", () => {
+  localStorage.setItem("print2Basket", "{oops");
   document.head.innerHTML = "";
   document.body.innerHTML = "";
   setupBasketUI();
