@@ -12,7 +12,7 @@ const router = Router();
 let stripeKey: string;
 let stripeWebhookSecret: string;
 try {
-  stripeKey = getEnvVar("STRIPE_KEY", { required: true })!;
+  stripeKey = getEnvVar("STRIPE_SECRET_KEY", { required: true })!;
   stripeWebhookSecret = getEnvVar("STRIPE_WEBHOOK_SECRET", { required: true })!;
 } catch (err) {
   logger.error((err as Error).message);

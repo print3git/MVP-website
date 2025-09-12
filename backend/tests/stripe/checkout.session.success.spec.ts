@@ -31,7 +31,7 @@ const buildApp = () => {
 describe("create checkout session success", () => {
   beforeEach(() => {
     mockCreate.mockClear();
-    process.env.STRIPE_TEST_KEY = "sk_test";
+    process.env.STRIPE_SECRET_KEY = "sk_test";
     process.env.FRONTEND_SUCCESS_URL = "https://example.com/success";
     process.env.FRONTEND_CANCEL_URL = "https://example.com/cancel";
   });

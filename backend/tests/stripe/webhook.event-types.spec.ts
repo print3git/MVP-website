@@ -8,7 +8,7 @@ jest.mock("../../src/queue/dbPrintQueue.js", () => ({
   enqueuePrint: jest.fn(),
 }));
 
-process.env.STRIPE_KEY = "sk_test_valid";
+process.env.STRIPE_SECRET_KEY = "sk_test_valid";
 process.env.STRIPE_WEBHOOK_SECRET = "whsec_test";
 
 const router = require("../../src/routes/stripe/webhook").default;

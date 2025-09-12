@@ -1,6 +1,6 @@
 process.env.DB_URL = "postgres://user:pass@localhost/db";
 process.env.CLOUDFRONT_DOMAIN = "cloud.test";
-process.env.STRIPE_TEST_KEY = "sk_test_dummy";
+process.env.STRIPE_SECRET_KEY = "sk_test_dummy";
 
 jest.mock("pg");
 const { Pool } = require("pg");

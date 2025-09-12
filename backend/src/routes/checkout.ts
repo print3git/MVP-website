@@ -13,8 +13,7 @@ const router = Router();
 
 router.post("/checkout/create", async (req, res) => {
   try {
-    const secretKey =
-      process.env.STRIPE_SECRET_KEY || process.env.STRIPE_TEST_KEY || "";
+    const secretKey = process.env.STRIPE_SECRET_KEY || "";
     const successUrl = process.env.FRONTEND_SUCCESS_URL;
     const cancelUrl = process.env.FRONTEND_CANCEL_URL;
 

@@ -38,7 +38,7 @@ function runGetHFAPIKey(env) {
 describe("validate-env script", () => {
   test("succeeds when required vars set and proxies unset", () => {
     const output = run({
-      STRIPE_TEST_KEY: "test",
+      STRIPE_SECRET_KEY: "test",
       HF_TOKEN: "token",
       AWS_ACCESS_KEY_ID: "id",
       AWS_SECRET_ACCESS_KEY: "secret",
@@ -53,7 +53,7 @@ describe("validate-env script", () => {
     expect(() =>
       run(
         {
-          STRIPE_TEST_KEY: "test",
+          STRIPE_SECRET_KEY: "test",
           HF_TOKEN: "token",
           AWS_ACCESS_KEY_ID: "id",
           AWS_SECRET_ACCESS_KEY: "secret",
@@ -66,7 +66,7 @@ describe("validate-env script", () => {
 
   test("succeeds when HF_TOKEN is missing", () => {
     const output = run({
-      STRIPE_TEST_KEY: "test",
+      STRIPE_SECRET_KEY: "test",
       HF_TOKEN: "",
       HF_API_KEY: "",
       AWS_ACCESS_KEY_ID: "id",
@@ -79,7 +79,7 @@ describe("validate-env script", () => {
 
   test("exports HF_API_KEY when absent", () => {
     const key = runGetHFAPIKey({
-      STRIPE_TEST_KEY: "test",
+      STRIPE_SECRET_KEY: "test",
       HF_TOKEN: "",
       HF_API_KEY: "",
       AWS_ACCESS_KEY_ID: "id",
@@ -93,7 +93,7 @@ describe("validate-env script", () => {
 
   test("falls back when database unreachable", () => {
     const output = run({
-      STRIPE_TEST_KEY: "test",
+      STRIPE_SECRET_KEY: "test",
       HF_TOKEN: "token",
       AWS_ACCESS_KEY_ID: "id",
       AWS_SECRET_ACCESS_KEY: "secret",

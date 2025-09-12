@@ -1,4 +1,4 @@
-process.env.STRIPE_TEST_KEY = "sk_test";
+process.env.STRIPE_SECRET_KEY = "sk_test";
 
 jest.mock("../db", () => ({ query: jest.fn() }));
 const db = require("../db");

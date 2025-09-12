@@ -1,8 +1,7 @@
 const request = require("supertest");
 const Stripe = require("stripe");
 
-process.env.STRIPE_TEST_KEY = "sk_test";
-process.env.STRIPE_LIVE_KEY = "sk_live";
+process.env.STRIPE_SECRET_KEY = "sk_test";
 process.env.STRIPE_WEBHOOK_SECRET = "whsec";
 
 jest.mock("stripe");
