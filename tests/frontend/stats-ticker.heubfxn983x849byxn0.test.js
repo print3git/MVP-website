@@ -2,12 +2,25 @@
 import "@testing-library/jest-dom";
 
 let computeDailyPrintsSold;
+let loc;
 
 beforeAll(async () => {
   const { webcrypto } = require("crypto");
   global.crypto = webcrypto;
+  loc = window.location;
+  delete window.location;
+  window.location = {
+    ...loc,
+    assign: jest.fn(),
+    replace: jest.fn(),
+    href: "http://example.com",
+  };
   const mod = await import("../../js/index.js");
   computeDailyPrintsSold = mod.computeDailyPrintsSold;
+});
+
+afterAll(() => {
+  window.location = loc;
 });
 
 describe("computeDailyPrintsSold", () => {
