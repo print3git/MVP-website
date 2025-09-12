@@ -117,6 +117,22 @@ test("loads index.html and clicking add button increments count", () => {
   expect(badge).toHaveTextContent("1");
 });
 
+test.failing("does not increment when viewer source is missing", () => {
+  const fs = require("fs");
+  const path = require("path");
+  const html = fs.readFileSync(
+    path.resolve(__dirname, "../../index.html"),
+    "utf8",
+  );
+  document.documentElement.innerHTML = html;
+  setupBasketUI();
+  document.getElementById("glb-viewer").src = "";
+  document.getElementById("add-basket-button").click();
+  const badge = document.getElementById("basket-count");
+  expect(badge).toHaveTextContent("");
+  expect(getBasket()).toHaveLength(0);
+});
+
 test("increments count for multiple added items", () => {
   const badge = document.getElementById("basket-count");
   for (let i = 1; i <= 3; i++) {
