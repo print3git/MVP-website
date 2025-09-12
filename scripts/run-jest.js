@@ -2,14 +2,11 @@
 const fs = require("fs");
 const path = require("path");
 const { spawnSync, spawn } = require("child_process");
-let waitOn;
+let waitOn = null;
 try {
   waitOn = require("wait-on");
 } catch {
-  console.error(
-    "wait-on is not installed. Run `npm run setup` to install dependencies.",
-  );
-  process.exit(1);
+  // wait-on is optional; only required for e2e tests
 }
 
 const repoRoot = path.resolve(__dirname, "..");
@@ -87,16 +84,19 @@ function verifyFiles(args) {
 }
 
 async function run(args) {
-  let runCLI;
-  try {
-    ({ runCLI } = require("@jest/core"));
-  } catch {
-    console.error(
-      "Jest is not installed. Run `npm run setup` to install dependencies.",
-    );
+  const corePath = resolveFromPaths("@jest/core");
+  if (!corePath) {
+    console.error("Missing jest core; run `npm run setup` before testing.");
     process.exit(1);
   }
+  const { runCLI } = require(corePath);
 
+  if (
+    !process.env.SKIP_ROOT_DEPS_CHECK &&
+    corePath.includes(`${path.sep}backend${path.sep}`)
+  ) {
+    process.env.SKIP_ROOT_DEPS_CHECK = "1";
+  }
   if (!process.env.SKIP_ROOT_DEPS_CHECK) {
     require("./ensure-root-deps.js");
   }
@@ -115,12 +115,6 @@ async function run(args) {
   }
   args = jestArgs;
   console.log("run-jest cwd:", process.cwd());
-  const corePath = resolveFromPaths("@jest/core");
-  if (!corePath) {
-    console.error("Missing jest core; run `npm run setup` before testing.");
-    process.exit(1);
-  }
-  ({ runCLI } = require(corePath));
   const defaultConfig = path.resolve(repoRoot, "jest.config.cjs");
   const backendConfig = path.resolve(backendRoot, "jest.config.js");
   const defaultOfflineConfig = path.resolve(
@@ -201,6 +195,12 @@ async function run(args) {
     exitCode = results.success ? 0 : 1;
   }
   if (!exitCode && pwTests.length) {
+    if (!waitOn) {
+      console.error(
+        "wait-on is required for e2e tests. Run `npm run setup` to install dependencies.",
+      );
+      process.exit(1);
+    }
     const relPwTests = pwTests.map((p) => path.relative(repoRoot, p));
     const env = { ...process.env };
     delete env.JEST_WORKER_ID;
