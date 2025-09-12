@@ -184,6 +184,15 @@ try {
   logger.error("Failed to load status router", err as Error);
 }
 
+try {
+  (() => {
+    const r = require("./routes/payment-init");
+    app.use("/api", r.default || r);
+  })();
+} catch (err) {
+  logger.error("Failed to load payment-init router", err as Error);
+}
+
 app.use(errorHandler);
 
 export default app;
