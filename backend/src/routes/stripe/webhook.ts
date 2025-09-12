@@ -55,6 +55,13 @@ router.post(
     }
 
     logger.info("stripe_webhook_received", { type: event.type });
+    if (processedEvents.has(event.id)) {
+      logger.info("stripe_webhook_duplicate_event", { eventId: event.id });
+      res.status(200).json({ received: true });
+      return;
+    }
+
+    processedEvents.add(event.id);
 
     if (processedEvents.has(event.id)) {
       logger.info("stripe_webhook_duplicate_event", { eventId: event.id });
@@ -81,6 +88,7 @@ router.post(
           });
         }
       } catch (err) {
+        processedEvents.delete(event.id);
         logger.error("stripe_webhook_processing_failed", {
           sessionId: session.id,
         });
