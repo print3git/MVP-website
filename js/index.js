@@ -1056,7 +1056,24 @@ async function init() {
           if (!refs.viewer) return resolve();
           const onLoad = () => resolve();
           if (!refs.viewer.src) {
-            onLoad();
+            const timer = setTimeout(() => {
+              if (!refs.viewer.src) {
+                refs.viewer.src =
+                  refs.previewImg?.dataset?.glb ||
+                  refs.previewImg?.src ||
+                  localStorage.getItem("print2Model") ||
+                  FALLBACK_GLB;
+              }
+              onLoad();
+            }, 0);
+            refs.viewer.addEventListener(
+              "load",
+              () => {
+                clearTimeout(timer);
+                onLoad();
+              },
+              { once: true },
+            );
           } else if (refs.viewer.loaded || refs.viewer.modelIsVisible) {
             onLoad();
           } else {
