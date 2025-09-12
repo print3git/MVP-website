@@ -14,8 +14,6 @@ const originalAddEventListener = window.addEventListener;
 const originalRemoveEventListener = window.removeEventListener;
 const originalAudio = global.Audio;
 const originalFetch = global.fetch;
-const originalCrypto = global.crypto;
-const originalWhenDefined = window.customElements?.whenDefined;
 let addedListeners = [];
 
 beforeAll(async () => {
@@ -31,9 +29,7 @@ beforeAll(async () => {
 
 beforeEach(() => {
   localStorage.clear();
-  document.head.innerHTML = "";
   document.body.innerHTML = "";
-  delete window.__basketSound;
   addedListeners = [];
   window.addEventListener = (type, listener, options) => {
     addedListeners.push({ type, listener, options });
@@ -70,22 +66,7 @@ afterEach(() => {
   } else {
     delete global.fetch;
   }
-  if (originalCrypto) {
-    global.crypto = originalCrypto;
-  } else {
-    delete global.crypto;
-  }
-  if (window.customElements) {
-    window.customElements.whenDefined = originalWhenDefined;
-  }
-  delete window.__basketSound;
-  delete window.initIndexPage;
-  localStorage.clear();
-  document.head.innerHTML = "";
-  document.body.innerHTML = "";
-  jest.clearAllMocks();
   jest.clearAllTimers();
-  jest.useRealTimers();
 });
 
 test("getBasket returns empty array when no data", () => {
