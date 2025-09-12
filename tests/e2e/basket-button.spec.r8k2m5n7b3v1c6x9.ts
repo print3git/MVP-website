@@ -1,8 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-test("basket button remains visible with invalid localStorage", async ({
-  page,
-}) => {
+test("basket button visible with corrupted storage", async ({ page }) => {
   await page.addInitScript(() => {
     localStorage.setItem("print2Basket", "{oops");
   });
