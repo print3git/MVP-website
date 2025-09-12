@@ -22,7 +22,7 @@ router.get("/payment-init", authRequired, async (req, res) => {
       slots: 0,
       publishableKey: config.stripePublishable,
     });
-  } catch (err) {
+  } catch (_err) {
     res.status(500).json({ error: "unexpected_error" });
   }
 });
