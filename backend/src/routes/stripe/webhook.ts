@@ -9,6 +9,7 @@ import { isTest } from "../../env";
 import { getEnv as getEnvVar } from "../../../utils/getEnv";
 
 const router = Router();
+const processedEvents = new Set<string>();
 let stripeKey: string;
 let stripeWebhookSecret: string;
 try {
@@ -55,6 +56,12 @@ router.post(
 
     logger.info("stripe_webhook_received", { type: event.type });
 
+    if (processedEvents.has(event.id)) {
+      logger.info("stripe_webhook_duplicate_event", { eventId: event.id });
+      res.status(200).json({ received: true });
+      return;
+    }
+
     if (event.type === "checkout.session.completed") {
       const session = event.data.object as Stripe.Checkout.Session;
       try {
@@ -83,6 +90,7 @@ router.post(
       }
     }
 
+    processedEvents.add(event.id);
     logger.info("stripe_webhook_processed", { type: event.type });
     res.status(200).json({ received: true });
   },
