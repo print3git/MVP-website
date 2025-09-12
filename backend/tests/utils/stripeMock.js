@@ -1,3 +1,5 @@
+const Stripe = require("stripe");
+
 const stripe = {
   checkout: {
     sessions: {
@@ -10,7 +12,10 @@ const stripe = {
     },
   },
   webhooks: {
-    constructEvent: () => ({}),
+    constructEvent: (payload, signature) => {
+      const secret = process.env.STRIPE_WEBHOOK_SECRET;
+      return Stripe.webhooks.constructEvent(payload, signature, secret);
+    },
   },
 };
 
