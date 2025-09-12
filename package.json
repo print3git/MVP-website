@@ -2,19 +2,6 @@
   "name": "mvp-website",
   "version": "1.0.0",
   "private": true,
-  "nyc": {
-    "reporter": [
-      "lcov",
-      "text",
-      "json-summary"
-    ],
-    "report-dir": "coverage",
-    "check-coverage": true,
-    "branches": 70,
-    "functions": 75,
-    "lines": 80,
-    "statements": 80
-  },
   "coverageThreshold": {
     "branches": 70,
     "functions": 75,
@@ -56,6 +43,7 @@
     "prepare": "husky",
     "prepush": "echo \"(pre-push) no checks\"",
     "test:fresh": "npm test",
+    "test:all": "bash scripts/test-all.sh",
     "test:banner": "node scripts/run-jest.js tests/frontend/discount-delivery-banner*.test.js",
     "serve": "node scripts/serve.js"
   },
