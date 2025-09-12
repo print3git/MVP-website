@@ -84,7 +84,9 @@ if [ "$SKIP_MISE_TOOLS" -eq 0 ]; then
   eval "$(mise activate bash)"
 fi
 
-unset npm_config_http_proxy npm_config_https_proxy
+unset npm_config_http_proxy npm_config_https_proxy npm_config_registry
+export npm_config_registry="https://registry.npmjs.org/"
+npm config set registry "$npm_config_registry" >/dev/null 2>&1 || true
 export npm_config_fund=false
 
 # Validate required environment variables and network access
@@ -96,7 +98,10 @@ fi
 
 # Persist proxy removal so new shells start clean
 if ! grep -q "unset npm_config_http_proxy" ~/.bashrc 2>/dev/null; then
-  echo "unset npm_config_http_proxy npm_config_https_proxy" >> ~/.bashrc
+  echo "unset npm_config_http_proxy npm_config_https_proxy npm_config_registry" >> ~/.bashrc
+fi
+if ! grep -q "npm config set registry https://registry.npmjs.org/" ~/.bashrc 2>/dev/null; then
+  echo "npm config set registry https://registry.npmjs.org/ >/dev/null 2>&1 || true" >> ~/.bashrc
 fi
 
 # Silence mise warnings about idiomatic version files
