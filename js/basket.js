@@ -476,7 +476,11 @@ export function setupBasketUI() {
   updateBadge();
   syncServerCart();
 }
-window.addEventListener("DOMContentLoaded", setupBasketUI);
+if (document.readyState === 'loading') {
+  window.addEventListener('DOMContentLoaded', setupBasketUI);
+} else {
+  setupBasketUI();
+}
 window.addToBasket = addToBasket;
 window.addAutoItem = addAutoItem;
 window.manualizeItem = manualizeItem;
