@@ -49,6 +49,8 @@ const FALLBACK_GLB_LOW =
 const FALLBACK_GLB_HIGH = FALLBACK_GLB_LOW;
 const FALLBACK_GLB = FALLBACK_GLB_LOW;
 const LOW_POLY_GLB = FALLBACK_GLB_LOW;
+let setIntervalFn = setInterval;
+let clearIntervalFn = clearInterval;
 
 function addBasketItem(item) {
   if (!window.addToBasket) return;
@@ -854,7 +856,7 @@ function initDiscountDeliveryBanner(bannerEl) {
   }
 
   refresh();
-  setInterval(refresh, 1000);
+  setIntervalFn(refresh, 1000);
   scheduleCycle();
 }
 
@@ -892,7 +894,7 @@ async function init() {
     }
     await updateStats();
     updatePrintRunInfo();
-    setInterval(updatePrintRunInfo, 60000);
+    setIntervalFn(updatePrintRunInfo, 60000);
   } else {
     updateWizardSlotCount();
     fetchProfile().then(() => {
@@ -903,7 +905,7 @@ async function init() {
     });
     await updateStats();
     updatePrintRunInfo();
-    setInterval(updatePrintRunInfo, 60000);
+    setIntervalFn(updatePrintRunInfo, 60000);
   }
   const sr = new URLSearchParams(window.location.search).get("sr");
   if (!sr) {
@@ -1093,7 +1095,7 @@ async function init() {
     });
   }
 
-  setInterval(updateStats, 3600000);
+  setIntervalFn(updateStats, 3600000);
 
   // Keep the wizard UI in sync with the payment page
   updateWizardSlotCount();
@@ -1111,7 +1113,7 @@ async function init() {
     cutoffEl.textContent = `Order in ${hrs}h ${String(mins).padStart(2, "0")}m for same-day processing`;
   }
   updateCutoff();
-  setInterval(updateCutoff, 60000);
+  setIntervalFn(updateCutoff, 60000);
 
   const popupEl = document.getElementById("purchase-popups");
   let popupMsgs = [
@@ -1185,7 +1187,7 @@ async function init() {
     }, 8000);
     popupIdx++;
   }
-  setInterval(showPopup, 15000);
+  setIntervalFn(showPopup, 15000);
 
   const banner = document.getElementById("theme-banner");
   if (banner) {
@@ -1206,19 +1208,28 @@ export function initBasketUI({
   doc = document,
   storage = window.localStorage,
   fetchFn = globalThis.fetch,
+  timers,
 } = {}) {
   const origDoc = globalThis.document;
   const origStorage = globalThis.localStorage;
   const origFetch = globalThis.fetch;
+  const origSetInterval = setIntervalFn;
+  const origClearInterval = clearIntervalFn;
   globalThis.document = doc;
   globalThis.localStorage = storage;
   globalThis.fetch = fetchFn;
+  if (timers) {
+    if (timers.setIntervalFn) setIntervalFn = timers.setIntervalFn;
+    if (timers.clearIntervalFn) clearIntervalFn = timers.clearIntervalFn;
+  }
   try {
     return init();
   } finally {
     globalThis.document = origDoc;
     globalThis.localStorage = origStorage;
     globalThis.fetch = origFetch;
+    setIntervalFn = origSetInterval;
+    clearIntervalFn = origClearInterval;
   }
 }
 
@@ -1247,6 +1258,8 @@ if (typeof module !== "undefined") {
     initIndexPage: initBasketUI,
     // test seam: allow unit tests to call snapshot helper
     captureModelSnapshot,
+    updateWizardSlotCount,
+    updateWizardFromInputs,
   };
 }
 
@@ -1258,4 +1271,6 @@ export {
   // test seam: allow unit tests to call snapshot helper
   captureModelSnapshot,
   initBasketUI as initIndexPage,
+  updateWizardSlotCount,
+  updateWizardFromInputs,
 };
