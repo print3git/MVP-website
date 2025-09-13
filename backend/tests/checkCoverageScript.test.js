@@ -8,7 +8,10 @@ const script = path.join(__dirname, "..", "..", "scripts", "check-coverage.js");
 describe("check-coverage script", () => {
   test("fails when coverage summary is missing", () => {
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "cov-"));
-    fs.writeFileSync(path.join(tmp, ".nycrc"), "{}");
+    fs.writeFileSync(
+      path.join(tmp, "package.json"),
+      JSON.stringify({ coverageThreshold: {} }, null, 2),
+    );
     const result = spawnSync(process.execPath, [script], {
       cwd: tmp,
       encoding: "utf8",

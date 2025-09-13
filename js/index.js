@@ -1052,7 +1052,6 @@ async function init() {
   });
 
   if (refs.addBasketBtn) {
-    refs.addBasketBtn.disabled = true;
     const viewerReadyPromise = customElements.whenDefined("model-viewer").then(
       () =>
         new Promise((resolve) => {
@@ -1085,11 +1084,12 @@ async function init() {
         }),
     );
 
-    await viewerReadyPromise;
-    refs.addBasketBtn.disabled = false;
-
     refs.addBasketBtn.addEventListener("click", async () => {
-      await viewerReadyPromise;
+      try {
+        await viewerReadyPromise;
+      } catch {
+        return;
+      }
       let modelUrl = refs.viewer.src;
       if (!modelUrl) {
         modelUrl =

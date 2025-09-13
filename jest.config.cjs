@@ -39,6 +39,10 @@ try {
       "**/*.test.*.jsx",
     ],
     passWithNoTests: false,
+
+    // 🔑 Coverage settings for Step 2
+    collectCoverage: true,
+    coverageReporters: ["lcov", "text", "json-summary"],
   };
 } catch {
   config = require("./jest.config.offline.cjs");
