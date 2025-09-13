@@ -48,12 +48,6 @@
     "needs": []
   },
   {
-    "name": "root:test:update-threshold",
-    "command": "npm run test:update-threshold",
-    "paths": ["."],
-    "needs": []
-  },
-  {
     "name": "root:test:cf-readiness",
     "command": "npm run test:cf-readiness",
     "paths": ["."],

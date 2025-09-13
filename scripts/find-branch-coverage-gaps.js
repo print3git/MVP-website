@@ -1,15 +1,31 @@
 #!/usr/bin/env node
 const fs = require("fs");
+const path = require("path");
 
 // Parse CLI args
 const args = process.argv.slice(2);
 let reportPath = "./coverage/coverage-final.json";
-let min = 90;
+let min;
 for (const arg of args) {
   if (arg.startsWith("--report=")) {
     reportPath = arg.split("=")[1];
   } else if (arg.startsWith("--min=")) {
     min = Number(arg.split("=")[1]);
+  }
+}
+
+if (min === undefined) {
+  const configPath = path.join(__dirname, "..", ".nycrc");
+  if (!fs.existsSync(configPath)) {
+    console.error(`Coverage config not found: ${configPath}`);
+    process.exit(1);
+  }
+  try {
+    const cfg = JSON.parse(fs.readFileSync(configPath, "utf8"));
+    min = cfg.branches;
+  } catch (err) {
+    console.error(`Failed to parse ${configPath}: ${err.message}`);
+    process.exit(1);
   }
 }
 

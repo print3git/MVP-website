@@ -38,11 +38,29 @@ const linesPct = pct(linesHit, linesFound);
 const funcsPct = pct(funcsHit, funcsFound);
 const branchesPct = pct(branchesHit, branchesFound);
 
+const nycrcPath = path.join(__dirname, "..", ".nycrc");
+if (!fs.existsSync(nycrcPath)) {
+  console.error(`Coverage config not found: ${nycrcPath}`);
+  process.exit(1);
+}
+
+let cfg;
+try {
+  cfg = JSON.parse(fs.readFileSync(nycrcPath, "utf8"));
+} catch (err) {
+  console.error(`Failed to parse ${nycrcPath}: ${err.message}`);
+  process.exit(1);
+}
+
 console.log(`Lines: ${linesPct.toFixed(2)}%`);
 console.log(`Functions: ${funcsPct.toFixed(2)}%`);
 console.log(`Branches: ${branchesPct.toFixed(2)}%`);
 
-if (linesPct >= 80 && funcsPct >= 80 && branchesPct >= 80) {
+if (
+  linesPct >= cfg.lines &&
+  funcsPct >= cfg.functions &&
+  branchesPct >= cfg.branches
+) {
   console.log("✅");
 } else {
   console.log("❌");
