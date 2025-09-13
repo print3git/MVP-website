@@ -2,8 +2,9 @@
 const fs = require("fs");
 const path = require("path");
 
+let min = 0;
+
 // Parse --min argument
-let min = 80;
 for (const arg of process.argv.slice(2)) {
   if (arg.startsWith("--min=")) {
     const val = Number(arg.slice(6));
