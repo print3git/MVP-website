@@ -488,13 +488,74 @@ export function setupBasketUI() {
   updateBadge();
   syncServerCart();
 }
-if (document.readyState === 'loading') {
-  window.addEventListener('DOMContentLoaded', setupBasketUI);
-} else {
-  setupBasketUI();
+export function createBasket(
+  storage = typeof window !== "undefined" ? window.localStorage : undefined,
+) {
+  try {
+    const map = {
+      print3Basket: "print2Basket",
+      print3Model: "print2Model",
+      print3JobId: "print2JobId",
+      print3Material: "print2Material",
+      print3Color: "print2Color",
+      print3EtchName: "print2EtchName",
+      print3Email: "print2Email",
+      print3ShipName: "print2ShipName",
+      print3ShipAddress: "print2ShipAddress",
+      print3ShipCity: "print2ShipCity",
+      print3ShipZip: "print2ShipZip",
+      print3DiscountCode: "print2DiscountCode",
+      print3CheckoutItems: "print2CheckoutItems",
+      print3Prompt: "print2Prompt",
+      print3Images: "print2Images",
+      print3Saved: "print2Saved",
+      print3CommunityOpen: "print2CommunityOpen",
+      print3CommunityState: "print2CommunityState",
+    };
+    for (const [oldKey, newKey] of Object.entries(map)) {
+      const val = storage?.getItem?.(oldKey);
+      if (val !== null && storage?.getItem?.(newKey) === null) {
+        storage.setItem(newKey, val);
+        storage.removeItem(oldKey);
+      }
+    }
+  } catch {}
+  const bind =
+    (fn) =>
+    (...args) => {
+      const original = globalThis.localStorage;
+      globalThis.localStorage = storage;
+      const result = fn(...args);
+      if (result && typeof result.then === "function") {
+        return result.finally(() => {
+          globalThis.localStorage = original;
+        });
+      }
+      globalThis.localStorage = original;
+      return result;
+    };
+  return {
+    getBasket: bind(getBasket),
+    addToBasket: bind(addToBasket),
+    addAutoItem: bind(addAutoItem),
+    manualizeItem: bind(manualizeItem),
+    removeFromBasket: bind(removeFromBasket),
+    clearBasket: bind(clearBasket),
+    setupBasketUI: bind(setupBasketUI),
+    syncServerCart: bind(syncServerCart),
+  };
 }
-window.addToBasket = addToBasket;
-window.addAutoItem = addAutoItem;
-window.manualizeItem = manualizeItem;
-window.getBasket = getBasket;
-window.syncServerCart = syncServerCart;
+if (typeof document !== "undefined") {
+  if (document.readyState === "loading") {
+    window.addEventListener("DOMContentLoaded", setupBasketUI);
+  } else {
+    setupBasketUI();
+  }
+}
+if (typeof window !== "undefined") {
+  window.addToBasket = addToBasket;
+  window.addAutoItem = addAutoItem;
+  window.manualizeItem = manualizeItem;
+  window.getBasket = getBasket;
+  window.syncServerCart = syncServerCart;
+}
