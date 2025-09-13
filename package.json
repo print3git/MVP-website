@@ -10,7 +10,7 @@
   "scripts": {
     "test": "node scripts/run-jest.js --passWithNoTests",
     "check:cov": "npx nyc check-coverage",
-    "test:all": "npm run test -- --coverage && npm run check:cov",
+    "test:all": "npx nyc npm test && npm run check:cov",
     "test:image-pipeline": "node scripts/test-image-pipeline.js",
     "preinstall": "corepack enable && node scripts/check-node-version.js",
     "preformat": "true",
