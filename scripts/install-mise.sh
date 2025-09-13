@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+unset npm_config_http_proxy npm_config_https_proxy npm_config_registry http_proxy https_proxy HTTP_PROXY HTTPS_PROXY
+
 if ! command -v mise >/dev/null 2>&1; then
   curl -fsSL https://mise.jdx.dev/install.sh -o /tmp/install-mise.sh
   bash /tmp/install-mise.sh
