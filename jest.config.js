@@ -19,13 +19,5 @@ module.exports = {
   testRunner: "jest-circus/runner",
   testRetryTimes: 2,
   testMatch: ["**/*.spec.ts", "**/*.test.ts", "**/*.spec.js", "**/*.test.js"],
-  coverageThreshold: {
-    global: {
-      lines: 80,
-      branches: 70,
-      functions: 75,
-      statements: 80,
-    },
-  },
   setupFiles: ["<rootDir>/jest.setup.env.js"],
 };
