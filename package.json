@@ -10,7 +10,6 @@
  "scripts": {
   "test": "node scripts/run-jest.js --passWithNoTests",
 
-  // coverage enforcement
   "check:cov": "nyc check-coverage --branches=100 --functions=100 --lines=100 --statements=100",
   "test:all": "npm run test && npm run check:cov",
 
