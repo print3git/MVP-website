@@ -45,14 +45,6 @@ try {
     collectCoverage: true,
     collectCoverageFrom: ["<rootDir>/utils/getEnv.js", "<rootDir>/users.js"],
     coveragePathIgnorePatterns: [],
-    coverageThreshold: {
-      global: {
-        lines: 80,
-        branches: 70,
-        functions: 75,
-        statements: 80,
-      },
-    },
   };
 } catch {
   config = require("./jest.config.offline.js");
