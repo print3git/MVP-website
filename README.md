@@ -464,14 +464,12 @@ Run coverage after installing dependencies:
 
 ```bash
 npm run setup
-npm run coverage
-
+npm run test:all
 cat coverage/lcov.info | npx coveralls
 ```
 
-The `check-coverage` script writes a baseline to `tests/coverageBaseline.json`
-the first time coverage falls below the required thresholds. Commit this file
-after the initial run so future merges will fail when coverage regresses.
+`npm run test:all` runs Jest with coverage and then `nyc check-coverage`.
+NYC's configuration in `.nycrc` is the single source of coverage thresholds.
 
 Using `npx coveralls` ensures the CLI runs even if it's not installed globally.
 By piping the generated `lcov.info` file instead of test output we avoid
