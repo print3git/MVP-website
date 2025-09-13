@@ -202,8 +202,9 @@ function ensureModelViewerLoaded() {
 }
 
 if (
-  localStorage.getItem("hasGenerated") === "true" ||
-  localStorage.getItem("demoDismissed") === "true"
+  typeof document !== "undefined" &&
+  (localStorage.getItem("hasGenerated") === "true" ||
+    localStorage.getItem("demoDismissed") === "true")
 ) {
   document.documentElement.classList.add("has-generated");
 }
@@ -1201,16 +1202,36 @@ async function init() {
   // modal-related click handlers so no popup flashes before navigation.
 }
 
-window.initIndexPage = init;
+export function initBasketUI({
+  doc = document,
+  storage = window.localStorage,
+  fetchFn = globalThis.fetch,
+} = {}) {
+  const origDoc = globalThis.document;
+  const origStorage = globalThis.localStorage;
+  const origFetch = globalThis.fetch;
+  globalThis.document = doc;
+  globalThis.localStorage = storage;
+  globalThis.fetch = fetchFn;
+  try {
+    return init();
+  } finally {
+    globalThis.document = origDoc;
+    globalThis.localStorage = origStorage;
+    globalThis.fetch = origFetch;
+  }
+}
+
+window.initIndexPage = initBasketUI;
 
 let _initialized = false;
 function start() {
   if (!_initialized) {
     _initialized = true;
-    init();
+    initBasketUI();
   }
 }
-if (typeof process === "undefined" || process.env.NODE_ENV !== "test") {
+if (typeof document !== "undefined") {
   if (document.readyState !== "loading") {
     start();
   }
@@ -1223,7 +1244,7 @@ if (typeof module !== "undefined") {
     computeDailyPrintsSold,
     updateStats,
     initDiscountDeliveryBanner,
-    initIndexPage: init,
+    initIndexPage: initBasketUI,
   };
 }
 
@@ -1232,5 +1253,5 @@ export {
   computeDailyPrintsSold,
   updateStats,
   initDiscountDeliveryBanner,
-  init as initIndexPage,
+  initBasketUI as initIndexPage,
 };
