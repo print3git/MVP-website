@@ -1245,6 +1245,8 @@ if (typeof module !== "undefined") {
     updateStats,
     initDiscountDeliveryBanner,
     initIndexPage: initBasketUI,
+    // test seam: allow unit tests to call snapshot helper
+    captureModelSnapshot,
   };
 }
 
@@ -1253,5 +1255,7 @@ export {
   computeDailyPrintsSold,
   updateStats,
   initDiscountDeliveryBanner,
+  // test seam: allow unit tests to call snapshot helper
+  captureModelSnapshot,
   initBasketUI as initIndexPage,
 };
