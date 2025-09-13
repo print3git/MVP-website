@@ -172,11 +172,14 @@ function ensureModelViewerLoaded() {
     (navigator.userAgent?.includes("Node.js") ||
       navigator.userAgent?.includes("jsdom"))
   ) {
-     if (!window.customElements.get("model-viewer")) {
-       window.customElements.define("model-viewer", class extends HTMLElement {});
-     }
-     return Promise.resolve();
-   }
+    if (!window.customElements.get("model-viewer")) {
+      window.customElements.define(
+        "model-viewer",
+        class extends HTMLElement {},
+      );
+    }
+    return Promise.resolve();
+  }
 
   const cdnUrl =
     "https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js";
@@ -1052,52 +1055,13 @@ async function init() {
   });
 
   if (refs.addBasketBtn) {
-    const viewerReadyPromise = customElements.whenDefined("model-viewer").then(
-      () =>
-        new Promise((resolve) => {
-          if (!refs.viewer) return resolve();
-          const onLoad = () => resolve();
-          if (!refs.viewer.src) {
-            const timer = setTimeout(() => {
-              if (!refs.viewer.src) {
-                refs.viewer.src =
-                  refs.previewImg?.dataset?.glb ||
-                  refs.previewImg?.src ||
-                  localStorage.getItem("print2Model") ||
-                  FALLBACK_GLB;
-              }
-              onLoad();
-            }, 0);
-            refs.viewer.addEventListener(
-              "load",
-              () => {
-                clearTimeout(timer);
-                onLoad();
-              },
-              { once: true },
-            );
-          } else if (refs.viewer.loaded || refs.viewer.modelIsVisible) {
-            onLoad();
-          } else {
-            refs.viewer.addEventListener("load", onLoad, { once: true });
-          }
-        }),
-    );
-
     refs.addBasketBtn.addEventListener("click", async () => {
-      try {
-        await viewerReadyPromise;
-      } catch {
-        return;
-      }
-      let modelUrl = refs.viewer.src;
-      if (!modelUrl) {
-        modelUrl =
-          refs.previewImg?.dataset?.glb ||
-          refs.previewImg?.src ||
-          localStorage.getItem("print2Model") ||
-          FALLBACK_GLB;
-      }
+      if (!window.addToBasket) return;
+      const modelUrl =
+        refs.viewer?.src ||
+        refs.previewImg?.dataset?.glb ||
+        localStorage.getItem("print2Model") ||
+        FALLBACK_GLB;
       let snapshot = refs.previewImg?.src;
       const host = (() => {
         try {
@@ -1114,23 +1078,13 @@ async function init() {
         snapshot = await captureModelSnapshot(modelUrl);
       }
       lastSnapshot = snapshot;
-      const item = { jobId: lastJobId, modelUrl, snapshot };
-      if (
-        window.manualizeItem &&
-        window
-          .getBasket?.()
-          .some((it) => it.auto && it.modelUrl === item.modelUrl)
-      ) {
-        window.manualizeItem((it) => it.modelUrl === item.modelUrl);
-      } else {
-        addBasketItem(item);
-      }
+      addBasketItem({ jobId: lastJobId || "", modelUrl, snapshot });
       const sessionId = localStorage.getItem("adSessionId");
       const subreddit = localStorage.getItem("adSubreddit");
-      if (sessionId && subreddit && item.jobId) {
+      if (sessionId && subreddit && lastJobId) {
         track("cart", {
           sessionId,
-          modelId: item.jobId,
+          modelId: lastJobId,
           subreddit,
         }).catch(() => {});
       }
