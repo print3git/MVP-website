@@ -10,7 +10,7 @@ try {
     ],
   };
   config = {
-    testEnvironment: "node",
+    testEnvironment: "jsdom",
     roots: ["<rootDir>"],
     transform: {
       "^.+\\.tsx?$": [
