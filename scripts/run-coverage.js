@@ -49,7 +49,6 @@ const jestArgs = [
   "--config",
   path.join(__dirname, "..", "backend", "jest.config.js"),
   ...(extraArgs.length ? ["--runTestsByPath", ...extraArgs] : []),
-  "--coverageThreshold={}",
 ];
 
 const jestBin = path.join(
