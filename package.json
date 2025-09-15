@@ -128,7 +128,7 @@
     "stripe": "^14.25.0",
     "supertest": "^7.1.4",
     "toml": "^3.0.0",
-    "ts-jest": "29.2.5",
+    "ts-jest": "29.4.1",
     "tsconfig-strictest": "^1.0.0-beta.1",
     "tslib": "^2.8.1",
     "tsx": "^4.20.4",
