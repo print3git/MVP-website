@@ -29,7 +29,7 @@ jobs:
         run: |
           cp -a *.html frontend/dist/
           if [ -d img ]; then cp -a img frontend/dist/; fi
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v4
         with:
           path: ./frontend/dist
   deploy:
