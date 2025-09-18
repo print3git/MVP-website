@@ -388,19 +388,27 @@ async function captureModelSnapshot(url) {
 }
 
 const hideAll = () => {
-  refs.previewImg.style.display = "none";
+  if (refs.previewImg) {
+    refs.previewImg.style.display = "none";
+  }
 
-  refs.viewer.style.opacity = "0";
-  refs.viewer.style.pointerEvents = "none";
-  if (typeof refs.viewer.pause === "function") {
-    refs.viewer.pause();
+  if (refs.viewer) {
+    refs.viewer.style.opacity = "0";
+    refs.viewer.style.pointerEvents = "none";
+    if (typeof refs.viewer.pause === "function") {
+      refs.viewer.pause();
+    }
   }
   if (globalThis.document) {
     delete document.body.dataset.viewerReady;
   }
 };
 const showLoader = () => {
-  refs.previewImg.style.display = "none";
+  if (refs.previewImg) {
+    refs.previewImg.style.display = "none";
+  }
+  if (!refs.viewer) return;
+
   refs.viewer.style.display = "block";
   refs.viewer.style.opacity = "1";
   refs.viewer.style.pointerEvents = "auto";
@@ -411,6 +419,8 @@ const showLoader = () => {
 
 const showModel = () => {
   hideAll();
+  if (!refs.viewer) return;
+
   refs.viewer.style.display = "block";
 
   refs.viewer.style.opacity = "1";
@@ -1215,9 +1225,24 @@ export function initBasketUI({
   const origFetch = globalThis.fetch;
   const origSetInterval = setIntervalFn;
   const origClearInterval = clearIntervalFn;
-  globalThis.document = doc;
-  globalThis.localStorage = storage;
-  globalThis.fetch = fetchFn;
+  const shouldOverrideDoc = doc && doc !== origDoc;
+  const shouldOverrideStorage = storage && storage !== origStorage;
+  const shouldOverrideFetch = fetchFn && fetchFn !== origFetch;
+  if (shouldOverrideDoc) {
+    try {
+      globalThis.document = doc;
+    } catch {}
+  }
+  if (shouldOverrideStorage) {
+    try {
+      globalThis.localStorage = storage;
+    } catch {}
+  }
+  if (shouldOverrideFetch) {
+    try {
+      globalThis.fetch = fetchFn;
+    } catch {}
+  }
   if (timers) {
     if (timers.setIntervalFn) setIntervalFn = timers.setIntervalFn;
     if (timers.clearIntervalFn) clearIntervalFn = timers.clearIntervalFn;
@@ -1225,9 +1250,21 @@ export function initBasketUI({
   try {
     return init();
   } finally {
-    globalThis.document = origDoc;
-    globalThis.localStorage = origStorage;
-    globalThis.fetch = origFetch;
+    if (shouldOverrideDoc) {
+      try {
+        globalThis.document = origDoc;
+      } catch {}
+    }
+    if (shouldOverrideStorage) {
+      try {
+        globalThis.localStorage = origStorage;
+      } catch {}
+    }
+    if (shouldOverrideFetch) {
+      try {
+        globalThis.fetch = origFetch;
+      } catch {}
+    }
     setIntervalFn = origSetInterval;
     clearIntervalFn = origClearInterval;
   }
