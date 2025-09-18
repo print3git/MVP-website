@@ -52,7 +52,7 @@ window.setWizardStage = setWizardStage;
 export function setWizardSlotCount(n) {
   const el = document.getElementById("wizard-slots");
   if (el) {
-    el.textContent = `Only ${n} print slots left`;
+    el.textContent = `Only ${n} print slots left:`;
     const stage = localStorage.getItem(STAGE_KEY);
     if (stage === "building" || stage === "purchase" || stage === "print") {
       el.classList.remove("hidden");
