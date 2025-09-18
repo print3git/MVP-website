@@ -49,6 +49,8 @@ const FALLBACK_GLB_LOW =
 const FALLBACK_GLB_HIGH = FALLBACK_GLB_LOW;
 const FALLBACK_GLB = FALLBACK_GLB_LOW;
 const LOW_POLY_GLB = FALLBACK_GLB_LOW;
+let setIntervalFn = setInterval;
+let clearIntervalFn = clearInterval;
 
 function addBasketItem(item) {
   if (!window.addToBasket) return;
@@ -172,11 +174,14 @@ function ensureModelViewerLoaded() {
     (navigator.userAgent?.includes("Node.js") ||
       navigator.userAgent?.includes("jsdom"))
   ) {
-     if (!window.customElements.get("model-viewer")) {
-       window.customElements.define("model-viewer", class extends HTMLElement {});
-     }
-     return Promise.resolve();
-   }
+    if (!window.customElements.get("model-viewer")) {
+      window.customElements.define(
+        "model-viewer",
+        class extends HTMLElement {},
+      );
+    }
+    return Promise.resolve();
+  }
 
   const cdnUrl =
     "https://cdn.jsdelivr.net/npm/@google/model-viewer@1.12.0/dist/model-viewer.min.js";
@@ -199,8 +204,9 @@ function ensureModelViewerLoaded() {
 }
 
 if (
-  localStorage.getItem("hasGenerated") === "true" ||
-  localStorage.getItem("demoDismissed") === "true"
+  typeof document !== "undefined" &&
+  (localStorage.getItem("hasGenerated") === "true" ||
+    localStorage.getItem("demoDismissed") === "true")
 ) {
   document.documentElement.classList.add("has-generated");
 }
@@ -382,19 +388,27 @@ async function captureModelSnapshot(url) {
 }
 
 const hideAll = () => {
-  refs.previewImg.style.display = "none";
+  if (refs.previewImg) {
+    refs.previewImg.style.display = "none";
+  }
 
-  refs.viewer.style.opacity = "0";
-  refs.viewer.style.pointerEvents = "none";
-  if (typeof refs.viewer.pause === "function") {
-    refs.viewer.pause();
+  if (refs.viewer) {
+    refs.viewer.style.opacity = "0";
+    refs.viewer.style.pointerEvents = "none";
+    if (typeof refs.viewer.pause === "function") {
+      refs.viewer.pause();
+    }
   }
   if (globalThis.document) {
     delete document.body.dataset.viewerReady;
   }
 };
 const showLoader = () => {
-  refs.previewImg.style.display = "none";
+  if (refs.previewImg) {
+    refs.previewImg.style.display = "none";
+  }
+  if (!refs.viewer) return;
+
   refs.viewer.style.display = "block";
   refs.viewer.style.opacity = "1";
   refs.viewer.style.pointerEvents = "auto";
@@ -405,6 +419,8 @@ const showLoader = () => {
 
 const showModel = () => {
   hideAll();
+  if (!refs.viewer) return;
+
   refs.viewer.style.display = "block";
 
   refs.viewer.style.opacity = "1";
@@ -850,7 +866,7 @@ function initDiscountDeliveryBanner(bannerEl) {
   }
 
   refresh();
-  setInterval(refresh, 1000);
+  setIntervalFn(refresh, 1000);
   scheduleCycle();
 }
 
@@ -888,7 +904,7 @@ async function init() {
     }
     await updateStats();
     updatePrintRunInfo();
-    setInterval(updatePrintRunInfo, 60000);
+    setIntervalFn(updatePrintRunInfo, 60000);
   } else {
     updateWizardSlotCount();
     fetchProfile().then(() => {
@@ -899,7 +915,7 @@ async function init() {
     });
     await updateStats();
     updatePrintRunInfo();
-    setInterval(updatePrintRunInfo, 60000);
+    setIntervalFn(updatePrintRunInfo, 60000);
   }
   const sr = new URLSearchParams(window.location.search).get("sr");
   if (!sr) {
@@ -1052,52 +1068,13 @@ async function init() {
   });
 
   if (refs.addBasketBtn) {
-    const viewerReadyPromise = customElements.whenDefined("model-viewer").then(
-      () =>
-        new Promise((resolve) => {
-          if (!refs.viewer) return resolve();
-          const onLoad = () => resolve();
-          if (!refs.viewer.src) {
-            const timer = setTimeout(() => {
-              if (!refs.viewer.src) {
-                refs.viewer.src =
-                  refs.previewImg?.dataset?.glb ||
-                  refs.previewImg?.src ||
-                  localStorage.getItem("print2Model") ||
-                  FALLBACK_GLB;
-              }
-              onLoad();
-            }, 0);
-            refs.viewer.addEventListener(
-              "load",
-              () => {
-                clearTimeout(timer);
-                onLoad();
-              },
-              { once: true },
-            );
-          } else if (refs.viewer.loaded || refs.viewer.modelIsVisible) {
-            onLoad();
-          } else {
-            refs.viewer.addEventListener("load", onLoad, { once: true });
-          }
-        }),
-    );
-
     refs.addBasketBtn.addEventListener("click", async () => {
-      try {
-        await viewerReadyPromise;
-      } catch {
-        return;
-      }
-      let modelUrl = refs.viewer.src;
-      if (!modelUrl) {
-        modelUrl =
-          refs.previewImg?.dataset?.glb ||
-          refs.previewImg?.src ||
-          localStorage.getItem("print2Model") ||
-          FALLBACK_GLB;
-      }
+      if (!window.addToBasket) return;
+      const modelUrl =
+        refs.viewer?.src ||
+        refs.previewImg?.dataset?.glb ||
+        localStorage.getItem("print2Model") ||
+        FALLBACK_GLB;
       let snapshot = refs.previewImg?.src;
       const host = (() => {
         try {
@@ -1114,23 +1091,13 @@ async function init() {
         snapshot = await captureModelSnapshot(modelUrl);
       }
       lastSnapshot = snapshot;
-      const item = { jobId: lastJobId, modelUrl, snapshot };
-      if (
-        window.manualizeItem &&
-        window
-          .getBasket?.()
-          .some((it) => it.auto && it.modelUrl === item.modelUrl)
-      ) {
-        window.manualizeItem((it) => it.modelUrl === item.modelUrl);
-      } else {
-        addBasketItem(item);
-      }
+      addBasketItem({ jobId: lastJobId || "", modelUrl, snapshot });
       const sessionId = localStorage.getItem("adSessionId");
       const subreddit = localStorage.getItem("adSubreddit");
-      if (sessionId && subreddit && item.jobId) {
+      if (sessionId && subreddit && lastJobId) {
         track("cart", {
           sessionId,
-          modelId: item.jobId,
+          modelId: lastJobId,
           subreddit,
         }).catch(() => {});
       }
@@ -1138,7 +1105,7 @@ async function init() {
     });
   }
 
-  setInterval(updateStats, 3600000);
+  setIntervalFn(updateStats, 3600000);
 
   // Keep the wizard UI in sync with the payment page
   updateWizardSlotCount();
@@ -1156,7 +1123,7 @@ async function init() {
     cutoffEl.textContent = `Order in ${hrs}h ${String(mins).padStart(2, "0")}m for same-day processing`;
   }
   updateCutoff();
-  setInterval(updateCutoff, 60000);
+  setIntervalFn(updateCutoff, 60000);
 
   const popupEl = document.getElementById("purchase-popups");
   let popupMsgs = [
@@ -1230,7 +1197,7 @@ async function init() {
     }, 8000);
     popupIdx++;
   }
-  setInterval(showPopup, 15000);
+  setIntervalFn(showPopup, 15000);
 
   const banner = document.getElementById("theme-banner");
   if (banner) {
@@ -1247,16 +1214,72 @@ async function init() {
   // modal-related click handlers so no popup flashes before navigation.
 }
 
-window.initIndexPage = init;
+export function initBasketUI({
+  doc = document,
+  storage = window.localStorage,
+  fetchFn = globalThis.fetch,
+  timers,
+} = {}) {
+  const origDoc = globalThis.document;
+  const origStorage = globalThis.localStorage;
+  const origFetch = globalThis.fetch;
+  const origSetInterval = setIntervalFn;
+  const origClearInterval = clearIntervalFn;
+  const shouldOverrideDoc = doc && doc !== origDoc;
+  const shouldOverrideStorage = storage && storage !== origStorage;
+  const shouldOverrideFetch = fetchFn && fetchFn !== origFetch;
+  if (shouldOverrideDoc) {
+    try {
+      globalThis.document = doc;
+    } catch {}
+  }
+  if (shouldOverrideStorage) {
+    try {
+      globalThis.localStorage = storage;
+    } catch {}
+  }
+  if (shouldOverrideFetch) {
+    try {
+      globalThis.fetch = fetchFn;
+    } catch {}
+  }
+  if (timers) {
+    if (timers.setIntervalFn) setIntervalFn = timers.setIntervalFn;
+    if (timers.clearIntervalFn) clearIntervalFn = timers.clearIntervalFn;
+  }
+  try {
+    return init();
+  } finally {
+    if (shouldOverrideDoc) {
+      try {
+        globalThis.document = origDoc;
+      } catch {}
+    }
+    if (shouldOverrideStorage) {
+      try {
+        globalThis.localStorage = origStorage;
+      } catch {}
+    }
+    if (shouldOverrideFetch) {
+      try {
+        globalThis.fetch = origFetch;
+      } catch {}
+    }
+    setIntervalFn = origSetInterval;
+    clearIntervalFn = origClearInterval;
+  }
+}
+
+window.initIndexPage = initBasketUI;
 
 let _initialized = false;
 function start() {
   if (!_initialized) {
     _initialized = true;
-    init();
+    initBasketUI();
   }
 }
-if (typeof process === "undefined" || process.env.NODE_ENV !== "test") {
+if (typeof document !== "undefined") {
   if (document.readyState !== "loading") {
     start();
   }
@@ -1269,7 +1292,11 @@ if (typeof module !== "undefined") {
     computeDailyPrintsSold,
     updateStats,
     initDiscountDeliveryBanner,
-    initIndexPage: init,
+    initIndexPage: initBasketUI,
+    // test seam: allow unit tests to call snapshot helper
+    captureModelSnapshot,
+    updateWizardSlotCount,
+    updateWizardFromInputs,
   };
 }
 
@@ -1278,5 +1305,9 @@ export {
   computeDailyPrintsSold,
   updateStats,
   initDiscountDeliveryBanner,
-  init as initIndexPage,
+  // test seam: allow unit tests to call snapshot helper
+  captureModelSnapshot,
+  initBasketUI as initIndexPage,
+  updateWizardSlotCount,
+  updateWizardFromInputs,
 };

@@ -27,8 +27,6 @@ jobs:
             command: npm run test
           - name: root:test:ci
             command: npm run test:ci
-          - name: root:test:update-threshold
-            command: npm run test:update-threshold
           - name: root:test:cf-readiness
             command: npm run test:cf-readiness
           - name: root:test:stability

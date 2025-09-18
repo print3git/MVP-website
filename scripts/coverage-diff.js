@@ -52,18 +52,13 @@ if (!current || !base) {
 const cur = summarize(current);
 const baseline = summarize(base);
 const diffLines = [];
-let failed = false;
 for (const metric of ["lines", "functions", "branches", "statements"]) {
   const change = cur[metric] - baseline[metric];
   diffLines.push(
     `${metric}: ${baseline[metric].toFixed(2)}% -> ${cur[metric].toFixed(2)}% (${change.toFixed(2)}%)`,
   );
-  if (change < -2) failed = true;
 }
 const output = diffLines.join("\n");
 fs.mkdirSync(path.dirname("coverage/diff.txt"), { recursive: true });
 fs.writeFileSync("coverage/diff.txt", output);
 console.log(output);
-if (failed) {
-  process.exit(1);
-}

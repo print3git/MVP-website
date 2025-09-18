@@ -35,6 +35,15 @@
 const KEY = "print2Basket";
 const API_BASE = (window.API_ORIGIN || "") + "/api";
 let basket;
+let fetchFn = typeof fetch !== "undefined" ? fetch : undefined;
+let setTimeoutFn = typeof setTimeout !== "undefined" ? setTimeout : undefined;
+let clearTimeoutFn =
+  typeof clearTimeout !== "undefined" ? clearTimeout : undefined;
+let setIntervalFn =
+  typeof setInterval !== "undefined" ? setInterval : undefined;
+let clearIntervalFn =
+  typeof clearInterval !== "undefined" ? clearInterval : undefined;
+let nowFn = () => Date.now();
 export function getBasket() {
   try {
     const raw = localStorage.getItem(KEY);
@@ -62,14 +71,14 @@ function notifyBasketChange() {
 }
 export async function addToBasket(item, opts = {}) {
   const items = getBasket();
-  const expire = Date.now() + RESERVE_MINS * 60 * 1000;
+  const expire = nowFn() + RESERVE_MINS * 60 * 1000;
   const entry = { ...item, auto: !!opts.auto, reserveUntil: expire };
   items.push(entry);
   saveBasket();
   const token = localStorage.getItem("token");
-  if (token && item.jobId && typeof fetch === "function") {
+  if (token && item.jobId && typeof fetchFn === "function") {
     try {
-      const res = await fetch(`${API_BASE}/cart/items`, {
+      const res = await fetchFn(`${API_BASE}/cart/items`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -92,7 +101,7 @@ export async function addToBasket(item, opts = {}) {
   const basketBtn = document.getElementById("basket-button");
   if (basketBtn) {
     basketBtn.classList.add("basket-bob");
-    setTimeout(() => basketBtn.classList.remove("basket-bob"), 800);
+    setTimeoutFn(() => basketBtn.classList.remove("basket-bob"), 800);
     if (window.__basketSound) {
       try {
         window.__basketSound.currentTime = 0;
@@ -135,9 +144,9 @@ export function removeFromBasket(index) {
   const [removed] = items.splice(index, 1);
   saveBasket();
   const token = localStorage.getItem("token");
-  if (token && removed?.serverId && typeof fetch === "function") {
+  if (token && removed?.serverId && typeof fetchFn === "function") {
     try {
-      const res = fetch(`${API_BASE}/cart/items/${removed.serverId}`, {
+      const res = fetchFn(`${API_BASE}/cart/items/${removed.serverId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -163,9 +172,9 @@ export function clearBasket() {
   saveBasket([]);
   localStorage.removeItem("print2CheckoutItems");
   const token = localStorage.getItem("token");
-  if (token && typeof fetch === "function") {
+  if (token && typeof fetchFn === "function") {
     try {
-      const res = fetch(`${API_BASE}/cart`, {
+      const res = fetchFn(`${API_BASE}/cart`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -193,7 +202,7 @@ async function syncServerCart() {
   const token = localStorage.getItem("token");
   if (!token) return;
   try {
-    const res = await fetch(`${API_BASE}/cart`, {
+    const res = await fetchFn(`${API_BASE}/cart`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();
@@ -213,21 +222,21 @@ async function syncServerCart() {
 }
 
 function startReservationTimer() {
-  clearInterval(reserveInterval);
+  clearIntervalFn(reserveInterval);
   const label = document.getElementById("basket-reserve");
   if (!label) return;
   function tick() {
     const items = getBasket();
     if (!items.length) {
       label.classList.add("hidden");
-      clearInterval(reserveInterval);
+      clearIntervalFn(reserveInterval);
       return;
     }
     const expire = Math.min(...items.map((i) => i.reserveUntil || 0));
-    const diff = expire - Date.now();
+    const diff = expire - nowFn();
     if (diff <= 0) {
       label.textContent = "Queue slot expired";
-      clearInterval(reserveInterval);
+      clearIntervalFn(reserveInterval);
       return;
     }
     const mins = Math.floor(diff / 60000);
@@ -237,7 +246,7 @@ function startReservationTimer() {
     label.classList.remove("hidden");
   }
   tick();
-  reserveInterval = setInterval(tick, 1000);
+  reserveInterval = setIntervalFn(tick, 1000);
 }
 let viewerModal;
 let viewerEl;
@@ -488,13 +497,115 @@ export function setupBasketUI() {
   updateBadge();
   syncServerCart();
 }
-if (document.readyState === 'loading') {
-  window.addEventListener('DOMContentLoaded', setupBasketUI);
-} else {
-  setupBasketUI();
+export function createBasket(
+  storage = typeof window !== "undefined" ? window.localStorage : undefined,
+  opts = {},
+) {
+  try {
+    const map = {
+      print3Basket: "print2Basket",
+      print3Model: "print2Model",
+      print3JobId: "print2JobId",
+      print3Material: "print2Material",
+      print3Color: "print2Color",
+      print3EtchName: "print2EtchName",
+      print3Email: "print2Email",
+      print3ShipName: "print2ShipName",
+      print3ShipAddress: "print2ShipAddress",
+      print3ShipCity: "print2ShipCity",
+      print3ShipZip: "print2ShipZip",
+      print3DiscountCode: "print2DiscountCode",
+      print3CheckoutItems: "print2CheckoutItems",
+      print3Prompt: "print2Prompt",
+      print3Images: "print2Images",
+      print3Saved: "print2Saved",
+      print3CommunityOpen: "print2CommunityOpen",
+      print3CommunityState: "print2CommunityState",
+    };
+    for (const [oldKey, newKey] of Object.entries(map)) {
+      const val = storage?.getItem?.(oldKey);
+      if (val !== null && storage?.getItem?.(newKey) === null) {
+        storage.setItem(newKey, val);
+        storage.removeItem(oldKey);
+      }
+    }
+  } catch {}
+  const {
+    fetchFn: fetchOverride = typeof fetch !== "undefined" ? fetch : undefined,
+    setTimeoutFn: setTimeoutOverride = typeof setTimeout !== "undefined"
+      ? setTimeout
+      : undefined,
+    clearTimeoutFn: clearTimeoutOverride = typeof clearTimeout !== "undefined"
+      ? clearTimeout
+      : undefined,
+    setIntervalFn: setIntervalOverride = typeof setInterval !== "undefined"
+      ? setInterval
+      : undefined,
+    clearIntervalFn: clearIntervalOverride = typeof clearInterval !==
+    "undefined"
+      ? clearInterval
+      : undefined,
+    nowFn: nowOverride = () => Date.now(),
+  } = opts;
+  const bind =
+    (fn) =>
+    (...args) => {
+      const originalStorage = globalThis.localStorage;
+      const originals = {
+        fetchFn,
+        setTimeoutFn,
+        clearTimeoutFn,
+        setIntervalFn,
+        clearIntervalFn,
+        nowFn,
+      };
+      globalThis.localStorage = storage;
+      fetchFn = fetchOverride;
+      setTimeoutFn = setTimeoutOverride;
+      clearTimeoutFn = clearTimeoutOverride;
+      setIntervalFn = setIntervalOverride;
+      clearIntervalFn = clearIntervalOverride;
+      nowFn = nowOverride;
+      const result = fn(...args);
+      const restore = () => {
+        globalThis.localStorage = originalStorage;
+        ({
+          fetchFn,
+          setTimeoutFn,
+          clearTimeoutFn,
+          setIntervalFn,
+          clearIntervalFn,
+          nowFn,
+        } = originals);
+      };
+      if (result && typeof result.then === "function") {
+        return result.finally(restore);
+      }
+      restore();
+      return result;
+    };
+  return {
+    getBasket: bind(getBasket),
+    addToBasket: bind(addToBasket),
+    addAutoItem: bind(addAutoItem),
+    manualizeItem: bind(manualizeItem),
+    removeFromBasket: bind(removeFromBasket),
+    clearBasket: bind(clearBasket),
+    setupBasketUI: bind(setupBasketUI),
+    syncServerCart: bind(syncServerCart),
+  };
 }
-window.addToBasket = addToBasket;
-window.addAutoItem = addAutoItem;
-window.manualizeItem = manualizeItem;
-window.getBasket = getBasket;
-window.syncServerCart = syncServerCart;
+if (typeof document !== "undefined") {
+  if (document.readyState === "loading") {
+    window.addEventListener("DOMContentLoaded", setupBasketUI);
+  } else {
+    setupBasketUI();
+  }
+}
+if (typeof window !== "undefined") {
+  window.addToBasket = addToBasket;
+  window.addAutoItem = addAutoItem;
+  window.manualizeItem = manualizeItem;
+  window.getBasket = getBasket;
+  window.syncServerCart = syncServerCart;
+}
