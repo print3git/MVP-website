@@ -395,7 +395,7 @@ export function setupBasketUI() {
           jobId: it.jobId,
           snapshot: it.snapshot || prev.snapshot || "",
           material:
-            prev.material || localStorage.getItem("print2Material") || "multi",
+            prev.material || localStorage.getItem("print2Material") || "single",
           color: prev.color || null,
           // Preserve personalised etch text per model for the payment page.
           etchName:
@@ -437,8 +437,8 @@ export function setupBasketUI() {
       <div id="basket-checkout-container" class="absolute bottom-4 right-4 flex flex-col items-center">
         <div id="basket-tier-toggle" class="flex gap-1 mb-2 text-xs">
           <button type="button" data-tier="bronze" class="basket-tier-option px-2 py-1 rounded-full border border-white/20 opacity-50 text-black" style="background-color: #cd7f32">1 colour</button>
-          <button type="button" data-tier="silver" class="basket-tier-option px-2 py-1 rounded-full border border-white/20 opacity-50 text-black" style="background-color: #c0c0c0">multicolour</button>
-          <button type="button" data-tier="gold" class="basket-tier-option px-2 py-1 rounded-full border border-white/20 opacity-50 text-black" style="background-color: #ffd700">premium</button>
+          <button type="button" data-tier="silver" disabled aria-disabled="true" class="basket-tier-option px-2 py-1 rounded-full border border-white/20 opacity-50 text-black cursor-not-allowed" style="background-color: #c0c0c0">multicolour</button>
+          <button type="button" data-tier="gold" disabled aria-disabled="true" class="basket-tier-option px-2 py-1 rounded-full border border-white/20 opacity-50 text-black cursor-not-allowed" style="background-color: #ffd700">premium</button>
         </div>
   <a id="basket-model-checkout" href="payment.html" class="font-bold py-2 px-5 rounded-full shadow-md transition border-2 border-black" style="background-color: #30D5C8; color: #1A1A1D" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">Print for £39.99 →</a>
       </div>
@@ -478,7 +478,7 @@ export function setupBasketUI() {
       btn.classList.toggle("opacity-50", !active);
     });
     if (viewerCheckoutBtn) {
-      const price = tier === "bronze" ? 29.99 : tier === "gold" ? 59.99 : 39.99;
+      const price = tier === "bronze" ? 29.99 : tier === "gold" ? 79.99 : 39.99;
       viewerCheckoutBtn.textContent = `Print for £${price.toFixed(2)} →`;
     }
     const material =
@@ -487,12 +487,9 @@ export function setupBasketUI() {
   }
   viewerTierToggle?.addEventListener("click", (ev) => {
     const btn = ev.target.closest("button[data-tier]");
-    if (btn) setTier(btn.dataset.tier);
+    if (btn && !btn.disabled) setTier(btn.dataset.tier);
   });
-  const storedMat = localStorage.getItem("print2Material");
-  if (storedMat === "single") setTier("bronze");
-  else if (storedMat === "premium") setTier("gold");
-  else setTier("silver");
+  setTier("bronze");
 
   updateBadge();
   syncServerCart();
