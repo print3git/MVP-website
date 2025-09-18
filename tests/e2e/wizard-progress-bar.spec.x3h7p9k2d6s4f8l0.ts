@@ -23,6 +23,6 @@ for (const path of ["/index.html", "/payment.html"]) {
     );
     const slots = page.locator("#wizard-slots");
     await expect(slots).toBeVisible();
-    await expect(slots).toHaveText("Only 2 print slots left");
+    await expect(slots).toHaveText("Only 2 print slots left:");
   });
 }
