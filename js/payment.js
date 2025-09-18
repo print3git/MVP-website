@@ -1016,27 +1016,33 @@ async function initPaymentPage() {
       }
     } catch {}
   }
-  let baseSlots = null;
+  // Compute a client-side slot count first so we have a reasonable value even
+  // if the API fails or returns stale data.
+  let baseSlots = computeSlotsByTime();
+  if (typeof initData.slots === "number") {
+    baseSlots = initData.slots;
+  }
+
+  const adjustedSlotCount = adjustedSlots(baseSlots);
 
   if (slotEl) {
     slotEl.style.visibility = "hidden";
-    if (bulkSlotEl) {
-      bulkSlotEl.style.visibility = "hidden";
-    }
-    // Compute a client-side slot count first so we have a reasonable value even
-    // if the API fails or returns stale data.
-    baseSlots = computeSlotsByTime();
-    if (typeof initData.slots === "number") {
-      baseSlots = initData.slots;
-    }
-    slotEl.textContent = adjustedSlots(baseSlots);
+  }
+  if (bulkSlotEl) {
+    bulkSlotEl.style.visibility = "hidden";
+  }
+
+  if (window.setWizardSlotCount) {
+    window.setWizardSlotCount(adjustedSlotCount);
+  }
+
+  if (slotEl) {
+    slotEl.textContent = adjustedSlotCount;
     slotEl.style.visibility = "visible";
-    if (window.setWizardSlotCount)
-      window.setWizardSlotCount(adjustedSlots(baseSlots));
-    if (bulkSlotEl) {
-      bulkSlotEl.textContent = adjustedSlots(baseSlots);
-      bulkSlotEl.style.visibility = "visible";
-    }
+  }
+  if (bulkSlotEl) {
+    bulkSlotEl.textContent = adjustedSlotCount;
+    bulkSlotEl.style.visibility = "visible";
   }
 
   if (colorSlotEl) {
