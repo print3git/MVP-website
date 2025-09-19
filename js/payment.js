@@ -59,6 +59,7 @@ const PRICES = {
   multi: 3999,
   premium: 5999,
 };
+const BASKET_ANIMATION_PENDING_KEY = "print2PendingBasketAnimation";
 
 // Override prices for Luckybox checkout
 if (window.location.pathname.endsWith("luckybox-payment.html")) {
@@ -477,6 +478,24 @@ async function initPaymentPage() {
   const promoToggle = document.querySelector(".promo-toggle");
   const promoBox = document.querySelector(".promo-input");
   const surpriseToggle = document.getElementById("surprise-toggle");
+  try {
+    if (sessionStorage.getItem(BASKET_ANIMATION_PENDING_KEY) === "1") {
+      sessionStorage.removeItem(BASKET_ANIMATION_PENDING_KEY);
+      let attempts = 0;
+      const triggerBasketAnimation = () => {
+        const basketBtn = document.getElementById("basket-button");
+        if (!basketBtn) {
+          if (attempts++ < 10) {
+            setTimeout(triggerBasketAnimation, 50);
+          }
+          return;
+        }
+        basketBtn.classList.add("basket-bob");
+        setTimeout(() => basketBtn.classList.remove("basket-bob"), 800);
+      };
+      setTimeout(triggerBasketAnimation, 0);
+    }
+  } catch {}
   viewer?.addEventListener("error", () => {
     const img = document.getElementById("preview-img");
     if (img) {
