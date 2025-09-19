@@ -51,10 +51,13 @@ const FALLBACK_GLB = FALLBACK_GLB_LOW;
 const LOW_POLY_GLB = FALLBACK_GLB_LOW;
 let setIntervalFn = setInterval;
 let clearIntervalFn = clearInterval;
+const BASKET_ANIMATION_PENDING_KEY = "print2PendingBasketAnimation";
 
-function addBasketItem(item) {
+function addBasketItem(item, opts = {}) {
   if (!window.addToBasket) return;
-  window.addToBasket(item);
+  window.addToBasket(item, opts);
+  const shouldAnimate = opts.animate !== false;
+  if (!shouldAnimate) return;
   const basketBtn = document.getElementById("basket-button");
   if (basketBtn) {
     basketBtn.classList.add("basket-bob");
@@ -1059,7 +1062,10 @@ async function init() {
       snapshot: lastSnapshot || "",
     };
     // Add the current viewer item to the basket and persist it for checkout
-    addBasketItem(item);
+    addBasketItem(item, { animate: false });
+    try {
+      sessionStorage.setItem(BASKET_ANIMATION_PENDING_KEY, "1");
+    } catch {}
     try {
       const items = window.getBasket ? window.getBasket() : [item];
       localStorage.setItem("print2CheckoutItems", JSON.stringify(items));

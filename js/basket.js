@@ -73,6 +73,7 @@ export async function addToBasket(item, opts = {}) {
   const items = getBasket();
   const expire = nowFn() + RESERVE_MINS * 60 * 1000;
   const entry = { ...item, auto: !!opts.auto, reserveUntil: expire };
+  const shouldAnimate = opts.animate !== false;
   items.push(entry);
   saveBasket();
   const token = localStorage.getItem("token");
@@ -100,8 +101,10 @@ export async function addToBasket(item, opts = {}) {
   startReservationTimer();
   const basketBtn = document.getElementById("basket-button");
   if (basketBtn) {
-    basketBtn.classList.add("basket-bob");
-    setTimeoutFn(() => basketBtn.classList.remove("basket-bob"), 800);
+    if (shouldAnimate) {
+      basketBtn.classList.add("basket-bob");
+      setTimeoutFn(() => basketBtn.classList.remove("basket-bob"), 800);
+    }
     if (window.__basketSound) {
       try {
         window.__basketSound.currentTime = 0;
