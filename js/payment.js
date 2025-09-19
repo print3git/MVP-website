@@ -458,6 +458,8 @@ async function initPaymentPage() {
   }
 
   const viewer = document.getElementById("viewer");
+  const prevBtn = document.getElementById("viewer-prev");
+  const nextBtn = document.getElementById("viewer-next");
   const optOut = document.getElementById("opt-out");
   const emailEl = document.getElementById("checkout-email");
   const successMsg = document.getElementById("success");
@@ -938,6 +940,15 @@ async function initPaymentPage() {
   function showItem(idx) {
     if (!checkoutItems.length) return;
     currentIndex = (idx + checkoutItems.length) % checkoutItems.length;
+    const hasMultiple = checkoutItems.length > 1;
+    if (prevBtn) {
+      prevBtn.hidden = !hasMultiple;
+      prevBtn.disabled = !hasMultiple;
+    }
+    if (nextBtn) {
+      nextBtn.hidden = !hasMultiple;
+      nextBtn.disabled = !hasMultiple;
+    }
     const item = checkoutItems[currentIndex];
     if (viewer) {
       const tag = viewer.tagName.toLowerCase();
@@ -998,6 +1009,14 @@ async function initPaymentPage() {
     updatePayButton();
     updateFlashSaleBanner();
   }
+  prevBtn?.addEventListener("click", () => {
+    if (!checkoutItems.length) return;
+    showItem(currentIndex - 1);
+  });
+  nextBtn?.addEventListener("click", () => {
+    if (!checkoutItems.length) return;
+    showItem(currentIndex + 1);
+  });
   const sessionId = qs("session_id");
   if (sessionId) {
     recordPurchase();
