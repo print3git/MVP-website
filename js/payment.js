@@ -460,6 +460,7 @@ async function initPaymentPage() {
   const viewer = document.getElementById("viewer");
   const prevBtn = document.getElementById("viewer-prev");
   const nextBtn = document.getElementById("viewer-next");
+  const viewerCounter = document.getElementById("viewer-counter");
   const optOut = document.getElementById("opt-out");
   const emailEl = document.getElementById("checkout-email");
   const successMsg = document.getElementById("success");
@@ -937,8 +938,21 @@ async function initPaymentPage() {
   }
   updatePayButton();
   updatePopularMessage();
+  function updateViewerCounter() {
+    if (!viewerCounter) return;
+    if (checkoutItems.length <= 1) {
+      viewerCounter.textContent = "";
+      viewerCounter.classList.add("hidden");
+      return;
+    }
+    viewerCounter.textContent = `${currentIndex + 1}/${checkoutItems.length}`;
+    viewerCounter.classList.remove("hidden");
+  }
   function showItem(idx) {
-    if (!checkoutItems.length) return;
+    if (!checkoutItems.length) {
+      updateViewerCounter();
+      return;
+    }
     currentIndex = (idx + checkoutItems.length) % checkoutItems.length;
     const hasMultiple = checkoutItems.length > 1;
     if (prevBtn) {
@@ -1008,6 +1022,7 @@ async function initPaymentPage() {
     applyStoredColorIfNeeded();
     updatePayButton();
     updateFlashSaleBanner();
+    updateViewerCounter();
   }
   prevBtn?.addEventListener("click", () => {
     if (!checkoutItems.length) return;
@@ -1204,6 +1219,53 @@ async function initPaymentPage() {
       );
     } catch {}
   }
+  function normaliseQuantity(val) {
+    const num = parseInt(val, 10);
+    return Number.isFinite(num) && num > 0 ? num : 1;
+  }
+  function getItemQuantity(item) {
+    if (!item) return 1;
+    if (item.qty != null) return normaliseQuantity(item.qty);
+    if (item.quantity != null) return normaliseQuantity(item.quantity);
+    return 1;
+  }
+  function updateBasketBadgeCount() {
+    const badge = document.getElementById("basket-count");
+    if (!badge) return;
+    let total = 0;
+    if (checkoutItems.length) {
+      checkoutItems.forEach((it) => {
+        total += getItemQuantity(it);
+      });
+    } else {
+      try {
+        const stored = JSON.parse(localStorage.getItem("print2Basket"));
+        if (Array.isArray(stored)) {
+          stored.forEach((entry) => {
+            total += getItemQuantity(entry);
+          });
+        }
+      } catch {}
+    }
+    badge.textContent = total > 0 ? String(total) : "";
+    badge.hidden = total === 0;
+  }
+  function syncBasketQuantities() {
+    let stored = null;
+    try {
+      stored = JSON.parse(localStorage.getItem("print2Basket"));
+    } catch {}
+    if (Array.isArray(stored) && stored.length) {
+      const updated = stored.map((entry, idx) => ({
+        ...entry,
+        quantity: getItemQuantity(checkoutItems[idx] || entry),
+      }));
+      try {
+        localStorage.setItem("print2Basket", JSON.stringify(updated));
+      } catch {}
+    }
+    updateBasketBadgeCount();
+  }
   function saveCheckoutItems() {
     try {
       localStorage.setItem(
@@ -1211,12 +1273,19 @@ async function initPaymentPage() {
         JSON.stringify(checkoutItems),
       );
     } catch {}
+    syncBasketQuantities();
   }
 
   // Ensure a minimum quantity of 2 when arriving on the payment page
   if (checkoutItems.length === 1 && checkoutItems[0].qty === 1) {
     checkoutItems[0].qty = 2;
     saveCheckoutItems();
+  }
+
+  if (checkoutItems.length > 1) {
+    syncBasketQuantities();
+  } else {
+    updateBasketBadgeCount();
   }
 
   if (!checkoutItems.length) {

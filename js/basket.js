@@ -192,9 +192,15 @@ export function clearBasket() {
 function updateBadge() {
   const badge = document.getElementById("basket-count");
   if (badge) {
-    const n = getBasket().length;
-    badge.textContent = n > 0 ? String(n) : "";
-    badge.hidden = n === 0;
+    const items = getBasket();
+    const total = items.reduce((acc, item) => {
+      const raw = item?.quantity ?? item?.qty ?? 1;
+      const parsed = parseInt(raw, 10);
+      const qty = Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
+      return acc + qty;
+    }, 0);
+    badge.textContent = total > 0 ? String(total) : "";
+    badge.hidden = total === 0;
   }
 }
 
