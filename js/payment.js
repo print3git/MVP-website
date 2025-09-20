@@ -66,6 +66,7 @@ const PRICES = {
   premium: 5999,
 };
 const BASKET_ANIMATION_PENDING_KEY = "print2PendingBasketAnimation";
+const MODEL_QUANTITY_KEY = "print2ModelQuantities";
 
 // Override prices for Luckybox checkout
 if (window.location.pathname.endsWith("luckybox-payment.html")) {
@@ -115,6 +116,37 @@ function sanitizeUrl(url) {
   } catch {
     return "";
   }
+}
+
+function readModelQuantity(modelUrl) {
+  if (!modelUrl) return null;
+  try {
+    const raw = localStorage.getItem(MODEL_QUANTITY_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+      return null;
+    }
+    const stored = parsed[modelUrl];
+    const num = parseInt(stored, 10);
+    return Number.isFinite(num) && num > 0 ? num : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeModelQuantity(modelUrl, qty) {
+  if (!modelUrl) return;
+  const value = Math.max(1, parseInt(qty, 10) || 1);
+  try {
+    const raw = localStorage.getItem(MODEL_QUANTITY_KEY);
+    let parsed = raw ? JSON.parse(raw) : null;
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+      parsed = {};
+    }
+    parsed[modelUrl] = value;
+    localStorage.setItem(MODEL_QUANTITY_KEY, JSON.stringify(parsed));
+  } catch {}
 }
 
 function computeDiscountFor(material, qty) {
@@ -901,12 +933,17 @@ async function initPaymentPage() {
   }
 
   qtySelect?.addEventListener("change", () => {
-    if (checkoutItems[currentIndex]) {
-      checkoutItems[currentIndex].qty = Math.max(
-        1,
-        parseInt(qtySelect.value || "1", 10),
-      );
+    const parsedQty = Math.max(1, parseInt(qtySelect.value || "1", 10));
+    qtySelect.value = String(parsedQty);
+    const currentItem = checkoutItems[currentIndex];
+    const itemModelUrl = sanitizeUrl(currentItem?.modelUrl);
+    const modelForQty =
+      itemModelUrl || (checkoutItems.length <= 1 ? storedModel : "");
+    if (currentItem) {
+      currentItem.qty = parsedQty;
       saveCheckoutItems();
+    } else if (modelForQty) {
+      writeModelQuantity(modelForQty, parsedQty);
     }
     updatePayButton();
     updatePopularMessage();
@@ -1042,7 +1079,14 @@ async function initPaymentPage() {
       singleButton.style.borderColor = "";
     }
     if (qtySelect) {
-      qtySelect.value = String(item.qty || 2);
+      const itemQty = getItemQuantity(item);
+      qtySelect.value = String(itemQty);
+      const itemModel = sanitizeUrl(item.modelUrl);
+      const modelKey =
+        itemModel || (checkoutItems.length <= 1 ? storedModel : "");
+      if (modelKey) {
+        writeModelQuantity(modelKey, itemQty);
+      }
     }
     applyStoredColorIfNeeded();
     updatePayButton();
@@ -1284,6 +1328,21 @@ async function initPaymentPage() {
   function saveCheckoutItems() {
     writeCheckoutItems(checkoutItems);
     syncBasketQuantities();
+    if (checkoutItems.length) {
+      checkoutItems.forEach((entry) => {
+        const modelUrl = sanitizeUrl(entry?.modelUrl);
+        if (modelUrl) {
+          writeModelQuantity(modelUrl, getItemQuantity(entry));
+        } else if (checkoutItems.length === 1 && storedModel) {
+          writeModelQuantity(storedModel, getItemQuantity(entry));
+        }
+      });
+    } else if (storedModel) {
+      writeModelQuantity(
+        storedModel,
+        Math.max(1, parseInt(qtySelect?.value || "1", 10)),
+      );
+    }
   }
 
   // Ensure a minimum quantity of 2 when arriving on the payment page
@@ -1312,7 +1371,20 @@ async function initPaymentPage() {
   }
 
   if (!checkoutItems.length && qtySelect) {
-    qtySelect.value = "2";
+    let qtyToApply = 2;
+    if (storedModel) {
+      const storedQty = readModelQuantity(storedModel);
+      if (storedQty != null) {
+        qtyToApply = storedQty;
+      }
+    }
+    if (qtyToApply <= 1) {
+      qtyToApply = 2;
+      if (storedModel) {
+        writeModelQuantity(storedModel, qtyToApply);
+      }
+    }
+    qtySelect.value = String(qtyToApply);
     qtySelect.dispatchEvent(new Event("change"));
   }
 
