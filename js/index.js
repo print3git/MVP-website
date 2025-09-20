@@ -60,7 +60,11 @@ const BASKET_ANIMATION_PENDING_KEY = "print2PendingBasketAnimation";
 
 function addBasketItem(item, opts = {}) {
   if (!window.addToBasket) return false;
-  if (opts.preventDuplicate && typeof window.getBasket === "function") {
+  const options = { ...opts };
+  if (
+    options.preventDuplicate &&
+    typeof window.getBasket === "function"
+  ) {
     try {
       const items = window.getBasket() || [];
       const alreadyExists = items.some((existing) => {
@@ -80,8 +84,8 @@ function addBasketItem(item, opts = {}) {
       // ignore duplicate detection errors
     }
   }
-  window.addToBasket(item, opts);
-  const shouldAnimate = opts.animate !== false;
+  window.addToBasket(item, options);
+  const shouldAnimate = options.animate !== false;
   if (!shouldAnimate) return true;
   const basketBtn = document.getElementById("basket-button");
   if (basketBtn) {
@@ -1091,6 +1095,7 @@ async function init() {
     const addedToBasket = addBasketItem(item, {
       animate: false,
       preventDuplicate: true,
+      deferAnimation: true,
     });
     if (addedToBasket) {
       try {

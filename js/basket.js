@@ -80,7 +80,8 @@ export async function addToBasket(item, opts = {}) {
   const items = getBasket();
   const expire = nowFn() + RESERVE_MINS * 60 * 1000;
   const entry = { ...item, auto: !!opts.auto, reserveUntil: expire };
-  const shouldAnimate = opts.animate !== false;
+  const shouldAnimate =
+    opts.animate !== false && !opts.deferAnimation;
   items.push(entry);
   saveBasket();
   const token = localStorage.getItem("token");
