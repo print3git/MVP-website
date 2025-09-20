@@ -54,7 +54,7 @@ let clearIntervalFn = clearInterval;
 const BASKET_ANIMATION_PENDING_KEY = "print2PendingBasketAnimation";
 
 function addBasketItem(item, opts = {}) {
-  if (!window.addToBasket) return;
+  if (!window.addToBasket) return false;
   if (opts.preventDuplicate && typeof window.getBasket === "function") {
     try {
       const items = window.getBasket() || [];
@@ -69,7 +69,7 @@ function addBasketItem(item, opts = {}) {
         return false;
       });
       if (alreadyExists) {
-        return;
+        return false;
       }
     } catch {
       // ignore duplicate detection errors
@@ -77,12 +77,13 @@ function addBasketItem(item, opts = {}) {
   }
   window.addToBasket(item, opts);
   const shouldAnimate = opts.animate !== false;
-  if (!shouldAnimate) return;
+  if (!shouldAnimate) return true;
   const basketBtn = document.getElementById("basket-button");
   if (basketBtn) {
     basketBtn.classList.add("basket-bob");
     setTimeout(() => basketBtn.classList.remove("basket-bob"), 800);
   }
+  return true;
 }
 
 // Save referrer ID from query string for later checkout discount
@@ -1082,10 +1083,15 @@ async function init() {
       snapshot: lastSnapshot || "",
     };
     // Add the current viewer item to the basket and persist it for checkout
-    addBasketItem(item, { animate: false, preventDuplicate: true });
-    try {
-      sessionStorage.setItem(BASKET_ANIMATION_PENDING_KEY, "1");
-    } catch {}
+    const addedToBasket = addBasketItem(item, {
+      animate: false,
+      preventDuplicate: true,
+    });
+    if (addedToBasket) {
+      try {
+        sessionStorage.setItem(BASKET_ANIMATION_PENDING_KEY, "1");
+      } catch {}
+    }
     try {
       const items = window.getBasket ? window.getBasket() : [item];
       localStorage.setItem("print2CheckoutItems", JSON.stringify(items));
