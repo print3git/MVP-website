@@ -73,6 +73,14 @@ function saveBasket(items = basket) {
 }
 const RESERVE_MINS = 15;
 let reserveInterval;
+function normaliseQuantity(raw) {
+  const parsed = parseInt(raw, 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
+}
+function getItemQuantityValue(item) {
+  if (!item) return 1;
+  return normaliseQuantity(item.quantity ?? item.qty ?? 1);
+}
 function notifyBasketChange() {
   window.dispatchEvent(new CustomEvent("basket-change"));
 }
@@ -201,12 +209,7 @@ function updateBadge() {
   const badge = document.getElementById("basket-count");
   if (badge) {
     const items = getBasket();
-    const total = items.reduce((acc, item) => {
-      const raw = item?.quantity ?? item?.qty ?? 1;
-      const parsed = parseInt(raw, 10);
-      const qty = Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
-      return acc + qty;
-    }, 0);
+    const total = items.reduce((acc, item) => acc + getItemQuantityValue(item), 0);
     badge.textContent = total > 0 ? String(total) : "";
     badge.hidden = total === 0;
   }
@@ -298,6 +301,8 @@ function renderList() {
     const div = document.createElement("div");
     div.className = "relative group";
 
+    const quantity = getItemQuantityValue(it);
+
     const img = document.createElement("img");
     img.src = it.snapshot || it.modelUrl || "";
     img.alt = "Model";
@@ -306,6 +311,17 @@ function renderList() {
     img.addEventListener("click", () =>
       showModel(it.modelUrl, it.snapshot, it.jobId),
     );
+
+    div.appendChild(img);
+
+    if (quantity > 1) {
+      const quantityBadge = document.createElement("span");
+      quantityBadge.textContent = `x${quantity}`;
+      quantityBadge.className =
+        "absolute top-1 right-1 bg-black/75 text-white text-xs font-semibold px-1.5 py-0.5 rounded pointer-events-none z-10";
+      quantityBadge.title = `${quantity} copies`;
+      div.appendChild(quantityBadge);
+    }
 
     const btn = document.createElement("button");
     btn.textContent = "Remove";
@@ -318,8 +334,6 @@ function renderList() {
       removeFromBasket(idx);
       renderList();
     });
-
-    div.appendChild(img);
     div.appendChild(btn);
     list.appendChild(div);
   });
