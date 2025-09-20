@@ -47,6 +47,13 @@ try {
 }
 
 try {
+  const r = require("./routes/profile");
+  app.use("/api", r.default || r);
+} catch (err) {
+  logger.error("Failed to load profile router", err);
+}
+
+try {
   (() => {
     const r = require("./routes/auth");
     app.use("/api", r.default || r);
