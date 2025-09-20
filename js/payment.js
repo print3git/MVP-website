@@ -107,6 +107,38 @@ let flashTimerId = null;
 let flashSale = null;
 let checkoutItems = [];
 let currentIndex = 0;
+let suppressCheckoutReload = false;
+let suppressCheckoutReloadTimer = null;
+
+function markLocalCheckoutUpdate() {
+  suppressCheckoutReload = true;
+  if (typeof clearTimeout === "function" && suppressCheckoutReloadTimer) {
+    clearTimeout(suppressCheckoutReloadTimer);
+  }
+  if (typeof setTimeout === "function") {
+    suppressCheckoutReloadTimer = setTimeout(() => {
+      suppressCheckoutReload = false;
+      suppressCheckoutReloadTimer = null;
+    }, 1500);
+  } else {
+    suppressCheckoutReload = false;
+    suppressCheckoutReloadTimer = null;
+  }
+}
+
+function persistCheckoutItems(items) {
+  markLocalCheckoutUpdate();
+  writeCheckoutItems(items);
+}
+
+function clearCheckoutStorage() {
+  markLocalCheckoutUpdate();
+  clearCheckoutItems();
+}
+
+function shouldReloadForExternalBasketChange() {
+  return !suppressCheckoutReload;
+}
 
 function sanitizeUrl(url) {
   if (!url || url === "null" || url === "undefined") return "";
@@ -1223,7 +1255,7 @@ async function initPaymentPage() {
       }));
     }
   } else {
-    clearCheckoutItems();
+    clearCheckoutStorage();
   }
 
   if (viewer && viewer.tagName.toLowerCase() !== "img") {
@@ -1267,16 +1299,9 @@ async function initPaymentPage() {
             })(),
           };
         });
-        writeCheckoutItems(checkoutItems);
+        persistCheckoutItems(checkoutItems);
       }
     } catch {}
-  }
-  // Reset quantities to 1 when multiple items are in the basket
-  if (checkoutItems.length > 1) {
-    checkoutItems.forEach((it) => {
-      it.qty = 1;
-    });
-    writeCheckoutItems(checkoutItems);
   }
   function normaliseQuantity(val) {
     const num = parseInt(val, 10);
@@ -1326,7 +1351,7 @@ async function initPaymentPage() {
     updateBasketBadgeCount();
   }
   function saveCheckoutItems() {
-    writeCheckoutItems(checkoutItems);
+    persistCheckoutItems(checkoutItems);
     syncBasketQuantities();
     if (checkoutItems.length) {
       checkoutItems.forEach((entry) => {
@@ -1795,14 +1820,18 @@ window.addEventListener("pageshow", (e) => {
   }
 });
 
+function handleExternalBasketChange() {
+  if (shouldReloadForExternalBasketChange()) {
+    window.location.reload();
+  }
+}
+
 // Refresh the page if basket contents change in another tab
 window.addEventListener("storage", (e) => {
   if (e.key === "print2CheckoutItems") {
-    window.location.reload();
+    handleExternalBasketChange();
   }
 });
 
 // Refresh the page if basket changes within this tab
-window.addEventListener("basket-change", () => {
-  window.location.reload();
-});
+window.addEventListener("basket-change", handleExternalBasketChange);
