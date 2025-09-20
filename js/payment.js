@@ -1,5 +1,11 @@
 import { track } from "./analytics.js";
 import {
+  readCheckoutItems,
+  writeCheckoutItems,
+  createCheckoutMatcher,
+  clearCheckoutItems,
+} from "./checkout-storage.js";
+import {
   computeSlotsByTime,
   adjustedSlots,
   recordSlotPurchase,
@@ -1164,18 +1170,16 @@ async function initPaymentPage() {
 
   // Load saved basket items unless this is the Luckybox page
   if (!window.location.pathname.endsWith("luckybox-payment.html")) {
-    try {
-      const arr = JSON.parse(localStorage.getItem("print2CheckoutItems"));
-      if (Array.isArray(arr) && arr.length) {
-        checkoutItems = arr.map((it) => ({
-          ...it,
-          etchName: it.etchName || "",
-          qty: Math.max(1, parseInt(it.qty || "1", 10)),
-        }));
-      }
-    } catch {}
+    const stored = readCheckoutItems();
+    if (stored.length) {
+      checkoutItems = stored.map((it) => ({
+        ...it,
+        etchName: it.etchName || "",
+        qty: Math.max(1, parseInt(it.qty || "1", 10)),
+      }));
+    }
   } else {
-    localStorage.removeItem("print2CheckoutItems");
+    clearCheckoutItems();
   }
 
   if (viewer && viewer.tagName.toLowerCase() !== "img") {
@@ -1198,9 +1202,9 @@ async function initPaymentPage() {
             return !c || c.modelUrl !== it.modelUrl || c.jobId !== it.jobId;
           }))
       ) {
-        const existing = checkoutItems;
+        const findPrevForItem = createCheckoutMatcher(checkoutItems);
         checkoutItems = basket.map((it, idx) => {
-          const prev = existing[idx] || {};
+          const prev = findPrevForItem(it, idx);
           return {
             modelUrl: it.modelUrl,
             jobId: it.jobId,
@@ -1219,10 +1223,7 @@ async function initPaymentPage() {
             })(),
           };
         });
-        localStorage.setItem(
-          "print2CheckoutItems",
-          JSON.stringify(checkoutItems),
-        );
+        writeCheckoutItems(checkoutItems);
       }
     } catch {}
   }
@@ -1231,12 +1232,7 @@ async function initPaymentPage() {
     checkoutItems.forEach((it) => {
       it.qty = 1;
     });
-    try {
-      localStorage.setItem(
-        "print2CheckoutItems",
-        JSON.stringify(checkoutItems),
-      );
-    } catch {}
+    writeCheckoutItems(checkoutItems);
   }
   function normaliseQuantity(val) {
     const num = parseInt(val, 10);
@@ -1286,12 +1282,7 @@ async function initPaymentPage() {
     updateBasketBadgeCount();
   }
   function saveCheckoutItems() {
-    try {
-      localStorage.setItem(
-        "print2CheckoutItems",
-        JSON.stringify(checkoutItems),
-      );
-    } catch {}
+    writeCheckoutItems(checkoutItems);
     syncBasketQuantities();
   }
 
