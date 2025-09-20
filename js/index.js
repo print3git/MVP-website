@@ -55,6 +55,26 @@ const BASKET_ANIMATION_PENDING_KEY = "print2PendingBasketAnimation";
 
 function addBasketItem(item, opts = {}) {
   if (!window.addToBasket) return;
+  if (opts.preventDuplicate && typeof window.getBasket === "function") {
+    try {
+      const items = window.getBasket() || [];
+      const alreadyExists = items.some((existing) => {
+        if (!existing) return false;
+        if (item.jobId && existing.jobId) {
+          return existing.jobId === item.jobId;
+        }
+        if (item.modelUrl && existing.modelUrl) {
+          return existing.modelUrl === item.modelUrl;
+        }
+        return false;
+      });
+      if (alreadyExists) {
+        return;
+      }
+    } catch {
+      // ignore duplicate detection errors
+    }
+  }
   window.addToBasket(item, opts);
   const shouldAnimate = opts.animate !== false;
   if (!shouldAnimate) return;
@@ -1062,7 +1082,7 @@ async function init() {
       snapshot: lastSnapshot || "",
     };
     // Add the current viewer item to the basket and persist it for checkout
-    addBasketItem(item, { animate: false });
+    addBasketItem(item, { animate: false, preventDuplicate: true });
     try {
       sessionStorage.setItem(BASKET_ANIMATION_PENDING_KEY, "1");
     } catch {}

@@ -64,6 +64,71 @@ describe("index wiring", () => {
     ).toBe("1");
   });
 
+  test("checkout button skips duplicate entries", async () => {
+    const html = `
+      <model-viewer id="glb-viewer" src="https://example.com/model.glb"></model-viewer>
+      <img id="preview-img" src="https://example.com/img.png" />
+      <a id="checkout-button" href="#"></a>
+      <button id="basket-button"><span id="basket-count"></span></button>
+      <div id="theme-banner" class="hidden"></div>
+    `;
+    const dom = buildDOM(html);
+    const storage = memoryStorage();
+    const session = memoryStorage();
+    const fetchFn = () =>
+      Promise.resolve({ ok: false, json: async () => ({}) });
+
+    global.window = dom.window;
+    global.document = dom.window.document;
+    global.localStorage = storage;
+    global.sessionStorage = session;
+    global.navigator = dom.window.navigator;
+
+    dom.window.localStorage = storage;
+    dom.window.sessionStorage = session;
+
+    const originalCustomElements = global.customElements;
+    const customElementsStub = {
+      get: () => undefined,
+      whenDefined: () => Promise.resolve(),
+      define: () => {},
+    };
+    dom.window.customElements = customElementsStub;
+    global.customElements = customElementsStub;
+
+    const { createBasket } = await import("../js/basket.js");
+    const basket = createBasket(storage, { fetchFn });
+
+    dom.window.addToBasket = basket.addToBasket;
+    dom.window.getBasket = basket.getBasket;
+    global.addToBasket = basket.addToBasket;
+    global.getBasket = basket.getBasket;
+
+    await basket.addToBasket({
+      modelUrl: "https://example.com/model.glb",
+      jobId: "job-1",
+    });
+
+    const { initBasketUI } = await import("../js/index.js");
+    await initBasketUI({ doc: dom.window.document, storage, fetchFn });
+
+    expect(dom.window.getBasket().length).toBe(1);
+
+    const checkoutBtn = dom.window.document.getElementById("checkout-button");
+    checkoutBtn.dispatchEvent(
+      new dom.window.Event("click", { bubbles: true }),
+    );
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(dom.window.getBasket().length).toBe(1);
+    const storedItemsRaw = storage.getItem("print2CheckoutItems");
+    expect(storedItemsRaw).not.toBeNull();
+    expect(JSON.parse(storedItemsRaw)).toHaveLength(1);
+
+    global.customElements = originalCustomElements;
+  });
+
   test("graceful when elements missing", async () => {
     const dom = buildDOM("<div></div>");
     global.window = dom.window;
