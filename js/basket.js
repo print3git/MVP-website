@@ -1,3 +1,10 @@
+import {
+  readCheckoutItems,
+  writeCheckoutItems,
+  createCheckoutMatcher,
+  clearCheckoutItems,
+} from "./checkout-storage.js";
+
 (() => {
   try {
     const map = {
@@ -160,20 +167,18 @@ export function removeFromBasket(index) {
       /* ignore network errors */
     }
   }
-  try {
-    const arr = JSON.parse(localStorage.getItem("print2CheckoutItems"));
-    if (Array.isArray(arr) && index >= 0 && index < arr.length) {
-      arr.splice(index, 1);
-      localStorage.setItem("print2CheckoutItems", JSON.stringify(arr));
-    }
-  } catch {}
+  const checkoutItems = readCheckoutItems();
+  if (index >= 0 && index < checkoutItems.length) {
+    checkoutItems.splice(index, 1);
+    writeCheckoutItems(checkoutItems);
+  }
   updateBadge();
   renderList();
   notifyBasketChange();
 }
 export function clearBasket() {
   saveBasket([]);
-  localStorage.removeItem("print2CheckoutItems");
+  clearCheckoutItems();
   const token = localStorage.getItem("token");
   if (token && typeof fetchFn === "function") {
     try {
@@ -395,10 +400,10 @@ export function setupBasketUI() {
     }
     // Save basket contents for payment page navigation
     try {
-      const existing =
-        JSON.parse(localStorage.getItem("print2CheckoutItems")) || [];
+      const existing = readCheckoutItems();
+      const findPrevForItem = createCheckoutMatcher(existing);
       const checkoutItems = items.map((it, idx) => {
-        const prev = existing[idx] || {};
+        const prev = findPrevForItem(it, idx);
         return {
           modelUrl: it.modelUrl,
           jobId: it.jobId,
@@ -411,10 +416,7 @@ export function setupBasketUI() {
             prev.etchName || localStorage.getItem("print2EtchName") || "",
         };
       });
-      localStorage.setItem(
-        "print2CheckoutItems",
-        JSON.stringify(checkoutItems),
-      );
+      writeCheckoutItems(checkoutItems);
     } catch {}
     closeBasket();
     if (location.pathname.endsWith("addons.html")) {
