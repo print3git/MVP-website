@@ -2,6 +2,11 @@
 import { shareOn } from "./share.js";
 import { track } from "./analytics.js";
 import {
+  readCheckoutItems,
+  writeCheckoutItems,
+  createCheckoutMatcher,
+} from "./checkout-storage.js";
+import {
   computeSlotsByTime,
   adjustedSlots,
   updatePrintRunInfo,
@@ -1087,8 +1092,20 @@ async function init() {
       sessionStorage.setItem(BASKET_ANIMATION_PENDING_KEY, "1");
     } catch {}
     try {
-      const items = window.getBasket ? window.getBasket() : [item];
-      localStorage.setItem("print2CheckoutItems", JSON.stringify(items));
+      const basketItems = window.getBasket ? window.getBasket() : null;
+      const items = Array.isArray(basketItems) && basketItems.length
+        ? basketItems
+        : [item];
+      const previous = readCheckoutItems();
+      const findPrevForItem = createCheckoutMatcher(previous);
+      const checkoutItems = items.map((basketItem, index) => {
+        const prev = findPrevForItem(basketItem, index);
+        return {
+          ...prev,
+          ...basketItem,
+        };
+      });
+      writeCheckoutItems(checkoutItems);
     } catch {}
     if (window.setWizardStage) window.setWizardStage("purchase");
   });
