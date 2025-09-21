@@ -24,6 +24,9 @@ try {
       ],
     },
     moduleFileExtensions: ["ts", "tsx", "js", "json", "mjs"],
+    moduleNameMapper: {
+      "^yaml$": "<rootDir>/node_modules/yaml/dist/index.js",
+    },
     testMatch: [
       "**/*.spec.ts",
       "**/*.spec.tsx",
