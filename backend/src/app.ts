@@ -105,6 +105,15 @@ try {
 
 try {
   (() => {
+    const r = require("./routes/profile");
+    app.use("/api", r.default || r);
+  })();
+} catch (err) {
+  logger.error("Failed to load profile router", err as Error);
+}
+
+try {
+  (() => {
     const r = require("./routes/rewards");
     app.use("/api", r.default || r);
   })();
