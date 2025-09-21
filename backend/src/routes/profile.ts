@@ -1,10 +1,39 @@
+import fs from "fs";
+import os from "os";
+import path from "path";
 import { Router, type Request, type Response } from "express";
+import multer from "multer";
 import { authRequired, userIdFromAuth } from "../lib/auth";
 import logger from "../logger";
+import { uploadFile } from "../lib/uploadS3";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const db = require("../../db");
 
 const router = Router();
+const upload = multer({ storage: multer.memoryStorage() });
+
+function sanitizeExtension(ext: string): string {
+  if (/^\.[a-z0-9]+$/i.test(ext)) {
+    return ext.toLowerCase();
+  }
+  return "";
+}
+
+function extensionFromMime(mime: string): string {
+  switch (mime) {
+    case "image/jpeg":
+    case "image/jpg":
+      return ".jpg";
+    case "image/png":
+      return ".png";
+    case "image/gif":
+      return ".gif";
+    case "image/webp":
+      return ".webp";
+    default:
+      return "";
+  }
+}
 
 router.get("/me", authRequired, async (req: Request, res: Response) => {
   const userId = userIdFromAuth(req);
@@ -102,6 +131,60 @@ router.get("/profile", authRequired, async (req: Request, res: Response) => {
     res.status(500).json({ error: "unexpected_error" });
   }
 });
+
+router.post(
+  "/profile/avatar",
+  authRequired,
+  upload.single("avatar"),
+  async (req: Request, res: Response) => {
+    const userId = userIdFromAuth(req);
+    if (!userId) {
+      res.status(401).json({ error: "unauthorized" });
+      return;
+    }
+
+    const file = req.file;
+    if (!file || !file.buffer?.length) {
+      res.status(400).json({ error: "missing_avatar" });
+      return;
+    }
+
+    const rawMime = typeof file.mimetype === "string" ? file.mimetype : "";
+    const contentType = /^[a-z0-9.+-]+\/[a-z0-9.+-]+$/i.test(rawMime)
+      ? rawMime
+      : "application/octet-stream";
+    const nameExt = sanitizeExtension(path.extname(file.originalname ?? ""));
+    const fallbackExt = extensionFromMime(contentType);
+    const ext = nameExt || fallbackExt || ".bin";
+    let tempPath: string | undefined;
+
+    try {
+      tempPath = path.join(os.tmpdir(), `avatar-${userId}-${Date.now()}${ext}`);
+      await fs.promises.writeFile(tempPath, file.buffer);
+      const avatarUrl = await uploadFile(tempPath, contentType);
+      await db.query(
+        `INSERT INTO user_profiles (user_id, avatar_url)
+         VALUES ($1,$2)
+         ON CONFLICT (user_id) DO UPDATE SET
+           avatar_url = EXCLUDED.avatar_url,
+           updated_at = NOW()`,
+        [userId, avatarUrl],
+      );
+      res.json({ avatarUrl });
+    } catch (err) {
+      logger.error("avatar_upload_failed", err as Error);
+      res.status(500).json({ error: "unexpected_error" });
+    } finally {
+      if (tempPath) {
+        try {
+          await fs.promises.unlink(tempPath);
+        } catch {
+          // ignore cleanup errors
+        }
+      }
+    }
+  },
+);
 
 router.post("/profile", authRequired, async (req: Request, res: Response) => {
   const userId = userIdFromAuth(req);
