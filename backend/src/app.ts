@@ -114,6 +114,15 @@ try {
 
 try {
   (() => {
+    const r = require("./routes/myModels");
+    app.use("/api/my/models", r.default || r);
+  })();
+} catch (err) {
+  logger.error("Failed to load my models router", err as Error);
+}
+
+try {
+  (() => {
     const r = require("./routes/rewards");
     app.use("/api", r.default || r);
   })();
