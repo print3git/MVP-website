@@ -1,16 +1,13 @@
+process.env.NODE_ENV = "test";
 process.env.STRIPE_SECRET_KEY = "test";
 process.env.STRIPE_WEBHOOK_SECRET = "whsec";
 process.env.DB_URL = "postgres://user:pass@localhost/db";
+process.env.S3_BUCKET = "test-bucket";
+process.env.CLOUDFRONT_MODEL_DOMAIN = "cdn.test";
 
-jest.mock("../db", () => ({
-  query: jest.fn().mockResolvedValue({ rows: [] }),
-  insertCommission: jest.fn().mockResolvedValue({}),
-  getUserCreations: jest.fn(),
-  insertCommunityComment: jest.fn(),
-  getCommunityComments: jest.fn(),
-  getOrCreateOrderReferralLink: jest.fn(),
-  insertReferredOrder: jest.fn(),
-}));
+const dbMock = require("./__mocks__/db.js");
+jest.mock("../db", () => dbMock);
+jest.mock("../../db", () => dbMock);
 const db = require("../db");
 
 jest.mock("../mail", () => ({ sendMail: jest.fn() }));
@@ -39,12 +36,10 @@ const { shouldSkipSuite } = require("./utils/shouldSkipSuite");
 
 const skipCommunity = shouldSkipSuite("/api/community");
 const communityTest = skipCommunity ? test.skip : test;
-const skipProfile = shouldSkipSuite("/api/profile");
-const profileTest = skipProfile ? test.skip : test;
+const profileTest = test;
 const skipCompetitions = shouldSkipSuite("/api/competitions");
 const competitionsTest = skipCompetitions ? test.skip : test;
-const skipMyModels = shouldSkipSuite("/api/my/models");
-const myModelsTest = skipMyModels ? test.skip : test;
+const myModelsTest = test;
 const skipUserModels = shouldSkipSuite("/api/users");
 const userModelsTest = skipUserModels ? test.skip : test;
 const skipModels = shouldSkipSuite("/api/models");
@@ -85,6 +80,7 @@ beforeAll(() => {
 beforeEach(() => {
   db.query.mockClear();
   db.insertCommission.mockClear();
+  db.getUserCreations.mockClear();
   axios.post.mockClear();
   sendMail.mockClear();
   stripeMock.checkout.sessions.create.mockResolvedValue({
@@ -94,78 +90,113 @@ beforeEach(() => {
 });
 
 myModelsTest("GET /api/my/models returns models", async () => {
-  db.query.mockResolvedValueOnce({ rows: [{ job_id: "j1" }] });
+  db.getUserCreations.mockResolvedValueOnce([
+    {
+      id: "m1",
+      job_id: "j1",
+      model_url: "https://cdn.test/models/j1.glb",
+      title: "Robot",
+      category: "scifi",
+      snapshot: "https://cdn.test/snap.png",
+      prompt: "make a robot",
+    },
+  ]);
   const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .get("/api/my/models")
     .set("authorization", `Bearer ${token}`);
   expect(res.status).toBe(200);
-  expect(res.body[0].job_id).toBe("j1");
+  expect(db.getUserCreations).toHaveBeenCalledWith("u1", 10, 0);
+  expect(res.body).toEqual([
+    {
+      id: "m1",
+      job_id: "j1",
+      model_url: "https://cdn.test/models/j1.glb",
+      title: "Robot",
+      category: "scifi",
+      snapshot: "https://cdn.test/snap.png",
+      prompt: "make a robot",
+    },
+  ]);
 });
 
-myModelsTest("GET /api/my/models includes snapshot", async () => {
-  db.query.mockResolvedValueOnce({
-    rows: [{ job_id: "j1", snapshot: "snap.png" }],
-  });
-  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
-  const res = await request(app)
-    .get("/api/my/models")
-    .set("authorization", `Bearer ${token}`);
-  expect(res.status).toBe(200);
-  expect(res.body[0].snapshot).toBeDefined();
-});
+myModelsTest(
+  "GET /api/my/models derives prompt from title when missing",
+  async () => {
+    db.getUserCreations.mockResolvedValueOnce([
+      {
+        id: "m2",
+        job_id: "j2",
+        model_url: "https://cdn.test/models/j2.glb",
+        title: "Dragon",
+        category: null,
+        snapshot: null,
+        prompt: null,
+      },
+    ]);
+    const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
+    const res = await request(app)
+      .get("/api/my/models")
+      .set("authorization", `Bearer ${token}`);
+    expect(res.status).toBe(200);
+    expect(res.body[0]).toEqual({
+      id: "m2",
+      job_id: "j2",
+      model_url: "https://cdn.test/models/j2.glb",
+      title: "Dragon",
+      category: null,
+      snapshot: null,
+      prompt: "Dragon",
+    });
+  },
+);
 
 myModelsTest("GET /api/my/models requires auth", async () => {
   const res = await request(app).get("/api/my/models");
   expect(res.status).toBe(401);
 });
 
-myModelsTest("GET /api/my/models ordered by date", async () => {
-  db.query.mockResolvedValueOnce({ rows: [] });
+myModelsTest("GET /api/my/models uses default pagination", async () => {
+  db.getUserCreations.mockResolvedValueOnce([]);
   const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   await request(app)
     .get("/api/my/models")
     .set("authorization", `Bearer ${token}`);
-  expect(db.query).toHaveBeenCalledWith(
-    expect.stringContaining("ORDER BY created_at DESC"),
-    ["u1", 10, 0],
-  );
+  expect(db.getUserCreations).toHaveBeenCalledWith("u1", 10, 0);
 });
 
 myModelsTest("GET /api/my/models supports pagination", async () => {
-  db.query.mockResolvedValueOnce({ rows: [] });
+  db.getUserCreations.mockResolvedValueOnce([]);
   const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   await request(app)
     .get("/api/my/models?limit=5&offset=2")
     .set("authorization", `Bearer ${token}`);
-  expect(db.query).toHaveBeenCalledWith(
-    expect.stringContaining("ORDER BY created_at DESC"),
-    ["u1", 5, 2],
-  );
-});
-
-myModelsTest("GET /api/my/models returns models sorted by date", async () => {
-  const rows = [
-    { job_id: "j2", created_at: "2024-01-02" },
-    { job_id: "j1", created_at: "2024-01-01" },
-  ];
-  db.query.mockResolvedValueOnce({ rows });
-  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
-  const res = await request(app)
-    .get("/api/my/models")
-    .set("authorization", `Bearer ${token}`);
-  expect(res.status).toBe(200);
-  expect(res.body.map((r) => r.job_id)).toEqual(["j2", "j1"]);
+  expect(db.getUserCreations).toHaveBeenCalledWith("u1", 5, 2);
 });
 
 profileTest("GET /api/profile returns profile", async () => {
-  db.query.mockResolvedValueOnce({ rows: [{ display_name: "A" }] });
+  const row = {
+    user_id: "u1",
+    email: "user@example.com",
+    username: "alice",
+    display_name: "Alice",
+    avatar_url: "https://cdn.test/avatar.png",
+    avatar_glb: "model.glb",
+    shipping_info: { city: "Seattle" },
+    payment_info: { brand: "visa" },
+    competition_notify: true,
+  };
+  db.query.mockResolvedValueOnce({ rows: [row] });
   const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   const res = await request(app)
     .get("/api/profile")
     .set("authorization", `Bearer ${token}`);
   expect(res.status).toBe(200);
-  expect(res.body.display_name).toBe("A");
+  expect(db.query).toHaveBeenCalledWith(
+    expect.stringContaining("FROM user_profiles p"),
+    ["u1"],
+  );
+  expect(res.body).toEqual(row);
 });
 
 profileTest("GET /api/profile 404 when missing", async () => {
@@ -189,25 +220,31 @@ userModelsTest("GET /api/users/:username/models returns models", async () => {
   expect(call[1]).toEqual(["u1", 10, 0]);
 });
 
-userModelsTest("GET /api/users/:username/models includes snapshot", async () => {
-  db.query
-    .mockResolvedValueOnce({ rows: [{ id: "u1" }] })
-    .mockResolvedValueOnce({
-      rows: [{ job_id: "j1", likes: 0, snapshot: "s.png" }],
-    });
-  const res = await request(app).get("/api/users/alice/models");
-  expect(res.status).toBe(200);
-  expect(res.body[0].snapshot).toBeDefined();
-});
+userModelsTest(
+  "GET /api/users/:username/models includes snapshot",
+  async () => {
+    db.query
+      .mockResolvedValueOnce({ rows: [{ id: "u1" }] })
+      .mockResolvedValueOnce({
+        rows: [{ job_id: "j1", likes: 0, snapshot: "s.png" }],
+      });
+    const res = await request(app).get("/api/users/alice/models");
+    expect(res.status).toBe(200);
+    expect(res.body[0].snapshot).toBeDefined();
+  },
+);
 
-userModelsTest("GET /api/users/:username/models supports pagination", async () => {
-  db.query
-    .mockResolvedValueOnce({ rows: [{ id: "u1" }] })
-    .mockResolvedValueOnce({ rows: [] });
-  await request(app).get("/api/users/alice/models?limit=3&offset=1");
-  const call = db.query.mock.calls.find((c) => c[0].includes("FROM jobs"));
-  expect(call[1]).toEqual(["u1", 3, 1]);
-});
+userModelsTest(
+  "GET /api/users/:username/models supports pagination",
+  async () => {
+    db.query
+      .mockResolvedValueOnce({ rows: [{ id: "u1" }] })
+      .mockResolvedValueOnce({ rows: [] });
+    await request(app).get("/api/users/alice/models?limit=3&offset=1");
+    const call = db.query.mock.calls.find((c) => c[0].includes("FROM jobs"));
+    expect(call[1]).toEqual(["u1", 3, 1]);
+  },
+);
 
 userModelsTest("GET /api/users/:username/models 404 when missing", async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
@@ -750,19 +787,22 @@ staticTest("static assets send cache headers", async () => {
   );
 });
 
-initDataTest("GET /api/init-data returns slots, stats, and profile", async () => {
-  const { _setDailyPrintsSold } = require("../utils/dailyPrints");
-  _setDailyPrintsSold(10);
-  db.query.mockResolvedValueOnce({ rows: [{ display_name: "A" }] });
-  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
-  const res = await request(app)
-    .get("/api/init-data")
-    .set("authorization", `Bearer ${token}`);
-  expect(res.status).toBe(200);
-  expect(typeof res.body.slots).toBe("number");
-  expect(res.body.stats.printsSold).toBe(10);
-  expect(res.body.profile.display_name).toBe("A");
-});
+initDataTest(
+  "GET /api/init-data returns slots, stats, and profile",
+  async () => {
+    const { _setDailyPrintsSold } = require("../utils/dailyPrints");
+    _setDailyPrintsSold(10);
+    db.query.mockResolvedValueOnce({ rows: [{ display_name: "A" }] });
+    const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
+    const res = await request(app)
+      .get("/api/init-data")
+      .set("authorization", `Bearer ${token}`);
+    expect(res.status).toBe(200);
+    expect(typeof res.body.slots).toBe("number");
+    expect(res.body.stats.printsSold).toBe(10);
+    expect(res.body.profile.display_name).toBe("A");
+  },
+);
 
 paymentInitTest("GET /api/payment-init bundles payment data", async () => {
   db.query

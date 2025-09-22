@@ -73,16 +73,44 @@ test("/api/me rejects invalid token", async () => {
 });
 
 test("/api/me returns user for valid token", async () => {
-  db.query
-    .mockResolvedValueOnce({
-      rows: [{ id: "u1", username: "alice", email: "a@a.com" }],
-    })
-    .mockResolvedValueOnce({ rows: [{ display_name: "Alice" }] });
+  db.query.mockResolvedValueOnce({
+    rows: [
+      {
+        id: "u1",
+        username: "alice",
+        email: "a@a.com",
+        display_name: "Alice",
+        avatar_url: "https://cdn.test/avatar.png",
+        avatar_glb: "model.glb",
+        shipping_info: { city: "Seattle" },
+        payment_info: { brand: "visa" },
+        competition_notify: true,
+      },
+    ],
+  });
   const token = jwt.sign({ id: "u1" }, AUTH_SECRET);
   const res = await request(app)
     .get("/api/me")
     .set("Authorization", `Bearer ${token}`);
+
   expect(res.status).toBe(200);
-  expect(res.body.username).toBe("alice");
-  expect(res.body.email).toBe("a@a.com");
+  expect(db.query).toHaveBeenCalledWith(
+    expect.stringContaining("LEFT JOIN user_profiles"),
+    ["u1"],
+  );
+  expect(res.body).toMatchObject({
+    id: "u1",
+    username: "alice",
+    email: "a@a.com",
+    avatarUrl: "https://cdn.test/avatar.png",
+    profile: {
+      user_id: "u1",
+      display_name: "Alice",
+      avatar_url: "https://cdn.test/avatar.png",
+      avatar_glb: "model.glb",
+      shipping_info: { city: "Seattle" },
+      payment_info: { brand: "visa" },
+      competition_notify: true,
+    },
+  });
 });

@@ -1,6 +1,9 @@
+process.env.NODE_ENV = "test";
 process.env.STRIPE_SECRET_KEY = "test";
 process.env.STRIPE_WEBHOOK_SECRET = "whsec";
 process.env.DB_URL = "postgres://user:pass@localhost/db";
+process.env.S3_BUCKET = "test-bucket";
+process.env.CLOUDFRONT_MODEL_DOMAIN = "cdn.test";
 
 // mock the database module using the same relative path as the app code
 jest.mock("../../db", () => ({
@@ -77,6 +80,12 @@ jest.mock("../shipping", () => ({
 }));
 const { getShippingEstimate } = require("../shipping");
 
+jest.mock("../src/lib/uploadS3", () => ({
+  uploadFile: jest.fn(),
+}));
+const uploadS3 = require("../src/lib/uploadS3") as { uploadFile: jest.Mock };
+const uploadFile = uploadS3.uploadFile;
+
 jest.mock(
   "../utils/captionService",
   () => ({
@@ -91,8 +100,7 @@ const { shouldSkipSuite } = require("./utils/shouldSkipSuite");
 
 const skipCommunity = shouldSkipSuite("/api/community");
 const communityTest = skipCommunity ? test.skip : test;
-const skipProfile = shouldSkipSuite("/api/profile");
-const profileTest = skipProfile ? test.skip : test;
+const profileTest = test;
 const fs = require("fs");
 const stream = require("stream");
 
@@ -113,6 +121,7 @@ beforeEach(() => {
   db.ensureCurrentWeekCredits.mockClear();
   db.getCurrentWeekCredits.mockClear();
   db.getUserIdForReferral.mockClear();
+  uploadFile.mockClear();
 });
 
 afterEach(() => {
@@ -248,9 +257,7 @@ test("create-order grants free print after three referrals", async () => {
 
 test("create-order rejects unknown job", async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
-  const res = await req()
-    .post("/api/create-order")
-    .send({ jobId: "bad" });
+  const res = await req().post("/api/create-order").send({ jobId: "bad" });
   expect(res.status).toBe(404);
 });
 
@@ -508,9 +515,7 @@ communityTest("GET /api/community/mine returns creations", async () => {
 });
 
 communityTest("POST /api/community/:id/comment requires auth", async () => {
-  const res = await req()
-    .post("/api/community/5/comment")
-    .send({ text: "hi" });
+  const res = await req().post("/api/community/5/comment").send({ text: "hi" });
   expect(res.status).toBe(401);
 });
 
@@ -682,40 +687,88 @@ test("GET /api/users/:username/profile 404 when missing", async () => {
 
 profileTest("GET /api/profile returns profile", async () => {
   const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
-  db.query.mockResolvedValueOnce({
-    rows: [
-      {
-        user_id: "u1",
-        shipping_info: {},
-        payment_info: {},
-        avatar_glb: "model.glb",
-      },
-    ],
-  });
+  const row = {
+    user_id: "u1",
+    email: "user@example.com",
+    username: "alice",
+    display_name: "Alice",
+    avatar_url: "https://cdn.test/avatar.png",
+    avatar_glb: "model.glb",
+    shipping_info: { city: "Seattle" },
+    payment_info: { brand: "visa" },
+    competition_notify: false,
+  };
+  db.query.mockResolvedValueOnce({ rows: [row] });
   const res = await req()
     .get("/api/profile")
     .set("authorization", `Bearer ${token}`);
   expect(res.status).toBe(200);
-  expect(res.body.user_id).toBe("u1");
-  expect(res.body.avatar_glb).toBe("model.glb");
+  expect(db.query).toHaveBeenCalledWith(
+    expect.stringContaining("FROM user_profiles p"),
+    ["u1"],
+  );
+  expect(res.body).toEqual(row);
 });
 
 profileTest("POST /api/profile saves details", async () => {
   const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
   db.query.mockResolvedValueOnce({});
+  const payload = {
+    displayName: "Alice",
+    avatarUrl: "https://cdn.test/avatar.png",
+    avatarGlb: "model.glb",
+    shippingInfo: { city: "Seattle" },
+    paymentInfo: { brand: "visa" },
+    competitionNotify: false,
+  };
   const res = await req()
     .post("/api/profile")
     .set("authorization", `Bearer ${token}`)
-    .send({
-      shippingInfo: { a: 1 },
-      paymentInfo: { b: 2 },
-      avatarGlb: "model.glb",
-    });
+    .send(payload);
+
   expect(res.status).toBe(204);
   const call = db.query.mock.calls.find((c) =>
     c[0].includes("INSERT INTO user_profiles"),
   );
   expect(call).toBeTruthy();
+  expect(call?.[1]).toEqual([
+    "u1",
+    payload.displayName,
+    payload.avatarUrl,
+    payload.avatarGlb,
+    payload.shippingInfo,
+    payload.paymentInfo,
+    payload.competitionNotify,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+  ]);
+});
+
+profileTest("POST /api/profile/avatar uploads avatar", async () => {
+  const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
+  uploadFile.mockResolvedValueOnce("https://cdn.test/avatar.png");
+  db.query.mockResolvedValueOnce({});
+
+  const res = await req()
+    .post("/api/profile/avatar")
+    .set("authorization", `Bearer ${token}`)
+    .attach("avatar", Buffer.from("data"), "avatar.png");
+
+  expect(res.status).toBe(200);
+  expect(uploadFile).toHaveBeenCalledTimes(1);
+  const [uploadedPath, contentType] = uploadFile.mock.calls[0];
+  expect(typeof uploadedPath).toBe("string");
+  expect(typeof contentType).toBe("string");
+  expect((contentType as string).length).toBeGreaterThan(0);
+  const queryCall = db.query.mock.calls.find((c) =>
+    c[0].includes("INSERT INTO user_profiles (user_id, avatar_url)"),
+  );
+  expect(queryCall?.[1]).toEqual(["u1", "https://cdn.test/avatar.png"]);
+  expect(res.body).toEqual({ avatarUrl: "https://cdn.test/avatar.png" });
 });
 
 test("POST /api/create-order saves user id", async () => {
@@ -876,9 +929,7 @@ test("POST /api/discount-code returns discount", async () => {
   db.query.mockResolvedValueOnce({
     rows: [{ id: 1, code: "SAVE5", amount_cents: 500 }],
   });
-  const res = await req()
-    .post("/api/discount-code")
-    .send({ code: "SAVE5" });
+  const res = await req().post("/api/discount-code").send({ code: "SAVE5" });
   expect(res.status).toBe(200);
   expect(res.body.discount).toBe(500);
   expect(db.query).toHaveBeenCalledWith(
@@ -889,9 +940,7 @@ test("POST /api/discount-code returns discount", async () => {
 
 test("POST /api/discount-code invalid", async () => {
   db.query.mockResolvedValueOnce({ rows: [] });
-  const res = await req()
-    .post("/api/discount-code")
-    .send({ code: "BAD" });
+  const res = await req().post("/api/discount-code").send({ code: "BAD" });
   expect(res.status).toBe(404);
 });
 
@@ -925,7 +974,6 @@ test("POST /api/dalle requires prompt", async () => {
   const res = await req().post("/api/dalle").send({});
   expect(res.status).toBe(400);
 });
-
 
 test("GET /api/dashboard returns aggregated info", async () => {
   const token = jwt.sign({ id: "u1" }, process.env.AUTH_SECRET || "secret");
