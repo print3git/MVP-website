@@ -54,6 +54,13 @@ try {
 }
 
 try {
+  const r = require("./routes/myModels");
+  app.use("/api/my/models", r.default || r);
+} catch (err) {
+  logger.error("Failed to load my models router", err);
+}
+
+try {
   (() => {
     const r = require("./routes/auth");
     app.use("/api", r.default || r);
