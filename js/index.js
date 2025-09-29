@@ -11,6 +11,7 @@ import {
   adjustedSlots,
   updatePrintRunInfo,
 } from "./print-slots.js";
+import { initDiscountDeliveryBanner as initDiscountDeliveryBannerCore } from "./discountDeliveryBanner.js";
 
 (() => {
   try {
@@ -838,69 +839,16 @@ if (refs.submitBtn && refs.promptInput && refs.viewer) {
   });
 }
 
-function initDiscountDeliveryBanner(bannerEl) {
-  if (!bannerEl) return;
-  const discountMsg = "24% off when you order 3 prints";
-  let countdownText = "";
-  let showDiscount = true;
-  bannerEl.style.opacity = "1";
-  bannerEl.style.transition = "opacity 1s";
-  bannerEl.textContent = discountMsg;
-
-  function getCountdownText() {
-    const now = new Date();
-    const day = now.getDay();
-    const friday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    friday.setDate(friday.getDate() + ((5 - day + 7) % 7));
-    const diff = friday - now;
-    if (day !== 0 && day !== 6 && diff > 0 && diff < 7 * 86400000) {
-      const hoursTotal = Math.floor(diff / 3600000);
-      const days = Math.floor(hoursTotal / 24);
-      const hours = hoursTotal % 24;
-      const minutes = Math.floor((diff % 3600000) / 60000);
-      const seconds = Math.floor((diff % 60000) / 1000);
-      const parts = [];
-      if (days > 0) parts.push(`${days}d`);
-      parts.push(`${hours.toString().padStart(2, "0")}h`);
-      parts.push(`${minutes.toString().padStart(2, "0")}m`);
-      parts.push(`${seconds.toString().padStart(2, "0")}s`);
-      return `${parts.join(" ")} left for weekend delivery`;
-    }
-    return "";
-  }
-
-  function refresh() {
-    countdownText = getCountdownText();
-    bannerEl.classList.remove("hidden");
-    if (!countdownText) {
-      showDiscount = true;
-      bannerEl.textContent = discountMsg;
-    } else if (!showDiscount) {
-      bannerEl.textContent = countdownText;
-    }
-  }
-
-  function scheduleCycle() {
-    setTimeout(cycle, 7000);
-  }
-
-  function cycle() {
-    if (!countdownText) {
-      scheduleCycle();
-      return;
-    }
-    bannerEl.style.opacity = "0";
-    setTimeout(() => {
-      showDiscount = !showDiscount;
-      bannerEl.textContent = showDiscount ? discountMsg : countdownText;
-      bannerEl.style.opacity = "1";
-    }, 1000);
-    scheduleCycle();
-  }
-
-  refresh();
-  setIntervalFn(refresh, 1000);
-  scheduleCycle();
+function initDiscountDeliveryBanner(bannerEl, options = {}) {
+  initDiscountDeliveryBannerCore(
+    bannerEl,
+    Object.assign(
+      {
+        scheduleInterval: (fn, interval) => setIntervalFn(fn, interval),
+      },
+      options,
+    ),
+  );
 }
 
 async function init() {
