@@ -455,6 +455,50 @@ function applyPopularViewer() {
   else grid.appendChild(viewer);
 }
 
+function getColumnCount(grid) {
+  const template = window.getComputedStyle(grid).gridTemplateColumns || "";
+  const repeatMatch = template.match(/repeat\((\d+)/);
+  if (repeatMatch) return parseInt(repeatMatch[1], 10) || 1;
+  const parts = template.split(" ").filter((part) => part.trim());
+  return parts.length || 1;
+}
+
+function balancePopularGrid(state) {
+  const grid = document.getElementById("popular-grid");
+  if (!grid || !state) return;
+  const cards = Array.from(
+    grid.querySelectorAll(".model-card:not(.viewer-card)"),
+  );
+  if (cards.length === 0) return;
+
+  const columns = getColumnCount(grid);
+  if (!columns || columns <= 1) return;
+
+  const viewer = grid.querySelector(".viewer-card");
+  let viewerSpan = viewer ? 1 : 0;
+  if (viewer) {
+    const rowEnd = window.getComputedStyle(viewer).gridRowEnd || "";
+    const match = rowEnd.match(/span\s*(\d+)/);
+    if (match) {
+      viewerSpan = parseInt(match[1], 10) || 1;
+    }
+  }
+  const advert = grid.querySelector(".popular-referral");
+  const extras = (viewerSpan || 0) + (advert ? 1 : 0);
+
+  let cardCount = cards.length;
+  while (columns && (cardCount + extras) % columns !== 0) {
+    const last = cards.pop();
+    if (!last) break;
+    last.remove();
+    cardCount -= 1;
+    if (state.models && state.models.length) state.models.pop();
+    if (typeof state.offset === "number" && state.offset > 0) {
+      state.offset -= 1;
+    }
+  }
+}
+
 function applyRecentViewer() {
   const grid = document.getElementById("recent-grid");
   if (!grid) return;
@@ -533,6 +577,7 @@ async function loadMore(type, filters = getFilters()) {
   await captureSnapshots(grid);
   if (type === "recent") applyRecentViewer();
   if (type === "popular") applyPopularViewer();
+  if (type === "popular") balancePopularGrid(state);
   const btn = document.getElementById(`${type}-load`);
   if (btn) {
     const effectiveCount =
@@ -571,6 +616,7 @@ function renderGrid(type, filters = getFilters()) {
         ? "w-full min-h-32 bg-[#2A2A2E] border border-dashed border-white/40 rounded-xl flex items-center justify-center text-sm p-2 row-start-1 sm:col-start-2 md:col-start-3"
         : "w-full min-h-32 bg-[#2A2A2E] border border-dashed border-white/40 rounded-xl flex items-center justify-center text-sm p-2 row-start-3 sm:col-start-2 md:col-start-2";
     advert.classList.add("flex-col");
+    if (type === "popular") advert.classList.add("popular-referral");
     const loggedIn = !!localStorage.getItem("token");
     const inputClass =
       "flex-1 bg-[#1A1A1D] border border-white/10 rounded-l-xl px-3 py-2 text-white placeholder-gray-500" +
@@ -606,6 +652,7 @@ function renderGrid(type, filters = getFilters()) {
     captureSnapshots(grid);
     if (type === "recent") applyRecentViewer();
     if (type === "popular") applyPopularViewer();
+    if (type === "popular") balancePopularGrid(state);
     const btn = document.getElementById(`${type}-load`);
     if (btn) {
       const threshold = 8;
