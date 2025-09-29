@@ -71,7 +71,14 @@
       id="theme-banner"
       class="bg-[#30D5C8] text-black text-center py-1 hidden sticky top-0 z-50"
     >
-      24% off when you buy from this community page
+      24% off when you order 3 prints from this community page.
+      <a
+        href="cart.html"
+        onclick="const basketBtn = document.getElementById('basket-button'); if (basketBtn) { basketBtn.click(); return false; }"
+        class="font-bold text-black visited:text-black"
+      >Add To Basket</a>,
+      then
+      <a href="payment.html" class="font-bold text-black visited:text-black">Buy</a>.
     </div>
     <div
       aria-hidden="true"
@@ -651,9 +658,12 @@
       import { initDiscountDeliveryBanner } from "./js/discountDeliveryBanner.js";
 
       const banner = document.getElementById("theme-banner");
-      initDiscountDeliveryBanner(banner, {
-        discountMessage: "24% off when you buy from this community page",
-      });
+      if (banner) {
+        const discountMessage =
+          banner.innerHTML.trim() ||
+          "24% off when you order 3 prints from this community page. Add To Basket, then Buy.";
+        initDiscountDeliveryBanner(banner, { discountMessage });
+      }
     </script>
   </body>
 </html>
