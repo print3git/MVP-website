@@ -106,6 +106,7 @@ const TZ = "America/New_York";
 let flashTimerId = null;
 let flashSale = null;
 let checkoutItems = [];
+let storedModel = "";
 let currentIndex = 0;
 let suppressCheckoutReload = false;
 let suppressCheckoutReloadTimer = null;
@@ -1042,13 +1043,27 @@ async function initPaymentPage() {
     viewerCounter.textContent = `${currentIndex + 1}/${checkoutItems.length}`;
     viewerCounter.classList.remove("hidden");
   }
+  function getDisplayedModelKey(item) {
+    const sanitized = sanitizeUrl(item?.modelUrl);
+    if (sanitized) return sanitized;
+    if (storedModel) return storedModel;
+    return FALLBACK_GLB;
+  }
+  function shouldShowViewerNavigation() {
+    if (checkoutItems.length <= 1) return false;
+    const uniqueModels = new Set();
+    checkoutItems.forEach((entry) => {
+      uniqueModels.add(getDisplayedModelKey(entry));
+    });
+    return uniqueModels.size > 1;
+  }
   function showItem(idx) {
     if (!checkoutItems.length) {
       updateViewerCounter();
       return;
     }
     currentIndex = (idx + checkoutItems.length) % checkoutItems.length;
-    const hasMultiple = checkoutItems.length > 1;
+    const hasMultiple = shouldShowViewerNavigation();
     if (prevBtn) {
       prevBtn.hidden = !hasMultiple;
       prevBtn.disabled = !hasMultiple;
@@ -1242,7 +1257,7 @@ async function initPaymentPage() {
       // ignore if the element never upgrades
     }
   }
-  const storedModel = sanitizeUrl(localStorage.getItem("print2Model"));
+  storedModel = sanitizeUrl(localStorage.getItem("print2Model"));
 
   // Load saved basket items unless this is the Luckybox page
   if (!window.location.pathname.endsWith("luckybox-payment.html")) {

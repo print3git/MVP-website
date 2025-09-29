@@ -1,4 +1,9 @@
 import { captureSnapshots } from "./snapshot.js";
+import {
+  updatePrintRunInfo,
+  adjustedSlots,
+  computeSlotsByTime,
+} from "./print-slots.js";
 
 (() => {
   try {
@@ -39,6 +44,164 @@ const API_BASE = (window.API_ORIGIN || "") + "/api";
 const OPEN_KEY = "print2CommunityOpen";
 const FALLBACK_GLB =
   "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
+
+const PRINT_RUN_OVERLAY_CLASS = "print-run-indicator";
+const PRINT_RUN_TZ = "America/New_York";
+const PRINT_RUN_TARGETS = [
+  { id: "popular-grid", count: 2 },
+  { id: "gallery-grid", count: 1 },
+  { id: "recent-grid", count: 1 },
+];
+let printRunBaseSlots = computeSlotsByTime();
+let activeCycleKey = getCycleKeyForCommunity();
+
+function getCycleKeyForCommunity() {
+  const now = new Date();
+  const dateFmt = new Intl.DateTimeFormat("en-US", {
+    timeZone: PRINT_RUN_TZ,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+  const hourFmt = new Intl.DateTimeFormat("en-US", {
+    timeZone: PRINT_RUN_TZ,
+    hour: "numeric",
+    hour12: false,
+  });
+  const dateStr = dateFmt.format(now);
+  const hour = parseInt(hourFmt.format(now), 10);
+  if (hour < 1) {
+    const prev = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    return dateFmt.format(prev);
+  }
+  return dateStr;
+}
+
+function hashString(str) {
+  let hash = 2166136261;
+  for (let i = 0; i < str.length; i += 1) {
+    hash ^= str.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  return hash >>> 0;
+}
+
+function getCardSectionId(card) {
+  const section = card.closest("#popular-grid, #gallery-grid, #recent-grid");
+  return section?.id || "";
+}
+
+function scoreCard(card, index, key) {
+  const identifier = `${card.dataset.model || ""}|${card.dataset.job || ""}`;
+  return hashString(`${key}|${identifier}|${index}`);
+}
+
+function selectCardsForOverlay(cards, key) {
+  if (!cards.length) return [];
+  const entries = cards.map((card, index) => ({
+    card,
+    section: getCardSectionId(card),
+    score: scoreCard(card, index, key),
+  }));
+
+  const chosen = new Set();
+  const selected = [];
+
+  PRINT_RUN_TARGETS.forEach(({ id, count }) => {
+    if (!count) return;
+    const sectionCards = entries
+      .filter((entry) => entry.section === id)
+      .sort((a, b) => a.score - b.score);
+    for (let i = 0; i < Math.min(count, sectionCards.length); i += 1) {
+      const card = sectionCards[i].card;
+      if (chosen.has(card)) continue;
+      chosen.add(card);
+      selected.push(sectionCards[i]);
+    }
+  });
+
+  if (selected.length < Math.min(4, entries.length)) {
+    const remaining = entries
+      .filter((entry) => !chosen.has(entry.card))
+      .sort((a, b) => a.score - b.score);
+    for (const entry of remaining) {
+      chosen.add(entry.card);
+      selected.push(entry);
+      if (selected.length >= Math.min(4, entries.length)) break;
+    }
+  }
+
+  return selected.map((entry) => entry.card).slice(0, 4);
+}
+
+function getAdjustedSlotsCount() {
+  return adjustedSlots(printRunBaseSlots);
+}
+
+function updateOverlayText() {
+  const slots = getAdjustedSlotsCount();
+  document
+    .querySelectorAll(`.${PRINT_RUN_OVERLAY_CLASS} [data-print-run-slots]`)
+    .forEach((el) => {
+      el.textContent = slots;
+    });
+}
+
+function ensureOverlay(card) {
+  let overlay = card.querySelector(`.${PRINT_RUN_OVERLAY_CLASS}`);
+  if (!overlay) {
+    overlay = document.createElement("div");
+    overlay.className = `${PRINT_RUN_OVERLAY_CLASS} absolute top-2 left-2 text-xs sm:text-sm text-red-400 leading-snug font-semibold pointer-events-none`;
+    overlay.innerHTML =
+      'Only <span data-print-run-slots></span> prints remaining';
+    card.appendChild(overlay);
+  }
+  return overlay;
+}
+
+function applyPrintRunHighlights() {
+  const allCards = Array.from(
+    document.querySelectorAll(
+      ".model-card:not(.viewer-card)[data-model]",
+    ),
+  );
+  const key = getCycleKeyForCommunity();
+  const selectedCards = selectCardsForOverlay(allCards, key);
+  const selectedSet = new Set(selectedCards);
+
+  allCards.forEach((card) => {
+    const overlay = card.querySelector(`.${PRINT_RUN_OVERLAY_CLASS}`);
+    if (overlay && !selectedSet.has(card)) {
+      overlay.remove();
+    }
+  });
+
+  selectedCards.forEach((card) => {
+    ensureOverlay(card);
+  });
+
+  updateOverlayText();
+}
+
+async function refreshPrintRunInfo() {
+  const base = await updatePrintRunInfo();
+  if (typeof base === "number") {
+    printRunBaseSlots = base;
+  } else {
+    printRunBaseSlots = computeSlotsByTime();
+  }
+  updateOverlayText();
+  const key = getCycleKeyForCommunity();
+  if (key !== activeCycleKey) {
+    activeCycleKey = key;
+    applyPrintRunHighlights();
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  refreshPrintRunInfo();
+  window.setInterval(refreshPrintRunInfo, 60000);
+});
 
 function handleModelError(e) {
   const img = document.createElement("img");
@@ -463,40 +626,58 @@ function getColumnCount(grid) {
   return parts.length || 1;
 }
 
-function balancePopularGrid(state) {
+function getRowSpan(element) {
+  if (!element) return 0;
+  const rowEnd = window.getComputedStyle(element).gridRowEnd || "";
+  const match = rowEnd.match(/span\s*(\d+)/i);
+  if (match) {
+    const span = parseInt(match[1], 10);
+    if (!Number.isNaN(span) && span > 0) return span;
+  }
+  return element.classList.contains("viewer-card") ? 3 : 1;
+}
+
+function getPopularRemainder() {
   const grid = document.getElementById("popular-grid");
-  if (!grid || !state) return;
+  if (!grid) return 0;
+  const columns = getColumnCount(grid);
+  if (!columns || columns <= 1) return 0;
+  const viewer = grid.querySelector(".viewer-card");
+  const advert = grid.querySelector(".popular-referral");
+  const cards = grid.querySelectorAll(".model-card:not(.viewer-card)");
+  const units =
+    cards.length +
+    (viewer ? getRowSpan(viewer) : 0) +
+    (advert ? getRowSpan(advert) : 0);
+  return units % columns;
+}
+
+function balancePopularGrid(state, adjustOffset = false) {
+  const grid = document.getElementById("popular-grid");
+  if (!grid || !state) return 0;
+
+  const remainder = getPopularRemainder();
+  if (!remainder) return 0;
+
   const cards = Array.from(
     grid.querySelectorAll(".model-card:not(.viewer-card)"),
   );
-  if (cards.length === 0) return;
-
-  const columns = getColumnCount(grid);
-  if (!columns || columns <= 1) return;
-
-  const viewer = grid.querySelector(".viewer-card");
-  let viewerSpan = viewer ? 1 : 0;
-  if (viewer) {
-    const rowEnd = window.getComputedStyle(viewer).gridRowEnd || "";
-    const match = rowEnd.match(/span\s*(\d+)/);
-    if (match) {
-      viewerSpan = parseInt(match[1], 10) || 1;
-    }
-  }
-  const advert = grid.querySelector(".popular-referral");
-  const extras = (viewerSpan || 0) + (advert ? 1 : 0);
-
-  let cardCount = cards.length;
-  while (columns && (cardCount + extras) % columns !== 0) {
+  let removed = 0;
+  while (cards.length && removed < remainder) {
     const last = cards.pop();
     if (!last) break;
     last.remove();
-    cardCount -= 1;
+    removed += 1;
     if (state.models && state.models.length) state.models.pop();
-    if (typeof state.offset === "number" && state.offset > 0) {
-      state.offset -= 1;
+    if (
+      adjustOffset &&
+      typeof state.offset === "number" &&
+      state.offset > 0
+    ) {
+      state.offset = Math.max(0, state.offset - 1);
     }
   }
+  return removed;
 }
 
 function applyRecentViewer() {
@@ -538,6 +719,7 @@ function addRecentModel(model) {
   }
   captureSnapshots(grid);
   applyRecentViewer();
+  applyPrintRunHighlights();
 }
 
 function getFilters() {
@@ -553,56 +735,118 @@ async function loadMore(type, filters = getFilters()) {
   if (!cache[key]) cache[key] = { offset: 0, models: [] };
   const state = cache[key];
   const offsetBefore = state.offset;
-  const limit =
-    type === "recent" && offsetBefore === 0 ? 8 : type === "popular" ? 12 : 9;
-  let models = await fetchCreations(
-    type,
-    state.offset,
-    limit,
-    category,
-    search,
-    order,
-  );
-  if (models.length === 0) {
-    models = getFallbackModels(limit, state.offset);
-  }
-  const fetchedCount = models.length;
-  models = models.filter(
-    (m) => m && (m.placeholder || (m.model_url && m.snapshot)),
-  );
-  state.offset += fetchedCount;
-  state.models = state.models.concat(models);
+  const isPopular = type === "popular";
+  const isRecent = type === "recent";
+  const baseLimit = isRecent && offsetBefore === 0 ? 8 : isPopular ? 12 : 9;
   const grid = document.getElementById(`${type}-grid`);
-  models.forEach((m) => grid.appendChild(createCard(m)));
+  if (!grid) return;
+
+  if (!isPopular) {
+    let models = await fetchCreations(
+      type,
+      state.offset,
+      baseLimit,
+      category,
+      search,
+      order,
+    );
+    if (models.length === 0) {
+      models = getFallbackModels(baseLimit, state.offset);
+    }
+    const fetchedCount = models.length;
+    models = models.filter(
+      (m) => m && (m.placeholder || (m.model_url && m.snapshot)),
+    );
+    state.offset += fetchedCount;
+    state.models = state.models.concat(models);
+    models.forEach((m) => grid.appendChild(createCard(m)));
+    await captureSnapshots(grid);
+    if (isRecent) applyRecentViewer();
+    const btn = document.getElementById(`${type}-load`);
+    if (btn) {
+      if (models.length < baseLimit) {
+        btn.classList.add("hidden");
+      } else {
+        btn.classList.remove("hidden");
+      }
+    }
+    if (isRecent) {
+      const hasViewer = !!grid.querySelector(".viewer-card");
+      let models = Array.from(
+        grid.querySelectorAll(".model-card:not(.viewer-card)"),
+      );
+      const base = hasViewer ? 5 : 0;
+      while ((models.length - base) % 3 !== 0) {
+        const last = models.pop();
+        if (!last) break;
+        last.remove();
+        state.models.pop();
+        state.offset -= 1;
+      }
+    }
+    saveState();
+    return;
+  }
+
+  let limit = baseLimit;
+  let iterations = 0;
+  let appended = 0;
+  let reachedEnd = false;
+  while (iterations < 10) {
+    let models = await fetchCreations(
+      type,
+      state.offset,
+      limit,
+      category,
+      search,
+      order,
+    );
+    const fetchedCount = models.length;
+    if (fetchedCount === 0) {
+      reachedEnd = true;
+      models = getFallbackModels(limit, state.offset);
+    }
+    models = models.filter(
+      (m) => m && (m.placeholder || (m.model_url && m.snapshot)),
+    );
+    if (fetchedCount) state.offset += fetchedCount;
+    if (models.length) {
+      state.models = state.models.concat(models);
+      models.forEach((m) => grid.appendChild(createCard(m)));
+      appended += models.length;
+    }
+
+    applyPopularViewer();
+    const remainder = getPopularRemainder();
+    if (!remainder) {
+      reachedEnd = fetchedCount < limit || reachedEnd;
+      break;
+    }
+    if (fetchedCount === 0 || fetchedCount < limit) {
+      reachedEnd = true;
+      balancePopularGrid(state, true);
+      break;
+    }
+    limit = remainder;
+    iterations += 1;
+  }
+
   await captureSnapshots(grid);
-  if (type === "recent") applyRecentViewer();
-  if (type === "popular") applyPopularViewer();
-  if (type === "popular") balancePopularGrid(state);
+  applyPopularViewer();
+  if (getPopularRemainder()) {
+    balancePopularGrid(state, true);
+    applyPopularViewer();
+  }
   const btn = document.getElementById(`${type}-load`);
   if (btn) {
-    const effectiveCount =
-      type === "popular" && offsetBefore === 0 ? fetchedCount : models.length;
-    if (effectiveCount < limit) {
+    if (appended === 0 || reachedEnd) {
       btn.classList.add("hidden");
     } else {
       btn.classList.remove("hidden");
     }
   }
-  if (type === "recent") {
-    const hasViewer = !!grid.querySelector(".viewer-card");
-    let models = Array.from(
-      grid.querySelectorAll(".model-card:not(.viewer-card)"),
-    );
-    const base = hasViewer ? 5 : 0;
-    while ((models.length - base) % 3 !== 0) {
-      const last = models.pop();
-      if (!last) break;
-      last.remove();
-      state.models.pop();
-      state.offset -= 1;
-    }
-  }
   saveState();
+  applyPrintRunHighlights();
 }
 
 function renderGrid(type, filters = getFilters()) {
@@ -664,6 +908,7 @@ function renderGrid(type, filters = getFilters()) {
     state = window.communityState[type][key];
   }
   if (state) state.loading = false;
+  applyPrintRunHighlights();
 }
 
 // IntersectionObserver support has been removed in favor of explicit "More"
