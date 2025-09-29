@@ -67,6 +67,16 @@
     </style>
   </head>
   <body class="bg-[#1A1A1D] text-white font-sans flex flex-col min-h-screen">
+    <div
+      aria-hidden="true"
+      style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;"
+    >
+      <div id="print-run-info" class="invisible">
+        Only <span id="print-run-slots"></span> prints left
+        for next <span id="print-run-hours"></span>
+        <span id="print-run-hours-label"></span>
+      </div>
+    </div>
     <!-- Header -->
     <header class="relative flex items-center py-4 px-6">
       <div class="flex items-center flex-1">
