@@ -565,7 +565,7 @@ function createViewerCard(modelUrl) {
     "viewer-card model-card relative bg-[#2A2A2E] border border-white/10 rounded-xl flex items-stretch justify-center cursor-pointer h-full row-span-1 sm:row-span-2 sm:col-start-2 md:row-span-3 md:col-start-3";
 
   div.dataset.model = modelUrl;
-  div.innerHTML = `<model-viewer src="${modelUrl}" alt="3D model preview" poster="images/box logo.png" environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr" camera-controls auto-rotate loading="lazy" class="w-full h-full min-h-0 flex-1 bg-[#2A2A2E] rounded-xl"></model-viewer>\n    <button class="purchase absolute bottom-1 right-1 font-bold text-lg py-1.5 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]" style="transform: scale(0.78); transform-origin: right bottom;">Buy from £29.99</button>`;
+  div.innerHTML = `<span class="absolute top-2 left-2 z-10 text-xs sm:text-sm font-semibold text-red-400 bg-black/60 px-3 py-1 rounded-full pointer-events-none">🔥 #1 Bestseller</span>\n    <model-viewer src="${modelUrl}" alt="3D model preview" poster="images/box logo.png" environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr" camera-controls auto-rotate loading="lazy" class="w-full h-full min-h-0 flex-1 bg-[#2A2A2E] rounded-xl"></model-viewer>\n    <button class="purchase absolute bottom-1 right-1 font-bold text-lg py-1.5 px-4 rounded-full shadow-md transition border-2 border-black bg-[#30D5C8] text-[#1A1A1D]" style="transform: scale(0.78); transform-origin: right bottom;">Buy from £29.99</button>`;
   const viewer = div.querySelector("model-viewer");
   viewer.addEventListener("error", handleModelError);
   div.addEventListener("pointerenter", () => prefetchModel(modelUrl));
