@@ -71,6 +71,14 @@ describe("Discount/delivery banner", () => {
     expect(banner.style.opacity).toBe("1");
   });
 
+  test("respects a custom discount message supplied via dataset", () => {
+    document.body.innerHTML =
+      '<div id="theme-banner" data-discount-message="Community deal"></div>';
+    const customBanner = document.getElementById("theme-banner");
+    initDiscountDeliveryBanner(customBanner);
+    expect(customBanner.textContent).toBe("Community deal");
+  });
+
   test("opacity resets after transition", () => {
     advance(7000);
     advance(1000);

@@ -838,9 +838,12 @@ if (refs.submitBtn && refs.promptInput && refs.viewer) {
   });
 }
 
-function initDiscountDeliveryBanner(bannerEl) {
+function initDiscountDeliveryBanner(bannerEl, options = {}) {
   if (!bannerEl) return;
-  const discountMsg = "24% off when you order 3 prints";
+  const discountMsg =
+    options.discountMessage ||
+    bannerEl.dataset.discountMessage ||
+    "24% off when you order 3 prints";
   let countdownText = "";
   let showDiscount = true;
   bannerEl.style.opacity = "1";

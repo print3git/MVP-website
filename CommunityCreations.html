@@ -67,6 +67,13 @@
     </style>
   </head>
   <body class="bg-[#1A1A1D] text-white font-sans flex flex-col min-h-screen">
+    <div
+      id="theme-banner"
+      class="bg-[#30D5C8] text-black text-center py-1 hidden sticky top-0 z-50 w-full"
+      data-discount-message="24% off when you order 3 prints – when you buy from this community page"
+    >
+      24% off when you order 3 prints – when you buy from this community page
+    </div>
     <!-- Header -->
     <header class="relative flex items-center py-4 px-6">
       <div class="flex items-center flex-1">
@@ -468,6 +475,7 @@
         loadReferralLink,
         copyReferralLink,
       } from "./js/community.js";
+      import { initDiscountDeliveryBanner } from "./js/index.js";
       window.shareOn = shareOn;
       window.copyReferralLink = copyReferralLink;
 
@@ -477,6 +485,10 @@
         const addBasketBtn = document.getElementById("modal-add-basket");
         const closeBtn = document.getElementById("close-modal");
         const tierToggle = document.getElementById("tier-toggle");
+        const banner = document.getElementById("theme-banner");
+        if (banner) {
+          initDiscountDeliveryBanner(banner);
+        }
         document
           .querySelectorAll('a[href="login.html"], a[href="signup.html"]')
           .forEach((el) => {
