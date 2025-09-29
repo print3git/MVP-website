@@ -1,4 +1,9 @@
 import { captureSnapshots } from "./snapshot.js";
+import {
+  updatePrintRunInfo,
+  adjustedSlots,
+  computeSlotsByTime,
+} from "./print-slots.js";
 
 (() => {
   try {
@@ -39,6 +44,164 @@ const API_BASE = (window.API_ORIGIN || "") + "/api";
 const OPEN_KEY = "print2CommunityOpen";
 const FALLBACK_GLB =
   "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
+
+const PRINT_RUN_OVERLAY_CLASS = "print-run-indicator";
+const PRINT_RUN_TZ = "America/New_York";
+const PRINT_RUN_TARGETS = [
+  { id: "popular-grid", count: 2 },
+  { id: "gallery-grid", count: 1 },
+  { id: "recent-grid", count: 1 },
+];
+let printRunBaseSlots = computeSlotsByTime();
+let activeCycleKey = getCycleKeyForCommunity();
+
+function getCycleKeyForCommunity() {
+  const now = new Date();
+  const dateFmt = new Intl.DateTimeFormat("en-US", {
+    timeZone: PRINT_RUN_TZ,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+  const hourFmt = new Intl.DateTimeFormat("en-US", {
+    timeZone: PRINT_RUN_TZ,
+    hour: "numeric",
+    hour12: false,
+  });
+  const dateStr = dateFmt.format(now);
+  const hour = parseInt(hourFmt.format(now), 10);
+  if (hour < 1) {
+    const prev = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    return dateFmt.format(prev);
+  }
+  return dateStr;
+}
+
+function hashString(str) {
+  let hash = 2166136261;
+  for (let i = 0; i < str.length; i += 1) {
+    hash ^= str.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  return hash >>> 0;
+}
+
+function getCardSectionId(card) {
+  const section = card.closest("#popular-grid, #gallery-grid, #recent-grid");
+  return section?.id || "";
+}
+
+function scoreCard(card, index, key) {
+  const identifier = `${card.dataset.model || ""}|${card.dataset.job || ""}`;
+  return hashString(`${key}|${identifier}|${index}`);
+}
+
+function selectCardsForOverlay(cards, key) {
+  if (!cards.length) return [];
+  const entries = cards.map((card, index) => ({
+    card,
+    section: getCardSectionId(card),
+    score: scoreCard(card, index, key),
+  }));
+
+  const chosen = new Set();
+  const selected = [];
+
+  PRINT_RUN_TARGETS.forEach(({ id, count }) => {
+    if (!count) return;
+    const sectionCards = entries
+      .filter((entry) => entry.section === id)
+      .sort((a, b) => a.score - b.score);
+    for (let i = 0; i < Math.min(count, sectionCards.length); i += 1) {
+      const card = sectionCards[i].card;
+      if (chosen.has(card)) continue;
+      chosen.add(card);
+      selected.push(sectionCards[i]);
+    }
+  });
+
+  if (selected.length < Math.min(4, entries.length)) {
+    const remaining = entries
+      .filter((entry) => !chosen.has(entry.card))
+      .sort((a, b) => a.score - b.score);
+    for (const entry of remaining) {
+      chosen.add(entry.card);
+      selected.push(entry);
+      if (selected.length >= Math.min(4, entries.length)) break;
+    }
+  }
+
+  return selected.map((entry) => entry.card).slice(0, 4);
+}
+
+function getAdjustedSlotsCount() {
+  return adjustedSlots(printRunBaseSlots);
+}
+
+function updateOverlayText() {
+  const slots = getAdjustedSlotsCount();
+  document
+    .querySelectorAll(`.${PRINT_RUN_OVERLAY_CLASS} [data-print-run-slots]`)
+    .forEach((el) => {
+      el.textContent = slots;
+    });
+}
+
+function ensureOverlay(card) {
+  let overlay = card.querySelector(`.${PRINT_RUN_OVERLAY_CLASS}`);
+  if (!overlay) {
+    overlay = document.createElement("div");
+    overlay.className = `${PRINT_RUN_OVERLAY_CLASS} absolute top-2 left-2 text-xs sm:text-sm text-red-400 leading-snug font-semibold pointer-events-none`;
+    overlay.innerHTML =
+      'Only <span data-print-run-slots></span> prints remaining';
+    card.appendChild(overlay);
+  }
+  return overlay;
+}
+
+function applyPrintRunHighlights() {
+  const allCards = Array.from(
+    document.querySelectorAll(
+      ".model-card:not(.viewer-card)[data-model]",
+    ),
+  );
+  const key = getCycleKeyForCommunity();
+  const selectedCards = selectCardsForOverlay(allCards, key);
+  const selectedSet = new Set(selectedCards);
+
+  allCards.forEach((card) => {
+    const overlay = card.querySelector(`.${PRINT_RUN_OVERLAY_CLASS}`);
+    if (overlay && !selectedSet.has(card)) {
+      overlay.remove();
+    }
+  });
+
+  selectedCards.forEach((card) => {
+    ensureOverlay(card);
+  });
+
+  updateOverlayText();
+}
+
+async function refreshPrintRunInfo() {
+  const base = await updatePrintRunInfo();
+  if (typeof base === "number") {
+    printRunBaseSlots = base;
+  } else {
+    printRunBaseSlots = computeSlotsByTime();
+  }
+  updateOverlayText();
+  const key = getCycleKeyForCommunity();
+  if (key !== activeCycleKey) {
+    activeCycleKey = key;
+    applyPrintRunHighlights();
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  refreshPrintRunInfo();
+  window.setInterval(refreshPrintRunInfo, 60000);
+});
 
 function handleModelError(e) {
   const img = document.createElement("img");
@@ -538,6 +701,7 @@ function addRecentModel(model) {
   }
   captureSnapshots(grid);
   applyRecentViewer();
+  applyPrintRunHighlights();
 }
 
 function getFilters() {
@@ -603,6 +767,7 @@ async function loadMore(type, filters = getFilters()) {
     }
   }
   saveState();
+  applyPrintRunHighlights();
 }
 
 function renderGrid(type, filters = getFilters()) {
@@ -664,6 +829,7 @@ function renderGrid(type, filters = getFilters()) {
     state = window.communityState[type][key];
   }
   if (state) state.loading = false;
+  applyPrintRunHighlights();
 }
 
 // IntersectionObserver support has been removed in favor of explicit "More"
