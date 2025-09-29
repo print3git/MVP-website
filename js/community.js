@@ -597,25 +597,53 @@ function applyPopularViewer() {
   const grid = document.getElementById("popular-grid");
   if (!grid) return;
 
-  const existing = grid.querySelector(".viewer-card");
-  if (existing) existing.remove();
+  const cards = Array.from(
+    grid.querySelectorAll(".model-card:not(.viewer-card)"),
+  ).filter((card) => !card.classList.contains("popular-referral"));
 
-  const cards = Array.from(grid.children);
-  if (cards.length < 2) return;
-  const modelUrl = cards[1].dataset.model;
+  const models = cards.filter((card) => card.dataset.model);
+  if (models.length < 2) return;
+
+  const modelCard = models[1];
+  const modelUrl = modelCard?.dataset?.model;
   if (!modelUrl) return;
 
-  const toRemove = [];
-  for (let i = 2; i < Math.min(cards.length, 9); i += 3) {
-    if (cards[i]) toRemove.push(cards[i]);
+  const nextViewer = createViewerCard(modelUrl);
+  const existingViewer = grid.querySelector(".viewer-card");
+  if (existingViewer) {
+    existingViewer.replaceWith(nextViewer);
+    return;
   }
-  toRemove.forEach((el) => el.remove());
 
-  const viewer = createViewerCard(modelUrl);
+  const columns = getColumnCount(grid);
+  if (columns < 1) {
+    grid.appendChild(nextViewer);
+    return;
+  }
 
-  const insertBefore = grid.children[2];
-  if (insertBefore) grid.insertBefore(viewer, insertBefore);
-  else grid.appendChild(viewer);
+  const targetColumn = Math.min(columns, 3) - 1;
+  if (targetColumn < 0) {
+    grid.appendChild(nextViewer);
+    return;
+  }
+
+  grid.appendChild(nextViewer);
+  const viewerSpan = Math.max(1, getRowSpan(nextViewer));
+  nextViewer.remove();
+
+  const overlapping = [];
+  for (let row = 0; row < viewerSpan; row += 1) {
+    const index = row * columns + targetColumn;
+    const card = models[index];
+    if (card && card !== modelCard) overlapping.push(card);
+  }
+
+  const reference = overlapping[0] || models[targetColumn] || null;
+  if (reference) grid.insertBefore(nextViewer, reference);
+  else grid.appendChild(nextViewer);
+
+  overlapping.forEach((card) => card.remove());
+  overlapping.forEach((card) => grid.appendChild(card));
 }
 
 function getColumnCount(grid) {
