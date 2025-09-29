@@ -21,7 +21,13 @@ function initDiscountDeliveryBanner(
   if (!bannerEl.style.zIndex) bannerEl.style.zIndex = "50";
   if (!bannerEl.classList.contains("w-full")) bannerEl.classList.add("w-full");
 
-  bannerEl.textContent = discountMessage;
+  const discountMarkup = discountMessage;
+
+  function setDiscountMessage() {
+    bannerEl.innerHTML = discountMarkup;
+  }
+
+  setDiscountMessage();
 
   function getCountdownText() {
     const now = getNow();
@@ -50,7 +56,7 @@ function initDiscountDeliveryBanner(
     bannerEl.classList.remove("hidden");
     if (!countdownText) {
       showDiscount = true;
-      bannerEl.textContent = discountMessage;
+      setDiscountMessage();
     } else if (!showDiscount) {
       bannerEl.textContent = countdownText;
     }
@@ -68,7 +74,11 @@ function initDiscountDeliveryBanner(
     bannerEl.style.opacity = "0";
     scheduleTimeout(() => {
       showDiscount = !showDiscount;
-      bannerEl.textContent = showDiscount ? discountMessage : countdownText;
+      if (showDiscount) {
+        setDiscountMessage();
+      } else {
+        bannerEl.textContent = countdownText;
+      }
       bannerEl.style.opacity = "1";
     }, 1000);
     scheduleCycle();
