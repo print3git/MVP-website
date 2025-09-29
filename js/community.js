@@ -593,6 +593,33 @@ function createViewerCard(modelUrl) {
   return div;
 }
 
+function removeCardFromState(card, state, adjustOffset = true) {
+  if (!card || !state || !Array.isArray(state.models)) return false;
+  const jobId = card.dataset?.job;
+  const modelUrl = card.dataset?.model;
+  if (!jobId && !modelUrl) return false;
+  const index = state.models.findIndex((entry) => {
+    if (!entry) return false;
+    if (jobId && entry.job_id != null) {
+      return String(entry.job_id) === jobId;
+    }
+    if (modelUrl && entry.model_url) {
+      return entry.model_url === modelUrl;
+    }
+    return false;
+  });
+  if (index === -1) return false;
+  state.models.splice(index, 1);
+  if (
+    adjustOffset &&
+    typeof state.offset === "number" &&
+    state.offset > 0
+  ) {
+    state.offset = Math.max(0, state.offset - 1);
+  }
+  return true;
+}
+
 function applyPopularViewer() {
   const grid = document.getElementById("popular-grid");
   if (!grid) return;
@@ -607,9 +634,30 @@ function applyPopularViewer() {
 
   const toRemove = [];
   for (let i = 2; i < Math.min(cards.length, 9); i += 3) {
-    if (cards[i]) toRemove.push(cards[i]);
+    const card = cards[i];
+    if (
+      card &&
+      card.classList?.contains("model-card") &&
+      !card.classList.contains("viewer-card")
+    ) {
+      toRemove.push(card);
+    }
+  }
+
+  let stateChanged = false;
+  if (toRemove.length) {
+    const filters = getFilters();
+    const stateKey = filters?.key;
+    const state = window.communityState?.popular?.[stateKey];
+    if (state) {
+      toRemove.forEach((card) => {
+        if (removeCardFromState(card, state, true)) stateChanged = true;
+      });
+    }
   }
   toRemove.forEach((el) => el.remove());
+
+  if (stateChanged && typeof saveState === "function") saveState();
 
   const viewer = createViewerCard(modelUrl);
 
@@ -663,20 +711,17 @@ function balancePopularGrid(state, adjustOffset = false) {
     grid.querySelectorAll(".model-card:not(.viewer-card)"),
   );
   let removed = 0;
+  let stateChanged = false;
   while (cards.length && removed < remainder) {
     const last = cards.pop();
     if (!last) break;
+    if (removeCardFromState(last, state, adjustOffset)) {
+      stateChanged = true;
+    }
     last.remove();
     removed += 1;
-    if (state.models && state.models.length) state.models.pop();
-    if (
-      adjustOffset &&
-      typeof state.offset === "number" &&
-      state.offset > 0
-    ) {
-      state.offset = Math.max(0, state.offset - 1);
-    }
   }
+  if (stateChanged && typeof saveState === "function") saveState();
   return removed;
 }
 
