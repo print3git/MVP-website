@@ -817,6 +817,7 @@ async function loadMore(type, filters = getFilters()) {
     }
 
     applyPopularViewer();
+    const columns = getColumnCount(grid);
     const remainder = getPopularRemainder();
     if (!remainder) {
       reachedEnd = fetchedCount < limit || reachedEnd;
@@ -827,7 +828,12 @@ async function loadMore(type, filters = getFilters()) {
       balancePopularGrid(state, true);
       break;
     }
-    limit = remainder;
+    const complement = columns - remainder;
+    if (complement <= 0) {
+      iterations += 1;
+      continue;
+    }
+    limit = complement;
     iterations += 1;
   }
 
