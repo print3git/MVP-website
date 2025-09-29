@@ -463,40 +463,58 @@ function getColumnCount(grid) {
   return parts.length || 1;
 }
 
-function balancePopularGrid(state) {
+function getRowSpan(element) {
+  if (!element) return 0;
+  const rowEnd = window.getComputedStyle(element).gridRowEnd || "";
+  const match = rowEnd.match(/span\s*(\d+)/i);
+  if (match) {
+    const span = parseInt(match[1], 10);
+    if (!Number.isNaN(span) && span > 0) return span;
+  }
+  return element.classList.contains("viewer-card") ? 3 : 1;
+}
+
+function getPopularRemainder() {
   const grid = document.getElementById("popular-grid");
-  if (!grid || !state) return;
+  if (!grid) return 0;
+  const columns = getColumnCount(grid);
+  if (!columns || columns <= 1) return 0;
+  const viewer = grid.querySelector(".viewer-card");
+  const advert = grid.querySelector(".popular-referral");
+  const cards = grid.querySelectorAll(".model-card:not(.viewer-card)");
+  const units =
+    cards.length +
+    (viewer ? getRowSpan(viewer) : 0) +
+    (advert ? getRowSpan(advert) : 0);
+  return units % columns;
+}
+
+function balancePopularGrid(state, adjustOffset = false) {
+  const grid = document.getElementById("popular-grid");
+  if (!grid || !state) return 0;
+
+  const remainder = getPopularRemainder();
+  if (!remainder) return 0;
+
   const cards = Array.from(
     grid.querySelectorAll(".model-card:not(.viewer-card)"),
   );
-  if (cards.length === 0) return;
-
-  const columns = getColumnCount(grid);
-  if (!columns || columns <= 1) return;
-
-  const viewer = grid.querySelector(".viewer-card");
-  let viewerSpan = viewer ? 1 : 0;
-  if (viewer) {
-    const rowEnd = window.getComputedStyle(viewer).gridRowEnd || "";
-    const match = rowEnd.match(/span\s*(\d+)/);
-    if (match) {
-      viewerSpan = parseInt(match[1], 10) || 1;
-    }
-  }
-  const advert = grid.querySelector(".popular-referral");
-  const extras = (viewerSpan || 0) + (advert ? 1 : 0);
-
-  let cardCount = cards.length;
-  while (columns && (cardCount + extras) % columns !== 0) {
+  let removed = 0;
+  while (cards.length && removed < remainder) {
     const last = cards.pop();
     if (!last) break;
     last.remove();
-    cardCount -= 1;
+    removed += 1;
     if (state.models && state.models.length) state.models.pop();
-    if (typeof state.offset === "number" && state.offset > 0) {
-      state.offset -= 1;
+    if (
+      adjustOffset &&
+      typeof state.offset === "number" &&
+      state.offset > 0
+    ) {
+      state.offset = Math.max(0, state.offset - 1);
     }
   }
+  return removed;
 }
 
 function applyRecentViewer() {
@@ -553,53 +571,114 @@ async function loadMore(type, filters = getFilters()) {
   if (!cache[key]) cache[key] = { offset: 0, models: [] };
   const state = cache[key];
   const offsetBefore = state.offset;
-  const limit =
-    type === "recent" && offsetBefore === 0 ? 8 : type === "popular" ? 12 : 9;
-  let models = await fetchCreations(
-    type,
-    state.offset,
-    limit,
-    category,
-    search,
-    order,
-  );
-  if (models.length === 0) {
-    models = getFallbackModels(limit, state.offset);
-  }
-  const fetchedCount = models.length;
-  models = models.filter(
-    (m) => m && (m.placeholder || (m.model_url && m.snapshot)),
-  );
-  state.offset += fetchedCount;
-  state.models = state.models.concat(models);
+  const isPopular = type === "popular";
+  const isRecent = type === "recent";
+  const baseLimit = isRecent && offsetBefore === 0 ? 8 : isPopular ? 12 : 9;
   const grid = document.getElementById(`${type}-grid`);
-  models.forEach((m) => grid.appendChild(createCard(m)));
+  if (!grid) return;
+
+  if (!isPopular) {
+    let models = await fetchCreations(
+      type,
+      state.offset,
+      baseLimit,
+      category,
+      search,
+      order,
+    );
+    if (models.length === 0) {
+      models = getFallbackModels(baseLimit, state.offset);
+    }
+    const fetchedCount = models.length;
+    models = models.filter(
+      (m) => m && (m.placeholder || (m.model_url && m.snapshot)),
+    );
+    state.offset += fetchedCount;
+    state.models = state.models.concat(models);
+    models.forEach((m) => grid.appendChild(createCard(m)));
+    await captureSnapshots(grid);
+    if (isRecent) applyRecentViewer();
+    const btn = document.getElementById(`${type}-load`);
+    if (btn) {
+      if (models.length < baseLimit) {
+        btn.classList.add("hidden");
+      } else {
+        btn.classList.remove("hidden");
+      }
+    }
+    if (isRecent) {
+      const hasViewer = !!grid.querySelector(".viewer-card");
+      let models = Array.from(
+        grid.querySelectorAll(".model-card:not(.viewer-card)"),
+      );
+      const base = hasViewer ? 5 : 0;
+      while ((models.length - base) % 3 !== 0) {
+        const last = models.pop();
+        if (!last) break;
+        last.remove();
+        state.models.pop();
+        state.offset -= 1;
+      }
+    }
+    saveState();
+    return;
+  }
+
+  let limit = baseLimit;
+  let iterations = 0;
+  let appended = 0;
+  let reachedEnd = false;
+  while (iterations < 10) {
+    let models = await fetchCreations(
+      type,
+      state.offset,
+      limit,
+      category,
+      search,
+      order,
+    );
+    const fetchedCount = models.length;
+    if (fetchedCount === 0) {
+      reachedEnd = true;
+      models = getFallbackModels(limit, state.offset);
+    }
+    models = models.filter(
+      (m) => m && (m.placeholder || (m.model_url && m.snapshot)),
+    );
+    if (fetchedCount) state.offset += fetchedCount;
+    if (models.length) {
+      state.models = state.models.concat(models);
+      models.forEach((m) => grid.appendChild(createCard(m)));
+      appended += models.length;
+    }
+
+    applyPopularViewer();
+    const remainder = getPopularRemainder();
+    if (!remainder) {
+      reachedEnd = fetchedCount < limit || reachedEnd;
+      break;
+    }
+    if (fetchedCount === 0 || fetchedCount < limit) {
+      reachedEnd = true;
+      balancePopularGrid(state, true);
+      break;
+    }
+    limit = remainder;
+    iterations += 1;
+  }
+
   await captureSnapshots(grid);
-  if (type === "recent") applyRecentViewer();
-  if (type === "popular") applyPopularViewer();
-  if (type === "popular") balancePopularGrid(state);
+  applyPopularViewer();
+  if (getPopularRemainder()) {
+    balancePopularGrid(state, true);
+    applyPopularViewer();
+  }
   const btn = document.getElementById(`${type}-load`);
   if (btn) {
-    const effectiveCount =
-      type === "popular" && offsetBefore === 0 ? fetchedCount : models.length;
-    if (effectiveCount < limit) {
+    if (appended === 0 || reachedEnd) {
       btn.classList.add("hidden");
     } else {
       btn.classList.remove("hidden");
-    }
-  }
-  if (type === "recent") {
-    const hasViewer = !!grid.querySelector(".viewer-card");
-    let models = Array.from(
-      grid.querySelectorAll(".model-card:not(.viewer-card)"),
-    );
-    const base = hasViewer ? 5 : 0;
-    while ((models.length - base) % 3 !== 0) {
-      const last = models.pop();
-      if (!last) break;
-      last.remove();
-      state.models.pop();
-      state.offset -= 1;
     }
   }
   saveState();
