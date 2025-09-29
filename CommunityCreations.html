@@ -68,6 +68,12 @@
   </head>
   <body class="bg-[#1A1A1D] text-white font-sans flex flex-col min-h-screen">
     <div
+      id="theme-banner"
+      class="bg-[#30D5C8] text-black text-center py-1 hidden sticky top-0 z-50"
+    >
+      24% off when you buy from this community page
+    </div>
+    <div
       aria-hidden="true"
       style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;"
     >
@@ -641,5 +647,13 @@
     <script type="module" src="js/publicGalleries.js"></script>
     <script type="module" src="js/carousel.js"></script>
     <script type="module" src="js/trackingPixel.js"></script>
+    <script type="module">
+      import { initDiscountDeliveryBanner } from "./js/discountDeliveryBanner.js";
+
+      const banner = document.getElementById("theme-banner");
+      initDiscountDeliveryBanner(banner, {
+        discountMessage: "24% off when you buy from this community page",
+      });
+    </script>
   </body>
 </html>
