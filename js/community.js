@@ -820,6 +820,7 @@ async function loadMore(type, filters = getFilters()) {
   let iterations = 0;
   let appended = 0;
   let reachedEnd = false;
+  let appendedFallback = false;
   while (iterations < 10) {
     let models = await fetchCreations(
       type,
@@ -830,13 +831,23 @@ async function loadMore(type, filters = getFilters()) {
       order,
     );
     const fetchedCount = models.length;
+    let usedFallbackThisIteration = false;
     if (fetchedCount === 0) {
-      reachedEnd = true;
-      models = getFallbackModels(limit, state.offset);
+      const fallback = getFallbackModels(limit, state.offset);
+      if (fallback.length) {
+        models = fallback;
+        usedFallbackThisIteration = true;
+      } else {
+        reachedEnd = true;
+        models = fallback;
+      }
     }
     models = models.filter(
       (m) => m && (m.placeholder || (m.model_url && m.snapshot)),
     );
+    if (usedFallbackThisIteration && models.length) {
+      appendedFallback = true;
+    }
     if (fetchedCount) state.offset += fetchedCount;
     if (models.length) {
       state.models = state.models.concat(models);
@@ -848,11 +859,15 @@ async function loadMore(type, filters = getFilters()) {
     const columns = getColumnCount(grid);
     const remainder = getPopularRemainder();
     if (!remainder) {
-      reachedEnd = fetchedCount < limit || reachedEnd;
+      if (fetchedCount < limit && !usedFallbackThisIteration) {
+        reachedEnd = true;
+      }
       break;
     }
     if (fetchedCount === 0 || fetchedCount < limit) {
-      reachedEnd = true;
+      if (!usedFallbackThisIteration) {
+        reachedEnd = true;
+      }
       balancePopularGrid(state, true);
       break;
     }
@@ -873,7 +888,7 @@ async function loadMore(type, filters = getFilters()) {
   }
   const btn = document.getElementById(`${type}-load`);
   if (btn) {
-    if (appended === 0 || reachedEnd) {
+    if (!appendedFallback && (appended === 0 || reachedEnd)) {
       btn.classList.add("hidden");
     } else {
       btn.classList.remove("hidden");
