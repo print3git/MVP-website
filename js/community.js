@@ -813,6 +813,7 @@ async function loadMore(type, filters = getFilters()) {
       }
     }
     saveState();
+    applyPrintRunHighlights();
     return;
   }
 
