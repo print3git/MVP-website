@@ -47,13 +47,15 @@ const FALLBACK_GLB =
 
 const PRINT_RUN_OVERLAY_CLASS = "print-run-indicator";
 const PRINT_RUN_TZ = "America/New_York";
+const PRINT_RUN_MAX_OVERLAYS = 2;
 const PRINT_RUN_TARGETS = [
-  { id: "popular-grid", count: 2 },
+  { id: "popular-grid", count: 1 },
   { id: "gallery-grid", count: 1 },
-  { id: "recent-grid", count: 1 },
+  { id: "recent-grid", count: 0 },
 ];
 let printRunBaseSlots = computeSlotsByTime();
 let activeCycleKey = getCycleKeyForCommunity();
+const printRunSelections = new Map();
 
 function getCycleKeyForCommunity() {
   const now = new Date();
@@ -91,47 +93,75 @@ function getCardSectionId(card) {
   return section?.id || "";
 }
 
+function getCardIdentifier(card) {
+  return `${card.dataset.model || ""}|${card.dataset.job || ""}`;
+}
+
 function scoreCard(card, index, key) {
-  const identifier = `${card.dataset.model || ""}|${card.dataset.job || ""}`;
-  return hashString(`${key}|${identifier}|${index}`);
+  return hashString(`${key}|${getCardIdentifier(card)}|${index}`);
 }
 
 function selectCardsForOverlay(cards, key) {
   if (!cards.length) return [];
-  const entries = cards.map((card, index) => ({
-    card,
-    section: getCardSectionId(card),
-    score: scoreCard(card, index, key),
-  }));
 
-  const chosen = new Set();
-  const selected = [];
+  const storedIds = printRunSelections.get(key) || [];
+  const cardById = new Map(cards.map((card) => [getCardIdentifier(card), card]));
+  const preserved = storedIds
+    .map((id) => cardById.get(id))
+    .filter(Boolean)
+    .slice(0, PRINT_RUN_MAX_OVERLAYS);
 
-  PRINT_RUN_TARGETS.forEach(({ id, count }) => {
-    if (!count) return;
-    const sectionCards = entries
-      .filter((entry) => entry.section === id)
-      .sort((a, b) => a.score - b.score);
-    for (let i = 0; i < Math.min(count, sectionCards.length); i += 1) {
-      const card = sectionCards[i].card;
-      if (chosen.has(card)) continue;
-      chosen.add(card);
-      selected.push(sectionCards[i]);
-    }
+  const perSectionRemaining = new Map(
+    PRINT_RUN_TARGETS.map(({ id, count }) => [id, count]),
+  );
+  preserved.forEach((card) => {
+    const section = getCardSectionId(card);
+    if (!perSectionRemaining.has(section)) return;
+    const remaining = perSectionRemaining.get(section) - 1;
+    perSectionRemaining.set(section, Math.max(0, remaining));
   });
 
-  if (selected.length < Math.min(4, entries.length)) {
-    const remaining = entries
-      .filter((entry) => !chosen.has(entry.card))
+  const preservedSet = new Set(preserved);
+  const selected = [...preserved];
+
+  if (selected.length < PRINT_RUN_MAX_OVERLAYS) {
+    const entries = cards
+      .filter((card) => !preservedSet.has(card))
+      .map((card, index) => ({
+        card,
+        section: getCardSectionId(card),
+        score: scoreCard(card, index, key),
+      }))
       .sort((a, b) => a.score - b.score);
-    for (const entry of remaining) {
+
+    const chosen = new Set(selected);
+
+    entries.forEach((entry) => {
+      if (selected.length >= PRINT_RUN_MAX_OVERLAYS) return;
+      if (chosen.has(entry.card)) return;
+      const remaining = perSectionRemaining.get(entry.section);
+      if (typeof remaining === "number" && remaining <= 0) return;
+      selected.push(entry.card);
       chosen.add(entry.card);
-      selected.push(entry);
-      if (selected.length >= Math.min(4, entries.length)) break;
+      if (typeof remaining === "number") {
+        perSectionRemaining.set(entry.section, remaining - 1);
+      }
+    });
+
+    if (selected.length < PRINT_RUN_MAX_OVERLAYS) {
+      entries.forEach((entry) => {
+        if (selected.length >= PRINT_RUN_MAX_OVERLAYS) return;
+        if (chosen.has(entry.card)) return;
+        selected.push(entry.card);
+        chosen.add(entry.card);
+      });
     }
   }
 
-  return selected.map((entry) => entry.card).slice(0, 4);
+  const identifiers = selected.map((card) => getCardIdentifier(card));
+  printRunSelections.set(key, identifiers.slice(0, PRINT_RUN_MAX_OVERLAYS));
+
+  return selected.slice(0, PRINT_RUN_MAX_OVERLAYS);
 }
 
 function getAdjustedSlotsCount() {
@@ -194,6 +224,7 @@ async function refreshPrintRunInfo() {
   const key = getCycleKeyForCommunity();
   if (key !== activeCycleKey) {
     activeCycleKey = key;
+    printRunSelections.clear();
     applyPrintRunHighlights();
   }
 }
@@ -704,6 +735,13 @@ function balancePopularGrid(state, adjustOffset = false) {
     ) {
       state.offset = Math.max(0, state.offset - 1);
     }
+    if (
+      adjustOffset &&
+      typeof state.fallbackOffset === "number" &&
+      state.fallbackOffset > 0
+    ) {
+      state.fallbackOffset = Math.max(0, state.fallbackOffset - 1);
+    }
   }
   return removed;
 }
@@ -762,6 +800,9 @@ async function loadMore(type, filters = getFilters()) {
   const cache = window.communityState[type];
   if (!cache[key]) cache[key] = { offset: 0, models: [] };
   const state = cache[key];
+  if (typeof state.fallbackOffset !== "number") {
+    state.fallbackOffset = state.offset || 0;
+  }
   const offsetBefore = state.offset;
   const isPopular = type === "popular";
   const isRecent = type === "recent";
@@ -786,6 +827,11 @@ async function loadMore(type, filters = getFilters()) {
       (m) => m && (m.placeholder || (m.model_url && m.snapshot)),
     );
     state.offset += fetchedCount;
+    if (typeof state.fallbackOffset === "number") {
+      state.fallbackOffset = Math.max(state.fallbackOffset, state.offset);
+    } else {
+      state.fallbackOffset = state.offset;
+    }
     state.models = state.models.concat(models);
     models.forEach((m) => grid.appendChild(createCard(m)));
     await captureSnapshots(grid);
@@ -834,10 +880,15 @@ async function loadMore(type, filters = getFilters()) {
     const fetchedCount = models.length;
     let usedFallbackThisIteration = false;
     if (fetchedCount === 0) {
-      const fallback = getFallbackModels(limit, state.offset);
+      const fallbackStart =
+        typeof state.fallbackOffset === "number"
+          ? state.fallbackOffset
+          : state.offset;
+      const fallback = getFallbackModels(limit, fallbackStart);
       if (fallback.length) {
         models = fallback;
         usedFallbackThisIteration = true;
+        state.fallbackOffset = fallbackStart + fallback.length;
       } else {
         reachedEnd = true;
         models = fallback;
@@ -849,7 +900,13 @@ async function loadMore(type, filters = getFilters()) {
     if (usedFallbackThisIteration && models.length) {
       appendedFallback = true;
     }
+    if (usedFallbackThisIteration && models.length < limit) {
+      reachedEnd = true;
+    }
     if (fetchedCount) state.offset += fetchedCount;
+    if (fetchedCount && typeof state.fallbackOffset === "number") {
+      state.fallbackOffset = Math.max(state.fallbackOffset, state.offset);
+    }
     if (models.length) {
       state.models = state.models.concat(models);
       models.forEach((m) => grid.appendChild(createCard(m)));
@@ -889,7 +946,7 @@ async function loadMore(type, filters = getFilters()) {
   }
   const btn = document.getElementById(`${type}-load`);
   if (btn) {
-    if (!appendedFallback && (appended === 0 || reachedEnd)) {
+    if (appended === 0 || reachedEnd) {
       btn.classList.add("hidden");
     } else {
       btn.classList.remove("hidden");
