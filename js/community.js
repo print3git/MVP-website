@@ -704,6 +704,13 @@ function balancePopularGrid(state, adjustOffset = false) {
     ) {
       state.offset = Math.max(0, state.offset - 1);
     }
+    if (
+      adjustOffset &&
+      typeof state.fallbackOffset === "number" &&
+      state.fallbackOffset > 0
+    ) {
+      state.fallbackOffset = Math.max(0, state.fallbackOffset - 1);
+    }
   }
   return removed;
 }
@@ -762,6 +769,9 @@ async function loadMore(type, filters = getFilters()) {
   const cache = window.communityState[type];
   if (!cache[key]) cache[key] = { offset: 0, models: [] };
   const state = cache[key];
+  if (typeof state.fallbackOffset !== "number") {
+    state.fallbackOffset = state.offset || 0;
+  }
   const offsetBefore = state.offset;
   const isPopular = type === "popular";
   const isRecent = type === "recent";
@@ -786,6 +796,11 @@ async function loadMore(type, filters = getFilters()) {
       (m) => m && (m.placeholder || (m.model_url && m.snapshot)),
     );
     state.offset += fetchedCount;
+    if (typeof state.fallbackOffset === "number") {
+      state.fallbackOffset = Math.max(state.fallbackOffset, state.offset);
+    } else {
+      state.fallbackOffset = state.offset;
+    }
     state.models = state.models.concat(models);
     models.forEach((m) => grid.appendChild(createCard(m)));
     await captureSnapshots(grid);
@@ -834,10 +849,15 @@ async function loadMore(type, filters = getFilters()) {
     const fetchedCount = models.length;
     let usedFallbackThisIteration = false;
     if (fetchedCount === 0) {
-      const fallback = getFallbackModels(limit, state.offset);
+      const fallbackStart =
+        typeof state.fallbackOffset === "number"
+          ? state.fallbackOffset
+          : state.offset;
+      const fallback = getFallbackModels(limit, fallbackStart);
       if (fallback.length) {
         models = fallback;
         usedFallbackThisIteration = true;
+        state.fallbackOffset = fallbackStart + fallback.length;
       } else {
         reachedEnd = true;
         models = fallback;
@@ -849,7 +869,13 @@ async function loadMore(type, filters = getFilters()) {
     if (usedFallbackThisIteration && models.length) {
       appendedFallback = true;
     }
+    if (usedFallbackThisIteration && models.length < limit) {
+      reachedEnd = true;
+    }
     if (fetchedCount) state.offset += fetchedCount;
+    if (fetchedCount && typeof state.fallbackOffset === "number") {
+      state.fallbackOffset = Math.max(state.fallbackOffset, state.offset);
+    }
     if (models.length) {
       state.models = state.models.concat(models);
       models.forEach((m) => grid.appendChild(createCard(m)));
@@ -889,7 +915,7 @@ async function loadMore(type, filters = getFilters()) {
   }
   const btn = document.getElementById(`${type}-load`);
   if (btn) {
-    if (!appendedFallback && (appended === 0 || reachedEnd)) {
+    if (appended === 0 || reachedEnd) {
       btn.classList.add("hidden");
     } else {
       btn.classList.remove("hidden");
