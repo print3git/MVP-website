@@ -47,13 +47,15 @@ const FALLBACK_GLB =
 
 const PRINT_RUN_OVERLAY_CLASS = "print-run-indicator";
 const PRINT_RUN_TZ = "America/New_York";
+const PRINT_RUN_MAX_OVERLAYS = 2;
 const PRINT_RUN_TARGETS = [
-  { id: "popular-grid", count: 2 },
+  { id: "popular-grid", count: 1 },
   { id: "gallery-grid", count: 1 },
-  { id: "recent-grid", count: 1 },
+  { id: "recent-grid", count: 0 },
 ];
 let printRunBaseSlots = computeSlotsByTime();
 let activeCycleKey = getCycleKeyForCommunity();
+const printRunSelections = new Map();
 
 function getCycleKeyForCommunity() {
   const now = new Date();
@@ -91,47 +93,75 @@ function getCardSectionId(card) {
   return section?.id || "";
 }
 
+function getCardIdentifier(card) {
+  return `${card.dataset.model || ""}|${card.dataset.job || ""}`;
+}
+
 function scoreCard(card, index, key) {
-  const identifier = `${card.dataset.model || ""}|${card.dataset.job || ""}`;
-  return hashString(`${key}|${identifier}|${index}`);
+  return hashString(`${key}|${getCardIdentifier(card)}|${index}`);
 }
 
 function selectCardsForOverlay(cards, key) {
   if (!cards.length) return [];
-  const entries = cards.map((card, index) => ({
-    card,
-    section: getCardSectionId(card),
-    score: scoreCard(card, index, key),
-  }));
 
-  const chosen = new Set();
-  const selected = [];
+  const storedIds = printRunSelections.get(key) || [];
+  const cardById = new Map(cards.map((card) => [getCardIdentifier(card), card]));
+  const preserved = storedIds
+    .map((id) => cardById.get(id))
+    .filter(Boolean)
+    .slice(0, PRINT_RUN_MAX_OVERLAYS);
 
-  PRINT_RUN_TARGETS.forEach(({ id, count }) => {
-    if (!count) return;
-    const sectionCards = entries
-      .filter((entry) => entry.section === id)
-      .sort((a, b) => a.score - b.score);
-    for (let i = 0; i < Math.min(count, sectionCards.length); i += 1) {
-      const card = sectionCards[i].card;
-      if (chosen.has(card)) continue;
-      chosen.add(card);
-      selected.push(sectionCards[i]);
-    }
+  const perSectionRemaining = new Map(
+    PRINT_RUN_TARGETS.map(({ id, count }) => [id, count]),
+  );
+  preserved.forEach((card) => {
+    const section = getCardSectionId(card);
+    if (!perSectionRemaining.has(section)) return;
+    const remaining = perSectionRemaining.get(section) - 1;
+    perSectionRemaining.set(section, Math.max(0, remaining));
   });
 
-  if (selected.length < Math.min(4, entries.length)) {
-    const remaining = entries
-      .filter((entry) => !chosen.has(entry.card))
+  const preservedSet = new Set(preserved);
+  const selected = [...preserved];
+
+  if (selected.length < PRINT_RUN_MAX_OVERLAYS) {
+    const entries = cards
+      .filter((card) => !preservedSet.has(card))
+      .map((card, index) => ({
+        card,
+        section: getCardSectionId(card),
+        score: scoreCard(card, index, key),
+      }))
       .sort((a, b) => a.score - b.score);
-    for (const entry of remaining) {
+
+    const chosen = new Set(selected);
+
+    entries.forEach((entry) => {
+      if (selected.length >= PRINT_RUN_MAX_OVERLAYS) return;
+      if (chosen.has(entry.card)) return;
+      const remaining = perSectionRemaining.get(entry.section);
+      if (typeof remaining === "number" && remaining <= 0) return;
+      selected.push(entry.card);
       chosen.add(entry.card);
-      selected.push(entry);
-      if (selected.length >= Math.min(4, entries.length)) break;
+      if (typeof remaining === "number") {
+        perSectionRemaining.set(entry.section, remaining - 1);
+      }
+    });
+
+    if (selected.length < PRINT_RUN_MAX_OVERLAYS) {
+      entries.forEach((entry) => {
+        if (selected.length >= PRINT_RUN_MAX_OVERLAYS) return;
+        if (chosen.has(entry.card)) return;
+        selected.push(entry.card);
+        chosen.add(entry.card);
+      });
     }
   }
 
-  return selected.map((entry) => entry.card).slice(0, 4);
+  const identifiers = selected.map((card) => getCardIdentifier(card));
+  printRunSelections.set(key, identifiers.slice(0, PRINT_RUN_MAX_OVERLAYS));
+
+  return selected.slice(0, PRINT_RUN_MAX_OVERLAYS);
 }
 
 function getAdjustedSlotsCount() {
@@ -194,6 +224,7 @@ async function refreshPrintRunInfo() {
   const key = getCycleKeyForCommunity();
   if (key !== activeCycleKey) {
     activeCycleKey = key;
+    printRunSelections.clear();
     applyPrintRunHighlights();
   }
 }
