@@ -57,7 +57,7 @@ jobs:
         run: npx playwright test --trace on --pass-with-no-tests tests/e2e
       - name: Upload Playwright traces
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: playwright-traces
           path: test-results
