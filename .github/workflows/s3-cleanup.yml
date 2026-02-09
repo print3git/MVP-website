@@ -28,7 +28,7 @@ jobs:
       # Use OIDC role if provided
       - name: Configure AWS via role (OIDC)
         if: env.AWS_ROLE_TO_ASSUME != ''
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ env.AWS_ROLE_TO_ASSUME }}
           aws-region: ${{ inputs.region }}
@@ -36,7 +36,7 @@ jobs:
       # Otherwise fall back to key pair
       - name: Configure AWS via keys
         if: env.AWS_ROLE_TO_ASSUME == ''
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
